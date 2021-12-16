@@ -178,17 +178,22 @@ public class JadeFirmwareManager {
             Log.i(TAG, "Jade OTA Update returned: " + updated);
             jade.disconnect();
 
-            // Sleep to allow jade to reboot
-            android.os.SystemClock.sleep(5000);
+            if(jade.isUsb()) {
+                // Sleep to allow jade to reboot
+                android.os.SystemClock.sleep(5000);
+            }
         } catch (final Exception e) {
             Log.e(TAG, "Error during firmware update: " + e);
             jade.disconnect();
             android.os.SystemClock.sleep(1000);
         }
 
-        // Regardless of OTA success, fail, error etc. we try to reconnect.
-        if (!jade.connect()) {
-            throw new IOException("Failed to reconnect to Jade after OTA");
+        // On BLE connection re-bonding is expected
+        if(jade.isUsb()) {
+            // Regardless of OTA success, fail, error etc. we try to reconnect.
+            if (!jade.connect()) {
+                throw new IOException("Failed to reconnect to Jade after OTA");
+            }
         }
     }
 
@@ -250,14 +255,24 @@ public class JadeFirmwareManager {
                                                 emitter.onSuccess(fwValid);
                                             } else {
                                                 try {
+                                                    boolean requireBleRebonding = jade.isBle() && currentVersion.isLessThan(new JadeVersion("0.1.31"));
+
                                                     // Try to OTA the fw onto Jade
                                                     doOtaUpdate(jade, verInfo.getJadeOtaMaxChunk(), fwFile);
 
-                                                    // Check fw validity again (from scratch)
-                                                    final VersionInfo newInfo = jade.getVersionInfo();
-                                                    final JadeVersion newVersion = new JadeVersion(newInfo.getJadeVersion());
-                                                    final boolean fwNowValid = isJadeFwValid(newVersion);
-                                                    emitter.onSuccess(fwNowValid);
+                                                    if(jade.isUsb()) {
+                                                        // Check fw validity again (from scratch)
+                                                        final VersionInfo newInfo = jade.getVersionInfo();
+                                                        final JadeVersion newVersion = new JadeVersion(newInfo.getJadeVersion());
+                                                        final boolean fwNowValid = isJadeFwValid(newVersion);
+                                                        emitter.onSuccess(fwNowValid);
+                                                        firmwareInteraction.firmwareUpdated(false, requireBleRebonding);
+                                                    }else{
+                                                        // If it's a BLE connection re-bonding is necessary
+                                                        firmwareInteraction.firmwareUpdated(true, requireBleRebonding);
+                                                        emitter.onSuccess(true); // the return value is irrelevant as we expect re-bonding
+                                                    }
+
                                                 } catch (final Exception e) {
                                                     emitter.onError(e);
                                                 }

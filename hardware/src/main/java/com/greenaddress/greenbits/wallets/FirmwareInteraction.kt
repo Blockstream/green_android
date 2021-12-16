@@ -8,6 +8,8 @@ interface FirmwareInteraction {
         firmwareUpgradeRequest: FirmwareUpgradeRequest,
         callback: Function<Boolean?, Void?>?
     )
+
+    fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean)
 }
 
 data class FirmwareUpgradeRequest(

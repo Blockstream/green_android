@@ -1,12 +1,11 @@
 package com.blockstream.green.ui.devices
 
-import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -19,6 +18,7 @@ import com.blockstream.gdk.data.Network
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.Urls
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceInfoFragmentBinding
 import com.blockstream.green.databinding.PinTextDialogBinding
@@ -28,11 +28,11 @@ import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.clearNavigationResult
+import com.blockstream.green.utils.getNavigationResult
+import com.blockstream.green.utils.openBrowser
+import com.blockstream.green.utils.snackbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.greenaddress.greenbits.ui.GaActivity
-import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity
-import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.jade.entities.JadeVersion
 import com.mikepenz.fastadapter.GenericItem
@@ -111,6 +111,29 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                         askForFirmwareUpgrade(it.request, it.callback)
                     }
                 }
+            }
+
+            onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
+                if(it.data == DeviceInfoViewModel.REQUIRE_REBONDING){
+                    MaterialAlertDialogBuilder(
+                        requireContext(),
+                        R.style.ThemeOverlay_Green_MaterialAlertDialog
+                    )
+                        .setTitle(R.string.id_warning)
+                        .setMessage(R.string.id_the_new_firmware_requires_you_to_unpair)
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int ->
+                            startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                        }
+                        .setNegativeButton(R.string.id_cancel, null)
+                        .setOnDismissListener {
+                            popBackStack()
+                        }
+                        .show()
+                }
+            }
+
+            onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
+                popBackStack()
             }
         }
 

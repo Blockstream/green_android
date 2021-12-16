@@ -131,4 +131,12 @@ public class JadeVersion implements Comparable<JadeVersion> {
         // NOTE: we should only get to this when testing local dev jade fw builds.
         return this.trailer.compareTo(other.trailer);
     }
+
+    public boolean isGreaterThan(JadeVersion that) {
+        return this.compareTo(that) > 0;
+    }
+
+    public boolean isLessThan(JadeVersion that) {
+        return this.compareTo(that) < 0;
+    }
 }

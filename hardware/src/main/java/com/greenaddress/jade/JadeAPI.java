@@ -541,6 +541,10 @@ public class JadeAPI {
         return isUsb;
     }
 
+    public boolean isBle(){
+        return !isUsb;
+    }
+
     public PublishSubject<Boolean> getBleDisconnectEvent() {
         return jade.getBleDisconnectEvent();
     }

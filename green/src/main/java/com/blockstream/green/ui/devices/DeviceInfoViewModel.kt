@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.data.AppEvent
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
@@ -117,6 +118,15 @@ class DeviceInfoViewModel @AssistedInject constructor(
         onEvent.postValue(ConsumableEvent(DeviceInfoEvent.AskForFirmwareUpgrade(firmwareUpgradeRequest, callback)))
     }
 
+    override fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean) {
+        if(requireBleRebonding){
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(REQUIRE_REBONDING)))
+        }else if(requireReconnection) {
+            // on firmware update, navigate to device list
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
+        }
+    }
+
     override fun requestPin(deviceBrand: DeviceBrand): Single<String> {
         onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPin(deviceBrand)))
 
@@ -134,6 +144,8 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     companion object : KLogging() {
+        const val REQUIRE_REBONDING = "REQUIRE_REBONDING"
+
         fun provideFactory(
             assistedFactory: AssistedFactory,
             applicationContext: Context,
