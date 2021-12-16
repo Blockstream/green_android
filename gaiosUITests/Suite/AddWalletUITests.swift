@@ -277,6 +277,8 @@ class AddWalletUITests: XCTestBase {
             .pause(1)
             .chooseWord()
             .pause(1)
+            .chooseWord()
+            .pause(1)
         
         RecoverySuccess()
             .pause(1)
