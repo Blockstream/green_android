@@ -36,7 +36,7 @@ android {
     productFlavors {
         development {
             applicationId "com.greenaddress.greenbits_android_wallet.dev"
-            versionNameSuffix "-dev"
+            versionNameSuffix "-dev" + appendGdkCommitHash()
             resValue "string", "app_name", "Green Dev"
             resValue "string", "application_id", applicationId
             manifestPlaceholders = [
@@ -226,3 +226,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
+def appendGdkCommitHash () {
+    def cmd = "git --git-dir=crypto/gdk/.git rev-parse --short HEAD"
+    def proc = cmd.execute ()
+    def hash = proc.text.trim()
+    hash ? ("-gdk:" + hash) : ""
+}
