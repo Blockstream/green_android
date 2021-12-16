@@ -6,8 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Unreleased
 
 ### Added
+- New flow for automatic wallet restore
+- Balances on account cards in the overview screen
+- Support adding wallets with both 12 or 24 words mnemonic
 
 ### Changed
+- Refactoring transaction detail UI
+- Update GDK to 0.0.48
 
 ### Fixed
 - Support Ledger firmware 2.0.0
