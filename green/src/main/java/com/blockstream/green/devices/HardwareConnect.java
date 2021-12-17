@@ -21,6 +21,7 @@ import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest;
+import com.greenaddress.greenbits.wallets.JadeFirmwareManager;
 import com.greenaddress.greenbits.wallets.JadeHWWallet;
 import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
@@ -40,7 +41,6 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 
@@ -52,7 +52,11 @@ public class HardwareConnect {
     private final CompositeDisposable mDisposables = new CompositeDisposable();
     private HWWallet mHwWallet;
     private com.blockstream.green.devices.Device device;
+    private JadeFirmwareManager jadeFirmwareManager;
 
+    public void setJadeFirmwareManager(JadeFirmwareManager jadeFirmwareManager){
+        this.jadeFirmwareManager = jadeFirmwareManager;
+    }
 
     public void connectDevice(final HardwareConnectInteraction interaction, final HttpRequestProvider requestProvider, final com.blockstream.green.devices.Device device){
         this.device = device;
@@ -177,7 +181,7 @@ public class HardwareConnect {
                     final JadeHWWallet jadeWallet = new JadeHWWallet(jade, interaction.getConnectionNetwork(), device, Bridge.INSTANCE.getHardwareQATester());
                     return jadeWallet;
                 })
-                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction, interaction, interaction.getGreenSession()).as(RxJavaBridge.toV3Single()))
+                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction, jadeFirmwareManager != null ? jadeFirmwareManager : new JadeFirmwareManager(interaction, interaction.getGreenSession())).as(RxJavaBridge.toV3Single()))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
                 .observeOn(AndroidSchedulers.mainThread())
@@ -241,8 +245,8 @@ public class HardwareConnect {
                 (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0) ||
                 (version.get(0) == 2 && version.get(1) < 1);
         if (isFirmwareOutdated) {
-            interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Trezor, true,null, null, null, !Bridge.INSTANCE.isDevelopmentFlavor()), isPositive -> {
-                if(isPositive) {
+            interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Trezor, true,null, null, null, null, !Bridge.INSTANCE.isDevelopmentFlavor()), isPositive -> {
+                if(isPositive != null) {
                     onTrezorConnected(interaction, t);
                 }else{
                     closeTrezor(interaction, t);
@@ -316,10 +320,10 @@ public class HardwareConnect {
             }
 
             if (isFirmwareOutdated) {
-                interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Ledger, transport.isUsb(), null, null, null, !Bridge.INSTANCE.isDevelopmentFlavor()), isPositive -> {
-                    if(isPositive) {
+                interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Ledger, transport.isUsb(), null, null, null, null, !Bridge.INSTANCE.isDevelopmentFlavor()), isPositive -> {
+                    if (isPositive != null) {
                         onLedgerConnected(interaction, dongle, bleDisconnectEvent);
-                    }else{
+                    } else {
                         closeLedger(interaction, transport);
                     }
                     return null;

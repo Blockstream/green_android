@@ -6,7 +6,7 @@ import com.blockstream.DeviceBrand
 interface FirmwareInteraction {
     fun askForFirmwareUpgrade(
         firmwareUpgradeRequest: FirmwareUpgradeRequest,
-        callback: Function<Boolean?, Void?>?
+        callback: Function<Int?, Void>
     )
 
     fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean)
@@ -17,6 +17,7 @@ data class FirmwareUpgradeRequest(
     val isUsb: Boolean,
     val currentVersion: String?,
     val upgradeVersion: String?,
+    val firmwareList: List<String>?,
     val hardwareVersion: String?,
     val isUpgradeRequired: Boolean
 )

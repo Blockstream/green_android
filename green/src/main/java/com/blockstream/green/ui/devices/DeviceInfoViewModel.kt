@@ -21,6 +21,7 @@ import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
+import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import com.greenaddress.jade.HttpRequestProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -44,13 +45,13 @@ class DeviceInfoViewModel @AssistedInject constructor(
         data class RequestPin(val deviceBrand: DeviceBrand) : DeviceInfoEvent()
         data class AskForFirmwareUpgrade(
             val request: FirmwareUpgradeRequest,
-            val callback: Function<Boolean?, Void?>?
+            val callback: Function<Int?, Void>
         ) : DeviceInfoEvent()
     }
 
     var requestPinEmitter: SingleEmitter<String>? = null
 
-    private val hardwareConnect = HardwareConnect()
+    val hardwareConnect = HardwareConnect()
 
     @Inject
     lateinit var greenWallet: GreenWallet
@@ -112,9 +113,8 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
     override fun askForFirmwareUpgrade(
         firmwareUpgradeRequest: FirmwareUpgradeRequest,
-        callback: Function<Boolean?, Void?>?
+        callback: Function<Int?, Void>
     ) {
-
         onEvent.postValue(ConsumableEvent(DeviceInfoEvent.AskForFirmwareUpgrade(firmwareUpgradeRequest, callback)))
     }
 
@@ -133,6 +133,10 @@ class DeviceInfoViewModel @AssistedInject constructor(
         return Single.create<String> { emitter ->
             requestPinEmitter = emitter
         }.subscribeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun setJadeFirmwareManager(jadeFirmwareManager: JadeFirmwareManager) {
+        hardwareConnect.setJadeFirmwareManager(jadeFirmwareManager)
     }
 
     @dagger.assisted.AssistedFactory

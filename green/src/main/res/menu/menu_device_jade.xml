@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/emulate"
-        android:title="Emulate Compromised Wallet" />
+        android:id="@+id/updateFirmware"
+        android:title="Update Firmware" />
 
 </menu>

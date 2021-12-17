@@ -76,23 +76,22 @@ public class JadeHWWallet extends HWWallet {
     }
 
     // Authenticate Jade with pinserver and check firmware version with fw-server
-    public Single<JadeHWWallet> authenticate(final HWWalletBridge hwWalletBridge, final FirmwareInteraction firmwareInteraction, HttpRequestProvider httpRequestProvider) throws Exception {
+    public Single<JadeHWWallet> authenticate(final HWWalletBridge hwWalletBridge, final JadeFirmwareManager jadeFirmwareManager) throws Exception {
         /*
          * 1. check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
          * 2. authenticate the user (see above)
          * 3. check the firmware again (and maybe OTA) for devices that are set-up (and hence needed unlocking first)
          * 4. authenticate the user *if required* - as we may have OTA'd and rebooted the hww.  Should be a no-op if not needed.
          */
-        final JadeFirmwareManager fwManager = new JadeFirmwareManager(firmwareInteraction, httpRequestProvider);
         return Single.just(this)
-                .flatMap(hww -> fwManager.checkFirmware(jade, false))
+                .flatMap(hww -> jadeFirmwareManager.checkFirmware(jade, false))
                 .map(fwValid -> {
                     if(hwWalletBridge != null) {
                         hwWalletBridge.interactionRequest(this);
                     }
                     return authUser(hwWalletBridge);
                  })
-                .flatMap(authed -> fwManager.checkFirmware(jade, true))
+                .flatMap(authed -> jadeFirmwareManager.checkFirmware(jade, true))
                 .flatMap(fwValid -> {
                     if (fwValid) {
                         authUser(hwWalletBridge);  // re-auth if required

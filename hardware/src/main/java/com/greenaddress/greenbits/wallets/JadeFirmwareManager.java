@@ -28,7 +28,6 @@ public class JadeFirmwareManager {
     private static final String TAG = "JadeFirmwareManager";
 
     private static final JadeVersion JADE_MIN_ALLOWED_FW_VERSION = new JadeVersion("0.1.24");
-    private static final String JADE_FW_VERSIONS_FILE = "LATEST";
     private static final String JADE_FW_SUFFIX = "fw.bin";
 
     private static final String JADE_FW_SERVER_HTTPS = "https://jadefw.blockstream.com";
@@ -43,8 +42,15 @@ public class JadeFirmwareManager {
     private static final String JADE_BOARD_TYPE_JADE_V1_1 = "JADE_V1.1";
     private static final String JADE_FEATURE_SECURE_BOOT = "SB";
 
+    public static final String JADE_FW_VERSIONS_LATEST = "LATEST";
+    public static final String JADE_FW_VERSIONS_BETA = "BETA";
+    public static final String JADE_FW_VERSIONS_PREVIOUS = "PREVIOUS";
+
+
     private FirmwareInteraction firmwareInteraction;
     private final HttpRequestProvider httpRequestProvider;
+    private String jadeFwVersionsFile = JADE_FW_VERSIONS_LATEST;
+    private boolean forceFirmwareUpdate = false;
 
     // A firmware instance on the file server
     // Meta data, and optionally the actual fw binary
@@ -75,6 +81,14 @@ public class JadeFirmwareManager {
     public JadeFirmwareManager(final FirmwareInteraction firmwareInteraction, HttpRequestProvider httpRequestProvider) {
         this.firmwareInteraction = firmwareInteraction;
         this.httpRequestProvider = httpRequestProvider;
+    }
+
+    public void setJadeFwVersionFile(String jadeFwVersionsFile){
+        this.jadeFwVersionsFile = jadeFwVersionsFile;
+    }
+
+    public void setForceFirmwareUpdate(boolean forceUpdate){
+        this.forceFirmwareUpdate = forceUpdate;
     }
 
     // Check Jade fw against minimum allowed firmware version
@@ -135,7 +149,7 @@ public class JadeFirmwareManager {
             }
 
             // Get the index file from that path
-            final String versionIndexFilePath = fwPath + JADE_FW_VERSIONS_FILE;
+            final String versionIndexFilePath = fwPath + jadeFwVersionsFile;
             final byte[] versions = downloadJadeFwFile(versionIndexFilePath, false);
 
             // Parse the filenames referenced
@@ -228,8 +242,8 @@ public class JadeFirmwareManager {
                 // FIXME: temporary filter to restrict to same config
                 final List<FwFileData> updates = new ArrayList<>(availableFirmwares.size());
                 for (final FwFileData fw : availableFirmwares) {
-                    if (fw.version.compareTo(currentVersion) > 0
-                            && verInfo.getJadeConfig().equalsIgnoreCase(fw.config)) {
+                    if (forceFirmwareUpdate || (fw.version.compareTo(currentVersion) > 0
+                            && verInfo.getJadeConfig().equalsIgnoreCase(fw.config))) {
                         updates.add(fw);
                     }
                 }
@@ -241,10 +255,22 @@ public class JadeFirmwareManager {
 
                 // Get first/only match then offer as Y/N to user
                 // FIXME: show user full list and let them choose
-                final FwFileData fwFile = updates.get(0);
+
+                FwFileData bleFirmwareFile = null;
+                ArrayList<String> firmwareNameList = null;
+                if(forceFirmwareUpdate){
+                    firmwareNameList = new ArrayList();
+                    for(final FwFileData fw : updates) {
+                        firmwareNameList.add(fw.version + " " + fw.config);
+                    }
+                }else{
+                    bleFirmwareFile = updates.get(0);
+                }
                 
-                firmwareInteraction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Blockstream, jade.isUsb(), currentVersion.toString(), fwFile.version.toString(), verInfo.getBoardType(), !fwValid), isPositive -> {
-                    if(isPositive){
+                firmwareInteraction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Blockstream, jade.isUsb(), currentVersion.toString(), bleFirmwareFile != null ? bleFirmwareFile.version.toString(): null, firmwareNameList, verInfo.getBoardType(), !fwValid), firmwareSelectionIndex -> {
+                    if(firmwareSelectionIndex != null){
+                        FwFileData fwFile = updates.get(firmwareSelectionIndex);
+
                         // Update firmware
                         final Disposable unused = Single.just(fwFile)
                                 .subscribeOn(Schedulers.computation())
@@ -281,11 +307,8 @@ public class JadeFirmwareManager {
                                         emitter::onError);
                     }else{
                         // User declined to update firmware right now
-                        final Disposable unused = Single.just(fwFile)
-                                .subscribeOn(Schedulers.computation())
-                                .doOnSuccess(fw -> Log.i(TAG, "No OTA firmware selected"))
-                                .subscribe(fw -> emitter.onSuccess(fwValid),
-                                        emitter::onError);
+                        Log.i(TAG, "No OTA firmware selected");
+                        emitter.onSuccess(fwValid);
                     }
                     return null;
                 });

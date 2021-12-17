@@ -4,8 +4,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -28,12 +27,10 @@ import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
-import com.blockstream.green.utils.clearNavigationResult
-import com.blockstream.green.utils.getNavigationResult
-import com.blockstream.green.utils.openBrowser
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
+import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import com.greenaddress.jade.entities.JadeVersion
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
@@ -46,7 +43,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     layout = R.layout.device_info_fragment,
-    menuRes = 0
+    menuRes = R.menu.menu_device_jade
 ) {
     val args: DeviceInfoFragmentArgs by navArgs()
 
@@ -178,6 +175,40 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater).also {
+            menu.findItem(R.id.updateFirmware).isVisible = isDevelopmentFlavor() && device?.isJade == true
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.updateFirmware -> {
+
+                val channels = listOf(
+                    JadeFirmwareManager.JADE_FW_VERSIONS_BETA,
+                    JadeFirmwareManager.JADE_FW_VERSIONS_LATEST,
+                    JadeFirmwareManager.JADE_FW_VERSIONS_PREVIOUS
+                )
+
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Select Firmware Channel")
+                    .setItems(channels.toTypedArray()){ _: DialogInterface, i: Int ->
+                        // Update
+                        viewModel.setJadeFirmwareManager(JadeFirmwareManager(viewModel, viewModel.getGreenSession()).also {
+                            it.setForceFirmwareUpdate(true)
+                            it.setJadeFwVersionFile(channels[i])
+                        })
+                        connect(Network.GreenMainnet)
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -281,7 +312,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
     private fun askForFirmwareUpgrade(
         request: FirmwareUpgradeRequest,
-        callback: Function<Boolean?, Void?>?
+        callback: Function<Int?, Void>
     ) {
         if (request.deviceBrand == DeviceBrand.Blockstream) {
             val usbIsRequired = !request.isUsb && request.hardwareVersion == "JADE_V1.1" && JadeVersion(request.currentVersion) < JadeVersion("0.1.28")
@@ -293,21 +324,28 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                         setMessage(R.string.id_connect_jade_with_a_usb_cable)
                         setPositiveButton(R.string.id_read_more) { _, _ ->
                             openBrowser(Urls.HELP_JADE_USB_UPGRADE)
-                            callback?.apply(false)
+                            callback.apply(null)
                         }
                     }else{
-                        setMessage(getString(R.string.id_install_version_s, request.upgradeVersion))
-                        setPositiveButton(R.string.id_continue) { _, _ ->
-                            callback?.apply(true)
+                        if(request.firmwareList != null){
+                            setTitle("Select firmware")
+                            setItems(request.firmwareList!!.toTypedArray()){ _: DialogInterface, i: Int ->
+                                callback.apply(i)
+                            }
+                        }else {
+                            setMessage(getString(R.string.id_install_version_s, request.upgradeVersion))
+                            setPositiveButton(R.string.id_continue) { _, _ ->
+                                callback.apply(0)
+                            }
                         }
                     }
                     if (request.isUpgradeRequired) {
                         setNegativeButton(R.string.id_cancel) { _, _ ->
-                            callback?.apply(false)
+                            callback.apply(null)
                         }
                     } else {
                         setNeutralButton(R.string.id_skip) { _, _ ->
-                            callback?.apply(false)
+                            callback.apply(null)
                         }
                     }
                 }
@@ -320,10 +358,10 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                     .setTitle(R.string.id_warning)
                     .setMessage(R.string.id_outdated_hardware_wallet)
                     .setPositiveButton(R.string.id_continue) { _, _ ->
-                        callback?.apply(true)
+                        callback.apply(0)
                     }
                     .setNegativeButton(R.string.id_cancel) { _, _ ->
-                        callback?.apply(false)
+                        callback.apply(null)
                     }
                     .show()
             }
