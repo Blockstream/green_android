@@ -3,20 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [3.7.7] - 2021-12-17
 
 ### Added
-- New flow for automatic wallet restore
-- Balances on account cards in the overview screen
-- Support adding wallets with both 12 or 24 words mnemonic
+- Automatic wallet restore, Green will find any wallet associated with your recovery phrase
+- Balances on account cards when switching between accounts
+- Support for wallet creation with both 12 or 24 words recovery phrases
+- Support for Ledger Nano X firmware 2.0.0
 
 ### Changed
-- Refactoring transaction detail UI
-- Update GDK to 0.0.48
+- Improved transaction details layout
+- Updated GDK to 0.0.48
 
 ### Fixed
-- Support Ledger firmware 2.0.0
-- Warn user if needing re-bonding jade after fmw upgrade
+- Assist Jade users with Bluetooth re-pairing after firmware 0.1.31+ upgrade
 
 ## [3.7.6] - 2021-11-10
 ### Added
