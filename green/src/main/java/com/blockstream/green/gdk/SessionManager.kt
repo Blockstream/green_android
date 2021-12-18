@@ -8,10 +8,8 @@ import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
-import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.greenapi.Session
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -41,7 +39,7 @@ class SessionManager constructor(
 
     var connectionChangeEvent = MutableLiveData<Boolean>()
 
-    private val AllowMultipleConnectedSessions = context.isDevelopmentFlavor()
+    private val AllowMultipleConnectedSessions = true
 
     init {
         // Listen to foreground / background events
