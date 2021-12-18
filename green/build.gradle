@@ -128,7 +128,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.2"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation "androidx.activity:activity-ktx:1.4.0"
-    implementation "androidx.biometric:biometric:1.2.0-alpha03"
+    implementation "androidx.biometric:biometric:1.2.0-alpha04"
     implementation "androidx.preference:preference-ktx:1.1.1"
     implementation "androidx.browser:browser:1.4.0"
     implementation("androidx.recyclerview:recyclerview:1.2.1")
@@ -178,13 +178,13 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- FastAdapter  ----------------------------------------------------------------------- */
-    implementation "com.mikepenz:fastadapter:5.4.1"
-    implementation "com.mikepenz:fastadapter-extensions-diff:5.4.1" // diff util helpers
-    implementation "com.mikepenz:fastadapter-extensions-binding:5.4.1" // view binding helpers
-    implementation "com.mikepenz:fastadapter-extensions-expandable:5.4.1"
-    implementation "com.mikepenz:fastadapter-extensions-ui:5.4.1" // pre-defined ui components
-    implementation "com.mikepenz:fastadapter-extensions-scroll:5.4.1"
-    implementation "com.mikepenz:fastadapter-extensions-utils:5.4.1"
+    implementation "com.mikepenz:fastadapter:5.6.0"
+    implementation "com.mikepenz:fastadapter-extensions-diff:5.6.0" // diff util helpers
+    implementation "com.mikepenz:fastadapter-extensions-binding:5.6.0" // view binding helpers
+    implementation "com.mikepenz:fastadapter-extensions-expandable:5.6.0"
+    implementation "com.mikepenz:fastadapter-extensions-ui:5.6.0" // pre-defined ui components
+    implementation "com.mikepenz:fastadapter-extensions-scroll:5.6.0"
+    implementation "com.mikepenz:fastadapter-extensions-utils:5.6.0"
     implementation "com.mikepenz:itemanimators:1.1.0"
     /** ----------------------------------------------------------------------------------------- */
 
@@ -208,11 +208,11 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Beagle  ---------------------------------------------------------------------------- */
-    developmentImplementation "com.github.pandulapeter.beagle:ui-drawer:2.6.4"
-    developmentImplementation "com.github.pandulapeter.beagle:log-crash:2.6.4"
+    developmentImplementation "com.github.pandulapeter.beagle:ui-drawer:2.6.5"
+    developmentImplementation "com.github.pandulapeter.beagle:log-crash:2.6.5"
 
-    productionImplementation "com.github.pandulapeter.beagle:noop:2.6.4"
-    productionImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.4"
+    productionImplementation "com.github.pandulapeter.beagle:noop:2.6.5"
+    productionImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.5"
     /** ----------------------------------------------------------------------------------------- */
 
     testImplementation fileTree(dir: 'libs', include: ['.jar', '.so'])
