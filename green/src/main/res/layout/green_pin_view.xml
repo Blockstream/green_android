@@ -49,8 +49,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:minHeight="200dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/indicatorDots"
@@ -58,41 +59,49 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/button1"
-            app:layout_constraintEnd_toEndOf="@id/button3"
+            app:layout_constraintBottom_toTopOf="@+id/numberPad"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@id/button1"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread_inside">
+            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintWidth_max="350dp">
 
             <View
                 android:id="@+id/dot1"
+                isGone="@{showDigits}"
                 android:layout_width="@dimen/pin_circle"
                 android:layout_height="@dimen/pin_circle"
                 android:background="@{pinLength >= 1 ? @drawable/indicator_dot_filled : @drawable/indicator_dot_empty}"
-                isInvisible="@{showDigits}"
+                app:layout_constraintBottom_toTopOf="@+id/error"
                 app:layout_constraintEnd_toStartOf="@+id/dot2"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/digit1"
+                app:layout_constraintVertical_chainStyle="packed" />
 
             <TextView
                 android:id="@+id/digit1"
+                style="@style/GreenPinViewDigit"
+                isVisible="@{showDigits}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{pin[0]}"
-                style="@style/GreenPinViewDigit"
-                isVisible="@{showDigits}"
-                tools:text="1"
+                app:layout_constraintBottom_toTopOf="@+id/dot1"
                 app:layout_constraintEnd_toStartOf="@+id/digit2"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="1" />
 
             <View
                 android:id="@+id/dot2"
+                isGone="@{showDigits}"
                 android:layout_width="@dimen/pin_circle"
                 android:layout_height="@dimen/pin_circle"
                 android:background="@{pinLength >= 2 ? @drawable/indicator_dot_filled : @drawable/indicator_dot_empty}"
-                isInvisible="@{showDigits}"
                 app:layout_constraintBottom_toBottomOf="@+id/dot1"
                 app:layout_constraintEnd_toStartOf="@+id/dot3"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -100,23 +109,23 @@
 
             <TextView
                 android:id="@+id/digit2"
+                style="@style/GreenPinViewDigit"
+                isVisible="@{showDigits}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{pin[1]}"
-                style="@style/GreenPinViewDigit"
-                isVisible="@{showDigits}"
-                tools:text="2"
                 app:layout_constraintBottom_toBottomOf="@+id/digit1"
                 app:layout_constraintEnd_toStartOf="@+id/digit3"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/digit1" />
+                app:layout_constraintStart_toEndOf="@+id/digit1"
+                tools:text="2" />
 
             <View
                 android:id="@+id/dot3"
+                isGone="@{showDigits}"
                 android:layout_width="@dimen/pin_circle"
                 android:layout_height="@dimen/pin_circle"
                 android:background="@{pinLength >= 3 ? @drawable/indicator_dot_filled : @drawable/indicator_dot_empty}"
-                isInvisible="@{showDigits}"
                 app:layout_constraintBottom_toBottomOf="@+id/dot2"
                 app:layout_constraintEnd_toStartOf="@+id/dot4"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -125,23 +134,23 @@
 
             <TextView
                 android:id="@+id/digit3"
+                style="@style/GreenPinViewDigit"
+                isVisible="@{showDigits}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{pin[2]}"
-                style="@style/GreenPinViewDigit"
-                isVisible="@{showDigits}"
-                tools:text="3"
                 app:layout_constraintBottom_toBottomOf="@+id/digit2"
                 app:layout_constraintEnd_toStartOf="@+id/digit4"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/digit2" />
+                app:layout_constraintStart_toEndOf="@+id/digit2"
+                tools:text="3" />
 
             <View
                 android:id="@+id/dot4"
+                isGone="@{showDigits}"
                 android:layout_width="@dimen/pin_circle"
                 android:layout_height="@dimen/pin_circle"
                 android:background="@{pinLength >= 4 ? @drawable/indicator_dot_filled : @drawable/indicator_dot_empty}"
-                isInvisible="@{showDigits}"
                 app:layout_constraintBottom_toBottomOf="@+id/dot3"
                 app:layout_constraintEnd_toStartOf="@+id/dot5"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -149,23 +158,23 @@
 
             <TextView
                 android:id="@+id/digit4"
+                style="@style/GreenPinViewDigit"
+                isVisible="@{showDigits}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{pin[3]}"
-                style="@style/GreenPinViewDigit"
-                isVisible="@{showDigits}"
-                tools:text="4"
                 app:layout_constraintBottom_toBottomOf="@+id/digit3"
                 app:layout_constraintEnd_toStartOf="@+id/digit5"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/digit3" />
+                app:layout_constraintStart_toEndOf="@+id/digit3"
+                tools:text="4" />
 
             <View
                 android:id="@+id/dot5"
+                isGone="@{showDigits}"
                 android:layout_width="@dimen/pin_circle"
                 android:layout_height="@dimen/pin_circle"
                 android:background="@{pinLength >= 5 ? @drawable/indicator_dot_filled : @drawable/indicator_dot_empty}"
-                isInvisible="@{showDigits}"
                 app:layout_constraintBottom_toBottomOf="@+id/dot4"
                 app:layout_constraintEnd_toStartOf="@+id/dot6"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -173,23 +182,23 @@
 
             <TextView
                 android:id="@+id/digit5"
+                style="@style/GreenPinViewDigit"
+                isVisible="@{showDigits}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{pin[4]}"
-                style="@style/GreenPinViewDigit"
-                isVisible="@{showDigits}"
-                tools:text="5"
                 app:layout_constraintBottom_toBottomOf="@+id/digit4"
                 app:layout_constraintEnd_toStartOf="@+id/digit6"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/digit4" />
+                app:layout_constraintStart_toEndOf="@+id/digit4"
+                tools:text="5" />
 
             <View
                 android:id="@+id/dot6"
+                isGone="@{showDigits}"
                 android:layout_width="@dimen/pin_circle"
                 android:layout_height="@dimen/pin_circle"
                 android:background="@{pinLength >= 6 ? @drawable/indicator_dot_filled : @drawable/indicator_dot_empty}"
-                isInvisible="@{showDigits}"
                 app:layout_constraintBottom_toBottomOf="@+id/dot5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -197,254 +206,266 @@
 
             <TextView
                 android:id="@+id/digit6"
+                style="@style/GreenPinViewDigit"
+                isVisible="@{showDigits}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{pin[5]}"
-                style="@style/GreenPinViewDigit"
-                isVisible="@{showDigits}"
-                tools:text="6"
                 app:layout_constraintBottom_toBottomOf="@+id/digit5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/digit5" />
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrierDotsDigits"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="dot1,digit1" />
+                app:layout_constraintStart_toEndOf="@+id/digit5"
+                tools:text="6" />
 
             <TextView
                 android:id="@+id/error"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.Green.Subtitle2"
+                android:textAppearance="?attr/textAppearanceCaption"
                 android:textColor="@color/error"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/barrierDotsDigits"
+                app:layout_constraintTop_toBottomOf="@+id/dot1"
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <Button
-            android:id="@+id/button1"
-            textAsNumber="@{1}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="1"
-            app:layout_constraintBottom_toTopOf="@+id/button4"
-            app:layout_constraintEnd_toStartOf="@+id/button2"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/indicatorDots" />
-
-        <Button
-            android:id="@+id/button2"
-            textAsNumber="@{2}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="2"
-            app:layout_constraintEnd_toStartOf="@+id/button3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/button1"
-            app:layout_constraintTop_toTopOf="@+id/button1" />
-
-        <Button
-            android:id="@+id/button3"
-            textAsNumber="@{3}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/button2"
-            app:layout_constraintTop_toTopOf="@+id/button2" />
-
-
-        <Button
-            android:id="@+id/button4"
-            textAsNumber="@{4}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="4"
-            app:layout_constraintBottom_toTopOf="@+id/button7"
-            app:layout_constraintEnd_toStartOf="@+id/button5"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button1" />
-
-        <Button
-            android:id="@+id/button5"
-            textAsNumber="@{5}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="5"
-            app:layout_constraintBottom_toBottomOf="@+id/button4"
-            app:layout_constraintEnd_toStartOf="@+id/button6"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/button4"
-            app:layout_constraintTop_toTopOf="@+id/button4" />
-
-        <Button
-            android:id="@+id/button6"
-            textAsNumber="@{6}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="6"
-            app:layout_constraintBottom_toBottomOf="@+id/button5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/button5"
-            app:layout_constraintTop_toTopOf="@+id/button5" />
-
-        <Button
-            android:id="@+id/button7"
-            textAsNumber="@{7}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="7"
-            app:layout_constraintBottom_toTopOf="@+id/button0"
-            app:layout_constraintEnd_toStartOf="@+id/button8"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button4" />
-
-        <Button
-            android:id="@+id/button8"
-            textAsNumber="@{8}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="8"
-            app:layout_constraintBottom_toBottomOf="@+id/button7"
-            app:layout_constraintEnd_toStartOf="@+id/button9"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/button7"
-            app:layout_constraintTop_toTopOf="@+id/button7" />
-
-        <Button
-            android:id="@+id/button9"
-            textAsNumber="@{9}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="9"
-            app:layout_constraintBottom_toBottomOf="@+id/button8"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/button8"
-            app:layout_constraintTop_toTopOf="@+id/button8" />
-
-        <!--   When complete v4 transition remove iconTint as is no longer needed     -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonPaste"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/numberPad"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            style="@style/GreenPinViewButton"
-            android:onClick="@{clickListener}"
-            isVisible="@{withPaste}"
-            app:icon="@drawable/ic_baseline_content_paste_24"
-            app:iconTint="@color/material_on_surface_emphasis_medium"
-            app:iconGravity="textStart"
-            app:iconSize="20dp"
-            app:layout_constraintBottom_toBottomOf="@+id/button0"
-            app:layout_constraintEnd_toEndOf="@+id/button7"
-            app:layout_constraintStart_toStartOf="@+id/button7"
-            app:layout_constraintTop_toTopOf="@+id/button0" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonShuffle"
-            style="@style/GreenPinViewButton"
-            isVisible="@{withShuffle &amp;&amp; !withPaste}"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{shuffleListener}"
-            android:onLongClick="@{shuffleLongClickListener}"
-            app:icon="@drawable/ic_autorenew"
-            app:iconGravity="textStart"
-            app:iconSize="20dp"
-            app:iconTint="@color/material_on_surface_emphasis_medium"
-            app:layout_constraintBottom_toBottomOf="@+id/button0"
-            app:layout_constraintEnd_toEndOf="@+id/button7"
-            app:layout_constraintStart_toStartOf="@+id/button7"
-            app:layout_constraintTop_toTopOf="@+id/button0" />
-
-        <Button
-            android:id="@+id/button0"
-            textAsNumber="@{0}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{keysEnabled}"
-            android:onClick="@{clickListener}"
-            android:textSize="@dimen/pin_textsize"
-            tools:text="0"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/button8"
-            app:layout_constraintStart_toStartOf="@+id/button8"
-            app:layout_constraintTop_toBottomOf="@+id/button7" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_max="400dp"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/indicatorDots"
+            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintWidth_max="350dp"
+            app:layout_constraintHeight_min="180dp">
 
-        <!--   When complete v4 transition remove iconTint as is no longer needed     -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonDelete"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            style="@style/GreenPinViewButton"
-            android:enabled="@{deleteEnabled}"
-            android:onClick="@{clickListener}"
-            app:iconTint="@color/material_on_surface_emphasis_medium"
-            app:icon="@drawable/ic_outline_backspace_24"
-            app:iconGravity="textStart"
-            app:iconSize="20dp"
-            app:layout_constraintBottom_toBottomOf="@+id/button0"
-            app:layout_constraintEnd_toEndOf="@+id/button9"
-            app:layout_constraintStart_toStartOf="@+id/button9"
-            app:layout_constraintTop_toTopOf="@+id/button0" />
+            <Button
+                android:id="@+id/button1"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{1}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toTopOf="@+id/button4"
+                app:layout_constraintEnd_toStartOf="@+id/button2"
+                app:layout_constraintHeight_min="42dp"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1" />
+
+            <Button
+                android:id="@+id/button2"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{2}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toBottomOf="@+id/button1"
+                app:layout_constraintEnd_toStartOf="@+id/button3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/button1"
+                app:layout_constraintTop_toTopOf="@+id/button1"
+                tools:text="2" />
+
+            <Button
+                android:id="@+id/button3"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{3}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toBottomOf="@+id/button2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/button2"
+                app:layout_constraintTop_toTopOf="@+id/button2"
+                tools:text="3" />
+
+
+            <Button
+                android:id="@+id/button4"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{4}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toTopOf="@+id/button7"
+                app:layout_constraintEnd_toStartOf="@+id/button5"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHeight_min="42dp"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button1"
+                tools:text="4" />
+
+            <Button
+                android:id="@+id/button5"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{5}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toBottomOf="@+id/button4"
+                app:layout_constraintEnd_toStartOf="@+id/button6"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/button4"
+                app:layout_constraintTop_toTopOf="@+id/button4"
+                tools:text="5" />
+
+            <Button
+                android:id="@+id/button6"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{6}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toBottomOf="@+id/button5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/button5"
+                app:layout_constraintTop_toTopOf="@+id/button5"
+                tools:text="6" />
+
+            <Button
+                android:id="@+id/button7"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{7}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toTopOf="@+id/button0"
+                app:layout_constraintEnd_toStartOf="@+id/button8"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHeight_min="42dp"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button4"
+                tools:text="7" />
+
+            <Button
+                android:id="@+id/button8"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{8}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toBottomOf="@+id/button7"
+                app:layout_constraintEnd_toStartOf="@+id/button9"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/button7"
+                app:layout_constraintTop_toTopOf="@+id/button7"
+                tools:text="8" />
+
+            <Button
+                android:id="@+id/button9"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{9}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintBottom_toBottomOf="@+id/button8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/button8"
+                app:layout_constraintTop_toTopOf="@+id/button8"
+                tools:text="9" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPaste"
+                style="@style/GreenPinViewButton"
+                isVisible="@{withPaste}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:onClick="@{clickListener}"
+                app:icon="@drawable/ic_baseline_content_paste_24"
+                app:iconGravity="textStart"
+                app:iconSize="20dp"
+                app:iconTint="@color/material_on_surface_emphasis_medium"
+                app:layout_constraintBottom_toBottomOf="@+id/button0"
+                app:layout_constraintEnd_toEndOf="@+id/button7"
+                app:layout_constraintStart_toStartOf="@+id/button7"
+                app:layout_constraintTop_toTopOf="@+id/button0" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonShuffle"
+                style="@style/GreenPinViewButton"
+                isVisible="@{withShuffle &amp;&amp; !withPaste}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{shuffleListener}"
+                android:onLongClick="@{shuffleLongClickListener}"
+                app:icon="@drawable/ic_autorenew"
+                app:iconGravity="textStart"
+                app:iconSize="20dp"
+                app:iconTint="@color/material_on_surface_emphasis_medium"
+                app:layout_constraintBottom_toBottomOf="@+id/button0"
+                app:layout_constraintEnd_toEndOf="@+id/button7"
+                app:layout_constraintStart_toStartOf="@+id/button7"
+                app:layout_constraintTop_toTopOf="@+id/button0" />
+
+            <Button
+                android:id="@+id/button0"
+                style="@style/GreenPinViewButton"
+                textAsNumber="@{0}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{keysEnabled}"
+                android:onClick="@{clickListener}"
+                android:textSize="@dimen/pin_textsize"
+                app:layout_constraintHeight_min="42dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/button8"
+                app:layout_constraintStart_toStartOf="@+id/button8"
+                app:layout_constraintTop_toBottomOf="@+id/button7"
+                tools:text="0" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDelete"
+                style="@style/GreenPinViewButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:enabled="@{deleteEnabled}"
+                android:onClick="@{clickListener}"
+                app:icon="@drawable/ic_outline_backspace_24"
+                app:iconGravity="textStart"
+                app:iconSize="20dp"
+                app:layout_constraintBottom_toBottomOf="@+id/button0"
+                app:layout_constraintEnd_toEndOf="@+id/button9"
+                app:layout_constraintStart_toStartOf="@+id/button9"
+                app:layout_constraintTop_toTopOf="@+id/button0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
