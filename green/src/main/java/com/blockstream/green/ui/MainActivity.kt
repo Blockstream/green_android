@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
@@ -12,28 +13,21 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.databinding.OnRebindCallback
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.transition.TransitionManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.AuthenticationCallback
-import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.getVersionName
+import com.blockstream.green.utils.*
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 import javax.inject.Inject
-import android.view.ViewGroup
-
-import androidx.databinding.ViewDataBinding
-
-import androidx.databinding.OnRebindCallback
-import androidx.transition.TransitionManager
 
 
 @AndroidEntryPoint
@@ -55,6 +49,48 @@ class MainActivity : AppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if(isDevelopmentFlavor()) {
+            // On development flavor, you can change settings using intent data, useful for UI tests
+            intent?.let {
+                if (it.hasExtra(ENABLE_TESTNET)) {
+                    settingsManager.saveApplicationSettings(
+                        settingsManager.getApplicationSettings().copy(
+                            testnet = it.getBooleanExtra(ENABLE_TESTNET, false)
+                        )
+                    )
+                }
+
+                if (it.hasExtra(ENABLE_TOR)) {
+                    settingsManager.saveApplicationSettings(
+                        settingsManager.getApplicationSettings().copy(
+                            tor = it.getBooleanExtra(ENABLE_TOR, false)
+                        )
+                    )
+                }
+
+                if (it.hasExtra(PROXY_URL)) {
+                    settingsManager.saveApplicationSettings(
+                        settingsManager.getApplicationSettings().copy(
+                            proxyUrl = it.getStringExtra(PROXY_URL)
+                        )
+                    )
+                }
+
+                if (it.hasExtra(PERSONAL_ELECTRUM_SERVER)) {
+                    val electrumServer = it.getStringExtra(PERSONAL_ELECTRUM_SERVER);
+                    settingsManager.saveApplicationSettings(
+                        settingsManager.getApplicationSettings().copy(
+                            electrumNode = !electrumServer.isNullOrBlank(),
+                            personalBitcoinElectrumServer = electrumServer,
+                            personalLiquidElectrumServer = electrumServer,
+                            personalTestnetElectrumServer = electrumServer,
+                            personalTestnetLiquidElectrumServer = electrumServer,
+                        )
+                    )
+                }
+            }
+        }
 
         binding = MainActivityBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
@@ -220,5 +256,10 @@ class MainActivity : AppActivity() {
         }
     }
 
-    companion object: KLogging()
+    companion object: KLogging() {
+        const val ENABLE_TESTNET = "ENABLE_TESTNET"
+        const val ENABLE_TOR = "ENABLE_TOR"
+        const val PROXY_URL = "PROXY_URL"
+        const val PERSONAL_ELECTRUM_SERVER = "PERSONAL_ELECTRUM_SERVER"
+    }
 }
