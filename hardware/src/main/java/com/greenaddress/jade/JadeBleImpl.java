@@ -1,7 +1,10 @@
 package com.greenaddress.jade;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.util.Log;
 
+import com.blockstream.JadePairingManager;
 import com.jakewharton.rx.ReplayingShare;
 import com.polidea.rxandroidble2.NotificationSetupMode;
 import com.polidea.rxandroidble2.RxBleConnection;
@@ -9,6 +12,7 @@ import com.polidea.rxandroidble2.RxBleDevice;
 
 import java.util.UUID;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
@@ -34,12 +38,14 @@ public class JadeBleImpl extends JadeConnectionImpl {
 
     private final RxBleDevice device;
     private final PublishSubject<Boolean> disconnectTrigger;
+    private final Context context;
 
     private CompositeDisposable disposable;
     private Observable<RxBleConnection> connection;
     private io.reactivex.rxjava3.subjects.PublishSubject<Boolean> bleDisconnectEvent = io.reactivex.rxjava3.subjects.PublishSubject.create();
 
-    JadeBleImpl(final RxBleDevice device) {
+    JadeBleImpl(final Context context, final RxBleDevice device) {
+        this.context = context;
         this.device = device;
 
         // Set a condition to stop the connection/subscriptions
@@ -75,16 +81,13 @@ public class JadeBleImpl extends JadeConnectionImpl {
                 && this.connection != null && isBleConnected();
     }
 
-    @Override
-    public void connect() {
-        this.disposable = new CompositeDisposable();
-
+    private void createBleConnection(){
         // Log connection state changes
         this.disposable.add(this.device.observeConnectionStateChanges()
                 .subscribe(state -> {
                     Log.i(TAG, "Connection State Change: " + state);
 
-                    if(state == RxBleConnection.RxBleConnectionState.DISCONNECTING){
+                    if (state == RxBleConnection.RxBleConnectionState.DISCONNECTING) {
                         // Trigger Disconnect
                         Log.i(TAG, "Send BLE disconnect event");
                         bleDisconnectEvent.onNext(true);
@@ -98,28 +101,61 @@ public class JadeBleImpl extends JadeConnectionImpl {
                 .takeUntil(disconnectTrigger)
 
                 // Set the MTU to consistent with Jade stack
-                .doOnNext(rxConn-> Log.d(TAG,"Requesting MTU: " + JADE_MTU))
-                .flatMapSingle(rxConn ->
-                        rxConn.requestMtu(JADE_MTU)
-                                .doOnSuccess(mtu -> Log.i(TAG, "Successfully set the MTU to: " + mtu))
-                                .ignoreElement()
-                                .andThen(Single.just(rxConn))
+                .doOnNext(rxConn -> Log.d(TAG, "Requesting MTU: " + JADE_MTU))
+                .flatMapSingle(rxConn -> rxConn.requestMtu(JADE_MTU)
+                        .doOnSuccess(mtu -> Log.i(TAG, "Successfully set the MTU to: " + mtu))
+                        .ignoreElement()
+                        .andThen(Single.just(rxConn))
                 )
 
                 // Compose with ReplayingShare to make this connection reusable from here, rather
                 // than running the above code every time we try to subscribe/use the connection.
                 .compose(ReplayingShare.instance());
 
-        // Set the callback for receiving data over the ble connection
-        // (Just collect into base-class queue of byte-arrays.)
         this.disposable.add(this.connection
-                .doOnNext(observableBytes -> Log.d(TAG, "Setting up characteristic indication"))
+                .doOnNext(rxBleConnection -> Log.d(TAG, "Setting up characteristic indication"))
                 .flatMap(rxConn -> rxConn.setupIndication(IO_RX_CHAR_UUID, NotificationSetupMode.QUICK_SETUP))
                 .doOnNext(observableBytes -> Log.i(TAG, "Indication setup complete"))
                 .flatMap(observableBytes -> observableBytes)  // flatten
                 .subscribe(super::onDataReceived,
-                           this::onReceiveFailure)
+                        this::onReceiveFailure)
         );
+    }
+
+    @Override
+    public Completable connect() {
+        this.disposable = new CompositeDisposable();
+
+        if (device.getBluetoothDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
+            createBleConnection();
+            return Completable.complete();
+        } else {
+
+            Single<Boolean> bondingEvent = JadePairingManager.INSTANCE.pairWithDevice(context, device);
+
+            // Initiate bond connection
+            Single<RxBleConnection> bondConnection = this.device
+                    .establishConnection(false)
+                    .takeUntil(disconnectTrigger)
+                    .take(1)
+                    .doOnTerminate(() -> {
+                        Log.i(TAG, "Disconnect bonding connection");
+                    })
+                    .singleOrError();
+
+            return Completable.create(complete -> {
+
+                bondConnection
+                        .flatMap(connection -> bondingEvent)
+                        .subscribe(newBonding -> {
+                            createBleConnection();
+                            complete.onComplete();
+                        }, throwable -> {
+                            complete.tryOnError(throwable);
+                        });
+
+            });
+        }
     }
 
     @Override

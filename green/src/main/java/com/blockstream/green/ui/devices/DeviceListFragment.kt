@@ -73,7 +73,8 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 
         fastAdapter.onClickListener = { _, _, item, _ ->
 
-            if (item.device.hasPermissionsOrIsBonded()) {
+            // Handle Jade as an already Bonded device
+            if (item.device.hasPermissionsOrIsBonded() || item.device.handleBondingByHwwImplementation()) {
                 navigateToDevice(item.device)
             } else {
                 viewModel.askForPermissionOrBond(item.device)

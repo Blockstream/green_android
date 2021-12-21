@@ -207,13 +207,15 @@ class DeviceManager constructor(
             ).addTo(bleScanDisposable)
     }
 
-    private fun addBluetoothDevice(device: Device){
-        bluetoothDevicesSubject.value.find { it.id == device.id }?.also { device ->
+    private fun addBluetoothDevice(newDevice: Device){
+        bluetoothDevicesSubject.value.find { it.id == newDevice.id }?.also { oldDevice ->
+            // Update bleDevice as the it can be changed due to RPA
+            oldDevice.bleDevice = newDevice.bleDevice
             // Update timeout
-            device.timeout = SystemClock.elapsedRealtimeNanos()
+            oldDevice.timeout = SystemClock.elapsedRealtimeNanos()
         } ?: run {
             // Add it if new
-            bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value + device)
+            bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value + newDevice)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.greenaddress.jade;
 
+import android.content.Context;
 import android.util.Log;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -62,8 +63,8 @@ public class JadeAPI {
         return new JadeAPI(jade, requestProvider, true);
     }
 
-    public static JadeAPI createBle(final HttpRequestProvider requestProvider, final RxBleDevice device) {
-        final JadeInterface jade = JadeInterface.createBle(device);
+    public static JadeAPI createBle(final Context context, final HttpRequestProvider requestProvider, final RxBleDevice device) {
+        final JadeInterface jade = JadeInterface.createBle(context, device);
         return new JadeAPI(jade, requestProvider, false);
     }
 

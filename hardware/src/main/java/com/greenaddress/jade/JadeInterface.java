@@ -1,5 +1,6 @@
 package com.greenaddress.jade;
 
+import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
@@ -41,8 +42,8 @@ class JadeInterface {
         return new JadeInterface(serial);
     }
 
-    public static JadeInterface createBle(final RxBleDevice device) {
-        final JadeBleImpl ble = new JadeBleImpl(device);
+    public static JadeInterface createBle(final Context context, final RxBleDevice device) {
+        final JadeBleImpl ble = new JadeBleImpl(context, device);
         return new JadeInterface(ble);
     }
 
@@ -55,7 +56,7 @@ class JadeInterface {
     }
 
     public void connect() {
-        this.connection.connect();
+        this.connection.connect().blockingAwait(); // wait until connection is established (and paired for BLE)
 
         // Read and discard anything present on connection
         final byte[] bytes = this.drain();

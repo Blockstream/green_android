@@ -97,7 +97,7 @@ public class HardwareConnect {
 
             switch (device.getDeviceBrand()){
                 case Blockstream:
-                    final JadeAPI jadeAPI = JadeAPI.createBle(requestProvider, device.getBleDevice());
+                    final JadeAPI jadeAPI = JadeAPI.createBle(interaction.context(), requestProvider, device.getBleDevice());
                     onJade(interaction, jadeAPI);
                     break;
                 case Ledger:
@@ -138,6 +138,7 @@ public class HardwareConnect {
                             }
                         },
                         throwable -> {
+                            throwable.printStackTrace();
                             Log.e(TAG, "Exception connecting to Jade");
                             interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
                             closeJade(interaction, jade);

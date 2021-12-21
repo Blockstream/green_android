@@ -12,6 +12,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Completable;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
@@ -43,7 +44,7 @@ public abstract class JadeConnectionImpl {
 
     abstract public boolean isConnected();
 
-    abstract public void connect();
+    abstract public Completable connect();
 
     abstract public void disconnect();
 

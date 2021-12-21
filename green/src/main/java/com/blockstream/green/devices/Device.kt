@@ -14,17 +14,19 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import kotlinx.parcelize.IgnoredOnParcel
 import mu.KLogging
 import kotlin.properties.Delegates
 
-
+/*
+ * If a BLE device, DeviceManager will update bleDevice if required due to RPA, it's safe to consider
+ * Device to be updated with latest broadcasted RxBleDevice
+ */
 class Device constructor(
     val type: ConnectionType,
     val deviceManager: DeviceManager,
     val usbDevice: UsbDevice? = null,
     var bleDevice: RxBleDevice? = null,
-    var bleService: ParcelUuid? = null,
+    val bleService: ParcelUuid? = null,
 ) {
     enum class DeviceState {
         UNAUTHORIZED, CONNECTED, DISCONNECTED
@@ -55,6 +57,22 @@ class Device constructor(
     val usbManager
         get() = deviceManager.usbManager
 
+    val isJade by lazy {
+        bleService == ParcelUuid(JadeBleImpl.IO_SERVICE_UUID) || usbDevice?.vendorId == VENDOR_JADE_A  || usbDevice?.vendorId == VENDOR_JADE_B
+    }
+
+    val isTrezor by lazy {
+        usbDevice?.vendorId == VENDOR_TREZOR || usbDevice?.vendorId == VENDOR_TREZOR_V2
+    }
+
+    val isLedger by lazy {
+        bleService == ParcelUuid(LedgerDeviceBLE.SERVICE_UUID) || usbDevice?.vendorId == VENDOR_BTCHIP || usbDevice?.vendorId == VENDOR_LEDGER
+    }
+
+    val supportsLiquid by lazy {
+        !isTrezor
+    }
+
     init {
         if(hasPermissionsOrIsBonded()){
             deviceState.value = DeviceState.CONNECTED
@@ -83,16 +101,17 @@ class Device constructor(
 
     var timeout: Long = 0
 
-    open val id: String by lazy {
-        usbDevice?.deviceId?.toString(10) ?: bleDevice?.bluetoothDevice?.address ?: hashCode().toString(10)
+    // On Jade devices is not safe to use mac address as an id cause of RPA. Prefer using the unique name as a way to identify the device.
+    val id: String by lazy {
+        usbDevice?.deviceId?.toString(10) ?: (if(isJade) name else bleDevice?.bluetoothDevice?.address) ?: hashCode().toString(10)
     }
 
-    open val name
+    val name
         get() = if (isJade && isUsb) "Jade" else usbDevice?.productName
             ?: bleDevice?.bluetoothDevice?.name
 
     // Jade v1 has the controller manufacturer as a productName
-    open val manufacturer
+    val manufacturer
         get() = if (isJade) deviceBrand.name else usbDevice?.productName
             ?: bleDevice?.bluetoothDevice?.name
 
@@ -108,33 +127,12 @@ class Device constructor(
     val isBle
         get() = type == ConnectionType.BLUETOOTH
 
-    @IgnoredOnParcel
     val deviceBrand by lazy {
         when {
             isTrezor -> DeviceBrand.Trezor
             isLedger -> DeviceBrand.Ledger
             else -> DeviceBrand.Blockstream
         }
-    }
-
-    @IgnoredOnParcel
-    open val isJade by lazy {
-        bleService == ParcelUuid(JadeBleImpl.IO_SERVICE_UUID) || usbDevice?.vendorId == VENDOR_JADE_A  || usbDevice?.vendorId == VENDOR_JADE_B
-    }
-
-    @IgnoredOnParcel
-    open val isTrezor by lazy {
-        usbDevice?.vendorId == VENDOR_TREZOR || usbDevice?.vendorId == VENDOR_TREZOR_V2
-    }
-
-    @IgnoredOnParcel
-    val isLedger by lazy {
-        bleService == ParcelUuid(LedgerDeviceBLE.SERVICE_UUID) || usbDevice?.vendorId == VENDOR_BTCHIP || usbDevice?.vendorId == VENDOR_LEDGER
-    }
-
-    @IgnoredOnParcel
-    val supportsLiquid by lazy {
-        !isTrezor
     }
 
     fun hasPermissions(): Boolean {
@@ -149,6 +147,10 @@ class Device constructor(
         } else {
             isBonded()
         }
+    }
+
+    fun handleBondingByHwwImplementation(): Boolean {
+        return isJade
     }
 
     fun offline() {

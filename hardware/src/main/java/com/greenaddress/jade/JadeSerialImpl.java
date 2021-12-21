@@ -9,6 +9,7 @@ import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 import com.greenaddress.jade.entities.JadeError;
 
+import io.reactivex.Completable;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
@@ -37,7 +38,7 @@ public class JadeSerialImpl extends JadeConnectionImpl {
     }
 
     @Override
-    public void connect() {
+    public Completable connect() {
         // Maybe collapse this into the ctor ?  Maybe see how BLE pans out.
         final UsbDeviceConnection usbConnection = usbManager.openDevice(this.usbDevice);
         this.serial = UsbSerialDevice.createUsbSerialDevice(this.usbDevice, usbConnection);
@@ -56,6 +57,8 @@ public class JadeSerialImpl extends JadeConnectionImpl {
         // Set the callback for receiving data over the serial connection
         // (Just collect into base-class queue of byte-arrays.)
         this.serial.read(super::onDataReceived);
+
+        return Completable.complete();
     }
 
     @Override
