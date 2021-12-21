@@ -389,10 +389,4 @@ public class TrezorHWWallet extends HWWallet {
                                   final long csvBlocks) {
         return null;
     }
-
-    @Nullable
-    @Override
-    public PublishSubject<Boolean> getBleDisconnectEvent() {
-        return null;
-    }
 }

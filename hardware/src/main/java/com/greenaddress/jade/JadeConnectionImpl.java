@@ -1,5 +1,6 @@
 package com.greenaddress.jade;
 
+import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 
 import java.io.ByteArrayInputStream;
@@ -40,8 +41,6 @@ public abstract class JadeConnectionImpl {
         }
     }
 
-    abstract public PublishSubject<Boolean> getBleDisconnectEvent();
-
     abstract public boolean isConnected();
 
     abstract public void connect();
@@ -49,6 +48,10 @@ public abstract class JadeConnectionImpl {
     abstract public void disconnect();
 
     abstract public int write(final byte[] bytes);
+
+    public PublishSubject<Boolean> getBleDisconnectEvent() {
+        return null;
+    }
 
     // Function to push data into the dataReceived queue
     protected void onDataReceived(final byte[] data) {

@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.hardware.usb.UsbManager
 import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.gdk.SessionManager
 import com.polidea.rxandroidble2.RxBleClient
 import dagger.Module
 import dagger.Provides
@@ -19,9 +20,10 @@ class DeviceModule {
 
     @Singleton
     @Provides
-    fun provideDeviceManager(@ApplicationContext context: Context): DeviceManager {
+    fun provideDeviceManager(@ApplicationContext context: Context, sessionManager: SessionManager): DeviceManager {
         return DeviceManager(
             context,
+            sessionManager,
             context.getSystemService(Context.USB_SERVICE) as UsbManager,
             context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager,
             RxBleClient.create(context)

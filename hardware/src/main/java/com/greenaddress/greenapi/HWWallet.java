@@ -4,15 +4,10 @@ import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.Network;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.InputOutputData;
-
 import com.greenaddress.greenapi.data.SubaccountData;
-
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public abstract class HWWallet {
@@ -135,7 +130,9 @@ public abstract class HWWallet {
     }
 
     @Nullable
-    public abstract PublishSubject<Boolean> getBleDisconnectEvent();
+    public PublishSubject<Boolean> getBleDisconnectEvent(){
+        return null;
+    }
 
     @Nullable
     public HardwareQATester getHardwareEmulator() {

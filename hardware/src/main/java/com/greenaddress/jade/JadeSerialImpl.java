@@ -1,5 +1,6 @@
 package com.greenaddress.jade;
 
+import android.bluetooth.BluetoothDevice;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -28,11 +29,6 @@ public class JadeSerialImpl extends JadeConnectionImpl {
         this.usbDevice = usbDevice;
         this.baud = baud;
         this.serial = null;
-    }
-
-    @Override
-    public PublishSubject<Boolean> getBleDisconnectEvent() {
-        return null;
     }
 
     @Override

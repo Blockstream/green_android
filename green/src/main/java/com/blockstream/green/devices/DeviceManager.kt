@@ -3,7 +3,6 @@ package com.blockstream.green.devices
 import android.app.PendingIntent
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothProfile
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,6 +12,7 @@ import android.hardware.usb.UsbManager
 import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.async
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.jade.JadeBleImpl
@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit
 
 class DeviceManager constructor(
     private val context: Context,
+    val sessionManager: SessionManager,
     val usbManager: UsbManager,
     val bluetoothManager: BluetoothManager,
     private val rxBleClient: RxBleClient
@@ -128,7 +129,6 @@ class DeviceManager constructor(
             logger.info { "Skip starting bluetooth scanning as it's already started" }
         }
 
-        // Is this actually works?
         addBleConnectedDevices()
 
         Observable.interval( 2, 1, TimeUnit.SECONDS)
@@ -222,55 +222,11 @@ class DeviceManager constructor(
         bleScanDisposable.clear()
     }
 
-    // TODO Tests needed to check if this method actually works
     private fun addBleConnectedDevices(){
-        try{
-            if(bluetoothManager.adapter == null){
-                // Adapter not available
-                return
+        sessionManager.getHardwareSessionV3().device?.let { device ->
+            if(device.isBle){
+                addBluetoothDevice(device)
             }
-
-            val connectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)
-
-            // Add supported devices that are already connected (and may not be 'advertising')
-            addSupportedDevices(connectedDevices)
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
-    }
-
-    private fun addSupportedDevices(devices: List<BluetoothDevice>) {
-        for(connectedDevice in devices){
-            val bleDevice = rxBleClient.getBleDevice(connectedDevice.address)
-
-            bleDevice
-                .establishConnection(false)
-                .`as`(RxJavaBridge.toV3Observable())
-                .singleOrError()
-                .flatMap { it.discoverServices().`as`(RxJavaBridge.toV3Single()) }
-                .async()
-                .subscribeBy(
-                    onError = {
-                        logger.error { "Error trying to browse services for ${connectedDevice.name}" }
-                        it.printStackTrace()
-                    },
-                    onSuccess = {
-                        for(service in it.bluetoothGattServices){
-                            val serviceId = service.uuid
-
-                            if(SupportedBleUuid.contains(ParcelUuid(serviceId))){
-                                val device = Device.fromScan(
-                                    this,
-                                    bleDevice,
-                                    ParcelUuid(serviceId)
-                                )
-
-                                addBluetoothDevice(device)
-                                return@subscribeBy
-                            }
-                        }
-                    }
-                )
         }
     }
 
