@@ -29,7 +29,7 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
     @Inject
     lateinit var viewModelFactory: AddAccountViewModel.AssistedFactory
     val viewModel: AddAccountViewModel by viewModels {
-        AddAccountViewModel.provideFactory(viewModelFactory, wallet, args.accountType)
+        AddAccountViewModel.provideFactory(viewModelFactory, wallet, args.accountType, args.mnemonic, args.xpub)
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {

@@ -13,7 +13,6 @@ import com.blockstream.green.gdk.observable
 import com.blockstream.green.lifecycle.ListenableLiveData
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.nameCleanup
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -21,7 +20,9 @@ class AddAccountViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     @Assisted wallet: Wallet,
-    @Assisted val accountType: AccountType
+    @Assisted val accountType: AccountType,
+    @Assisted("mnemonic") val mnemonic: String?,
+    @Assisted("xpub") val xpub: String?,
 ) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
 
     val isEnabled = MutableLiveData(false)
@@ -35,7 +36,12 @@ class AddAccountViewModel @AssistedInject constructor(
     fun createAccount() {
         session.observable {
             accountName.value.nameCleanup()!!.let { name ->
-                it.createSubAccount(SubAccountParams(name, accountType)).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(this, session.hwWallet))
+                it.createSubAccount(SubAccountParams(
+                    name = name,
+                    type = accountType,
+                    recoveryMnemonic = mnemonic,
+                    recoveryXpub = xpub
+                ))
             }
         }.doOnSubscribe {
             isEnabled.postValue(false)
@@ -53,6 +59,10 @@ class AddAccountViewModel @AssistedInject constructor(
         fun create(
             wallet: Wallet,
             accountType: AccountType,
+            @Assisted("mnemonic")
+            mnemonic: String?,
+            @Assisted("xpub")
+            xpub: String?
         ): AddAccountViewModel
     }
 
@@ -60,11 +70,13 @@ class AddAccountViewModel @AssistedInject constructor(
         fun provideFactory(
             assistedFactory: AssistedFactory,
             wallet: Wallet,
-            accountType: AccountType
+            accountType: AccountType,
+            mnemonic: String?,
+            xpub: String?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, accountType) as T
+                return assistedFactory.create(wallet, accountType, mnemonic, xpub) as T
             }
         }
     }

@@ -70,6 +70,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button27"
+                isVisible="@{!vm.isBip39}"
                 style="@style/Widget.Green.Button.Outlined.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

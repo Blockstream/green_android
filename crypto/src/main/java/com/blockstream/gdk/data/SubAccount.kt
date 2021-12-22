@@ -17,6 +17,7 @@ data class SubAccount(
     @SerialName("receiving_id") val receivingId: String,
     @SerialName("recovery_pub_key") val recoveryPubKey: String = "",
     @SerialName("recovery_chain_code") val recoveryChainCode: String = "",
+    @SerialName("recovery_xpub") val recoveryXpub: String? = null,
     @Serializable(with = AccountTypeSerializer::class)
     @SerialName("type") val type: AccountType,
 ) : GAJson<SubAccount>() {

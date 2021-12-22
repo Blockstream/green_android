@@ -1,7 +1,6 @@
 package com.blockstream.green.ui.items
 
 import android.view.View
-import androidx.core.view.isVisible
 import com.blockstream.green.R
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.views.GreenContentCardView
@@ -13,9 +12,9 @@ class NetworkListItem constructor(val network: String, val networkName: String, 
     override val type: Int
         get() = R.id.fastadapter_network_item_id
 
-        /** defines the layout which will be used for this item in the list */
+    /** defines the layout which will be used for this item in the list */
     override val layoutRes: Int
-        get() = R.layout.list_item_network
+        get() = R.layout.list_item_content_card
 
     init {
         identifier = network.hashCode().toLong()

@@ -4,16 +4,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryCheckFragmentBinding
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.snackbar
-import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -45,16 +44,29 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
         binding.clickListener = View.OnClickListener { button ->
             if (viewModel.selectWord((button as Button).text.toString())) {
                 if (viewModel.isLastPage) {
-                    navigate(
-                        RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentToWalletNameFragment(
-                            onboardingOptions = args.onboardingOptions!!,
-                            mnemonic = args.mnemonic!!,
-                            mnemonicPassword = ""
+                    if(args.wallet == null) {
+                        navigate(
+                            RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentToWalletNameFragment(
+                                onboardingOptions = args.onboardingOptions!!,
+                                mnemonic = args.mnemonic,
+                                mnemonicPassword = ""
+                            )
                         )
-                    )
+                    }else{
+                        navigate(
+                            RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentToAddAccountFragment(
+                                accountType = AccountType.TWO_OF_THREE,
+                                wallet = args.wallet!!,
+                                mnemonic = args.mnemonic,
+                            ), navOptionsBuilder = NavOptions.Builder().also {
+                                it.setPopUpTo(R.id.recoveryIntroFragment, false)
+                            }
+                        )
+                    }
                 } else {
                     navigate(
                         RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentSelf(
+                            wallet = args.wallet,
                             onboardingOptions = args.onboardingOptions,
                             mnemonic = args.mnemonic,
                             page = args.page + 1

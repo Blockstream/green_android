@@ -51,10 +51,14 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
             if(args.wallet == null){
                 navigateToWords()
             }else{
-                // If recovery is confirmed, ask for user presence
-                if (wallet.isRecoveryPhraseConfirmed) {
-                    launchUserPresencePrompt()
-                } else {
+                if(args.mnemonic == null) {
+                    // If recovery is confirmed, ask for user presence
+                    if (wallet.isRecoveryPhraseConfirmed) {
+                        launchUserPresencePrompt()
+                    } else {
+                        navigateToWords()
+                    }
+                }else{
                     navigateToWords()
                 }
             }
@@ -63,9 +67,10 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
 
     private fun navigateToWords() {
         // Onboarding
-        if (args.wallet == null) {
+        if (args.wallet == null || args.mnemonic != null) {
             navigate(
                 RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
+                    wallet = args.wallet,
                     onboardingOptions = args.onboardingOptions,
                     mnemonic = args.mnemonic ?: ""
                 )
@@ -73,7 +78,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         } else {
             navigate(
                 RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryPhraseFragment(
-                    wallet = args.wallet
+                    wallet = args.wallet,
                 ), navOptionsBuilder = NavOptions.Builder().also {
                     it.setPopUpTo(R.id.recoveryIntroFragment, true)
                 })

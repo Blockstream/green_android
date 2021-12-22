@@ -530,8 +530,8 @@ class GreenSession constructor(
 
     override fun refreshAssets(params: AssetsParams) = greenWallet.refreshAssets(gaSession, params)
 
-    fun createSubAccount(params: SubAccountParams) =
-        AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
+    fun createSubAccount(params: SubAccountParams) = AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
+            .result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
     fun getSubAccounts() = AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession))
         .result<SubAccounts>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))

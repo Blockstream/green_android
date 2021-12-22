@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.EditTextDialogBinding
@@ -49,7 +50,7 @@ class EnterRecoveryPhraseFragment :
 
     val viewModel: EnterRecoveryPhraseViewModel by viewModels{
         EnterRecoveryPhraseViewModel.provideFactory(
-            assistedFactory, args.scannedInput , options!!.isSingleSig
+            assistedFactory = assistedFactory, recoveryPhrase = args.scannedInput , isBip39 = options?.isSingleSig ?: true
         )
     }
 
@@ -166,25 +167,33 @@ class EnterRecoveryPhraseFragment :
     }
 
     fun navigate(options: OnboardingOptions? , mnemonic: String, mnemonicPassword: String ){
-        options?.let {
-            if(args.restoreWallet == null) {
+        if(options != null){
+            if(args.wallet == null) {
                 navigate(
                     EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToScanWalletFragment(
                         onboardingOptions = options,
                         mnemonic = mnemonic,
-                        mnemonicPassword = mnemonicPassword,
-                        restoreWallet = args.restoreWallet
+                        mnemonicPassword = mnemonicPassword
                     )
                 )
             }else{
-                navigate(EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToWalletNameFragment(
-                    onboardingOptions = options,
-                    mnemonic = mnemonic,
-                    mnemonicPassword = mnemonicPassword,
-                    restoreWallet = args.restoreWallet
-                )
+                navigate(
+                    EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToWalletNameFragment(
+                        onboardingOptions = options,
+                        mnemonic = mnemonic,
+                        mnemonicPassword = mnemonicPassword,
+                        restoreWallet = args.wallet
+                    )
                 )
             }
+        }else if (args.wallet != null){
+            navigate(
+                EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToAddAccountFragment(
+                    accountType = AccountType.TWO_OF_THREE,
+                    wallet = args.wallet!!,
+                    mnemonic = mnemonic,
+                )
+            )
         }
     }
 

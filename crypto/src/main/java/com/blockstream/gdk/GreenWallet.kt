@@ -10,11 +10,8 @@ import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.GDK
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
-import java.lang.Exception
 import java.security.SecureRandom
-import kotlin.collections.LinkedHashMap
 import kotlin.random.asKotlinRandom
 
 typealias Balances = LinkedHashMap<String, Long>
@@ -262,6 +259,16 @@ class GreenWallet constructor(
 
     fun isMnemonicValid(mnemonic: String): Boolean {
         return wally.bip39MnemonicValidate(bip39WordList, mnemonic)
+    }
+
+    fun isXpubValid(xpub: String): Boolean {
+        try {
+            wally.bip32KeyFromBase58(xpub)
+            return true
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+        return false
     }
 
     companion object {

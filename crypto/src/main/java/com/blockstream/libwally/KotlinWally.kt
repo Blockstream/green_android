@@ -26,6 +26,7 @@ class KotlinWally {
         }
     }
 
+    fun bip32KeyFromBase58(base58: String) = Wally.bip32_key_from_base58(base58)
 
     companion object{
         const val WALLY_SECP_RANDOMIZE_LEN = Wally.WALLY_SECP_RANDOMIZE_LEN

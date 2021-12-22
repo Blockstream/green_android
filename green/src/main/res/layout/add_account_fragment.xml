@@ -5,7 +5,8 @@
     tools:context=".ui.onboarding.WalletNameFragment">
 
     <data>
-        
+
+        <import type="com.blockstream.gdk.data.AccountType"/>
         <import type="com.blockstream.green.gdk.ExtensionsKt"/>
 
         <variable
@@ -81,7 +82,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dividerView2" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/accountTypeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -90,10 +91,55 @@
             android:textAppearance="@style/TextAppearance.Green.Body1"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/accountType"
             tools:text="@string/id_standard_account" />
+
+        <TextView
+            android:id="@+id/recoveryKeyType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_recovery_key_type"
+            android:textAppearance="@style/TextAppearance.Green.Overline"
+            android:textColor="@color/color_on_surface_emphasis_low"
+            isVisible="@{vm.accountType == AccountType.TWO_OF_THREE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/accountTypeText" />
+
+        <TextView
+            android:id="@+id/recoveryKeyTypeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@{vm.mnemonic != null ? @string/id_recovery_phrase : vm.xpub != null ? @string/id_xpub : @string/id_hardware_wallet}"
+            android:textAppearance="@style/TextAppearance.Green.Body1"
+            android:textStyle="bold"
+            isVisible="@{vm.accountType == AccountType.TWO_OF_THREE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recoveryKeyType"
+            tools:text="@string/id_recovery_phrase" />
+
+        <TextView
+            android:id="@+id/xpub"
+            isVisible="@{vm.accountType == AccountType.TWO_OF_THREE &amp;&amp; vm.xpub != null}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:text="@{vm.xpub}"
+            android:textIsSelectable="true"
+            android:textAppearance="@style/TextAppearance.Green.Caption"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recoveryKeyTypeText"
+            tools:text="@string/id_xpub" />
 
         <Button
             android:id="@+id/buttonContinue"

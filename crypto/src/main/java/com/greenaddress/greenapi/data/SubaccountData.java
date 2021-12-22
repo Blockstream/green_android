@@ -96,7 +96,7 @@ public class SubaccountData extends JSONData {
     }
 
     public SubAccount toSubAccount(){
-        return new SubAccount(getName(), getPointer(), getReceivingId(), getRecoveryPubKey(), getRecoveryChainCode(), AccountType.Companion.byGDKType(getType()));
+        return new SubAccount(getName(), getPointer(), getReceivingId(), getRecoveryPubKey(), getRecoveryChainCode(),null, AccountType.Companion.byGDKType(getType()));
     }
 
 }

@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.R
+import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
 import dagger.assisted.Assisted
@@ -13,9 +13,9 @@ import dagger.assisted.AssistedInject
 import kotlin.properties.Delegates
 
 class EnterRecoveryPhraseViewModel @AssistedInject constructor(
-    private val appWallet: GreenWallet,
+    private val greenWallet: GreenWallet,
     @Assisted private val recoveryPhrase: String?,
-    @Assisted private val isBip39: Boolean
+    @Assisted val isBip39: Boolean
 ) : AppViewModel() {
 
     val showPasteButton = MutableLiveData(true)
@@ -67,7 +67,7 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
         len -= if (isEditMode && len % 3 == 0) 1 else 0
 
         val valid = if (len > 11 && len % 3 == 0 && !isEditMode) {
-            appWallet.isMnemonicValid(recoveryPhrase.joinToString(" "))
+            greenWallet.isMnemonicValid(recoveryPhrase.joinToString(" "))
         } else {
             false
         }

@@ -7,8 +7,6 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoverySetupWordsFragmentBinding
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,6 +36,7 @@ class RecoveryWordsFragment : AppFragment<RecoverySetupWordsFragmentBinding>(
             if (viewModel.isLastPage) {
                 navigate(
                     RecoveryWordsFragmentDirections.actionRecoveryWordsFragmentToRecoveryCheckFragment(
+                        wallet = args.wallet,
                         onboardingOptions = args.onboardingOptions,
                         mnemonic = args.mnemonic
                     )
@@ -45,6 +44,7 @@ class RecoveryWordsFragment : AppFragment<RecoverySetupWordsFragmentBinding>(
             } else {
                 navigate(
                     RecoveryWordsFragmentDirections.actionRecoveryWordsFragmentSelf(
+                        wallet = args.wallet,
                         onboardingOptions = args.onboardingOptions,
                         mnemonic = args.mnemonic,
                         page = nextPage

@@ -1020,5 +1020,9 @@
   <string name="id_wallet_not_found">Wallet not found</string>
   <string name="id_wallet_already_restored">Wallet already restored</string>
   <string name="id_the_new_firmware_requires_you_to_unpair">The new firmware requires you to unpair your Jade from the Bluetooth settings.</string>
-
+  <string name="id_select_your_recovery_key">Select your recovery key</string>
+  <string name="id_recovery_key_type">Recovery Key Type</string>
+  <string name="id_xpub">xPub</string>
+  <string name="id_12_words">12 words</string>
+  <string name="id_24_words">24 words</string>
 </resources>

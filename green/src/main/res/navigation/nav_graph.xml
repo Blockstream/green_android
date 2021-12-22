@@ -155,7 +155,9 @@
         tools:layout="@layout/choose_recovery_phrase_fragment">
         <argument
             android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions" />
+            app:argType="com.blockstream.green.data.OnboardingOptions"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_chooseRecoveryPhraseFragment_to_enterRecoveryPhraseFragment"
             app:destination="@id/enterRecoveryPhraseFragment" />
@@ -246,7 +248,9 @@
         tools:layout="@layout/enter_recovery_phrase_fragment">
         <argument
             android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions" />
+            app:argType="com.blockstream.green.data.OnboardingOptions"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_enterRecoveryPhraseFragment_to_helpBottomSheetDialogFragment"
             app:destination="@id/helpBottomSheetDialogFragment" />
@@ -255,16 +259,24 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
-        <argument
-            android:name="restoreWallet"
-            app:argType="com.blockstream.green.database.Wallet"
-            app:nullable="true" />
         <action
             android:id="@+id/action_enterRecoveryPhraseFragment_to_scanWalletFragment"
             app:destination="@id/scanWalletFragment" />
         <action
             android:id="@+id/action_enterRecoveryPhraseFragment_to_walletNameFragment"
             app:destination="@id/walletNameFragment" />
+        <action
+            android:id="@+id/action_enterRecoveryPhraseFragment_to_addAccountFragment"
+            app:destination="@id/addAccountFragment" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="isAddAccount"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 
     <fragment
@@ -316,6 +328,10 @@
             android:id="@+id/action_recoveryWordsFragment_to_recoveryCheckFragment"
             app:destination="@id/recoveryCheckFragment" />
         <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
             android:name="onboardingOptions"
             android:defaultValue="@null"
             app:argType="com.blockstream.green.data.OnboardingOptions"
@@ -338,6 +354,10 @@
             android:id="@+id/action_recoveryCheckFragment_self"
             app:destination="@id/recoveryCheckFragment" />
         <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
             android:name="onboardingOptions"
             android:defaultValue="@null"
             app:argType="com.blockstream.green.data.OnboardingOptions"
@@ -352,6 +372,9 @@
         <action
             android:id="@+id/action_recoveryCheckFragment_to_walletNameFragment"
             app:destination="@id/walletNameFragment" />
+        <action
+            android:id="@+id/action_recoveryCheckFragment_to_addAccountFragment"
+            app:destination="@id/addAccountFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_addWalletFragment"
@@ -438,6 +461,22 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="accountType"
+            app:argType="com.blockstream.gdk.data.AccountType"
+            android:defaultValue="UNKNOWN" />
+        <action
+            android:id="@+id/action_chooseAccountTypeFragment_to_recoveryIntroFragment"
+            app:destination="@id/recoveryIntroFragment" />
+        <action
+            android:id="@+id/action_chooseAccountTypeFragment_self"
+            app:destination="@id/chooseAccountTypeFragment" />
+        <action
+            android:id="@+id/action_chooseAccountTypeFragment_to_enterRecoveryPhraseFragment"
+            app:destination="@id/enterRecoveryPhraseFragment" />
+        <action
+            android:id="@+id/action_chooseAccountTypeFragment_to_enterXpubFragment"
+            app:destination="@id/enterXpubFragment" />
     </fragment>
     <fragment
         android:id="@+id/addAccountFragment"
@@ -450,6 +489,16 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="mnemonic"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="xpub"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <action
         android:id="@+id/action_global_appSettingsDialogFragment"
@@ -557,6 +606,20 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+    </fragment>
+    <fragment
+        android:id="@+id/enterXpubFragment"
+        android:name="com.blockstream.green.ui.wallet.EnterXpubFragment"
+        tools:layout="@layout/enter_xpub_fragment">
+        <action
+            android:id="@+id/action_enterXpubFragment_to_addAccountFragment"
+            app:destination="@id/addAccountFragment" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="accountType"
+            app:argType="com.blockstream.gdk.data.AccountType" />
     </fragment>
 
 </navigation>
