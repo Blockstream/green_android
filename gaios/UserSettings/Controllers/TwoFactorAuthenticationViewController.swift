@@ -51,7 +51,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         setContent()
         setStyle()
 
-        currentCsv = SessionManager.shared.settings?.csvtime
+        currentCsv = SessionsManager.current.settings?.csvtime
         tableViewCsvTime.estimatedRowHeight = 80
         tableViewCsvTime.rowHeight = UITableView.automaticDimension
 
@@ -123,7 +123,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func reloadData() {
-        let dataTwoFactorConfig = try? SessionManager.shared.getTwoFactorConfig()
+        let dataTwoFactorConfig = try? SessionsManager.current.getTwoFactorConfig()
         guard dataTwoFactorConfig != nil else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         self.twoFactorConfig = twoFactorConfig
@@ -137,7 +137,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
         thresholdView.isHidden = true
         if self.twoFactorConfig?.anyEnabled ?? false,
-            let settings = SessionManager.shared.settings,
+            let settings = SessionsManager.current.settings,
             let twoFactorConfig = self.twoFactorConfig {
 
             var balance: Balance?
@@ -172,9 +172,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.then(on: bgq) { details in
-            try SessionManager.shared.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
+            try SessionsManager.current.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
         }.then(on: bgq) { _ in
-            SessionManager.shared.loadTwoFactorConfig()
+            SessionsManager.current.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -201,9 +201,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try SessionManager.shared.setCSVTime(details: details).resolve()
+            try SessionsManager.current.setCSVTime(details: details).resolve()
         }.then(on: bgq) { _ in
-            SessionManager.shared.loadSettings()
+            SessionsManager.current.loadSettings()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -249,9 +249,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try SessionManager.shared.resetTwoFactor(email: email, isDispute: false).resolve()
+            try SessionsManager.current.resetTwoFactor(email: email, isDispute: false).resolve()
         }.then(on: bgq) {_ in
-            SessionManager.shared.loadTwoFactorConfig()
+            SessionsManager.current.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

@@ -43,20 +43,46 @@ class HomeViewController: UIViewController {
     func enterWallet(_ index: Int) {
         // watch only wallet
         let account = swAccounts[index]
+        if let session = SessionsManager.get(for: account),
+           session.connected && session.logged {
+            session.subaccount().done { wallet in
+                AccountsManager.shared.current = account
+                let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+                let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
+                if let vc = nav?.topViewController as? ContainerViewController {
+                    vc.presentingWallet = wallet
+                }
+                UIApplication.shared.keyWindow?.rootViewController = nav
+            }.catch { err in
+                print("subaccount error: \(err.localizedDescription)")
+            }
+            return
+        }
+        let homeS = UIStoryboard(name: "Home", bundle: nil)
+        let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
         if account.isWatchonly {
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController
-            vc?.account = swAccounts[index]
-            navigationController?.pushViewController(vc!, animated: true)
-        } else {
-            let storyboard = UIStoryboard(name: "Home", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
-            vc?.account = swAccounts[index]
-            navigationController?.pushViewController(vc!, animated: true)
+            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
+                    vc.account = account
+                    nav.pushViewController(vc, animated: false)
+                    UIApplication.shared.keyWindow?.rootViewController = nav
+            }
+            return
+        }
+        if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+            let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+                vc.account = account
+                nav.pushViewController(vc, animated: false)
+                UIApplication.shared.keyWindow?.rootViewController = nav
         }
     }
 
     func showHardwareWallet(_ index: Int) {
+        if let account = AccountsManager.shared.current {
+            if account.isJade || account.isLedger {
+                BLEManager.shared.dispose()
+            }
+        }
         let storyboard = UIStoryboard(name: "HWW", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
             vc.account = hwAccounts[index]
@@ -107,8 +133,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                     return cell
                 }
             } else {
+                let account = swAccounts[indexPath.row]
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
-                    cell.configure(swAccounts[indexPath.row])
+                    let selected = { () -> Bool in
+                        if let session = SessionsManager.get(for: account) {
+                            return session.connected && session.logged
+                        }
+                        return false
+                    }
+                    cell.configure(account, selected())
                     cell.selectionStyle = .none
                     return cell
                 }

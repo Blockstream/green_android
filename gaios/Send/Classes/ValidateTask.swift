@@ -18,14 +18,14 @@ class ValidateTask {
             var details = details
 
             if inputType == .transaction && details["utxos"] == nil {
-                let unspentCall = try? SessionManager.shared.getUnspentOutputs(details: ["subaccount": details["subaccount"] ?? 0, "num_confs": 0])
+                let unspentCall = try? SessionsManager.current.getUnspentOutputs(details: ["subaccount": details["subaccount"] ?? 0, "num_confs": 0])
                 let unspentData = try? unspentCall?.resolve().wait()
                 let unspentResult = unspentData?["result"] as? [String: Any]
                 let unspent = unspentResult?["unspent_outputs"] as? [String: Any]
                 details["utxos"] = unspent ?? [:]
             }
 
-            let createCall = try? SessionManager.shared.createTransaction(details: details)
+            let createCall = try? SessionsManager.current.createTransaction(details: details)
             let createData = try? createCall?.resolve().wait()
             let createResult = createData?["result"] as? [String: Any]
             self.tx = Transaction(createResult ?? [:])

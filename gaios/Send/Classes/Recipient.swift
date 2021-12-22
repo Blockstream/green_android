@@ -26,7 +26,7 @@ class Recipient: Codable {
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
         let isBtc = assetId == btc
-        let denominationBtc = SessionManager.shared.settings!.denomination.rawValue
+        let denominationBtc = SessionsManager.current.settings!.denomination.rawValue
         let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetId)
         let details: [String: Any]
         if isBtc {

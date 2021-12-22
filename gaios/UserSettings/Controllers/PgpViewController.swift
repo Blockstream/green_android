@@ -12,7 +12,7 @@ class PgpViewController: KeyboardViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_pgp_key", comment: "")
         subtitle.text = NSLocalizedString("id_enter_a_pgp_public_key_to_have", comment: "")
-        textarea.text = SessionManager.shared.settings?.pgp ?? ""
+        textarea.text = SessionsManager.current.settings?.pgp ?? ""
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         btnSave.addTarget(self, action: #selector(save), for: .touchUpInside)
         setStyle()
@@ -28,9 +28,9 @@ class PgpViewController: KeyboardViewController {
     }
 
     @objc func save(_ sender: UIButton) {
-        guard let settings = SessionManager.shared.settings else { return }
+        guard let settings = SessionsManager.current.settings else { return }
         let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionManager.shared
+        let session = SessionsManager.current
         let value = settings.pgp
         settings.pgp = textarea.text
         firstly {

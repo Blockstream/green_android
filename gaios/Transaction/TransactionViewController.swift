@@ -35,7 +35,7 @@ class TransactionViewController: UIViewController {
     private var blockToken: NSObjectProtocol?
     private var cantBumpFees: Bool {
         get {
-            return SessionManager.shared.isResetActive ?? false ||
+            return SessionsManager.current.isResetActive ?? false ||
             !transaction.canRBF || account?.isWatchonly ?? false
         }
     }
@@ -239,7 +239,7 @@ class TransactionViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then {
-            try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 1]).resolve()
+            try SessionsManager.current.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 1]).resolve()
         }.compactMap { data in
             let result = data["result"] as? [String: Any]
             let unspent = result?["unspent_outputs"] as? [String: Any]
@@ -450,7 +450,7 @@ extension TransactionViewController: DialogNoteViewControllerDelegate {
         self.startAnimating()
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) { _ in
-            try gaios.SessionManager.shared.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
+            try gaios.SessionsManager.current.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
             self.transaction.memo = note
             }.ensure {
                 self.stopAnimating()

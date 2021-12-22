@@ -37,7 +37,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func getCurrentRate() {
-        if let settings = SessionManager.shared.settings {
+        if let settings = SessionsManager.current.settings {
             currentCurrency.text = settings.pricing["currency"] ?? ""
             currentExchange.text = settings.pricing["exchange"]?.capitalized ?? ""
         }
@@ -81,7 +81,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func setExchangeRate(_ currency: CurrencyItem) {
-        guard let settings = SessionManager.shared.settings else { return }
+        guard let settings = SessionsManager.current.settings else { return }
         let bgq = DispatchQueue.global(qos: .background)
 
         var pricing = [String: String]()
@@ -93,7 +93,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         }.compactMap(on: bgq) {
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try SessionManager.shared.changeSettings(details: details)
+            try SessionsManager.current.changeSettings(details: details)
         }.then(on: bgq) { call in
             call.resolve()
         }.done { _ in
@@ -107,7 +107,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     func getExchangeRate() {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap(on: bgq) {
-            try SessionManager.shared.getAvailableCurrencies()
+            try SessionsManager.current.getAvailableCurrencies()
         }.done { (data: [String: Any]?) in
             guard let json = data else { return }
             guard let perExchange = json["per_exchange"] as? [String: [String]] else { throw GaError.GenericError }

@@ -14,7 +14,6 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     var onSelection: ((Account) -> Void)?
 
-    private var selectedAccount =  AccountsManager.shared.current
     private let swAccounts = AccountsManager.shared.swAccounts
     private let hwAccounts = AccountsManager.shared.hwAccounts
     weak var delegate: DrawerNetworkSelectionDelegate?
@@ -70,7 +69,13 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 0:
             let account = swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
-                cell.configure(account, account.id == selectedAccount?.id)
+                let selected = { () -> Bool in
+                    if let session = SessionsManager.get(for: account) {
+                        return session.connected && session.logged
+                    }
+                    return false
+                }
+                cell.configure(account, selected())
                 cell.selectionStyle = .none
                 return cell
             }
@@ -131,9 +136,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         switch indexPath.section {
         case 0:
             let account = swAccounts[indexPath.row]
-            if selectedAccount?.id != account.id {
-                self.delegate?.didSelectAccount(account: account)
-            }
+            self.delegate?.didSelectAccount(account: account)
         case 1:
             let account = hwAccounts[indexPath.row]
             self.delegate?.didSelectHW(account: account)

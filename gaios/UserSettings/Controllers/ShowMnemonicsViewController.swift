@@ -17,7 +17,7 @@ class ShowMnemonicsViewController: UIViewController {
     }
 
     func createViews() {
-        let res = try? SessionManager.shared.getMnemonicPassphrase(password: "")
+        let res = try? SessionsManager.current.getMnemonicPassphrase(password: "")
         guard let mnemonic = res?.split(separator: " ") else { return }
         for index in 0..<mnemonic.count {
             let myView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: viewHeight))

@@ -19,7 +19,7 @@ class Learn2faViewController: UIViewController {
     @IBOutlet weak var btnUndoReset: UIButton!
 
     weak var delegate: Learn2faViewControllerDelegate?
-    let isDisputeActive = SessionManager.shared.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
+    let isDisputeActive = SessionsManager.current.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,7 +42,7 @@ class Learn2faViewController: UIViewController {
             btnUndoReset.setTitle(NSLocalizedString("id_undo_2fa_dispute", comment: ""), for: .normal)
             return
         }
-        let resetDaysRemaining = SessionManager.shared.twoFactorConfig?.twofactorReset.daysRemaining
+        let resetDaysRemaining = SessionsManager.current.twoFactorConfig?.twofactorReset.daysRemaining
         lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
         lblResetTitle.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), resetDaysRemaining ?? 0)
         lblResetHint.text = NSLocalizedString("id_the_waiting_period_is_necessary", comment: "")
@@ -61,9 +61,9 @@ class Learn2faViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try SessionManager.shared.cancelTwoFactorReset().resolve()
+            try SessionsManager.current.cancelTwoFactorReset().resolve()
         }.then(on: bgq) { _ in
-            SessionManager.shared.loadTwoFactorConfig()
+            SessionsManager.current.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -85,9 +85,9 @@ class Learn2faViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try SessionManager.shared.resetTwoFactor(email: email, isDispute: true).resolve()
+            try SessionsManager.current.resetTwoFactor(email: email, isDispute: true).resolve()
         }.then(on: bgq) { _ in
-            SessionManager.shared.loadTwoFactorConfig()
+            SessionsManager.current.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -106,9 +106,9 @@ class Learn2faViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try SessionManager.shared.undoTwoFactorReset(email: email).resolve()
+            try SessionsManager.current.undoTwoFactorReset(email: email).resolve()
         }.then(on: bgq) { _ in
-            SessionManager.shared.loadTwoFactorConfig()
+            SessionsManager.current.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

@@ -3,8 +3,6 @@ import PromiseKit
 
 class SessionManager: Session {
 
-    static var shared = SessionManager()
-
     var account: Account?
     var connected = false
     var logged = false
@@ -29,20 +27,23 @@ class SessionManager: Session {
         }
     }
 
-    public override init() {
-        notificationManager = NotificationManager()
+    public init(account: Account) {
+        self.account = account
+        notificationManager = NotificationManager(account: account)
         try! super.init()
     }
 
-    public static func newSession(account: Account?) -> SessionManager {
-        // Todo: destroy the session in a thread-safe way
-        //SessionManager.shared = SessionManager()
-        let session = SessionManager.shared
-        session.disconnect()
-        session.account = account
-        session.twoFactorConfig = nil
-        session.settings = nil
-        return SessionManager.shared
+    deinit {
+        if connected {
+            disconnect()
+        }
+        remove()
+    }
+
+    public func remove() {
+        if let id = account?.id {
+            SessionsManager.shared.removeValue(forKey: id)
+        }
     }
 
     public override func disconnect() {
@@ -50,15 +51,18 @@ class SessionManager: Session {
         setNotificationHandler(notificationCompletionHandler: nil)
         connected = false
         logged = false
+        twoFactorConfig = nil
+        settings = nil
     }
 
     public func connect() throws {
+        print("connect")
         if connected == false {
             try connect(network: self.account?.networkName ?? "mainnet")
         }
     }
 
-    public func connect(network: String, params: [String: Any]? = nil) throws {
+    private func connect(network: String, params: [String: Any]? = nil) throws {
         let networkSettings = params ?? getUserNetworkSettings()
         let useProxy = networkSettings["proxy"] as? Bool ?? false
         let socks5Hostname = useProxy ? networkSettings["socks5_hostname"] as? String ?? "" : ""
@@ -104,7 +108,7 @@ class SessionManager: Session {
         let bgq = DispatchQueue.global(qos: .background)
         let pointer = activeWallet
         return Guarantee().then(on: bgq) {_ in
-            try SessionManager.shared.getTransactions(details: ["subaccount": pointer, "first": first, "count": Constants.trxPerPage]).resolve()
+            try self.getTransactions(details: ["subaccount": pointer, "first": first, "count": Constants.trxPerPage]).resolve()
         }.compactMap(on: bgq) { data in
             let result = data["result"] as? [String: Any]
             let dict = result?["transactions"] as? [[String: Any]]
@@ -147,7 +151,7 @@ class SessionManager: Session {
     func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
        let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
-            try SessionManager.shared.getTwoFactorConfig()
+            try self.getTwoFactorConfig()
         }.compactMap { dataTwoFactorConfig in
             let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: []))
             self.twoFactorConfig = twoFactorConfig
@@ -158,7 +162,7 @@ class SessionManager: Session {
     func loadSettings() -> Promise<Settings> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
-            try SessionManager.shared.getSettings()
+            try self.getSettings()
         }.compactMap { data in
             self.settings = Settings.from(data)
             return self.settings
@@ -168,7 +172,7 @@ class SessionManager: Session {
     func loadSystemMessage() -> Promise<String> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().map(on: bgq) {
-            try SessionManager.shared.getSystemMessage()
+            try self.getSystemMessage()
         }
     }
 
@@ -215,7 +219,7 @@ class SessionManager: Session {
                 return Promise<Void>()
             }.then { _ -> Promise<Void> in
                 if self.account?.network == "liquid" {
-                    return Registry.shared.load()
+                    return Registry.shared.load(session: self)
                 }
                 return Promise<Void>()
             }

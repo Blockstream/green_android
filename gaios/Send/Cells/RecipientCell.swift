@@ -340,7 +340,7 @@ class RecipientCell: UITableViewCell {
 
     func getCurrency() -> String {
         let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
-        let settings = SessionManager.shared.settings!
+        let settings = SessionsManager.current.settings!
         let currency = isMainnet ? settings.getCurrency() : "FIAT"
         let title = isFiat ? currency : settings.denomination.string
         return title
@@ -355,7 +355,7 @@ class RecipientCell: UITableViewCell {
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
         let isBtc = assetId == btc
-        let denominationBtc = SessionManager.shared.settings!.denomination.rawValue
+        let denominationBtc = SessionsManager.current.settings!.denomination.rawValue
         let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetId)
         let details: [String: Any]
         if isBtc {

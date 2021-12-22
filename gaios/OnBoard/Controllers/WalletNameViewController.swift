@@ -78,7 +78,7 @@ class WalletNameViewController: UIViewController {
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            vc.account = OnBoardManager.shared.account()
+            vc.account = OnBoardManager.shared.account
             present(vc, animated: true) {}
         }
     }
@@ -107,18 +107,24 @@ class WalletNameViewController: UIViewController {
     fileprivate func register() {
         let bgq = DispatchQueue.global(qos: .background)
         let params = OnBoardManager.shared.params
-        let account = OnBoardManager.shared.account()
-        let session = SessionManager.newSession(account: account)
+        let session = SessionsManager.new(for: OnBoardManager.shared.account)
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.then(on: bgq) {
             session.registerLogin(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "")
+        }.then(on: bgq) { _ -> Promise<[String: Any]> in
+            if params?.singleSig ?? false {
+                return try session.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue]).resolve()
+            } else {
+                return Promise<[String: Any]> { seal in seal.fulfill([:]) }
+            }
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            self.finalizeRegister()
+            self.next()
         }.catch { error in
+            session.disconnect()
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
@@ -131,13 +137,12 @@ class WalletNameViewController: UIViewController {
     func checkCredential() {
         let params = OnBoardManager.shared.params
         let bgq = DispatchQueue.global(qos: .background)
-        let account = OnBoardManager.shared.account()
-        let session = SessionManager.newSession(account: account)
+        let session = SessionsManager.new(for: OnBoardManager.shared.account)
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            return try session.connect(network: OnBoardManager.shared.networkName)
+            return try session.connect()
         }.then(on: bgq) {
             session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
         }.ensure {
@@ -145,7 +150,7 @@ class WalletNameViewController: UIViewController {
         }.done { _ in
             self.next()
         }.catch { error in
-            _ = SessionManager.newSession(account: account)
+            session.disconnect()
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
@@ -155,33 +160,9 @@ class WalletNameViewController: UIViewController {
         }
     }
 
-    func finalizeRegister() {
-        let params = OnBoardManager.shared.params
-        let bgq = DispatchQueue.global(qos: .background)
-
-        if params?.singleSig ?? false {
-            firstly {
-                return Guarantee()
-            }.compactMap(on: bgq) {
-                try SessionManager.shared.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue]).resolve()
-            }.ensure {
-                self.stopLoader()
-            }.done { _ in
-                self.next()
-            }.catch { e in
-                // Do we need a retry?
-                DropAlert().error(message: e.localizedDescription)
-            }
-        } else {
-            stopLoader()
-            next()
-        }
-    }
-
     func next() {
         DispatchQueue.main.async {
-            let account = OnBoardManager.shared.account()
-            AccountsManager.shared.current = account
+            AccountsManager.shared.current = OnBoardManager.shared.account
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
             self.navigationController?.pushViewController(vc, animated: true)

@@ -3,7 +3,16 @@ import PromiseKit
 
 class NotificationManager {
 
+    let account: Account
     var blockHeight: UInt32 = 0
+
+    init(account: Account) {
+        self.account = account
+    }
+
+    var session: SessionManager? {
+        return SessionsManager.get(for: self.account)
+    }
 
     public func newNotification(notification: [String: Any]?) {
         guard let notificationEvent = notification?["event"] as? String,
@@ -34,12 +43,16 @@ class NotificationManager {
                 }
             } catch { break }
         case .TwoFactorReset:
-            SessionManager.shared.loadTwoFactorConfig().done { _ in
-                self.post(event: .TwoFactorReset, data: data)
+            if let session = session {
+                session.loadTwoFactorConfig().done { _ in
+                    self.post(event: .TwoFactorReset, data: data)
+                }
             }
         case .Settings:
-            SessionManager.shared.settings = Settings.from(data)
-            post(event: .Settings, data: data)
+            if let session = session {
+                session.settings = Settings.from(data)
+                post(event: .Settings, data: data)
+            }
         case .Session:
             post(event: EventType.Network, data: data)
         case .Network:
@@ -51,11 +64,14 @@ class NotificationManager {
                 post(event: EventType.Network, data: data)
                 return
             }
-            guard SessionManager.shared.connected && SessionManager.shared.logged else {
+            guard let session = session else {
+                return
+            }
+            guard session.connected && session.logged else {
                 return
             }
             // Restore connection through hidden login
-            SessionManager.shared.login(details: [:], hwDevice: nil).done { _ in
+            session.login(details: [:], hwDevice: nil).done { _ in
                 self.post(event: EventType.Network, data: data)
             }.catch { err in
                 print("Error on reconnected with hw: \(err.localizedDescription)")

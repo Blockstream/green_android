@@ -38,7 +38,7 @@ class WalletItem: Codable {
     func generateNewAddress() -> Promise<String> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {_ in
-            try SessionManager.shared.getReceiveAddress(details: ["subaccount": self.pointer])
+            try SessionsManager.current.getReceiveAddress(details: ["subaccount": self.pointer])
         }.then(on: bgq) { call in
             call.resolve()
         }.compactMap(on: bgq) { data in
@@ -62,7 +62,7 @@ class WalletItem: Codable {
     func getBalance() -> Promise<[String: UInt64]> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
-            try SessionManager.shared.getBalance(details: ["subaccount": self.pointer, "num_confs": 0])
+            try SessionsManager.current.getBalance(details: ["subaccount": self.pointer, "num_confs": 0])
         }.then(on: bgq) { call in
             call.resolve()
         }.compactMap { data in

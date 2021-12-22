@@ -53,7 +53,7 @@ class SendViewController: KeyboardViewController {
     }()
 
     private var defaultTransactionPriority: TransactionPriority = {
-        guard let settings = SessionManager.shared.settings else { return .High }
+        guard let settings = SessionsManager.current.settings else { return .High }
         if let pref = TransactionPriority.getPreference() {
             settings.transactionPriority = pref
         }

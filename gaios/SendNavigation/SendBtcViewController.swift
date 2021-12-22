@@ -134,7 +134,7 @@ class SendBtcViewController: KeyboardViewController {
                 return ["addressees": [addressee], "fee_rate": feeRate, "subaccount": subaccount, "utxos": [:]]
             }
         }.then(on: queue) { data in
-            try SessionManager.shared.createTransaction(details: data).resolve()
+            try SessionsManager.current.createTransaction(details: data).resolve()
         }.then(on: queue) { data -> Promise<[String: Any]> in
             let result = data["result"] as? [String: Any]
             tx = Transaction(result ?? [:])
@@ -152,7 +152,7 @@ class SendBtcViewController: KeyboardViewController {
                 return Promise { seal in seal.fulfill([:])}
             } else {
                 // fetch utxos to create transaction
-                return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
+                return try SessionsManager.current.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
             }
         }.done { data in
             let result = data["result"] as? [String: Any]

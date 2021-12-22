@@ -84,18 +84,21 @@ class ScreenLocker {
             // Screen lock is already activated.
             return
         }
-        if self.countdownInterval == nil {
+        guard let countdownInterval = self.countdownInterval else {
             // We became inactive, but never started a countdown.
             return
         }
-        guard let settings = SessionManager.shared.settings else {
-            // App is not logged
-            return
-        }
-        let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval!
-        if Int(countdown) >= settings.altimeout * 60 {
-            // after timeout
-            self.isScreenLockLocked = true
+        let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval
+
+        SessionsManager.shared.forEach { (id, session) in
+            if let settings = session.settings,
+               Int(countdown) >= settings.altimeout * 60 {
+                session.disconnect()
+
+                if id == AccountsManager.shared.current?.id ?? "" {
+                    self.isScreenLockLocked = true
+                }
+            }
         }
     }
 
@@ -161,9 +164,13 @@ class ScreenLocker {
             return
         }
         clear()
-        DispatchQueue.main.async {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.logout(with: false)
+        if let account = AccountsManager.shared.current,
+           let session = SessionsManager.get(for: account),
+           !session.logged {
+            DispatchQueue.main.async {
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.logout(with: false)
+            }
         }
     }
 }

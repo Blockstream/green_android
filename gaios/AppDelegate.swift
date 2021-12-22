@@ -24,14 +24,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
     }
 
-    func lock(with pin: Bool) {
-        window?.endEditing(true)
-        instantiateViewControllerAsRoot(storyboard: "Home", identifier: "HomeViewController")
-    }
-
     func logout(with pin: Bool) {
-        if let account = AccountsManager.shared.current,
-           account.isJade || account.isLedger {
+        guard let account = AccountsManager.shared.current,
+              let session = SessionsManager.get(for: account) else {
+                return
+        }
+        if account.isJade || account.isLedger {
             BLEManager.shared.dispose()
         }
         let bgq = DispatchQueue.global(qos: .background)
@@ -39,11 +37,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController?.startAnimating()
             return Guarantee()
         }.map(on: bgq) {
-            _ = SessionManager.newSession(account: AccountsManager.shared.current)
+            session.disconnect()
         }.ensure {
             self.window?.rootViewController?.stopAnimating()
         }.done {
-            self.lock(with: pin)
+            let homeS = UIStoryboard(name: "Home", bundle: nil)
+            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+                    vc.account = AccountsManager.shared.current
+                    nav.pushViewController(vc, animated: false)
+                    UIApplication.shared.keyWindow?.rootViewController = nav
+            }
         }.catch { _ in
             fatalError("disconnection error never happens")
         }
@@ -80,13 +84,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Load custom window to handle touches event
         window = UIWindow(frame: UIScreen.main.bounds)
+        window?.endEditing(true)
 
         // Initialize gdk and accounts
         try? gdkinitialize()
         AccountsManager.shared.onFirstInitialization()
 
         // Set screen lock
-        lock(with: false)
+        instantiateViewControllerAsRoot(storyboard: "Home", identifier: "HomeViewController")
         ScreenLockWindow.shared.setup()
         ScreenLocker.shared.startObserving()
 
@@ -117,14 +122,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         DispatchQueue.global().async {
-            try? SessionManager.shared.reconnectHint(hint: ["tor_sleep_hint": "sleep", "hint": "disable"])
+            SessionsManager.shared.forEach { (_, session) in
+                if session.connected {
+                    try? session.reconnectHint(hint: ["tor_sleep_hint": "sleep", "hint": "disable"])
+                }
+            }
         }
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
         DispatchQueue.global().async {
-            try? SessionManager.shared.reconnectHint(hint: ["tor_sleep_hint": "wakeup", "hint": "now"])
+            SessionsManager.shared.forEach { (_, session) in
+                if session.connected {
+                    try? session.reconnectHint(hint: ["tor_sleep_hint": "wakeup", "hint": "now"])
+                }
+            }
         }
     }
 

@@ -244,6 +244,7 @@
 		81286117222212C7005598D3 /* SetPhoneView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286116222212C7005598D3 /* SetPhoneView.xib */; };
 		81286119222212DB005598D3 /* SetGauthView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286118222212DB005598D3 /* SetGauthView.xib */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
+		813D053A27AD7D9700AA6655 /* SessionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813D053927AD7D9700AA6655 /* SessionsManager.swift */; };
 		815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
 		8158974B2701980700DDF6D4 /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
@@ -589,6 +590,7 @@
 		81286116222212C7005598D3 /* SetPhoneView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetPhoneView.xib; sourceTree = "<group>"; };
 		81286118222212DB005598D3 /* SetGauthView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetGauthView.xib; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
+		813D053927AD7D9700AA6655 /* SessionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsManager.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
 		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
@@ -1060,6 +1062,7 @@
 			isa = PBXGroup;
 			children = (
 				81D671EA26C8007600682508 /* SessionManager.swift */,
+				813D053927AD7D9700AA6655 /* SessionsManager.swift */,
 				81D671F626C81B0800682508 /* NotificationManager.swift */,
 				344562EA25D297CF00A5EC18 /* BLEManager.swift */,
 				819DFBA726038E800022BD85 /* AccountsManager.swift */,
@@ -1972,6 +1975,7 @@
 				34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */,
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
 				349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */,
+				813D053A27AD7D9700AA6655 /* SessionsManager.swift in Sources */,
 				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */,
 				349D1EDB274250540095B5CA /* TransactionViewController.swift in Sources */,

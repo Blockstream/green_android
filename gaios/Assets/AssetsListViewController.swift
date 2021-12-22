@@ -43,7 +43,7 @@ class AssetsListViewController: UIViewController {
 
     @objc func onAssetsUpdated(_ notification: NSNotification) {
         Guarantee()
-            .compactMap { Registry.shared.cache() }
+            .compactMap { Registry.shared.cache(session: SessionsManager.current) }
             .done { self.tableView.reloadData() }
             .catch { err in
                 print(err.localizedDescription)

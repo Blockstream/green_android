@@ -75,7 +75,7 @@ class AccountCreateViewController: UIViewController {
 
     func createAccount(name: String, type: AccountType) {
         let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionManager.shared
+        let session = SessionsManager.current
         firstly {
             self.startAnimating()
             return Guarantee()

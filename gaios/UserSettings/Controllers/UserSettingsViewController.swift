@@ -19,7 +19,7 @@ class UserSettingsViewController: UIViewController {
     var twoFactorConfig: TwoFactorConfig?
     var isResetActive: Bool {
         get {
-            SessionManager.shared.isResetActive ?? false
+            SessionsManager.current.isResetActive ?? false
         }
     }
     var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
@@ -62,9 +62,9 @@ class UserSettingsViewController: UIViewController {
     }
 
     func load() throws {
-        let session = SessionManager.shared
+        let session = SessionsManager.current
         if let settings = try session.getSettings() {
-            SessionManager.shared.settings = Settings.from(settings)
+            SessionsManager.current.settings = Settings.from(settings)
         }
         self.username = try session.getWatchOnlyUsername()
         let dataTwoFactorConfig = try session.getTwoFactorConfig()
@@ -105,7 +105,7 @@ class UserSettingsViewController: UIViewController {
         if isLiquid || isSingleSig || isWatchOnly || isResetActive || isHW {} else {
             items += [watchOnly]
         }
-        if let settings = SessionManager.shared.settings {
+        if let settings = SessionsManager.current.settings {
             let bitcoinDenomination = UserSettingsItem(
                 title: NSLocalizedString("id_bitcoin_denomination", comment: ""),
                 subtitle: settings.denomination.string,
@@ -159,7 +159,7 @@ class UserSettingsViewController: UIViewController {
             }
         }
 
-        if let settings = SessionManager.shared.settings {
+        if let settings = SessionsManager.current.settings {
             let autolock = UserSettingsItem(
                 title: NSLocalizedString("id_auto_logout_timeout", comment: ""),
                 subtitle: settings.autolock.string,
@@ -233,7 +233,7 @@ class UserSettingsViewController: UIViewController {
             items += [backUpRecoveryPhrase]
         }
 
-        if let settings = SessionManager.shared.settings {
+        if let settings = SessionsManager.current.settings {
             var locktimeRecoveryEnable = false
             if let notifications = settings.notifications {
                 locktimeRecoveryEnable = notifications.emailOutgoing == true
@@ -277,7 +277,7 @@ class UserSettingsViewController: UIViewController {
 
     func getSwitchValue() -> Bool {
 
-        guard let screenlock = SessionManager.shared.settings?.getScreenLock() else {
+        guard let screenlock = SessionsManager.current.settings?.getScreenLock() else {
             DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return false
         }
@@ -468,7 +468,7 @@ extension UserSettingsViewController {
 
     func showBitcoinDenomination() {
         let list = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats].map { DenominationType.denominations[$0]! }
-        let settings = SessionManager.shared.settings!
+        let settings = SessionsManager.current.settings!
         let selected = settings.denomination.string
         let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
@@ -513,7 +513,7 @@ extension UserSettingsViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionManager.shared.setWatchOnly(username: username, password: password)
+            try SessionsManager.current.setWatchOnly(username: username, password: password)
             try self.load()
         }.ensure {
             self.stopAnimating()
@@ -526,7 +526,7 @@ extension UserSettingsViewController {
 
     func showAutoLogout() {
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
-        let settings = SessionManager.shared.settings!
+        let settings = SessionsManager.current.settings!
         let selected = settings.autolock.string
         let alert = UIAlertController(title: NSLocalizedString("id_auto_logout_timeout", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
@@ -541,7 +541,7 @@ extension UserSettingsViewController {
 
     func changeSettings(_ settings: Settings) {
         let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-        let session = SessionManager.shared
+        let session = SessionsManager.current
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {_ in
             self.startAnimating()
@@ -560,7 +560,7 @@ extension UserSettingsViewController {
     }
 
     func showRecoveryTransactions() {
-        let settings = SessionManager.shared.settings!
+        let settings = SessionsManager.current.settings!
         var enabled = false
         if let notifications = settings.notifications {
             enabled = notifications.emailOutgoing == true
@@ -609,7 +609,7 @@ extension UserSettingsViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try self.account?.addBioPin(session: SessionManager.shared)
+            try self.account?.addBioPin(session: SessionsManager.current)
         }.ensure {
             self.stopAnimating()
         }.catch { error in

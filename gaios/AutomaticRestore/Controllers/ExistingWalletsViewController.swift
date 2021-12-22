@@ -63,7 +63,6 @@ class ExistingWalletsViewController: UIViewController {
     }
 
     func validateMnemonic() {
-
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             return Guarantee()
@@ -123,65 +122,32 @@ class ExistingWalletsViewController: UIViewController {
         }
     }
 
-    func getSubaccounts() {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            return Guarantee()
-        }.then(on: bgq) {
-            SessionManager.shared.subaccounts()
-        }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
-            let balances = wallets.map { wallet in { wallet.getBalance() } }
-            return Promise.chain(balances).compactMap { _ in wallets }
-        }.done { wallets in
-            print(wallets)
-        }.catch { err in
-            print(err.localizedDescription)
-        }
-    }
-
     func checkExistance(isSinglesig: Bool) -> Promise<Bool> {
-        OnBoardManager.shared.params?.singleSig = isSinglesig
-        let params = OnBoardManager.shared.params
         let bgq = DispatchQueue.global(qos: .background)
-        let account = OnBoardManager.shared.account()
-        let session = SessionManager.newSession(account: account)
-        if isSinglesig {
-            return Promise { seal in
-                firstly {
-                    Guarantee()
-                }.compactMap(on: bgq) {
-                    try session.connect(network: OnBoardManager.shared.networkName)
-                }.then(on: bgq) {
-                    session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
-                }.then(on: bgq) {
-                    session.subaccounts(true)
-                }.compactMap(on: bgq) { wallets in
-                    !wallets.filter({ $0.bip44Discovered ?? false }).isEmpty
-                }.ensure {
-                    _ = SessionManager.newSession(account: account)
-                }.done { result in
-                    seal.fulfill(result)
-                }.catch { error in
-                    print(error)
-                    seal.fulfill(false)
+        let params = OnBoardManager.shared.params
+        let session = SessionManager(account: OnBoardManager.shared.account)
+        return Promise { seal in
+            firstly {
+                Guarantee()
+            }.compactMap(on: bgq) {
+                try session.connect()
+            }.then(on: bgq) {
+                session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
+            }.then(on: bgq) {
+                session.subaccounts(true)
+            }.compactMap(on: bgq) { wallets in
+                if isSinglesig {
+                    return !wallets.filter({ $0.bip44Discovered ?? false }).isEmpty
+                } else {
+                    return true
                 }
-            }
-        } else {
-            return Promise { seal in
-                firstly {
-                    return Guarantee()
-                }.compactMap(on: bgq) {
-                    return try session.connect(network: OnBoardManager.shared.networkName)
-                }.then(on: bgq) {
-                    session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
-                }.ensure {
-                    _ = SessionManager.newSession(account: account)
-                }.done { _ in
-                    seal.fulfill(true)
-                }.catch { error in
-                    print(error)
-                    seal.fulfill(false)
-                }
+            }.ensure {
+                session.disconnect()
+            }.done { result in
+                seal.fulfill(result)
+            }.catch { error in
+                print(error)
+                seal.fulfill(false)
             }
         }
     }

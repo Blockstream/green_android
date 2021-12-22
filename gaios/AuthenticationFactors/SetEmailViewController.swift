@@ -57,11 +57,11 @@ class SetEmailViewController: KeyboardViewController {
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try SessionManager.shared.changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: details)
+            try SessionsManager.current.changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(connected: { self.connected })
         }.then(on: bgq) { _ in
-            SessionManager.shared.loadTwoFactorConfig()
+            SessionsManager.current.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

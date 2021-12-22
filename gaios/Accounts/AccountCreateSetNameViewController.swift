@@ -82,7 +82,7 @@ class AccountCreateSetNameViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionManager.shared.createSubaccount(details: ["name": name, "type": type.rawValue])
+            try SessionsManager.current.createSubaccount(details: ["name": name, "type": type.rawValue])
         }.then(on: bgq) { call in
             call.resolve()
         }.ensure {

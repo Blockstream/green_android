@@ -5,6 +5,7 @@ class WalletCell: UITableViewCell {
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var iconSecurityType: UIImageView!
+    @IBOutlet weak var circleImageView: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -23,9 +24,10 @@ class WalletCell: UITableViewCell {
         iconSecurityType.image = UIImage()
     }
 
-    func configure(_ item: Account) {
+    func configure(_ item: Account, _ isSelected: Bool = false) {
         self.lblTitle.text = item.name
         self.icon.image = item.icon
+        self.circleImageView.isHidden = !isSelected
 
         self.iconSecurityType.image = UIImage(named: "ic_keys_invert")!
 

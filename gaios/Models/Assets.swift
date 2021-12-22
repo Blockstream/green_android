@@ -81,8 +81,8 @@ class Registry: Codable {
     }
 
     @discardableResult
-    func fetchIcons(refresh: Bool) -> Bool {
-        guard let data = try? SessionManager.shared.refreshAssets(params: ["icons": true, "assets": false, "refresh": refresh]) else {
+    func fetchIcons(session: SessionManager, refresh: Bool) -> Bool {
+        guard let data = try? session.refreshAssets(params: ["icons": true, "assets": false, "refresh": refresh]) else {
             return false
         }
         var iconsData = data["icons"] as? [String: String]
@@ -94,8 +94,8 @@ class Registry: Codable {
     }
 
     @discardableResult
-    func fetchAssets(refresh: Bool) -> Bool {
-        guard let data = try? SessionManager.shared.refreshAssets(params: ["icons": false, "assets": true, "refresh": refresh]) else {
+    func fetchAssets(session: SessionManager, refresh: Bool) -> Bool {
+        guard let data = try? session.refreshAssets(params: ["icons": false, "assets": true, "refresh": refresh]) else {
             return false
         }
         var infosData = data["assets"] as? [String: Any]
@@ -108,25 +108,25 @@ class Registry: Codable {
         return infos != nil
     }
 
-    func cache() {
-        return refresh(refresh: false)
+    func cache(session: SessionManager) {
+        return refresh(session: session, refresh: false)
     }
 
-    func refresh(refresh: Bool = true) {
+    func refresh(session: SessionManager, refresh: Bool = true) {
 
-        iconsTask = fetchIcons(refresh: false)
-        assetsTask = fetchAssets(refresh: refresh)
+        iconsTask = fetchIcons(session: session, refresh: false)
+        assetsTask = fetchAssets(session: session, refresh: refresh)
 
         if refresh && !assetsTask {
             //remote refresh failed for assetes, than try refresh from cache
-            fetchAssets(refresh: false)
+            fetchAssets(session: session, refresh: false)
         }
 
     }
 
-    func load() -> Promise<Void> {
+    func load(session: SessionManager) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Promise()
-            .compactMap(on: bgq) { self.refresh(refresh: true) }
+            .compactMap(on: bgq) { self.refresh(session: session, refresh: true) }
     }
 }

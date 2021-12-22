@@ -166,7 +166,10 @@ class SetPinViewController: UIViewController {
 
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
-        var account = AccountsManager.shared.current
+        guard var account = AccountsManager.shared.current,
+              let session = SessionsManager.get(for: account) else {
+            fatalError("no account or session found")
+        }
         firstly {
             switch pinFlow {
             case .settings:
@@ -176,14 +179,13 @@ class SetPinViewController: UIViewController {
             }
             return Guarantee()
         }.compactMap(on: bgq) {
-            let mnemonic = try SessionManager.shared.getMnemonicPassphrase(password: "")
-            try account?.addPin(session: SessionManager.shared, pin: pin, mnemonic: mnemonic)
-
-            account?.attempts = 0
+            let mnemonic = try session.getMnemonicPassphrase(password: "")
+            try account.addPin(session: session, pin: pin, mnemonic: mnemonic)
+            account.attempts = 0
             AccountsManager.shared.current = account
         }.then { _ -> Promise<Void> in
-            if AccountsManager.shared.current?.network == "liquid" {
-                return Registry.shared.load()
+            if account.network == "liquid" {
+                return Registry.shared.load(session: session)
             }
             return Promise<Void>()
         }.ensure {

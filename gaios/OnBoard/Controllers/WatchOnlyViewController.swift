@@ -133,14 +133,13 @@ class WatchOnlyViewController: KeyboardViewController {
         if self.rememberSwitch.isOn {
             account.password = password
         }
-        let session = SessionManager.newSession(account: account)
-
+        let session = SessionsManager.new(for: account)
         firstly {
             dismissKeyboard()
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            try session.connect(network: network)
+            try session.connect()
         }.then(on: bgq) { _ in
             session.login(details: ["username": username, "password": password])
         }.ensure {
@@ -149,7 +148,7 @@ class WatchOnlyViewController: KeyboardViewController {
             AccountsManager.shared.current = account
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
-            _ = SessionManager.newSession(account: account)
+            session.disconnect()
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))

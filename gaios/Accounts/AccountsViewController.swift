@@ -56,7 +56,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            SessionManager.shared.subaccounts()
+            SessionsManager.current.subaccounts()
         }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
             let balances = wallets.map { wallet in { wallet.getBalance() } }
             return Promise.chain(balances).compactMap { _ in wallets }

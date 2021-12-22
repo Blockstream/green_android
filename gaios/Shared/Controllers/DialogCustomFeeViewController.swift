@@ -81,7 +81,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
         var feeRate: UInt64
         if let storedFeeRate = storedFeeRate {
             feeRate = storedFeeRate
-        } else if let settings = SessionManager.shared.settings {
+        } else if let settings = SessionsManager.current.settings {
             feeRate = UInt64(settings.customFeeRate ?? self.minFeeRate)
         } else {
             feeRate = self.minFeeRate

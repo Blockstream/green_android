@@ -79,10 +79,10 @@ class SendConfirmViewController: KeyboardViewController {
             let result = resultDict["result"] as? [String: Any]
             if transaction.isSweep {
                 let tx = result!["transaction"] as? String
-                _ = try SessionManager.shared.broadcastTransaction(tx_hex: tx!)
+                _ = try SessionsManager.current.broadcastTransaction(tx_hex: tx!)
                 return nil
             } else {
-                return try SessionManager.shared.sendTransaction(details: result!)
+                return try SessionsManager.current.sendTransaction(details: result!)
             }
         }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
             call?.resolve(connected: {

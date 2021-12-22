@@ -161,7 +161,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionManager.newSession(account: account)
+        let session = SessionsManager.new(for: account!)
         firstly {
             return Guarantee()
         }.compactMap {
@@ -191,7 +191,7 @@ class LoginViewController: UIViewController {
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
-            _ = SessionManager.newSession(account: self.account)
+            session.disconnect()
             self.stopLoader()
             switch error {
             case AuthenticationTypeHandler.AuthError.CanceledByUser:

@@ -92,7 +92,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
     }
 
     func reloadData() {
-        let dataTwoFactorConfig = try? SessionManager.shared.getTwoFactorConfig()
+        let dataTwoFactorConfig = try? SessionsManager.current.getTwoFactorConfig()
         guard dataTwoFactorConfig != nil else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         factors.removeAll()
@@ -127,9 +127,9 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.then(on: bgq) { details in
-            try SessionManager.shared.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
+            try SessionsManager.current.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
         }.then(on: bgq) { _ in
-            SessionManager.shared.loadTwoFactorConfig()
+            SessionsManager.current.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

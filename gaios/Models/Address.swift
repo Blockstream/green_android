@@ -11,7 +11,7 @@ class Address: Codable {
     static func generate(with wallet: WalletItem) -> Promise<Address> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().then(on: bgq) {_ in
-            try SessionManager.shared.getReceiveAddress(details: ["subaccount": wallet.pointer]).resolve()
+            try SessionsManager.current.getReceiveAddress(details: ["subaccount": wallet.pointer]).resolve()
         }.compactMap(on: bgq) { res in
             let result = res["result"] as? [String: Any]
             let data = try? JSONSerialization.data(withJSONObject: result!, options: [])

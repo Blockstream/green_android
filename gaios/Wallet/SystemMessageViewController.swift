@@ -36,7 +36,7 @@ class SystemMessageViewController: UIViewController {
         } else if sender == content.confirmButton {
             let bgq = DispatchQueue.global(qos: .background)
             Guarantee().map(on: bgq) {
-                try SessionManager.shared.ackSystemMessage(message: self.text ?? "")
+                try SessionsManager.current.ackSystemMessage(message: self.text ?? "")
             }.then(on: bgq) { twoFactorCall in
                 twoFactorCall.resolve()
             }.done { _ in

@@ -45,9 +45,9 @@ class OverviewViewController: UIViewController {
         get {
             if subAccounts.count == 0 { return [] }
             if showAccounts {
-                return subAccounts.filter { $0.pointer == SessionManager.shared.activeWallet} + subAccounts.filter { $0.pointer != SessionManager.shared.activeWallet}
+                return subAccounts.filter { $0.pointer == SessionsManager.current.activeWallet} + subAccounts.filter { $0.pointer != SessionsManager.current.activeWallet}
             } else {
-                return subAccounts.filter { $0.pointer == SessionManager.shared.activeWallet}
+                return subAccounts.filter { $0.pointer == SessionsManager.current.activeWallet}
             }
         }
     }
@@ -207,11 +207,11 @@ class OverviewViewController: UIViewController {
     func loadAlertCards() {
         alertCards = []
         // load reset card
-        if SessionManager.shared.isResetActive ?? false {
-            if SessionManager.shared.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
+        if SessionsManager.current.isResetActive ?? false {
+            if SessionsManager.current.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
                 alertCards.append(AlertCardType.dispute)
             } else {
-                let resetDaysRemaining = SessionManager.shared.twoFactorConfig?.twofactorReset.daysRemaining
+                let resetDaysRemaining = SessionsManager.current.twoFactorConfig?.twofactorReset.daysRemaining
                 alertCards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
             }
         }
@@ -233,7 +233,7 @@ class OverviewViewController: UIViewController {
         reloadSections([OverviewSection.card], animated: false)
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) {
-            try SessionManager.shared.getSystemMessage()
+            try SessionsManager.current.getSystemMessage()
         }.done { text in
             if !text.isEmpty {
                 self.alertCards.append(AlertCardType.systemMessage(text))
@@ -278,7 +278,7 @@ class OverviewViewController: UIViewController {
     }
 
     func loadWallet() -> Promise<Void> {
-        return SessionManager.shared.subaccount().then { wallet in
+        return SessionsManager.current.subaccount().then { wallet in
             wallet.getBalance().compactMap { _ in wallet }
         }.map { wallet in
             self.presentingWallet = wallet
@@ -286,7 +286,7 @@ class OverviewViewController: UIViewController {
     }
 
     func loadTransactions(_ pageId: Int = 0) -> Promise<Void> {
-        return SessionManager.shared.transactions(first: UInt32(pageId))
+        return SessionsManager.current.transactions(first: UInt32(pageId))
         .map { page in
             self.transactions.removeAll()
             self.transactions += page.list
@@ -310,7 +310,7 @@ class OverviewViewController: UIViewController {
 
     func onAssetsUpdated(_ notification: Notification) {
         Guarantee()
-            .compactMap { Registry.shared.cache() }
+            .compactMap { Registry.shared.cache(session: SessionsManager.current) }
             .done {
                 self.reloadSections([OverviewSection.asset], animated: true)
                 self.showTransactions()
@@ -323,7 +323,7 @@ class OverviewViewController: UIViewController {
     func onNewTransaction(_ notification: Notification) {
         guard let dict = notification.userInfo as NSDictionary? else { return }
         guard let subaccounts = dict["subaccounts"] as? [UInt32] else { return }
-        if subaccounts.contains(SessionManager.shared.activeWallet) {
+        if subaccounts.contains(SessionsManager.current.activeWallet) {
             handleRefresh()
         }
     }
@@ -350,7 +350,7 @@ class OverviewViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            SessionManager.shared.subaccounts()
+            SessionsManager.current.subaccounts()
         }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
             let balances = wallets.map { wallet in { wallet.getBalance() } }
             return Promise.chain(balances).compactMap { _ in wallets }
@@ -392,7 +392,7 @@ class OverviewViewController: UIViewController {
 
     func reloadRegistry() {
         self.startAnimating()
-        Registry.shared.load().done { () in
+        Registry.shared.load(session: SessionsManager.current).done { () in
             self.stopAnimating()
             self.loadAlertCards()
         }.catch { _ in }
@@ -448,83 +448,73 @@ extension OverviewViewController: UIViewControllerTransitioningDelegate {
 
 extension OverviewViewController: DrawerNetworkSelectionDelegate {
 
-    func logout() -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return firstly {
-            self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
-            return Guarantee()
-        }.map(on: bgq) {
-            let account = AccountsManager.shared.current
-            _ = SessionManager.newSession(account: account)
-            if let account = AccountsManager.shared.current {
-                if account.isJade || account.isLedger {
-                    BLEManager.shared.dispose()
-                }
-            }
+    func didSelectAddWallet() {
+        let homeS = UIStoryboard(name: "Home", bundle: nil)
+        let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+            let vc = onBoardS.instantiateViewController(withIdentifier: "LandingViewController") as? LandingViewController {
+            nav.pushViewController(vc, animated: false)
+            UIApplication.shared.keyWindow?.rootViewController = nav
         }
     }
 
-    func didSelectAddWallet() {
-        logout()
-            .recover { _ in }
-            .done {
-                self.stopLoader()
-
-                let homeS = UIStoryboard(name: "Home", bundle: nil)
-                let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
-
-                if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                   let vc = onBoardS.instantiateViewController(withIdentifier: "LandingViewController") as? LandingViewController {
+    func didSelectAccount(account: Account) {
+        // don't switch if same account selected
+        if account.id == AccountsManager.shared.current?.id ?? "" {
+            return
+        }
+        // switch on selected active session
+        if let session = SessionsManager.get(for: account),
+           session.connected && session.logged {
+            session.subaccount().done { wallet in
+                AccountsManager.shared.current = account
+                let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+                let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
+                if let vc = nav?.topViewController as? ContainerViewController {
+                    vc.presentingWallet = wallet
+                }
+                UIApplication.shared.keyWindow?.rootViewController = nav
+            }.catch { err in
+                print("subaccount error: \(err.localizedDescription)")
+            }
+            return
+        }
+        // switch on pin view of selected account
+        let homeS = UIStoryboard(name: "Home", bundle: nil)
+        let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
+        if account.isWatchonly {
+            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
+                    vc.account = account
                     nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
-                }
             }
-    }
-
-    func didSelectAccount(account: Account) {
-        logout()
-            .recover { _ in }
-            .done {
-                self.stopLoader()
-
-                let homeS = UIStoryboard(name: "Home", bundle: nil)
-                let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
-
-                if account.isWatchonly {
-                    if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                       let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
-                        vc.account = account
-                        nav.pushViewController(vc, animated: false)
-                        UIApplication.shared.keyWindow?.rootViewController = nav
-                    }
-                } else {
-                    if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                       let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
-                        vc.account = account
-                        nav.pushViewController(vc, animated: false)
-                        UIApplication.shared.keyWindow?.rootViewController = nav
-                    }
-                }
-            }
+            return
+        }
+        if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+            let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+                vc.account = account
+                nav.pushViewController(vc, animated: false)
+                UIApplication.shared.keyWindow?.rootViewController = nav
+        }
     }
 
     func didSelectHW(account: Account) {
-
-        logout()
-            .recover { _ in }
-            .done {
-                self.stopLoader()
-
-                let storyboard = UIStoryboard(name: "Home", bundle: nil)
-                let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-
-                let storyboard2 = UIStoryboard(name: "HWW", bundle: nil)
-                if let vc = storyboard2.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-                    vc.account = account
-                    nav?.pushViewController(vc, animated: false)
-                    UIApplication.shared.keyWindow?.rootViewController = nav
-                }
+        if let account = AccountsManager.shared.current {
+            if account.isJade || account.isLedger {
+                BLEManager.shared.dispose()
             }
+        }
+
+        let storyboard = UIStoryboard(name: "Home", bundle: nil)
+        let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
+
+        let storyboard2 = UIStoryboard(name: "HWW", bundle: nil)
+        if let vc = storyboard2.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
+            vc.account = account
+            nav?.pushViewController(vc, animated: false)
+            UIApplication.shared.keyWindow?.rootViewController = nav
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -645,7 +635,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewTransactionCell", for: indexPath) as? OverviewTransactionCell {
                 let transaction = transactions[indexPath.row]
                 cell.setup(transaction: transaction, network: account?.network)
-                cell.checkBlockHeight(transaction: transaction, blockHeight: SessionManager.shared.notificationManager.blockHeight)
+                cell.checkBlockHeight(transaction: transaction, blockHeight: SessionsManager.current.notificationManager.blockHeight)
                 cell.checkTransactionType(transaction: transaction)
                 return cell
             }
@@ -713,7 +703,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case OverviewSection.account.rawValue:
             let isWatchonly = account?.isWatchonly ?? false
-            let isResetActive = SessionManager.shared.isResetActive ?? false
+            let isResetActive = SessionsManager.current.isResetActive ?? false
             return showAccounts && !isWatchonly && !isResetActive ? footerView(.addAccount) : footerView(.none)
         case OverviewSection.transaction.rawValue:
             return transactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
@@ -732,7 +722,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 reloadSections([OverviewSection.account], animated: true)
                 return
             } else {
-                SessionManager.shared.activeWallet = accounts[indexPath.row].pointer
+                SessionsManager.current.activeWallet = accounts[indexPath.row].pointer
                 presentingWallet = accounts[indexPath.row]
                 showAccounts = !showAccounts
                 self.transactions.removeAll()
@@ -784,7 +774,7 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
                     print("----> null or pending")
                     return
                 }
-                self.fetchTxs = SessionManager.shared.transactions(first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
+                self.fetchTxs = SessionsManager.current.transactions(first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
                     let c = self.transactions.count
                     self.transactions += page.list
                     self.callPage += 1
@@ -966,7 +956,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionManager.shared.renameSubaccount(subaccount: SessionManager.shared.activeWallet, newName: name)
+            try SessionsManager.current.renameSubaccount(subaccount: SessionsManager.current.activeWallet, newName: name)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -984,15 +974,21 @@ extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faVi
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {
-            DispatchQueue.main.async { [weak self] in
-                self?.logout()
-                    .recover { _ in }
-                    .done {
-                        self?.stopLoader()
-                        let storyboard = UIStoryboard(name: "Home", bundle: nil)
-                        let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-                        UIApplication.shared.keyWindow?.rootViewController = nav
+            DispatchQueue.main.async {
+                self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
+                if let account = AccountsManager.shared.current {
+                   if account.isJade || account.isLedger {
+                       BLEManager.shared.dispose()
+                   }
+                    if let session = SessionsManager.get(for: account) {
+                        session.disconnect()
+                        session.remove()
                     }
+                }
+                self.stopLoader()
+                let storyboard = UIStoryboard(name: "Home", bundle: nil)
+                let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
+                UIApplication.shared.keyWindow?.rootViewController = nav
             }
         })
     }
