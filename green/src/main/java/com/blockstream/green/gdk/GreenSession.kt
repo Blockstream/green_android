@@ -28,9 +28,7 @@ import kotlinx.serialization.json.*
 import mu.KLogging
 import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.collections.LinkedHashMap
 import kotlin.properties.Delegates
-import kotlin.reflect.KProperty
 
 
 class GreenSession constructor(
@@ -58,7 +56,7 @@ class GreenSession constructor(
     private var blockSubject = BehaviorSubject.create<Block>()
     private var settingsSubject = BehaviorSubject.create<Settings>()
     private var twoFactorResetSubject = BehaviorSubject.create<TwoFactorReset>()
-    private var torStatusSubject = BehaviorSubject.create<TORStatus?>()
+    private val torStatusSubject = BehaviorSubject.create<TORStatus>()
     private var networkSubject = BehaviorSubject.create<NetworkEvent>()
 
     val gaSession: GASession = greenWallet.createSession()
@@ -272,8 +270,8 @@ class GreenSession constructor(
         blockSubject = BehaviorSubject.create()
         settingsSubject = BehaviorSubject.create()
         twoFactorResetSubject = BehaviorSubject.create()
-        torStatusSubject = BehaviorSubject.create()
         networkSubject = BehaviorSubject.create()
+        torStatusSubject.onNext(TORStatus(progress = 100)) // reset TOR status
 
         // Clear balances
         walletBalances.clear()
