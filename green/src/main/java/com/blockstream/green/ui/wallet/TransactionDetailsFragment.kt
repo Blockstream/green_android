@@ -1,14 +1,9 @@
 package com.blockstream.green.ui.wallet
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.MenuRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.navArgs
@@ -21,13 +16,13 @@ import com.blockstream.green.databinding.ListItemGenericDetailBinding
 import com.blockstream.green.databinding.ListItemTransactionAmountBinding
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
 import com.blockstream.green.gdk.getConfirmationsMax
+import com.blockstream.green.ui.MenuBottomSheetDialogFragment
+import com.blockstream.green.ui.MenuDataProvider
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.looks.TransactionDetailsLook
 import com.blockstream.green.ui.overview.AssetBottomSheetFragment
 import com.blockstream.green.utils.*
-import com.kennyc.bottomsheet.BottomSheetListener
-import com.kennyc.bottomsheet.BottomSheetMenuDialogFragment
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
@@ -36,7 +31,6 @@ import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.itemanimators.AlphaInAnimator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.serialization.json.JsonElement
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -119,21 +113,31 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
                 hideKeyboard()
             } else {
                 if (session.isLiquid) {
-                    showPopupMenu(view, R.menu.menu_transaction_details_explorer_liquid) { item ->
-                        when (item.itemId) {
-                            R.id.explorer_confidential -> {
-                                openBrowser("${session.network.explorerUrl}${args.transaction.txHash}")
-                            }
-                            R.id.explorer_non_confidential -> {
-                                val blinder = args.transaction.getUnblindedString().let {
-                                    if (it.isNotBlank()) "#blinded=$it" else ""
-                                }
 
-                                openBrowser("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
+                    MenuBottomSheetDialogFragment(object : MenuDataProvider {
+                        override fun getTitle() = getString(R.string.id_view_in_explorer)
+                        override fun getSubtitle() = null
+
+                        override fun getMenuListItems() = listOf(
+                            MenuListItem(icon = R.drawable.ic_baseline_visibility_off_24, title = StringHolder(R.string.id_confidential)),
+                            MenuListItem(icon = R.drawable.ic_baseline_visibility_24 , title = StringHolder(R.string.id_non_confidential)),
+                        )
+
+                        override fun menuItemClicked(item: GenericItem, position: Int) {
+                            when (position) {
+                                0 -> {
+                                    openBrowser("${session.network.explorerUrl}${args.transaction.txHash}")
+                                }
+                                else -> {
+                                    val blinder = args.transaction.getUnblindedString().let {
+                                        if (it.isNotBlank()) "#blinded=$it" else ""
+                                    }
+
+                                    openBrowser("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
+                                }
                             }
                         }
-                        true
-                    }
+                    }).show(childFragmentManager)
                 } else {
                     openBrowser("${session.network.explorerUrl}${args.transaction.txHash}")
                 }
@@ -169,7 +173,35 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         when (item.itemId) {
             R.id.share -> {
                 if (session.isLiquid) {
-                    showMenu(R.menu.menu_transaction_details_share_liquid)
+                    MenuBottomSheetDialogFragment(object : MenuDataProvider {
+                        override fun getTitle() = getString(R.string.id_share)
+                        override fun getSubtitle() = null
+
+                        override fun getMenuListItems() = listOf(
+                            MenuListItem(icon = R.drawable.ic_baseline_visibility_off_24, title = StringHolder(R.string.id_confidential_transaction)),
+                            MenuListItem(icon = R.drawable.ic_baseline_visibility_24 , title = StringHolder(R.string.id_non_confidential_transaction)),
+                            MenuListItem(icon = R.drawable.ic_baseline_text_snippet_24 , title = StringHolder(R.string.id_unblinding_data))
+                        )
+
+                        override fun menuItemClicked(item: GenericItem, position: Int) {
+                            when (position) {
+                                0 -> {
+                                    val blinder = args.transaction.getUnblindedString().let {
+                                        if (it.isNotBlank()) "#blinded=$it" else ""
+                                    }
+
+                                    share("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
+                                }
+                                1 -> {
+                                    share("${session.network.explorerUrl}${args.transaction.txHash}")
+                                }
+                                else -> {
+                                    share(args.transaction.getUnblindedData().toString())
+                                }
+                            }
+                        }
+                    }).show(childFragmentManager)
+
                 } else {
                     share("${session.network.explorerUrl}${args.transaction.txHash}")
                 }
@@ -226,55 +258,6 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         }
 
         FastAdapterDiffUtil.set(detailsAdapter.itemAdapter, list, true)
-    }
-
-    private fun showMenu(@MenuRes menuRes: Int) {
-        BottomSheetMenuDialogFragment.Builder(
-            context = requireContext(),
-            style = R.style.Green_BottomSheetMenuDialog,
-            sheet = menuRes,
-            listener = object : BottomSheetListener {
-                override fun onSheetDismissed(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    `object`: Any?,
-                    dismissEvent: Int
-                ) {
-
-                }
-
-                override fun onSheetItemSelected(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    item: MenuItem,
-                    `object`: Any?
-                ) {
-
-                    when (item.itemId) {
-                        R.id.non_confidential_transaction -> {
-                            val blinder = args.transaction.getUnblindedString().let {
-                                if (it.isNotBlank()) "#blinded=$it" else ""
-                            }
-
-                            share("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
-                        }
-                        R.id.confidential_transaction -> {
-                            share("${session.network.explorerUrl}${args.transaction.txHash}")
-                        }
-                        R.id.unblinding_data -> {
-                            share(args.transaction.getUnblindedData().toString())
-                        }
-                    }
-                }
-
-                override fun onSheetShown(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    `object`: Any?
-                ) {
-
-                }
-
-            },
-            title = getString(R.string.id_share),
-        ).show(childFragmentManager)
     }
 
     override fun getWalletViewModel() = viewModel

@@ -6,6 +6,7 @@
     <item name="fastadapter_transaction_item_id" type="id" />
     <item name="fastadapter_help_item_id" type="id" />
     <item name="fastadapter_title_item_id" type="id" />
+    <item name="fastadapter_menu_item_id" type="id" />
     <item name="fastadapter_text_item_id" type="id" />
     <item name="fastadapter_overline_text_item_id" type="id" />
     <item name="fastadapter_block_header_item_id" type="id" />

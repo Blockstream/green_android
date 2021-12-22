@@ -1,7 +1,6 @@
 package com.blockstream.green.ui.wallet
 
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -11,13 +10,14 @@ import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseAccountTypeFragmentBinding
 import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
+import com.blockstream.green.ui.MenuBottomSheetDialogFragment
+import com.blockstream.green.ui.MenuDataProvider
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.AccountTypeListItem
 import com.blockstream.green.ui.items.ContentCardListItem
+import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.blockstream.green.utils.StringHolder
-import com.kennyc.bottomsheet.BottomSheetListener
-import com.kennyc.bottomsheet.BottomSheetMenuDialogFragment
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
@@ -51,14 +51,41 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, position: Int ->
             if(item is AccountTypeListItem){
                 if(item.accountType == AccountType.TWO_OF_THREE){
-                    navigate(ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentSelf(accountType = AccountType.TWO_OF_THREE, wallet = args.wallet))
+                    if (wallet.isLiquid) {
+                        ComingSoonBottomSheetDialogFragment().also {
+                            it.show(childFragmentManager, it.toString())
+                        }
+                    }else{
+                        navigate(
+                            ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentSelf(
+                                accountType = AccountType.TWO_OF_THREE,
+                                wallet = args.wallet
+                            )
+                        )
+                    }
                 }else{
                     navigate(ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToAddAccountFragment(accountType = item.accountType, wallet = args.wallet))
                 }
             }else if(item is ContentCardListItem){
                 when(item.key){
                     TwoOfThreeRecovery.NEW_RECOVERY -> {
-                        chooseRecoveryPhraseLength()
+
+                        MenuBottomSheetDialogFragment(object : MenuDataProvider {
+                            override fun getTitle() = getString(R.string.id_new_recovery_phrase)
+                            override fun getSubtitle() = getString(R.string.id_choose_recovery_phrase_length)
+
+                            override fun getMenuListItems() = listOf(
+                                MenuListItem(title = StringHolder(R.string.id_12_words)),
+                                MenuListItem(title = StringHolder(R.string.id_24_words))
+                            )
+
+                            override fun menuItemClicked(item: GenericItem, position: Int) {
+                                val mnemonic = if (position == 0) greenWallet.generateMnemonic12() else greenWallet.generateMnemonic24()
+                                navigate(ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToRecoveryIntroFragment(wallet = args.wallet, mnemonic = mnemonic))
+                            }
+
+                        }).show(childFragmentManager)
+
                     }
                     TwoOfThreeRecovery.EXISTING_RECOVERY -> {
                         navigate(ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToEnterRecoveryPhraseFragment(wallet = args.wallet, isAddAccount = true))
@@ -134,52 +161,13 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
 
                 if (wallet.isLiquid) {
                     adapter.add(AccountTypeListItem(AccountType.AMP_ACCOUNT))
-                }else{
-                    adapter.add(AccountTypeListItem(AccountType.TWO_OF_THREE))
                 }
+
+                adapter.add(AccountTypeListItem(AccountType.TWO_OF_THREE))
             }
         }
 
         return adapter
-    }
-
-    private fun chooseRecoveryPhraseLength(){
-        BottomSheetMenuDialogFragment.Builder(
-            context = requireContext(),
-            style = R.style.Green_BottomSheetMenuDialog,
-            sheet = R.menu.menu_recovery_length,
-            listener = object : BottomSheetListener {
-                override fun onSheetDismissed(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    `object`: Any?,
-                    dismissEvent: Int
-                ) { }
-
-                override fun onSheetItemSelected(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    item: MenuItem,
-                    `object`: Any?
-                ) {
-                    val mnemonic = when (item.itemId) {
-                        R.id.words12 -> {
-                            greenWallet.generateMnemonic12()
-                        }
-                        else -> {
-                            greenWallet.generateMnemonic24()
-                        }
-                    }
-
-                    navigate(ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToRecoveryIntroFragment(wallet = args.wallet, mnemonic = mnemonic))
-                }
-
-                override fun onSheetShown(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    `object`: Any?
-                ) {}
-
-            },
-            title = getString(R.string.id_choose_recovery_phrase_length),
-        ).show(childFragmentManager)
     }
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel

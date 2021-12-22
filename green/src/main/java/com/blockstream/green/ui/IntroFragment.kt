@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.databinding.*
+import com.blockstream.green.databinding.IntroFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

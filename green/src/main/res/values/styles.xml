@@ -128,14 +128,6 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Green.BottomSheetMenuDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
-        <item name="bottom_sheet_menu_title_text_appearance">@style/BottomSheetMenu.Title.TextAppearance</item>
-        <item name="bottom_sheet_menu_list_text_appearance">@style/BottomSheetMenu.ListItem.TextAppearance</item>
-        <item name="bottom_sheet_menu_grid_text_appearance">@style/BottomSheetMenu.GridItem.TextAppearance</item>
-        <item name="bottom_sheet_menu_selector">@drawable/bs_list_selector</item>
-        <item name="bottomSheetStyle">@style/Green.BottomSheetStyle</item>
-    </style>
-
     <style name="Green.BottomSheetDialogTheme" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Green.BottomSheetStyle</item>
     </style>

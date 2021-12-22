@@ -11,18 +11,19 @@ import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.MenuRes
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ReceiveFragmentBinding
+import com.blockstream.green.ui.MenuBottomSheetDialogFragment
+import com.blockstream.green.ui.MenuDataProvider
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
-import com.kennyc.bottomsheet.BottomSheetListener
-import com.kennyc.bottomsheet.BottomSheetMenuDialogFragment
+import com.mikepenz.fastadapter.GenericItem
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
@@ -63,16 +64,53 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonShare.setOnClickListener {
-            showMenu(getString(R.string.id_share), R.menu.menu_receive_share)
+            MenuBottomSheetDialogFragment(object : MenuDataProvider {
+                override fun getTitle() = getString(R.string.id_share)
+                override fun getSubtitle() = null
+
+                override fun getMenuListItems() = listOf(
+                    MenuListItem(icon = R.drawable.ic_baseline_text_fields_24, title = StringHolder(R.string.id_address)),
+                    MenuListItem(icon = R.drawable.ic_qr_60 , title = StringHolder(R.string.id_qr_code))
+                )
+
+                override fun menuItemClicked(item: GenericItem, position: Int) {
+                    if(position == 0){
+                        share(binding.address.text.toString())
+                    }else{
+                        createQRImage()
+                    }
+                }
+            }).show(childFragmentManager)
         }
 
         binding.buttonMore.setOnClickListener {
-            if(session.isLiquid || session.isElectrum){
-                // Sweep is not available in Liquid
-                showMenu(getString(R.string.id_more_options), R.menu.menu_receive_without_sweep)
-            }else{
-                showMenu(getString(R.string.id_more_options), R.menu.menu_receive_more)
-            }
+            MenuBottomSheetDialogFragment(object : MenuDataProvider {
+                override fun getTitle() = getString(R.string.id_more_options)
+                override fun getSubtitle() = null
+
+                override fun getMenuListItems() = buildList {
+                    add(MenuListItem(title = StringHolder(R.string.id_request_amount)))
+                    if(!session.isLiquid && !session.isElectrum) {
+                        add(MenuListItem(title = StringHolder(R.string.id_sweep_from_paper_wallet)))
+                    }
+                }
+
+                override fun menuItemClicked(item: GenericItem, position: Int) {
+                    if(position == 0){
+                        RequestAmountLabelBottomSheetDialogFragment().also {
+                            it.show(childFragmentManager, it.toString())
+                        }
+                    }else{
+                        navigate(
+                            ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
+                                wallet = wallet,
+                                isSweep =  true
+                            )
+                        )
+                    }
+                }
+            }).show(childFragmentManager)
+
         }
 
         binding.buttonNewAddress.setOnClickListener {
@@ -138,68 +176,6 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
                 toast(R.string.id_please_hold_on_while_your)
             }
         }
-    }
-
-    private fun showMenu(title: String, @MenuRes menuRes: Int) {
-        BottomSheetMenuDialogFragment.Builder(
-            context = requireContext(),
-            style = R.style.Green_BottomSheetMenuDialog,
-            sheet = menuRes,
-            listener = object : BottomSheetListener {
-                override fun onSheetDismissed(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    `object`: Any?,
-                    dismissEvent: Int
-                ) {
-
-                }
-
-                override fun onSheetItemSelected(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    item: MenuItem,
-                    `object`: Any?
-                ) {
-
-                    when (item.itemId) {
-                        R.id.share_address -> {
-                            share(binding.address.text.toString())
-                        }
-                        R.id.share_qr -> {
-                            createQRImage()
-                        }
-                        // R.id.address_history -> {
-                        //    notImpementedYet(requireActivity())
-                        // }
-                        R.id.sweep -> {
-                            navigate(
-//                                ReceiveFragmentDirections.actionReceiveFragmentToSweepFragment(
-//                                    wallet
-//                                )
-                                ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
-                                    wallet = wallet,
-                                    isSweep =  true
-                                )
-                            )
-                        }
-                        R.id.request_amount_label -> {
-                            RequestAmountLabelBottomSheetDialogFragment().also {
-                                it.show(childFragmentManager, it.toString())
-                            }
-                        }
-                    }
-
-                }
-
-                override fun onSheetShown(
-                    bottomSheet: BottomSheetMenuDialogFragment,
-                    `object`: Any?
-                ) {
-
-                }
-
-            },
-            title = title,
-        ).show(childFragmentManager)
     }
 
     private fun createQRImage() {
