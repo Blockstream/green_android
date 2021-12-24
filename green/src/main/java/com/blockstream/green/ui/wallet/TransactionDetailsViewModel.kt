@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.Transaction
-import com.blockstream.gdk.data.Transactions
 import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
@@ -12,7 +11,6 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -81,7 +79,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
                     limit = txIndex + 1,
                     confirmations = 0
                 )
-            ).result<Transactions>(hardwareWalletResolver = HardwareCodeResolver(session.hwWallet))
+            )
 
             val transaction = transactions.jsonElement?.jsonObject?.get("transactions")?.jsonArray?.get(txIndex)
 

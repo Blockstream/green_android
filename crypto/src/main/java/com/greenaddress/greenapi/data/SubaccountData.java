@@ -94,9 +94,4 @@ public class SubaccountData extends JSONData {
     public void setSatoshi(final Map<String, Long> satoshi) {
         this.satoshi = satoshi;
     }
-
-    public SubAccount toSubAccount(){
-        return new SubAccount(getName(), getPointer(), getReceivingId(), getRecoveryPubKey(), getRecoveryChainCode(),null, AccountType.Companion.byGDKType(getType()));
-    }
-
 }

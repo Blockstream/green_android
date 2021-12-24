@@ -199,7 +199,7 @@ class GreenWallet constructor(
         params
     )
 
-    fun getSubAccounts(session: GASession) = gdk.getSubAccounts(session)
+    fun getSubAccounts(session: GASession, params: SubAccountsParams) = gdk.getSubAccounts(session, params)
     fun getSubAccount(session: GASession, index: Long) = gdk.getSubAccount(session, index)
     fun renameSubAccount(session: GASession, index: Long, name: String) =
         gdk.renameSubAccount(session, index, name)

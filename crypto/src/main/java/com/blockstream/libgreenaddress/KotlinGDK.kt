@@ -1,7 +1,6 @@
 package com.blockstream.libgreenaddress
 
 import com.blockstream.gdk.GAJson
-import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.*
@@ -51,7 +50,7 @@ class KotlinGDK {
     fun createSubAccount(session: GASession, params: SubAccountParams): GAAuthHandler =
         GDK.create_subaccount(session, params)
 
-    fun getSubAccounts(session: GASession): GAAuthHandler = GDK.get_subaccounts(session)
+    fun getSubAccounts(session: GASession, params: SubAccountsParams): GAAuthHandler = GDK.get_subaccounts(session, params)
     fun getSubAccount(session: GASession, index: Long): GASession =
         GDK.get_subaccount(session, index)
 

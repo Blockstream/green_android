@@ -3,14 +3,13 @@ package com.blockstream.green.ui.onboarding
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.gdk.data.Transactions
+import com.blockstream.gdk.params.SubAccountsParams
 import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -28,36 +27,41 @@ class ScanWalletViewModel @AssistedInject constructor(
         scan(onboardingOptions.networkType!!, mnemonic, "")
     }
 
-    // Multisig (wallet_hash_id, alreadyExists) / Singleisg (wallet_hash_id, alreadyExists)
     fun scan(networkType: String , mnemonic: String, mnemonicPassword: String) {
         // skip if we already scanning
         if(onProgress.value == true) return
 
+        /*
+            How wallet identification works with Boolean?
+            null -> wallet not found
+            false -> wallet already exists in app
+            true -> wallet can be added
+         */
+
         session.observable {
-            val multisig: Pair<String, Boolean>? = try{
+            val multisig: Boolean? = try{
                 val multiSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = false)
                 val multisigLoginData = it.loginWithMnemonic(multiSigNetwork, mnemonic, mnemonicPassword)
-                Pair(multisigLoginData.walletHashId, !walletRepository.walletsExistsSync(multisigLoginData.walletHashId, false))
+                !walletRepository.walletsExistsSync(multisigLoginData.walletHashId, false)
             }catch (e: Exception){
                 null
             }
 
-            val singlesig: Pair<String, Boolean>? = try{
+            val singlesig: Boolean? = try{
                 val singleSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = true)
                 val singleSigLoginData = it.loginWithMnemonic(singleSigNetwork, mnemonic, mnemonicPassword)
 
-                it.getSubAccounts().subaccounts.find { subaccount ->
-                    it.getTransactions(TransactionParams(subaccount = subaccount.pointer)).result<Transactions>(
-                        hardwareWalletResolver = HardwareCodeResolver(it.hwWallet)
-                    ).transactions.isNotEmpty()
+                it.getSubAccounts(params = SubAccountsParams(refresh = true)).subaccounts.find { subaccount ->
+                    it.getTransactions(TransactionParams(subaccount = subaccount.pointer)).transactions.isNotEmpty()
                 }.let {  subAccountWithTransactions ->
                     if(subAccountWithTransactions != null){
-                        Pair(singleSigLoginData.walletHashId, !walletRepository.walletsExistsSync(singleSigLoginData.walletHashId, false))
+                        !walletRepository.walletsExistsSync(singleSigLoginData.walletHashId, false)
                     }else{
                         null
                     }
                 }
             }catch (e: Exception){
+                e.printStackTrace()
                 null
             }
 
@@ -71,8 +75,8 @@ class ScanWalletViewModel @AssistedInject constructor(
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {
-                multiSig.value = it.first?.second
-                singleSig.value = it.second?.second
+                multiSig.value = it.first
+                singleSig.value = it.second
             }
         )
     }

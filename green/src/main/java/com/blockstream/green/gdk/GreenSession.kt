@@ -432,10 +432,7 @@ class GreenSession constructor(
         ).result<LoginData>().also {
            if(network.isElectrum){
                // On Singlesig, check if there is a SegWit account already restored or create one
-               val subAccounts = AuthHandler(
-                   greenWallet,
-                   greenWallet.getSubAccounts(gaSession)
-               ).result<SubAccounts>(hardwareWalletResolver = HardwareCodeResolver(hwWallet)).subaccounts
+               val subAccounts = getSubAccounts().subaccounts
 
                if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
                    // Create SegWit Account
@@ -533,7 +530,7 @@ class GreenSession constructor(
     fun createSubAccount(params: SubAccountParams) = AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
             .result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
-    fun getSubAccounts() = AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession))
+    fun getSubAccounts(params: SubAccountsParams = SubAccountsParams()) = AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession, params))
         .result<SubAccounts>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
     fun getSubAccount(index: Long) = AuthHandler(greenWallet, greenWallet.getSubAccount(gaSession, index)
@@ -553,6 +550,9 @@ class GreenSession constructor(
     }
 
     fun getTransactions(params: TransactionParams) = AuthHandler(greenWallet, greenWallet.getTransactions(gaSession, params))
+        .result<Transactions>(
+            hardwareWalletResolver = HardwareCodeResolver(hwWallet)
+        )
 
     private var txOffset = 0
     private var transactionListBootstrapped = false
@@ -598,9 +598,6 @@ class GreenSession constructor(
             }
 
             it.getTransactions(TransactionParams(subaccount = accountBeingFetched, offset = offset, limit = limit))
-                .result<Transactions>(
-                    hardwareWalletResolver = HardwareCodeResolver(hwWallet)
-                )
         }
         .retry(1)
         .doOnTerminate {
