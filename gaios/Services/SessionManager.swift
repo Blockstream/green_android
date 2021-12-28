@@ -107,19 +107,6 @@ class SessionManager: Session {
         }
     }
 
-    func hasTransactions(pointer: UInt32, first: UInt32 = 0) -> Promise<Bool> {
-        let bgq = DispatchQueue.global(qos: .background)
-        let pointer = pointer
-        return Guarantee().then(on: bgq) {_ in
-            try SessionManager.shared.getTransactions(details: ["subaccount": pointer, "first": first, "count": Constants.trxPerPage]).resolve()
-        }.compactMap(on: bgq) { data in
-            let result = data["result"] as? [String: Any]
-            let dict = result?["transactions"] as? [[String: Any]]
-            let list = dict?.map { Transaction($0) }
-            return list?.count ?? 0 > 0
-        }
-    }
-
     func subaccount() -> Promise<WalletItem> {
         let bgq = DispatchQueue.global(qos: .background)
         let pointer = activeWallet
@@ -138,10 +125,10 @@ class SessionManager: Session {
         }
     }
 
-    func subaccounts() -> Promise<[WalletItem]> {
+    func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().then(on: bgq) {
-            try self.getSubaccounts().resolve()
+            try self.getSubaccounts(details: ["refresh": refresh]).resolve()
         }.compactMap(on: bgq) { data in
             let result = data["result"] as? [String: Any]
             let subaccounts = result?["subaccounts"] as? [[String: Any]]

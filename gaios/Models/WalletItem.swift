@@ -12,6 +12,7 @@ class WalletItem: Codable {
         case satoshi
         case recoveryChainCode = "recovery_chain_code"
         case recoveryPubKey = "recovery_pub_key"
+        case bip44Discovered = "bip44_discovered"
     }
 
     private let name: String
@@ -22,6 +23,7 @@ class WalletItem: Codable {
     var satoshi: [String: UInt64]?
     var recoveryChainCode: String?
     var recoveryPubKey: String?
+    let bip44Discovered: Bool?
 
     func localizedName() -> String {
         if !name.isEmpty {

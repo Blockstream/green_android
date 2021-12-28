@@ -148,19 +148,18 @@ class ExistingWalletsViewController: UIViewController {
         if isSinglesig {
             return Promise { seal in
                 firstly {
-                    return Guarantee()
+                    Guarantee()
                 }.compactMap(on: bgq) {
-                    return try session.connect(network: OnBoardManager.shared.networkName)
+                    try session.connect(network: OnBoardManager.shared.networkName)
                 }.then(on: bgq) {
                     session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
                 }.then(on: bgq) {
-                    SessionManager.shared.subaccounts()
-                }.then(on: bgq) { wallets -> Promise<Bool> in
-                    return self.findTransactions(accounts: wallets)
+                    session.subaccounts(true)
+                }.compactMap(on: bgq) { wallets in
+                    !wallets.filter({ $0.bip44Discovered ?? false }).isEmpty
                 }.ensure {
                     _ = SessionManager.newSession(account: account)
                 }.done { result in
-                    print(result)
                     seal.fulfill(result)
                 }.catch { error in
                     print(error)
@@ -183,24 +182,6 @@ class ExistingWalletsViewController: UIViewController {
                     print(error)
                     seal.fulfill(false)
                 }
-            }
-        }
-    }
-
-    func findTransactions(accounts: [WalletItem]) -> Promise<Bool> {
-        var promises: [Promise<Bool>] = []
-        for account in accounts {
-            promises.append(SessionManager.shared.hasTransactions(pointer: account.pointer))
-        }
-
-        return Promise { seal in
-            firstly {
-                when(fulfilled: promises)
-            }.done { list in
-                seal.fulfill(list.filter { $0 == true }.count > 0)
-            }.catch { error in
-                print(error)
-                seal.fulfill(false)
             }
         }
     }
