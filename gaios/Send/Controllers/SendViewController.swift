@@ -117,9 +117,9 @@ class SendViewController: KeyboardViewController {
         }.then(on: queue) { data in
             try SessionManager.shared.createTransaction(details: data).resolve()
         }.done { data in
-            let tx: Transaction = Transaction(data)
-            print(tx)
-            //got to next screen
+            let result = data["result"] as? [String: Any]
+            let tx: Transaction = Transaction(result ?? [:])
+            self.onTransactionReady(tx)
         }.catch { error in
             switch error {
             case TransactionError.invalid(let localizedDescription):
@@ -132,59 +132,15 @@ class SendViewController: KeyboardViewController {
         }.finally {
             self.stopAnimating()
         }
-/*
-        Guarantee().compactMap { [unowned self] _ -> [String: Any] in
+    }
 
-            // user input can be a bitcoin or liquid uri as well as an address
-            var addressee: [String: Any] = ["address": userInput]
-            if network?.liquid ?? false && !isBip21 {
-                // insert dummy policy asset to validate address
-                addressee["asset_id"] = policyAsset
-            }
-            return ["addressees": [addressee], "fee_rate": feeRate, "subaccount": subaccount, "utxos": [:]]
-
-        }.then(on: queue) { data in
-            try SessionManager.shared.createTransaction(details: data).resolve()
-        }.then(on: queue) { data -> Promise<[String: Any]> in
-            let result = data["result"] as? [String: Any]
-            tx = Transaction(result ?? [:])
-            // handle tx errors
-            if let error = tx?.error, !error.isEmpty && !["id_invalid_amount", "id_no_amount_specified", "id_insufficient_funds"].contains(error) {
-                throw TransactionError.invalid(localizedDescription: NSLocalizedString(error, comment: ""))
-            } else if let addressees = tx?.addressees, addressees.isEmpty {
-                throw TransactionError.invalid(localizedDescription: NSLocalizedString("id_invalid_address", comment: ""))
-            } else if network?.liquid ?? false && !isBip21 {
-                // remove dummy assetid
-                let addressee = tx?.addressees.first
-                tx?.addressees = [Addressee(address: addressee!.address, satoshi: addressee!.satoshi)]
-            }
-            // fetch utxos to create transaction
-            return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
-        }.done { data in
-            let result = data["result"] as? [String: Any]
-            let unspent = result?["unspent_outputs"] as? [String: Any]
-            tx?.details["utxos"] = unspent ?? [:]
-            let haveAssets = tx?.addressees.first?.assetId != nil
-            if self.isLiquid && !haveAssets {
-                self.performSegue(withIdentifier: "asset_select", sender: tx)
-            } else {
-                self.performSegue(withIdentifier: "next", sender: tx)
-            }
-        }.catch { error in
-            switch error {
-            case TransactionError.invalid(let localizedDescription):
-                DropAlert().error(message: localizedDescription)
-            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                DropAlert().error(message: NSLocalizedString("id_you_are_not_connected", comment: ""))
-            default:
-                DropAlert().error(message: error.localizedDescription)
-            }
-//            self.qrCodeReaderBackgroundView.startScan()
-        }.finally {
-            self.stopAnimating()
-//            self.updateButton(!self.textView.text.isEmpty)
+    func onTransactionReady(_ transaction: Transaction) {
+        let storyboard = UIStoryboard(name: "Send", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController {
+            vc.wallet = wallet
+            vc.transaction = transaction
+            navigationController?.pushViewController(vc, animated: true)
         }
- */
     }
 
     @IBAction func btnNext(_ sender: Any) {
