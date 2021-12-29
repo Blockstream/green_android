@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -103,14 +103,14 @@
                                 <color key="separatorColor" name="customTitaniumLight"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="AccountTypeCell" rowHeight="139" id="e1n-Hd-1Ku" customClass="AccountTypeCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="24.5" width="414" height="139"/>
+                                        <rect key="frame" x="0.0" y="44.5" width="414" height="139"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="e1n-Hd-1Ku" id="hE2-q7-sel">
                                             <rect key="frame" x="0.0" y="0.0" width="373.5" height="139"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The most delightfully simple account" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8dN-ni-UDQ">
-                                                    <rect key="frame" x="20" y="15" width="244.5" height="22"/>
+                                                    <rect key="frame" x="20" y="15" width="244" height="22"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="256-IE-Hyl"/>
                                                     </constraints>
@@ -145,7 +145,7 @@
                                                     </subviews>
                                                 </stackView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TwM-Ff-xWI">
-                                                    <rect key="frame" x="20" y="15" width="263.5" height="22"/>
+                                                    <rect key="frame" x="20" y="15" width="263" height="22"/>
                                                     <state key="normal" image="helpcircle"/>
                                                 </button>
                                             </subviews>
@@ -172,14 +172,14 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="ReviewCell" rowHeight="139" id="CXd-Xh-KWT" customClass="ReviewCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="163.5" width="414" height="139"/>
+                                        <rect key="frame" x="0.0" y="183.5" width="414" height="139"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="CXd-Xh-KWT" id="U22-Jg-ZhK">
                                             <rect key="frame" x="0.0" y="0.0" width="373.5" height="139"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The most delightfully simple account" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZgD-Kz-LA9">
-                                                    <rect key="frame" x="20" y="15" width="244.5" height="22"/>
+                                                    <rect key="frame" x="20" y="15" width="244" height="22"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="Thu-ES-fAJ"/>
                                                     </constraints>
@@ -214,7 +214,7 @@
                                                     </subviews>
                                                 </stackView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3U-EI-t1r">
-                                                    <rect key="frame" x="20" y="15" width="263.5" height="22"/>
+                                                    <rect key="frame" x="20" y="15" width="263" height="22"/>
                                                     <state key="normal" image="helpcircle"/>
                                                 </button>
                                             </subviews>
@@ -296,7 +296,7 @@
         <!--SendBtcViewController-->
         <scene sceneID="CHa-MC-LT0">
             <objects>
-                <viewControllerPlaceholder storyboardName="Send" referencedIdentifier="SendBtcViewController" id="h6g-rr-LAM" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="SendBtc" referencedIdentifier="SendBtcViewController" id="h6g-rr-LAM" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="U78-dL-IIz"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b0P-sw-feX" userLabel="First Responder" sceneMemberID="firstResponder"/>

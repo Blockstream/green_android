@@ -252,7 +252,7 @@ class TransactionViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { [weak self] tx in
-            let storyboard = UIStoryboard(name: "Send", bundle: nil)
+            let storyboard = UIStoryboard(name: "SendBtc", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SendBtcDetailsViewController") as? SendBtcDetailsViewController {
                 vc.transaction = tx
                 vc.wallet = self?.wallet

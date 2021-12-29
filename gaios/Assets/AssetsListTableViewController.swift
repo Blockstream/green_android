@@ -2,11 +2,18 @@ import Foundation
 import UIKit
 import PromiseKit
 
+protocol AssetsListTableViewControllerDelegate: AnyObject {
+    func didSelect(assetId: String, index: Int?)
+}
+
 class AssetsListTableViewController: UITableViewController {
 
     var wallet: WalletItem?
     var transaction: Transaction!
     var isSend: Bool = false
+    var index: Int?
+
+    weak var delegate: AssetsListTableViewControllerDelegate?
 
     private var assets: [(key: String, value: UInt64)] {
         get {
@@ -63,7 +70,9 @@ class AssetsListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tag = assets[indexPath.row].key
         if isSend {
-            performSegue(withIdentifier: "asset_send", sender: tag)
+//            performSegue(withIdentifier: "asset_send", sender: tag)
+            delegate?.didSelect(assetId: tag, index: index)
+            dismiss(animated: true)
         } else {
             performSegue(withIdentifier: "asset", sender: tag)
         }

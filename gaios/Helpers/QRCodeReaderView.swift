@@ -1,7 +1,7 @@
 import AVFoundation
 import UIKit
 
-protocol QRCodeReaderDelegate: class {
+protocol QRCodeReaderDelegate: AnyObject {
     func onQRCodeReadSuccess(result: String)
     func userDidGrant(_: Bool)
 }
@@ -13,6 +13,10 @@ class QRCodeReaderView: UIView {
     var captureSession = AVCaptureSession()
     var captureMetadataOutput: AVCaptureMetadataOutput?
 
+    var cFrame: CGRect {
+        return CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
+    }
+
     lazy var previewLayer: AVCaptureVideoPreviewLayer? = {
         let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer.videoGravity = .resizeAspectFill
@@ -22,14 +26,14 @@ class QRCodeReaderView: UIView {
     lazy var blurEffectView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: .light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = frame
+        blurEffectView.frame = cFrame
         blurEffectView.layer.masksToBounds = true
         blurEffectView.alpha = 0.9
         return blurEffectView
     }()
 
     lazy var borderView: UIView = {
-        let borderImageView = UIImageView(frame: frame)
+        let borderImageView = UIImageView(frame: cFrame)
         borderImageView.image = UIImage(named: "qr_bg")
         return borderImageView
     }()
@@ -37,7 +41,7 @@ class QRCodeReaderView: UIView {
     lazy var placeholderTextView: UIView = {
         let placeholderTextView = UIView(frame: frame)
         placeholderTextView.backgroundColor = UIColor.customTitaniumDark()
-        let label = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 40))
+        let label = UIButton(frame: CGRect(x: 36, y: 0, width: cFrame.width - 72, height: cFrame.height))
         placeholderTextView.addSubview(label)
 
         label.translatesAutoresizingMaskIntoConstraints = true
@@ -45,7 +49,9 @@ class QRCodeReaderView: UIView {
         label.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
         label.setTitle(NSLocalizedString("id_please_enable_camera", comment: ""), for: .normal)
         label.setTitleColor(UIColor.customTitaniumMedium(), for: .normal)
-        label.titleLabel?.adjustsFontSizeToFitWidth = true
+        label.titleLabel?.adjustsFontSizeToFitWidth = false
+        label.titleLabel?.numberOfLines = 0
+        label.titleLabel?.textAlignment = .center
         label.backgroundColor = UIColor.customTitaniumDark()
         label.addTarget(self, action: #selector(onAllowCameraTap), for: .touchUpInside)
 
@@ -126,17 +132,17 @@ class QRCodeReaderView: UIView {
     }
 
     override func layoutSubviews() {
-        blurEffectView.frame = frame
-        previewLayer?.frame = frame
-        placeholderTextView.frame = frame
+        blurEffectView.frame = cFrame
+        previewLayer?.frame = cFrame
+        placeholderTextView.frame = cFrame
 
-        borderView.frame = createFrame(frame: frame)
+        borderView.frame = createFrame(frame: cFrame)
 
         let maskLayer = createMaskLayer()
         if #available(iOS 11.0, *) {
             blurEffectView.layer.mask = maskLayer
         } else {
-            let maskView = UIView(frame: frame)
+            let maskView = UIView(frame: cFrame)
             maskView.backgroundColor = UIColor.clear
             maskView.layer.mask = maskLayer
             blurEffectView.mask = maskView
@@ -144,7 +150,7 @@ class QRCodeReaderView: UIView {
     }
 
     func createBorderView(frame: CGRect) -> UIView {
-        let rect = createFrame(frame: frame)
+        let rect = createFrame(frame: cFrame)
         let borderView = UIView(frame: rect)
         borderView.backgroundColor = UIColor(white: 0, alpha: 0)
         borderView.borderWidth = 4
@@ -153,8 +159,8 @@ class QRCodeReaderView: UIView {
     }
 
     private func createMaskLayer() -> CALayer {
-        let rect = createFrame(frame: frame)
-        let path = UIBezierPath(rect: frame)
+        let rect = createFrame(frame: cFrame)
+        let path = UIBezierPath(rect: cFrame)
         let centerRectangle = UIBezierPath(rect: rect)
         path.append(centerRectangle)
         path.usesEvenOddFillRule = true
