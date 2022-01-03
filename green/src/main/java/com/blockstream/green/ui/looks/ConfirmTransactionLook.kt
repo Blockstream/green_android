@@ -50,8 +50,12 @@ data class ConfirmTransactionLook constructor(val session: GreenSession, val tx:
     override fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding) {
         binding.directionColor = ContextCompat.getColor(binding.root.context, R.color.white)
 
-        val satoshi = tx.addressees.getOrNull(index)?.satoshi ?: changeOutput?.satoshi ?: 0
         val assetId = tx.addressees.getOrNull(index)?.assetId ?: changeOutput?.assetId ?: session.policyAsset
+        val satoshi = if(!session.isElectrum && tx.isSendAll){
+            tx.satoshi[assetId]
+        }else{
+            tx.addressees.getOrNull(index)?.satoshi
+        } ?: changeOutput?.satoshi ?: tx.satoshi[assetId] ?: 0
 
         binding.amount = satoshi.toAmountLook(
             session = session,
@@ -63,7 +67,7 @@ data class ConfirmTransactionLook constructor(val session: GreenSession, val tx:
         )
         binding.ticker.text = if(assetId.isPolicyAsset(session)) getBitcoinOrLiquidUnit(session) else session.getAsset(assetId)?.ticker ?: "n/a"
 
-        binding.fiat = null
+        binding.fiat = if(assetId == session.policyAsset) session.convertAmount(Convert(satoshi = satoshi)).fiat(session, withUnit = true) else null
         binding.icon.setImageDrawable(assetId.getAssetIcon(binding.root.context, session))
         binding.icon.updateAssetPadding(session, assetId, 3)
 

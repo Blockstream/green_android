@@ -23,7 +23,7 @@ class SendConfirmViewModel @AssistedInject constructor(
     @Assisted wallet: Wallet
 ) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
 
-    val editableNote = MutableLiveData("")
+    val editableNote = MutableLiveData(session.pendingTransaction?.second?.memo ?: "") // bump memo
     val deviceAddressValidationEvent = MutableLiveData<ConsumableEvent<Boolean?>>()
 
     fun broadcastTransaction(twoFactorResolver: TwoFactorResolver) {

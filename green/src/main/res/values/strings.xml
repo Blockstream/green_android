@@ -995,7 +995,6 @@
   <string name="id_address_was_filled_by_a_payment_uri">Address was filled by a Payment URI</string>
   <string name="id_issuer_domain">Issuer Domain: %s</string>
   <string name="id_add_recipient">Add Recipient</string>
-  <string name="id_transaction_fees_can_be_defined_on_the_last_step">Transaction fees can be defined on the last step. Note, if you send all, we’ll do the math for you.</string>
   <string name="id_available_funds">Available funds %s</string>
   <string name="id_are_you_sure_you_want_to_remove_the_recipient">Are you sure you want to remove the recipient?</string>
   <string name="id_edit_fee">Edit Fee</string>
@@ -1027,5 +1026,6 @@
   <string name="id_24_words">24 words</string>
   <string name="id_passphrase">Passphrase</string>
   <string name="id_confirm_on_your_device">Confirm on your device</string>
+  <string name="id_hold_button_to_send">Hold button to Send</string>
 
 </resources>

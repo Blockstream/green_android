@@ -65,33 +65,6 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="@color/brand_surface_variant"
-                    app:strokeColor="@color/color_on_surface_divider"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:drawablePadding="16dp"
-                            android:drawableTint="@color/color_on_surface_emphasis_low"
-                            android:text="@string/id_transaction_fees_can_be_defined_on_the_last_step"
-                            android:textAppearance="?attr/textAppearanceCaption"
-                            android:textColor="@color/color_on_surface_emphasis_low"
-                            app:drawableStartCompat="@drawable/ic_baseline_help_outline_18" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/brand_surface_variant"
                     app:strokeColor="@color/color_on_surface_divider"
                     app:strokeWidth="1dp">

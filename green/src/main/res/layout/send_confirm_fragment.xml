@@ -27,6 +27,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/buttonSendHelp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/id_hold_button_to_send"
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textAlignment="center"
+            android:alpha="0.0"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
+            app:layout_constraintEnd_toEndOf="@+id/buttonSend"
+            app:layout_constraintStart_toStartOf="@+id/buttonSend"
+            app:layout_constraintTop_toTopOf="@+id/buttonSend" />
+
         <com.blockstream.green.views.LongClickButton
             android:id="@+id/buttonSend"
             style="@style/Widget.Green.Button"
@@ -69,9 +85,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

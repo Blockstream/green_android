@@ -2,17 +2,18 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.blockstream.gdk.data.Transaction
+import androidx.core.content.ContextCompat
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionAmountBinding
 import com.blockstream.green.ui.looks.AddreseeLookInterface
-import com.blockstream.green.ui.looks.TransactionDetailsLook
+import com.blockstream.green.utils.toPixels
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
 data class TransactionAmountListItem constructor(
     val index: Int,
-    val look: AddreseeLookInterface
+    val look: AddreseeLookInterface,
+    val withStroke : Boolean = false,
 ) : AbstractBindingItem<ListItemTransactionAmountBinding>() {
     override val type: Int
         get() = R.id.fastadapter_asset_item_id
@@ -28,8 +29,11 @@ data class TransactionAmountListItem constructor(
         binding.isChange = look.isChange(index)
         binding.type = look.txType
         binding.address = look.getAddress(index)
+        if(withStroke){
+            binding.card.strokeWidth = binding.root.context.toPixels(1)
+            binding.card.strokeColor = ContextCompat.getColor(binding.root.context, R.color.color_on_surface_divider)
+        }
         look.setAssetToBinding(index, binding.amount)
-
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemTransactionAmountBinding {

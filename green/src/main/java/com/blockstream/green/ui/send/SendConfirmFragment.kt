@@ -14,10 +14,7 @@ import com.blockstream.green.ui.items.TransactionAmountListItem
 import com.blockstream.green.ui.items.TransactionFeeListItem
 import com.blockstream.green.ui.looks.ConfirmTransactionLook
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
-import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.errorSnackbar
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.utils.*
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -73,7 +70,12 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
 
         binding.buttonSend.progressIndicator = binding.sendIndicator
         binding.buttonSend.setOnClickListener {
+            binding.buttonSendHelp.starWarsAndHide(offset = binding.buttonSendHelp.height * 2, duration = 1000)
+        }
+
+        binding.buttonSend.setOnLongClickListener {
             viewModel.broadcastTransaction(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+            true
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
@@ -111,16 +113,16 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
         val list = mutableListOf<GenericItem>()
 
         for (i in 0 until look.recipients) {
-            list += TransactionAmountListItem(i, look)
+            list += TransactionAmountListItem(i, look, withStroke = isAddressVerification)
         }
 
-        if(isAddressVerification && look.changeOutput != null){
-            list += TransactionAmountListItem(look.recipients, look)
+        if(isAddressVerification && look.changeOutput != null && session.device?.isJade == false){
+            list += TransactionAmountListItem(look.recipients, look, withStroke = isAddressVerification)
         }
+
+        list += TransactionFeeListItem(look)
 
         if(!isAddressVerification) {
-            list += TransactionFeeListItem(look)
-
             if(!tx.isSweep) {
                 list += noteListItem
             }

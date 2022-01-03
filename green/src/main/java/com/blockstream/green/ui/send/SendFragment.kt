@@ -13,7 +13,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.BalancePair
 import com.blockstream.gdk.GreenWallet
@@ -38,6 +37,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
+import java.lang.ref.WeakReference
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
@@ -57,7 +57,8 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     private val isBump by lazy { !args.bumpTransaction.isNullOrBlank() }
     private val bumpTransaction by lazy { if(isBump) Json.parseToJsonElement(args.bumpTransaction ?: "") else null }
 
-    val bindings = mutableListOf<ListItemTransactionRecipientBinding>()
+    // Store bindings as weak reference to allow them to be GC'ed
+    val bindings = mutableListOf<WeakReference<ListItemTransactionRecipientBinding>>()
 
     @Inject
     lateinit var viewModelFactory: SendViewModel.AssistedFactory
@@ -93,6 +94,9 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
 
+        // Clear previous references as we need to re-create everything
+        bindings.clear()
+
         getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
             viewLifecycleOwner
         ) {
@@ -127,7 +131,6 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
                         popBackStack()
                     }
                 } ?: popBackStack()
-
             }
         }
 
@@ -197,13 +200,13 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             recipientBinding.lifecycleOwner = viewLifecycleOwner
             recipientBinding.vm = viewModel
 
-            bindings.add(recipientBinding)
+            bindings.add(WeakReference(recipientBinding))
             binding.recipientContainer.addView(recipientBinding.root)
 
             initRecipientBinging(recipientBinding)
         }
 
-        bindings.getOrNull(index)?.let { binding ->
+        bindings.getOrNull(index)?.get()?.let { binding ->
             updateBindingData(recipientBinding = binding, index = index, liveData = value)
         }
     }

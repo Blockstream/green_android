@@ -15,7 +15,8 @@ class LongClickButton @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialButton(context, attrs, defStyleAttr) {
-    private var timer: Timer? = null
+    private var timer: Timer = Timer()
+    private var task: TimerTask? = null
     var clickListener: OnClickListener? = null
 
     var progressIndicator: BaseProgressIndicator<*>? by Delegates.observable(null) { _, _, newValue ->
@@ -28,18 +29,21 @@ class LongClickButton @JvmOverloads constructor(
                 MotionEvent.ACTION_DOWN -> {
                     progressIndicator?.setProgressCompat(100, true)
 
-                    timer = Timer().also {
-                        it.schedule(1000) {
-                            post { // run in ui thread
-                                performClick()
-                                progressIndicator?.setProgressCompat(0, false)
-                            }
+                    task = timer.schedule(1000) {
+                        post { // run in ui thread
+                            task = null
+                            performLongClick()
+                            progressIndicator?.setProgressCompat(0, false)
                         }
                     }
                 }
                 MotionEvent.ACTION_UP -> {
                     progressIndicator?.setProgressCompat(0, true)
-                    timer?.cancel()
+                    task = task?.let {
+                        performClick()
+                        it.cancel()
+                        null
+                    }
                 }
             }
 
@@ -54,7 +58,7 @@ class LongClickButton @JvmOverloads constructor(
         if (enabled) {
             progressIndicator?.show()
         } else {
-            timer?.cancel()
+            task?.cancel()
             progressIndicator?.hide()
         }
     }
