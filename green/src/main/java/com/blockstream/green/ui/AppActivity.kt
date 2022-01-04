@@ -6,8 +6,8 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.blockstream.green.R
+import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.isDebug
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.notifyDevelopmentFeature
 import javax.inject.Inject
@@ -16,6 +16,9 @@ abstract class AppActivity : AppCompatActivity() {
 
     @Inject
     lateinit var settingsManager: SettingsManager
+
+    @Inject
+    lateinit var deviceManager: DeviceManager
 
     abstract fun isDrawerOpen(): Boolean
     abstract fun closeDrawer()
@@ -45,6 +48,12 @@ abstract class AppActivity : AppCompatActivity() {
                 } else {
                     setSecureScreen(false)
                 }
+            }
+
+            if(destination.id == R.id.deviceListFragment || destination.id == R.id.deviceInfoFragment){
+                deviceManager.startBluetoothScanning()
+            }else{
+                deviceManager.pauseBluetoothScanning()
             }
         }
 

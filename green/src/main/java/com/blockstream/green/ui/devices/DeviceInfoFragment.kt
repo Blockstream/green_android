@@ -231,6 +231,10 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     }
 
     private fun connect(network: String){
+
+        // Pause BLE scanning as can make unstable the connection to a ble device
+        deviceManager.pauseBluetoothScanning()
+
         val hardwareWallet = Wallet.createEmulatedHardwareWallet(
             greenWallet.networks.getNetworkById(network)
         )

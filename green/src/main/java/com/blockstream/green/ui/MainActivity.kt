@@ -21,7 +21,6 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.transition.TransitionManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.MainActivityBinding
-import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.utils.*
 import com.google.android.material.snackbar.Snackbar
@@ -32,9 +31,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppActivity() {
-
-    @Inject
-    lateinit var deviceManager: DeviceManager
 
     @Inject
     lateinit var sessionManager: SessionManager

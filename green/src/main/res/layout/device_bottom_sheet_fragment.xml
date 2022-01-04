@@ -136,7 +136,7 @@
 
             <Button
                 android:id="@+id/buttonAuthorize"
-                isVisible="@{vm.device.deviceState == DeviceState.UNAUTHORIZED}"
+                isVisible="@{vm.device.deviceState == DeviceState.SCANNED}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"

@@ -29,10 +29,10 @@ class Device constructor(
     val bleService: ParcelUuid? = null,
 ) {
     enum class DeviceState {
-        UNAUTHORIZED, CONNECTED, DISCONNECTED
+        SCANNED, DISCONNECTED
     }
 
-    val deviceState = MutableLiveData(DeviceState.UNAUTHORIZED)
+    val deviceState = MutableLiveData(DeviceState.SCANNED)
 
     private val bleDisposables = CompositeDisposable()
 
@@ -73,25 +73,17 @@ class Device constructor(
         !isTrezor
     }
 
-    init {
-        if(hasPermissionsOrIsBonded()){
-            deviceState.value = DeviceState.CONNECTED
-        }else{
-            deviceState.value = DeviceState.UNAUTHORIZED
-        }
-    }
-
     fun askForPermissionOrBond(onSuccess: (() -> Unit), onError: ((throwable: Throwable) -> Unit)) {
         usbDevice?.let {
             deviceManager.askForPermissions(it) {
-                deviceState.postValue(DeviceState.CONNECTED)
+                // deviceState.postValue(DeviceState.CONNECTED)
                 onSuccess.invoke()
             }
         }
 
         bleDevice?.let {
             deviceManager.bondDevice(this, {
-                deviceState.postValue(DeviceState.CONNECTED)
+                // deviceState.postValue(DeviceState.CONNECTED)
                 onSuccess.invoke()
             }, {
                 onError.invoke(it)
@@ -150,7 +142,7 @@ class Device constructor(
     }
 
     fun handleBondingByHwwImplementation(): Boolean {
-        return isJade
+        return isBle && isJade
     }
 
     fun offline() {
@@ -161,6 +153,15 @@ class Device constructor(
     fun disconnect() {
         bleDisposables.clear()
         hwWallet?.disconnect()
+    }
+
+    fun updateFromScan(newBleDevice: RxBleDevice) {
+        // Update bleDevice as the it can be changed due to RPA
+        bleDevice = newBleDevice
+        // Update timeout
+        timeout = SystemClock.elapsedRealtimeNanos()
+
+        deviceState.postValue(DeviceState.SCANNED)
     }
 
     enum class ConnectionType {

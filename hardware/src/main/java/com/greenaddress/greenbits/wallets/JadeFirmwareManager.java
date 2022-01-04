@@ -205,7 +205,7 @@ public class JadeFirmwareManager {
         // On BLE connection re-bonding is expected
         if(jade.isUsb()) {
             // Regardless of OTA success, fail, error etc. we try to reconnect.
-            if (!jade.connect()) {
+            if (jade.connect() == null) {
                 throw new IOException("Failed to reconnect to Jade after OTA");
             }
         }

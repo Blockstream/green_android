@@ -38,7 +38,7 @@ public class JadeSerialImpl extends JadeConnectionImpl {
     }
 
     @Override
-    public Completable connect() {
+    public void connect() {
         // Maybe collapse this into the ctor ?  Maybe see how BLE pans out.
         final UsbDeviceConnection usbConnection = usbManager.openDevice(this.usbDevice);
         this.serial = UsbSerialDevice.createUsbSerialDevice(this.usbDevice, usbConnection);
@@ -57,8 +57,6 @@ public class JadeSerialImpl extends JadeConnectionImpl {
         // Set the callback for receiving data over the serial connection
         // (Just collect into base-class queue of byte-arrays.)
         this.serial.read(super::onDataReceived);
-
-        return Completable.complete();
     }
 
     @Override

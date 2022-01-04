@@ -145,10 +145,6 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     override fun onResume() {
         super.onResume()
 
-        if (args.deviceBrand.hasBleConnectivity) {
-            deviceManager.startBluetoothScanning()
-        }
-
         if (args.deviceBrand == DeviceBrand.Blockstream) {
             setToolbar(
                 drawable = ContextCompat.getDrawable(
@@ -168,14 +164,6 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
             ) {
                 openBrowser(settingsManager.getApplicationSettings(), Urls.HARDWARE_STORE)
             }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        if (args.deviceBrand.hasBleConnectivity) {
-            deviceManager.pauseBluetoothScanning()
         }
     }
 

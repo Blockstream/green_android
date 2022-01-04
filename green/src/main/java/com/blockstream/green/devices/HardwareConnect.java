@@ -121,16 +121,14 @@ public class HardwareConnect {
 
     void onJade(final HardwareConnectInteraction interaction, final JadeAPI jade) {
         // Connect to jade (using background thread)
-        mDisposables.add(Observable.just(jade)
+        mDisposables.add(Single.just(jade)
                 .subscribeOn(Schedulers.io())
                 .map(JadeAPI::connect)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        rslt -> {
-                            if (rslt) {
-                                // Connected - ok to proceed to fw check, pin, login etc.
-                                final VersionInfo verInfo = jade.getVersionInfo();
-                                onJadeConnected(interaction, verInfo, jade);
+                        version -> {
+                            if (version != null) {
+                                onJadeConnected(interaction, version, jade);
                             } else {
                                 Log.e(TAG, "Failed to connect to Jade");
                                 interaction.showInstructions(R.string.id_please_reconnect_your_hardware);

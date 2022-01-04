@@ -11,6 +11,7 @@ import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -81,85 +82,119 @@ public class JadeBleImpl extends JadeConnectionImpl {
                 && this.connection != null && isBleConnected();
     }
 
-    private void createBleConnection(){
-        // Log connection state changes
-        this.disposable.add(this.device.observeConnectionStateChanges()
-                .subscribe(state -> {
-                    Log.i(TAG, "Connection State Change: " + state);
+    private Completable createBleConnection(Single<Boolean> bondingEvent){
+        return Completable.create(complete -> {
 
-                    if (state == RxBleConnection.RxBleConnectionState.DISCONNECTING) {
-                        // Trigger Disconnect
-                        Log.i(TAG, "Send BLE disconnect event");
-                        bleDisconnectEvent.onNext(true);
-                    }
-                })
-        );
+            // Log connection state changes
+            this.disposable.add(this.device.observeConnectionStateChanges()
+                    .subscribe(state -> {
+                        Log.i(TAG, "Connection State Change: " + state);
 
-        // Create connection, set mtu, etc.
-        this.connection = this.device.establishConnection(false)
-                // Set a condition to stop the connection/subscriptions
-                .takeUntil(disconnectTrigger)
+                        if (state == RxBleConnection.RxBleConnectionState.DISCONNECTING) {
+                            // Trigger Disconnect
+                            Log.i(TAG, "Send BLE disconnect event");
+                            bleDisconnectEvent.onNext(true);
+                        }
+                    }, Throwable::printStackTrace)
+            );
 
-                // Set the MTU to consistent with Jade stack
-                .doOnNext(rxConn -> Log.d(TAG, "Requesting MTU: " + JADE_MTU))
-                .flatMapSingle(rxConn -> rxConn.requestMtu(JADE_MTU)
-                        .doOnSuccess(mtu -> Log.i(TAG, "Successfully set the MTU to: " + mtu))
-                        .ignoreElement()
-                        .andThen(Single.just(rxConn))
-                )
 
-                // Compose with ReplayingShare to make this connection reusable from here, rather
-                // than running the above code every time we try to subscribe/use the connection.
-                .compose(ReplayingShare.instance());
 
-        this.disposable.add(this.connection
-                .doOnNext(rxBleConnection -> Log.d(TAG, "Setting up characteristic indication"))
-                .flatMap(rxConn -> rxConn.setupIndication(IO_RX_CHAR_UUID, NotificationSetupMode.QUICK_SETUP))
-                .doOnNext(observableBytes -> Log.i(TAG, "Indication setup complete"))
-                .flatMap(observableBytes -> observableBytes)  // flatten
-                .subscribe(super::onDataReceived,
-                        this::onReceiveFailure)
-        );
+            // Create connection, set mtu, etc.
+            this.connection = this.device.establishConnection(false)
+                    // Set a condition to stop the connection/subscriptions
+                    .takeUntil(disconnectTrigger)
+
+                    .doOnError(throwable -> {
+                        complete.tryOnError(throwable);
+                    })
+
+                    .doOnDispose(() -> {
+                        complete.tryOnError(new Exception("Closed"));
+                    })
+
+                    // wait until bondingEvent fires
+                    .delay((rxBleConnection) -> {
+                        Log.d(TAG, "Delay bonding event");
+                        return bondingEvent.toObservable();
+                    })
+
+                    // stabilization delay
+                    .delay(1000, TimeUnit.MILLISECONDS)
+
+                    // Set the MTU to consistent with Jade stack
+                    .doOnNext(rxConn -> {
+                        Log.d(TAG, "Requesting MTU: " + JADE_MTU);
+                    })
+
+                    .flatMapSingle(rxConn -> rxConn.requestMtu(JADE_MTU)
+                            .doOnSuccess(mtu -> {
+                                Log.i(TAG, "Successfully set the MTU to: " + mtu);
+                            })
+                            .ignoreElement()
+                            .andThen(Single.just(rxConn))
+                    )
+
+                    // Compose with ReplayingShare to make this connection reusable from here, rather
+                    // than running the above code every time we try to subscribe/use the connection.
+                    .compose(ReplayingShare.instance());
+
+            this.disposable.add(this.connection
+                    .doOnNext(rxBleConnection -> Log.d(TAG, "Setting up characteristic indication"))
+                    .flatMap(rxConn -> rxConn.setupIndication(IO_RX_CHAR_UUID, NotificationSetupMode.QUICK_SETUP))
+                    .doOnNext(observableBytes -> {
+                        Log.i(TAG, "Indication setup complete");
+                        complete.onComplete();
+                    })
+                    .flatMap(observableBytes -> observableBytes)  // flatten
+                    .subscribe(super::onDataReceived,
+                            this::onReceiveFailure)
+            );
+        });
     }
 
     @Override
-    public Completable connect() {
+    public void connect() {
         this.disposable = new CompositeDisposable();
 
-        if (device.getBluetoothDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
-            createBleConnection();
-            return Completable.complete();
-        } else {
+        Single<Boolean> bondingEvent = JadePairingManager.INSTANCE.pairWithDevice(context, device);
 
-            Single<Boolean> bondingEvent = JadePairingManager.INSTANCE.pairWithDevice(context, device);
+        // Solution #1 - Use same connection after bond
+//         createBleConnection(bondingEvent).blockingGet();
+
+        // Solution #2 - Drop connection after bond
+        if (device.getBluetoothDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
+            // block until connection is initialized and configured
+            createBleConnection(bondingEvent).blockingGet();
+        } else {
 
             // Initiate bond connection
             Single<RxBleConnection> bondConnection = this.device
                     .establishConnection(false)
-                    .takeUntil(disconnectTrigger)
                     .take(1)
                     .doOnTerminate(() -> {
                         Log.i(TAG, "Disconnect bonding connection");
                     })
                     .singleOrError();
 
-            return Completable.create(complete -> {
-
-                bondConnection
+            Completable.create(complete -> {
+                disposable.add(bondConnection
                         .flatMap(connection -> bondingEvent)
                         .subscribe(newBonding -> {
-                            createBleConnection();
+                            createBleConnection(bondingEvent).blockingGet();
                             complete.onComplete();
                         }, throwable -> {
                             complete.tryOnError(throwable);
-                        });
+                        })
+                );
 
-            });
+            }).blockingGet();
         }
     }
 
     @Override
     public void disconnect() {
+        Log.i(TAG, "Disconnecting");
         if (this.disposable != null) {
             if (isConnected()) {
                 this.disconnectTrigger.onNext(true);

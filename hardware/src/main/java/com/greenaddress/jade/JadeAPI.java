@@ -18,12 +18,15 @@ import com.greenaddress.jade.entities.TxInput;
 import com.greenaddress.jade.entities.TxInputLiquid;
 import com.greenaddress.jade.entities.VersionInfo;
 import com.polidea.rxandroidble2.RxBleDevice;
+import com.polidea.rxandroidble2.exceptions.BleException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import io.reactivex.exceptions.UndeliverableException;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
@@ -31,7 +34,20 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
  * High-Level Synchronous Jade Client API
  * Builds on a JadeInterface to provide a properly typed API
  */
+
 public class JadeAPI {
+
+    // https://github.com/dariuszseweryn/RxAndroidBle/wiki/FAQ:-UndeliverableException
+    static {
+        RxJavaPlugins.setErrorHandler(throwable -> {
+            if (throwable instanceof UndeliverableException && throwable.getCause() instanceof BleException) {
+                return; // ignore BleExceptions as they were surely delivered at least once
+            }
+            // add other custom handlers if needed
+            throw new RuntimeException("Unexpected Throwable in RxJavaPlugins error handler", throwable);
+        });
+    }
+
     private static final String TAG = "JadeAPI";
 
     public static boolean isDebug = false;
@@ -68,7 +84,7 @@ public class JadeAPI {
         return new JadeAPI(jade, requestProvider, false);
     }
 
-    public boolean connect() {
+    public VersionInfo connect() {
         // Connect the underlying transport
         this.jade.connect();
 
@@ -81,7 +97,7 @@ public class JadeAPI {
                 this.jade.drain();
                 final VersionInfo info = this.getVersionInfo();
                 this.efusemac = info.getEfusemac();
-                return true;
+                return info;
             } catch (final Exception e) {
                 // On error loop trying again
                 Log.w(TAG, "Error trying connect: " + e);
@@ -90,7 +106,7 @@ public class JadeAPI {
 
         // Couldn't verify connection
         Log.e(TAG,"Exhausted retries, failed to connect to Jade");
-        return false;
+        return null;
     }
 
     public void disconnect() {

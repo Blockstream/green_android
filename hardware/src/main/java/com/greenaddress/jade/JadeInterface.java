@@ -56,7 +56,7 @@ class JadeInterface {
     }
 
     public void connect() {
-        this.connection.connect().blockingAwait(); // wait until connection is established (and paired for BLE)
+        this.connection.connect();
 
         // Read and discard anything present on connection
         final byte[] bytes = this.drain();

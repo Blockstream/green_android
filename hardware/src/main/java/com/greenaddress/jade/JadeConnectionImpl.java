@@ -44,7 +44,7 @@ public abstract class JadeConnectionImpl {
 
     abstract public boolean isConnected();
 
-    abstract public Completable connect();
+    abstract public void connect();
 
     abstract public void disconnect();
 

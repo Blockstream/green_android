@@ -123,11 +123,11 @@ class DeviceManager constructor(
     }
 
     fun startBluetoothScanning() {
-        logger.info { "Start BLE scanning" }
-
         if(bleScanDisposable.size() > 0){
-            logger.info { "Skip starting bluetooth scanning as it's already started" }
+            return
         }
+
+        logger.info { "Start BLE scanning" }
 
         addBleConnectedDevices()
 
@@ -209,10 +209,9 @@ class DeviceManager constructor(
 
     private fun addBluetoothDevice(newDevice: Device){
         bluetoothDevicesSubject.value.find { it.id == newDevice.id }?.also { oldDevice ->
-            // Update bleDevice as the it can be changed due to RPA
-            oldDevice.bleDevice = newDevice.bleDevice
-            // Update timeout
-            oldDevice.timeout = SystemClock.elapsedRealtimeNanos()
+            newDevice.bleDevice?.let{
+                oldDevice.updateFromScan(it)
+            }
         } ?: run {
             // Add it if new
             bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value + newDevice)
@@ -220,6 +219,10 @@ class DeviceManager constructor(
     }
 
     fun pauseBluetoothScanning() {
+        if(bleScanDisposable.size() == 0){
+            return
+        }
+
         logger.info { "Pause BLE scanning" }
         bleScanDisposable.clear()
     }
@@ -239,7 +242,7 @@ class DeviceManager constructor(
     fun askForPermissions(device: UsbDevice, onSuccess: (() -> Unit)) {
         onPermissionSuccess = WeakReference(onSuccess)
         val permissionIntent =
-            PendingIntent.getBroadcast(context, 0, Intent(ACTION_USB_PERMISSION), 0)
+            PendingIntent.getBroadcast(context, 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE)
         usbManager.requestPermission(device, permissionIntent)
     }
 
