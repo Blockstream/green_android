@@ -163,7 +163,9 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
                     adapter.add(AccountTypeListItem(AccountType.AMP_ACCOUNT))
                 }
 
-                adapter.add(AccountTypeListItem(AccountType.TWO_OF_THREE))
+                if (!wallet.isLiquid) {
+                    adapter.add(AccountTypeListItem(AccountType.TWO_OF_THREE))
+                }
             }
         }
 
