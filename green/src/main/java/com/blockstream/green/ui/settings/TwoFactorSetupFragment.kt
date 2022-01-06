@@ -89,6 +89,8 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         }
 
         binding.buttonContinue.setOnClickListener {
+            hideKeyboard()
+
             if(action == TwoFactorSetupAction.SETUP || action == TwoFactorSetupAction.SETUP_EMAIL){
                 var data = ""
                 when(viewModel.method){
