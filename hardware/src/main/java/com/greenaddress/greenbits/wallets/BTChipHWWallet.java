@@ -312,7 +312,7 @@ public class BTChipHWWallet extends HWWallet {
         mDongle.startUntrustedLiquidTransaction(version, true, 0, hwInputs, script0);
 
         if (mDongle.supportScreen() && parent != null) {
-            parent.interactionRequest(this);
+            parent.interactionRequest(this, null, null);
         }
 
         List<Long> inputValues = new ArrayList<>();
@@ -414,7 +414,7 @@ public class BTChipHWWallet extends HWWallet {
         mDongle.startUntrustedTransaction(version, true, 0, hwInputs, script0, true);
 
         if (mDongle.supportScreen() && parent != null) {
-            parent.interactionRequest(this);
+            parent.interactionRequest(this, null, null);
         }
         mDongle.finalizeInputFull(outputBytes(outputs));
 
@@ -454,7 +454,7 @@ public class BTChipHWWallet extends HWWallet {
 
             mDongle.startUntrustedTransaction(version, i == 0, i, hwInputs, script, false);
             if (mDongle.supportScreen() && parent != null) {
-                parent.interactionRequest(this);
+                parent.interactionRequest(this, null, null);
             }
             mDongle.finalizeInputFull(outputData);
 

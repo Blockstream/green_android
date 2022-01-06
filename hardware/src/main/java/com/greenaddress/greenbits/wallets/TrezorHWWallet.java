@@ -345,7 +345,7 @@ public class TrezorHWWallet extends HWWallet {
         switch (m.getClass().getSimpleName()) {
         case "ButtonRequest":
             if(parent != null) {
-                parent.interactionRequest(this);
+                parent.interactionRequest(this, null, null);
             }
             return handleCommon(parent, mTrezor.io(TrezorMessage.ButtonAck.newBuilder()));
 

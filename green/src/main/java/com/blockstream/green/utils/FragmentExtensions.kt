@@ -1,8 +1,6 @@
 package com.blockstream.green.utils
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -11,15 +9,12 @@ import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
-import androidx.biometric.BiometricPrompt
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.gdk.isConnectionError
@@ -28,7 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
-import java.util.*
 
 fun Fragment.hideKeyboard() {
     view?.let { context?.hideKeyboard(it) }
@@ -71,14 +65,21 @@ fun Context.localized2faMethods(methods: List<String>): List<String> = methods.m
     localized2faMethod(it)
 }
 
+fun Context.stringFromIdentifier(id: String): String? {
+    val intRes = resources.getIdentifier(id, "string", BuildConfig.APPLICATION_ID)
+    if (intRes > 0) {
+        return getString(intRes)
+    }
+    return null
+}
+
 fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String = requireContext().errorFromResourcesAndGDK(throwable)
 
 fun Context.errorFromResourcesAndGDK(throwable: Throwable): String = errorFromResourcesAndGDK(throwable.cause?.message ?: throwable.message ?: "An error occurred")
 
 fun Context.errorFromResourcesAndGDK(error: String): String {
-    val intRes = resources.getIdentifier(error, "string", BuildConfig.APPLICATION_ID)
-    if (intRes > 0) {
-        return getString(intRes)
+    stringFromIdentifier(error)?.let {
+        return it
     }
 
     if (error.isConnectionError()) {

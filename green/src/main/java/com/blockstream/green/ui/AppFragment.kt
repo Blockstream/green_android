@@ -12,7 +12,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
-import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -21,24 +20,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.blockstream.DeviceBrand
 import com.blockstream.gdk.data.Device
-import com.blockstream.green.R
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.devices.DeviceInfoFragmentDirections
-import com.blockstream.green.ui.devices.DeviceInfoViewModel
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.ui.devices.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.navigate
-import com.blockstream.green.utils.snackbar
-import com.google.android.material.snackbar.Snackbar
 import com.greenaddress.greenbits.ui.GaActivity
 import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity
 import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity
+import io.reactivex.rxjava3.core.Completable
 import mu.KLogging
 import javax.inject.Inject
 
@@ -164,11 +158,12 @@ abstract class AppFragment<T : ViewDataBinding>(
         findNavController().popBackStack()
     }
 
-    internal fun setupDeviceInteractionEvent(onDeviceInteractionEvent: MutableLiveData<ConsumableEvent<Device>>) {
+    internal fun setupDeviceInteractionEvent(onDeviceInteractionEvent: MutableLiveData<ConsumableEvent<Triple<Device, Completable?, String?>>>) {
         onDeviceInteractionEvent.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandledOrReturnNull()?.let {
-                // KISS: It's not what v3 had done in the past, but it's simpler
-                snackbar(R.string.id_please_follow_the_instructions, Snackbar.LENGTH_LONG)
+                DeviceInteractionRequestBottomSheetDialogFragment(device = it.first, completable = it.second, text = it.third).also {
+                    it.show(childFragmentManager, it.toString())
+                }
             }
         }
     }

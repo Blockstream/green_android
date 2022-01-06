@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.blockstream.DeviceBrand;
@@ -31,6 +32,7 @@ import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleEmitter;
 
@@ -160,7 +162,7 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
         return hwRequest(HARDWARE_PASSPHRASE_REQUEST);
     }
 
-    public void interactionRequest(final HWWallet hw) {
+    public void interactionRequest(HWWallet hw, @Nullable Completable completable, @Nullable String text) {
         final int iconId = hw.getIconResourceId();
         runOnUiThread(() -> {
             final LayoutInflater inflater = getLayoutInflater();

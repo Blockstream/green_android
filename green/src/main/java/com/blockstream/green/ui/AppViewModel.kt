@@ -4,11 +4,11 @@ import androidx.lifecycle.*
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.data.AppEvent
-import com.blockstream.green.ui.devices.DeviceInfoViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -23,14 +23,16 @@ open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
     val onProgress = MutableLiveData(false)
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
 
-    val onDeviceInteractionEvent = MutableLiveData<ConsumableEvent<Device>>()
+    val onDeviceInteractionEvent = MutableLiveData<ConsumableEvent<Triple<Device, Completable?, String?>>>()
 
     var requestPinMatrixEmitter: SingleEmitter<String>? = null
     var requestPinPassphraseEmitter: SingleEmitter<String>? = null
 
-    override fun interactionRequest(hw: HWWallet?) {
+    override fun interactionRequest(hw: HWWallet?, completable: Completable?, text: String?) {
         hw?.let {
-            onDeviceInteractionEvent.postValue(ConsumableEvent(it.device))
+            onDeviceInteractionEvent.postValue(ConsumableEvent(
+                Triple(it.device, completable, text)
+            ))
         }
     }
 

@@ -1,7 +1,10 @@
 package com.greenaddress.greenbits.wallets;
 
-import android.content.Context;
+import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
+
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.Network;
@@ -16,7 +19,6 @@ import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HardwareQATester;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.Commitment;
 import com.greenaddress.jade.entities.JadeError;
@@ -26,6 +28,7 @@ import com.greenaddress.jade.entities.TxChangeOutput;
 import com.greenaddress.jade.entities.TxInput;
 import com.greenaddress.jade.entities.TxInputBtc;
 import com.greenaddress.jade.entities.TxInputLiquid;
+import com.greenaddress.jade.entities.VersionInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,12 +40,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Single;
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.subjects.CompletableSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
-
-import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
-
-import androidx.annotation.Nullable;
 
 public class JadeHWWallet extends HWWallet {
     private static final String TAG = "JadeHWWallet";
@@ -67,10 +67,32 @@ public class JadeHWWallet extends HWWallet {
         // Push some extra entropy into Jade
         jade.addEntropy(GDK.get_random_bytes(32));
 
-        // Authenticate with pinserver (loop/retry on failure)
-        // Note: this should be a no-op if the user is already authenticated on the device.
-        while (!this.jade.authUser(getNetwork().getNetwork())) {
-            Log.w(TAG, "Jade authentication failed");
+        VersionInfo info = jade.getVersionInfo();
+        String state = info.getJadeState();
+
+        // JADE_STATE => READY | TEMP (these mean unlocked / ready to use)
+        // anything else ( LOCKED | UNSAVED | UNINIT) will need an authUser first to unlock
+
+        if (!"READY".equals(state) && !"TEMP".equals(state)) {
+
+            CompletableSubject completable = CompletableSubject.create();
+
+            if (hwWalletBridge != null) {
+                hwWalletBridge.interactionRequest(this, completable, "id_enter_pin_on_jade");
+            }
+
+            try {
+                // Authenticate with pinserver (loop/retry on failure)
+                // Note: this should be a no-op if the user is already authenticated on the device.
+                while (!this.jade.authUser(getNetwork().getNetwork())) {
+                    Log.w(TAG, "Jade authentication failed");
+                }
+                completable.onComplete();
+            }catch (Exception e){
+                completable.onError(e);
+                throw e;
+            }
+
         }
         return true;
     }
@@ -85,12 +107,7 @@ public class JadeHWWallet extends HWWallet {
          */
         return Single.just(this)
                 .flatMap(hww -> jadeFirmwareManager.checkFirmware(jade, false))
-                .map(fwValid -> {
-                    if(hwWalletBridge != null) {
-                        hwWalletBridge.interactionRequest(this);
-                    }
-                    return authUser(hwWalletBridge);
-                 })
+                .map(fwValid -> authUser(hwWalletBridge))
                 .flatMap(authed -> jadeFirmwareManager.checkFirmware(jade, true))
                 .flatMap(fwValid -> {
                     if (fwValid) {

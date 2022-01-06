@@ -98,8 +98,6 @@ public class JadeBleImpl extends JadeConnectionImpl {
                     }, Throwable::printStackTrace)
             );
 
-
-
             // Create connection, set mtu, etc.
             this.connection = this.device.establishConnection(false)
                     // Set a condition to stop the connection/subscriptions
@@ -159,37 +157,8 @@ public class JadeBleImpl extends JadeConnectionImpl {
 
         Single<Boolean> bondingEvent = JadePairingManager.INSTANCE.pairWithDevice(context, device);
 
-        // Solution #1 - Use same connection after bond
-//         createBleConnection(bondingEvent).blockingGet();
-
-        // Solution #2 - Drop connection after bond
-        if (device.getBluetoothDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
-            // block until connection is initialized and configured
-            createBleConnection(bondingEvent).blockingGet();
-        } else {
-
-            // Initiate bond connection
-            Single<RxBleConnection> bondConnection = this.device
-                    .establishConnection(false)
-                    .take(1)
-                    .doOnTerminate(() -> {
-                        Log.i(TAG, "Disconnect bonding connection");
-                    })
-                    .singleOrError();
-
-            Completable.create(complete -> {
-                disposable.add(bondConnection
-                        .flatMap(connection -> bondingEvent)
-                        .subscribe(newBonding -> {
-                            createBleConnection(bondingEvent).blockingGet();
-                            complete.onComplete();
-                        }, throwable -> {
-                            complete.tryOnError(throwable);
-                        })
-                );
-
-            }).blockingGet();
-        }
+        // Block until BLE is bootstrapped properly
+        createBleConnection(bondingEvent).blockingGet();
     }
 
     @Override
