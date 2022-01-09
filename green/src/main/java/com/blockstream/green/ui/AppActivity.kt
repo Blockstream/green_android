@@ -37,7 +37,14 @@ abstract class AppActivity : AppCompatActivity() {
 
     private var isWindowSecure: Boolean = false
 
-    private val secureFragments = listOf(R.id.recoveryIntroFragment, R.id.recoveryCheckFragment, R.id.recoveryWordsFragment, R.id.recoveryPhraseFragment)
+    private val secureFragments = listOf(
+        R.id.recoveryIntroFragment,
+        R.id.recoveryCheckFragment,
+        R.id.recoveryWordsFragment,
+        R.id.recoveryPhraseFragment,
+        R.id.setPinFragment,
+        R.id.changePinFragment
+    )
 
     internal fun setupSecureScreenListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
