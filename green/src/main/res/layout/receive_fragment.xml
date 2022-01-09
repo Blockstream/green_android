@@ -70,6 +70,18 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/loader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminate="true"
+                            isVisible="@{vm.onProgress &amp;&amp; vm.address == null}"
+                            app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
+                            app:layout_constraintEnd_toEndOf="@+id/materialCardView"
+                            app:layout_constraintStart_toStartOf="@+id/materialCardView"
+                            app:layout_constraintTop_toTopOf="@+id/materialCardView" />
+
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/materialCardView"
                             android:layout_width="0dp"
@@ -79,6 +91,7 @@
                             android:background="@color/white"
                             android:backgroundTint="@color/white"
                             android:scaleType="fitCenter"
+                            isInvisible="@{vm.address == null}"
                             app:layout_constraintDimensionRatio="1:1"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHeight_max="350dp"
