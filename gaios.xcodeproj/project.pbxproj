@@ -72,7 +72,7 @@
 		34477D322771D2600021698B /* RecipientCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D312771D2600021698B /* RecipientCell.swift */; };
 		34477D352771D34D0021698B /* Recipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D342771D34D0021698B /* Recipient.swift */; };
 		34477D392771F7090021698B /* AddRecipientCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D382771F7090021698B /* AddRecipientCell.swift */; };
-		34477D3B277216640021698B /* FeeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D3A277216640021698B /* FeeCell.swift */; };
+		34477D3B277216640021698B /* FeeEditCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D3A277216640021698B /* FeeEditCell.swift */; };
 		3448E63B2730141500C7ADFF /* DialogReceiveShareTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */; };
 		344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */; };
 		344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BBB268C5567000182B0 /* Mnemonic.swift */; };
@@ -162,6 +162,7 @@
 		34BAD9DE2636A12700FB8011 /* HWWScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */; };
 		34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */; };
 		34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */; };
+		34BD7E76278C2EB6004AEC6F /* FeeSummaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */; };
 		34C2464B26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464A26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift */; };
 		34C2464D2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */; };
 		34C2464F2670ECE0009E8FCE /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464E2670ECE0009E8FCE /* AccountType.swift */; };
@@ -400,7 +401,7 @@
 		34477D312771D2600021698B /* RecipientCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientCell.swift; sourceTree = "<group>"; };
 		34477D342771D34D0021698B /* Recipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipient.swift; sourceTree = "<group>"; };
 		34477D382771F7090021698B /* AddRecipientCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipientCell.swift; sourceTree = "<group>"; };
-		34477D3A277216640021698B /* FeeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeCell.swift; sourceTree = "<group>"; };
+		34477D3A277216640021698B /* FeeEditCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeEditCell.swift; sourceTree = "<group>"; };
 		3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveShareTypeViewController.swift; sourceTree = "<group>"; };
 		344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhrase.swift; sourceTree = "<group>"; };
 		344B1BBB268C5567000182B0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
@@ -491,6 +492,7 @@
 		34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWScanViewController.swift; sourceTree = "<group>"; };
 		34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactivate2faViewController.swift; sourceTree = "<group>"; };
 		34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccessViewController.swift; sourceTree = "<group>"; };
+		34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeSummaryCell.swift; sourceTree = "<group>"; };
 		34C2464A26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSelectTypeViewController.swift; sourceTree = "<group>"; };
 		34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSetNameViewController.swift; sourceTree = "<group>"; };
 		34C2464E2670ECE0009E8FCE /* AccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountType.swift; sourceTree = "<group>"; };
@@ -861,8 +863,9 @@
 			children = (
 				34477D312771D2600021698B /* RecipientCell.swift */,
 				34477D382771F7090021698B /* AddRecipientCell.swift */,
-				34477D3A277216640021698B /* FeeCell.swift */,
+				34477D3A277216640021698B /* FeeEditCell.swift */,
 				34B30F79277C730000D37A3C /* AddresseeCell.swift */,
+				34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1902,7 +1905,7 @@
 				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				34D678AF261F060F00DBC0BB /* WalletDrawerCell.swift in Sources */,
-				34477D3B277216640021698B /* FeeCell.swift in Sources */,
+				34477D3B277216640021698B /* FeeEditCell.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
@@ -2003,6 +2006,7 @@
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
 				34477D392771F7090021698B /* AddRecipientCell.swift in Sources */,
 				81D671EF26C80D3400682508 /* EventType.swift in Sources */,
+				34BD7E76278C2EB6004AEC6F /* FeeSummaryCell.swift in Sources */,
 				34BAD9DA2636A12700FB8011 /* HWWNetworkCell.swift in Sources */,
 				3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */,
 				34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */,

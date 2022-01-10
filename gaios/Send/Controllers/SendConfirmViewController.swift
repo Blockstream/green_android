@@ -25,7 +25,8 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     func setContent() {
-        title = NSLocalizedString("id_send", comment: "")
+        title = NSLocalizedString("id_review", comment: "")
+        btnNext.setTitle(NSLocalizedString("id_send", comment: ""), for: .normal)
     }
 
     func setStyle() {
@@ -49,7 +50,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
         case SendConfirm.addressee.rawValue:
             return transaction?.addressees.count ?? 0
         case SendConfirm.fee.rawValue:
-            return 0
+            return 1
         case SendConfirm.change.rawValue:
             return 0
         case SendConfirm.note.rawValue:
@@ -69,7 +70,11 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
                 return cell
             }
         case SendConfirm.fee.rawValue:
-            break
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeSummaryCell") as? FeeSummaryCell, let tx = self.transaction {
+                cell.configure(tx)
+            cell.selectionStyle = .none
+            return cell
+        }
         case SendConfirm.change.rawValue:
             break
         case SendConfirm.note.rawValue:

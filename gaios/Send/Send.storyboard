@@ -437,7 +437,7 @@
                                             <outlet property="btnAddRecipient" destination="ZyY-R7-WeL" id="zcv-Aw-qLf"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeeCell" rowHeight="184" id="pCG-bO-fGL" customClass="FeeCell" customModule="gaios" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeeEditCell" rowHeight="184" id="pCG-bO-fGL" customClass="FeeEditCell" customModule="gaios" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="567.5" width="414" height="184"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="pCG-bO-fGL" id="PlG-2H-1El">
@@ -743,6 +743,84 @@
                                             <outlet property="lblDenomination" destination="SbN-yl-zHw" id="NaU-vK-VSA"/>
                                             <outlet property="lblRecipientAddress" destination="7IA-y8-shj" id="pG9-XM-6FK"/>
                                             <outlet property="lblRecipientTitle" destination="ePq-oi-iZu" id="OG1-2g-Q4G"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeeSummaryCell" rowHeight="116" id="t5I-yF-mlY" customClass="FeeSummaryCell" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="268.5" width="414" height="116"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="t5I-yF-mlY" id="b3N-AW-Oq2">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="116"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y5J-ze-OAq">
+                                                    <rect key="frame" x="20" y="10" width="374" height="96"/>
+                                                    <subviews>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xfe-vF-M6Q">
+                                                            <rect key="frame" x="0.0" y="0.0" width="374" height="81"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" text="lbl_fee_title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WiZ-Se-iFf">
+                                                                    <rect key="frame" x="20" y="10" width="195.5" height="21.5"/>
+                                                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_fee_amount" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bhV-8p-7io">
+                                                                    <rect key="frame" x="225.5" y="10" width="128.5" height="21.5"/>
+                                                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_fee_fiat" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g7B-8x-dyk">
+                                                                    <rect key="frame" x="273" y="36.5" width="81" height="19.5"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_fee_info" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9re-Hh-n81">
+                                                                    <rect key="frame" x="269.5" y="61" width="84.5" height="20"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <constraints>
+                                                                <constraint firstItem="bhV-8p-7io" firstAttribute="centerY" secondItem="WiZ-Se-iFf" secondAttribute="centerY" id="2rS-hd-0lk"/>
+                                                                <constraint firstItem="9re-Hh-n81" firstAttribute="trailing" secondItem="g7B-8x-dyk" secondAttribute="trailing" id="9Uh-to-sqE"/>
+                                                                <constraint firstItem="WiZ-Se-iFf" firstAttribute="leading" secondItem="Xfe-vF-M6Q" secondAttribute="leading" constant="20" id="DBh-b0-2rN"/>
+                                                                <constraint firstItem="g7B-8x-dyk" firstAttribute="trailing" secondItem="bhV-8p-7io" secondAttribute="trailing" id="HbM-TH-F4N"/>
+                                                                <constraint firstItem="bhV-8p-7io" firstAttribute="leading" secondItem="WiZ-Se-iFf" secondAttribute="trailing" constant="10" id="KDI-rA-orq"/>
+                                                                <constraint firstItem="WiZ-Se-iFf" firstAttribute="top" secondItem="Xfe-vF-M6Q" secondAttribute="top" constant="10" id="OzZ-px-yv2"/>
+                                                                <constraint firstItem="g7B-8x-dyk" firstAttribute="top" secondItem="bhV-8p-7io" secondAttribute="bottom" constant="5" id="RHU-Tb-Qge"/>
+                                                                <constraint firstAttribute="trailing" secondItem="bhV-8p-7io" secondAttribute="trailing" constant="20" id="Zlb-8m-v0b"/>
+                                                                <constraint firstItem="9re-Hh-n81" firstAttribute="top" secondItem="g7B-8x-dyk" secondAttribute="bottom" constant="5" id="kVC-pY-4A5"/>
+                                                                <constraint firstAttribute="bottom" secondItem="9re-Hh-n81" secondAttribute="bottom" id="nIX-9V-FmE"/>
+                                                            </constraints>
+                                                        </view>
+                                                    </subviews>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstItem="Xfe-vF-M6Q" firstAttribute="leading" secondItem="y5J-ze-OAq" secondAttribute="leading" id="4uy-ad-x1P"/>
+                                                        <constraint firstItem="Xfe-vF-M6Q" firstAttribute="top" secondItem="y5J-ze-OAq" secondAttribute="top" id="MfA-Gj-tsh"/>
+                                                        <constraint firstAttribute="bottom" secondItem="Xfe-vF-M6Q" secondAttribute="bottom" constant="15" id="UFz-bs-cQO"/>
+                                                        <constraint firstAttribute="trailing" secondItem="Xfe-vF-M6Q" secondAttribute="trailing" id="Zc0-6O-ZH5"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="y5J-ze-OAq" secondAttribute="trailing" constant="20" id="WVN-nW-wTw"/>
+                                                <constraint firstItem="y5J-ze-OAq" firstAttribute="leading" secondItem="b3N-AW-Oq2" secondAttribute="leading" constant="20" id="aFM-Jz-QQX"/>
+                                                <constraint firstItem="y5J-ze-OAq" firstAttribute="top" secondItem="b3N-AW-Oq2" secondAttribute="top" constant="10" id="kGu-N0-Ytg"/>
+                                                <constraint firstAttribute="bottom" secondItem="y5J-ze-OAq" secondAttribute="bottom" constant="10" id="t5c-3B-zEX"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <connections>
+                                            <outlet property="lblFeeAmount" destination="bhV-8p-7io" id="goj-MU-hMt"/>
+                                            <outlet property="lblFeeFiat" destination="g7B-8x-dyk" id="KIp-qR-zF4"/>
+                                            <outlet property="lblFeeInfo" destination="9re-Hh-n81" id="ybC-ES-ub7"/>
+                                            <outlet property="lblFeeTitle" destination="WiZ-Se-iFf" id="c47-lk-VRQ"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

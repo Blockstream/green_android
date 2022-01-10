@@ -10,11 +10,10 @@ class SendViewController: KeyboardViewController {
         case fee = 2
     }
 
-    var wallet: WalletItem?
-
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnNext: UIButton!
 
+    var wallet: WalletItem?
     var recipients: [Recipient] = []
 
     var isLiquid: Bool {
@@ -27,6 +26,36 @@ class SendViewController: KeyboardViewController {
         get {
             let ntw = AccountsManager.shared.current?.network
             return ntw == "mainnet" || ntw == "testnet"
+        }
+    }
+
+    private var feeEstimates: [UInt64?] = {
+        var feeEstimates = [UInt64?](repeating: 0, count: 4)
+        guard let estimates = getFeeEstimates() else {
+            // We use the default minimum fee rates when estimates are not available
+            let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
+            return [UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee)]
+        }
+        for (index, value) in [3, 12, 24, 0].enumerated() {
+            feeEstimates[index] = estimates[value]
+        }
+        feeEstimates[3] = nil
+        return feeEstimates
+    }()
+
+    var transactionPriority: TransactionPriority = .High
+    var customFee: UInt64 = 1000
+
+    func selectedFee() -> Int {
+        switch transactionPriority {
+        case .High:
+            return 0
+        case .Medium:
+            return 1
+        case .Low:
+            return 2
+        case .Custom:
+            return 3
         }
     }
 
@@ -102,7 +131,10 @@ class SendViewController: KeyboardViewController {
 
     func createTransaction() {
         let subaccount = self.wallet!.pointer
-        let feeRate = getFeeEstimates()?.first ?? 1000
+
+        feeEstimates[3] = customFee
+        guard let feeEstimate = feeEstimates[selectedFee()] else { return }
+        let feeRate = feeEstimate
 
         self.startAnimating()
         let queue = DispatchQueue.global(qos: .default)
@@ -119,7 +151,11 @@ class SendViewController: KeyboardViewController {
         }.done { data in
             let result = data["result"] as? [String: Any]
             let tx: Transaction = Transaction(result ?? [:])
-            self.onTransactionReady(tx)
+            if !tx.error.isEmpty {
+                throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
+            } else {
+                self.onTransactionReady(tx)
+            }
         }.catch { error in
             switch error {
             case TransactionError.invalid(let localizedDescription):
@@ -236,13 +272,16 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                 let storyboard = UIStoryboard(name: "Shared", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
                     vc.modalPresentationStyle = .overFullScreen
-                    vc.index = indexPath.row
                     vc.delegate = self
+                    vc.storedFeeRate = self?.feeEstimates[3]
                     self?.present(vc, animated: false, completion: nil)
                 }
             }
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeCell") as? FeeCell {
-                cell.configure(setCustomFee: setCustomFee)
+            let updatePriority: ((TransactionPriority) -> Void) = {[weak self] value in
+                self?.transactionPriority = value
+            }
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeEditCell") as? FeeEditCell {
+                cell.configure(setCustomFee: setCustomFee, updatePriority: updatePriority)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -310,7 +349,8 @@ extension SendViewController: DialogQRCodeScanViewControllerDelegate {
 }
 
 extension SendViewController: DialogCustomFeeViewControllerDelegate {
-    func didSave(fee: String, index: Int?) {
-        print(fee, index ?? 0)
+    func didSave(fee: UInt64?) {
+        feeEstimates[3] = fee ?? 1000
+        customFee = feeEstimates[3] ?? 1000
     }
 }

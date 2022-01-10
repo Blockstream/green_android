@@ -1,6 +1,6 @@
 import UIKit
 
-class FeeCell: UITableViewCell {
+class FeeEditCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblFeeTitle: UILabel!
@@ -15,6 +15,15 @@ class FeeCell: UITableViewCell {
     @IBOutlet weak var icon4: UIImageView!
 
     var setCustomFee: VoidToVoid?
+    var updatePriority: ((TransactionPriority) -> Void)?
+
+    private var defaultFee: TransactionPriority = {
+        guard let settings = SessionManager.shared.settings else { return .High }
+        if let pref = TransactionPriority.getPreference() {
+            settings.transactionPriority = pref
+        }
+        return settings.transactionPriority
+    }()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -37,19 +46,37 @@ class FeeCell: UITableViewCell {
     override func prepareForReuse() {
     }
 
-    func configure(setCustomFee: VoidToVoid?) {
+    func configure(setCustomFee: VoidToVoid?, updatePriority: ((TransactionPriority) -> Void)?) {
         self.setCustomFee = setCustomFee
-        setPriority(2)
+        self.updatePriority = updatePriority
+
+        setPriority(feeToSwitchIndex(defaultFee))
+        feeSlider.value = Float(feeToSwitchIndex(defaultFee))
+        updatePriority?(defaultFee)
     }
 
-    func setPriority(_ index: Int) {
-        let tp = getPriority(index)
-        lblTimeHint.text = tp == .Custom ? "" : "~ \(tp.time)"
+    func setPriority(_ switchIndex: Int) {
+        let tp = switchIndexToFee(switchIndex)
+        lblTimeHint.text = tp == .Custom ? "Custom" : "~ \(tp.time)"
+        updatePriority?(tp)
     }
 
-    func getPriority(_ index: Int) -> TransactionPriority {
+    func feeToSwitchIndex(_ fee: TransactionPriority) -> Int {
+        switch fee {
+        case .High:
+            return 3
+        case .Medium:
+            return 2
+        case .Low:
+            return 1
+        case .Custom:
+            return 0
+        }
+    }
+
+    func switchIndexToFee(_ switchIndex: Int) -> TransactionPriority {
         // [3, 12, 24, 0]
-        switch index {
+        switch switchIndex {
         case 3:
             return TransactionPriority.High
         case 2:
