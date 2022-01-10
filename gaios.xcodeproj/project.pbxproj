@@ -163,6 +163,7 @@
 		34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */; };
 		34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */; };
 		34BD7E76278C2EB6004AEC6F /* FeeSummaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */; };
+		34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BD7E79278C93F3004AEC6F /* NoteCell.swift */; };
 		34C2464B26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464A26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift */; };
 		34C2464D2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */; };
 		34C2464F2670ECE0009E8FCE /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464E2670ECE0009E8FCE /* AccountType.swift */; };
@@ -493,6 +494,7 @@
 		34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactivate2faViewController.swift; sourceTree = "<group>"; };
 		34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccessViewController.swift; sourceTree = "<group>"; };
 		34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeSummaryCell.swift; sourceTree = "<group>"; };
+		34BD7E79278C93F3004AEC6F /* NoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCell.swift; sourceTree = "<group>"; };
 		34C2464A26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSelectTypeViewController.swift; sourceTree = "<group>"; };
 		34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSetNameViewController.swift; sourceTree = "<group>"; };
 		34C2464E2670ECE0009E8FCE /* AccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountType.swift; sourceTree = "<group>"; };
@@ -866,6 +868,7 @@
 				34477D3A277216640021698B /* FeeEditCell.swift */,
 				34B30F79277C730000D37A3C /* AddresseeCell.swift */,
 				34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */,
+				34BD7E79278C93F3004AEC6F /* NoteCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1904,6 +1907,7 @@
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
+				34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */,
 				34D678AF261F060F00DBC0BB /* WalletDrawerCell.swift in Sources */,
 				34477D3B277216640021698B /* FeeEditCell.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
