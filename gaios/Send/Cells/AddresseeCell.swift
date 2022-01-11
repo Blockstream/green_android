@@ -35,7 +35,7 @@ class AddresseeCell: UITableViewCell {
     override func prepareForReuse() {
     }
 
-    func configure(addressee: Addressee?) {
+    func configure(addressee: Addressee?, isSendAll: Bool) {
         lblRecipientTitle.text = "Recipient"
         lblRecipientAddress.text = addressee?.address
 
@@ -55,12 +55,11 @@ class AddresseeCell: UITableViewCell {
 
         if let balance = Balance.convert(details: ["satoshi": addressee?.satoshi ?? 0]) {
             let (amount, denom) = balance.get(tag: isFiat ? "fiat" : btc)
-//            if transaction.sendAll {
-//                content.amountText.text! = NSLocalizedString("id_all", comment: "")
-//            } else {
-                lblAmount.text = amount ?? "N.A."
-                lblDenomination.text = denom
-//            }
+            lblAmount.text = amount ?? "N.A."
+            lblDenomination.text = denom
+            if isSendAll {
+                lblAmount.text = NSLocalizedString("id_all", comment: "")
+            }
         }
 
 //        if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {

@@ -390,6 +390,7 @@
                                             <outlet property="bg" destination="ipc-a1-bzl" id="z9x-jE-RLG"/>
                                             <outlet property="btnCancelAddress" destination="m8r-7x-LjZ" id="Ng2-X3-KMx"/>
                                             <outlet property="btnCancelAmount" destination="7n4-mm-ccq" id="nbR-5I-jMM"/>
+                                            <outlet property="btnConvert" destination="ShT-Ex-eKW" id="ieS-aM-I7e"/>
                                             <outlet property="btnPasteAddress" destination="evo-pv-U1t" id="2cK-m7-fIN"/>
                                             <outlet property="btnPasteAmount" destination="mxf-E0-r1z" id="iqv-NX-cgG"/>
                                             <outlet property="btnSendAll" destination="THB-xG-rQM" id="O0b-RQ-e0l"/>

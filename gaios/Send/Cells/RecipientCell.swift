@@ -24,6 +24,7 @@ class RecipientCell: UITableViewCell {
     @IBOutlet weak var lblCurrency: UILabel!
     @IBOutlet weak var btnCancelAmount: UIButton!
     @IBOutlet weak var btnPasteAmount: UIButton!
+    @IBOutlet weak var btnConvert: UIButton!
 
     @IBOutlet weak var lblAvailableFunds: UILabel!
     @IBOutlet weak var btnSendAll: UIButton!
@@ -34,6 +35,8 @@ class RecipientCell: UITableViewCell {
     var chooseAsset: VoidToVoid?
     var qrScan: VoidToVoid?
     var wallet: WalletItem?
+    var tapSendAll: VoidToVoid?
+    var isSendAll: Bool = false
 
     var isFiat: Bool {
         return recipient?.isFiat ?? false
@@ -83,7 +86,9 @@ class RecipientCell: UITableViewCell {
                    needRefresh: VoidToVoid?,
                    chooseAsset: VoidToVoid?,
                    qrScan: VoidToVoid?,
-                   walletItem: WalletItem?
+                   walletItem: WalletItem?,
+                   tapSendAll: VoidToVoid?,
+                   isSendAll: Bool
     ) {
         lblRecipientNum.text = "#\(index + 1)"
         removeRecipientView.isHidden = !isMultiple
@@ -96,6 +101,8 @@ class RecipientCell: UITableViewCell {
         self.chooseAsset = chooseAsset
         self.qrScan = qrScan
         self.wallet = walletItem
+        self.tapSendAll = tapSendAll
+        self.isSendAll = isSendAll
 
         iconAsset.image = UIImage(named: "default_asset_icon")!
         lblAssetName.text = "Asset"
@@ -135,13 +142,23 @@ class RecipientCell: UITableViewCell {
 
     func onChange() {
         recipient?.address = addressTextView.text
-        recipient?.amount = amountTextField.text
         btnCancelAddress.isHidden = !(addressTextView.text.count > 0)
         btnPasteAddress.isHidden = (addressTextView.text.count > 0)
         btnCancelAmount.isHidden = !(amountTextField.text?.count ?? 0 > 0)
         btnPasteAmount.isHidden = (amountTextField.text?.count ?? 0 > 0)
         lblCurrency.text = getCurrency()
         lblAvailableFunds.text = getBalance()
+        if isSendAll {
+            btnSendAll.setStyle(.primary)
+            recipient?.amount = nil
+        } else {
+            btnSendAll.setStyle(.outlinedGray)
+            recipient?.amount = amountTextField.text
+        }
+        amountTextField.isUserInteractionEnabled = !isSendAll
+        btnConvert.isUserInteractionEnabled = !isSendAll
+        btnPasteAmount.isUserInteractionEnabled = !isSendAll
+        btnCancelAmount.isUserInteractionEnabled = !isSendAll
         needRefresh?()
     }
 
@@ -230,7 +247,12 @@ class RecipientCell: UITableViewCell {
     }
 
     @IBAction func btnSendAll(_ sender: Any) {
-        print("btnSendAll")
+        tapSendAll?()
+        if isFiat == true {
+            convertAmount()
+        }
+        amountTextField.text = NSLocalizedString("id_all", comment: "")
+        onChange()
     }
 
     @IBAction func btnCancelAmount(_ sender: Any) {

@@ -15,6 +15,7 @@ class SendViewController: KeyboardViewController {
 
     var wallet: WalletItem?
     var recipients: [Recipient] = []
+    var isSendAll: Bool = false
 
     var isLiquid: Bool {
         get {
@@ -145,7 +146,15 @@ class SendViewController: KeyboardViewController {
         }.compactMap { data in
             let result = data["result"] as? [String: Any]
             let unspent = result?["unspent_outputs"] as? [String: Any]
-            return ["addressees": [self.getAddressee()], "fee_rate": feeRate, "subaccount": subaccount, "utxos": unspent ?? [:]]
+            var details: [String: Any] = [:]
+            details["addressees"] = [self.getAddressee()]
+            details["fee_rate"] = feeRate
+            details["subaccount"] = subaccount
+            details["utxos"] = unspent ?? [:]
+            if self.isSendAll == true {
+                details["send_all"] = true
+            }
+            return details
         }.then(on: queue) { data in
             try SessionManager.shared.createTransaction(details: data).resolve()
         }.done { data in
@@ -196,7 +205,7 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
         case SendSection.recipient.rawValue:
             return recipients.count
         case SendSection.addRecipient.rawValue:
-            return 1
+            return 0 // 1
         case SendSection.fee.rawValue:
             return 1
         default:
@@ -244,6 +253,10 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                 self?.present(vc, animated: false, completion: nil)
             }
         }
+        let tapSendAll: VoidToVoid = {[weak self] in
+            self?.isSendAll.toggle()
+            self?.reloadSections([SendSection.recipient], animated: true)
+        }
         switch indexPath.section {
         case SendSection.recipient.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "RecipientCell") as? RecipientCell {
@@ -254,7 +267,9 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                                needRefresh: needRefresh,
                                chooseAsset: selectAsset,
                                qrScan: qrAction,
-                               walletItem: self.wallet)
+                               walletItem: self.wallet,
+                               tapSendAll: tapSendAll,
+                               isSendAll: self.isSendAll)
                 cell.selectionStyle = .none
                 return cell
             }
