@@ -17,9 +17,11 @@ class KeyboardViewController: UIViewController {
         super.viewWillDisappear(animated)
         if let token = showToken {
             NotificationCenter.default.removeObserver(token)
+            showToken = nil
         }
         if let token = hideToken {
             NotificationCenter.default.removeObserver(token)
+            hideToken = nil
         }
     }
 

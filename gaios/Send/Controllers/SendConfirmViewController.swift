@@ -16,10 +16,13 @@ class SendConfirmViewController: KeyboardViewController {
 
     var wallet: WalletItem?
     var transaction: Transaction?
+    private var connected = true
+    private var updateToken: NSObjectProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
         setContent()
         setStyle()
     }
@@ -55,9 +58,80 @@ class SendConfirmViewController: KeyboardViewController {
         }
     }
 
-    @IBAction func btnNext(_ sender: Any) {
+    func send() {
+        guard let transaction = transaction else { return }
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            btnNext.isUserInteractionEnabled = false
+            let account = AccountsManager.shared.current
+            if account?.isHW ?? false {
+                DropAlert().success(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""), delay: 4)
+            }
+            return Guarantee()
+        }.then(on: bgq) {
+            signTransaction(transaction: transaction)
+        }.then(on: bgq) { call in
+            call.resolve(connected: {
+                return self.connected
+            })
+        }.map(on: bgq) { resultDict in
+            let result = resultDict["result"] as? [String: Any]
+            if transaction.isSweep {
+                let tx = result!["transaction"] as? String
+                _ = try SessionManager.shared.broadcastTransaction(tx_hex: tx!)
+                return nil
+            } else {
+                return try SessionManager.shared.sendTransaction(details: result!)
+            }
+        }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
+            call?.resolve(connected: {
+                return self.connected }) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.executeOnDone()
+        }.catch { error in
+            self.btnNext.isUserInteractionEnabled = true
+            switch error {
+            case JadeError.Abort(let desc),
+                 JadeError.Declined(let desc):
+                self.showError(desc)
+            case LedgerWrapper.LedgerError.IOError,
+                 LedgerWrapper.LedgerError.InvalidParameter:
+                self.showError(NSLocalizedString("id_operation_failure", comment: ""))
+            case TwoFactorCallError.failure(let localizedDescription),
+                 TwoFactorCallError.cancel(let localizedDescription):
+                self.showError(localizedDescription)
+            default:
+                self.showError(error.localizedDescription)
+            }
+        }
     }
 
+    func executeOnDone() {
+        self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
+            self.stopAnimating()
+            self.navigationController?.popToRootViewController(animated: true)
+        }
+    }
+
+    func updateConnection(_ notification: Notification) {
+        let connected = notification.userInfo?["connected"] as? Bool
+        self.connected = connected ?? false
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = updateToken {
+            NotificationCenter.default.removeObserver(token)
+            updateToken = nil
+        }
+    }
+
+    @IBAction func btnNext(_ sender: Any) {
+        send()
+    }
 }
 
 extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource {
