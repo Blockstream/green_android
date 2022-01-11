@@ -31,6 +31,7 @@ public class HWDeviceRequiredData extends JSONData {
     private List<BlindedScriptsData> blindedScripts;
     private List<String> scripts;
     private List<String> publicKeys;
+    private boolean blindingKeysRequired;
 
 
     HWDeviceRequiredData() { }
@@ -109,6 +110,14 @@ public class HWDeviceRequiredData extends JSONData {
 
     public void setUseAeProtocol(final boolean useAeProtocol) {
         this.useAeProtocol = useAeProtocol;
+    }
+
+    public boolean getBlindingKeysRequired() {
+        return blindingKeysRequired;
+    }
+
+    public void setBlindingKeysRequired(final boolean blindingKeysRequired) {
+        this.blindingKeysRequired = blindingKeysRequired;
     }
 
     public String getAeHostCommitment() {
