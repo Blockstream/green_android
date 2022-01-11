@@ -97,10 +97,6 @@ class SendViewController: KeyboardViewController {
 
 //    func reloadAmount() {
 //
-//        if content.sendAllFundsButton.isSelected {
-//            content.amountTextField.text = NSLocalizedString("id_all", comment: "")
-//            return
-//        }
 //
 //        guard let satoshi = transaction.addressees.first?.satoshi else { return }
 //        let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
@@ -115,7 +111,7 @@ class SendViewController: KeyboardViewController {
 
         let isBip21 = addressInput.starts(with: "bitcoin:") || addressInput.starts(with: "liquidnetwork:")
         let network = AccountsManager.shared.current?.gdkNetwork
-        let policyAsset = network?.policyAsset ?? "btc"
+        let policyAsset = recipients[0].assetId
 
         let satoshi = recipient?.getSatoshi() ?? 0
 

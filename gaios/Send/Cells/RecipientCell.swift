@@ -116,7 +116,7 @@ class RecipientCell: UITableViewCell {
             iconAsset.image = Registry.shared.image(for: asset?.assetId)
             lblAssetName.text = asset?.name ?? "Asset"
         }
-
+        btnConvert.isHidden = isLiquid
         onChange()
     }
 
@@ -146,7 +146,11 @@ class RecipientCell: UITableViewCell {
         btnPasteAddress.isHidden = (addressTextView.text.count > 0)
         btnCancelAmount.isHidden = !(amountTextField.text?.count ?? 0 > 0)
         btnPasteAmount.isHidden = (amountTextField.text?.count ?? 0 > 0)
-        lblCurrency.text = getCurrency()
+        if isLiquid {
+            lblCurrency.text = ""
+        } else {
+            lblCurrency.text = getCurrency()
+        }
         lblAvailableFunds.text = getBalance()
         if isSendAll {
             btnSendAll.setStyle(.primary)
@@ -204,12 +208,6 @@ class RecipientCell: UITableViewCell {
     }
 
     func convertAmount() {
-        // remember to avoid asset!
-
-//        if content.sendAllFundsButton.isSelected {
-//            content.amountTextField.text = NSLocalizedString("id_all", comment: "")
-//            return
-//        }
         guard let assetId = recipient?.assetId else {
             return
         }

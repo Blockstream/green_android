@@ -160,8 +160,8 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
 
         switch indexPath.section {
         case SendConfirmSection.addressee.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "AddresseeCell") as? AddresseeCell {
-                cell.configure(addressee: transaction?.addressees[indexPath.row], isSendAll: transaction?.sendAll ?? false)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AddresseeCell") as? AddresseeCell, let tx = transaction {
+                cell.configure(transaction: tx, index: indexPath.row)
                 cell.selectionStyle = .none
                 return cell
             }

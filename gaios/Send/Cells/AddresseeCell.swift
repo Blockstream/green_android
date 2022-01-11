@@ -35,31 +35,38 @@ class AddresseeCell: UITableViewCell {
     override func prepareForReuse() {
     }
 
-    func configure(addressee: Addressee?, isSendAll: Bool) {
+    func configure(transaction: Transaction, index: Int) {
+        let addressee = transaction.addressees[index]
+        let isSendAll = transaction.sendAll
         lblRecipientTitle.text = "Recipient"
-        lblRecipientAddress.text = addressee?.address
+        lblRecipientAddress.text = addressee.address
 
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
-        if isLiquid {
-            let tag = addressee?.assetId ?? "btc"
-            // let info = Registry.shared.infos[tag]
-            var icon = Registry.shared.image(for: tag)
-            if network == "mainnet" {
-                icon = UIImage(named: "ntw_btc")
-            } else if network == "testnet" {
-                icon = UIImage(named: "ntw_testnet")
+        let asset = transaction.defaultAsset
+        let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+        let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
+        if asset == "btc" {
+            if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+                let (value, denom) = balance.get(tag: btc)
+                lblAmount.text = value ?? ""
+                lblDenomination.text = "\(denom)"
             }
-            self.icon.image = icon
-//            content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: addressee.satoshi, negative: false, isTransaction: false, sendAll: transaction.sendAll)
+        } else {
+            if let balance = Balance.convert(details: details) {
+                let (amount, ticker) = balance.get(tag: transaction.defaultAsset)
+                lblAmount.text = amount ?? "N.A."
+                lblDenomination.text = "\(ticker)"
+            }
         }
-
-        if let balance = Balance.convert(details: ["satoshi": addressee?.satoshi ?? 0]) {
-            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : btc)
-            lblAmount.text = amount ?? "N.A."
-            lblDenomination.text = denom
-            if isSendAll {
-                lblAmount.text = NSLocalizedString("id_all", comment: "")
-            }
+        if isSendAll {
+            lblAmount.text = NSLocalizedString("id_all", comment: "")
+        }
+        icon.image = UIImage(named: "default_asset_icon")!
+        if network == "mainnet" {
+            icon.image = UIImage(named: "ntw_btc")
+        } else if network == "testnet" {
+            icon.image = UIImage(named: "ntw_testnet")
+        } else {
+            icon.image = Registry.shared.image(for: asset)
         }
 
 //        if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
