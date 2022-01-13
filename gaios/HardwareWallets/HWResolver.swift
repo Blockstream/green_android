@@ -32,10 +32,20 @@ class HWResolver {
                   let publicKeys = requiredData["public_keys"] as? [String] else {
                 return Promise { $0.reject(GaError.GenericError) }
             }
-            return HWResolver.shared.getBlindingNonces(hw: hw, scripts: scripts, publicKeys: publicKeys).compactMap {
-                let data = try JSONSerialization.data(withJSONObject: ["nonces": $0], options: .fragmentsAllowed)
-                return String(data: data, encoding: .utf8)
-            }
+            var output = [String: Any]()
+            return HWResolver.shared.getBlindingNonces(hw: hw, scripts: scripts, publicKeys: publicKeys)
+                .then { nonces -> Promise<[String]> in
+                    output["nonces"] = nonces
+                    if let blindingKeysRequired = requiredData["blinding_keys_required"] as? Bool,
+                       blindingKeysRequired {
+                        return HWResolver.shared.getBlindingPublicKeys(hw: hw, scripts: scripts)
+                    }
+                    return Promise<[String]> { seal in seal.fulfill([]) }
+                }.compactMap { keys in
+                    output["public_keys"] = keys
+                    let data = try JSONSerialization.data(withJSONObject: output, options: .fragmentsAllowed)
+                    return String(data: data, encoding: .utf8)
+                }
         case "get_blinding_public_keys":
             guard let scripts = requiredData["scripts"] as? [String] else {
                 return Promise { $0.reject(GaError.GenericError) }
