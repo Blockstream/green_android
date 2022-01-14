@@ -166,14 +166,17 @@ class RecipientCell: UITableViewCell {
         btnConvert.isUserInteractionEnabled = !isSendAll
         btnPasteAmount.isUserInteractionEnabled = !isSendAll
         btnCancelAmount.isUserInteractionEnabled = !isSendAll
-        if isSweep {
-            lblAvailableFunds.isHidden = true
-            btnSendAll.isHidden = true
-            btnConvert.isHidden = true
-            btnPasteAmount.isHidden = true
-            btnCancelAmount.isHidden = true
-            amountTextField.isUserInteractionEnabled = false
-            lblCurrency.isHidden = true
+
+        if let address = addressTextView.text {
+            if address.starts(with: "bitcoin:") || address.starts(with: "liquidnetwork:") || isSweep {
+                lblAvailableFunds.isHidden = true
+                btnSendAll.isHidden = true
+                btnConvert.isHidden = true
+                btnPasteAmount.isHidden = true
+                btnCancelAmount.isHidden = true
+                amountTextField.isUserInteractionEnabled = false
+                lblCurrency.isHidden = true
+            }
         }
         needRefresh?()
     }
