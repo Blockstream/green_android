@@ -824,8 +824,69 @@
                                             <outlet property="lblFeeTitle" destination="WiZ-Se-iFf" id="c47-lk-VRQ"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ChangeCell" rowHeight="116" id="oQO-Wf-Oo0" customClass="ChangeCell" customModule="gaios" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="384.5" width="414" height="116"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="oQO-Wf-Oo0" id="O7W-DQ-M8g">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="116"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Iwp-l7-dNr">
+                                                    <rect key="frame" x="20" y="10" width="374" height="96"/>
+                                                    <subviews>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eya-ew-sKz">
+                                                            <rect key="frame" x="0.0" y="0.0" width="374" height="81"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" text="lbl_change_title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jNy-vz-F0d">
+                                                                    <rect key="frame" x="20" y="10" width="334" height="21.5"/>
+                                                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_change_hint" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7oz-xA-2EK">
+                                                                    <rect key="frame" x="20" y="39" width="334" height="32"/>
+                                                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <constraints>
+                                                                <constraint firstItem="7oz-xA-2EK" firstAttribute="leading" secondItem="eya-ew-sKz" secondAttribute="leading" constant="20" symbolic="YES" id="73H-aJ-wrz"/>
+                                                                <constraint firstItem="7oz-xA-2EK" firstAttribute="top" secondItem="jNy-vz-F0d" secondAttribute="bottom" constant="7.5" id="CZW-Pr-CDA"/>
+                                                                <constraint firstAttribute="trailing" secondItem="7oz-xA-2EK" secondAttribute="trailing" constant="20" id="JYI-KK-UZx"/>
+                                                                <constraint firstItem="jNy-vz-F0d" firstAttribute="leading" secondItem="eya-ew-sKz" secondAttribute="leading" constant="20" id="dOK-Ft-5Uj"/>
+                                                                <constraint firstItem="jNy-vz-F0d" firstAttribute="top" secondItem="eya-ew-sKz" secondAttribute="top" constant="10" id="oYB-w7-tfQ"/>
+                                                                <constraint firstAttribute="bottom" secondItem="7oz-xA-2EK" secondAttribute="bottom" constant="10" id="pdR-qO-Z0q"/>
+                                                                <constraint firstAttribute="trailing" secondItem="jNy-vz-F0d" secondAttribute="trailing" constant="20" id="zir-Vj-DgB"/>
+                                                            </constraints>
+                                                        </view>
+                                                    </subviews>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="bottom" secondItem="eya-ew-sKz" secondAttribute="bottom" constant="15" id="1b9-6L-JpY"/>
+                                                        <constraint firstItem="eya-ew-sKz" firstAttribute="leading" secondItem="Iwp-l7-dNr" secondAttribute="leading" id="PAS-sQ-shQ"/>
+                                                        <constraint firstItem="eya-ew-sKz" firstAttribute="top" secondItem="Iwp-l7-dNr" secondAttribute="top" id="XCw-f5-hNS"/>
+                                                        <constraint firstAttribute="trailing" secondItem="eya-ew-sKz" secondAttribute="trailing" id="q5V-G2-7PU"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="Iwp-l7-dNr" secondAttribute="bottom" constant="10" id="4au-eW-LJH"/>
+                                                <constraint firstItem="Iwp-l7-dNr" firstAttribute="leading" secondItem="O7W-DQ-M8g" secondAttribute="leading" constant="20" id="5gS-rj-X5t"/>
+                                                <constraint firstAttribute="trailing" secondItem="Iwp-l7-dNr" secondAttribute="trailing" constant="20" id="TgX-mx-kZO"/>
+                                                <constraint firstItem="Iwp-l7-dNr" firstAttribute="top" secondItem="O7W-DQ-M8g" secondAttribute="top" constant="10" id="uY0-cS-7HJ"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <connections>
+                                            <outlet property="lblChangeHint" destination="7oz-xA-2EK" id="T8o-j9-90L"/>
+                                            <outlet property="lblChangeTitle" destination="jNy-vz-F0d" id="NXr-kq-SvA"/>
+                                        </connections>
+                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="NoteCell" rowHeight="119" id="9hP-dd-ywc" customClass="NoteCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="384.5" width="414" height="119"/>
+                                        <rect key="frame" x="0.0" y="500.5" width="414" height="119"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9hP-dd-ywc" id="cHj-jv-gDr">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="119"/>

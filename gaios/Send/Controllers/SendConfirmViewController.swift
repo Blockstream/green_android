@@ -148,7 +148,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
         case SendConfirmSection.fee.rawValue:
             return 1
         case SendConfirmSection.change.rawValue:
-            return 0
+            return AccountsManager.shared.current?.isHW == true ? 1 : 0
         case SendConfirmSection.note.rawValue:
             return 1
         default:
@@ -168,11 +168,15 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
         case SendConfirmSection.fee.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeSummaryCell") as? FeeSummaryCell, let tx = self.transaction {
                 cell.configure(tx)
-            cell.selectionStyle = .none
-            return cell
-        }
+                cell.selectionStyle = .none
+                return cell
+            }
         case SendConfirmSection.change.rawValue:
-            break
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "ChangeCell") as? ChangeCell, let tx = self.transaction {
+                cell.configure(tx)
+                cell.selectionStyle = .none
+                return cell
+            }
         case SendConfirmSection.note.rawValue:
             let noteAction: VoidToVoid? = { [weak self] in
                 self?.editNote()

@@ -140,6 +140,7 @@
 		349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */; };
 		3498806426A9692A00E11216 /* DialogTorSingleSig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498806326A9692A00E11216 /* DialogTorSingleSig.swift */; };
 		3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */; };
+		349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75042791BCA60046DA59 /* ChangeCell.swift */; };
 		349D1ED927424F200095B5CA /* Transaction.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 349D1ED827424F200095B5CA /* Transaction.storyboard */; };
 		349D1EDB274250540095B5CA /* TransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D1EDA274250540095B5CA /* TransactionViewController.swift */; };
 		349D7FED268D9470009E1815 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D7FEC268D9470009E1815 /* Constants.swift */; };
@@ -470,6 +471,7 @@
 		349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRecipientDeleteViewController.swift; sourceTree = "<group>"; };
 		3498806326A9692A00E11216 /* DialogTorSingleSig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSig.swift; sourceTree = "<group>"; };
 		3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSigViewController.swift; sourceTree = "<group>"; };
+		349C75042791BCA60046DA59 /* ChangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeCell.swift; sourceTree = "<group>"; };
 		349D1ED827424F200095B5CA /* Transaction.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Transaction.storyboard; sourceTree = "<group>"; };
 		349D1EDA274250540095B5CA /* TransactionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewController.swift; sourceTree = "<group>"; };
 		349D7FEC268D9470009E1815 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -869,6 +871,7 @@
 				34B30F79277C730000D37A3C /* AddresseeCell.swift */,
 				34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */,
 				34BD7E79278C93F3004AEC6F /* NoteCell.swift */,
+				349C75042791BCA60046DA59 /* ChangeCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1899,6 +1902,7 @@
 				819DFBA826038E800022BD85 /* AccountsManager.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
 				3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */,
+				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
 				3497936825F8B18C0029ECB1 /* WalletNameViewController.swift in Sources */,
 				34477D322771D2600021698B /* RecipientCell.swift in Sources */,
