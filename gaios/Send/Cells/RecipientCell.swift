@@ -173,6 +173,7 @@ class RecipientCell: UITableViewCell {
             btnPasteAmount.isHidden = true
             btnCancelAmount.isHidden = true
             amountTextField.isUserInteractionEnabled = false
+            lblCurrency.isHidden = true
         }
         needRefresh?()
     }

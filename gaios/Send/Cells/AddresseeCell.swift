@@ -57,7 +57,7 @@ class AddresseeCell: UITableViewCell {
                 lblDenomination.text = "\(ticker)"
             }
         }
-        if isSendAll {
+        if isSendAll && transaction.isSweep == false {
             lblAmount.text = NSLocalizedString("id_all", comment: "")
         }
         icon.image = UIImage(named: "default_asset_icon")!
