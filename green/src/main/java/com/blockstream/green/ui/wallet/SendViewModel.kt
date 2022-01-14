@@ -6,11 +6,9 @@ import com.blockstream.gdk.Balances
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.FeeBlockTarget
 import com.blockstream.gdk.data.CreateTransaction
-import com.blockstream.gdk.data.FeeEstimation
 import com.blockstream.gdk.params.AddressParams
 import com.blockstream.gdk.params.BalanceParams
 import com.blockstream.gdk.params.CreateTransactionParams
-
 import com.blockstream.green.Preferences
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
@@ -29,7 +27,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import mu.KLogging
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.text.isNotBlank
 
 
 class SendViewModel @AssistedInject constructor(
@@ -67,6 +64,7 @@ class SendViewModel @AssistedInject constructor(
     var feeRate : Long? =  null
     var feeEstimation: List<Long>? = null
 
+    private var checkedTransaction: CreateTransaction? = null
     val transactionError: MutableLiveData<String?> = MutableLiveData("") // empty string as an initial error to disable next button
 
     val handledGdkErrors = listOf("id_insufficient_funds", "id_invalid_private_key", "id_invalid_address", "id_invalid_amount", "id_invalid_asset_id",)
@@ -238,8 +236,11 @@ class SendViewModel @AssistedInject constructor(
             .drop(1)// drop initial value
             .filterNot { isBumpOrSweep }
             .distinctUntilChanged()
-            .onEach {
-                checkTransaction()
+            .onEach { isSendAll ->
+                // avoid checkTransaction when deselected as the event is fired from the amount field being set to ""
+                if(isSendAll) {
+                    checkTransaction()
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -400,11 +401,13 @@ class SendViewModel @AssistedInject constructor(
                             recipient.isFiat.postValue(false)
 
                             val assetId = addressee.assetId ?: session.policyAsset
-                            recipient.amount.postValue(if(assetId == session.policyAsset){
-                                tx.satoshi[assetId]?.toBTCLook(session, withUnit = false)
-                            }else{
-                                tx.satoshi[assetId]?.toAssetLook(session, assetId = assetId , withUnit = false)
-                            })
+                            recipient.amount.postValue(
+                                (if (recipient.isSendAll.value == true && session.isElectrum) addressee.satoshi else tx.satoshi[assetId])?.toAmountLook(
+                                    session,
+                                    assetId = assetId,
+                                    withUnit = false
+                                )
+                            )
                         }
                     }
                 }
@@ -439,9 +442,10 @@ class SendViewModel @AssistedInject constructor(
             }
         }.subscribeBy(
             onSuccess = { tx ->
+                checkedTransaction = tx
                 transactionError.value = null
 
-                feeAmount.value = tx.fee?.toBTCLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: ""
+                feeAmount.value = tx.fee?.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: ""
                 feeAmountRate.value = tx.feeRateWithUnit() ?: ""
                 feeAmountFiat.value = tx.fee?.toFiatLook(session = session, withUnit = true, withGrouping = true) ?: ""
 
@@ -492,6 +496,7 @@ class SendViewModel @AssistedInject constructor(
                 it.amount.value = ""
             }
             it.isSendAll.value = false
+            it.isFiat.value = false // reset isFiat as we don't want to have inconsistencies between btc / assets
             it.assetId.value = assetId
         }
     }
@@ -527,10 +532,25 @@ class SendViewModel @AssistedInject constructor(
             // Toggle it first as the amount trigger will be called with wrong isFiat value
             addressParams.isFiat.value = !isFiat
 
+            // Get value from the transaction object to get the actual send all amount
+            val amountToConvert = if(checkedTransaction?.isSendAll == true){
+                addressParams.assetId.value?.let { assetId ->
+                    checkedTransaction?.satoshi?.get(assetId)?.toAmountLook(session, assetId = assetId , withUnit = false, withMinimumDigits = false, withGrouping = false)
+                }
+            }else{
+                addressParams.amount.value ?: ""
+            }
+
+            // If isSend All, skip conversion and get the actual value
+            if(checkedTransaction?.isSendAll == true && isFiat){
+                addressParams.amount.value = amountToConvert
+                return
+            }
+
             // Convert between BTC / Fiat
             addressParams.amount.value = try {
                 val input =
-                    UserInput.parseUserInput(session, addressParams.amount.value, isFiat = isFiat)
+                    UserInput.parseUserInput(session, amountToConvert, isFiat = isFiat)
                 input.getBalance(session)?.let {
                     if (it.satoshi > 0) {
                         if (isFiat) {

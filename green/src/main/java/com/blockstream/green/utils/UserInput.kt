@@ -40,7 +40,7 @@ data class UserInput constructor(val amount: String, val decimals: Int, val unit
             val asset: Asset?
 
             when {
-                !assetId.isNullOrBlank() -> {
+                session.policyAsset != assetId && !assetId.isNullOrBlank() -> {
                     asset = session.getAsset(assetId) ?: Asset.createEmpty(assetId)
 
                     unitKey = getUnit(session)

@@ -13,10 +13,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAccountBinding
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.utils.getBitcoinOrLiquidUnit
-import com.blockstream.green.utils.toBTCLook
-import com.blockstream.green.utils.toPixels
-import com.blockstream.green.utils.updateAssetPadding
+import com.blockstream.green.utils.*
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
@@ -52,7 +49,7 @@ data class AccountListItem constructor(
 
         val policyAsset = walletBalances[subAccount.pointer.toInt()]?.entries?.firstOrNull()
 
-        binding.balance = policyAsset?.value?.toBTCLook(session, withUnit = false, withGrouping = true, withMinimumDigits = false)
+        binding.balance = policyAsset?.value?.toAmountLook(session, withUnit = false, withGrouping = true, withMinimumDigits = false)
         binding.ticker = getBitcoinOrLiquidUnit(session)
 
         if(session.isLiquid){

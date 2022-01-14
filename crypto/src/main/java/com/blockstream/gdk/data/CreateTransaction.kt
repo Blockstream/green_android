@@ -16,6 +16,7 @@ data class CreateTransaction constructor(
     @SerialName("fee") val fee: Long? = null,
     @SerialName("fee_rate") val feeRate: Long? = null,
     @SerialName("addressees_read_only") val isReadOnly: Boolean = false,
+    @SerialName("send_all") val isSendAll: Boolean = false,
     @SerialName("error") val error: String? = null,
 ) : GAJson<CreateTransaction>() {
     override val keepJsonElement = true

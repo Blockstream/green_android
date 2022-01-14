@@ -2,11 +2,9 @@ package com.blockstream.green.utils
 
 import com.blockstream.gdk.data.Balance
 import com.blockstream.gdk.data.CreateTransaction
-import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.GreenSession
-import com.greenaddress.greenapi.model.Conversion
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -125,38 +123,23 @@ fun Balance?.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: 
     } + if (withUnit) " ${getBitcoinOrLiquidUnit(session)}" else ""
 }
 
-fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
-    return try {
-        userNumberFormat(decimals = getDecimals(settings.unit), withDecimalSeparator = false, withGrouping = false).format(this)
-    } catch (e: Exception) {
-        "n/a"
-    } + if (withUnit) " ${settings.unit}" else ""
-}
-
-fun Balance?.asset(withUnit: Boolean = true, withGrouping: Boolean = false): String {
+fun Balance?.asset(withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
     if(this == null) return "n/a"
 
     return try {
-        userNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = withGrouping).format(assetValue?.toDouble() ?: satoshi)
+        userNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits).format(assetValue?.toDouble() ?: satoshi)
     } catch (e: Exception) {
         "n/a"
     } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""
 }
 
-fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null, withGrouping: Boolean = false, withMinimumDigits: Boolean = true): String {
-    return session.convertAmount(Convert(satoshi = this))?.btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)?.let{ amount ->
-        withDirection?.let { direction ->
-            return if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){
-                "-$amount"
-            }else{
-                "+$amount"
-            }
-        } ?: amount
-    } ?: "n/a"
-}
-
-fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean = true, withGrouping: Boolean = false, withDirection: Transaction.Type? = null): String {
-    return session.convertAmount(Convert(satoshi = this, session.getAsset(assetId)), isAsset = true)?.asset(withUnit = withUnit, withGrouping = withGrouping)?.let{ amount ->
+fun Long.toAmountLook(session: GreenSession, assetId: String? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withDirection: Transaction.Type? = null, withMinimumDigits: Boolean = false): String {
+    return if(assetId == null || assetId == session.policyAsset){
+        session.convertAmount(Convert(satoshi = this))?.btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)
+    }else{
+        // withMinimumDigits is not used on asset amounts
+        session.convertAmount(Convert(satoshi = this, session.getAsset(assetId)), isAsset = true)?.asset(withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = false)
+    }?.let { amount ->
         withDirection?.let { direction ->
             if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){
                 "-$amount"

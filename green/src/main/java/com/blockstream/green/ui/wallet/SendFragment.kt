@@ -290,27 +290,31 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         recipientBinding.liveData = liveData
         recipientBinding.index = index
 
-        viewModel.getRecipientLiveData(index)?.assetId?.observe(viewLifecycleOwner) { assetId ->
-            val balance = viewModel.getAssetsLiveData().value?.firstNotNullOfOrNull { if(it.key == assetId) it.value else null }
-            var look : AssetLook? = null
+        viewModel.getRecipientLiveData(index)?.let { addressParamsLiveData ->
 
-            if(!assetId.isNullOrBlank()) {
-                look = AssetLook(
-                    id = assetId,
-                    amount = balance ?: 0,
-                    session = session
-                )
+            addressParamsLiveData.assetId.observe(viewLifecycleOwner) { assetId ->
+                val balance = viewModel.getAssetsLiveData().value?.firstNotNullOfOrNull { if (it.key == assetId) it.value else null }
+                var look: AssetLook? = null
+
+                if (!assetId.isNullOrBlank()) {
+                    look = AssetLook(
+                        id = assetId,
+                        amount = balance ?: 0,
+                        session = session
+                    )
+                }
+
+                recipientBinding.assetName = look?.name
+                recipientBinding.assetBalance = if (look != null) getString(
+                    R.string.id_available_funds,
+                    look.balance(withUnit = true)
+                ) else ""
+                recipientBinding.assetSatoshi = balance ?: 0
+                setAssetIcon(recipientBinding, assetId)
+
+                recipientBinding.canConvert = assetId == session.network.policyAsset
             }
 
-            recipientBinding.assetName = look?.name
-            recipientBinding.assetBalance = if(look != null) getString(R.string.id_available_funds, look.balance(withUnit = true)) else ""
-            recipientBinding.assetSatoshi = balance ?: 0
-            setAssetIcon(recipientBinding, assetId)
-
-            recipientBinding.canConvert = assetId == session.network.policyAsset
-        }
-
-        viewModel.getRecipientLiveData(index)?.let { addressParamsLiveData ->
             listOf(
                 addressParamsLiveData.isFiat.asFlow(),
                 addressParamsLiveData.assetId.asFlow()
@@ -318,9 +322,9 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
                 .map { addressParamsLiveData }
                 .onEach {
                     recipientBinding.amountCurrency = it.assetId.value?.let { assetId ->
-                        if(it.isFiat.value == true){
+                        if (it.isFiat.value == true) {
                             getFiatCurrency(session)
-                        }else {
+                        } else {
                             if (session.policyAsset == assetId) {
                                 getBitcoinOrLiquidUnit(session)
                             } else {
@@ -330,12 +334,12 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
                     }
                 }
                 .launchIn(lifecycleScope)
-        }
 
-        // When changing asset and send all is enabled, listen for the event resetting the send all flag
-        viewModel.getRecipientLiveData(index)?.isSendAll?.observe(viewLifecycleOwner){ isSendAll ->
-            if(recipientBinding.buttonSendAll.isChecked != isSendAll) {
-                recipientBinding.buttonSendAll.isChecked = isSendAll
+            // When changing asset and send all is enabled, listen for the event resetting the send all flag
+            addressParamsLiveData.isSendAll.observe(viewLifecycleOwner) { isSendAll ->
+                if (recipientBinding.buttonSendAll.isChecked != isSendAll) {
+                    recipientBinding.buttonSendAll.isChecked = isSendAll
+                }
             }
         }
     }

@@ -2,14 +2,12 @@ package com.blockstream.green.ui.looks
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
-import com.blockstream.green.R
-import com.blockstream.green.gdk.GreenSession
-import com.blockstream.gdk.data.Asset
 import com.blockstream.gdk.data.Balance
 import com.blockstream.gdk.params.Convert
+import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.getBitcoinOrLiquidUnit
+import com.blockstream.green.utils.toAmountLook
 
 
 class AssetLook constructor(
@@ -23,13 +21,7 @@ class AssetLook constructor(
 
     private val isBTCValue by lazy { id == session.network.policyAsset }
 
-    fun balance(withUnit: Boolean = false) : String {
-            return if(isBTCValue){
-                amount.toBTCLook(session, withUnit = withUnit, withGrouping = true)
-            }else{
-                amount.toAssetLook(session, assetId = id, withUnit = withUnit, withGrouping = true)
-            }
-        }
+    fun balance(withUnit: Boolean = false) : String = amount.toAmountLook(session, assetId = id, withUnit = withUnit, withGrouping = true, withMinimumDigits = true)
 
     val fiatValue : Balance?
         get() = if (isBTCValue) {

@@ -245,7 +245,7 @@
                 android:layout_marginEnd="4dp"
                 android:adjustViewBounds="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:enabled="@{liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false}"
+                android:enabled="@{liveData.amountBip21 == false}"
                 android:padding="10dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_change"

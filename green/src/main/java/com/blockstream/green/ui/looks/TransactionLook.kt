@@ -31,7 +31,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     }
 
     val fee : String
-        get() = tx.fee.toBTCLook(session, withUnit = true, withGrouping = true, withMinimumDigits = true)
+        get() = tx.fee.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = true)
 
     val feeFiat: String?
         get() = session.convertAmount(Convert(satoshi = tx.fee)).fiatOrNull(session, withUnit = true).let {
@@ -48,7 +48,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     fun amount(index: Int): String {
         if(!cacheAmounts.containsKey(index)) {
             if (tx.txType == Transaction.Type.REDEPOSIT) {
-                cacheAmounts[index] = tx.fee.toBTCLook(
+                cacheAmounts[index] = tx.fee.toAmountLook(
                     session,
                     withUnit = false,
                     withDirection = tx.txType,
@@ -57,24 +57,14 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
                 )
             } else {
                 cacheAmounts[index] = assets[index].let {
-                     if (it.first == session.network.policyAsset) {
-                        it.second.toBTCLook(
-                            session,
-                            withUnit = false,
-                            withDirection = tx.txType,
-                            withGrouping = true,
-                            withMinimumDigits = true
-                        )
-                    } else {
-                        val assetId = it.first
-                        it.second.toAssetLook(
-                            session,
-                            assetId,
-                            withUnit = false,
-                            withDirection = tx.txType,
-                            withGrouping = true
-                        )
-                    }
+                    it.second.toAmountLook(
+                        session,
+                        assetId = it.first,
+                        withUnit = false,
+                        withDirection = tx.txType,
+                        withGrouping = true,
+                        withMinimumDigits = true
+                    )
                 }
             }
         }
