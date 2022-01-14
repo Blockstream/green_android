@@ -161,7 +161,12 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
         wallet = wallets[indexPath.row]
         subaccountDelegate?.onChange(wallet)
         if isSweep {
-            performSegue(withIdentifier: "sweep", sender: nil)
+            let storyboard = UIStoryboard(name: "Send", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
+                vc.isSweep = true
+                vc.wallet = wallet
+                navigationController?.pushViewController(vc, animated: true)
+            }
         } else {
             dismiss()
         }
@@ -173,10 +178,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let controller = segue.destination as? SendBtcViewController {
-            controller.isSweep = true
-            controller.wallet = wallet
-        } else if let controller = segue.destination as? AccountCreateViewController {
+        if let controller = segue.destination as? AccountCreateViewController {
             controller.subaccountDelegate = subaccountDelegate
             controller.presentationController?.delegate = self
         }

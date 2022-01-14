@@ -16,6 +16,7 @@ class SendViewController: KeyboardViewController {
     var wallet: WalletItem?
     var recipients: [Recipient] = []
     var isSendAll: Bool = false
+    var isSweep: Bool = false
 
     var isLiquid: Bool {
         get {
@@ -69,7 +70,10 @@ class SendViewController: KeyboardViewController {
     }
 
     func setContent() {
-        title = NSLocalizedString("id_send", comment: "")
+//        title = NSLocalizedString("id_send", comment: "")
+        if let wallet = wallet {
+            self.title = isSweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), wallet.localizedName()) : NSLocalizedString("id_send_to", comment: "")
+        }
     }
 
     func setStyle() {
@@ -126,6 +130,12 @@ class SendViewController: KeyboardViewController {
         return addressee
     }
 
+    func getPrivateKey() -> String {
+        //handling only 1 recipient for the moment
+        let recipient = recipients.first
+        return recipient?.address ?? ""
+    }
+
     func createTransaction() {
         let subaccount = self.wallet!.pointer
 
@@ -140,17 +150,28 @@ class SendViewController: KeyboardViewController {
         }.then(on: queue) {
             return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
         }.compactMap { data in
-            let result = data["result"] as? [String: Any]
-            let unspent = result?["unspent_outputs"] as? [String: Any]
-            var details: [String: Any] = [:]
-            details["addressees"] = [self.getAddressee()]
-            details["fee_rate"] = feeRate
-            details["subaccount"] = subaccount
-            details["utxos"] = unspent ?? [:]
-            if self.isSendAll == true {
-                details["send_all"] = true
+
+            if self.isSweep {
+                var details: [String: Any] = [:]
+                details["private_key"] = self.getPrivateKey()
+                details["fee_rate"] = feeRate
+                details["subaccount"] = subaccount
+                details["utxos"] = [:]
+                return details
+            } else {
+                let result = data["result"] as? [String: Any]
+                let unspent = result?["unspent_outputs"] as? [String: Any]
+                var details: [String: Any] = [:]
+                details["addressees"] = [self.getAddressee()]
+                details["fee_rate"] = feeRate
+                details["subaccount"] = subaccount
+                details["utxos"] = unspent ?? [:]
+                if self.isSendAll == true {
+                    details["send_all"] = true
+                }
+                return details
             }
-            return details
+
         }.then(on: queue) { data in
             try SessionManager.shared.createTransaction(details: data).resolve()
         }.done { data in
@@ -265,7 +286,8 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                                qrScan: qrAction,
                                walletItem: self.wallet,
                                tapSendAll: tapSendAll,
-                               isSendAll: self.isSendAll)
+                               isSendAll: self.isSendAll,
+                               isSweep: self.isSweep)
                 cell.selectionStyle = .none
                 return cell
             }

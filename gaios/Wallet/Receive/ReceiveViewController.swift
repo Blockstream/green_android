@@ -225,8 +225,8 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
                 present(vc, animated: false, completion: nil)
             }
         case .sweep:
-            let storyboard = UIStoryboard(name: "SendBtc", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "SendBtcViewController") as? SendBtcViewController {
+            let storyboard = UIStoryboard(name: "Send", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
                 vc.isSweep = true
                 vc.wallet = wallet
                 navigationController?.pushViewController(vc, animated: true)

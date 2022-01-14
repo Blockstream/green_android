@@ -37,6 +37,7 @@ class RecipientCell: UITableViewCell {
     var wallet: WalletItem?
     var tapSendAll: VoidToVoid?
     var isSendAll: Bool = false
+    var isSweep: Bool = false
 
     var isFiat: Bool {
         return recipient?.isFiat ?? false
@@ -88,7 +89,8 @@ class RecipientCell: UITableViewCell {
                    qrScan: VoidToVoid?,
                    walletItem: WalletItem?,
                    tapSendAll: VoidToVoid?,
-                   isSendAll: Bool
+                   isSendAll: Bool,
+                   isSweep: Bool
     ) {
         lblRecipientNum.text = "#\(index + 1)"
         removeRecipientView.isHidden = !isMultiple
@@ -103,7 +105,9 @@ class RecipientCell: UITableViewCell {
         self.wallet = walletItem
         self.tapSendAll = tapSendAll
         self.isSendAll = isSendAll
+        self.isSweep = isSweep
 
+        lblAddressHint.text = NSLocalizedString(isSweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
         iconAsset.image = UIImage(named: "default_asset_icon")!
         lblAssetName.text = "Asset"
         if network == "mainnet" {
@@ -131,7 +135,6 @@ class RecipientCell: UITableViewCell {
     }
 
     func setContent() {
-        lblAddressHint.text = "Recipient Address"
         lblAssetHint.text = "Asset"
         lblAvailableFunds.text = ""
         btnSendAll.setTitle("Send All funds", for: .normal)
@@ -163,6 +166,14 @@ class RecipientCell: UITableViewCell {
         btnConvert.isUserInteractionEnabled = !isSendAll
         btnPasteAmount.isUserInteractionEnabled = !isSendAll
         btnCancelAmount.isUserInteractionEnabled = !isSendAll
+        if isSweep {
+            lblAvailableFunds.isHidden = true
+            btnSendAll.isHidden = true
+            btnConvert.isHidden = true
+            btnPasteAmount.isHidden = true
+            btnCancelAmount.isHidden = true
+            amountTextField.isUserInteractionEnabled = false
+        }
         needRefresh?()
     }
 
