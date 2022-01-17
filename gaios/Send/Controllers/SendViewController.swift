@@ -48,6 +48,9 @@ class SendViewController: KeyboardViewController {
     var transactionPriority: TransactionPriority = .High
     var customFee: UInt64 = 1000
 
+    var transaction: Transaction?
+    var isBumpFee: Bool = false
+
     func selectedFee() -> Int {
         switch transactionPriority {
         case .High:
@@ -82,6 +85,17 @@ class SendViewController: KeyboardViewController {
 
     func addRecipient() {
         let recipient = Recipient()
+        if isBumpFee {
+            let addressee = transaction?.addressees.first
+            recipient.address = addressee?.address
+
+            if let satoshi = addressee?.satoshi {
+                let details = ["satoshi": satoshi]
+                let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: "btc") ?? ("", "")
+                recipient.amount = amount
+            }
+        }
+
         recipient.assetId = isBtc ? "btc" : nil
         recipients.append(recipient)
         reloadSections([SendSection.recipient], animated: true)
@@ -151,6 +165,12 @@ class SendViewController: KeyboardViewController {
             return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
         }.compactMap { data in
 
+            if self.isBumpFee {
+                var details: [String: Any] = [:]
+                details = self.transaction!.details
+                details["fee_rate"] = feeRate
+                return details
+            }
             if self.isSweep {
                 var details: [String: Any] = [:]
                 details["private_key"] = self.getPrivateKey()
@@ -287,7 +307,8 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                                walletItem: self.wallet,
                                tapSendAll: tapSendAll,
                                isSendAll: self.isSendAll,
-                               isSweep: self.isSweep)
+                               isSweep: self.isSweep,
+                               isBumpFee: self.isBumpFee)
                 cell.selectionStyle = .none
                 return cell
             }

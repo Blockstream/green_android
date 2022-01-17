@@ -38,6 +38,7 @@ class RecipientCell: UITableViewCell {
     var tapSendAll: VoidToVoid?
     var isSendAll: Bool = false
     var isSweep: Bool = false
+    var isBumpFee: Bool = false
 
     var isFiat: Bool {
         return recipient?.isFiat ?? false
@@ -90,7 +91,8 @@ class RecipientCell: UITableViewCell {
                    walletItem: WalletItem?,
                    tapSendAll: VoidToVoid?,
                    isSendAll: Bool,
-                   isSweep: Bool
+                   isSweep: Bool,
+                   isBumpFee: Bool
     ) {
         lblRecipientNum.text = "#\(index + 1)"
         removeRecipientView.isHidden = !isMultiple
@@ -106,6 +108,7 @@ class RecipientCell: UITableViewCell {
         self.tapSendAll = tapSendAll
         self.isSendAll = isSendAll
         self.isSweep = isSweep
+        self.isBumpFee = isBumpFee
 
         lblAddressHint.text = NSLocalizedString(isSweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
         iconAsset.image = UIImage(named: "default_asset_icon")!
@@ -177,6 +180,10 @@ class RecipientCell: UITableViewCell {
                 amountTextField.isUserInteractionEnabled = false
                 lblCurrency.isHidden = true
             }
+        }
+        if isBumpFee {
+            isUserInteractionEnabled = false
+            bg.alpha = 0.6
         }
         needRefresh?()
     }
