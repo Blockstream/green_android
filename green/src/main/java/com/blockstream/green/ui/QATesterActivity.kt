@@ -5,27 +5,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.Notification
-import com.blockstream.green.R
-import com.blockstream.green.data.Countries
-import com.blockstream.green.data.Country
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.QaTesterActivityBinding
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.QTNotificationDelay
 import com.blockstream.green.utils.isDevelopmentFlavor
-import com.blockstream.green.utils.openKeyboard
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import mu.KLogging
+import java.io.File
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
@@ -100,6 +99,18 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
                 it.show(supportFragmentManager, it.toString())
             }
         }
+
+        binding.buttonClearGdk.setOnClickListener {
+            lifecycleScope.launchWhenStarted {
+                logger.info { "Deleting ${applicationContext.filesDir.absolutePath}" }
+                File(applicationContext.filesDir.absolutePath).deleteRecursively()
+
+                Snackbar.make(binding.root, "Restarting application", Snackbar.LENGTH_SHORT).show()
+                delay(1500)
+                exitProcess(0)
+            }
+
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -141,6 +152,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
-
     }
+
+    companion object: KLogging()
 }
