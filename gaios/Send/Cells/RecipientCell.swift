@@ -161,6 +161,7 @@ class RecipientCell: UITableViewCell {
         if isSendAll {
             btnSendAll.setStyle(.primary)
             recipient?.amount = nil
+            amountTextField.text = NSLocalizedString("id_all", comment: "")
         } else {
             btnSendAll.setStyle(.outlinedGray)
             recipient?.amount = amountTextField.text
