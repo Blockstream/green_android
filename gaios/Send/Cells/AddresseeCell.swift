@@ -57,9 +57,6 @@ class AddresseeCell: UITableViewCell {
                 lblDenomination.text = "\(ticker)"
             }
         }
-        if isSendAll && transaction.isSweep == false {
-            lblAmount.text = NSLocalizedString("id_all", comment: "")
-        }
         icon.image = UIImage(named: "default_asset_icon")!
         if network == "mainnet" {
             icon.image = UIImage(named: "ntw_btc")
