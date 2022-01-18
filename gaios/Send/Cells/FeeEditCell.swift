@@ -4,6 +4,9 @@ class FeeEditCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblFeeTitle: UILabel!
+    @IBOutlet weak var lblFeeValue: UILabel!
+    @IBOutlet weak var lblFeeRate: UILabel!
+    @IBOutlet weak var lblFeeFiat: UILabel!
     @IBOutlet weak var btnCustomFee: UIButton!
     @IBOutlet weak var lblTimeTitle: UILabel!
     @IBOutlet weak var lblTimeHint: UILabel!
@@ -37,6 +40,9 @@ class FeeEditCell: UITableViewCell {
         lblFeeTitle.text = "Fee"
         lblTimeTitle.text = "Confirmation Time"
         lblTimeHint.text = ""
+        lblFeeValue.isHidden = true
+        lblFeeRate.isHidden = true
+        lblFeeFiat.isHidden = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
