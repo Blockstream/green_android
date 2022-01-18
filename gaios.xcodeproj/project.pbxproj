@@ -141,6 +141,8 @@
 		3498806426A9692A00E11216 /* DialogTorSingleSig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498806326A9692A00E11216 /* DialogTorSingleSig.swift */; };
 		3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */; };
 		349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75042791BCA60046DA59 /* ChangeCell.swift */; };
+		349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75212796D99E0046DA59 /* AssetsListViewController.swift */; };
+		349C75242796DBB90046DA59 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75232796DBB90046DA59 /* AssetCell.swift */; };
 		349D1ED927424F200095B5CA /* Transaction.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 349D1ED827424F200095B5CA /* Transaction.storyboard */; };
 		349D1EDB274250540095B5CA /* TransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D1EDA274250540095B5CA /* TransactionViewController.swift */; };
 		349D7FED268D9470009E1815 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D7FEC268D9470009E1815 /* Constants.swift */; };
@@ -472,6 +474,8 @@
 		3498806326A9692A00E11216 /* DialogTorSingleSig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSig.swift; sourceTree = "<group>"; };
 		3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSigViewController.swift; sourceTree = "<group>"; };
 		349C75042791BCA60046DA59 /* ChangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeCell.swift; sourceTree = "<group>"; };
+		349C75212796D99E0046DA59 /* AssetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsListViewController.swift; sourceTree = "<group>"; };
+		349C75232796DBB90046DA59 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
 		349D1ED827424F200095B5CA /* Transaction.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Transaction.storyboard; sourceTree = "<group>"; };
 		349D1EDA274250540095B5CA /* TransactionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewController.swift; sourceTree = "<group>"; };
 		349D7FEC268D9470009E1815 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -1329,6 +1333,7 @@
 			children = (
 				6DD813B122BC5877002DCC8B /* TableViewCells */,
 				81923A32228084FF0097BEA8 /* AssetsListTableViewController.swift */,
+				349C75212796D99E0046DA59 /* AssetsListViewController.swift */,
 				81C602AA22A55A47004E26E1 /* AssetDetailTableViewController.swift */,
 				6DD813B222BC58A7002DCC8B /* Assets.storyboard */,
 			);
@@ -1342,6 +1347,7 @@
 				81923A37228194950097BEA8 /* AssetTableCell.xib */,
 				6DD813B422BC6218002DCC8B /* AssetDetailHeaderCell.swift */,
 				6DD813B622BDA4F2002DCC8B /* AssetDetailTableCell.swift */,
+				349C75232796DBB90046DA59 /* AssetCell.swift */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -1955,12 +1961,14 @@
 				811B963821F5FC8300DE02CB /* AccountsHeaderCollection.swift in Sources */,
 				34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */,
 				34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */,
+				349C75242796DBB90046DA59 /* AssetCell.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
 				34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */,
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
+				349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */,
 				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */,
 				349D1EDB274250540095B5CA /* TransactionViewController.swift in Sources */,

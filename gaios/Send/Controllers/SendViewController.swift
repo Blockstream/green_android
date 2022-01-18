@@ -266,15 +266,8 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
             self?.tableView.endUpdates()
         }
         let selectAsset: VoidToVoid = {[weak self] in
-            //        if self.isLiquid && !haveAssets { ...  }
-            //        if let next = segue.destination as? AssetsListTableViewController {
-            //            next.isSend = true
-            //            next.wallet = wallet
-            //            next.transaction = sender as? Transaction
-            //        }
             let storyboard = UIStoryboard(name: "Assets", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetsListTableViewController") as? AssetsListTableViewController {
-                vc.isSend = true
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetsListViewController") as? AssetsListViewController {
                 vc.wallet = self?.wallet
                 vc.index = indexPath.row
                 vc.delegate = self
@@ -381,7 +374,7 @@ extension SendViewController: DialogRecipientDeleteViewControllerDelegate {
     }
 }
 
-extension SendViewController: AssetsListTableViewControllerDelegate {
+extension SendViewController: AssetsListViewControllerDelegate {
     func didSelect(assetId: String, index: Int?) {
         if let index = index {
             recipients[index].assetId = assetId
