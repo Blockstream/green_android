@@ -9,6 +9,7 @@ class AddresseeCell: UITableViewCell {
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblDenomination: UILabel!
     @IBOutlet weak var lblAmount: UILabel!
+    @IBOutlet weak var lblFiat: UILabel!
 
     var isFiat = false
 
@@ -37,7 +38,6 @@ class AddresseeCell: UITableViewCell {
 
     func configure(transaction: Transaction, index: Int) {
         let addressee = transaction.addressees[index]
-        let isSendAll = transaction.sendAll
         lblRecipientTitle.text = "Recipient"
         lblRecipientAddress.text = addressee.address
 
@@ -49,12 +49,15 @@ class AddresseeCell: UITableViewCell {
                 let (value, denom) = balance.get(tag: btc)
                 lblAmount.text = value ?? ""
                 lblDenomination.text = "\(denom)"
+                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
+                lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
             }
         } else {
             if let balance = Balance.convert(details: details) {
                 let (amount, ticker) = balance.get(tag: transaction.defaultAsset)
                 lblAmount.text = amount ?? "N.A."
                 lblDenomination.text = "\(ticker)"
+                lblFiat.isHidden = true
             }
         }
         icon.image = UIImage(named: "default_asset_icon")!
