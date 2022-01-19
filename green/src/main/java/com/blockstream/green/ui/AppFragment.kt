@@ -2,13 +2,11 @@ package com.blockstream.green.ui
 
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -18,15 +16,14 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.data.AppEvent
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.devices.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.clearNavigationResult
 import com.blockstream.green.utils.getNavigationResult
 import com.blockstream.green.utils.navigate
+import com.blockstream.green.views.GreenToolbar
 import io.reactivex.rxjava3.core.Completable
 import mu.KLogging
 import javax.inject.Inject
@@ -66,6 +63,21 @@ abstract class AppFragment<T : ViewDataBinding>(
     lateinit var settingsManager: SettingsManager
 
     open fun getAppViewModel(): AppViewModel? = null
+
+    open val title : String? = null
+
+    protected val toolbar: GreenToolbar
+        get() = (requireActivity() as AppActivity).toolbar
+
+    open fun updateToolbar() {
+        title?.let {
+            toolbar.title = it
+        }
+        toolbar.subtitle = null
+        toolbar.logo = null
+        toolbar.setBubble(null)
+        toolbar.setButton(null)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -129,8 +141,10 @@ abstract class AppFragment<T : ViewDataBinding>(
         super.onResume()
 
         // Prevent DrawerFragment from corrupting the main fragment
-        if(this !is DrawerFragment) {
+        if (this !is DrawerFragment) {
             requireActivity().window.setSoftInputMode(if (isAdjustResize) WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE else WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
+            updateToolbar()
         }
     }
 
@@ -145,16 +159,6 @@ abstract class AppFragment<T : ViewDataBinding>(
     }
 
     protected fun isDrawerOpen() = (requireActivity() as AppActivity).isDrawerOpen()
-
-    fun setToolbar(wallet: Wallet) {
-        val icon = ContextCompat.getDrawable(requireContext(), wallet.getIcon())
-        setToolbar(wallet.name, subtitle = null, drawable = icon)
-    }
-
-    fun setToolbar(title: String? = null, subtitle: String? = null, drawable: Drawable? = null, button: CharSequence? = null,
-                   buttonListener: View.OnClickListener? = null){
-        (requireActivity() as AppActivity).setToolbar(title, subtitle, drawable, button, buttonListener)
-    }
 
     fun setToolbarVisibility(isVisible: Boolean){
         (requireActivity() as AppActivity).setToolbarVisibility(isVisible)

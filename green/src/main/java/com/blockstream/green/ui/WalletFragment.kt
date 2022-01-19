@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
+import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.GreenSession
+import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
@@ -23,6 +25,21 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     lateinit var session: GreenSession
 
     private var networkSnackbar: Snackbar? = null
+
+    override fun updateToolbar() {
+        super.updateToolbar()
+        if (isSessionAndWalletRequired()) {
+            toolbar.setLogo(wallet.getIcon())
+            session.hwWallet?.device?.let {
+                toolbar.setBubble(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        it.getIcon()
+                    )
+                )
+            }
+        }
+    }
 
     // Guard initialization code for fragments that requires a connected session
     abstract fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?)

@@ -1,10 +1,8 @@
 package com.blockstream.green.ui
 
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
@@ -22,7 +20,10 @@ import androidx.transition.TransitionManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.ui.devices.DeviceInfoBottomSheetDialogFragment
+import com.blockstream.green.ui.wallet.LoginFragment
 import com.blockstream.green.utils.*
+import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
@@ -42,6 +43,9 @@ class MainActivity : AppActivity() {
 
     private lateinit var binding: MainActivityBinding
     private val activityViewModel: MainActivityViewModel by viewModels()
+
+    override val toolbar: GreenToolbar
+        get() = binding.toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,6 +114,19 @@ class MainActivity : AppActivity() {
         )
 
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
+
+        binding.toolbar.setLogoClickListener {
+            navHostFragment.childFragmentManager.fragments.firstOrNull()?.let { fragment ->
+                // Except LoginFragment as we don't want concurrent login requests to happen
+                if(fragment is WalletFragment<*> && fragment !is LoginFragment){
+                    fragment.session.device?.let {
+                        DeviceInfoBottomSheetDialogFragment.create(it.id).also {
+                            it.show(navHostFragment.childFragmentManager, it.toString())
+                        }
+                    }
+                }
+            }
+        }
 
         binding.buttonUnlock.setOnClickListener {
             showUnlockPrompt()
@@ -231,13 +248,6 @@ class MainActivity : AppActivity() {
 
     override fun closeDrawer() {
         binding.drawerLayout.closeDrawers()
-    }
-
-    override fun setToolbar(
-        title: String?, subtitle: String?, drawable: Drawable?, button: CharSequence?,
-        buttonListener: View.OnClickListener?
-    ){
-        binding.toolbar.set(title, subtitle, drawable, null, button, buttonListener)
     }
 
     override fun setToolbarVisibility(isVisible: Boolean) {

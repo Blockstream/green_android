@@ -80,6 +80,23 @@ class DeviceInfoViewModel @AssistedInject constructor(
         )
     }
 
+    fun changeNetwork(wallet: Wallet){
+        getGreenSession().observable {
+            it.disconnect(disconnectDevice = false)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onSuccess = {
+                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
+            },
+            onError = {
+                it.printStackTrace()
+            }
+        )
+    }
+
     override fun onCleared() {
         super.onCleared()
         hardwareConnect.onDestroy()

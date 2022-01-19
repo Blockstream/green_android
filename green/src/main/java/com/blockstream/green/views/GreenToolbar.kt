@@ -27,36 +27,30 @@ class GreenToolbar @JvmOverloads constructor(
     }
 
     override fun setTitle(title: CharSequence?) {
-        set(title)
+        binding.title.text = title
     }
 
     override fun setSubtitle(subtitle: CharSequence?) {
-        set(title = title, subtitle = subtitle)
-    }
-
-    override fun setLogo(drawable: Drawable?) {
-        set(title, subtitle, drawable)
-    }
-
-    fun set(
-        title: CharSequence? = null,
-        subtitle: CharSequence? = null,
-        drawableLogo: Drawable? = null,
-        drawableBubbleIcon: Drawable? = null,
-        button: CharSequence? = null,
-        buttonListener: OnClickListener? = null
-    ) {
-        binding.title.text = title
-
+        super.setSubtitle(subtitle)
         binding.subtitle.text = subtitle
         binding.subtitle.isGone = subtitle.isNullOrBlank()
+    }
 
-        binding.icon.isGone = drawableLogo == null
-        binding.icon.setImageDrawable(drawableLogo)
+    override fun setLogo(logo: Drawable?) {
+        binding.icon.isGone = logo == null
+        binding.icon.setImageDrawable(logo)
+    }
 
-        binding.bubbleIcon.isGone = drawableBubbleIcon == null
-        binding.bubbleIcon.setImageDrawable(drawableBubbleIcon)
+    fun setLogoClickListener(listener : OnClickListener) {
+        binding.icon.setOnClickListener(listener)
+    }
 
+    fun setBubble(bubble: Drawable?) {
+        binding.bubbleIcon.isGone = bubble == null
+        binding.bubbleIcon.setImageDrawable(bubble)
+    }
+
+    fun setButton(button: CharSequence? = null, buttonListener: OnClickListener? = null) {
         binding.button.isGone = button == null
         binding.button.text = button
         binding.button.setOnClickListener(buttonListener)

@@ -10,6 +10,10 @@
         <variable
             name="vm"
             type="com.blockstream.green.ui.devices.DeviceInfoViewModel" />
+
+        <variable
+            name="isBottomSheet"
+            type="Boolean" />
     </data>
 
 
@@ -28,6 +32,7 @@
             android:layout_marginBottom="24dp"
             android:cropToPadding="false"
             android:scaleType="fitCenter"
+            tools:src="@drawable/blockstream_jade_device"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,10 +79,11 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
-            isVisible="@{!vm.onProgress}"
+            isVisible="@{!vm.onProgress &amp;&amp; !isBottomSheet}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="40dp"
+            android:overScrollMode="never"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -97,7 +103,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonAppSettings"
             style="@style/Widget.Green.Button.Text"
-            isGone="@{vm.onProgress}"
+            isGone="@{vm.onProgress || isBottomSheet}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"

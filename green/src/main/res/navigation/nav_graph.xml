@@ -60,7 +60,6 @@
     <fragment
         android:id="@+id/twoFactorSetupFragment"
         android:name="com.blockstream.green.ui.settings.TwoFactorSetupFragment"
-        android:label=""
         tools:layout="@layout/twofactor_setup_fragment">
         <argument
             android:name="wallet"

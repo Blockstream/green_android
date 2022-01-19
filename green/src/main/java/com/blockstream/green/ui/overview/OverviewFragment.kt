@@ -24,7 +24,6 @@ import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ListItemAccountBinding
 import com.blockstream.green.databinding.OverviewFragmentBinding
 import com.blockstream.green.gdk.getConfirmationsMax
-import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.ui.TwoFactorResetBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.*
@@ -99,7 +98,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
     var showAccountInToolbar: Boolean by Delegates.observable(false) { _, oldValue, newValue ->
         if(oldValue != newValue) {
-            updateToolbar(newValue)
+            updateToolbar()
         }
     }
 
@@ -193,13 +192,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             viewModel.refresh()
         }
 
-        viewModel.getWalletLiveData().observe(viewLifecycleOwner) {
-            setToolbar(it.name, drawable = ContextCompat.getDrawable(requireContext(), it.getIcon()))
-        }
-
         viewModel.getState().distinctUntilChanged().observe(viewLifecycleOwner) {
             // TODO fix it, its not working
-            updateToolbar(false)
+            // updateToolbar(false)
 
             onBackCallback.isEnabled = !isOverviewState
         }
@@ -580,16 +575,13 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         adapter?.notifyItemChanged(0)
     }
 
-    private fun updateToolbar(showSecondary: Boolean) {
+    override fun updateToolbar() {
+        super.updateToolbar()
+
         var title = viewModel.wallet.name
         var subtitle: String? = null
 
-        var icon = ContextCompat.getDrawable(
-            requireContext(),
-            viewModel.wallet.getIcon()
-        )
-
-        if (showSecondary) {
+        if (showAccountInToolbar) {
             if (isOverviewState) {
                 viewModel.getSubAccountLiveData().value?.nameOrDefault(getString(R.string.id_main_account))
                     ?.let {
@@ -603,12 +595,12 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
                         subtitle = title // wallet name
                         title = look.name
-                        icon = look.icon(requireContext())
                     }
                 }
             }
         }
 
-        setToolbar(title, subtitle = subtitle, drawable = icon)
+        toolbar.title = title
+        toolbar.subtitle = subtitle
     }
 }

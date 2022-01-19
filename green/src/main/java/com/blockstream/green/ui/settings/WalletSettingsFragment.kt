@@ -90,6 +90,9 @@ class WalletSettingsFragment :
             updateSharedPreferencesSummaries()
         }
 
+    override val title: String?
+        get() = if(args.showRecoveryTransactions) getString(R.string.id_recovery_transactions) else null
+
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         getNavigationResult<Boolean>()?.observe(viewLifecycleOwner) {
             it?.let {
@@ -99,10 +102,6 @@ class WalletSettingsFragment :
         }
 
         binding.vm = viewModel
-
-        if(args.showRecoveryTransactions) {
-            setToolbar(getString(R.string.id_recovery_transactions))
-        }
 
         watchOnlyPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
         logoutPreference = PreferenceListItem(StringHolder(wallet.name), StringHolder(R.string.id_logout), withSubtitleRed = true)

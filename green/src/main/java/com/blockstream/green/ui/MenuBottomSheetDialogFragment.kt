@@ -16,7 +16,7 @@ import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MenuBottomSheetDialogFragment(val dataProvider: MenuDataProvider) :
+class MenuBottomSheetDialogFragment constructor(val dataProvider: MenuDataProvider) :
     BottomSheetDialogFragment() {
 
     private lateinit var binding: MenuBottomSheetBinding

@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.rxjava3.subjects.CompletableSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import kotlin.UInt;
 import kotlin.UIntKt;
@@ -345,10 +346,13 @@ public class TrezorHWWallet extends HWWallet {
     private Message handleCommon(final HWWalletBridge parent, final Message m) {
         switch (m.getClass().getSimpleName()) {
         case "ButtonRequest":
+            CompletableSubject completable = CompletableSubject.create();
             if(parent != null) {
-                parent.interactionRequest(this, null, null);
+                parent.interactionRequest(this, completable, "id_check_device");
             }
-            return handleCommon(parent, mTrezor.io(TrezorMessage.ButtonAck.newBuilder()));
+            Message io = mTrezor.io(TrezorMessage.ButtonAck.newBuilder());
+            completable.onComplete();
+            return handleCommon(parent, io);
 
         case "PinMatrixRequest":
             final String pin = parent.requestPinMatrix(DeviceBrand.Trezor).blockingGet();

@@ -60,6 +60,9 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
             // Nothing to do here, it's already handled by DeviceManager
         }
 
+    override val title: String?
+        get() = if (args.deviceBrand != DeviceBrand.Blockstream)  args.deviceBrand.brand  else null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -142,26 +145,23 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun updateToolbar() {
+        super.updateToolbar()
 
         if (args.deviceBrand == DeviceBrand.Blockstream) {
-            setToolbar(
-                drawable = ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.blockstream_jade_logo
-                ), button = getString(R.string.id_get_jade)
-            ) {
+            toolbar.logo = ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.blockstream_jade_logo
+            )
+            toolbar.setButton(button = getString(R.string.id_get_jade)) {
                 openBrowser(settingsManager.getApplicationSettings(), Urls.JADE_STORE)
             }
         } else {
-            setToolbar(
-                title = args.deviceBrand.brand,
-                drawable = ContextCompat.getDrawable(
-                    requireContext(),
-                    args.deviceBrand.icon
-                ), button = getString(R.string.id_blockstream_store)
-            ) {
+            toolbar.logo = ContextCompat.getDrawable(
+                requireContext(),
+                args.deviceBrand.icon
+            )
+            toolbar.setButton(button = getString(R.string.id_blockstream_store)) {
                 openBrowser(settingsManager.getApplicationSettings(), Urls.HARDWARE_STORE)
             }
         }

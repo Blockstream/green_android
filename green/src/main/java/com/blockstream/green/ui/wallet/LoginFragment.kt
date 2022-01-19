@@ -69,6 +69,9 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
     override fun getWalletViewModel() = viewModel
 
+    override val title: String
+        get() = wallet.name
+
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
@@ -76,10 +79,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             if (it) {
                 navigate(LoginFragmentDirections.actionGlobalOverviewFragment(viewModel.wallet))
             }
-        }
-
-        viewModel.getWalletLiveData().observe(viewLifecycleOwner) {
-            setToolbar(viewModel.wallet)
         }
 
         viewModel.pinCredentials.observe(viewLifecycleOwner) {

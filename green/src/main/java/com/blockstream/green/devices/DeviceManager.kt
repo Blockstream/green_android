@@ -67,17 +67,15 @@ class DeviceManager constructor(
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED == intent.action) {
                 scanDevices()
             } else if (ACTION_USB_PERMISSION == intent.action) {
-                synchronized(this) {
-                    val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+                val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
 
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        device?.apply {
-                            logger.info { "Permission granted for device $device" }
-                            onPermissionSuccess?.get()?.invoke()
-                        }
-                    } else {
-                        logger.info { "Permission denied for device $device" }
+                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                    device?.apply {
+                        logger.info { "Permission granted for device $device" }
+                        onPermissionSuccess?.get()?.invoke()
                     }
+                } else {
+                    logger.info { "Permission denied for device $device" }
                 }
             }else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED == intent.action){
                 val bondedDevice  = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
@@ -241,8 +239,7 @@ class DeviceManager constructor(
 
     fun askForPermissions(device: UsbDevice, onSuccess: (() -> Unit)) {
         onPermissionSuccess = WeakReference(onSuccess)
-        val permissionIntent =
-            PendingIntent.getBroadcast(context, 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE)
+        val permissionIntent = PendingIntent.getBroadcast(context, 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE)
         usbManager.requestPermission(device, permissionIntent)
     }
 
@@ -306,7 +303,7 @@ class DeviceManager constructor(
     }
 
     companion object : KLogging() {
-        private const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
+        private const val ACTION_USB_PERMISSION = "com.blockstream.green.USB_PERMISSION"
 
         // Supported BLE Devices
         private val SupportedBleUuid = listOf(ParcelUuid(LedgerDeviceBLE.SERVICE_UUID), ParcelUuid(JadeBleImpl.IO_SERVICE_UUID))

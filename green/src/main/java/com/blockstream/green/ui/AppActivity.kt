@@ -1,7 +1,5 @@
 package com.blockstream.green.ui
 
-import android.graphics.drawable.Drawable
-import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -10,6 +8,7 @@ import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.notifyDevelopmentFeature
+import com.blockstream.green.views.GreenToolbar
 import javax.inject.Inject
 
 abstract class AppActivity : AppCompatActivity() {
@@ -23,15 +22,10 @@ abstract class AppActivity : AppCompatActivity() {
     abstract fun isDrawerOpen(): Boolean
     abstract fun closeDrawer()
     abstract fun lockDrawer(isLocked: Boolean)
-    abstract fun setToolbar(
-        title: String?,
-        subtitle: String? = null,
-        drawable: Drawable? = null,
-        button: CharSequence? = null,
-        buttonListener: View.OnClickListener? = null
-    )
 
     abstract fun setToolbarVisibility(isVisible: Boolean)
+
+    abstract val toolbar: GreenToolbar
 
     internal lateinit var navController: NavController
 

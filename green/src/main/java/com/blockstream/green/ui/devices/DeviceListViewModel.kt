@@ -22,6 +22,8 @@ class DeviceListViewModel @AssistedInject constructor(
     val bleAdapterState = deviceManager.bleAdapterState
     val hasBleConnectivity = deviceBrand.hasBleConnectivity
 
+    var onSuccess: (() -> Unit)? = null
+
     init {
         deviceManager
             .getDevices()
@@ -33,9 +35,11 @@ class DeviceListViewModel @AssistedInject constructor(
     }
 
     fun askForPermissionOrBond(device: Device) {
-        device.askForPermissionOrBond({
+        onSuccess = {
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
-        }, {
+        }
+
+        device.askForPermissionOrBond(onSuccess!! , {
             onError.postValue(ConsumableEvent(it))
         })
     }

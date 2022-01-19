@@ -74,6 +74,15 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     override fun getWalletViewModel() = viewModel
 
+    override val title: String
+        get() = getString(
+            when {
+                isBump -> R.string.id_increase_fee
+                isSweep -> R.string.id_sweep
+                else -> R.string.id_send
+            }
+        )
+
     private val assetAdapter by lazy {
         ModelAdapter<BalancePair, AssetListItem> {
             AssetListItem(session = session, balancePair = it, showInfo = false, isLoading = false)
@@ -401,16 +410,6 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             .setNegativeButton(android.R.string.cancel, null)
             .show()
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        setToolbar(title = getString(when{
-            isBump -> R.string.id_increase_fee
-            isSweep -> R.string.id_sweep
-            else -> R.string.id_send
-        }))
     }
 
     override fun onPause() {

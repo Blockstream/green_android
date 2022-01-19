@@ -66,6 +66,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/id_verify_on_device"
             isInvisible="@{confirmed}"
+            android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceCaption"
             app:layout_constraintEnd_toEndOf="@+id/icon"
             app:layout_constraintStart_toStartOf="@+id/icon"

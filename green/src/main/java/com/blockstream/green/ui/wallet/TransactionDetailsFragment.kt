@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.MenuRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.navArgs
@@ -58,6 +57,15 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         TransactionDetailsViewModel.provideFactory(viewModelFactory, wallet, args.transaction)
     }
 
+    override val title: String
+        get() = getString(
+            when (args.transaction.txType) {
+                Transaction.Type.OUT -> R.string.id_sent
+                Transaction.Type.REDEPOSIT -> R.string.id_redeposited
+                else -> R.string.id_received
+            }
+        )
+
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
 
         noteListItem = GenericDetailListItem(
@@ -66,18 +74,6 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             buttonText = StringHolder(R.string.id_save),
             enableButton = saveButtonEnabled
         )
-
-        viewModel.getSubAccountLiveData().observe(viewLifecycleOwner) {
-            setToolbar(
-                title = getString(
-                    when (args.transaction.txType) {
-                        Transaction.Type.OUT -> R.string.id_sent
-                        Transaction.Type.REDEPOSIT -> R.string.id_redeposited
-                        else -> R.string.id_received
-                    }
-                ), subtitle = it.nameOrDefault(getString(R.string.id_main_account))
-            )
-        }
 
         viewModel.editableNote.observe(viewLifecycleOwner) {
             saveButtonEnabled.postValue(it != viewModel.originalNote.value ?: "")

@@ -25,7 +25,7 @@ import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.items.NetworkListItem
+import com.blockstream.green.ui.items.NetworkSmallListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -61,6 +61,9 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
     @Inject
     lateinit var greenWallet: GreenWallet
+
+    override val title: String?
+        get() = if(device?.deviceBrand == DeviceBrand.Blockstream) null else device?.deviceBrand?.name
 
     override fun getAppViewModel(): AppViewModel = viewModel
 
@@ -150,7 +153,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
             when (item) {
-                is NetworkListItem -> {
+                is NetworkSmallListItem -> {
 
                     if (settingsManager.isDeviceTermsAccepted()){
                         connect(item.network)
@@ -209,23 +212,20 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun updateToolbar() {
+        super.updateToolbar()
 
         device?.deviceBrand?.let {
             if(it == DeviceBrand.Blockstream){
-                setToolbar(
-                    drawable = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.blockstream_jade_logo
-                    ))
+                toolbar.logo = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.blockstream_jade_logo
+                )
             }else{
-                setToolbar(
-                    title = it.brand,
-                    drawable = ContextCompat.getDrawable(
-                        requireContext(),
-                        device?.deviceBrand?.icon ?: 0
-                    ))
+                toolbar.logo = ContextCompat.getDrawable(
+                    requireContext(),
+                    it.icon
+                )
             }
         }
     }
@@ -252,38 +252,35 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner) { applicationSettings ->
             fastItemAdapter.clear()
 
-            fastItemAdapter.add(NetworkListItem(Network.GreenMainnet, greenWallet.networks.bitcoinGreen.productName, ""))
+            fastItemAdapter.add(NetworkSmallListItem(Network.GreenMainnet, greenWallet.networks.bitcoinGreen.productName))
             if(device?.supportsLiquid == true){
-                fastItemAdapter.add(NetworkListItem(Network.GreenLiquid, greenWallet.networks.liquidGreen.productName, ""))
+                fastItemAdapter.add(NetworkSmallListItem(Network.GreenLiquid, greenWallet.networks.liquidGreen.productName))
             }
 
             if(applicationSettings.testnet) {
                 val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
 
                 expandable.subItems.add(
-                    NetworkListItem(
+                    NetworkSmallListItem(
                         Network.GreenTestnet,
-                        greenWallet.networks.testnetGreen.productName,
-                        ""
+                        greenWallet.networks.testnetGreen.productName
                     )
                 )
 
                 if (device?.supportsLiquid == true) {
                     expandable.subItems.add(
-                        NetworkListItem(
+                        NetworkSmallListItem(
                             Network.GreenTestnetLiquid,
-                            greenWallet.networks.testnetLiquidGreen.productName,
-                            ""
+                            greenWallet.networks.testnetLiquidGreen.productName
                         )
                     )
                 }
 
                 greenWallet.networks.customNetwork?.let {
                     expandable.subItems.add(
-                        NetworkListItem(
+                        NetworkSmallListItem(
                             it.id,
-                            it.name,
-                            "Force usage of custom network. Multisig/Singlesig selection is irrelevant."
+                            it.name
                         )
                     )
                 }

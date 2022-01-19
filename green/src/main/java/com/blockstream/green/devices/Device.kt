@@ -73,6 +73,10 @@ class Device constructor(
         !isTrezor
     }
 
+    val canSwitchNetwork by lazy {
+        isJade || isTrezor
+    }
+
     fun askForPermissionOrBond(onSuccess: (() -> Unit), onError: ((throwable: Throwable) -> Unit)) {
         usbDevice?.let {
             deviceManager.askForPermissions(it) {
