@@ -29,22 +29,27 @@ class SessionManager: Session {
         }
     }
 
-    public init() {
+    public override init() {
         notificationManager = NotificationManager()
-        try! super.init(notificationCompletionHandler: notificationManager.newNotification)
+        try! super.init()
     }
 
     public static func newSession(account: Account?) -> SessionManager {
         // Todo: destroy the session in a thread-safe way
         //SessionManager.shared = SessionManager()
         let session = SessionManager.shared
-        try? session.disconnect()
+        session.disconnect()
         session.account = account
-        session.connected = false
-        session.logged = false
         session.twoFactorConfig = nil
         session.settings = nil
         return SessionManager.shared
+    }
+
+    public override func disconnect() {
+        try? super.disconnect()
+        setNotificationHandler(notificationCompletionHandler: nil)
+        connected = false
+        logged = false
     }
 
     public func connect() throws {
@@ -87,6 +92,7 @@ class SessionManager: Session {
         }
         // Connect
         do {
+            setNotificationHandler(notificationCompletionHandler: notificationManager.newNotification)
             try super.connect(netParams: netParams)
             connected = true
         } catch {
