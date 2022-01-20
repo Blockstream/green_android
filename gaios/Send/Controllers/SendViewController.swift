@@ -17,6 +17,14 @@ class SendViewController: KeyboardViewController {
     var recipients: [Recipient] = []
     var isSendAll: Bool = false
     var isSweep: Bool = false
+    var isBumpFee: Bool = false
+
+    var transaction: Transaction?
+    var prevTxDetails: [String: Any] = [:]
+
+    var transactionPriority: TransactionPriority = .High
+    var customFee: UInt64 = 1000
+    let activityIndicator = UIActivityIndicatorView(style: .white)
 
     var isLiquid: Bool {
         get {
@@ -45,11 +53,13 @@ class SendViewController: KeyboardViewController {
         return feeEstimates
     }()
 
-    var transactionPriority: TransactionPriority = .High
-    var customFee: UInt64 = 1000
-
-    var transaction: Transaction?
-    var isBumpFee: Bool = false
+    private var defaultTransactionPriority: TransactionPriority = {
+        guard let settings = SessionManager.shared.settings else { return .High }
+        if let pref = TransactionPriority.getPreference() {
+            settings.transactionPriority = pref
+        }
+        return settings.transactionPriority
+    }()
 
     func selectedFee() -> Int {
         switch transactionPriority {
@@ -70,6 +80,12 @@ class SendViewController: KeyboardViewController {
         setContent()
         setStyle()
         addRecipient()
+        updateBtnNext()
+        transactionPriority = defaultTransactionPriority
+        activityIndicator.hidesWhenStopped = true
+        if isBumpFee {
+            prevTxDetails = transaction?.details ?? [:]
+        }
     }
 
     func setContent() {
@@ -113,15 +129,6 @@ class SendViewController: KeyboardViewController {
         }
     }
 
-//    func reloadAmount() {
-//
-//
-//        guard let satoshi = transaction.addressees.first?.satoshi else { return }
-//        let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
-//        let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetId) ?? ("", "")
-//        content.amountTextField.text = amount
-//    }
-
     func getAddressee() -> [String: Any] {
         //handling only 1 recipient for the moment
         let recipient = recipients.first
@@ -150,57 +157,84 @@ class SendViewController: KeyboardViewController {
         return recipient?.address ?? ""
     }
 
-    func createTransaction() {
+    func updateBtnNext() {
+        btnNext.setStyle(.primaryDisabled)
+        if let tx = transaction {
+            if tx.error.isEmpty {
+                btnNext.setStyle(.primary)
+            }
+        }
+    }
+
+    func showIndicator() {
+        self.activityIndicator.isHidden = false
+        self.activityIndicator.startAnimating()
+        self.navigationItem.titleView = self.activityIndicator
+    }
+
+    func hideIndicator() {
+        self.activityIndicator.stopAnimating()
+        self.navigationItem.titleView = nil
+    }
+
+    func validateTransaction() {
+        transaction = nil
+        updateBtnNext()
+
+        if (recipients[0].amount ?? "").isEmpty && (recipients[0].address ?? "").isEmpty {
+            return
+        }
+        if recipients[0].assetId == nil {
+            return
+        }
         let subaccount = self.wallet!.pointer
 
         feeEstimates[3] = customFee
         guard let feeEstimate = feeEstimates[selectedFee()] else { return }
         let feeRate = feeEstimate
 
-        self.startAnimating()
+        showIndicator()
         let queue = DispatchQueue.global(qos: .default)
         firstly {
             return Guarantee()
         }.then(on: queue) {
             return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
         }.compactMap { data in
-
             if self.isBumpFee {
                 var details: [String: Any] = [:]
-                details = self.transaction!.details
+                details = self.prevTxDetails
                 details["fee_rate"] = feeRate
-                return details
-            }
-            if self.isSweep {
-                var details: [String: Any] = [:]
-                details["private_key"] = self.getPrivateKey()
-                details["fee_rate"] = feeRate
-                details["subaccount"] = subaccount
-                details["utxos"] = [:]
                 return details
             } else {
-                let result = data["result"] as? [String: Any]
-                let unspent = result?["unspent_outputs"] as? [String: Any]
-                var details: [String: Any] = [:]
-                details["addressees"] = [self.getAddressee()]
-                details["fee_rate"] = feeRate
-                details["subaccount"] = subaccount
-                details["utxos"] = unspent ?? [:]
-                if self.isSendAll == true {
-                    details["send_all"] = true
+                if self.isSweep {
+                    var details: [String: Any] = [:]
+                    details["private_key"] = self.getPrivateKey()
+                    details["fee_rate"] = feeRate
+                    details["subaccount"] = subaccount
+                    details["utxos"] = [:]
+                    return details
+                } else {
+                    let result = data["result"] as? [String: Any]
+                    let unspent = result?["unspent_outputs"] as? [String: Any]
+                    var details: [String: Any] = [:]
+                    details["addressees"] = [self.getAddressee()]
+                    details["fee_rate"] = feeRate
+                    details["subaccount"] = subaccount
+                    details["utxos"] = unspent ?? [:]
+                    if self.isSendAll == true {
+                        details["send_all"] = true
+                    }
+                    return details
                 }
-                return details
             }
-
         }.then(on: queue) { data in
             try SessionManager.shared.createTransaction(details: data).resolve()
         }.done { data in
             let result = data["result"] as? [String: Any]
             let tx: Transaction = Transaction(result ?? [:])
-            if !tx.error.isEmpty {
-                throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
-            } else {
-                self.onTransactionReady(tx)
+            self.transaction = tx
+            if tx.error == "id_invalid_replacement_fee_rate" {
+                DropAlert().error(message: NSLocalizedString("id_invalid_replacement_fee_rate", comment: ""))
             }
         }.catch { error in
             switch error {
@@ -212,21 +246,28 @@ class SendViewController: KeyboardViewController {
                 DropAlert().error(message: error.localizedDescription)
             }
         }.finally {
-            self.stopAnimating()
+            self.hideIndicator()
+            self.updateBtnNext()
+            let vc = self.tableView.visibleCells
+            vc.forEach({ item in
+                if let cell = item as? RecipientCell {
+                    cell.onTransactionValidate(self.transaction)
+                }})
+            self.reloadSections([SendSection.fee], animated: false)
         }
     }
 
-    func onTransactionReady(_ transaction: Transaction) {
+    func onTransactionReady() {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController, let tx = self.transaction {
             vc.wallet = wallet
-            vc.transaction = transaction
+            vc.transaction = tx
             navigationController?.pushViewController(vc, animated: true)
         }
     }
 
     @IBAction func btnNext(_ sender: Any) {
-        createTransaction()
+        onTransactionReady()
     }
 }
 
@@ -265,6 +306,9 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
             self?.tableView.beginUpdates()
             self?.tableView.endUpdates()
         }
+        let validateTransaction: VoidToVoid = {[weak self] in
+            self?.validateTransaction()
+        }
         let selectAsset: VoidToVoid = {[weak self] in
             let storyboard = UIStoryboard(name: "Assets", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetsListViewController") as? AssetsListViewController {
@@ -301,7 +345,8 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                                tapSendAll: tapSendAll,
                                isSendAll: self.isSendAll,
                                isSweep: self.isSweep,
-                               isBumpFee: self.isBumpFee)
+                               isBumpFee: self.isBumpFee,
+                               validateTransaction: validateTransaction)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -326,9 +371,13 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
             }
             let updatePriority: ((TransactionPriority) -> Void) = {[weak self] value in
                 self?.transactionPriority = value
+                self?.validateTransaction()
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeEditCell") as? FeeEditCell {
-                cell.configure(setCustomFee: setCustomFee, updatePriority: updatePriority)
+                cell.configure(transaction: self.transaction,
+                               setCustomFee: setCustomFee,
+                               updatePriority: updatePriority,
+                               transactionPriority: self.transactionPriority)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -377,8 +426,12 @@ extension SendViewController: DialogRecipientDeleteViewControllerDelegate {
 extension SendViewController: AssetsListViewControllerDelegate {
     func didSelect(assetId: String, index: Int?) {
         if let index = index {
+            isSendAll = false
             recipients[index].assetId = assetId
+            recipients[index].amount = nil
+            recipients[index].isFiat = false
             reloadSections([SendSection.recipient], animated: false)
+            validateTransaction()
         }
     }
 }
@@ -399,5 +452,7 @@ extension SendViewController: DialogCustomFeeViewControllerDelegate {
     func didSave(fee: UInt64?) {
         feeEstimates[3] = fee ?? 1000
         customFee = feeEstimates[3] ?? 1000
+        transactionPriority = .Custom
+        validateTransaction()
     }
 }

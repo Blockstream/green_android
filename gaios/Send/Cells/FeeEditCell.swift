@@ -17,16 +17,19 @@ class FeeEditCell: UITableViewCell {
     @IBOutlet weak var icon3: UIImageView!
     @IBOutlet weak var icon4: UIImageView!
 
+    @IBOutlet weak var lblTipCustom: UILabel!
+    @IBOutlet weak var lblTipLow: UILabel!
+    @IBOutlet weak var lblTipMedium: UILabel!
+    @IBOutlet weak var lblTipHigh: UILabel!
+
+    var transaction: Transaction?
     var setCustomFee: VoidToVoid?
     var updatePriority: ((TransactionPriority) -> Void)?
+    var transactionPriority: TransactionPriority?
 
-    private var defaultFee: TransactionPriority = {
-        guard let settings = SessionManager.shared.settings else { return .High }
-        if let pref = TransactionPriority.getPreference() {
-            settings.transactionPriority = pref
-        }
-        return settings.transactionPriority
-    }()
+    private var btc: String {
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -40,9 +43,10 @@ class FeeEditCell: UITableViewCell {
         lblFeeTitle.text = "Fee"
         lblTimeTitle.text = "Confirmation Time"
         lblTimeHint.text = ""
-        lblFeeValue.isHidden = true
-        lblFeeRate.isHidden = true
-        lblFeeFiat.isHidden = true
+        lblTipCustom.text = NSLocalizedString("id_custom", comment: "")
+        lblTipLow.text = NSLocalizedString("id_low", comment: "")
+        lblTipMedium.text = NSLocalizedString("id_medium", comment: "")
+        lblTipHigh.text = NSLocalizedString("id_high", comment: "")
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -50,21 +54,56 @@ class FeeEditCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        lblTipLow.textColor = .white
+        lblTipMedium.textColor = .white
+        lblTipHigh.textColor = .white
+        lblTipCustom.textColor = .white
     }
 
-    func configure(setCustomFee: VoidToVoid?, updatePriority: ((TransactionPriority) -> Void)?) {
+    func configure(transaction: Transaction?,
+                   setCustomFee: VoidToVoid?,
+                   updatePriority: ((TransactionPriority) -> Void)?,
+                   transactionPriority: TransactionPriority
+    ) {
         self.setCustomFee = setCustomFee
         self.updatePriority = updatePriority
+        self.transaction = transaction
+        lblFeeValue.isHidden = true
+        lblFeeRate.isHidden = true
+        lblFeeFiat.isHidden = true
 
-        setPriority(feeToSwitchIndex(defaultFee))
-        feeSlider.value = Float(feeToSwitchIndex(defaultFee))
-        updatePriority?(defaultFee)
+        lblTimeHint.text = transactionPriority == .Custom ? "Custom" : "~ \(transactionPriority.time)"
+        feeSlider.value = Float(feeToSwitchIndex(transactionPriority))
+
+        switch transactionPriority {
+        case .Low:
+            lblTipLow.textColor = UIColor.customMatrixGreen()
+        case .Medium:
+            lblTipMedium.textColor = UIColor.customMatrixGreen()
+        case .High:
+            lblTipHigh.textColor = UIColor.customMatrixGreen()
+        case .Custom:
+            lblTipCustom.textColor = UIColor.customMatrixGreen()
+        }
+
+        if let tx = transaction, tx.error.isEmpty {
+            if let balance = Balance.convert(details: ["satoshi": tx.fee]) {
+                let (amount, denom) = balance.get(tag: btc)
+                lblFeeValue.text = "\(amount ?? "") \(denom)"
+                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
+                lblFeeFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+                lblFeeRate.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(tx.feeRate) / 1000))"
+                lblFeeValue.isHidden = false
+                lblFeeRate.isHidden = false
+                lblFeeFiat.isHidden = false
+            }
+        }
+
     }
 
     func setPriority(_ switchIndex: Int) {
         let tp = switchIndexToFee(switchIndex)
         lblTimeHint.text = tp == .Custom ? "Custom" : "~ \(tp.time)"
-        updatePriority?(tp)
     }
 
     func feeToSwitchIndex(_ fee: TransactionPriority) -> Int {
@@ -94,7 +133,7 @@ class FeeEditCell: UITableViewCell {
         }
     }
 
-    func onChabge() {
+    func onChange() {
 
     }
 
@@ -106,6 +145,6 @@ class FeeEditCell: UITableViewCell {
         let step = Float(1)
         let roundedValue = round(sender.value / step) * step
         sender.value = roundedValue
-        setPriority(Int(sender.value))
+        updatePriority?(switchIndexToFee(Int(sender.value)))
     }
 }
