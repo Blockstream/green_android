@@ -38,7 +38,7 @@ extension UITextField {
         doneToolbar.barStyle = UIBarStyle.default
 
         let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let done: UIBarButtonItem = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.done, target: self, action: myAction)
+        let done: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("id_done", comment: ""), style: UIBarButtonItem.Style.done, target: self, action: myAction)
 
         var items = [UIBarButtonItem]()
         items.append(flexSpace)
