@@ -3,14 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
-### Added
+## [3.7.8] - 2022-01-20
 
 ### Changed
-- Update account discovery on restore
-- Update get nonces for jade
-
-### Fixed
+- Update GDK to version 0.0.49
+- Improve automatic wallet restore
 
 ## [3.7.7] - 2021-12-17
 
