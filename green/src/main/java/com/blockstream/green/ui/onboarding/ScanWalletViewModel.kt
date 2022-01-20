@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.params.SubAccountsParams
-import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
@@ -41,7 +40,7 @@ class ScanWalletViewModel @AssistedInject constructor(
         session.observable {
             val multisig: Boolean? = try{
                 val multiSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = false)
-                val multisigLoginData = it.loginWithMnemonic(multiSigNetwork, mnemonic, mnemonicPassword)
+                val multisigLoginData = it.loginWithMnemonic(multiSigNetwork, mnemonic, mnemonicPassword, initializeSession = false)
                 !walletRepository.walletsExistsSync(multisigLoginData.walletHashId, false)
             }catch (e: Exception){
                 null
@@ -49,17 +48,20 @@ class ScanWalletViewModel @AssistedInject constructor(
 
             val singlesig: Boolean? = try{
                 val singleSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = true)
-                val singleSigLoginData = it.loginWithMnemonic(singleSigNetwork, mnemonic, mnemonicPassword)
+                val singleSigLoginData = it.loginWithMnemonic(singleSigNetwork, mnemonic, mnemonicPassword, initializeSession = false)
 
                 it.getSubAccounts(params = SubAccountsParams(refresh = true)).subaccounts.find { subaccount ->
-                    it.getTransactions(TransactionParams(subaccount = subaccount.pointer)).transactions.isNotEmpty()
-                }.let {  subAccountWithTransactions ->
-                    if(subAccountWithTransactions != null){
+                    subaccount.bip44Discovered == true
+                }.let { subAccountWithTransactions ->
+                    if (subAccountWithTransactions != null) {
                         !walletRepository.walletsExistsSync(singleSigLoginData.walletHashId, false)
-                    }else{
+                    } else {
                         null
                     }
+                }.also {
+                    session.disconnect(disconnectDevice = true)
                 }
+
             }catch (e: Exception){
                 e.printStackTrace()
                 null

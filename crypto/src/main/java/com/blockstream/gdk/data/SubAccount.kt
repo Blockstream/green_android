@@ -17,6 +17,7 @@ data class SubAccount(
     @SerialName("recovery_xpub") val recoveryXpub: String? = null,
     @Serializable(with = AccountTypeSerializer::class)
     @SerialName("type") val type: AccountType,
+    @SerialName("bip44_discovered") val bip44Discovered: Boolean? = null,
 ) : GAJson<SubAccount>() {
 
     override fun kSerializer(): KSerializer<SubAccount> {

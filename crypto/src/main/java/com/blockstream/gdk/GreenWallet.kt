@@ -11,6 +11,8 @@ import com.blockstream.libgreenaddress.GDK
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
 import kotlinx.serialization.json.*
+import mu.KLogging
+import java.io.File
 import java.security.SecureRandom
 import kotlin.random.asKotlinRandom
 
@@ -25,7 +27,7 @@ class GreenWallet constructor(
     val gdk: KotlinGDK,
     private val wally: KotlinWally,
     private val sharedPreferences: SharedPreferences,
-    dataDir: String,
+    val dataDir: File,
     developmentFlavor: Boolean,
     val extraLogger: Logger? = null
 ) {
@@ -33,7 +35,7 @@ class GreenWallet constructor(
     private val bip39WordList by lazy { wally.bip39Wordlist(BIP39_WORD_LIST_LANG) }
 
     init {
-        gdk.init(JsonConverter(developmentFlavor, !BuildConfig.DEBUG, extraLogger), InitConfig(dataDir))
+        gdk.init(JsonConverter(developmentFlavor, !BuildConfig.DEBUG, extraLogger), InitConfig(dataDir.absolutePath))
         wally.init(0, randomBytes(KotlinWally.WALLY_SECP_RANDOMIZE_LEN))
 
         sharedPreferences.getString(KEY_CUSTOM_NETWORK, null)?.let {
@@ -277,7 +279,7 @@ class GreenWallet constructor(
         return false
     }
 
-    companion object {
+    companion object: KLogging(){
         /**
          * Serialization / Deserialization JSON Options
          */

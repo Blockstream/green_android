@@ -76,7 +76,7 @@ class GreenModules {
             gdk = gdk,
             wally = wally,
             sharedPreferences = sharedPreferences,
-            dataDir = context.filesDir.absolutePath,
+            dataDir = context.filesDir,
             developmentFlavor = context.isDevelopmentFlavor(),
             extraLogger = logger
         )

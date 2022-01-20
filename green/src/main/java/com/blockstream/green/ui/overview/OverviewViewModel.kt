@@ -1,9 +1,13 @@
 package com.blockstream.green.ui.overview
 
-import androidx.lifecycle.*
 
-
-import com.blockstream.gdk.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.blockstream.gdk.BalanceLoading
+import com.blockstream.gdk.BalancePair
+import com.blockstream.gdk.Balances
 import com.blockstream.gdk.data.Block
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
@@ -137,7 +141,7 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     fun refresh(){
-        session.updateSubAccountsAndBalances()
+        session.updateSubAccountsAndBalances(refresh = true)
         session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
     }
 

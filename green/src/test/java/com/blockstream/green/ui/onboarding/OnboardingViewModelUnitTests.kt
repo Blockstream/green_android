@@ -15,9 +15,9 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.*
 
 @RunWith(MockitoJUnitRunner::class)
 class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
@@ -63,7 +63,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
     fun setup() {
         whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(session)
 
-        whenever(session.loginWithMnemonic(any(), any(), any())).thenAnswer {
+        whenever(session.loginWithMnemonic(any(), any(), any(), any())).thenAnswer {
             // value is same as requested key
             val recovery = it.arguments[1] as String
             if (recovery != "valid") {

@@ -405,7 +405,8 @@ class GreenSession constructor(
     fun loginWithMnemonic(
         network: Network,
         mnemonic: String,
-        password: String = ""
+        password: String = "",
+        initializeSession: Boolean = true,
     ): LoginData {
         isWatchOnly = false
 
@@ -414,9 +415,9 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic, password = password))
         ).result<LoginData>().also {
-           if(network.isElectrum){
+           if(initializeSession && network.isElectrum){
                // On Singlesig, check if there is a SegWit account already restored or create one
-               val subAccounts = getSubAccounts().subaccounts
+               val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
 
                if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
                    // Create SegWit Account
@@ -427,7 +428,7 @@ class GreenSession constructor(
                }
            }
 
-            onLoginSuccess(it, 0)
+            onLoginSuccess(loginData = it, initAccountIndex = 0, initializeSession = initializeSession)
         }
     }
 
@@ -456,14 +457,16 @@ class GreenSession constructor(
         }
     }
 
-    private fun onLoginSuccess(loginData: LoginData, initAccountIndex: Long){
+    private fun onLoginSuccess(loginData: LoginData, initAccountIndex: Long, initializeSession: Boolean = true) {
         isConnected = true
         walletHashId = loginData.walletHashId
-        initializeSessionData(initAccountIndex)
+        if(initializeSession) {
+            initializeSessionData(initAccountIndex)
+        }
     }
 
     private fun initializeSessionData(initAccountIndex: Long) {
-        updateSubAccountsAndBalances()
+        updateSubAccountsAndBalances(isInitialize = true, refresh = false)
         updateSystemMessage()
 
         setActiveAccount(initAccountIndex)
@@ -714,7 +717,7 @@ class GreenSession constructor(
     }
 
     var isUpdatingSubAccounts = AtomicBoolean(false)
-    fun updateSubAccountsAndBalances() {
+    fun updateSubAccountsAndBalances(isInitialize: Boolean = false, refresh: Boolean = false) {
         // Prevent race condition
         if (!isUpdatingSubAccounts.compareAndSet(false, true)){
             return
@@ -723,7 +726,12 @@ class GreenSession constructor(
         logger.info { "updateSubAccountsAndBalances" }
 
         observable {
-            getSubAccounts().also {
+            getSubAccounts(params = SubAccountsParams(refresh = refresh)).also {
+                if(isInitialize){
+                    // immediately update subAccounts subject
+                    subAccountsSubject.onNext(it.subaccounts)
+                }
+
                 for(subaccount in it.subaccounts){
                     getBalance(BalanceParams(
                         subaccount = subaccount.pointer,
@@ -817,7 +825,11 @@ class GreenSession constructor(
             "block" -> {
                 notification.block?.let {
                     blockSubject.onNext(it)
-                    updateTransactionsAndBalance(isReset = false, isLoadMore = false)
+                    // SingleSig after connect immediatelly sends a block with height 0
+                    // it's not safe to call getTransactions so early
+                    if(it.height > 0) {
+                        updateTransactionsAndBalance(isReset = false, isLoadMore = false)
+                    }
                 }
             }
             "settings" -> {
