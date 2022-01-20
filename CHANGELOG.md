@@ -8,6 +8,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 ### Fixed
 
+## [3.7.8] - 2022-01-20
+### Added
+- Show recovery phrases as Qr codes, to facilitate exporting your wallets on a new device
+- 2of3 account creation for Bitcoin multisig shield wallets
+
+### Changed
+- Streamlined wallet navigation: switch between your wallets without needing to log out every time
+- Show a bottom sheet when an interaction with hardware wallet is needed
+- Updated GDK to 0.0.49
+- Updated project dependencies
+
+### Fixed
+- Jade Bluetooth pairing with Google Pixel devices
+- PIN screen layout for larger displays
+- Tor connection indicator
+- Crash when requesting USB permissions on Android 12
+
 ## [3.7.7] - 2021-12-17
 ### Added
 - Automatic wallet restore, Green will find any wallet associated with your recovery phrase
