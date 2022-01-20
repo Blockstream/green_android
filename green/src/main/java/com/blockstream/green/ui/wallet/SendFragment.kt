@@ -14,7 +14,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.BalancePair
@@ -37,6 +39,10 @@ import com.greenaddress.greenbits.ui.send.SendConfirmActivity
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
 import java.text.NumberFormat
 import java.util.*
@@ -302,11 +308,28 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             setAssetIcon(recipientBinding, assetId)
 
             recipientBinding.canConvert = assetId == session.network.policyAsset
-            recipientBinding.amountTextInputLayout.suffixText = look?.ticker ?: ""
         }
 
-        viewModel.getRecipientLiveData(index)?.isFiat?.observe(viewLifecycleOwner){ isFiat ->
-            recipientBinding.amountCurrency = if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)
+        viewModel.getRecipientLiveData(index)?.let { addressParamsLiveData ->
+            listOf(
+                addressParamsLiveData.isFiat.asFlow(),
+                addressParamsLiveData.assetId.asFlow()
+            ).merge()
+                .map { addressParamsLiveData }
+                .onEach {
+                    recipientBinding.amountCurrency = it.assetId.value?.let { assetId ->
+                        if(it.isFiat.value == true){
+                            getFiatCurrency(session)
+                        }else {
+                            if (session.policyAsset == assetId) {
+                                getBitcoinOrLiquidUnit(session)
+                            } else {
+                                session.getAsset(assetId)?.ticker ?: ""
+                            }
+                        }
+                    }
+                }
+                .launchIn(lifecycleScope)
         }
 
         // When changing asset and send all is enabled, listen for the event resetting the send all flag
