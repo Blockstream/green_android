@@ -113,7 +113,14 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final JsonNode addressee = mTxJson.withArray("addressees").get(0);
         final String asset = addressee.hasNonNull("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
         final String address = addressee.get("address").asText();
-        final long amount = mTxJson.get("satoshi").get(asset).asLong(0);
+
+        final long amount;
+        if(getSession().getNetworkData().isElectrum()){
+            amount = addressee.get("satoshi").asLong(0);
+        }else{
+            amount = mTxJson.get("satoshi").get(asset).asLong(0);
+        }
+
         final boolean isSweeping = mTxJson.get("is_sweep").asBoolean();
         UI.hideIf(isSweeping, noteTextTitle);
         UI.hideIf(isSweeping, noteText);
