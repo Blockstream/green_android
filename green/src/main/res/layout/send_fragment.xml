@@ -85,6 +85,23 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
+                        <ImageButton
+                            android:id="@+id/buttonFeeHelp"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_gravity="end"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="1dp"
+                            android:background="@android:color/transparent"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_baseline_help_outline_18"
+                            app:layout_constraintBottom_toBottomOf="@+id/feeLabel"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintStart_toEndOf="@+id/feeLabel"
+                            app:layout_constraintTop_toTopOf="@+id/feeLabel"
+                            app:tint="@color/color_on_surface_emphasis_low" />
+
                         <TextView
                             android:id="@+id/feeRate"
                             isInvisible="@{vm.feeAmountRate.empty}"
@@ -105,12 +122,12 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="8dp"
+                            android:includeFontPadding="false"
                             android:text="@{vm.feeAmount}"
                             android:textAlignment="textEnd"
-                            android:includeFontPadding="false"
                             android:textAppearance="?attr/textAppearanceBody1"
                             app:layout_constraintEnd_toStartOf="@+id/buttonEditFee"
-                            app:layout_constraintStart_toEndOf="@+id/feeLabel"
+                            app:layout_constraintStart_toEndOf="@+id/buttonFeeHelp"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="0.00000001 BTC" />
 

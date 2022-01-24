@@ -1,6 +1,7 @@
 package com.blockstream.green.utils
 
 import android.view.ViewParent
+import android.view.View
 import android.widget.ImageView
 import androidx.core.widget.doAfterTextChanged
 import com.blockstream.green.R
@@ -50,4 +51,10 @@ fun ViewParent.findTextInputLayoutParent(maxDepth: Int): TextInputLayout? {
         return parent.findTextInputLayoutParent(maxDepth - 1)
     }
     return null
+}
+
+fun <E: View> Collection<E>.setOnClickListener(onClickListener: (e: View) -> Unit) {
+    this.forEach {
+        it.setOnClickListener(onClickListener)
+    }
 }

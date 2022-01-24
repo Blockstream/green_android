@@ -11,6 +11,7 @@ object Urls {
     const val HELP_RECEIVE_ASSETS = "https://help.blockstream.com/hc/en-us/articles/900004651103-How-do-I-receive-assets-on-Blockstream-Green-"
     const val HELP_MNEMONIC_BACKUP = "https://help.blockstream.com/hc/en-us/articles/900001392563-What-is-a-mnemonic-backup-"
     const val HELP_NLOCKTIMES = "https://help.blockstream.com/hc/en-us/articles/900004249546-The-upgrade-from-nLockTime-to-CheckSequenceVerify"
+    const val HELP_FEES = "https://help.blockstream.com/hc/en-us/articles/4412578550809"
     const val HELP_GET_LIQUID = "https://help.blockstream.com/hc/en-us/articles/900000630846-How-do-I-get-Liquid-Bitcoin-L-BTC-"
     const val HELP_JADE_USB_UPGRADE = "https://help.blockstream.com/hc/en-us/articles/4408030503577"
     const val RECOVERY_TOOL = "https://github.com/greenaddress/garecovery"

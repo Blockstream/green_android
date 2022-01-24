@@ -17,6 +17,7 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.BalancePair
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.R
+import com.blockstream.green.Urls
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.ListItemTransactionRecipientBinding
@@ -171,6 +172,10 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
         binding.buttonEditFee.setOnClickListener {
             setCustomFeeRate()
+        }
+
+        listOf(binding.buttonFeeHelp, binding.feeLabel, binding.feeRate).setOnClickListener {
+            openBrowser(Urls.HELP_FEES)
         }
 
         binding.feeSlider.setLabelFormatter { value: Float ->
