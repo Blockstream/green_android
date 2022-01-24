@@ -14,6 +14,7 @@ data class DeviceRequiredData constructor(
     @SerialName("path") val path: List<UInt>? = null,
     @SerialName("message") val message: String? = null,
 
+    @SerialName("blinding_keys_required") val blindingKeysRequired: Boolean? = null,
     @SerialName("use_ae_protocol") val useAeProtocol: Boolean? = null,
     @SerialName("ae_host_commitment") val aeHostCommitment: String? = null,
     @SerialName("ae_host_entropy") val aeHostEntropy: String? = null,

@@ -141,24 +141,31 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
             }
 
             "get_blinding_nonces" -> {
-
                 val nonces = mutableListOf<String>()
+                val blindingPublicKeys = mutableListOf<String>()
 
-                if (requiredData.scripts?.size == requiredData.publicKeys?.size) {
+                val scripts = requiredData.scripts
+                val publicKeys = requiredData.publicKeys
 
-                    for (i in 0 until (requiredData.scripts?.size ?: 0)) {
+                if(scripts != null && publicKeys != null && scripts.size == publicKeys.size){
+                    for (i in 0 until (scripts.size)) {
                         nonces.add(
                             hwWallet.getBlindingNonce(
                                 hwWalletBridge,
-                                requiredData.publicKeys!![i],
-                                requiredData.scripts!![i]
+                                publicKeys[i],
+                                scripts[i]
                             )
                         )
+
+                        if(requiredData.blindingKeysRequired == true){
+                            blindingPublicKeys.add(hwWallet.getBlindingKey(hwWalletBridge, scripts[i]));
+                        }
                     }
                 }
 
                 DeviceResolvedData(
-                    nonces = nonces
+                    nonces = nonces,
+                    publicKeys = blindingPublicKeys
                 )
             }
 

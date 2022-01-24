@@ -74,8 +74,10 @@ class DialogTwoFactorResolver : TwoFactorResolver {
         Single.create<String> { emitter ->
             val dialogBinding = TwofactorCodeDialogBinding.inflate(LayoutInflater.from(context))
 
-            dialogBinding.icon.setImageResource(TwoFactorMethod.from(twoFactorStatus.method).getIcon())
-            dialogBinding.title = context.getString(R.string.id_please_provide_your_1s_code, context.localized2faMethod(twoFactorStatus.method))
+            twoFactorStatus.method?.let { method ->
+                dialogBinding.icon.setImageResource(TwoFactorMethod.from(method).getIcon())
+                dialogBinding.title = context.getString(R.string.id_please_provide_your_1s_code, context.localized2faMethod(method))
+            }
             dialogBinding.hint = context.getString(R.string.id_code)
 
             twoFactorStatus.attemptsRemaining?.let {
