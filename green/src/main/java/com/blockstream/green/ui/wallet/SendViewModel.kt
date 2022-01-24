@@ -398,13 +398,16 @@ class SendViewModel @AssistedInject constructor(
 
                         // Get amount from GDK if is a BIP21 or isSendAll or Sweep or Bump
                         if(addressee.bip21Params?.hasAmount == true || recipient.isSendAll.value == true || isBumpOrSweep){
-                            recipient.isFiat.postValue(false)
-
                             val assetId = addressee.assetId ?: session.policyAsset
+                            if(!assetId.isPolicyAsset(session)){
+                                recipient.isFiat.postValue(false)
+                            }
                             recipient.amount.postValue(
-                                (if (recipient.isSendAll.value == true && session.isElectrum) addressee.satoshi else tx.satoshi[assetId])?.toAmountLook(
-                                    session,
+                                (if (recipient.isSendAll.value == true && session.isElectrum) addressee.satoshi else tx.satoshi[assetId])
+                                    ?.toAmountLook(
+                                    session = session,
                                     assetId = assetId,
+                                    isFiat = recipient.isFiat.value,
                                     withUnit = false
                                 )
                             )

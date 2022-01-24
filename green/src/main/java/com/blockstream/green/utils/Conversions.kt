@@ -133,9 +133,18 @@ fun Balance?.asset(withUnit: Boolean = true, withGrouping: Boolean = false, with
     } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""
 }
 
-fun Long.toAmountLook(session: GreenSession, assetId: String? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withDirection: Transaction.Type? = null, withMinimumDigits: Boolean = false): String {
+fun Long.toAmountLook(session: GreenSession, assetId: String? = null, isFiat: Boolean? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withDirection: Transaction.Type? = null, withMinimumDigits: Boolean = false): String {
     return if(assetId == null || assetId == session.policyAsset){
-        session.convertAmount(Convert(satoshi = this))?.btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)
+        if(isFiat == true) {
+            this.toFiatLook(session, withUnit = withUnit, withGrouping = withGrouping)
+        }else{
+            session.convertAmount(Convert(satoshi = this))?.btc(
+                session,
+                withUnit = withUnit,
+                withGrouping = withGrouping,
+                withMinimumDigits = withMinimumDigits
+            )
+        }
     }else{
         // withMinimumDigits is not used on asset amounts
         session.convertAmount(Convert(satoshi = this, session.getAsset(assetId)), isAsset = true)?.asset(withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = false)

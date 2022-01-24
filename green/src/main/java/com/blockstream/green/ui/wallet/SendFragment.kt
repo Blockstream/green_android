@@ -291,36 +291,36 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         recipientBinding.index = index
 
         viewModel.getRecipientLiveData(index)?.let { addressParamsLiveData ->
-
-            addressParamsLiveData.assetId.observe(viewLifecycleOwner) { assetId ->
-                val balance = viewModel.getAssetsLiveData().value?.firstNotNullOfOrNull { if (it.key == assetId) it.value else null }
-                var look: AssetLook? = null
-
-                if (!assetId.isNullOrBlank()) {
-                    look = AssetLook(
-                        id = assetId,
-                        amount = balance ?: 0,
-                        session = session
-                    )
-                }
-
-                recipientBinding.assetName = look?.name
-                recipientBinding.assetBalance = if (look != null) getString(
-                    R.string.id_available_funds,
-                    look.balance(withUnit = true)
-                ) else ""
-                recipientBinding.assetSatoshi = balance ?: 0
-                setAssetIcon(recipientBinding, assetId)
-
-                recipientBinding.canConvert = assetId == session.network.policyAsset
-            }
-
             listOf(
                 addressParamsLiveData.isFiat.asFlow(),
                 addressParamsLiveData.assetId.asFlow()
             ).merge()
                 .map { addressParamsLiveData }
                 .onEach {
+                    val assetId = addressParamsLiveData.assetId.value
+
+                    val balance = viewModel.getAssetsLiveData().value?.firstNotNullOfOrNull { if (it.key == assetId) it.value else null }
+                    var look: AssetLook? = null
+
+                    if (!assetId.isNullOrBlank()) {
+                        look = AssetLook(
+                            id = assetId,
+                            amount = balance ?: 0,
+                            session = session
+                        )
+                    }
+
+                    recipientBinding.assetName = look?.name
+                    recipientBinding.assetBalance = if (look != null) getString(
+                        R.string.id_available_funds,
+                        look.balance(isFiat = it.isFiat.value, withUnit = true)
+                    ) else ""
+                    recipientBinding.assetSatoshi = balance ?: 0
+                    setAssetIcon(recipientBinding, assetId)
+
+                    recipientBinding.canConvert = assetId == session.network.policyAsset
+
+
                     recipientBinding.amountCurrency = it.assetId.value?.let { assetId ->
                         if (it.isFiat.value == true) {
                             getFiatCurrency(session)
@@ -344,9 +344,9 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         }
     }
 
-    private fun setAssetIcon(binding: ListItemTransactionRecipientBinding, assetId: String) {
+    private fun setAssetIcon(binding: ListItemTransactionRecipientBinding, assetId: String?) {
 
-        if(assetId.isBlank()){
+        if(assetId.isNullOrBlank()){
             ContextCompat.getDrawable(requireContext(),R.drawable.ic_pending_asset)
         }else{
             assetId.getAssetIcon(requireContext(), session)

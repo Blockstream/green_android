@@ -3,7 +3,10 @@ package com.blockstream.green.gdk
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import com.blockstream.gdk.data.*
+import com.blockstream.gdk.data.AccountType
+import com.blockstream.gdk.data.Device
+import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.libgreenaddress.KotlinGDK
@@ -41,6 +44,8 @@ fun AccountType?.descriptionRes(): Int = when (this) {
 fun Network.getNetworkIcon(): Int{
     return id.getNetworkIcon()
 }
+
+fun String?.isPolicyAsset(session: GreenSession): Boolean = (this == null || this == session.policyAsset)
 
 fun String.getNetworkIcon(): Int{
     if (Network.isMainnet(this)) return R.drawable.ic_bitcoin_network_60

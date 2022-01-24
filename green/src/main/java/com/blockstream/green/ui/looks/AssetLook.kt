@@ -21,7 +21,7 @@ class AssetLook constructor(
 
     private val isBTCValue by lazy { id == session.network.policyAsset }
 
-    fun balance(withUnit: Boolean = false) : String = amount.toAmountLook(session, assetId = id, withUnit = withUnit, withGrouping = true, withMinimumDigits = true)
+    fun balance(isFiat: Boolean? = null, withUnit: Boolean = false) : String = amount.toAmountLook(session, assetId = id, isFiat = isFiat, withUnit = withUnit, withGrouping = true, withMinimumDigits = true)
 
     val fiatValue : Balance?
         get() = if (isBTCValue) {
