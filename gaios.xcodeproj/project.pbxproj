@@ -47,6 +47,7 @@
 		3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */; };
 		3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
+		341D0325279EB9E900E2ABAB /* ValidateTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D0324279EB9E900E2ABAB /* ValidateTask.swift */; };
 		34237FC7276A479700618502 /* ExistingWallets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC6276A479700618502 /* ExistingWallets.swift */; };
 		34237FC9276A520800618502 /* ManualRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC8276A520800618502 /* ManualRestore.swift */; };
 		34237FD2276B68A900618502 /* Send.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34237FD1276B68A900618502 /* Send.storyboard */; };
@@ -381,6 +382,7 @@
 		3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionBarItem.swift; sourceTree = "<group>"; };
 		3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionBarItem.xib; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
+		341D0324279EB9E900E2ABAB /* ValidateTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateTask.swift; sourceTree = "<group>"; };
 		34237FC6276A479700618502 /* ExistingWallets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingWallets.swift; sourceTree = "<group>"; };
 		34237FC8276A520800618502 /* ManualRestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualRestore.swift; sourceTree = "<group>"; };
 		34237FD1276B68A900618502 /* Send.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Send.storyboard; sourceTree = "<group>"; };
@@ -783,7 +785,7 @@
 			isa = PBXGroup;
 			children = (
 				34237FD1276B68A900618502 /* Send.storyboard */,
-				34477D332771D3380021698B /* Model */,
+				34477D332771D3380021698B /* Classes */,
 				34477D302771CAC00021698B /* Cells */,
 				34237FD3276B691B00618502 /* Controllers */,
 			);
@@ -880,12 +882,13 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		34477D332771D3380021698B /* Model */ = {
+		34477D332771D3380021698B /* Classes */ = {
 			isa = PBXGroup;
 			children = (
 				34477D342771D34D0021698B /* Recipient.swift */,
+				341D0324279EB9E900E2ABAB /* ValidateTask.swift */,
 			);
-			path = Model;
+			path = Classes;
 			sourceTree = "<group>";
 		};
 		345E1A80261EE6A500A1D934 /* DrawerNetworkSelection */ = {
@@ -1976,6 +1979,7 @@
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				81D671F726C81B0800682508 /* NotificationManager.swift in Sources */,
 				34DEF5232729969F008C38EA /* DialogReceiveRequestAmountViewController.swift in Sources */,
+				341D0325279EB9E900E2ABAB /* ValidateTask.swift in Sources */,
 				811B963E21F72B5200DE02CB /* AccountsFooterCollection.swift in Sources */,
 				34C9E10726B91F2500200D2F /* TwoFaCsvTimeCell.swift in Sources */,
 				816F0AF423E4713600569A5D /* UIViewController.swift in Sources */,

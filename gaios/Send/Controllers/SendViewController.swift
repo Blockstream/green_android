@@ -18,8 +18,10 @@ class SendViewController: KeyboardViewController {
     var isSendAll: Bool = false
     var isSweep: Bool = false
     var isBumpFee: Bool = false
+    var inputType: InputType = .transaction
 
     var transaction: Transaction?
+    private var validateTask: ValidateTask?
     var prevTxDetails: [String: Any] = [:]
 
     var transactionPriority: TransactionPriority = .High
@@ -86,10 +88,11 @@ class SendViewController: KeyboardViewController {
         if isBumpFee {
             prevTxDetails = transaction?.details ?? [:]
         }
+        if isSweep { inputType = .sweep }
+        if isBumpFee { inputType = .bumpFee }
     }
 
     func setContent() {
-//        title = NSLocalizedString("id_send", comment: "")
         if let wallet = wallet {
             self.title = isSweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), wallet.localizedName()) : NSLocalizedString("id_send_to", comment: "")
         }
@@ -193,47 +196,32 @@ class SendViewController: KeyboardViewController {
         guard let feeEstimate = feeEstimates[selectedFee()] else { return }
         let feeRate = feeEstimate
 
-        showIndicator()
-        let queue = DispatchQueue.global(qos: .default)
-        firstly {
-            return Guarantee()
-        }.then(on: queue) {
-            return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
-        }.compactMap { data in
-            if self.isBumpFee {
-                var details: [String: Any] = [:]
-                details = self.prevTxDetails
-                details["fee_rate"] = feeRate
-                return details
-            } else {
-                if self.isSweep {
-                    var details: [String: Any] = [:]
-                    details["private_key"] = self.getPrivateKey()
-                    details["fee_rate"] = feeRate
-                    details["subaccount"] = subaccount
-                    details["utxos"] = [:]
-                    return details
-                } else {
-                    let result = data["result"] as? [String: Any]
-                    let unspent = result?["unspent_outputs"] as? [String: Any]
-                    var details: [String: Any] = [:]
-                    details["addressees"] = [self.getAddressee()]
-                    details["fee_rate"] = feeRate
-                    details["subaccount"] = subaccount
-                    details["utxos"] = unspent ?? [:]
-                    if self.isSendAll == true {
-                        details["send_all"] = true
-                    }
-                    return details
-                }
+        var details: [String: Any] = [:]
+        switch inputType {
+        case .transaction:
+            details["addressees"] = [self.getAddressee()]
+            details["fee_rate"] = feeRate
+            details["subaccount"] = subaccount
+            if self.isSendAll == true {
+                details["send_all"] = true
             }
-        }.then(on: queue) { data in
-            try SessionManager.shared.createTransaction(details: data).resolve()
-        }.done { data in
-            let result = data["result"] as? [String: Any]
-            let tx: Transaction = Transaction(result ?? [:])
+        case .sweep:
+            details["private_key"] = self.getPrivateKey()
+            details["fee_rate"] = feeRate
+            details["subaccount"] = subaccount
+        case .bumpFee:
+            details = self.prevTxDetails
+            details["fee_rate"] = feeRate
+        }
+
+        showIndicator()
+        validateTask?.cancel()
+        validateTask = ValidateTask(details: details, inputType: inputType)
+        validateTask?.execute().get { tx in
             self.transaction = tx
-            if tx.error == "id_invalid_replacement_fee_rate" {
+        }.done { tx in
+            self.transaction = tx
+            if tx!.error == "id_invalid_replacement_fee_rate" {
                 DropAlert().error(message: NSLocalizedString("id_invalid_replacement_fee_rate", comment: ""))
             }
         }.catch { error in
