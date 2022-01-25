@@ -130,7 +130,8 @@ class RecipientCell: UITableViewCell {
             lblAssetName.text = "Testnet Bitcoin"
         } else {
             iconAsset.image = Registry.shared.image(for: asset?.assetId)
-            lblAssetName.text = asset?.name ?? "Asset"
+            let name = asset?.assetId == btc ? "Liquid Bitcoin" : asset?.name
+            lblAssetName.text = name ?? "Asset"
         }
         onChange()
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
