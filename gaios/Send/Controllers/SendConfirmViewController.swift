@@ -65,6 +65,7 @@ class SendConfirmViewController: KeyboardViewController {
             btnNext.isUserInteractionEnabled = false
             let account = AccountsManager.shared.current
             if account?.isHW ?? false {
+                self.startAnimating()
                 DropAlert().success(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""), delay: 4)
             }
             return Guarantee()
