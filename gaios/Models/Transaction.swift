@@ -143,11 +143,18 @@ struct Transaction {
         get { return get("type") ?? String() }
     }
 
+    // tx outputs in create transaction
     var transactionOutputs: [[String: Any]]? {
+        get { return get("transaction_outputs") }
+    }
+
+    // tx outputs in get transaction
+    var outputs: [[String: Any]]? {
         get { return get("outputs") }
     }
 
-    var transactionInputs: [[String: Any]]? {
+    // tx inputs in get transaction
+    var inputs: [[String: Any]]? {
         get { return get("inputs") }
     }
 
@@ -203,12 +210,12 @@ struct Transaction {
         txBlindingData["version"] = 0
         txBlindingData["txid"] = hash
         txBlindingData["type"] = type
-        txBlindingData["inputs"] = transactionInputs?.filter { (data: [String: Any]) -> Bool in
+        txBlindingData["inputs"] = inputs?.filter { (data: [String: Any]) -> Bool in
             return hasBlindingData(data: data)
         }.map { (data: [String: Any]) -> [String: Any] in
             return txoBlindingData(data: data, isUnspent: false)
         }
-        txBlindingData["outputs"] = transactionOutputs?.filter { (data: [String: Any]) -> Bool in
+        txBlindingData["outputs"] = outputs?.filter { (data: [String: Any]) -> Bool in
             return hasBlindingData(data: data)
         }.map { (data: [String: Any]) -> [String: Any] in
             return txoBlindingData(data: data, isUnspent: true)
@@ -218,12 +225,12 @@ struct Transaction {
 
     func blindingUrlString() -> String {
         var blindingUrlString = [String]()
-        transactionInputs?.forEach { input in
+        inputs?.forEach { input in
             if let b = txoBlindingString(data: input) {
                 blindingUrlString.append(b)
             }
         }
-        transactionOutputs?.forEach { output in
+        outputs?.forEach { output in
             if let b = txoBlindingString(data: output) {
                 blindingUrlString.append(b)
             }
