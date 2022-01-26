@@ -230,13 +230,13 @@ class RecipientCell: UITableViewCell {
         if let transaction = tx, tx?.sendAll == true || isBip21 {
             let asset = transaction.defaultAsset
             let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-            let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
             if asset == "btc" {
                 if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
                     let (value, _) = balance.get(tag: btc)
                     amountTextField.text = value ?? ""
                 }
             } else {
+                let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
                 if let balance = Balance.convert(details: details) {
                     let (amount, _) = balance.get(tag: transaction.defaultAsset)
                     amountTextField.text = amount ?? ""
