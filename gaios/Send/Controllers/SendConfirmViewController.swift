@@ -149,7 +149,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
         case SendConfirmSection.fee.rawValue:
             return 1
         case SendConfirmSection.change.rawValue:
-            return AccountsManager.shared.current?.isHW == true ? 1 : 0
+            return AccountsManager.shared.current?.isLedger == true ? 1 : 0
         case SendConfirmSection.note.rawValue:
             return 1
         default:
