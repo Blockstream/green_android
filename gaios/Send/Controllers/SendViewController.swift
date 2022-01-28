@@ -245,6 +245,13 @@ class SendViewController: KeyboardViewController {
         }
     }
 
+    override func keyboardWillShow(notification: Notification) {
+    }
+
+    override func keyboardWillHide(notification: Notification) {
+        tableView.setContentOffset(CGPoint(x: 0.0, y: 0.0), animated: true)
+    }
+
     func onTransactionReady() {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController, let tx = self.transaction {
@@ -319,6 +326,9 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
             self?.isSendAll.toggle()
             self?.reloadSections([SendSection.recipient], animated: true)
         }
+        let onFocus: VoidToVoid = {[weak self] in
+            self?.tableView.scrollToRow(at: IndexPath(row: (self?.recipients.count ?? 1) - 1, section: SendSection.allCases.count - 1), at: .bottom, animated: true)
+        }
         switch indexPath.section {
         case SendSection.recipient.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "RecipientCell") as? RecipientCell {
@@ -334,7 +344,8 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                                isSendAll: self.isSendAll,
                                isSweep: self.isSweep,
                                isBumpFee: self.isBumpFee,
-                               validateTransaction: validateTransaction)
+                               validateTransaction: validateTransaction,
+                               onFocus: onFocus)
                 cell.selectionStyle = .none
                 return cell
             }

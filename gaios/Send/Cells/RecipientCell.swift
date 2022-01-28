@@ -47,6 +47,7 @@ class RecipientCell: UITableViewCell {
     var isSweep: Bool = false
     var isBumpFee: Bool = false
     var validateTransaction: VoidToVoid?
+    var onFocus: VoidToVoid?
 
     var isFiat: Bool {
         return recipient?.isFiat ?? false
@@ -101,7 +102,8 @@ class RecipientCell: UITableViewCell {
                    isSendAll: Bool,
                    isSweep: Bool,
                    isBumpFee: Bool,
-                   validateTransaction: VoidToVoid?
+                   validateTransaction: VoidToVoid?,
+                   onFocus: VoidToVoid?
     ) {
         lblRecipientNum.text = "#\(index + 1)"
         removeRecipientView.isHidden = !isMultiple
@@ -110,6 +112,7 @@ class RecipientCell: UITableViewCell {
         self.addressTextView.text = recipient.address
         self.addressTextView.delegate = self
         self.amountTextField.text = recipient.amount
+        self.amountTextField.delegate = self
         self.needRefresh = needRefresh
         self.chooseAsset = chooseAsset
         self.qrScan = qrScan
@@ -119,6 +122,8 @@ class RecipientCell: UITableViewCell {
         self.isSweep = isSweep
         self.isBumpFee = isBumpFee
         self.validateTransaction = validateTransaction
+        self.onFocus = onFocus
+
         lblAddressError.isHidden = true
         lblAmountError.isHidden = true
         lblAmountExchange.isHidden = true
@@ -460,6 +465,12 @@ extension RecipientCell: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         endEditing(true)
         return false
+    }
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == amountTextField {
+            onFocus?()
+        }
     }
 }
 
