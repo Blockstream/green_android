@@ -187,9 +187,9 @@ class SendViewController: KeyboardViewController {
         if (recipients[0].amount ?? "").isEmpty && (recipients[0].address ?? "").isEmpty {
             return
         }
-        if recipients[0].assetId == nil {
-            return
-        }
+//        if recipients[0].assetId == nil {
+//            return
+//        }
         let subaccount = self.wallet!.pointer
 
         feeEstimates[3] = customFee
@@ -429,6 +429,7 @@ extension SendViewController: DialogQRCodeScanViewControllerDelegate {
         if let index = index {
             recipients[index].address = value
             reloadSections([SendSection.recipient], animated: false)
+            validateTransaction()
         }
     }
     func didStop() {

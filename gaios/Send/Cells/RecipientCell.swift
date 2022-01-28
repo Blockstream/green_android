@@ -18,6 +18,9 @@ class RecipientCell: UITableViewCell {
     @IBOutlet weak var iconAsset: UIImageView!
     @IBOutlet weak var lblAssetName: UILabel!
     @IBOutlet weak var disclosureArrow: UIImageView!
+    @IBOutlet weak var assetBorder: UIView!
+    @IBOutlet weak var btnChooseAsset: UIButton!
+    @IBOutlet weak var assetBox: UIView!
 
     @IBOutlet weak var amountContainer: UIView!
     @IBOutlet weak var amountTextField: UITextField!
@@ -28,6 +31,7 @@ class RecipientCell: UITableViewCell {
     @IBOutlet weak var btnConvert: UIButton!
     @IBOutlet weak var lblAmountError: UILabel!
     @IBOutlet weak var lblAmountExchange: UILabel!
+    @IBOutlet weak var amountBox: UIView!
 
     @IBOutlet weak var lblAvailableFunds: UILabel!
     @IBOutlet weak var btnSendAll: UIButton!
@@ -170,19 +174,20 @@ class RecipientCell: UITableViewCell {
         lblCurrency.text = getDenomination()
         lblAvailableFunds.text = getBalance()
         btnSendAll.isHidden = recipient?.assetId == nil
+        btnChooseAsset.isUserInteractionEnabled = true
+        assetBox.alpha = 1.0
+        amountBox.alpha = 1.0
+
         if isSendAll {
             btnSendAll.setStyle(.primary)
             recipient?.amount = nil
             amountTextField.text = ""
-            amountTextField.alpha = 0.6
-            btnConvert.alpha = 0.6
+            amountBox.alpha = 0.6
         } else {
             btnSendAll.setStyle(.outlinedGray)
             recipient?.amount = amountTextField.text
-            amountTextField.alpha = 1.0
-            btnConvert.alpha = 1.0
         }
-        amountTextField.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
+        amountFieldIsEnabled(!isSendAll && recipient?.assetId != nil)
         btnConvert.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
         btnPasteAmount.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
         btnCancelAmount.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
@@ -190,16 +195,23 @@ class RecipientCell: UITableViewCell {
         btnConvert.isHidden = !(recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset)
 
         if let address = addressTextView.text {
-            if address.starts(with: "bitcoin:") || address.starts(with: "liquidnetwork:") || isSweep {
+            if address.starts(with: "bitcoin:") || address.starts(with: "liquidnetwork:") {
+//                lblAvailableFunds.isHidden = true
+                btnSendAll.isHidden = true
+                btnConvert.isHidden = true
+                btnPasteAmount.isUserInteractionEnabled = false
+                btnCancelAmount.isUserInteractionEnabled = false
+                btnChooseAsset.isUserInteractionEnabled = false
+                assetBox.alpha = 0.6
+                amountFieldIsEnabled(false)
+            }
+            if isSweep {
                 lblAvailableFunds.isHidden = true
                 btnSendAll.isHidden = true
                 btnConvert.isHidden = true
                 btnPasteAmount.isUserInteractionEnabled = false
-                btnPasteAmount.alpha = 0.6
                 btnCancelAmount.isUserInteractionEnabled = false
-                btnCancelAmount.alpha = 0.6
-                amountTextField.isUserInteractionEnabled = false
-                amountTextField.alpha = 0.6
+                amountFieldIsEnabled(false)
             }
         }
         if isBumpFee {
@@ -210,39 +222,41 @@ class RecipientCell: UITableViewCell {
         needRefresh?()
     }
 
+    func amountFieldIsEnabled(_ value: Bool) {
+        amountTextField.isUserInteractionEnabled = value
+        amountBox.alpha = value ? 1.0 : 0.6
+    }
+
     func onTransactionValidate(_ tx: Transaction?) {
         addressContainer.borderColor = UIColor.customTextFieldBg()
         amountContainer.borderColor = UIColor.customTextFieldBg()
+        assetBorder.backgroundColor = UIColor.customTitaniumLight()
         lblAddressError.isHidden = true
         lblAmountError.isHidden = true
         lblAmountExchange.isHidden = true
 
-        if tx?.error == "id_invalid_address" && !addressTextView.text.isEmpty {
+        if tx?.error == "id_invalid_address" || tx?.error == "id_invalid_private_key" {
             addressContainer.borderColor = UIColor.errorRed()
             lblAddressError.isHidden = false
             lblAddressError.text = NSLocalizedString(tx?.error ?? "Error", comment: "")
-        } else if (tx?.error == "id_invalid_amount" || tx?.error == "id_insufficient_funds") && !(amountTextField.text ?? "").isEmpty {
+        } else if tx?.error == "id_invalid_amount" || tx?.error == "id_insufficient_funds" {
             amountContainer.borderColor = UIColor.errorRed()
             lblAmountError.isHidden = false
             lblAmountError.text = NSLocalizedString(tx?.error ?? "Error", comment: "")
+        } else if tx?.error == "id_invalid_payment_request_assetid" || tx?.error == "id_invalid_asset_id" {
+            assetBorder.backgroundColor = UIColor.errorRed()
+        } else if !(tx?.error ?? "").isEmpty {
+            print(tx?.error ?? "Error")
         }
-        let isBip21 = addressTextView.text.starts(with: "bitcoin:") || addressTextView.text.starts(with: "liquidnetwork:")
-        if let transaction = tx, tx?.sendAll == true || isBip21 {
-            let asset = transaction.defaultAsset
-            let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-            if asset == "btc" {
-                if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
-                    let (value, _) = balance.get(tag: btc)
-                    amountTextField.text = value ?? ""
-                }
-            } else {
-                let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
-                if let balance = Balance.convert(details: details) {
-                    let (amount, _) = balance.get(tag: transaction.defaultAsset)
-                    amountTextField.text = amount ?? ""
-                }
-            }
+
+        if let transaction = tx, tx?.sendAll == true {
+            updateUISendAll(transaction)
         }
+
+        if let transaction = tx, isBipAddress() {
+            updateUIBipAddress(transaction)
+        }
+
         if let transaction = tx, transaction.error.isEmpty {
             let asset = transaction.defaultAsset
             if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
@@ -253,10 +267,55 @@ class RecipientCell: UITableViewCell {
                 }
             }
         }
-        // id_invalid_asset_id
-        // id_invalid_address
-        // id_invalid_amount
-        // id_insufficient_funds
+    }
+
+    func updateUISendAll(_ transaction: Transaction) {
+        let asset = transaction.defaultAsset
+        let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+        if asset == "btc" {
+            if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+                let (value, _) = balance.get(tag: btc)
+                amountTextField.text = value ?? ""
+            }
+        } else {
+            if transaction.error.isEmpty {
+                let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
+                if let balance = Balance.convert(details: details) {
+                    let (amount, _) = balance.get(tag: transaction.defaultAsset)
+                    amountTextField.text = amount ?? ""
+                }
+            }
+        }
+    }
+
+    func updateUIBipAddress(_ transaction: Transaction) {
+        recipient?.assetId = transaction.defaultAsset
+        if transaction.error == "id_invalid_payment_request_assetid" || transaction.error == "id_invalid_asset_id" {
+            iconAsset.image = UIImage(named: "default_asset_icon")
+            lblAssetName.text = "Asset"
+            lblCurrency.text = ""
+            lblAvailableFunds.text = ""
+            amountTextField.text = ""
+        } else {
+            iconAsset.image = Registry.shared.image(for: recipient?.assetId)
+            lblAssetName.text = getDenomination()
+            lblCurrency.text = getDenomination()
+            lblAvailableFunds.text = getBalance()
+            let asset = transaction.defaultAsset
+            if asset == "btc" {
+                if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+                    let (value, _) = balance.get(tag: btc)
+                    amountTextField.text = value ?? ""
+                }
+            } else {
+                let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+                let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
+                if let balance = Balance.convert(details: details) {
+                    let (amount, _) = balance.get(tag: transaction.defaultAsset)
+                    amountTextField.text = amount ?? ""
+                }
+            }
+        }
     }
 
     func getBalance() -> String {
@@ -322,6 +381,10 @@ class RecipientCell: UITableViewCell {
         let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
         let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetId) ?? ("", "")
         amountTextField.text = amount
+    }
+
+    func isBipAddress() -> Bool {
+        return addressTextView.text.starts(with: "bitcoin:") || addressTextView.text.starts(with: "liquidnetwork:")
     }
 
     @objc func triggerTextChange() {

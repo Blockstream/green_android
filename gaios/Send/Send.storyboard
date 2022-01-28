@@ -412,11 +412,15 @@
                                         <connections>
                                             <outlet property="addressContainer" destination="zjS-58-iXq" id="ssA-7E-Lfd"/>
                                             <outlet property="addressTextView" destination="0xi-Sb-HBx" id="Gwm-c8-WOc"/>
+                                            <outlet property="amountBox" destination="WeS-5F-sjN" id="u9n-Ia-Ls8"/>
                                             <outlet property="amountContainer" destination="cPT-Z6-G3g" id="edh-9i-Y44"/>
                                             <outlet property="amountTextField" destination="GLI-9E-J2s" id="KNv-Pk-75B"/>
+                                            <outlet property="assetBorder" destination="Ryb-aG-P68" id="zvV-qL-cPo"/>
+                                            <outlet property="assetBox" destination="e2E-tA-U3u" id="n7l-R0-g0d"/>
                                             <outlet property="bg" destination="ipc-a1-bzl" id="z9x-jE-RLG"/>
                                             <outlet property="btnCancelAddress" destination="m8r-7x-LjZ" id="Ng2-X3-KMx"/>
                                             <outlet property="btnCancelAmount" destination="7n4-mm-ccq" id="nbR-5I-jMM"/>
+                                            <outlet property="btnChooseAsset" destination="dkC-OX-npl" id="pkB-2y-mvS"/>
                                             <outlet property="btnConvert" destination="ShT-Ex-eKW" id="ieS-aM-I7e"/>
                                             <outlet property="btnPasteAddress" destination="evo-pv-U1t" id="2cK-m7-fIN"/>
                                             <outlet property="btnPasteAmount" destination="mxf-E0-r1z" id="iqv-NX-cgG"/>
