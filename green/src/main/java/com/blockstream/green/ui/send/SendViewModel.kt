@@ -254,15 +254,14 @@ class SendViewModel @AssistedInject constructor(
         addressParamsLiveData.amount.value?.let { amount ->
             // Convert between BTC / Fiat
             session.observable {
-                if (addressParamsLiveData.assetId.value == session.network.policyAsset) {
+                if (addressParamsLiveData.assetId.value.isPolicyAsset(session)) {
                     val isFiat = addressParamsLiveData.isFiat.value ?: false
 
                     // TODO calculate exchange from string input or from satoshi ?
 
-
                     UserInput.parseUserInput(
                             session,
-                            addressParamsLiveData.amount.value,
+                            amount,
                             isFiat = isFiat
                         ).getBalance(session)?.let {
                         "≈ " + if (isFiat) {
@@ -416,12 +415,14 @@ class SendViewModel @AssistedInject constructor(
                             recipient.amount.postValue(
                                 getSendAmountCompat(recipient, tx)
                                     ?.toAmountLook(
-                                    session = session,
-                                    assetId = assetId,
-                                    isFiat = recipient.isFiat.value,
-                                    withUnit = false
-                                )
+                                        session = session,
+                                        assetId = assetId,
+                                        isFiat = recipient.isFiat.value,
+                                        withUnit = false,
+                                        withGrouping = false,
+                                    )
                             )
+
                         }
                     }
                 }

@@ -1,20 +1,14 @@
 package com.blockstream.green.utils
 
-import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.Settings
 import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.settings.SettingsManager
 import org.junit.Assert
-import org.junit.Before
-import org.junit.ComparisonFailure
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.text.DecimalFormat
 import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
@@ -164,6 +158,12 @@ class JsonConverterUnitTest {
         Assert.assertThrows(Exception::class.java) {
             UserInput.parseUserInput(session, "123abc")
         }
+    }
 
+
+    @Test
+    fun test_grouping() {
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale =  Locale.US).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale =  Locale.ITALIAN).amount)
     }
 }
