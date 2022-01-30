@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateTransaction constructor(
-    @SerialName("addressees") val addressees: List<Addressee>,
+    @SerialName("addressees") val addressees: List<Addressee> = listOf(),
     @SerialName("satoshi") val satoshi: Map<String, Long> = mapOf(),
     @SerialName("fee") val fee: Long? = null,
     @SerialName("fee_rate") val feeRate: Long? = null,
