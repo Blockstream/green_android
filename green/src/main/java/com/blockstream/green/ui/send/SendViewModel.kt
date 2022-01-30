@@ -439,6 +439,8 @@ class SendViewModel @AssistedInject constructor(
                 }
             }
 
+            checkedTransaction = tx
+
             if(tx.error.isNotBlank()){
                 throw Exception(tx.error)
             }
@@ -457,7 +459,6 @@ class SendViewModel @AssistedInject constructor(
             }
         }.subscribeBy(
             onSuccess = { tx ->
-                checkedTransaction = tx
                 transactionError.value = null
 
                 feeAmount.value = tx.fee?.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: ""
@@ -567,22 +568,17 @@ class SendViewModel @AssistedInject constructor(
 
             // Convert between BTC / Fiat
             addressParams.amount.value = try {
-                val input =
-                    UserInput.parseUserInput(session, amountToConvert, isFiat = isFiat)
-                input.getBalance(session)?.let {
-                    if (it.satoshi > 0) {
-                        if (isFiat) {
-                            it.btc(
-                                session,
-                                withUnit = false,
-                                withGrouping = false,
-                                withMinimumDigits = false
-                            )
-                        } else {
-                            it.fiat(session, withUnit = false, withGrouping = false)
-                        }
+                UserInput.parseUserInput(session, amountToConvert, isFiat = isFiat)
+                    .getBalance(session)?.let {
+                    if (isFiat) {
+                        it.btc(
+                            session,
+                            withUnit = false,
+                            withGrouping = false,
+                            withMinimumDigits = false
+                        )
                     } else {
-                        ""
+                        it.fiat(session, withUnit = false, withGrouping = false)
                     }
                 }
             } catch (e: Exception) {

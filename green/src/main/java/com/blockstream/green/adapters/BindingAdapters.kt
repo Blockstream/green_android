@@ -126,16 +126,22 @@ fun setLayoutMarginBottom(view: View, dimen: Float) {
 
 @BindingAdapter("gdkError")
 fun setGdkError(textInputLayout: TextInputLayout, error: String?) {
-    if(error != null && !textInputLayout.editText?.text.isNullOrEmpty()){
-        textInputLayout.error = textInputLayout.context.errorFromResourcesAndGDK(error)
-    }else{
+    if(error.isNullOrBlank()){
         textInputLayout.error = null
+        textInputLayout.setTag("errorText".hashCode(), null)
 
         // Restore helper text if existed
         textInputLayout.getTag("helperText".hashCode())?.let {
             if(it is String){
                 textInputLayout.helperText = it
             }
+        }
+    }else{
+        if(textInputLayout.editText?.text.isNullOrBlank()){
+            // save error text to be used by TextInputWithGdkErrorEditText
+            textInputLayout.setTag("errorText".hashCode(), error)
+        }else{
+            textInputLayout.error = textInputLayout.context.errorFromResourcesAndGDK(error)
         }
     }
 }

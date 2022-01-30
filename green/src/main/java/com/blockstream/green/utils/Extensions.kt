@@ -1,12 +1,13 @@
 package com.blockstream.green.utils
 
+import android.view.ViewParent
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.gdk.getAssetIcon
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+
 
 fun TextInputLayout.endIconCopyMode() {
     endIconMode = TextInputLayout.END_ICON_CUSTOM
@@ -36,4 +37,17 @@ fun ImageView.updateAssetPadding(session: GreenSession, assetId: String, padding
         }
     }
     setPadding(imagePadding, imagePadding, imagePadding, imagePadding)
+}
+
+fun TextInputEditText.findTextInputLayoutParent(): TextInputLayout? {
+    return parent?.findTextInputLayoutParent(3)
+}
+
+fun ViewParent.findTextInputLayoutParent(maxDepth: Int): TextInputLayout? {
+    if (parent is TextInputLayout) {
+        return parent as TextInputLayout
+    } else if (maxDepth > 0) {
+        return parent.findTextInputLayoutParent(maxDepth - 1)
+    }
+    return null
 }
