@@ -38,8 +38,11 @@ fun Fragment.openKeyboard() {
     }
 }
 
-fun Fragment.copyToClipboard(label: String, content: String, animateView: View? = null) {
+fun Fragment.copyToClipboard(label: String, content: String, animateView: View? = null, showCopyNotification: Boolean = false) {
     copyToClipboard(label = label, content = content, context = requireContext(), animateView = animateView)
+    if(showCopyNotification) {
+        snackbar(R.string.id_copied_to_clipboard)
+    }
 }
 
 fun BottomSheetDialogFragment.dismissIn(timeMillis: Long){

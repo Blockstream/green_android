@@ -50,7 +50,8 @@ class WalletSettingsFragment :
     private val itemAdapter = ItemAdapter<GenericItem>()
 
     private lateinit var logoutPreference: PreferenceListItem
-    private lateinit var watchOnlyPreference: PreferenceListItem
+    private lateinit var watchOnlyMultisigPreference: PreferenceListItem
+    private lateinit var watchOnlySinglesigPreference: PreferenceListItem
     private lateinit var unitPreference: PreferenceListItem
     private lateinit var priceSourcePreference: PreferenceListItem
     private lateinit var txPriorityPreference: PreferenceListItem
@@ -103,7 +104,12 @@ class WalletSettingsFragment :
 
         binding.vm = viewModel
 
-        watchOnlyPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
+        if(args.showRecoveryTransactions) {
+            setToolbar(getString(R.string.id_recovery_transactions))
+        }
+
+        watchOnlyMultisigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
+        watchOnlySinglesigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_details))
         logoutPreference = PreferenceListItem(StringHolder(wallet.name), StringHolder(R.string.id_logout), withSubtitleRed = true)
         unitPreference = PreferenceListItem(StringHolder(R.string.id_bitcoin_denomination))
         priceSourcePreference = PreferenceListItem(StringHolder(R.string.id_reference_exchange_rate))
@@ -163,8 +169,15 @@ class WalletSettingsFragment :
                     logoutPreference -> {
                         viewModel.logout(AbstractWalletViewModel.LogoutReason.USER_ACTION)
                     }
-                    watchOnlyPreference -> {
+                    watchOnlyMultisigPreference -> {
                         handleWatchOnly()
+                    }
+                    watchOnlySinglesigPreference -> {
+                        navigate(
+                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToWatchOnlyDetailsFragment(
+                                wallet
+                            )
+                        )
                     }
                     changePinPreference -> {
                         navigate(
@@ -290,7 +303,7 @@ class WalletSettingsFragment :
         }
 
         viewModel.watchOnlyUsernameLiveData.observe(viewLifecycleOwner) {
-            watchOnlyPreference.subtitle = StringHolder(
+            watchOnlyMultisigPreference.subtitle = StringHolder(
                 if (it.isNullOrBlank()) {
                     getString(R.string.id_set_up_watchonly_credentials)
                 } else {
@@ -364,7 +377,11 @@ class WalletSettingsFragment :
                     list += TitleListItem(StringHolder(R.string.id_general))
 
                     if (!session.isLiquid && !session.isElectrum) {
-                        list += watchOnlyPreference
+                        list += watchOnlyMultisigPreference
+                    }
+
+                    if(session.isElectrum && !session.isLiquid){
+                        list += watchOnlySinglesigPreference
                     }
 
                     list += unitPreference

@@ -16,6 +16,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/watchOnlyDetailsFragment"
+        android:name="com.blockstream.green.ui.settings.WatchOnlyDetailsFragment"
+        android:label="@string/id_watchonly_details"
+        tools:layout="@layout/watch_only_details_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+    </fragment>
+
+    <fragment
         android:id="@+id/walletSettingsFragment"
         android:name="com.blockstream.green.ui.settings.WalletSettingsFragment"
         android:label="@string/id_settings"
@@ -42,6 +52,9 @@
         <action
             android:id="@+id/action_walletSettingsFragment_to_recoveryIntroFragment"
             app:destination="@id/recoveryIntroFragment" />
+        <action
+            android:id="@+id/action_walletSettingsFragment_to_watchOnlyDetailsFragment"
+            app:destination="@id/watchOnlyDetailsFragment" />
     </fragment>
 
     <fragment
@@ -418,7 +431,11 @@
         android:id="@+id/loginWatchOnlyFragment"
         android:name="com.blockstream.green.ui.onboarding.LoginWatchOnlyFragment"
         android:label=""
-        tools:layout="@layout/login_watch_only_fragment" />
+        tools:layout="@layout/login_watch_only_fragment">
+        <argument
+            android:name="isMultisig"
+            app:argType="boolean" />
+    </fragment>
     <dialog
         android:id="@+id/appSettingsDialogFragment"
         android:name="com.blockstream.green.ui.settings.AppSettingsDialogFragment"

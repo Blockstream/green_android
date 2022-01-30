@@ -9,6 +9,10 @@
             type="com.blockstream.green.ui.onboarding.LoginWatchOnlyViewModel" />
 
         <variable
+            name="isMultisig"
+            type="Boolean" />
+
+        <variable
             name="showTestnet"
             type="Boolean" />
     </data>
@@ -24,14 +28,30 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@string/id_log_in_via_watchonly_to_receive"
+            android:text="@string/id_login"
             android:textAppearance="?attr/textAppearanceHeadline1"
-            app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread_inside" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="8dp"
+            android:text="@{isMultisig ? @string/id_log_in_via_watchonly_to_receive : @string/id_scan_or_paste_your_extended_public_key}"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:layout_constraintVertical_chainStyle="spread_inside"
+            tools:text="@string/id_log_in_via_watchonly_to_receive"/>
 
         <com.blockstream.green.views.GappedLinearLayout
             android:id="@+id/gappedLinearLayout5"
@@ -46,13 +66,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3">
+            app:layout_constraintTop_toBottomOf="@+id/textView4">
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/id_username">
+                android:hint="@string/id_username"
+                isVisible="@{isMultisig}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/username"
@@ -71,7 +92,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/id_password"
-                app:passwordToggleEnabled="true">
+                app:passwordToggleEnabled="true"
+                isVisible="@{isMultisig}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password"
@@ -83,6 +105,54 @@
                     android:text="@={vm.password}" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                isVisible="@{!isMultisig}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/extendedPublicKeyTextInputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/id_extended_public_key"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonScan"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.blockstream.green.views.PlaceholderTextInputEditText
+                        android:id="@+id/extendedPublicKey"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="flagNoPersonalizedLearning|actionGo"
+                        android:importantForAccessibility="no"
+                        android:inputType="textMultiLine|textNoSuggestions"
+                        android:text="@={vm.extenedPublicKey}"
+                        tools:text="fasdfadffasdfasdf asd fasdfads afds fasdfadsfadsfasdffas dfad"
+                        app:placeholder="xPub/yPub/zPub" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/buttonScan"
+                    android:layout_width="54dp"
+                    android:layout_height="54dp"
+                    android:adjustViewBounds="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="10dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_qr_60"
+                    app:layout_constraintBottom_toBottomOf="@+id/extendedPublicKeyTextInputLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/extendedPublicKeyTextInputLayout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_width="match_parent"
@@ -97,7 +167,7 @@
                 android:checked="@={vm.isTestnet}"
                 android:text="Testnet"
                 app:useMaterialThemeColors="false"
-                isVisible="@{showTestnet}"
+                isVisible="@{showTestnet &amp;&amp; isMultisig}"
                 tools:ignore="HardcodedText" />
 
             <Button

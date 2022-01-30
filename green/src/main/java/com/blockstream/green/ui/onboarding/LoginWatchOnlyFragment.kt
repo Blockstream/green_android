@@ -3,15 +3,17 @@ package com.blockstream.green.ui.onboarding
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LoginWatchOnlyFragmentBinding
-import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.gdk.getGDKErrorCode
+import com.blockstream.green.ui.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragmentDirections
-import com.blockstream.green.utils.hideKeyboard
+import com.blockstream.green.utils.*
 import com.blockstream.libgreenaddress.KotlinGDK
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginWatchOnlyFragment :
@@ -22,15 +24,39 @@ class LoginWatchOnlyFragment :
 
     override val isAdjustResize: Boolean = true
 
-    val viewModel: LoginWatchOnlyViewModel by viewModels()
+    val args: LoginWatchOnlyFragmentArgs by navArgs()
+
+    @Inject
+    lateinit var assistedFactory: LoginWatchOnlyViewModel.AssistedFactory
+
+    val viewModel: LoginWatchOnlyViewModel by viewModels{
+        LoginWatchOnlyViewModel.provideFactory(
+            assistedFactory = assistedFactory, isMultisig = args.isMultisig
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
 
+        binding.isMultisig = args.isMultisig
+
+        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
+            result?.let { result ->
+                clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
+                viewModel.extenedPublicKey.postValue(result)
+            }
+        }
+
+        binding.extendedPublicKeyTextInputLayout.endIconCopyMode()
+
         binding.buttonAppSettings.setOnClickListener {
             navigate(NavGraphDirections.actionGlobalAppSettingsDialogFragment())
+        }
+
+        binding.buttonScan.setOnClickListener {
+            CameraBottomSheetDialogFragment.open(this)
         }
 
         settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner){

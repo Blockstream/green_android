@@ -388,7 +388,19 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             if(it.isNotEmpty()){
                 titleAdapter.set(listOf(TitleListItem(StringHolder(R.string.id_transactions))))
             }else{
-                titleAdapter.set(listOf(TextListItem(StringHolder(R.string.id_your_transactions_will_be_shown))))
+                titleAdapter.set(
+                    listOf(
+                        TextListItem(
+                            text = StringHolder(R.string.id_your_transactions_will_be_shown),
+                            textColor = R.color.color_on_surface_emphasis_low,
+                            textAlignment = View.TEXT_ALIGNMENT_CENTER,
+                            paddingTop = R.dimen.dp24,
+                            paddingBottom = R.dimen.dp24,
+                            paddingLeft = R.dimen.dp24,
+                            paddingRight = R.dimen.dp24
+                        )
+                    )
+                )
             }
         }
 

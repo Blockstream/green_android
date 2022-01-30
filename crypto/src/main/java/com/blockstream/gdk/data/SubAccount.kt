@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SubAccount(
-    @SerialName("name") val name: String,
+    @SerialName("name") private val gdkName: String,
     @SerialName("pointer") val pointer: Long,
     @SerialName("receiving_id") val receivingId: String,
     @SerialName("recovery_pub_key") val recoveryPubKey: String = "",
@@ -24,21 +24,24 @@ data class SubAccount(
         return serializer()
     }
 
-    fun nameOrDefault(default: String): String = name.ifBlank {
-        when(type){
-            AccountType.BIP44_LEGACY,
-            AccountType.BIP49_SEGWIT_WRAPPED,
-            AccountType.BIP84_SEGWIT -> {
-                val type = if(type == AccountType.BIP84_SEGWIT) "Segwit" else "Legacy"
-                val accountNumber = (pointer / 16) + 1
+    val name: String
+        get() = gdkName.ifBlank {
+            when (type) {
+                AccountType.BIP44_LEGACY,
+                AccountType.BIP49_SEGWIT_WRAPPED,
+                AccountType.BIP84_SEGWIT -> {
+                    val type = if (type == AccountType.BIP84_SEGWIT) "Segwit" else "Legacy"
+                    val accountNumber = (pointer / 16) + 1
 
-                "$type account $accountNumber"
-            }
-            else -> {
-                default
+                    "$type account $accountNumber"
+                }
+                else -> {
+                    ""
+                }
             }
         }
-    }
+
+    fun nameOrDefault(default: String): String = name.ifBlank { default }
 
     fun getRecoveryChainCodeAsBytes(): ByteArray? {
         return Wally.hex_to_bytes(recoveryChainCode)

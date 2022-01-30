@@ -7,7 +7,7 @@ import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-data class HelpListItem(
+data class HelpListItem constructor(
     private val title: StringHolder = StringHolder(),
     private val message: StringHolder = StringHolder(),
     private val button: StringHolder = StringHolder(),

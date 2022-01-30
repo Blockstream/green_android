@@ -1,8 +1,6 @@
 package com.blockstream.green.ui.onboarding
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -10,24 +8,24 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import javax.inject.Inject
 
-@HiltViewModel
-class LoginWatchOnlyViewModel @Inject constructor(
+class LoginWatchOnlyViewModel @AssistedInject constructor(
     private val walletRepository: WalletRepository,
     private val sessionManager: SessionManager,
-    private val appKeystore: AppKeystore
+    private val appKeystore: AppKeystore,
+    @Assisted val isMultisig: Boolean
 ) : AppViewModel() {
 
     var username = MutableLiveData("")
     var password = MutableLiveData("")
+    var extenedPublicKey = MutableLiveData("")
     val isRememberMe = MutableLiveData(true)
     val isTestnet = MutableLiveData(false)
     val newWallet: MutableLiveData<Wallet> = MutableLiveData()
@@ -35,12 +33,15 @@ class LoginWatchOnlyViewModel @Inject constructor(
     val isLoginEnabled: LiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
             val block = { _: Any? ->
-                value =
-                    !username.value.isNullOrBlank() && !password.value.isNullOrBlank() && !onProgress.value!!
+                value = if(isMultisig)
+                    !username.value.isNullOrBlank() && !password.value.isNullOrBlank() && !onProgress.value!! else !extenedPublicKey.value.isNullOrBlank()
             }
-
-            addSource(username, block)
-            addSource(password, block)
+            if(isMultisig) {
+                addSource(username, block)
+                addSource(password, block)
+            }else{
+                addSource(extenedPublicKey, block)
+            }
             addSource(onProgress, block)
         }
     }
@@ -90,5 +91,22 @@ class LoginWatchOnlyViewModel @Inject constructor(
                 newWallet.postValue(it)
             }
         ).addTo(disposables)
+    }
+
+    @dagger.assisted.AssistedFactory
+    interface AssistedFactory {
+        fun create(isMultisig: Boolean): LoginWatchOnlyViewModel
+    }
+
+    companion object {
+        fun provideFactory(
+            assistedFactory: AssistedFactory,
+            isMultisig: Boolean
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return assistedFactory.create(isMultisig) as T
+            }
+        }
     }
 }

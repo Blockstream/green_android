@@ -1069,4 +1069,12 @@
   <string name="id_coin">Coin</string>
   <string name="id_check_device">Check Device</string>
   <string name="id_connected_wallets">Connected wallets</string>
+  <string name="id_watchonly_details">Watch-only details</string>
+  <string name="id_account_extended_public_keys">Account Extended Public Keys</string>
+  <string name="id_extended_public_key">Extended Public Key</string>
+  <string name="id_exports_an_accounts_extended_public_key">Exports an account\'s extended public key (xPub/yPub/zPub) to view as a watch-only</string>
+  <string name="id_tip_you_can_use_the_xpub_ypub_zpub">Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.</string>
+  <string name="id_choose_the_security_policy_that_matches_your_wallet">Choose the security policy that matches your wallet.</string>
+  <string name="id_select_watchonly_type">Select Watch-only type</string>
+  <string name="id_scan_or_paste_your_extended_public_key">Scan or paste your extended public key (xPub/yPub/zPub) to log in to your watch-only-wallet.</string>
 </resources>
