@@ -111,12 +111,7 @@ class HWResolver {
                     if account?.gdkNetwork?.liquid ?? false {
                         return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                     }
-                    var txinfo = tx
-                    if let txhash = tx?["txhash"] as? String,
-                       account?.isLedger ?? false {
-                        txinfo = try SessionManager.shared.getTransactionDetails(txhash: txhash)
-                    }
-                    return hw.signTransaction(tx: txinfo!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
+                    return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                 }.subscribe(onNext: { res in
                     seal.fulfill(res)
                     Ledger.shared.TIMEOUT = 30
