@@ -42,9 +42,7 @@ class AddresseeCell: UITableViewCell {
         lblRecipientAddress.text = addressee.address
 
         let asset = transaction.defaultAsset
-        let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-        let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
-        if asset == "btc" {
+        if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
             if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
                 let (value, denom) = balance.get(tag: btc)
                 lblAmount.text = value ?? ""
@@ -53,6 +51,8 @@ class AddresseeCell: UITableViewCell {
                 lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
             }
         } else {
+            let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+            let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
             if let balance = Balance.convert(details: details) {
                 let (amount, ticker) = balance.get(tag: transaction.defaultAsset)
                 lblAmount.text = amount ?? "N.A."
