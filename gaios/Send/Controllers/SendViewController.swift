@@ -181,30 +181,23 @@ class SendViewController: KeyboardViewController {
     }
 
     func validateTransaction() {
-        transaction = nil
-        updateBtnNext()
 
-        if (recipients[0].amount ?? "").isEmpty && (recipients[0].address ?? "").isEmpty {
-            return
-        }
-//        if recipients[0].assetId == nil {
-//            return
-//        }
+        var details: [String: Any] = [:]
+        if let tx = transaction { details = tx.details }
+        transaction = nil
+
         let subaccount = self.wallet!.pointer
 
         feeEstimates[3] = customFee
         guard let feeEstimate = feeEstimates[selectedFee()] else { return }
         let feeRate = feeEstimate
 
-        var details: [String: Any] = [:]
         switch inputType {
         case .transaction:
             details["addressees"] = [self.getAddressee()]
             details["fee_rate"] = feeRate
             details["subaccount"] = subaccount
-            if self.isSendAll == true {
-                details["send_all"] = true
-            }
+            details["send_all"] = self.isSendAll
         case .sweep:
             details["private_key"] = self.getPrivateKey()
             details["fee_rate"] = feeRate
@@ -215,6 +208,7 @@ class SendViewController: KeyboardViewController {
         }
 
         showIndicator()
+        updateBtnNext()
         validateTask?.cancel()
         validateTask = ValidateTask(details: details, inputType: inputType)
         validateTask?.execute().get { tx in
@@ -425,6 +419,7 @@ extension SendViewController: DialogRecipientDeleteViewControllerDelegate {
 extension SendViewController: AssetsListViewControllerDelegate {
     func didSelect(assetId: String, index: Int?) {
         if let index = index {
+            transaction = nil
             isSendAll = false
             recipients[index].assetId = assetId
             recipients[index].amount = nil
@@ -438,6 +433,7 @@ extension SendViewController: AssetsListViewControllerDelegate {
 extension SendViewController: DialogQRCodeScanViewControllerDelegate {
     func didScan(value: String, index: Int?) {
         if let index = index {
+            transaction = nil
             recipients[index].address = value
             reloadSections([SendSection.recipient], animated: false)
             validateTransaction()

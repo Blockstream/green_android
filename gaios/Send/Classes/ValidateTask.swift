@@ -15,17 +15,17 @@ class ValidateTask {
     init(details: [String: Any], inputType: InputType) {
 
         task = DispatchWorkItem {
-            var newDetails = details
+            var details = details
 
-            if inputType == .transaction {
+            if inputType == .transaction && details["utxos"] == nil {
                 let unspentCall = try? SessionManager.shared.getUnspentOutputs(details: ["subaccount": details["subaccount"] ?? 0, "num_confs": 0])
                 let unspentData = try? unspentCall?.resolve().wait()
                 let unspentResult = unspentData?["result"] as? [String: Any]
                 let unspent = unspentResult?["unspent_outputs"] as? [String: Any]
-                newDetails["utxos"] = unspent ?? [:]
+                details["utxos"] = unspent ?? [:]
             }
 
-            let createCall = try? SessionManager.shared.createTransaction(details: newDetails)
+            let createCall = try? SessionManager.shared.createTransaction(details: details)
             let createData = try? createCall?.resolve().wait()
             let createResult = createData?["result"] as? [String: Any]
             self.tx = Transaction(createResult ?? [:])

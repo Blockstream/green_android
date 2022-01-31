@@ -556,67 +556,79 @@
                                                             </subviews>
                                                         </stackView>
                                                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="0.0" maxValue="3" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3rt-uv-8Ym">
-                                                            <rect key="frame" x="18" y="130.5" width="338" height="59.5"/>
+                                                            <rect key="frame" x="18" y="130.5" width="338" height="49.5"/>
                                                             <color key="minimumTrackTintColor" name="customMatrixGreen"/>
                                                             <connections>
                                                                 <action selector="feeSlider:" destination="pCG-bO-fGL" eventType="valueChanged" id="Baq-Cf-WPN"/>
                                                             </connections>
                                                         </slider>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vlf-ru-KhC">
-                                                            <rect key="frame" x="131.5" y="159.5" width="111" height="1"/>
+                                                            <rect key="frame" x="131.5" y="154.5" width="111" height="1"/>
                                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="1" id="CLt-g2-9wQ"/>
                                                             </constraints>
                                                         </view>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_edit" translatesAutoresizingMaskIntoConstraints="NO" id="2Z2-W3-jvi">
-                                                            <rect key="frame" x="20" y="192" width="20" height="20"/>
+                                                            <rect key="frame" x="20" y="182" width="20" height="20"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="20" id="FWN-Ch-Git"/>
                                                                 <constraint firstAttribute="height" constant="20" id="Wz7-Eg-la6"/>
                                                             </constraints>
                                                         </imageView>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tip_c" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wmw-aR-0Cv" userLabel="lbl_fee_title">
-                                                            <rect key="frame" x="8" y="217" width="44.5" height="13.5"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tip_c" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wmw-aR-0Cv" userLabel="lbl_fee_title">
+                                                            <rect key="frame" x="8" y="207" width="44.5" height="13.5"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="55" id="JHa-iO-KGr"/>
+                                                            </constraints>
                                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="11"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_right" translatesAutoresizingMaskIntoConstraints="NO" id="re2-rR-mwB">
-                                                            <rect key="frame" x="126.5" y="192" width="20" height="20"/>
+                                                            <rect key="frame" x="126.5" y="182" width="20" height="20"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="20" id="QT6-jS-3B9"/>
                                                                 <constraint firstAttribute="height" constant="20" id="eSe-4D-3lO"/>
                                                             </constraints>
                                                         </imageView>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tip_l" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Knp-kV-i7P" userLabel="lbl_fee_title">
-                                                            <rect key="frame" x="116" y="217" width="41" height="13.5"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tip_l" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Knp-kV-i7P" userLabel="lbl_fee_title">
+                                                            <rect key="frame" x="116" y="207" width="41" height="13.5"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="55" id="FH2-TX-FEc"/>
+                                                            </constraints>
                                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="11"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_right" translatesAutoresizingMaskIntoConstraints="NO" id="GGj-IZ-QN8">
-                                                            <rect key="frame" x="232.5" y="192" width="20" height="20"/>
+                                                            <rect key="frame" x="232.5" y="182" width="20" height="20"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="20" id="8k2-lK-QH0"/>
                                                                 <constraint firstAttribute="height" constant="20" id="wKu-Ty-RkU"/>
                                                             </constraints>
                                                         </imageView>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tip_m" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YEH-8a-pCk" userLabel="lbl_fee_title">
-                                                            <rect key="frame" x="218.5" y="217" width="48" height="13.5"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tip_m" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YEH-8a-pCk" userLabel="lbl_fee_title">
+                                                            <rect key="frame" x="218.5" y="207" width="48" height="13.5"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="55" id="1lb-4F-hIa"/>
+                                                            </constraints>
                                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="11"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_double_arrow_right" translatesAutoresizingMaskIntoConstraints="NO" id="TOR-8p-HYr">
-                                                            <rect key="frame" x="334" y="192" width="20" height="20"/>
+                                                            <rect key="frame" x="334" y="182" width="20" height="20"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="20" id="JNG-Xt-Pi3"/>
                                                                 <constraint firstAttribute="width" constant="20" id="L32-qH-Zm8"/>
                                                             </constraints>
                                                         </imageView>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tip_h" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mca-Zx-SeI" userLabel="lbl_fee_title">
-                                                            <rect key="frame" x="321.5" y="217" width="45" height="13.5"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tip_h" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mca-Zx-SeI" userLabel="lbl_fee_title">
+                                                            <rect key="frame" x="321.5" y="207" width="45" height="13.5"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="55" id="56c-mt-ANg"/>
+                                                            </constraints>
                                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="11"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
@@ -635,7 +647,7 @@
                                                         <constraint firstItem="jIu-lt-lQr" firstAttribute="leading" secondItem="cEU-hg-Htm" secondAttribute="leading" constant="20" id="DdP-Gt-eIM"/>
                                                         <constraint firstItem="YEH-8a-pCk" firstAttribute="centerX" secondItem="GGj-IZ-QN8" secondAttribute="centerX" id="GOQ-84-OBn"/>
                                                         <constraint firstItem="Vlf-ru-KhC" firstAttribute="width" secondItem="3rt-uv-8Ym" secondAttribute="width" multiplier="0.333" id="Iyk-7U-ogF"/>
-                                                        <constraint firstAttribute="bottom" secondItem="3rt-uv-8Ym" secondAttribute="bottom" constant="55" id="J6j-Ud-exF"/>
+                                                        <constraint firstAttribute="bottom" secondItem="3rt-uv-8Ym" secondAttribute="bottom" constant="65" id="J6j-Ud-exF"/>
                                                         <constraint firstItem="re2-rR-mwB" firstAttribute="centerY" secondItem="2Z2-W3-jvi" secondAttribute="centerY" id="JOk-vk-0Te"/>
                                                         <constraint firstItem="YEH-8a-pCk" firstAttribute="top" secondItem="GGj-IZ-QN8" secondAttribute="bottom" constant="5" id="JPO-kr-4WW"/>
                                                         <constraint firstAttribute="trailing" secondItem="Cu1-an-8Bf" secondAttribute="trailing" constant="70" id="Kov-dt-ub1"/>
