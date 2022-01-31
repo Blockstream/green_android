@@ -21,6 +21,7 @@ class FeeEditCell: UITableViewCell {
     @IBOutlet weak var lblTipLow: UILabel!
     @IBOutlet weak var lblTipMedium: UILabel!
     @IBOutlet weak var lblTipHigh: UILabel!
+    @IBOutlet weak var lblInvalidFee: UILabel!
 
     var transaction: Transaction?
     var setCustomFee: VoidToVoid?
@@ -47,6 +48,7 @@ class FeeEditCell: UITableViewCell {
         lblTipLow.text = NSLocalizedString("id_low", comment: "")
         lblTipMedium.text = NSLocalizedString("id_medium", comment: "")
         lblTipHigh.text = NSLocalizedString("id_high", comment: "")
+        lblInvalidFee.text = NSLocalizedString("id_invalid_replacement_fee_rate", comment: "")
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -71,6 +73,7 @@ class FeeEditCell: UITableViewCell {
         lblFeeValue.isHidden = true
         lblFeeRate.isHidden = true
         lblFeeFiat.isHidden = true
+        lblInvalidFee.isHidden = true
 
         lblTimeHint.text = transactionPriority == .Custom ? "Custom" : "~ \(transactionPriority.time)"
         feeSlider.value = Float(feeToSwitchIndex(transactionPriority))
@@ -98,7 +101,7 @@ class FeeEditCell: UITableViewCell {
                 lblFeeFiat.isHidden = false
             }
         }
-
+        lblInvalidFee.isHidden = !(transaction?.error == "id_invalid_replacement_fee_rate")
     }
 
     func setPriority(_ switchIndex: Int) {
