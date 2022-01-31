@@ -179,11 +179,9 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
                 return cell
             }
         case SendConfirmSection.note.rawValue:
-            let noteAction: VoidToVoid? = { [weak self] in
-                self?.editNote()
-            }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell") as? NoteCell {
-                cell.configure(note: transaction?.memo ?? "", noteAction: noteAction)
+                cell.configure(note: transaction?.memo ?? "")
+                cell.delegate = self
                 cell.selectionStyle = .none
                 return cell
             }
@@ -227,4 +225,11 @@ extension SendConfirmViewController: DialogNoteViewControllerDelegate {
     }
 
     func didCancel() { }
+}
+
+extension SendConfirmViewController: NoteCellDelegate {
+
+    func noteAction() {
+        editNote()
+    }
 }

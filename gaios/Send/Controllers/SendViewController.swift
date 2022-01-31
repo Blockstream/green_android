@@ -282,95 +282,31 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let removeRecipientAction: VoidToVoid = {[weak self] in
-            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRecipientDeleteViewController") as? DialogRecipientDeleteViewController {
-                vc.index = indexPath.row
-                vc.modalPresentationStyle = .overFullScreen
-                vc.delegate = self
-                self?.present(vc, animated: false, completion: nil)
-            }
-        }
-        let needRefresh: VoidToVoid = {[weak self] in
-            self?.tableView.beginUpdates()
-            self?.tableView.endUpdates()
-        }
-        let validateTransaction: VoidToVoid = {[weak self] in
-            self?.validateTransaction()
-        }
-        let selectAsset: VoidToVoid = {[weak self] in
-            let storyboard = UIStoryboard(name: "Assets", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetsListViewController") as? AssetsListViewController {
-                vc.wallet = self?.wallet
-                vc.index = indexPath.row
-                vc.delegate = self
-                self?.present(vc, animated: true, completion: nil)
-            }
-        }
-        let qrAction: VoidToVoid = {[weak self] in
-            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogQRCodeScanViewController") as? DialogQRCodeScanViewController {
-                vc.modalPresentationStyle = .overFullScreen
-                vc.index = indexPath.row
-                vc.delegate = self
-                self?.present(vc, animated: false, completion: nil)
-            }
-        }
-        let tapSendAll: VoidToVoid = {[weak self] in
-            self?.isSendAll.toggle()
-            self?.reloadSections([SendSection.recipient], animated: true)
-        }
-        let onFocus: VoidToVoid = {[weak self] in
-            self?.tableView.scrollToRow(at: IndexPath(row: (self?.recipients.count ?? 1) - 1, section: SendSection.allCases.count - 1), at: .bottom, animated: true)
-        }
         switch indexPath.section {
         case SendSection.recipient.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "RecipientCell") as? RecipientCell {
                 cell.configure(recipient: recipients[indexPath.row],
                                index: indexPath.row,
                                isMultiple: recipients.count > 1,
-                               removeRecipient: removeRecipientAction,
-                               needRefresh: needRefresh,
-                               chooseAsset: selectAsset,
-                               qrScan: qrAction,
                                walletItem: self.wallet,
-                               tapSendAll: tapSendAll,
                                isSendAll: self.isSendAll,
                                isSweep: self.isSweep,
-                               isBumpFee: self.isBumpFee,
-                               validateTransaction: validateTransaction,
-                               onFocus: onFocus)
+                               isBumpFee: self.isBumpFee)
+                cell.delegate = self
                 cell.selectionStyle = .none
                 return cell
             }
         case SendSection.addRecipient.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AddRecipientCell") as? AddRecipientCell {
-                cell.configure {
-                    [weak self] in
-                    self?.addRecipient()
-                }
+                cell.delegate = self
                 cell.selectionStyle = .none
                 return cell
             }
         case SendSection.fee.rawValue:
-            let setCustomFee: VoidToVoid = {[weak self] in
-                let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
-                    vc.modalPresentationStyle = .overFullScreen
-                    vc.delegate = self
-                    vc.storedFeeRate = self?.feeEstimates[3]
-                    self?.present(vc, animated: false, completion: nil)
-                }
-            }
-            let updatePriority: ((TransactionPriority) -> Void) = {[weak self] value in
-                self?.transactionPriority = value
-                self?.validateTransaction()
-            }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeEditCell") as? FeeEditCell {
                 cell.configure(transaction: self.transaction,
-                               setCustomFee: setCustomFee,
-                               updatePriority: updatePriority,
                                transactionPriority: self.transactionPriority)
+                cell.delegate = self
                 cell.selectionStyle = .none
                 return cell
             }
@@ -449,6 +385,81 @@ extension SendViewController: DialogCustomFeeViewControllerDelegate {
         feeEstimates[3] = fee ?? 1000
         customFee = feeEstimates[3] ?? 1000
         transactionPriority = .Custom
+        validateTransaction()
+    }
+}
+
+extension SendViewController: RecipientCellDelegate {
+
+    func validateTx() {
+        validateTransaction()
+    }
+
+    func removeRecipient(_ index: Int) {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRecipientDeleteViewController") as? DialogRecipientDeleteViewController {
+            vc.index = index
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func needRefresh() {
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+
+    func chooseAsset(_ index: Int) {
+        let storyboard = UIStoryboard(name: "Assets", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetsListViewController") as? AssetsListViewController {
+            vc.wallet = wallet
+            vc.index = index
+            vc.delegate = self
+            present(vc, animated: true, completion: nil)
+        }
+    }
+
+    func qrScan(_ index: Int) {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogQRCodeScanViewController") as? DialogQRCodeScanViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.index = index
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func tapSendAll() {
+        isSendAll.toggle()
+        reloadSections([SendSection.recipient], animated: true)
+    }
+
+    func onFocus() {
+        tableView.scrollToRow(at: IndexPath(row: recipients.count - 1, section: SendSection.allCases.count - 1), at: .bottom, animated: true)
+    }
+}
+
+extension SendViewController: AddRecipientCellDelegate {
+
+    func action() {
+        addRecipient()
+    }
+}
+
+extension SendViewController: FeeEditCellDelegate {
+    func setCustomFee() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            vc.storedFeeRate = feeEstimates[3]
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func updatePriority(_ priority: TransactionPriority) {
+        transactionPriority = priority
         validateTransaction()
     }
 }

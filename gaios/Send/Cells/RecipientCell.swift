@@ -1,5 +1,15 @@
 import UIKit
 
+protocol RecipientCellDelegate: AnyObject {
+    func removeRecipient(_ index: Int)
+    func needRefresh()
+    func chooseAsset(_ index: Int)
+    func qrScan(_ index: Int)
+    func tapSendAll()
+    func validateTx()
+    func onFocus()
+}
+
 class RecipientCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
@@ -36,18 +46,14 @@ class RecipientCell: UITableViewCell {
     @IBOutlet weak var lblAvailableFunds: UILabel!
     @IBOutlet weak var btnSendAll: UIButton!
 
-    var removeRecipient: VoidToVoid?
-    var needRefresh: VoidToVoid?
     var recipient: Recipient?
-    var chooseAsset: VoidToVoid?
-    var qrScan: VoidToVoid?
     var wallet: WalletItem?
-    var tapSendAll: VoidToVoid?
     var isSendAll: Bool = false
     var isSweep: Bool = false
     var isBumpFee: Bool = false
-    var validateTransaction: VoidToVoid?
-    var onFocus: VoidToVoid?
+
+    weak var delegate: RecipientCellDelegate?
+    var index: Int?
 
     var isFiat: Bool {
         return recipient?.isFiat ?? false
@@ -93,36 +99,23 @@ class RecipientCell: UITableViewCell {
     func configure(recipient: Recipient,
                    index: Int,
                    isMultiple: Bool,
-                   removeRecipient: VoidToVoid?,
-                   needRefresh: VoidToVoid?,
-                   chooseAsset: VoidToVoid?,
-                   qrScan: VoidToVoid?,
                    walletItem: WalletItem?,
-                   tapSendAll: VoidToVoid?,
                    isSendAll: Bool,
                    isSweep: Bool,
-                   isBumpFee: Bool,
-                   validateTransaction: VoidToVoid?,
-                   onFocus: VoidToVoid?
+                   isBumpFee: Bool
     ) {
         lblRecipientNum.text = "#\(index + 1)"
         removeRecipientView.isHidden = !isMultiple
+        self.index = index
         self.recipient = recipient
-        self.removeRecipient = removeRecipient
         self.addressTextView.text = recipient.address
         self.addressTextView.delegate = self
         self.amountTextField.text = recipient.amount
         self.amountTextField.delegate = self
-        self.needRefresh = needRefresh
-        self.chooseAsset = chooseAsset
-        self.qrScan = qrScan
         self.wallet = walletItem
-        self.tapSendAll = tapSendAll
         self.isSendAll = isSendAll
         self.isSweep = isSweep
         self.isBumpFee = isBumpFee
-        self.validateTransaction = validateTransaction
-        self.onFocus = onFocus
 
         lblAddressError.isHidden = true
         lblAmountError.isHidden = true
@@ -224,7 +217,7 @@ class RecipientCell: UITableViewCell {
             bg.alpha = 0.6
         }
 
-        needRefresh?()
+        delegate?.needRefresh()
     }
 
     func amountFieldIsEnabled(_ value: Bool) {
@@ -394,17 +387,19 @@ class RecipientCell: UITableViewCell {
 
     @objc func triggerTextChange() {
         onChange()
-        validateTransaction?()
+        delegate?.validateTx()
     }
 
     @IBAction func recipientRemove(_ sender: Any) {
-        removeRecipient?()
+        if let i = index {
+            delegate?.removeRecipient(i)
+        }
     }
 
     @IBAction func btnCancelAddress(_ sender: Any) {
         addressTextView.text = ""
         onChange()
-        validateTransaction?()
+        delegate?.validateTx()
     }
 
     @IBAction func btnPasteAddress(_ sender: Any) {
@@ -412,33 +407,37 @@ class RecipientCell: UITableViewCell {
             addressTextView.text = txt
         }
         onChange()
-        validateTransaction?()
+        delegate?.validateTx()
     }
 
     @IBAction func btnQr(_ sender: Any) {
-        qrScan?()
+        if let i = index {
+            delegate?.qrScan(i)
+        }
     }
 
     @IBAction func btnChooseAsset(_ sender: Any) {
         if isLiquid {
-            chooseAsset?()
+            if let i = index {
+                delegate?.chooseAsset(i)
+            }
         }
     }
 
     @IBAction func btnSendAll(_ sender: Any) {
-        tapSendAll?()
+        delegate?.tapSendAll()
         if isFiat == true {
             convertAmount()
         }
         amountTextField.text = ""
         onChange()
-        validateTransaction?()
+        delegate?.validateTx()
     }
 
     @IBAction func btnCancelAmount(_ sender: Any) {
         amountTextField.text = ""
         onChange()
-        validateTransaction?()
+        delegate?.validateTx()
     }
 
     @IBAction func btnPasteAmount(_ sender: Any) {
@@ -446,13 +445,13 @@ class RecipientCell: UITableViewCell {
             amountTextField.text = txt
         }
         onChange()
-        validateTransaction?()
+        delegate?.validateTx()
     }
 
     @IBAction func btnConvert(_ sender: Any) {
         convertAmount()
         onChange()
-        validateTransaction?()
+        delegate?.validateTx()
     }
 
     @IBAction func amountDidChange(_ sender: Any) {
@@ -469,7 +468,7 @@ extension RecipientCell: UITextFieldDelegate {
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == amountTextField {
-            onFocus?()
+            delegate?.onFocus()
         }
     }
 }

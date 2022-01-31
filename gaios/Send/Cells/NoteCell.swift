@@ -1,11 +1,15 @@
 import UIKit
 
+protocol NoteCellDelegate: AnyObject {
+    func noteAction()
+}
+
 class NoteCell: UITableViewCell {
 
     @IBOutlet weak var lblNoteTitle: UILabel!
     @IBOutlet weak var lblNoteTxt: UILabel!
     @IBOutlet weak var bgNote: UIView!
-    var noteAction: VoidToVoid?
+    weak var delegate: NoteCellDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -21,12 +25,11 @@ class NoteCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(note: String, noteAction: VoidToVoid?) {
-        self.noteAction = noteAction
+    func configure(note: String) {
         self.lblNoteTxt.text = note
     }
 
     @IBAction func btnNote(_ sender: Any) {
-        noteAction?()
+        delegate?.noteAction()
     }
 }

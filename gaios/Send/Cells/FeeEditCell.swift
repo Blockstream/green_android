@@ -1,5 +1,10 @@
 import UIKit
 
+protocol FeeEditCellDelegate: AnyObject {
+    func setCustomFee()
+    func updatePriority(_ priority: TransactionPriority)
+}
+
 class FeeEditCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
@@ -24,9 +29,8 @@ class FeeEditCell: UITableViewCell {
     @IBOutlet weak var lblInvalidFee: UILabel!
 
     var transaction: Transaction?
-    var setCustomFee: VoidToVoid?
-    var updatePriority: ((TransactionPriority) -> Void)?
     var transactionPriority: TransactionPriority?
+    weak var delegate: FeeEditCellDelegate?
 
     private var btc: String {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
@@ -63,12 +67,8 @@ class FeeEditCell: UITableViewCell {
     }
 
     func configure(transaction: Transaction?,
-                   setCustomFee: VoidToVoid?,
-                   updatePriority: ((TransactionPriority) -> Void)?,
                    transactionPriority: TransactionPriority
     ) {
-        self.setCustomFee = setCustomFee
-        self.updatePriority = updatePriority
         self.transaction = transaction
         lblFeeValue.isHidden = true
         lblFeeRate.isHidden = true
@@ -141,13 +141,13 @@ class FeeEditCell: UITableViewCell {
     }
 
     @IBAction func btnCustomFee(_ sender: Any) {
-        setCustomFee?()
+        delegate?.setCustomFee()
     }
 
     @IBAction func feeSlider(_ sender: UISlider) {
         let step = Float(1)
         let roundedValue = round(sender.value / step) * step
         sender.value = roundedValue
-        updatePriority?(switchIndexToFee(Int(sender.value)))
+        delegate?.updatePriority(switchIndexToFee(Int(sender.value)))
     }
 }

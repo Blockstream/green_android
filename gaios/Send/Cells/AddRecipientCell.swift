@@ -1,9 +1,13 @@
 import UIKit
 
+protocol AddRecipientCellDelegate: AnyObject {
+    func action()
+}
+
 class AddRecipientCell: UITableViewCell {
 
     @IBOutlet weak var btnAddRecipient: UIButton!
-    var action: VoidToVoid?
+    weak var delegate: AddRecipientCellDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -17,15 +21,11 @@ class AddRecipientCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    override func prepareForReuse() {
-    }
+    override func prepareForReuse() { }
 
-    func configure(action: VoidToVoid?) {
-        self.action = action
-    }
+    func configure() { }
 
     @IBAction func btnAddRecipient(_ sender: Any) {
-        print("btnAddRecipient")
-        action?()
+        delegate?.action()
     }
 }
