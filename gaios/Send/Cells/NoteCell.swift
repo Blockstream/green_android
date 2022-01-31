@@ -13,7 +13,7 @@ class NoteCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        lblNoteTitle.text = NSLocalizedString("id_my_notes", comment: "")
+        lblNoteTitle.text = (NSLocalizedString("id_my_notes", comment: "").lowercased()).firstUppercased
         bgNote.layer.cornerRadius = 5.0
     }
 
