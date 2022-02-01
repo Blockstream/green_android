@@ -48,11 +48,14 @@ class RecipientCell: UITableViewCell {
 
     var recipient: Recipient?
     var wallet: WalletItem?
-    var isSendAll: Bool = false
     var inputType: InputType = .transaction
 
     weak var delegate: RecipientCellDelegate?
     var index: Int?
+
+    var isSendAll: Bool {
+        return recipient?.isSendAll == true
+    }
 
     var isFiat: Bool {
         return recipient?.isFiat ?? false
@@ -94,12 +97,10 @@ class RecipientCell: UITableViewCell {
     override func prepareForReuse() {
     }
 
-    // swiftlint:disable function_parameter_count
     func configure(recipient: Recipient,
                    index: Int,
                    isMultiple: Bool,
                    walletItem: WalletItem?,
-                   isSendAll: Bool,
                    inputType: InputType
     ) {
         lblRecipientNum.text = "#\(index + 1)"
@@ -111,7 +112,6 @@ class RecipientCell: UITableViewCell {
         self.amountTextField.text = recipient.amount
         self.amountTextField.delegate = self
         self.wallet = walletItem
-        self.isSendAll = isSendAll
         self.inputType = inputType
 
         lblAddressError.isHidden = true
@@ -221,7 +221,7 @@ class RecipientCell: UITableViewCell {
         amountBox.alpha = value ? 1.0 : 0.6
     }
 
-    func onTransactionValidate(_ tx: Transaction?) {
+    func onTransactionValidate() {
         addressContainer.borderColor = UIColor.customTextFieldBg()
         amountContainer.borderColor = UIColor.customTextFieldBg()
         assetBorder.backgroundColor = UIColor.customTitaniumLight()
@@ -229,33 +229,43 @@ class RecipientCell: UITableViewCell {
         lblAmountError.isHidden = true
         lblAmountExchange.isHidden = true
 
-        if tx?.error == "id_invalid_address" || tx?.error == "id_invalid_private_key" {
+        if recipient?.txError == "id_invalid_address" || recipient?.txError == "id_invalid_private_key" {
             addressContainer.borderColor = UIColor.errorRed()
             lblAddressError.isHidden = false
-            lblAddressError.text = NSLocalizedString(tx?.error ?? "Error", comment: "")
-        } else if tx?.error == "id_invalid_amount" || tx?.error == "id_insufficient_funds" {
+            lblAddressError.text = NSLocalizedString(recipient?.txError ?? "Error", comment: "")
+        } else if recipient?.txError == "id_invalid_amount" || recipient?.txError == "id_insufficient_funds" {
             amountContainer.borderColor = UIColor.errorRed()
             lblAmountError.isHidden = false
-            lblAmountError.text = NSLocalizedString(tx?.error ?? "Error", comment: "")
-        } else if tx?.error == "id_invalid_payment_request_assetid" || tx?.error == "id_invalid_asset_id" {
+            lblAmountError.text = NSLocalizedString(recipient?.txError ?? "Error", comment: "")
+        } else if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
             assetBorder.backgroundColor = UIColor.errorRed()
-        } else if !(tx?.error ?? "").isEmpty {
-            print(tx?.error ?? "Error")
+        } else if !(recipient?.txError ?? "").isEmpty {
+            print(recipient?.txError ?? "Error")
         }
 
-        if let transaction = tx, tx?.sendAll == true {
-            updateUISendAll(transaction)
+        if isBipAddress() {
+            if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
+                iconAsset.image = UIImage(named: "default_asset_icon")
+                lblAssetName.text = "Asset"
+                lblCurrency.text = ""
+                lblAvailableFunds.text = ""
+                amountTextField.text = ""
+            } else {
+                iconAsset.image = Registry.shared.image(for: recipient?.assetId)
+                lblAssetName.text = getDenomination()
+                lblCurrency.text = getDenomination()
+                lblAvailableFunds.text = getBalance()
+                updateAmountTextField()
+            }
+        }
+        if inputType == .sweep || isSendAll {
+            updateAmountTextField()
         }
 
-        if let transaction = tx, isBipAddress() {
-            updateUIBipAddress(transaction)
-        }
-
-        if let transaction = tx, transaction.error.isEmpty {
-            let asset = transaction.defaultAsset
+        if let satoshi = recipient?.satoshi, (recipient?.txError ?? "").isEmpty, let asset = recipient?.assetId {
             if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
                 lblAmountExchange.isHidden = false
-                if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+                if let balance = Balance.convert(details: ["satoshi": satoshi]) {
                     let (fiat, fiatCurrency) = balance.get(tag: !isFiat ? "fiat" : asset)
                     lblAmountExchange.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
                 }
@@ -263,28 +273,8 @@ class RecipientCell: UITableViewCell {
         }
     }
 
-    func updateUISendAll(_ transaction: Transaction) {
-        let asset = transaction.defaultAsset
-        let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-        if asset == "btc" {
-            if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
-                let (value, _) = balance.get(tag: btc)
-                amountTextField.text = value ?? ""
-            }
-        } else {
-            if transaction.error.isEmpty {
-                let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
-                if let balance = Balance.convert(details: details) {
-                    let (amount, _) = balance.get(tag: transaction.defaultAsset)
-                    amountTextField.text = amount ?? ""
-                }
-            }
-        }
-    }
-
-    func updateUIBipAddress(_ transaction: Transaction) {
-        recipient?.assetId = transaction.defaultAsset
-        if transaction.error == "id_invalid_payment_request_assetid" || transaction.error == "id_invalid_asset_id" {
+    func updateUIBipAddress() {
+        if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
             iconAsset.image = UIImage(named: "default_asset_icon")
             lblAssetName.text = "Asset"
             lblCurrency.text = ""
@@ -295,18 +285,26 @@ class RecipientCell: UITableViewCell {
             lblAssetName.text = getDenomination()
             lblCurrency.text = getDenomination()
             lblAvailableFunds.text = getBalance()
-            let asset = transaction.defaultAsset
+            updateAmountTextField()
+        }
+    }
+
+    func updateAmountTextField() {
+        amountTextField.text = ""
+        if let asset = recipient?.assetId {
             if asset == "btc" {
-                if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
-                    let (value, _) = balance.get(tag: btc)
+                if let satoshi = recipient?.satoshi, let balance = Balance.convert(details: ["satoshi": satoshi]) {
+                    let (value, _) = satoshi == 0 ? ("", "") : balance.get(tag: btc)
                     amountTextField.text = value ?? ""
                 }
             } else {
                 let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-                let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
-                if let balance = Balance.convert(details: details) {
-                    let (amount, _) = balance.get(tag: transaction.defaultAsset)
-                    amountTextField.text = amount ?? ""
+                if let amounts = recipient?.amounts, let satoshi = amounts[asset], let assetInfo = info.encode() {
+                    let details = ["satoshi": satoshi, "asset_info": assetInfo] as [String: Any]
+                    if let balance = Balance.convert(details: details) {
+                        let (amount, _) = satoshi == 0 ? ("", "") : balance.get(tag: asset)
+                        amountTextField.text = amount ?? ""
+                    }
                 }
             }
         }
@@ -338,14 +336,6 @@ class RecipientCell: UITableViewCell {
         return ""
     }
 
-    func getCurrency() -> String {
-        let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
-        let settings = SessionsManager.current.settings!
-        let currency = isMainnet ? settings.getCurrency() : "FIAT"
-        let title = isFiat ? currency : settings.denomination.string
-        return title
-    }
-
     func getSatoshi() -> UInt64? {
         guard let assetId = recipient?.assetId else {
             return nil
@@ -355,7 +345,10 @@ class RecipientCell: UITableViewCell {
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
         let isBtc = assetId == btc
-        let denominationBtc = SessionsManager.current.settings!.denomination.rawValue
+        guard let settings = SessionsManager.current.settings else {
+            return nil
+        }
+        let denominationBtc = settings.denomination.rawValue
         let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetId)
         let details: [String: Any]
         if isBtc {
@@ -421,6 +414,7 @@ class RecipientCell: UITableViewCell {
     }
 
     @IBAction func btnSendAll(_ sender: Any) {
+        recipient?.isSendAll.toggle()
         delegate?.tapSendAll()
         if isFiat == true {
             convertAmount()

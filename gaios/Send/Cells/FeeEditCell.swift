@@ -28,7 +28,7 @@ class FeeEditCell: UITableViewCell {
     @IBOutlet weak var lblTipHigh: UILabel!
     @IBOutlet weak var lblInvalidFee: UILabel!
 
-    var transaction: Transaction?
+    var recipient: Recipient?
     var transactionPriority: TransactionPriority?
     weak var delegate: FeeEditCellDelegate?
 
@@ -66,10 +66,10 @@ class FeeEditCell: UITableViewCell {
         lblTipCustom.textColor = .white
     }
 
-    func configure(transaction: Transaction?,
+    func configure(recipient: Recipient,
                    transactionPriority: TransactionPriority
     ) {
-        self.transaction = transaction
+        self.recipient = recipient
         lblFeeValue.isHidden = true
         lblFeeRate.isHidden = true
         lblFeeFiat.isHidden = true
@@ -89,19 +89,19 @@ class FeeEditCell: UITableViewCell {
             lblTipCustom.textColor = UIColor.customMatrixGreen()
         }
 
-        if let tx = transaction, tx.error.isEmpty {
-            if let balance = Balance.convert(details: ["satoshi": tx.fee]) {
+        if (recipient.txError.isEmpty || recipient.txError == "id_invalid_replacement_fee_rate"), let fee = recipient.fee, let feeRate = recipient.feeRate {
+            if let balance = Balance.convert(details: ["satoshi": fee]) {
                 let (amount, denom) = balance.get(tag: btc)
                 lblFeeValue.text = "\(amount ?? "") \(denom)"
                 let (fiat, fiatCurrency) = balance.get(tag: "fiat")
                 lblFeeFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
-                lblFeeRate.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(tx.feeRate) / 1000))"
+                lblFeeRate.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(feeRate) / 1000))"
                 lblFeeValue.isHidden = false
                 lblFeeRate.isHidden = false
                 lblFeeFiat.isHidden = false
             }
         }
-        lblInvalidFee.isHidden = !(transaction?.error == "id_invalid_replacement_fee_rate")
+        lblInvalidFee.isHidden = !(recipient.txError == "id_invalid_replacement_fee_rate")
     }
 
     func setPriority(_ switchIndex: Int) {

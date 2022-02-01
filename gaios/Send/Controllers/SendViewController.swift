@@ -15,7 +15,6 @@ class SendViewController: KeyboardViewController {
 
     var wallet: WalletItem?
     var recipients: [Recipient] = []
-    var isSendAll: Bool = false
     var inputType: InputType = .transaction
 
     var transaction: Transaction?
@@ -105,6 +104,9 @@ class SendViewController: KeyboardViewController {
                 let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: "btc") ?? ("", "")
                 recipient.amount = amount
             }
+            recipient.txError = transaction?.error ?? ""
+            recipient.fee = transaction?.fee
+            recipient.feeRate = transaction?.feeRate
         }
 
         recipient.assetId = isBtc ? "btc" : nil
@@ -124,14 +126,19 @@ class SendViewController: KeyboardViewController {
         }
     }
 
+    func isSendAll() -> Bool {
+        //handling only 1 recipient for the moment
+        let recipient = recipients.first
+        return recipient?.isSendAll == true
+    }
+
     func getAddressee() -> [String: Any] {
         //handling only 1 recipient for the moment
         let recipient = recipients.first
         let addressInput: String = recipient?.address ?? ""
 
-        let isBip21 = addressInput.starts(with: "bitcoin:") || addressInput.starts(with: "liquidnetwork:")
         let network = AccountsManager.shared.current?.gdkNetwork
-        let policyAsset = recipients[0].assetId
+        let policyAsset = recipient?.assetId
 
         let satoshi = recipient?.getSatoshi() ?? 0
 
@@ -139,8 +146,8 @@ class SendViewController: KeyboardViewController {
         addressee["address"] = addressInput
         addressee["satoshi"] = satoshi
 
-        if network?.liquid ?? false && !isBip21 {
-            addressee["asset_id"] = policyAsset
+        if network?.liquid ?? false && !isBipAddress() && policyAsset != nil {
+            addressee["asset_id"] = policyAsset!
         }
 
         return addressee
@@ -172,6 +179,11 @@ class SendViewController: KeyboardViewController {
         self.navigationItem.titleView = nil
     }
 
+    func isBipAddress() -> Bool {
+        let addressInput: String = recipients.first?.address ?? ""
+        return addressInput.starts(with: "bitcoin:") || addressInput.starts(with: "liquidnetwork:")
+    }
+
     func validateTransaction() {
 
         var details: [String: Any] = [:]
@@ -186,10 +198,11 @@ class SendViewController: KeyboardViewController {
 
         switch inputType {
         case .transaction:
+            if isBipAddress() { details = [:] }
             details["addressees"] = [self.getAddressee()]
             details["fee_rate"] = feeRate
             details["subaccount"] = subaccount
-            details["send_all"] = self.isSendAll
+            details["send_all"] = self.isSendAll()
         case .sweep:
             details["private_key"] = self.getPrivateKey()
             details["fee_rate"] = feeRate
@@ -221,13 +234,23 @@ class SendViewController: KeyboardViewController {
         }.finally {
             self.hideIndicator()
             self.updateBtnNext()
+            self.bindRecipients()
             let vc = self.tableView.visibleCells
             vc.forEach({ item in
                 if let cell = item as? RecipientCell {
-                    cell.onTransactionValidate(self.transaction)
+                    cell.onTransactionValidate()
                 }})
             self.reloadSections([SendSection.fee], animated: false)
         }
+    }
+
+    func bindRecipients() {
+        recipients.first?.txError = self.transaction?.error ?? ""
+        recipients.first?.fee = self.transaction?.fee
+        recipients.first?.feeRate = self.transaction?.feeRate
+        recipients.first?.satoshi = self.transaction?.satoshi
+        recipients.first?.assetId = isLiquid ? self.transaction?.addressees.first?.assetId : "btc"
+        recipients.first?.amounts = self.transaction?.amounts
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -280,7 +303,6 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                                index: indexPath.row,
                                isMultiple: recipients.count > 1,
                                walletItem: self.wallet,
-                               isSendAll: self.isSendAll,
                                inputType: self.inputType)
                 cell.delegate = self
                 cell.selectionStyle = .none
@@ -294,7 +316,7 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case SendSection.fee.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeEditCell") as? FeeEditCell {
-                cell.configure(transaction: self.transaction,
+                cell.configure(recipient: recipients[indexPath.row],
                                transactionPriority: self.transactionPriority)
                 cell.delegate = self
                 cell.selectionStyle = .none
@@ -346,10 +368,10 @@ extension SendViewController: AssetsListViewControllerDelegate {
     func didSelect(assetId: String, index: Int?) {
         if let index = index {
             transaction = nil
-            isSendAll = false
             recipients[index].assetId = assetId
             recipients[index].amount = nil
             recipients[index].isFiat = false
+            recipients[index].isSendAll = false
             reloadSections([SendSection.recipient], animated: false)
             validateTransaction()
         }
@@ -421,7 +443,6 @@ extension SendViewController: RecipientCellDelegate {
     }
 
     func tapSendAll() {
-        isSendAll.toggle()
         reloadSections([SendSection.recipient], animated: true)
     }
 
