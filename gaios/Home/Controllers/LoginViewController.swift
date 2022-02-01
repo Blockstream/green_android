@@ -165,7 +165,7 @@ class LoginViewController: UIViewController {
         firstly {
             return Guarantee()
         }.compactMap {
-            try self.account?.auth(usingAuth)
+            try session.account?.auth(usingAuth)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         }.then(on: bgq) { data -> Promise<Void> in
@@ -179,9 +179,9 @@ class LoginViewController: UIViewController {
             session.subaccount()
         }.get { _ in
             if withPIN != nil {
-                self.account?.attempts = 0
+                session.account?.attempts = 0
             }
-            AccountsManager.shared.current = self.account
+            AccountsManager.shared.current = session.account
         }.done { wallet in
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
@@ -198,7 +198,7 @@ class LoginViewController: UIViewController {
                 return
             case AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
                 return self.onBioAuthError(error.localizedDescription)
-            case AuthenticationTypeHandler.AuthError.ConnectionFailed:
+            case LoginError.connectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             case GaError.NotAuthorizedError:
                 self.wrongPin(usingAuth)

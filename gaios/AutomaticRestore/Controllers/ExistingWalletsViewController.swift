@@ -5,6 +5,7 @@ import simd
 struct ExistingWallet {
     let isSingleSig: Bool
     let isFound: Bool
+    let isJustRestored: Bool
 }
 
 class ExistingWalletsViewController: UIViewController {
@@ -21,26 +22,19 @@ class ExistingWalletsViewController: UIViewController {
     var mnemonic = ""
     var mnemonicPassword = ""
 
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setContent()
-        setStyle()
 
         btnManualRestore.isHidden = true
         tableView.isHidden = true
-        showLoader()
         lblLoading.isHidden = false
-        validateMnemonic()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.ExistingWalletsScreen.view
         btnManualRestore.accessibilityIdentifier = AccessibilityIdentifiers.ExistingWalletsScreen.manualRestoreBtn
+
+        checkWalletsExistance()
     }
 
     func setContent() {
@@ -50,69 +44,22 @@ class ExistingWalletsViewController: UIViewController {
         lblLoading.text = "Looking for existing  wallets…"
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-    }
-
-    func setStyle() {
-    }
-
-    enum ValidateError: Error {
-        case invalidMnemonic
-    }
-
-    func validateMnemonic() {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            return Guarantee()
-        }.compactMap(on: bgq) {
-            guard try gaios.validateMnemonic(mnemonic: OnBoardManager.shared.params?.mnemonic ?? "") else {
-                throw ValidateError.invalidMnemonic
-            }
-        }.done { _ in
-            self.checkWalletsExistance()
-        }.catch { error in
-            DropAlert().error(message: "Invalid Recovery Phrase")
-            self.invalidMnemonic()
-        }
-    }
-
-    func invalidMnemonic() {
-        self.wallets = [
-            ExistingWallet(isSingleSig: true, isFound: false),
-            ExistingWallet(isSingleSig: false, isFound: false)
-        ]
-        self.tableView.reloadData {
-            self.hideLoader()
-            self.lblLoading.isHidden = true
-            self.tableView.isHidden = false
-            self.btnManualRestore.isHidden = self.wallets.filter { !$0.isFound }.count > 0 ? false : true
-        }
-    }
-
     func checkWalletsExistance() {
-
-        var singleSigExists: Bool = false
-        var multiSigExists: Bool = false
-
+        self.wallets = []
         firstly {
-            checkExistance(isSinglesig: true)
-        }
-        .then({ res -> Promise<Bool> in
-            singleSigExists = res
-            return self.checkExistance(isSinglesig: false)
-        })
-        .done { [weak self] res in
-            multiSigExists = res
-
-            self?.wallets = [
-                ExistingWallet(isSingleSig: true, isFound: singleSigExists),
-                ExistingWallet(isSingleSig: false, isFound: multiSigExists)
-            ]
+            startLoader()
+            return Guarantee()
+        }.then {
+            self.checkExistance(isSinglesig: true)
+        }.map { wallet in
+            self.wallets += [wallet]
+        }.then {
+            self.checkExistance(isSinglesig: false)
+        }.map { wallet in
+            self.wallets += [wallet]
         }.ensure {
             self.tableView.reloadData {
-                self.hideLoader()
+                self.stopLoader()
                 self.lblLoading.isHidden = true
                 self.tableView.isHidden = false
                 self.btnManualRestore.isHidden = self.wallets.filter { !$0.isFound }.count > 0 ? false : true
@@ -122,32 +69,35 @@ class ExistingWalletsViewController: UIViewController {
         }
     }
 
-    func checkExistance(isSinglesig: Bool) -> Promise<Bool> {
-        let bgq = DispatchQueue.global(qos: .background)
+    func checkExistance(isSinglesig: Bool) -> Promise<ExistingWallet> {
+        OnBoardManager.shared.params?.singleSig = isSinglesig
         let params = OnBoardManager.shared.params
         let session = SessionManager(account: OnBoardManager.shared.account)
         return Promise { seal in
-            firstly {
-                Guarantee()
-            }.compactMap(on: bgq) {
-                try session.connect()
-            }.then(on: bgq) {
-                session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
-            }.then(on: bgq) {
-                session.subaccounts(true)
-            }.compactMap(on: bgq) { wallets in
-                if isSinglesig {
-                    return !wallets.filter({ $0.bip44Discovered ?? false }).isEmpty
-                } else {
-                    return true
-                }
-            }.ensure {
+            session.restore(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
+            .ensure {
                 session.disconnect()
-            }.done { result in
-                seal.fulfill(result)
+                session.remove()
+            }.done { _ in
+                seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: true, isJustRestored: false))
             }.catch { error in
-                print(error)
-                seal.fulfill(false)
+                switch error {
+                case LoginError.walletNotFound:
+                    seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: false, isJustRestored: false))
+                case LoginError.walletsJustRestored:
+                    seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: false, isJustRestored: true))
+                case LoginError.invalidMnemonic:
+                    DropAlert().error(message: NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
+                    seal.reject(error)
+                case LoginError.connectionFailed:
+                    DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+                    seal.reject(error)
+                default:
+                    print(error)
+                    DropAlert().error(message: error.localizedDescription)
+                    session.disconnect()
+                    seal.reject(error)
+                }
             }
         }
     }
@@ -188,30 +138,5 @@ extension ExistingWalletsViewController: UITableViewDelegate, UITableViewDataSou
             let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
             self.navigationController?.pushViewController(vc, animated: true)
         }
-    }
-}
-
-extension ExistingWalletsViewController {
-    func showLoader() {
-        if loadingIndicator.isAnimating { return }
-        self.view.addSubview(loadingIndicator)
-
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor
-                .constraint(equalTo: self.loaderPlaceholder.centerXAnchor),
-            loadingIndicator.centerYAnchor
-                .constraint(equalTo: self.loaderPlaceholder.centerYAnchor),
-            loadingIndicator.widthAnchor
-                .constraint(equalToConstant: self.loaderPlaceholder.frame.width),
-            loadingIndicator.heightAnchor
-                .constraint(equalTo: self.loadingIndicator.widthAnchor)
-        ])
-
-        loadingIndicator.isAnimating = true
-    }
-
-    func hideLoader() {
-        if !loadingIndicator.isAnimating { return }
-        loadingIndicator.isAnimating = false
     }
 }

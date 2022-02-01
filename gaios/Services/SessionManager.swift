@@ -1,6 +1,13 @@
 import Foundation
 import PromiseKit
 
+public enum LoginError: Error, Equatable {
+    case walletsJustRestored
+    case walletNotFound
+    case invalidMnemonic
+    case connectionFailed
+}
+
 class SessionManager: Session {
 
     var account: Account?
@@ -100,7 +107,7 @@ class SessionManager: Session {
             try super.connect(netParams: netParams)
             connected = true
         } catch {
-            throw AuthenticationTypeHandler.AuthError.ConnectionFailed
+            throw LoginError.connectionFailed
         }
     }
 
@@ -196,7 +203,37 @@ class SessionManager: Session {
             }
     }
 
-    func login(details: [String: Any], hwDevice: HWDevice? = nil)-> Promise<Void> {
+    func restore(mnemonic: String, password: String?) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .map { _ in
+                guard try gaios.validateMnemonic(mnemonic: mnemonic) else {
+                    throw LoginError.invalidMnemonic
+                }
+            }.then {
+                self.login(details: ["mnemonic": mnemonic, "password": password ?? ""], hwDevice: nil)
+            }.map(on: bgq) {
+                // check if wallet just exist
+                if let walletHashId = self.account?.walletHashId,
+                   AccountsManager.shared.swAccounts.contains(where: {
+                        $0.walletHashId == walletHashId &&
+                        $0.id != self.account?.id &&
+                        $0.isSingleSig == self.account?.isSingleSig
+                    }) {
+                        throw LoginError.walletsJustRestored
+                }
+            }.then(on: bgq) {
+                self.subaccounts(true)
+            }.map(on: bgq) { wallets in
+                if self.account?.isSingleSig ?? false {
+                    if wallets.filter({ $0.bip44Discovered ?? false }).isEmpty {
+                        throw LoginError.walletNotFound
+                    }
+                }
+            }
+    }
+
+    func login(details: [String: Any], hwDevice: HWDevice? = nil) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .map(on: bgq) {
@@ -210,8 +247,16 @@ class SessionManager: Session {
                 return [:]
             }.then(on: bgq) { device in
                 try super.loginUser(details: details, hw_device: device).resolve()
-            }.then { _ -> Promise<Void> in
+            }.compactMap { res in
                 self.logged = true
+                // update wallet hash id
+                let result = res["result"] as? [String: Any]
+                let walletHashId = result?["wallet_hash_id"] as? String
+                if self.account?.walletHashId == nil {
+                    self.account?.walletHashId = walletHashId
+                }
+            }.then { _ -> Promise<Void> in
+                // load 2fa config on multisig
                 if let account = self.account,
                         !account.isWatchonly && !(account.isSingleSig ?? false) {
                     return self.loadTwoFactorConfig().then { _ in Promise<Void>() }

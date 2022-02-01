@@ -153,7 +153,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }.catch { error in
             session.disconnect()
             switch error {
-            case AuthenticationTypeHandler.AuthError.ConnectionFailed:
+            case LoginError.connectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             default:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))

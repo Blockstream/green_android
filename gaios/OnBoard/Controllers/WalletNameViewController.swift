@@ -122,11 +122,12 @@ class WalletNameViewController: UIViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
+            AccountsManager.shared.current = session.account
             self.next()
         }.catch { error in
             session.disconnect()
             switch error {
-            case AuthenticationTypeHandler.AuthError.ConnectionFailed:
+            case LoginError.connectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             default:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
@@ -135,34 +136,44 @@ class WalletNameViewController: UIViewController {
     }
 
     func checkCredential() {
-        let params = OnBoardManager.shared.params
         let bgq = DispatchQueue.global(qos: .background)
         let session = SessionsManager.new(for: OnBoardManager.shared.account)
+        let params = OnBoardManager.shared.params
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
-        }.compactMap(on: bgq) {
-            return try session.connect()
         }.then(on: bgq) {
-            session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
+            session.restore(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
         }.ensure {
             self.stopLoader()
         }.done { _ in
+            AccountsManager.shared.current = session.account
             self.next()
         }.catch { error in
-            session.disconnect()
             switch error {
-            case AuthenticationTypeHandler.AuthError.ConnectionFailed:
-                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+            case LoginError.walletNotFound:
+                AccountsManager.shared.current = session.account
+                self.next()
+            case LoginError.walletsJustRestored:
+                self.error(session, message: NSLocalizedString("Wallet just restored", comment: ""))
+            case LoginError.invalidMnemonic:
+                self.error(session, message: NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
+            case LoginError.connectionFailed:
+                self.error(session, message: NSLocalizedString("id_connection_failed", comment: ""))
             default:
-                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
+                self.error(session, message: error.localizedDescription)
             }
         }
     }
 
+    func error(_ session: SessionManager, message: String) {
+        DropAlert().error(message: NSLocalizedString(message, comment: ""))
+        session.disconnect()
+        session.remove()
+    }
+
     func next() {
         DispatchQueue.main.async {
-            AccountsManager.shared.current = OnBoardManager.shared.account
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
             self.navigationController?.pushViewController(vc, animated: true)

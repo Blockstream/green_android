@@ -3,6 +3,19 @@ import UIKit
 
 struct Account: Codable, Equatable {
 
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case isJade
+        case isLedger
+        case username
+        case password
+        case keychain
+        case network
+        case isSingleSig
+        case walletHashId = "wallet_hash_id"
+    }
+
     var name: String
     let id: String
     let isJade: Bool
@@ -12,6 +25,7 @@ struct Account: Codable, Equatable {
     let keychain: String
     var network: String
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
+    var walletHashId: String?
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(network) }}
 
     init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool = false) {

@@ -25,7 +25,8 @@ class ExistingWalletCell: UITableViewCell {
     func configure(_ wallet: ExistingWallet) {
         lblSecurity.text = wallet.isSingleSig ? NSLocalizedString("id_singlesig", comment: "") : NSLocalizedString("id_multisig_shield", comment: "")
         lblStatus.text = wallet.isFound ? "Wallet found" : "Wallet not found"
+        lblStatus.text = wallet.isJustRestored ? "Wallet just restored" : lblStatus.text
         self.icon.image = wallet.isSingleSig ? UIImage(named: "ic_key")! : UIImage(named: "ic_keys_invert")!
-        bg.alpha = wallet.isFound ? 1.0 : 0.5
+        bg.alpha = wallet.isFound || !wallet.isJustRestored ? 1.0 : 0.5
     }
 }
