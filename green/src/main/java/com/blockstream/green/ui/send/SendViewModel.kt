@@ -441,6 +441,10 @@ class SendViewModel @AssistedInject constructor(
 
             checkedTransaction = tx
 
+            feeAmount.postValue(tx.fee?.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
+            feeAmountRate.postValue(tx.feeRateWithUnit() ?: "")
+            feeAmountFiat.postValue(tx.fee?.toFiatLook(session = session, withUnit = true, withGrouping = true) ?: "")
+
             if(tx.error.isNotBlank()){
                 throw Exception(tx.error)
             }
@@ -460,10 +464,6 @@ class SendViewModel @AssistedInject constructor(
         }.subscribeBy(
             onSuccess = { tx ->
                 transactionError.value = null
-
-                feeAmount.value = tx.fee?.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: ""
-                feeAmountRate.value = tx.feeRateWithUnit() ?: ""
-                feeAmountFiat.value = tx.fee?.toFiatLook(session = session, withUnit = true, withGrouping = true) ?: ""
 
                 if(!pendingCheck && finalCheckBeforeContinue){
                     session.pendingTransaction = params!! to tx
@@ -485,10 +485,6 @@ class SendViewModel @AssistedInject constructor(
                 if(isBumpOrSweep && userInitiated){
                     onError.postValue(ConsumableEvent(it))
                 }
-
-                feeAmount.value = ""
-                feeAmountRate.value = ""
-                feeAmountFiat.value = ""
             }
         )
     }
