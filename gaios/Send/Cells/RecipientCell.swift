@@ -49,8 +49,7 @@ class RecipientCell: UITableViewCell {
     var recipient: Recipient?
     var wallet: WalletItem?
     var isSendAll: Bool = false
-    var isSweep: Bool = false
-    var isBumpFee: Bool = false
+    var inputType: InputType = .transaction
 
     weak var delegate: RecipientCellDelegate?
     var index: Int?
@@ -101,8 +100,7 @@ class RecipientCell: UITableViewCell {
                    isMultiple: Bool,
                    walletItem: WalletItem?,
                    isSendAll: Bool,
-                   isSweep: Bool,
-                   isBumpFee: Bool
+                   inputType: InputType
     ) {
         lblRecipientNum.text = "#\(index + 1)"
         removeRecipientView.isHidden = !isMultiple
@@ -114,14 +112,13 @@ class RecipientCell: UITableViewCell {
         self.amountTextField.delegate = self
         self.wallet = walletItem
         self.isSendAll = isSendAll
-        self.isSweep = isSweep
-        self.isBumpFee = isBumpFee
+        self.inputType = inputType
 
         lblAddressError.isHidden = true
         lblAmountError.isHidden = true
         lblAmountExchange.isHidden = true
 
-        lblAddressHint.text = NSLocalizedString(isSweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
+        lblAddressHint.text = NSLocalizedString(inputType == .sweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
         iconAsset.image = UIImage(named: "default_asset_icon")!
         lblAssetName.text = "Asset"
         if network == "mainnet" {
@@ -194,7 +191,6 @@ class RecipientCell: UITableViewCell {
 
         if let address = addressTextView.text {
             if address.starts(with: "bitcoin:") || address.starts(with: "liquidnetwork:") {
-//                lblAvailableFunds.isHidden = true
                 btnSendAll.isHidden = true
                 btnConvert.isHidden = true
                 btnPasteAmount.isUserInteractionEnabled = false
@@ -203,7 +199,7 @@ class RecipientCell: UITableViewCell {
                 assetBox.alpha = 0.6
                 amountFieldIsEnabled(false)
             }
-            if isSweep {
+            if inputType == .sweep {
                 lblAvailableFunds.isHidden = true
                 btnSendAll.isHidden = true
                 btnConvert.isHidden = true
@@ -212,7 +208,7 @@ class RecipientCell: UITableViewCell {
                 amountFieldIsEnabled(false)
             }
         }
-        if isBumpFee {
+        if inputType == .bumpFee {
             isUserInteractionEnabled = false
             bg.alpha = 0.6
         }

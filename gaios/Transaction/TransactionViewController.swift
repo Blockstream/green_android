@@ -255,7 +255,7 @@ class TransactionViewController: UIViewController {
             let storyboard = UIStoryboard(name: "Send", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
                 vc.transaction = tx
-                vc.isBumpFee = true
+                vc.inputType = .bumpFee
                 vc.wallet = self?.wallet
                 self?.navigationController?.pushViewController(vc, animated: true)
             }

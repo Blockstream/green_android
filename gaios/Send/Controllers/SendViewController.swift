@@ -16,8 +16,6 @@ class SendViewController: KeyboardViewController {
     var wallet: WalletItem?
     var recipients: [Recipient] = []
     var isSendAll: Bool = false
-    var isSweep: Bool = false
-    var isBumpFee: Bool = false
     var inputType: InputType = .transaction
 
     var transaction: Transaction?
@@ -85,16 +83,14 @@ class SendViewController: KeyboardViewController {
         updateBtnNext()
         transactionPriority = defaultTransactionPriority
         activityIndicator.hidesWhenStopped = true
-        if isBumpFee {
+        if inputType == .bumpFee {
             prevTxDetails = transaction?.details ?? [:]
         }
-        if isSweep { inputType = .sweep }
-        if isBumpFee { inputType = .bumpFee }
     }
 
     func setContent() {
         if let wallet = wallet {
-            self.title = isSweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), wallet.localizedName()) : NSLocalizedString("id_send_to", comment: "")
+            self.title = inputType == .sweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), wallet.localizedName()) : NSLocalizedString("id_send_to", comment: "")
         }
     }
 
@@ -104,7 +100,7 @@ class SendViewController: KeyboardViewController {
 
     func addRecipient() {
         let recipient = Recipient()
-        if isBumpFee {
+        if inputType == .bumpFee {
             let addressee = transaction?.addressees.first
             recipient.address = addressee?.address
 
@@ -290,8 +286,7 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                                isMultiple: recipients.count > 1,
                                walletItem: self.wallet,
                                isSendAll: self.isSendAll,
-                               isSweep: self.isSweep,
-                               isBumpFee: self.isBumpFee)
+                               inputType: self.inputType)
                 cell.delegate = self
                 cell.selectionStyle = .none
                 return cell

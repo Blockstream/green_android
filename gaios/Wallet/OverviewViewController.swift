@@ -179,7 +179,6 @@ class OverviewViewController: UIViewController {
 
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            vc.isSweep = false
             vc.wallet = presentingWallet
             navigationController?.pushViewController(vc, animated: true)
         }
