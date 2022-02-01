@@ -20,7 +20,6 @@ class SendViewController: KeyboardViewController {
 
     var transaction: Transaction?
     private var validateTask: ValidateTask?
-    var prevTxDetails: [String: Any] = [:]
 
     var transactionPriority: TransactionPriority = .High
     var customFee: UInt64 = 1000
@@ -83,9 +82,6 @@ class SendViewController: KeyboardViewController {
         updateBtnNext()
         transactionPriority = defaultTransactionPriority
         activityIndicator.hidesWhenStopped = true
-        if inputType == .bumpFee {
-            prevTxDetails = transaction?.details ?? [:]
-        }
     }
 
     func setContent() {
@@ -199,7 +195,6 @@ class SendViewController: KeyboardViewController {
             details["fee_rate"] = feeRate
             details["subaccount"] = subaccount
         case .bumpFee:
-            details = self.prevTxDetails
             details["fee_rate"] = feeRate
         }
 
