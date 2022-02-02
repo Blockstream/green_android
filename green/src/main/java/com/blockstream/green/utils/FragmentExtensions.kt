@@ -13,12 +13,15 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.wallet.SystemMessageBottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -207,3 +210,10 @@ fun Fragment.showPopupMenu(
     popup.show()
 }
 
+fun Fragment.showDialog(dialog: DialogFragment){
+    dialog.show(childFragmentManager, dialog.toString())
+}
+
+fun DialogFragment.show(fragment: AppFragment<*>){
+    show(fragment.childFragmentManager, this.toString())
+}

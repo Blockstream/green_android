@@ -3,6 +3,7 @@ package com.blockstream.green.ui.wallet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.gdk.data.SubAccount
+import com.blockstream.gdk.params.UpdateSubAccountParams
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -48,6 +49,9 @@ abstract class AbstractWalletViewModel constructor(
     private val subAccountLiveData: MutableLiveData<SubAccount> = MutableLiveData()
     fun getSubAccountLiveData(): LiveData<SubAccount> = subAccountLiveData
 
+    private val subAccountsLiveData: MutableLiveData<List<SubAccount>> = MutableLiveData()
+    fun getSubAccountsLiveData(): LiveData<List<SubAccount>> = subAccountsLiveData
+
     // Logout events, can be expanded in the future
     val onReconnectEvent = MutableLiveData<ConsumableEvent<Long>>()
 
@@ -65,12 +69,19 @@ abstract class AbstractWalletViewModel constructor(
             }.addTo(disposables)
 
 
-        session.device?.deviceState?.observe(viewLifecycleOwner){
+        session.device?.deviceState?.observe(lifecycleOwner){
             // Device went offline
             if(it == com.blockstream.green.devices.Device.DeviceState.DISCONNECTED){
                 logout(LogoutReason.DEVICE_DISCONNECTED)
             }
         }
+
+        session
+            .getSubAccountsObservable()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                subAccountsLiveData.value = it
+            }.addTo(disposables)
 
         // Only on Login Screen
         if (session.isConnected) {
@@ -153,18 +164,48 @@ abstract class AbstractWalletViewModel constructor(
         if (name.isBlank()) return
 
         session.observable {
-            it.renameSubAccount(index, name)
+            it.updateSubAccount(UpdateSubAccountParams(
+                name = name,
+                subaccount = index
+            ))
             it.getSubAccount(index)
         }.subscribeBy(
             onError = {
                 onError.postValue(ConsumableEvent(it))
             },
             onSuccess = {
-                subAccountLiveData.value = it
+                if(subAccountLiveData.value?.pointer == it.pointer) {
+                    subAccountLiveData.value = it
+                }
                 onEvent.postValue(ConsumableEvent(WalletEvent.RenameAccount))
 
                 // Update the subaccounts list
                 session.updateSubAccountsAndBalances()
+            }
+        )
+    }
+
+    fun updateSubAccountVisibility(subAccount: SubAccount, isHidden: Boolean, callback: (() -> Unit)? = null) {
+        session.observable {
+            it.updateSubAccount(UpdateSubAccountParams(
+                subaccount = subAccount.pointer,
+                hidden = isHidden
+            ))
+            it.getSubAccount(subAccount.pointer)
+        }.subscribeBy(
+            onError = {
+                onError.postValue(ConsumableEvent(it))
+                callback?.invoke()
+            },
+            onSuccess = {
+                if(subAccountLiveData.value?.pointer == it.pointer) {
+                    subAccountLiveData.value = it
+                }
+
+                // Update the subaccounts list
+                session.updateSubAccounts()
+
+                callback?.invoke()
             }
         )
     }

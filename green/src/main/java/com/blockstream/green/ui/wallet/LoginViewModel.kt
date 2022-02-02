@@ -167,6 +167,12 @@ class LoginViewModel @AssistedInject constructor(
                     walletRepository.updateWalletSync(wallet)
                 }
 
+                // Change active account if necessary (account archived)
+                if(wallet.activeAccount != session.activeAccount){
+                    wallet.activeAccount = session.activeAccount
+                    walletRepository.updateWalletSync(wallet)
+                }
+
                 // Reset counter
                 loginCredentials?.also{
                     it.counter = 0

@@ -65,6 +65,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         )
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+        binding.vm = viewModel
 
         noteListItem = GenericDetailListItem(
             title = StringHolder(R.string.id_my_notes),

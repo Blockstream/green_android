@@ -11,7 +11,7 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
 data class ButtonActionListItem constructor(
-    private val text: StringHolder,
+    var text: StringHolder,
     private val useCard: Boolean,
     private val extraPadding: Boolean
 ) : AbstractBindingItem<ListItemButtonActionBinding>() {

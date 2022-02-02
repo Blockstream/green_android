@@ -64,6 +64,6 @@ open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
-    val viewLifecycleOwner: LifecycleOwner
+    val lifecycleOwner: LifecycleOwner
         get() = this
 }

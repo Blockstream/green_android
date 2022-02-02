@@ -11,11 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
-import androidx.preference.*
 import com.blockstream.gdk.data.SettingsNotification
 import com.blockstream.gdk.data.asPricing
-import com.blockstream.green.*
+import com.blockstream.green.BuildConfig
+import com.blockstream.green.Preferences
 import com.blockstream.green.R
+import com.blockstream.green.Urls
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.ListItemHelpBinding
@@ -103,10 +104,6 @@ class WalletSettingsFragment :
         }
 
         binding.vm = viewModel
-
-        if(args.showRecoveryTransactions) {
-            setToolbar(getString(R.string.id_recovery_transactions))
-        }
 
         watchOnlyMultisigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
         watchOnlySinglesigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_details))
@@ -381,7 +378,8 @@ class WalletSettingsFragment :
                     }
 
                     if(session.isElectrum && !session.isLiquid){
-                        list += watchOnlySinglesigPreference
+                        // Disable it until is supported by GDK
+                        // list += watchOnlySinglesigPreference
                     }
 
                     list += unitPreference

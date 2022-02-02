@@ -57,7 +57,7 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
             }
             .launchIn(viewModelScope)
 
-        isFiat.observe(viewLifecycleOwner){ isFiat ->
+        isFiat.observe(lifecycleOwner){ isFiat ->
             (if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)).let {
                 amountCurrency.value = it
             }

@@ -7,13 +7,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.R
+import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemExtendedPublicKeyBinding
-import com.blockstream.green.databinding.WatchOnlyDetailsFragmentBinding
 import com.blockstream.green.ui.QrBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.ExtendedPublicKeyListItem
 import com.blockstream.green.ui.items.TextListItem
 import com.blockstream.green.ui.items.TitleListItem
+import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.copyToClipboard
 import com.blockstream.green.utils.observeList
@@ -28,14 +29,14 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class WatchOnlyDetailsFragment :
-    WalletFragment<WatchOnlyDetailsFragmentBinding>(R.layout.watch_only_details_fragment, 0) {
+    WalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: WatchOnlyDetailsFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
     @Inject
-    lateinit var viewModelFactory: WalletOnlyDetailsViewModel.AssistedFactory
-    val viewModel: WalletOnlyDetailsViewModel by viewModels {
-        WalletOnlyDetailsViewModel.provideFactory(viewModelFactory, args.wallet)
+    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
+    val viewModel: WalletViewModel by viewModels {
+        WalletViewModel.provideFactory(viewModelFactory, args.wallet)
     }
 
     override fun getWalletViewModel() = viewModel
@@ -71,7 +72,7 @@ class WatchOnlyDetailsFragment :
                 name = StringHolder(model.name),
                 extendedPublicKey = StringHolder("xpub6Bh31iozMXAFqryYyz39QTudkFC4rrhquBsokRCfLAn1YvzfprzdUTxYyPwVc4KTEUy2KPtUWdWwpvEHoz9GhZfW71REQuYwM1WfdQQHBt7")
             )
-        }.observeList(viewLifecycleOwner, viewModel.subAccounts)
+        }.observeList(viewLifecycleOwner, viewModel.getSubAccountsLiveData())
 
 
         val fastAdapter = FastAdapter.with(

@@ -27,8 +27,7 @@
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/brand_surface_variant"
             app:strokeColor="@color/color_on_surface_divider"
-            app:strokeWidth="1dp"
-            android:layout_marginBottom="16dp">
+            app:strokeWidth="1dp">
 
                 <TextView
                     android:id="@+id/textView"

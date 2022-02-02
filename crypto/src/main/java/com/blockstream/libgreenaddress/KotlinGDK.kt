@@ -53,7 +53,7 @@ class KotlinGDK {
     fun getSubAccount(session: GASession, index: Long): GASession =
         GDK.get_subaccount(session, index)
 
-    fun renameSubAccount(session: GASession, index: Long, name: String) = GDK.rename_subaccount(session, index, name)
+    fun updateSubAccount(session: GASession, params: UpdateSubAccountParams) = GDK.update_subaccount(session, params)
 
     fun getBalance(session: GASession, details: BalanceParams): GAAuthHandler =
         GDK.get_balance(session, details)

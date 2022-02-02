@@ -2,20 +2,19 @@ package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
 import com.blockstream.gdk.data.LoginData
+import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.Networks
 import com.blockstream.green.TestViewModel
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.Networks
+import com.blockstream.green.utils.ConsumableEvent
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import java.lang.Exception
+import org.mockito.kotlin.*
 
 @RunWith(MockitoJUnitRunner::class)
 class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>() {
@@ -57,7 +56,8 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
         viewModel = LoginWatchOnlyViewModel(
             walletRepository = mock(),
             sessionManager = sessionManager,
-            appKeystore = mock()
+            appKeystore = mock(),
+            isMultisig = true
         )
         viewModel.isLoginEnabled.observeForever(isLoginEnabledObserver)
         viewModel.newWallet.observeForever(newWalletObserver)

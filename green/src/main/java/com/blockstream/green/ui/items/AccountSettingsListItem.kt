@@ -4,73 +4,51 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateMargins
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.R
-import com.blockstream.green.databinding.ListItemAccountBinding
+import com.blockstream.green.databinding.ListItemAccountSettingsBinding
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.utils.getBitcoinOrLiquidUnit
-import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toPixels
 import com.blockstream.green.utils.updateAssetPadding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-
-data class AccountListItem constructor(
+data class AccountSettingsListItem constructor(
     val session: GreenSession,
-    val subAccount: SubAccount,
-    val isTopAccount: Boolean = false,
-    var showFakeCard: Boolean = false,
-    var isAccountListOpen: Boolean = false
-) : AbstractBindingItem<ListItemAccountBinding>() {
+    val subAccount: SubAccount
+) : AbstractBindingItem<ListItemAccountSettingsBinding>() {
     override val type: Int
-        get() = R.id.fastadapter_account_item_id
+        get() = R.id.fastadapter_subaccount_settings_item_id
 
     init {
-        identifier = "AccountListItem".hashCode() + subAccount.pointer
+        identifier = subAccount.pointer
     }
 
-    override fun bindView(binding: ListItemAccountBinding, payloads: List<Any>) {
+    override fun bindView(binding: ListItemAccountSettingsBinding, payloads: List<Any>) {
         val context = binding.root.context
 
-        binding.isTopAccount = isTopAccount
-        binding.isAccountListOpen = isAccountListOpen
-        binding.isLiquid = session.isLiquid
-        binding.isMainnet = session.isMainnet
         binding.subAccount = subAccount
+        binding.archivedChip.text = binding.root.context.getString(R.string.id_archived).lowercase()
 
-        if(isTopAccount){
-            binding.fakeAccountCard.isInvisible = !showFakeCard || isAccountListOpen
-        }else{
-            binding.fakeAccountCard.isVisible = false
-        }
+        // Clear all icons
+        binding.assetsIcons.removeAllViews()
 
-        val policyAsset = session.walletBalances.get(subAccount.pointer.toInt())?.entries?.firstOrNull()
-
-        binding.balance = policyAsset?.value?.toAmountLook(session, withUnit = false, withGrouping = true, withMinimumDigits = false)
-        binding.ticker = getBitcoinOrLiquidUnit(session)
-
-        if(session.isLiquid){
-            // Clear all icons
-            binding.assetsIcons.removeAllViews()
-
-            var assetWithoutIconShown = false
-            session.walletBalances.get(subAccount.pointer.toInt())?.let { balances ->
-                balances.onEachIndexed { index, balance ->
-
+        var assetWithoutIconShown = false
+        session.walletBalances.get(subAccount.pointer.toInt())?.let { balances ->
+            balances.onEachIndexed { index, balance ->
+                if(balance.value > 0L) {
                     val isAssetWithoutIcon = if (balance.key == session.network.policyAsset) {
                         false
                     } else {
                         session.getAssetDrawableOrNull(balance.key) == null
                     }
 
-                    if(isAssetWithoutIcon){
-                        if(assetWithoutIconShown){
+                    if (isAssetWithoutIcon) {
+                        if (assetWithoutIconShown) {
                             return@onEachIndexed
-                        }else{
+                        } else {
                             assetWithoutIconShown = true
                         }
                     }
@@ -92,13 +70,14 @@ data class AccountListItem constructor(
                     }
                 }
             }
+
+            binding.assetsIcons.isVisible  = binding.assetsIcons.childCount > 0
         }
+
     }
 
     override fun createBinding(
         inflater: LayoutInflater,
         parent: ViewGroup?
-    ): ListItemAccountBinding {
-        return ListItemAccountBinding.inflate(inflater, parent, false)
-    }
+    ) = ListItemAccountSettingsBinding.inflate(inflater, parent, false)
 }

@@ -1077,4 +1077,10 @@
   <string name="id_choose_the_security_policy_that_matches_your_wallet">Choose the security policy that matches your wallet.</string>
   <string name="id_select_watchonly_type">Select Watch-only type</string>
   <string name="id_scan_or_paste_your_extended_public_key">Scan or paste your extended public key (xPub/yPub/zPub) to log in to your watch-only-wallet.</string>
+  <string name="id_archive_account">Archive account</string>
+  <string name="id_unarchive_account">Unarchive account</string>
+  <string name="id_view_account">View account</string>
+  <string name="id_view_archived_accounts">View Archived Accounts</string>
+  <string name="id_no_archived_accounts">No archived accounts</string>
+
 </resources>

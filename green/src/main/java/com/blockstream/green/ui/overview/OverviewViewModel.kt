@@ -40,6 +40,7 @@ class OverviewViewModel @AssistedInject constructor(
     private val systemMessage: MutableLiveData<String?> = MutableLiveData()
     private val state: MutableLiveData<State> = MutableLiveData(State.Overview)
     private val filteredSubAccounts: MutableLiveData<List<SubAccount>> = MutableLiveData()
+    private val archivedAccounts = MutableLiveData(0)
 
     private var allBalances: Balances = linkedMapOf(BalanceLoading)
     private val shownBalances: MutableLiveData<Balances> = MutableLiveData(allBalances)
@@ -55,13 +56,13 @@ class OverviewViewModel @AssistedInject constructor(
     fun getSystemMessage(): LiveData<String?> = systemMessage
     fun getState(): LiveData<State> = state
     fun getFilteredSubAccounts(): LiveData<List<SubAccount>> = filteredSubAccounts
+    fun getArchivedAccounts(): LiveData<Int> = archivedAccounts
     fun getBalancesLiveData(): LiveData<Balances> = shownBalances
     fun getAlerts(): LiveData<List<AlertType>> = alerts
     fun isMainnet(): LiveData<Boolean> = MutableLiveData(session.isMainnet)
     fun isLiquid(): LiveData<Boolean> = MutableLiveData(wallet.isLiquid)
     fun getTransactions(): LiveData<List<Transaction>> = transactions
     fun getBlock(): LiveData<Block> = block
-
 
     fun getSelectedAsset(): LiveData<String?> = selectedAsset
     fun getAssetsUpdated(): MutableLiveData<ConsumableEvent<Boolean>> = assetsUpdated
@@ -103,6 +104,8 @@ class OverviewViewModel @AssistedInject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 allSubAccounts = it
+
+                archivedAccounts.value = it.count { it.hidden }
 
                 if (pendingSubAccountSwitch >= 0) {
                     allSubAccounts.find { subAccount ->
@@ -146,7 +149,7 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     private fun filterSubAccounts(subAccounts: List<SubAccount>): List<SubAccount> {
-        return subAccounts.filter { it.pointer != session.activeAccount }
+        return subAccounts.filter { it.pointer != session.activeAccount && !it.hidden}
     }
 
     fun setSubAccount(index: Long) {
@@ -184,6 +187,14 @@ class OverviewViewModel @AssistedInject constructor(
     fun loadMoreTransactions(): Boolean {
         logger.info { "loadMoreTransactions" }
         return session.updateTransactionsAndBalance(isReset = false, isLoadMore = true)
+    }
+
+    fun archiveSubAccount(subAccount: SubAccount) {
+        super.updateSubAccountVisibility(subAccount, true){
+            selectSubAccount(
+                allSubAccounts.find { !it.hidden && it.pointer != subAccount.pointer } ?: allSubAccounts.first()
+            )
+        }
     }
 
     @dagger.assisted.AssistedFactory

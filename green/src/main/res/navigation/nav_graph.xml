@@ -26,6 +26,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/archivedAccountsFragment"
+        android:name="com.blockstream.green.ui.wallet.ArchivedAccountsFragment"
+        android:label="@string/id_archived_accounts"
+        tools:layout="@layout/base_recycler_view">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+    </fragment>
+
+    <fragment
         android:id="@+id/walletSettingsFragment"
         android:name="com.blockstream.green.ui.settings.WalletSettingsFragment"
         android:label="@string/id_settings"
@@ -413,6 +423,9 @@
         <action
             android:id="@+id/action_overviewFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_archivedAccountsFragment"
+            app:destination="@id/archivedAccountsFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_overviewFragment"

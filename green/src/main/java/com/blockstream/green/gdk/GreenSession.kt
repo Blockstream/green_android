@@ -100,6 +100,9 @@ class GreenSession constructor(
     val isElectrum
         get() = network.isElectrum
 
+    val isSinglesig
+        get() = isElectrum
+
     val isMainnet
         get() = network.isMainnet
 
@@ -483,10 +486,22 @@ class GreenSession constructor(
     }
 
     private fun initializeSessionData(initAccountIndex: Long) {
+        var accountIndex = initAccountIndex
+
+        // Check if active subaccount index was archived from a different client
+        if(network.isMultisig){
+            getSubAccounts(params = SubAccountsParams()).let { subAccounts ->
+                if(subAccounts.subaccounts.find { it.pointer == initAccountIndex }?.hidden == true){
+                    accountIndex = subAccounts.subaccounts.find { !it.hidden }?.pointer ?: 0
+                }
+            }
+        }
+
         updateSubAccountsAndBalances(isInitialize = true, refresh = false)
+
         updateSystemMessage()
 
-        setActiveAccount(initAccountIndex)
+        setActiveAccount(accountIndex)
 
         if (network.isLiquid) {
             assetsManager.updateAssetsIfNeeded(this)
@@ -540,11 +555,7 @@ class GreenSession constructor(
     fun getSubAccount(index: Long) = AuthHandler(greenWallet, greenWallet.getSubAccount(gaSession, index)
         ).result<SubAccount>(hardwareWalletResolver = DeviceResolver(this))
 
-    fun renameSubAccount(index: Long, name: String) = greenWallet.renameSubAccount(
-        gaSession,
-        index,
-        name
-    )
+    fun updateSubAccount(params: UpdateSubAccountParams) = greenWallet.updateSubAccount(gaSession, params)
 
     fun getFeeEstimates() = try {
         greenWallet.getFeeEstimates(gaSession)
@@ -731,6 +742,23 @@ class GreenSession constructor(
                     it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
                 }).addTo(disposables)
 
+    }
+
+    fun updateSubAccounts() {
+        logger.info { "updateSubAccounts" }
+
+        observable {
+            getSubAccounts()
+        }
+        .subscribeBy(
+            onSuccess = {
+                subAccountsSubject.onNext(it.subaccounts)
+            },
+            onError = {
+                it.printStackTrace()
+                it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
+            }
+        ).addTo(disposables)
     }
 
     var isUpdatingSubAccounts = AtomicBoolean(false)

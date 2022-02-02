@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/rename"
+        android:title="@string/id_rename_account" />
+
+    <item
+        android:id="@+id/unarchive"
+        android:title="@string/id_unarchive_account" />
+
+</menu>

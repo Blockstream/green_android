@@ -206,8 +206,9 @@ class GreenWallet constructor(
 
     fun getSubAccounts(session: GASession, params: SubAccountsParams) = gdk.getSubAccounts(session, params)
     fun getSubAccount(session: GASession, index: Long) = gdk.getSubAccount(session, index)
-    fun renameSubAccount(session: GASession, index: Long, name: String) =
-        gdk.renameSubAccount(session, index, name)
+
+    fun updateSubAccount(session: GASession, params: UpdateSubAccountParams) =
+        gdk.updateSubAccount(session, params)
 
     fun getAuthHandlerStatus(gaAuthHandler: GAAuthHandler): JsonElement =
         gdk.getAuthHandlerStatus(gaAuthHandler)

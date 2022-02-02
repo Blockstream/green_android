@@ -41,7 +41,7 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
         }
 
         viewModel.accountCreated.observe(viewLifecycleOwner) {
-            setNavigationResult(result = it.pointer, key = OverviewFragment.ADD_NEW_ACCOUNT, destinationId = R.id.overviewFragment)
+            setNavigationResult(result = it.pointer, key = OverviewFragment.SET_ACCOUNT, destinationId = R.id.overviewFragment)
             findNavController().popBackStack(R.id.overviewFragment, false)
         }
 

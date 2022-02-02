@@ -57,7 +57,8 @@
             app:cardBackgroundColor="@{isLiquid ? @color/liquid : isMainnet ? @color/bitcoin : @color/testnet }"
             app:layout_constraintBottom_toBottomOf="@+id/account"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            tools:cardBackgroundColor="@color/liquid">
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -68,6 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@{isLiquid ? @color/liquid : isMainnet ? @color/bitcoin : @color/testnet }"
+            tools:cardBackgroundColor="@color/liquid"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -98,7 +100,7 @@
 
                 <ImageButton
                     android:id="@+id/buttonAccountMenu"
-                    isVisible="@{isTopAccount &amp;&amp; isAccountListOpen}"
+                    isVisible="@{isAccountListOpen}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
@@ -106,7 +108,8 @@
                     android:paddingEnd="16dp"
                     android:src="@drawable/ic_baseline_more_vert_24"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/color_on_surface_emphasis_medium" />
 
                 <TextView
                     android:id="@+id/type"
@@ -151,6 +154,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/type"
                     app:layout_constraintTop_toBottomOf="@+id/type">
+
+
 
                     <TextView
                         android:id="@+id/symbol"

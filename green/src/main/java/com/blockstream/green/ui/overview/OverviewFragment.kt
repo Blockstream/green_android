@@ -55,7 +55,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     layout = R.layout.overview_fragment,
     menuRes = R.menu.overview
 ) {
-
     val args: OverviewFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
@@ -64,6 +63,18 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     val viewModel: OverviewViewModel by viewModels {
         OverviewViewModel.provideFactory(viewModelFactory, args.wallet)
     }
+
+    private val buttonAddNewAccount: ButtonActionListItem = ButtonActionListItem(
+        text = StringHolder(R.string.id_add_new_account),
+        useCard = true,
+        extraPadding = true
+    )
+
+    private val buttonViewArchivedAccounts: ButtonActionListItem = ButtonActionListItem(
+        text = StringHolder(R.string.id_view_archived_accounts),
+        useCard = true,
+        extraPadding = true
+    )
 
     val AssetFilteringIsEnabled = false
 
@@ -102,16 +113,17 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     }
 
     companion object {
-        const val ADD_NEW_ACCOUNT = "add_new_account"
+        const val SET_ACCOUNT = "SET_ACCOUNT"
     }
 
     override fun getWalletViewModel() = viewModel
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        getNavigationResult<Long>(ADD_NEW_ACCOUNT)?.observe(viewLifecycleOwner) {
+        getNavigationResult<Long>(SET_ACCOUNT)?.observe(viewLifecycleOwner) {
             it?.let {
                 viewModel.setSubAccount(it)
-                clearNavigationResult(ADD_NEW_ACCOUNT)
+                closeInnerAdapter()
+                clearNavigationResult(SET_ACCOUNT)
             }
         }
 
@@ -253,7 +265,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         val assetsTitleAdapter: GenericFastItemAdapter = FastItemAdapter()
 
         // Top Account Card
-        var topAccountAdapter = FastItemAdapter<GenericItem>()
+        var topAccountAdapter = FastItemAdapter<AccountListItem>()
         var topAccount : AccountListItem? = null
 
         viewModel.getSubAccountLiveData().observe(viewLifecycleOwner){ subAccount ->
@@ -268,11 +280,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             topAccount = AccountListItem(
                 session = session,
                 subAccount = subAccount,
-                walletBalances = session.walletBalances,
                 isTopAccount = true
             ).also {
                 updateTopAccountCard(it)
-            }.also {
                 topAccountAdapter.set(listOf(it))
             }
 
@@ -294,9 +304,13 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         }
 
+        viewModel.getFilteredSubAccounts().observe(viewLifecycleOwner) { it ->
+            topAccount?.let { it -> updateTopAccountCard(it, topAccountAdapter) }
+        }
+
         // Account Cards
-        val accountsModelAdapter = ModelAdapter { model: SubAccount ->
-            AccountListItem(session, model, session.walletBalances, isTopAccount = false, isAccountListOpen = true)
+        val accountsModelAdapter = ModelAdapter { subAccount: SubAccount ->
+            AccountListItem(session = session, subAccount = subAccount, isTopAccount = false, isAccountListOpen = true)
         }.observeList(viewLifecycleOwner, viewModel.getFilteredSubAccounts()) {
             topAccount?.let { updateTopAccountCard(it, topAccountAdapter) }
         }.also {
@@ -304,19 +318,21 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         // Add new account button
-        val addAccountAdapter = FastItemAdapter<GenericItem>().also {
+        val accountsFooterAdapter = FastItemAdapter<GenericItem>().also {
             it.itemAdapter.active = false
         }
 
-        addAccountAdapter.add(ProgressListItem())
+        accountsFooterAdapter.add(ProgressListItem())
 
         if(!wallet.isWatchOnly){
-            addAccountAdapter.add(ButtonActionListItem(text = StringHolder(R.string.id_add_new_account), useCard = true, extraPadding = true))
+            accountsFooterAdapter.add(buttonAddNewAccount)
         }
+
+        accountsFooterAdapter.add(buttonViewArchivedAccounts)
 
         val removeAccountsLoader  = object : Observer<List<SubAccount>> {
             override fun onChanged(p0: List<SubAccount>?) {
-                addAccountAdapter.itemAdapter.remove(0) // remove ProgressListItem
+                accountsFooterAdapter.itemAdapter.remove(0) // remove ProgressListItem
                 viewModel.getFilteredSubAccounts().removeObserver(this)
             }
         }
@@ -347,9 +363,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     if (it) {
                         systemMessageAdapter.clear()
                     } else {
-                        SystemMessageBottomSheetDialogFragment.newInstance(message).also { dialog ->
-                            dialog.show(childFragmentManager, dialog.toString())
-                        }
+                        SystemMessageBottomSheetDialogFragment.newInstance(message).show(this)
                     }
                 }))
             }
@@ -438,7 +452,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         val adapters = listOf(
             topAccountAdapter,
             accountsModelAdapter,
-            addAccountAdapter,
+            accountsFooterAdapter,
             alertCardsAdapter,
             systemMessageAdapter,
             managedAssetsAccountIdAdapter,
@@ -452,6 +466,16 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         val fastAdapter = FastAdapter.with(adapters)
 
+        viewModel.getArchivedAccounts().distinctUntilChanged().observe(viewLifecycleOwner){
+            buttonViewArchivedAccounts.text = StringHolder(
+                if (it > 0) "${getString(R.string.id_view_archived_accounts)} ($it)" else getString(
+                    R.string.id_no_archived_accounts
+                )
+            )
+            buttonViewArchivedAccounts.isEnabled = it > 0
+            fastAdapter.notifyAdapterDataSetChanged()
+        }
+
         // Notify adapter when we have new assets
         viewModel.getAssetsUpdated().observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
@@ -459,16 +483,24 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         }
 
-        fastAdapter.addClickListener<ListItemAccountBinding, GenericItem>({ binding -> binding.buttonAccountMenu }) { view, _, _, _ ->
-            showPopupMenu(view, R.menu.menu_account) { item ->
-                when (item.itemId) {
-                    R.id.rename -> {
-                        RenameAccountBottomSheetDialogFragment().also {
-                            it.show(childFragmentManager, it.toString())
+        fastAdapter.addClickListener<ListItemAccountBinding, GenericItem>({ binding -> binding.buttonAccountMenu }) { view, _, _, item ->
+            if(item is AccountListItem) {
+
+                val menu = if (viewModel.getSubAccountsLiveData().value?.size == (viewModel.getArchivedAccounts().value?.plus(1))) R.menu.menu_account else R.menu.menu_account_archive
+
+                showPopupMenu(view,  menu) { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.rename -> {
+                            RenameAccountBottomSheetDialogFragment.newInstance(
+                                item.subAccount
+                            ).show(this)
+                        }
+                        R.id.archive -> {
+                            viewModel.archiveSubAccount(item.subAccount)
                         }
                     }
+                    true
                 }
-                true
             }
         }
 
@@ -488,11 +520,17 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 }
 
                 is ButtonActionListItem -> {
-                    navigate(
-                        OverviewFragmentDirections.actionOverviewFragmentToChooseAccountTypeFragment(
-                            wallet = args.wallet
+                    if(item == buttonAddNewAccount) {
+                        navigate(
+                            OverviewFragmentDirections.actionOverviewFragmentToChooseAccountTypeFragment(
+                                wallet = args.wallet
+                            )
                         )
-                    )
+                    }else if(item == buttonViewArchivedAccounts){
+                        navigate(
+                            OverviewFragmentDirections.actionOverviewFragmentToArchivedAccountsFragment(wallet = viewModel.wallet)
+                        )
+                    }
                     closeInnerAdapter()
                 }
                 is AssetListItem -> {
@@ -560,7 +598,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 updateTopAccountCard(it, topAccountAdapter)
             }
             accountsModelAdapter.active = isAccount
-            addAccountAdapter.itemAdapter.active = isAccount
+            accountsFooterAdapter.itemAdapter.active = isAccount
 
             alertCardsAdapter.active = isOverviewOrAssets
             systemMessageAdapter.itemAdapter.active = isOverviewOrAssets
@@ -578,7 +616,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
     private fun updateTopAccountCard(
         topCard: AccountListItem,
-        adapter: FastItemAdapter<GenericItem>? = null
+        adapter: FastItemAdapter<AccountListItem>? = null
     ) {
         // getSubAccounts returns the accounts except the selected one
         topCard.showFakeCard = viewModel.getFilteredSubAccounts().value?.size ?: 0 > 0
