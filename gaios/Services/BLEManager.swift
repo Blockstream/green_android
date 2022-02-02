@@ -177,7 +177,7 @@ class BLEManager {
                 hasPin = result?["JADE_HAS_PIN"] as? Bool ?? false
                 self.fmwVersion = result?["JADE_VERSION"] as? String ?? ""
                 if let networks = result?["JADE_NETWORKS"] as? String {
-                    if networks == "TEST" && network != "testnet" {
+                    if networks == "TEST" && (network != "testnet" && network != "testnet-liquid") {
                         throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
                     } else if networks == "MAIN" && network == "testnet" {
                         throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
