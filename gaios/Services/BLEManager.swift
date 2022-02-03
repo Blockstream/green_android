@@ -179,7 +179,7 @@ class BLEManager {
                 if let networks = result?["JADE_NETWORKS"] as? String {
                     if networks == "TEST" && (network != "testnet" && network != "testnet-liquid") {
                         throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
-                    } else if networks == "MAIN" && network == "testnet" {
+                    } else if networks == "MAIN" && (network == "testnet" || network == "testnet-liquid") {
                         throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
                     }
                 }
