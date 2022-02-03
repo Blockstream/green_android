@@ -369,7 +369,14 @@ class BLEManager {
     }
 
     func networkLabel(_ network: String) -> String {
-        return network == "testnet" ? "Bitcoin Test" : "Bitcoin"
+        switch network {
+        case "testnet":
+            return "Bitcoin Test"
+        case "testnet-liquid":
+            return "Liquid Test"
+        default:
+            return "Bitcoin"
+        }
     }
 
     func addStatusListener(_ peripheral: Peripheral) {
