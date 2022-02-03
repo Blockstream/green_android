@@ -51,12 +51,13 @@ class ContainerViewController: UIViewController {
     }
 
     func updateConnection(_ notification: Notification) {
-        let connected = notification.userInfo?["connected"] as? Bool
-        let waiting = notification.userInfo?["waiting"] as? Int
-        self.seconds = waiting ?? 0
+        let currentState = notification.userInfo?["current_state"] as? String
+        let backoffMs = notification.userInfo?["backoff_ms"] as? Int
+        let connected = currentState == "connected"
+        self.seconds = backoffMs ?? 0
         DispatchQueue.main.async {
             if self.timer.isValid { self.timer.invalidate() }
-            if connected! {
+            if connected {
                 self.connected()
             } else {
                 self.networkText.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ds_", comment: ""), self.seconds)

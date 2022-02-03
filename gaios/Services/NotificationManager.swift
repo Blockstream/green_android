@@ -53,21 +53,19 @@ class NotificationManager {
                 session.settings = Settings.from(data)
                 post(event: .Settings, data: data)
             }
-        case .Session:
-            post(event: EventType.Network, data: data)
         case .Network:
             guard let json = try? JSONSerialization.data(withJSONObject: data, options: []),
                   let connection = try? JSONDecoder().decode(Connection.self, from: json) else {
                 return
             }
-            if !connection.connected || !(connection.loginRequired ?? false) {
-                post(event: EventType.Network, data: data)
+            // avoid handling notification for unlogged session
+            guard let session = session,
+                  session.connected && session.logged else {
                 return
             }
-            guard let session = session else {
-                return
-            }
-            guard session.connected && session.logged else {
+            // notify disconnected network state
+            if connection.currentState == "disconnected" {
+                self.post(event: EventType.Network, data: data)
                 return
             }
             // Restore connection through hidden login

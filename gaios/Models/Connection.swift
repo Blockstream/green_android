@@ -2,17 +2,11 @@ import Foundation
 
 struct Connection: Codable {
     enum CodingKeys: String, CodingKey {
-        case connected = "connected"
-        case loginRequired = "login_required"
-        case heartbeatTimeout = "heartbeat_timeout"
-        case elapsed = "elapsed"
-        case waiting = "waiting"
-        case limit = "limit"
+        case currentState = "current_state"
+        case nextState = "next_state"
+        case backoffMs = "backoff_ms"
     }
-    let connected: Bool
-    let loginRequired: Bool?
-    let heartbeatTimeout: Bool?
-    let elapsed: Int?
-    let waiting: Int?
-    let limit: Bool?
+    let currentState: String
+    let nextState: String
+    let backoffMs: UInt8
 }

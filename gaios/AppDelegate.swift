@@ -124,7 +124,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DispatchQueue.global().async {
             SessionsManager.shared.forEach { (_, session) in
                 if session.connected {
-                    try? session.reconnectHint(hint: ["tor_sleep_hint": "sleep", "hint": "disable"])
+                    try? session.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
                 }
             }
         }
@@ -135,7 +135,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DispatchQueue.global().async {
             SessionsManager.shared.forEach { (_, session) in
                 if session.connected {
-                    try? session.reconnectHint(hint: ["tor_sleep_hint": "wakeup", "hint": "now"])
+                    try? session.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
                 }
             }
         }
