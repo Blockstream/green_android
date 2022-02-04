@@ -21,7 +21,7 @@ data class ConfirmTransactionLook constructor(val session: GreenSession, val tx:
         get() = tx.addressees.size
 
     override val fee: String
-        get() = (tx.fee ?: 0).toAmountLook(
+        get() = (tx.fee ?: 0).toAmountLookOrNa(
             session,
             withUnit = true,
             withGrouping = true,
@@ -30,9 +30,9 @@ data class ConfirmTransactionLook constructor(val session: GreenSession, val tx:
 
     override val feeFiat: String?
         get() = session.convertAmount(Convert(satoshi = tx.fee))
-            .fiatOrNull(session, withUnit = true).let {
-                if (it == null) it else "≈ $it"
-            }
+            ?.toAmountLook(session = session, withUnit = true)?.let {
+            "≈ $it"
+        }
 
     override val feeRate: String
         get() = (tx.feeRate ?: 0).feeRateWithUnit()
@@ -66,8 +66,11 @@ data class ConfirmTransactionLook constructor(val session: GreenSession, val tx:
             withMinimumDigits = true
         )
         binding.ticker.text = if(assetId.isPolicyAsset(session)) getBitcoinOrLiquidUnit(session) else session.getAsset(assetId)?.ticker ?: "n/a"
-
-        binding.fiat = if(assetId == session.policyAsset) session.convertAmount(Convert(satoshi = satoshi)).fiat(session, withUnit = true) else null
+        binding.fiat = satoshi.toAmountLook(
+            session = session,
+            isFiat = true,
+            assetId = assetId,
+        )
         binding.icon.setImageDrawable(assetId.getAssetIcon(binding.root.context, session))
         binding.icon.updateAssetPadding(session, assetId, 3)
 

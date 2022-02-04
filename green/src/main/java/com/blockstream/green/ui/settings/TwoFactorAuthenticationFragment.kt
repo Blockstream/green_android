@@ -12,7 +12,10 @@ import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
-import com.blockstream.green.databinding.*
+import com.blockstream.green.databinding.CustomTitleDialogBinding
+import com.blockstream.green.databinding.ListItemHelpBinding
+import com.blockstream.green.databinding.SettingsLimitsDialogBinding
+import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.lifecycle.MergeLiveData
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.HelpListItem
@@ -259,11 +262,13 @@ class TwoFactorAuthenticationFragment :
                 it.subtitle = StringHolder(twoFactorConfig.limits.let { limits ->
                     if (!limits.isFiat && limits.satoshi == 0L) {
                         getString(R.string.id_set_twofactor_threshold)
-                    } else if (limits.isFiat) {
-                        limits.fiat(session)
                     } else {
-                        limits.btc(session)
+                        limits.toAmountLook(
+                            session = session,
+                            isFiat = limits.isFiat
+                        )
                     }
+
                 })
             }
         }
@@ -311,12 +316,11 @@ class TwoFactorAuthenticationFragment :
 
         viewModel.twoFactorConfigLiveData.value?.limits?.let { limits ->
             binding.currency.setSelection(if (limits.isFiat) 1 else 0)
-
-            if (limits.isFiat) {
-                binding.amount = limits.fiat(session, withUnit = false)
-            } else {
-                binding.amount = limits.btc(session, withUnit = false)
-            }
+            binding.amount = limits.toAmountLook(
+                session = session,
+                isFiat = limits.isFiat,
+                withUnit = false
+            )
         }
 
         AmountTextWatcher.watch(binding.amountEditText)

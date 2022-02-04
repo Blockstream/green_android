@@ -8,7 +8,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAssetBinding
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.ui.looks.AssetLook
-import com.blockstream.green.utils.fiat
+import com.blockstream.green.utils.toAmountLookOrNa
 import com.blockstream.green.utils.updateAssetPadding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
@@ -47,7 +47,7 @@ data class AssetListItem constructor(
 
         val fiatValue = look.fiatValue
 
-        binding.secondaryValue.text = fiatValue.fiat(session = session, withUnit = true)
+        binding.secondaryValue.text = fiatValue.toAmountLookOrNa(session = session, isFiat = true, withUnit = true)
         binding.secondaryValue.isVisible = fiatValue != null
 
         binding.icon.setImageDrawable(look.icon(binding.root.context))

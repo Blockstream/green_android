@@ -97,48 +97,77 @@ fun Double.feeRateWithUnit(): String {
     }
 }
 
-fun Balance?.fiat(session: GreenSession, withUnit: Boolean = true, withGrouping :Boolean = false): String {
+fun Balance?.toAmountLookOrNa(session: GreenSession, assetId: String? = null, isFiat: Boolean? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withMinimumDigits: Boolean = false): String {
     if(this == null) return "n/a"
-    return fiatOrNull(session, withUnit = withUnit, withGrouping = withGrouping) ?: "n/a"
+    return toAmountLook(session, assetId, isFiat, withUnit, withGrouping, withMinimumDigits) ?: "n/a"
 }
 
-fun Balance?.fiatOrNull(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false): String? {
+fun Balance?.toAmountLook(session: GreenSession, assetId: String? = null, isFiat: Boolean? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withMinimumDigits: Boolean = false): String? {
     if(this == null) return null
-    return try {
-        val value = fiat!!.toDouble()
-        userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = withGrouping).format(value)
-    } catch (e: Exception) {
-        return null
-    } + if (withUnit) " ${fiatCurrency.getFiatUnit(session)}" else ""
-}
-
-fun Balance?.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = true): String {
-    if(this == null) return "n/a"
-    return try {
-        val unit = session.getSettings()?.unit ?: "BTC"
-        val value = getValue(unit).toDouble()
-        userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits).format(value)
-    } catch (e: Exception) {
-        "n/a"
-    } + if (withUnit) " ${getBitcoinOrLiquidUnit(session)}" else ""
-}
-
-fun Balance?.asset(withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
-    if(this == null) return "n/a"
-
-    return try {
-        userNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits).format(assetValue?.toDouble() ?: satoshi)
-    } catch (e: Exception) {
-        "n/a"
-    } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""
-}
-
-fun Long.toAmountLook(session: GreenSession, assetId: String? = null, isFiat: Boolean? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withDirection: Transaction.Type? = null, withMinimumDigits: Boolean = false): String {
     return if(assetId == null || assetId == session.policyAsset){
         if(isFiat == true) {
-            this.toFiatLook(session, withUnit = withUnit, withGrouping = withGrouping)
+             try {
+                 userNumberFormat(
+                     decimals = 2,
+                     withDecimalSeparator = true,
+                     withGrouping = withGrouping
+                 ).format(fiat?.toDouble())?.let {
+                     if (withUnit) "$it ${fiatCurrency.getFiatUnit(session)}" else it
+                 }
+            } catch (e: Exception) {
+                null
+            }
+
         }else{
-            session.convertAmount(Convert(satoshi = this))?.btc(
+            try {
+                val unit = session.getSettings()?.unit ?: "BTC"
+                val value = getValue(unit).toDouble()
+                userNumberFormat(
+                    decimals = getDecimals(unit),
+                    withDecimalSeparator = false,
+                    withGrouping = withGrouping,
+                    withMinimumDigits = withMinimumDigits
+                ).format(value).let {
+                    if (withUnit) "$it ${getBitcoinOrLiquidUnit(session)}" else it
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+    }else{
+        try {
+            userNumberFormat(
+                assetInfo?.precision ?: 0,
+                withDecimalSeparator = false,
+                withGrouping = withGrouping,
+                withMinimumDigits = withMinimumDigits
+            ).format(assetValue?.toDouble() ?: satoshi).let {
+                if (withUnit) "$it ${assetInfo?.ticker ?: ""}" else it
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
+
+fun Long?.toAmountLookOrNa(session: GreenSession, assetId: String? = null, isFiat: Boolean? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withDirection: Transaction.Type? = null, withMinimumDigits: Boolean = false): String {
+    if(this == null) return "n/a"
+    return toAmountLook(session, assetId, isFiat, withUnit, withGrouping, withDirection, withMinimumDigits) ?: "n/a"
+}
+
+fun Long?.toAmountLook(session: GreenSession, assetId: String? = null, isFiat: Boolean? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withDirection: Transaction.Type? = null, withMinimumDigits: Boolean = false): String? {
+    if(this == null) return null
+    return if(assetId == null || assetId == session.policyAsset){
+        if(isFiat == true) {
+            session.convertAmount(Convert(satoshi = this))?.toAmountLook(
+                session,
+                isFiat = true,
+                withUnit = withUnit,
+                withGrouping = withGrouping
+            )
+        }else{
+            session.convertAmount(Convert(satoshi = this))?.toAmountLook(
                 session,
                 withUnit = withUnit,
                 withGrouping = withGrouping,
@@ -147,7 +176,12 @@ fun Long.toAmountLook(session: GreenSession, assetId: String? = null, isFiat: Bo
         }
     }else{
         // withMinimumDigits is not used on asset amounts
-        session.convertAmount(Convert(satoshi = this, session.getAsset(assetId)), isAsset = true)?.asset(withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = false)
+        session.convertAmount(Convert(satoshi = this, session.getAsset(assetId)), isAsset = true)?.toAmountLook(
+            session = session,
+            withUnit = withUnit,
+            withGrouping = withGrouping,
+            withMinimumDigits = withMinimumDigits
+        )
     }?.let { amount ->
         withDirection?.let { direction ->
             if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){
@@ -156,11 +190,7 @@ fun Long.toAmountLook(session: GreenSession, assetId: String? = null, isFiat: Bo
                 "+$amount"
             }
         } ?: amount
-    } ?: "n/a"
-}
-
-fun Long.toFiatLook(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false): String {
-    return session.convertAmount(Convert(satoshi = this))?.fiat(session, withUnit = withUnit, withGrouping = withGrouping) ?: "n/a"
+    }
 }
 
 fun Date.formatOnlyDate(): String = DateFormat.getDateInstance(DateFormat.LONG).format(this)

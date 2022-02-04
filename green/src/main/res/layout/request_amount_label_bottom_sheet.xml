@@ -75,8 +75,7 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="numberDecimal"
-                        android:maxLength="42"
-                        android:singleLine="true"
+                        android:textAlignment="textEnd"
                         android:text="@={vm.requestAmount}" />
 
                 </com.google.android.material.textfield.TextInputLayout>

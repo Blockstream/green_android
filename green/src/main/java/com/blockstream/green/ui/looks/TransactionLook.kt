@@ -36,12 +36,13 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
         get() = tx.txType
 
     override val fee : String
-        get() = tx.fee.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = true)
+        get() = tx.fee.toAmountLookOrNa(session, withUnit = true, withGrouping = true, withMinimumDigits = true)
 
     override val feeFiat: String?
-        get() = session.convertAmount(Convert(satoshi = tx.fee)).fiatOrNull(session, withUnit = true).let {
-            if(it == null) it else "≈ $it"
-        }
+        get() = session.convertAmount(Convert(satoshi = tx.fee))
+            ?.toAmountLook(session = session, isFiat = true, withUnit = true)?.let {
+                "≈ $it"
+            }
 
     override val feeRate : String
         get() = tx.feeRate.feeRateWithUnit()
@@ -56,7 +57,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     fun amount(index: Int): String {
         if(!cacheAmounts.containsKey(index)) {
             if (tx.txType == Transaction.Type.REDEPOSIT) {
-                cacheAmounts[index] = tx.fee.toAmountLook(
+                cacheAmounts[index] = tx.fee.toAmountLookOrNa(
                     session,
                     withUnit = false,
                     withDirection = tx.txType,
@@ -65,7 +66,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
                 )
             } else {
                 cacheAmounts[index] = assets[index].let {
-                    it.second.toAmountLook(
+                    it.second.toAmountLookOrNa(
                         session,
                         assetId = it.first,
                         withUnit = false,
@@ -81,14 +82,13 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     }
 
 
-    fun fiat(index: Int): String? {
-        assets[index].let{
-            return if(it.first == session.network.policyAsset){
-                session.convertAmount(Convert(satoshi = it.second)).fiat(session, withUnit = true)
-            }else{
-                null
-            }
-        }
+    fun fiat(index: Int): String? = assets[index].let {
+        it.second.toAmountLook(
+            session = session,
+            assetId = it.first,
+            isFiat = true,
+            withUnit = true
+        )
     }
 
     private val valueColor

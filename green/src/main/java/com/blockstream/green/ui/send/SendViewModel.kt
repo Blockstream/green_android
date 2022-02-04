@@ -15,7 +15,10 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.*
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.UserInput
+import com.blockstream.green.utils.feeRateWithUnit
+import com.blockstream.green.utils.toAmountLook
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
@@ -264,16 +267,13 @@ class SendViewModel @AssistedInject constructor(
                             amount,
                             isFiat = isFiat
                         ).getBalance(session)?.let {
-                        "≈ " + if (isFiat) {
-                            it.btc(
-                                session,
-                                withUnit = true,
-                                withGrouping = true,
-                                withMinimumDigits = false
-                            )
-                        } else {
-                            it.fiat(session, withUnit = true, withGrouping = true)
-                        }
+                        "≈ " + it.toAmountLook(
+                            session = session,
+                            isFiat = !isFiat,
+                            withUnit = true,
+                            withGrouping = true,
+                            withMinimumDigits = false
+                        )
                     } ?: ""
                 } else {
                     ""
@@ -443,7 +443,7 @@ class SendViewModel @AssistedInject constructor(
 
             feeAmount.postValue(tx.fee?.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
             feeAmountRate.postValue(tx.feeRateWithUnit() ?: "")
-            feeAmountFiat.postValue(tx.fee?.toFiatLook(session = session, withUnit = true, withGrouping = true) ?: "")
+            feeAmountFiat.postValue(tx.fee?.toAmountLook(session = session, isFiat = true, withUnit = true, withGrouping = true) ?: "")
 
             if(tx.error.isNotBlank()){
                 throw Exception(tx.error)
@@ -564,19 +564,16 @@ class SendViewModel @AssistedInject constructor(
 
             // Convert between BTC / Fiat
             addressParams.amount.value = try {
-                UserInput.parseUserInput(session, amountToConvert, isFiat = isFiat)
-                    .getBalance(session)?.let {
-                    if (isFiat) {
-                        it.btc(
-                            session,
-                            withUnit = false,
-                            withGrouping = false,
-                            withMinimumDigits = false
-                        )
-                    } else {
-                        it.fiat(session, withUnit = false, withGrouping = false)
-                    }
-                }
+                UserInput
+                    .parseUserInput(session, amountToConvert, isFiat = isFiat)
+                    .getBalance(session)
+                    ?.toAmountLook(
+                        session = session,
+                        isFiat = !isFiat,
+                        withUnit = false,
+                        withGrouping = false,
+                        withMinimumDigits = false
+                    )
             } catch (e: Exception) {
                 e.printStackTrace()
                 ""

@@ -5,7 +5,10 @@ import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.UserInput
+import com.blockstream.green.utils.getBitcoinOrLiquidUnit
+import com.blockstream.green.utils.getFiatCurrency
+import com.blockstream.green.utils.toAmountLook
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -24,8 +27,15 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
         MutableLiveData(initialRequestAmount?.let { amount ->
             try {
                 // Amount is always in BTC value, convert it to user's settings
-                session.convertAmount(Convert.forUnit(amount = amount))
-                    .btc(session, withUnit = false, withGrouping = false, withMinimumDigits = false)
+                session
+                    .convertAmount(Convert.forUnit(amount = amount))
+                    ?.toAmountLook(
+                        session,
+                        withUnit = false,
+                        withGrouping = false,
+                        withMinimumDigits = false
+                    )!!
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 amount
@@ -65,16 +75,13 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
                     amount,
                     isFiat = isFiat
                 ).getBalance(session)?.let {
-                    "≈ " + if (isFiat) {
-                        it.btc(
-                            session,
-                            withUnit = true,
-                            withGrouping = true,
-                            withMinimumDigits = false
-                        )
-                    } else {
-                        it.fiat(session, withUnit = true, withGrouping = true)
-                    }
+                    "≈ " + it.toAmountLook(
+                        session = session,
+                        isFiat = !isFiat,
+                        withUnit = true,
+                        withGrouping = true,
+                        withMinimumDigits = false
+                    )
                 } ?: ""
 
             }.subscribeBy(
@@ -102,16 +109,13 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
                 UserInput.parseUserInput(session, requestAmount.value, isFiat = isFiat)
             input.getBalance(session)?.let {
                 if (it.satoshi > 0) {
-                    if (isFiat) {
-                        it.btc(
-                            session,
-                            withUnit = false,
-                            withGrouping = false,
-                            withMinimumDigits = false
-                        )
-                    } else {
-                        it.fiat(session, withUnit = false, withGrouping = false)
-                    }
+                    it.toAmountLook(
+                        session = session,
+                        isFiat = !isFiat,
+                        withUnit = false,
+                        withGrouping = false,
+                        withMinimumDigits = false
+                    )
                 } else {
                     ""
                 }

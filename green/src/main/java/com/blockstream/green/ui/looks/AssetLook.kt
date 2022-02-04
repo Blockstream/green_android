@@ -7,7 +7,7 @@ import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
-import com.blockstream.green.utils.toAmountLook
+import com.blockstream.green.utils.toAmountLookOrNa
 
 
 class AssetLook constructor(
@@ -21,7 +21,7 @@ class AssetLook constructor(
 
     private val isBTCValue by lazy { id == session.network.policyAsset }
 
-    fun balance(isFiat: Boolean? = null, withUnit: Boolean = false) : String = amount.toAmountLook(session, assetId = id, isFiat = isFiat, withUnit = withUnit, withGrouping = true, withMinimumDigits = true)
+    fun balance(isFiat: Boolean? = null, withUnit: Boolean = false) : String = amount.toAmountLookOrNa(session, assetId = id, isFiat = isFiat, withUnit = withUnit, withGrouping = true, withMinimumDigits = true)
 
     val fiatValue : Balance?
         get() = if (isBTCValue) {
