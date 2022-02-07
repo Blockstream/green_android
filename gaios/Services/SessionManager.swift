@@ -224,13 +224,23 @@ class SessionManager: Session {
                 }
             }.then(on: bgq) {
                 self.subaccounts(true)
-            }.map(on: bgq) { wallets in
+            }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
+                // create a default segwit account if singlesig
+                if self.account?.isSingleSig ?? false && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
+                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
+                        .resolve()
+                        .map { _ in wallets }
+                } else {
+                    return Promise<[WalletItem]> { seal in seal.fulfill(wallets) }
+                }
+            }.get(on: bgq) { wallets in
+                // check account discover if singlesig
                 if self.account?.isSingleSig ?? false {
                     if wallets.filter({ $0.bip44Discovered ?? false }).isEmpty {
                         throw LoginError.walletNotFound
                     }
                 }
-            }
+            }.asVoid()
     }
 
     func login(details: [String: Any], hwDevice: HWDevice? = nil) -> Promise<Void> {
