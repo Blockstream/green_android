@@ -181,9 +181,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case invalidMnemonic
     }
 
-    fileprivate func validate(_ mnemonic: String, _ password: String) {
-        OnBoardManager.shared.params?.mnemonic = mnemonic
-        OnBoardManager.shared.params?.mnemomicPassword = password
+    fileprivate func validate(mnemonic: String, password: String) {
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
@@ -195,27 +193,20 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
+            OnBoardManager.shared.params?.mnemonic = mnemonic
+            OnBoardManager.shared.params?.mnemomicPassword = password
+            let storyboard = UIStoryboard(name: "AutomaticRestore", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "ExistingWalletsViewController")
             self.navigationController?.pushViewController(vc, animated: true)
         }.catch { error in
             DropAlert().error(message: "Invalid Recovery Phrase")
         }
     }
-    func next() {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
 
     @IBAction func doneButtonClicked(_ sender: Any) {
         _ = getMnemonicString()
             .done {
-                OnBoardManager.shared.params?.mnemonic = $0.0
-                OnBoardManager.shared.params?.mnemomicPassword = $0.1
-                let storyboard = UIStoryboard(name: "AutomaticRestore", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "ExistingWalletsViewController")
-                self.navigationController?.pushViewController(vc, animated: true)
+                self.validate(mnemonic: $0.0, password: $0.1)
             }
     }
 
