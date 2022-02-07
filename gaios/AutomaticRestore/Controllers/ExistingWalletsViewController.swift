@@ -47,7 +47,7 @@ class ExistingWalletsViewController: UIViewController {
     func checkWalletsExistance() {
         self.wallets = []
         firstly {
-            startLoader()
+            startLoader(message: "Looking for existing  wallets…")
             return Guarantee()
         }.then {
             self.checkExistance(isSinglesig: true)
