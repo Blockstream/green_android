@@ -59,7 +59,7 @@ class XCTestBase: XCTestCase {
         if isSingleSig {
             ExistingWallets()
                 .pause(2)
-                .checkWalletsExistance()
+                .checkWalletsExist()
                 .pause(1)
                 .tapManualRestore()
             
@@ -70,7 +70,7 @@ class XCTestBase: XCTestCase {
         } else {
             ExistingWallets()
                 .pause(2)
-                .checkWalletsExistance()
+                .checkWalletsExist()
                 .tapMultisig()
         }
         

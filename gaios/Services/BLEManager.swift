@@ -283,8 +283,8 @@ class BLEManager {
             }
             .flatMap { _ in
                 return Observable<Void>.create { observer in
-                    let device = self.device(isJade: account.isJade ?? false, fmwVersion: self.fmwVersion ?? "")
-                    session.registerLogin(hwDevice: device).done { res in
+                    let device = self.device(isJade: account.isJade, fmwVersion: self.fmwVersion ?? "")
+                    session.create(hwDevice: device).done { res in
                             observer.onNext(res)
                             observer.onCompleted()
                         }.catch { err in

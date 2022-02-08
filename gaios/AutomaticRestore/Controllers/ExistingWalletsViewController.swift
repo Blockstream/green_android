@@ -34,7 +34,7 @@ class ExistingWalletsViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.ExistingWalletsScreen.view
         btnManualRestore.accessibilityIdentifier = AccessibilityIdentifiers.ExistingWalletsScreen.manualRestoreBtn
 
-        checkWalletsExistance()
+        checkWallets()
     }
 
     func setContent() {
@@ -44,17 +44,17 @@ class ExistingWalletsViewController: UIViewController {
         lblLoading.text = "Looking for existing  wallets…"
     }
 
-    func checkWalletsExistance() {
+    func checkWallets() {
         self.wallets = []
         firstly {
             startLoader(message: "Looking for existing  wallets…")
             return Guarantee()
         }.then {
-            self.checkExistance(isSinglesig: true)
+            self.checkWallet(isSinglesig: true)
         }.map { wallet in
             self.wallets += [wallet]
         }.then {
-            self.checkExistance(isSinglesig: false)
+            self.checkWallet(isSinglesig: false)
         }.map { wallet in
             self.wallets += [wallet]
         }.ensure {
@@ -69,12 +69,12 @@ class ExistingWalletsViewController: UIViewController {
         }
     }
 
-    func checkExistance(isSinglesig: Bool) -> Promise<ExistingWallet> {
+    func checkWallet(isSinglesig: Bool) -> Promise<ExistingWallet> {
         OnBoardManager.shared.params?.singleSig = isSinglesig
         let params = OnBoardManager.shared.params
         let session = SessionManager(account: OnBoardManager.shared.account)
         return Promise { seal in
-            session.restore(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
+            session.discover(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, hwDevice: nil)
             .ensure {
                 session.disconnect()
                 session.remove()

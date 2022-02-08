@@ -33,9 +33,9 @@ class Settings: Screen {
     @discardableResult
     func tapLogOut(connectionTimeout: TimeInterval = 25) -> Self {
         
-        let btnExistance = NSPredicate(format: "label MATCHES '\("id_log_out".localized(for: Self.self))'")
+        let btnExist = NSPredicate(format: "label MATCHES '\("id_log_out".localized(for: Self.self))'")
         let btnLabel = app.otherElements[AccessibilityIdentifiers.SettingsScreen.view].tables
-            .children(matching: .cell).staticTexts.element(matching: btnExistance)
+            .children(matching: .cell).staticTexts.element(matching: btnExist)
         _ = btnLabel.waitForExistence(timeout: 3)
 
         return tap(btnLabel)

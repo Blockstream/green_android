@@ -62,13 +62,7 @@ class WalletNameViewController: UIViewController {
 
     func nameIsSet() {
         OnBoardManager.shared.params?.walletName = fieldName.text ?? ""
-        if LandingViewController.flowType == .add {
-            // Register new user
-            register()
-        } else {
-            // Test credential on server side
-            checkCredential()
-        }
+        setup(restored: LandingViewController.flowType == .restore)
     }
 
     @IBAction func nameDidChange(_ sender: Any) {
@@ -104,46 +98,19 @@ class WalletNameViewController: UIViewController {
         }
     }
 
-    fileprivate func register() {
+    func setup(restored: Bool) {
         let bgq = DispatchQueue.global(qos: .background)
-        let params = OnBoardManager.shared.params
         let session = SessionsManager.new(for: OnBoardManager.shared.account)
+        let params = OnBoardManager.shared.params
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
-        }.then(on: bgq) {
-            session.registerLogin(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "")
-        }.then(on: bgq) { _ -> Promise<[String: Any]> in
-            if params?.singleSig ?? false {
-                return try session.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue]).resolve()
+        }.then(on: bgq) { () -> Promise<Void> in
+            if restored {
+                return session.restore(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, hwDevice: nil)
             } else {
-                return Promise<[String: Any]> { seal in seal.fulfill([:]) }
+                return session.create(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, hwDevice: nil)
             }
-        }.ensure {
-            self.stopLoader()
-        }.done { _ in
-            AccountsManager.shared.current = session.account
-            self.next()
-        }.catch { error in
-            session.disconnect()
-            switch error {
-            case LoginError.connectionFailed:
-                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-            default:
-                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
-            }
-        }
-    }
-
-    func checkCredential() {
-        let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionsManager.new(for: OnBoardManager.shared.account)
-        let params = OnBoardManager.shared.params
-        firstly {
-            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
-            return Guarantee()
-        }.then(on: bgq) {
-            session.restore(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
         }.ensure {
             self.stopLoader()
         }.done { _ in
@@ -152,10 +119,9 @@ class WalletNameViewController: UIViewController {
         }.catch { error in
             switch error {
             case LoginError.walletNotFound:
-                AccountsManager.shared.current = session.account
-                self.next()
+                self.error(session, message: NSLocalizedString("wallet not found", comment: ""))
             case LoginError.walletsJustRestored:
-                self.error(session, message: NSLocalizedString("Wallet just restored", comment: ""))
+                self.error(session, message: NSLocalizedString("id_wallet_already_restored", comment: ""))
             case LoginError.invalidMnemonic:
                 self.error(session, message: NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
             case LoginError.connectionFailed:

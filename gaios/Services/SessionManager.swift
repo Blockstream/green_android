@@ -183,12 +183,77 @@ class SessionManager: Session {
         }
     }
 
-    func registerLogin(mnemonic: String? = nil, password: String? = nil, hwDevice: HWDevice? = nil)-> Promise<Void> {
+    func discover(mnemonic: String, password: String?, hwDevice: HWDevice?) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let isSingleSig = account?.isSingleSig ?? false
+        return Guarantee()
+            .map(on: bgq) { _ in
+                guard try gaios.validateMnemonic(mnemonic: mnemonic) else {
+                    throw LoginError.invalidMnemonic
+                }
+            }.then(on: bgq) {
+                self.login(details: ["mnemonic": mnemonic, "password": password ?? ""], hwDevice: hwDevice)
+            }.recover { err in
+                switch err {
+                case TwoFactorCallError.failure(let localizedDescription):
+                    if localizedDescription == "id_login_failed", !isSingleSig {
+                        throw LoginError.walletNotFound
+                    }
+                default:
+                    throw err
+                }
+            }.then(on: bgq) {
+                self.subaccounts(true)
+            }.get(on: bgq) { wallets in
+                // check account discover if singlesig
+                if isSingleSig {
+                    if wallets.filter({ $0.bip44Discovered ?? false }).isEmpty {
+                        throw LoginError.walletNotFound
+                    }
+                }
+            }.map(on: bgq) {_ in
+                // check if wallet just exist
+                if let walletHashId = self.account?.walletHashId,
+                   AccountsManager.shared.swAccounts.contains(where: {
+                        $0.walletHashId == walletHashId &&
+                        $0.id != self.account?.id &&
+                        $0.isSingleSig == isSingleSig
+                    }) {
+                        throw LoginError.walletsJustRestored
+                }
+            }.asVoid()
+    }
+
+    func restore(mnemonic: String, password: String?, hwDevice: HWDevice? = nil) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let isSingleSig = account?.isSingleSig ?? false
+        return self.discover(mnemonic: mnemonic, password: password, hwDevice: hwDevice)
+            .recover { err in
+                switch err {
+                case LoginError.walletNotFound:
+                    if !isSingleSig {
+                        throw err
+                    }
+                default:
+                    throw err
+                }
+            }.then(on: bgq) { _ in
+                self.subaccounts(true)
+            }.then(on: bgq) { wallets -> Promise<Void> in
+                // create a default segwit account if singlesig
+                if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
+                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
+                        .resolve().asVoid()
+                } else {
+                    return Promise<Void>().asVoid()
+                }
+            }
+    }
+
+    func create(mnemonic: String? = nil, password: String? = nil, hwDevice: HWDevice? = nil) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .map(on: bgq) {
-                try self.connect()
-            }.map(on: bgq) {
                 if let hwDevice = hwDevice,
                     let data = try? JSONEncoder().encode(hwDevice),
                     let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
@@ -198,49 +263,17 @@ class SessionManager: Session {
             }.then(on: bgq) { device in
                 try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve()
             }.then(on: bgq) { _ in
-                self.login(details: mnemonic != nil ? ["mnemonic": mnemonic ?? "", "password": password ?? ""] : [:],
-                      hwDevice: hwDevice)
+                self.restore(mnemonic: mnemonic ?? "", password: password, hwDevice: hwDevice)
+            }.recover { err in
+                switch err {
+                case LoginError.walletNotFound,
+                    LoginError.walletsJustRestored:
+                    // Enable restore for HW
+                    return
+                default:
+                    throw err
+                }
             }
-    }
-
-    func restore(mnemonic: String, password: String?) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .map { _ in
-                guard try gaios.validateMnemonic(mnemonic: mnemonic) else {
-                    throw LoginError.invalidMnemonic
-                }
-            }.then {
-                self.login(details: ["mnemonic": mnemonic, "password": password ?? ""], hwDevice: nil)
-            }.map(on: bgq) {
-                // check if wallet just exist
-                if let walletHashId = self.account?.walletHashId,
-                   AccountsManager.shared.swAccounts.contains(where: {
-                        $0.walletHashId == walletHashId &&
-                        $0.id != self.account?.id &&
-                        $0.isSingleSig == self.account?.isSingleSig
-                    }) {
-                        throw LoginError.walletsJustRestored
-                }
-            }.then(on: bgq) {
-                self.subaccounts(true)
-            }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
-                // create a default segwit account if singlesig
-                if self.account?.isSingleSig ?? false && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
-                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
-                        .resolve()
-                        .map { _ in wallets }
-                } else {
-                    return Promise<[WalletItem]> { seal in seal.fulfill(wallets) }
-                }
-            }.get(on: bgq) { wallets in
-                // check account discover if singlesig
-                if self.account?.isSingleSig ?? false {
-                    if wallets.filter({ $0.bip44Discovered ?? false }).isEmpty {
-                        throw LoginError.walletNotFound
-                    }
-                }
-            }.asVoid()
     }
 
     func login(details: [String: Any], hwDevice: HWDevice? = nil) -> Promise<Void> {

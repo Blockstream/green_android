@@ -7,12 +7,12 @@ class ExistingWallets: Screen {
     }
 
     @discardableResult
-    func checkWalletsExistance() -> Self {
+    func checkWalletsExist() -> Self {
         
         let exists = app.staticTexts["id_multisig_shield".localized(for: Self.self)].waitForExistence(timeout: 20)
                     
         if exists != true {
-            XCTFail("checkWalletsExistance failure")
+            XCTFail("checkWalletsExist failure")
         }
         return self
     }
