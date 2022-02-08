@@ -120,7 +120,7 @@ class RecipientCell: UITableViewCell {
 
         lblAddressHint.text = NSLocalizedString(inputType == .sweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
         iconAsset.image = UIImage(named: "default_asset_icon")!
-        lblAssetName.text = "Asset"
+        lblAssetName.text = NSLocalizedString("id_asset", comment: "")
         if network == "mainnet" {
             iconAsset.image = UIImage(named: "ntw_btc")
             lblAssetName.text = "Bitcoin"
@@ -130,7 +130,7 @@ class RecipientCell: UITableViewCell {
         } else {
             iconAsset.image = Registry.shared.image(for: asset?.assetId)
             let name = asset?.assetId == btc ? "Liquid Bitcoin" : asset?.name
-            lblAssetName.text = name ?? "Asset"
+            lblAssetName.text = name ?? NSLocalizedString("id_asset", comment: "")
         }
         onChange()
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
@@ -152,10 +152,10 @@ class RecipientCell: UITableViewCell {
     }
 
     func setContent() {
-        lblAssetHint.text = "Asset"
+        lblAssetHint.text = NSLocalizedString("id_asset", comment: "")
         lblAvailableFunds.text = ""
-        btnSendAll.setTitle("Send All funds", for: .normal)
-        lblAmountHint.text = "Amount"
+        btnSendAll.setTitle(NSLocalizedString(("id_send_all_funds"), comment: ""), for: .normal)
+        lblAmountHint.text = NSLocalizedString("id_amount", comment: "")
         lblCurrency.text = ""
         lblRecipientNum.text = "#"
     }
@@ -246,7 +246,7 @@ class RecipientCell: UITableViewCell {
         if isBipAddress() {
             if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
                 iconAsset.image = UIImage(named: "default_asset_icon")
-                lblAssetName.text = "Asset"
+                lblAssetName.text = NSLocalizedString("id_asset", comment: "")
                 lblCurrency.text = ""
                 lblAvailableFunds.text = ""
                 amountTextField.text = ""
@@ -276,7 +276,7 @@ class RecipientCell: UITableViewCell {
     func updateUIBipAddress() {
         if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
             iconAsset.image = UIImage(named: "default_asset_icon")
-            lblAssetName.text = "Asset"
+            lblAssetName.text = NSLocalizedString("id_asset", comment: "")
             lblCurrency.text = ""
             lblAvailableFunds.text = ""
             amountTextField.text = ""

@@ -45,7 +45,7 @@ class FeeEditCell: UITableViewCell {
                 icon.image = icon.image?.maskWithColor(color: UIColor.customMatrixGreen())
             }
         }
-        lblFeeTitle.text = "Fee"
+        lblFeeTitle.text = NSLocalizedString("id_fee", comment: "")
         lblTimeTitle.text = "Confirmation Time"
         lblTimeHint.text = ""
         lblTipCustom.text = NSLocalizedString("id_custom", comment: "")
@@ -75,7 +75,7 @@ class FeeEditCell: UITableViewCell {
         lblFeeFiat.isHidden = true
         lblInvalidFee.isHidden = true
 
-        lblTimeHint.text = transactionPriority == .Custom ? "Custom" : "~ \(transactionPriority.time)"
+        lblTimeHint.text = transactionPriority == .Custom ? NSLocalizedString("id_custom", comment: "") : "~ \(transactionPriority.time)"
         feeSlider.value = Float(feeToSwitchIndex(transactionPriority))
 
         switch transactionPriority {
@@ -106,7 +106,7 @@ class FeeEditCell: UITableViewCell {
 
     func setPriority(_ switchIndex: Int) {
         let tp = switchIndexToFee(switchIndex)
-        lblTimeHint.text = tp == .Custom ? "Custom" : "~ \(tp.time)"
+        lblTimeHint.text = tp == .Custom ? NSLocalizedString("id_custom", comment: "") : "~ \(tp.time)"
     }
 
     func feeToSwitchIndex(_ fee: TransactionPriority) -> Int {

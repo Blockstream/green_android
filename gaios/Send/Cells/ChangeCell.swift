@@ -17,7 +17,7 @@ class ChangeCell: UITableViewCell {
     }
 
     func configure(_ transaction: Transaction) {
-        lblChangeTitle.text = "Change"
+        lblChangeTitle.text = NSLocalizedString("id_change", comment: "")
         lblChangeHint.text = "-"
         if let outputs = transaction.transactionOutputs, !outputs.isEmpty {
             var changeAddress = [String]()

@@ -38,7 +38,7 @@ class AddresseeCell: UITableViewCell {
 
     func configure(transaction: Transaction, index: Int) {
         let addressee = transaction.addressees[index]
-        lblRecipientTitle.text = "Recipient"
+        lblRecipientTitle.text = NSLocalizedString("id_recipient", comment: "")
         lblRecipientAddress.text = addressee.address
 
         let asset = transaction.defaultAsset
@@ -68,27 +68,6 @@ class AddresseeCell: UITableViewCell {
         } else {
             icon.image = Registry.shared.image(for: asset)
         }
-
-//        if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
-//            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : btc)
-//            content.assetsFeeLabel.text = "\(amount ?? "N.A.") \(denom)"
-//            content.feeLabel.text = "\(amount ?? "N.A.") \(denom)"
-//        }
-
-        // Show change address only for hardware wallet transaction
-//        let isHW = AccountsManager.shared.current?.isHW ?? false
-//        content.changeAddressView.isHidden = !isHW
-//        if let outputs = transaction.transactionOutputs, !outputs.isEmpty, isHW {
-//            var changeAddress = [String]()
-//            outputs.forEach { output in
-//                let isChange = output["is_change"] as? Bool ?? false
-//                let isFee = output["is_fee"] as? Bool ?? false
-//                if isChange && !isFee, let address = output["address"] as? String {
-//                    changeAddress.append(address)
-//                }
-//            }
-//            content.changeAddressValue.text = changeAddress.map { "- \($0)"}.joined(separator: "\n")
-//        }
     }
 
     func setStyle() {

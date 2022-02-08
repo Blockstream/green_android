@@ -27,7 +27,7 @@ class DialogQRCodeScanViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = "Scan QR Code"
+        lblTitle.text = NSLocalizedString("id_scan_qr_code", comment: "")
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
