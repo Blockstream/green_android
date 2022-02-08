@@ -72,6 +72,14 @@ class SendViewController: KeyboardViewController {
         }
     }
 
+    var inlineErrors = ["id_invalid_address",
+                      "id_invalid_private_key",
+                      "id_invalid_amount",
+                      "id_insufficient_funds",
+                      "id_invalid_payment_request_assetid",
+                      "id_invalid_asset_id"
+    ]
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -219,17 +227,17 @@ class SendViewController: KeyboardViewController {
             self.transaction = tx
         }.done { tx in
             self.transaction = tx
-            if tx!.error == "id_invalid_replacement_fee_rate" {
-                DropAlert().error(message: NSLocalizedString("id_invalid_replacement_fee_rate", comment: ""))
+            if let error = tx?.error, !error.isEmpty, !self.inlineErrors.contains(error) {
+                self.dropError(NSLocalizedString(error, comment: ""))
             }
         }.catch { error in
             switch error {
             case TransactionError.invalid(let localizedDescription):
-                DropAlert().error(message: localizedDescription)
+                self.dropError(localizedDescription)
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                DropAlert().error(message: NSLocalizedString("id_you_are_not_connected", comment: ""))
+                self.dropError(NSLocalizedString("id_you_are_not_connected", comment: ""))
             default:
-                DropAlert().error(message: error.localizedDescription)
+                self.dropError(error.localizedDescription)
             }
         }.finally {
             self.hideIndicator()
@@ -242,6 +250,10 @@ class SendViewController: KeyboardViewController {
                 }})
             self.reloadSections([SendSection.fee], animated: false)
         }
+    }
+
+    func dropError(_ msg: String) {
+        DropAlert().error(message: msg)
     }
 
     func bindRecipients() {
