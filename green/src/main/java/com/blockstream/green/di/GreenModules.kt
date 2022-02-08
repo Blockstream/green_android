@@ -85,13 +85,12 @@ class GreenModules {
     @Singleton
     @Provides
     fun provideSessionManager(
-        @ApplicationContext context: Context,
         settingsManager: SettingsManager,
         assetManager: AssetManager,
         greenWallet: GreenWallet,
         qaTester: QATester
     ): SessionManager {
-        return SessionManager(context, settingsManager, assetManager, greenWallet, qaTester)
+        return SessionManager(settingsManager, assetManager, greenWallet, qaTester)
     }
 
     @Singleton

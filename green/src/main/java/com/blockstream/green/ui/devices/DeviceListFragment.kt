@@ -60,8 +60,8 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
             // Nothing to do here, it's already handled by DeviceManager
         }
 
-    override val title: String?
-        get() = if (args.deviceBrand != DeviceBrand.Blockstream)  args.deviceBrand.brand  else null
+    override val title: String
+        get() = if (args.deviceBrand != DeviceBrand.Blockstream) args.deviceBrand.brand else ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

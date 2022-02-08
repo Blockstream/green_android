@@ -212,9 +212,6 @@ class GreenSession constructor(
         network = n
         isInitialized = true
 
-        // Prevent multiple open sessions
-        sessionManager.disconnectSessions(this)
-
         greenWallet.connect(
             gaSession,
             createConnectionParams(network)

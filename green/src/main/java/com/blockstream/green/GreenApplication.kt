@@ -9,8 +9,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.gdk.data.Network
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.settings.Migrator
@@ -18,7 +16,6 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.QATesterActivity
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
-import com.blockstream.libgreenaddress.GASession
 import com.pandulapeter.beagle.Beagle
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
@@ -65,25 +62,6 @@ class GreenApplication : Application(){
 
         if (isDevelopmentFlavor() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             initShortcuts()
-        }
-    }
-
-    private suspend fun getWalletOrEmulatedHardwareWallet(gaSession: GASession?, network: Network): Wallet {
-        val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-        return if (walletId >= 0) {
-            walletRepository.getWalletSuspend(walletId)
-        } else {
-            // Emulated Hardware wallet
-            Wallet(
-                id = -1L,
-                walletHashId = network.id,
-                name = network.name,
-                network = network.network,
-                isRecoveryPhraseConfirmed = true,
-                isHardware = true,
-                activeAccount = 0
-            )
         }
     }
 

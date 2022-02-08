@@ -78,7 +78,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
         }
 
         binding.buttonDisconnectAll.setOnClickListener {
-            for(session in sessionManager.getConnectedSessions().values){
+            for(session in sessionManager.getConnectedSessions()){
                 session.disconnectAsync()
             }
 

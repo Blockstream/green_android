@@ -1,6 +1,5 @@
 package com.blockstream.green.gdk
 
-import android.content.Context
 import androidx.lifecycle.*
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
@@ -10,7 +9,6 @@ import com.blockstream.green.database.WalletId
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
-import com.blockstream.libgreenaddress.GASession
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -19,16 +17,14 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 class SessionManager constructor(
-    private val context: Context,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
     qaTester: QATester,
 ) : LifecycleObserver {
-    private val sessions = mutableMapOf<GASession, GreenSession>()
+    private val greenSessions = mutableSetOf<GreenSession>()
     private val walletSessions = mutableMapOf<WalletId, GreenSession>()
     private var onBoardingSession: GreenSession? = null
-    private var jadeSession: GreenSession? = null
     private var hardwareSessionV3: GreenSession? = null
 
     private var timeoutTimers = mutableListOf<Timer>()
@@ -37,15 +33,12 @@ class SessionManager constructor(
 
     var connectionChangeEvent = MutableLiveData<Boolean>()
 
-    private val AllowMultipleConnectedSessions = true
-
     init {
         // Listen to foreground / background events
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         greenWallet.setNotificationHandler { gaSession, jsonObject ->
-            sessions[gaSession]?.apply {
-
+            greenSessions.find { it.gaSession == gaSession }?.apply {
                 try{
                     onNewNotification(JsonDeserializer.decodeFromJsonElement(jsonObject as JsonElement))
                 }catch (e: Exception){
@@ -56,7 +49,7 @@ class SessionManager constructor(
 
         // Inject notification events from QATester to all sessions
         qaTester.getSessionNotificationInjectorObservable().subscribeBy { notification ->
-            for(session in sessions.values){
+            for(session in greenSessions){
                 session.onNewNotification(notification)
             }
         }
@@ -76,28 +69,10 @@ class SessionManager constructor(
         return walletSessions[wallet.id]!!
     }
 
-    // Used to find a GreenSession from v3 gaSession
-    fun getWalletSession(gaSession: GASession?): GreenSession? {
-        return sessions[gaSession]
-    }
-
-    // Used to find the Wallet Id from v3 gaSession
-    fun getWalletIdFromSession(gaSession: GASession?): WalletId {
-        getWalletSession(gaSession)?.let { greenSession ->
-            for (key in walletSessions.keys){
-                if(walletSessions[key] == greenSession){
-                    return key
-                }
-            }
-        }
-
-        return -1
-    }
-
     fun destroyWalletSession(wallet: Wallet){
         walletSessions[wallet.id]?.let{
             it.destroy()
-            sessions.remove(it.gaSession)
+            greenSessions.remove(it.gaSession)
         }
 
         walletSessions.remove(wallet.id)
@@ -125,17 +100,8 @@ class SessionManager constructor(
         return onBoardingSession!!
     }
 
-    // Is this really needed
-    fun getJadeSession(): GreenSession {
-        if (jadeSession == null) {
-            jadeSession = createSession()
-        }
-
-        return jadeSession!!
-    }
-
-    fun getConnectedSessions(): Map<GASession, GreenSession> {
-        return sessions.filter { it.value.isConnected }
+    fun getConnectedSessions(): List<GreenSession> {
+        return greenSessions.filter { it.isConnected }
     }
 
     fun upgradeOnBoardingSessionToWallet(wallet: Wallet) {
@@ -149,7 +115,7 @@ class SessionManager constructor(
     private fun createSession(): GreenSession {
         val session = GreenSession(this, settingsManager, assetManager, greenWallet)
 
-        sessions[session.gaSession] = session
+        greenSessions.add(session)
 
         return session
     }
@@ -162,7 +128,7 @@ class SessionManager constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onEnterBackground() {
-        for(session in sessions.filter { it.value.isConnected }.values){
+        for(session in greenSessions.filter { it.isConnected }){
 
             val sessionTimeout = (session.getSettings()?.altimeout ?: 1) * 60 * 1000L
 
@@ -177,18 +143,6 @@ class SessionManager constructor(
 
     fun fireConnectionChangeEvent(){
         connectionChangeEvent.postValue(true)
-    }
-
-    fun disconnectSessions(exception: GreenSession){
-        if(!AllowMultipleConnectedSessions) {
-            for (session in sessions.values) {
-                if (session != exception) {
-                    if (session.isConnected) {
-                        session.disconnectAsync()
-                    }
-                }
-            }
-        }
     }
 
     companion object: KLogging()
