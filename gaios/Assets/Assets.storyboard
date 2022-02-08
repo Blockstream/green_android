@@ -9,30 +9,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Assets List Table View Controller-->
-        <scene sceneID="ChU-tG-pNl">
-            <objects>
-                <tableViewController storyboardIdentifier="AssetsListTableViewController" hidesBottomBarWhenPushed="YES" id="1Gt-Ni-L6U" customClass="AssetsListTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="zKa-eZ-PQT">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <connections>
-                            <outlet property="dataSource" destination="1Gt-Ni-L6U" id="r2d-ah-O8Z"/>
-                            <outlet property="delegate" destination="1Gt-Ni-L6U" id="fEo-ov-mCt"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="uXT-oQ-rdY">
-                        <barButtonItem key="backBarButtonItem" title=" " id="E83-gQ-Hmm"/>
-                    </navigationItem>
-                    <connections>
-                        <segue destination="o0F-xl-fvc" kind="presentation" identifier="asset" id="9UY-e8-x3T"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="bEf-pI-Cpe" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7472" y="-1389"/>
-        </scene>
         <!--Assets List View Controller-->
         <scene sceneID="mfe-fw-eNX">
             <objects>
@@ -159,14 +135,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ecq-qw-rTo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7471" y="-719"/>
+            <point key="canvasLocation" x="6823" y="-1390"/>
         </scene>
         <!--Asset Detail Table View Controller-->
         <scene sceneID="i4M-HS-QIL">
             <objects>
                 <tableViewController storyboardIdentifier="AssetDetailTableViewController" id="o0F-xl-fvc" customClass="AssetDetailTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="9db-T5-kbl">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customModalBlueDark"/>
                         <prototypes>
@@ -256,25 +232,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="enX-He-AvZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8245" y="-1390"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="MTe-JZ-tL0">
-            <objects>
-                <navigationController storyboardIdentifier="AssetsNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="GO7-sf-8fs" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="9Pt-P4-R6T">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="1Gt-Ni-L6U" kind="relationship" relationship="rootViewController" id="9fq-dG-0L7"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="soJ-Ep-bGi" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6741" y="-1390"/>
+            <point key="canvasLocation" x="7614" y="-1390"/>
         </scene>
     </scenes>
     <resources>
