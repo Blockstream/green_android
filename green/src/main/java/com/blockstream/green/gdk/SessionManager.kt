@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.settings.SettingsManager
@@ -17,6 +18,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 class SessionManager constructor(
+    private val applicationScope: ApplicationScope,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
@@ -72,7 +74,7 @@ class SessionManager constructor(
     fun destroyWalletSession(wallet: Wallet){
         walletSessions[wallet.id]?.let{
             it.destroy()
-            greenSessions.remove(it.gaSession)
+            greenSessions.remove(it)
         }
 
         walletSessions.remove(wallet.id)
@@ -113,7 +115,13 @@ class SessionManager constructor(
 
     // Always use this method to create a Session as it keeps track of gaSession & GreenSession
     private fun createSession(): GreenSession {
-        val session = GreenSession(this, settingsManager, assetManager, greenWallet)
+        val session = GreenSession(
+            applicationScope = applicationScope,
+            sessionManager = this,
+            settingsManager = settingsManager,
+            assetsManager = assetManager,
+            greenWallet = greenWallet,
+        )
 
         greenSessions.add(session)
 

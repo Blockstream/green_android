@@ -89,30 +89,16 @@ abstract class AbstractWalletViewModel constructor(
                 .async()
                 .subscribeBy(
                     onNext = { event ->
-
                         // Dispose previous timer
                         reconnectTimer?.dispose()
 
-                        if(event.connected && event.loginRequired != true){
+                        if(event.isConnected){
                             onReconnectEvent.value = ConsumableEvent(-1)
-                        }else if (event.loginRequired == true) {
-                            logger.info { "Trying to re-establish connection" }
-                            session.observable { session ->
-                                session.reLogin()
-                            }.subscribeBy(
-                                onError = {
-                                    it.printStackTrace()
-                                    logger.info { "Re-login failed..." }
-                                },
-                                onSuccess = {
-                                    logger.info { "Re-login was successful" }
-                                }
-                            )
                         } else {
                             reconnectTimer = Observable.interval(1, TimeUnit.SECONDS)
-                                .take((event.waiting ?: 0) + 1)
+                                .take(event.waitInSeconds+ 1)
                                 .map {
-                                    (event.waiting ?: 0) - it
+                                    event.waitInSeconds - it
                                 }
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeBy(

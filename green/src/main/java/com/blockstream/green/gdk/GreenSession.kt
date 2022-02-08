@@ -5,6 +5,7 @@ import android.util.SparseArray
 import com.blockstream.gdk.*
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
@@ -22,6 +23,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
@@ -33,6 +36,7 @@ import kotlin.properties.Delegates
 
 
 class GreenSession constructor(
+    private val applicationScope: ApplicationScope,
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
     private val assetsManager: AssetManager,
@@ -57,10 +61,10 @@ class GreenSession constructor(
     private var blockSubject = BehaviorSubject.create<Block>()
     private var settingsSubject = BehaviorSubject.create<Settings>()
     private var twoFactorResetSubject = BehaviorSubject.create<TwoFactorReset>()
-    private val torStatusSubject = BehaviorSubject.create<TORStatus>()
+    private val torStatusSubject = BehaviorSubject.create<TorEvent>()
     private var networkSubject = BehaviorSubject.create<NetworkEvent>()
 
-    val gaSession: GASession = greenWallet.createSession()
+    var gaSession: GASession = greenWallet.createSession()
     private val disposables = CompositeDisposable()
 
     val hwWallet: HWWallet?
@@ -76,6 +80,8 @@ class GreenSession constructor(
     // get() = this::network.isInitialized
     var isInitialized: Boolean = false
         private set
+
+    var authenticationRequired = false
 
     val networks
         get() = greenWallet.networks
@@ -122,7 +128,7 @@ class GreenSession constructor(
     fun getTransationsObservable(): Observable<List<Transaction>> = transactionsSubject.hide()
     fun getSubAccountsObservable(): Observable<List<SubAccount>> = subAccountsSubject.hide()
     fun getSystemMessageObservable(): Observable<String> = systemMessageSubject.hide()
-    fun getTorStatusObservable(): Observable<TORStatus> = torStatusSubject.hide()
+    fun getTorStatusObservable(): Observable<TorEvent> = torStatusSubject.hide()
     fun getSettingsObservable(): Observable<Settings> = settingsSubject.hide()
     fun getNetworkEventObservable(): Observable<NetworkEvent> = networkSubject.hide()
     fun getTwoFactorResetObservable(): Observable<TwoFactorReset> = twoFactorResetSubject.hide()
@@ -197,7 +203,6 @@ class GreenSession constructor(
         return ConnectionParams(
             networkName = network.id,
             useTor = applicationSettings.tor && network.supportTorConnection, // Exclude Singlesig from Tor connection
-            logLevel = if (BuildConfig.DEBUG) "debug" else "none",
             userAgent = userAgent,
             proxy = applicationSettings.proxyUrl ?: "",
             spvEnabled = spvEnabled,
@@ -218,20 +223,14 @@ class GreenSession constructor(
         )
     }
 
-    // GDK doesn't send connection events on connect
-    // to avoid having invalid events from previous connections
-    // emulate a successful connect event
-    private fun emulateConnectionEvent(){
-        NetworkEvent(connected = true, loginRequired = false, waiting = 0).let {
-            networkSubject.onNext(it)
+    fun reconnectHint(hint: ReconnectHintParams) =
+        applicationScope.launch(context = Dispatchers.IO) {
+            try{
+                greenWallet.reconnectHint(gaSession, hint)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
         }
-    }
-
-    fun reconnectHint() = try {
-        greenWallet.reconnectHint(gaSession)
-    }catch (e: Exception){
-        e.printStackTrace()
-    }
 
     fun disconnect(disconnectDevice : Boolean = true) {
         isConnected = false
@@ -239,6 +238,8 @@ class GreenSession constructor(
             device?.disconnect()
             device = null
         }
+        
+        authenticationRequired = false
 
         activeAccount = 0L
 
@@ -252,29 +253,30 @@ class GreenSession constructor(
         settingsSubject = BehaviorSubject.create()
         twoFactorResetSubject = BehaviorSubject.create()
         networkSubject = BehaviorSubject.create()
-        torStatusSubject.onNext(TORStatus(progress = 100)) // reset TOR status
+        torStatusSubject.onNext(TorEvent(progress = 100)) // reset TOR status
 
         // Clear balances
         walletBalances.clear()
 
-        greenWallet.disconnect(gaSession)
+        val gaSessionToBeDestroyed = gaSession
+        // Create a new gaSession
+        gaSession = greenWallet.createSession()
+
+        // Destroy gaSession
+        greenWallet.destroySession(gaSessionToBeDestroyed)
     }
 
     fun disconnectAsync() {
         isConnected = false
 
-        observable {
-            disconnect()
-        }.subscribeBy(
-            onError = {
-                it.printStackTrace()
-                it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
+        try {
+            applicationScope.launch(Dispatchers.IO) {
+                disconnect()
             }
-        )
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
-
-    private fun generateMnemonic12() = greenWallet.generateMnemonic12()
-    private fun generateMnemonic24() = greenWallet.generateMnemonic24()
 
     override fun getHttpRequest(): HttpRequestHandler {
         return this
@@ -441,7 +443,7 @@ class GreenSession constructor(
         }
     }
 
-    fun reLogin(): LoginData {
+    private fun reLogin(): LoginData {
         return AuthHandler(
             greenWallet,
             greenWallet.loginUser(
@@ -450,7 +452,7 @@ class GreenSession constructor(
                 loginCredentialsParams = LoginCredentialsParams()
             )
         ).result<LoginData>(hardwareWalletResolver = DeviceResolver(null, hwWallet)).also {
-            emulateConnectionEvent()
+            authenticationRequired = false
         }
     }
 
@@ -840,17 +842,30 @@ class GreenSession constructor(
                 }
             }
             "tor" -> {
-                notification.torStatus?.let {
+                notification.tor?.let {
                     torStatusSubject.onNext(it)
                 }
             }
             "network" -> {
-                notification.network?.let {
-                    networkSubject.onNext(it)
+                notification.network?.let { event ->
+
+                    if(isConnected){
+                        if(event.isConnected && authenticationRequired){
+                            applicationScope.launch(context = Dispatchers.IO){
+                                try{
+                                    reLogin()
+                                }catch (e: Exception){
+                                    e.printStackTrace()
+                                }
+                            }
+                        }else if(!event.isConnected){
+                            // mark re-authentication is required
+                            authenticationRequired = true
+                        }
+                    }
+
+                    networkSubject.onNext(event)
                 }
-            }
-            "session" -> {
-                // GDK 0.45
             }
             "ticker" -> {
                 // UPDATE UI

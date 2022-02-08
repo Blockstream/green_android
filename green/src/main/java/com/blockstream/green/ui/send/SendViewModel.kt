@@ -104,7 +104,7 @@ class SendViewModel @AssistedInject constructor(
             .async()
             .subscribeBy(
                 onNext = { event ->
-                    if (event.connected) {
+                    if (event.isConnected) {
                         checkTransaction()
                     }
                 }

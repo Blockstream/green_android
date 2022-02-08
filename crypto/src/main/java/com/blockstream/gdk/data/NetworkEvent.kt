@@ -4,12 +4,23 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkEvent(
-    @SerialName("connected") val connected: Boolean,
-    @SerialName("heartbeat_timeout") val heartbeatTimeout: Boolean? = null,
-    @SerialName("login_required") val loginRequired: Boolean? = null,
+data class NetworkEvent constructor(
+    @SerialName("current_state") val currentState: String,
+    @SerialName("next_state") val nextState: String? = null,
+    @SerialName("wait_ms") val wait: Long = 0,
+){
 
-    @SerialName("elapsed") val elapsed: Int? = null,
-    @SerialName("limit") val limit: Boolean? = null,
-    @SerialName("waiting") val waiting: Long? = null
-)
+    val isConnected
+        get() = currentState == KEY_CONNECTED
+
+    val waitInSeconds
+        get() = wait / 1000
+
+    companion object{
+        private const val KEY_CONNECTED = "connected"
+        private const val KEY_DISCONNECTED = "disconnected"
+
+        val ConnectedEvent = NetworkEvent(currentState = KEY_CONNECTED, wait = 0)
+        val DisconnectedEvent = NetworkEvent(currentState = KEY_DISCONNECTED, wait = 100)
+    }
+}

@@ -166,18 +166,6 @@
                             android:text="Emulate GDK Events (w/ 7 secs delay)" />
 
                         <Button
-                            android:id="@+id/buttonRequireLoginNotification"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:text="Send Require Login Notification" />
-
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
-
-                        <Button
                             android:id="@+id/buttonDisconnectNotification"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

@@ -128,7 +128,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
-            android:text="@{(vm.torStatus == null || vm.torStatus.progress == 100) ? @string/id_logging_in : @string/id_connecting_through_tor}"
+            android:text="@{(vm.torEvent == null || vm.torEvent.progress == 100) ? @string/id_logging_in : @string/id_connecting_through_tor}"
             tools:text="@string/id_logging_in"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintBottom_toTopOf="@+id/progress"
@@ -273,9 +273,9 @@
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
-            indeterminate="@{(vm.torStatus == null || vm.torStatus.progress == 100) ? true : false}"
+            indeterminate="@{(vm.torEvent == null || vm.torEvent.progress == 100) ? true : false}"
             isInvisible="@{!vm.onProgress}"
-            progress="@{vm.torStatus.progress}"
+            progress="@{vm.torEvent.progress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:progress="75"

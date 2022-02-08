@@ -17,11 +17,10 @@ class KotlinGDK {
     }
 
     fun createSession(): GASession = GDK.create_session()
-    fun destroySession(session: GASession): GASession = GDK.destroy_session(session)
+    fun destroySession(session: GASession) = GDK.destroy_session(session)
 
     fun connect(session: GASession, params: ConnectionParams) = GDK.connect(session, params)
     fun reconnectHint(session: GASession, hint: ReconnectHintParams) = GDK.reconnect_hint(session, hint)
-    fun disconnect(session: GASession) = GDK.disconnect(session)
 
     fun httpRequest(session: GASession, data: JsonElement) = GDK.http_request(session, data)
 

@@ -10,7 +10,6 @@ import kotlinx.serialization.Serializable
 data class ConnectionParams constructor(
     @SerialName("name") val networkName: String,
     @SerialName("use_tor") val useTor: Boolean,
-    @SerialName("log_level") val logLevel: String = "none",
     @SerialName("user_agent") val userAgent: String,
     @SerialName("proxy") val proxy: String,
 

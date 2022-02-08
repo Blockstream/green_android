@@ -2,7 +2,7 @@ package com.blockstream.green.ui.wallet
 
 import android.util.Base64
 import androidx.lifecycle.*
-import com.blockstream.gdk.data.TORStatus
+import com.blockstream.gdk.data.TorEvent
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -42,7 +42,7 @@ class LoginViewModel @AssistedInject constructor(
     var password = MutableLiveData("")
     var watchOnlyPassword = MutableLiveData("")
 
-    val torStatus: MutableLiveData<TORStatus> = MutableLiveData()
+    val torEvent: MutableLiveData<TorEvent> = MutableLiveData()
 
     var actionLogin = MutableLiveData<Boolean>()
 
@@ -97,7 +97,7 @@ class LoginViewModel @AssistedInject constructor(
         session.getTorStatusObservable()
             .async()
             .subscribe {
-                torStatus.value = it
+                torEvent.value = it
             }.addTo(disposables)
 
     }

@@ -10,6 +10,7 @@ import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.Notification
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.QaTesterActivityBinding
 import com.blockstream.green.gdk.SessionManager
@@ -41,6 +42,9 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
 
     @Inject
     lateinit var greenWallet: GreenWallet
+
+    @Inject
+    lateinit var applicationScope: ApplicationScope
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,13 +89,10 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
             Snackbar.make(binding.coordinator, "All sessions was disconnected", Snackbar.LENGTH_SHORT).show()
         }
 
-        binding.buttonRequireLoginNotification.setOnClickListener {
-            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(true, loginRequired = true, waiting = 0))))
-        }
-
         binding.buttonDisconnectNotification.setOnClickListener {
-            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(false, waiting = 7, loginRequired = false))))
-            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(true, loginRequired = false, waiting = 0)), delay = 10))
+            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent.DisconnectedEvent)))
+            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent.ConnectedEvent), delay = 10))
+
         }
 
         binding.buttonCreateCustomNetwork.setOnClickListener {

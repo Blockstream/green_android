@@ -35,7 +35,10 @@ class GreenWallet constructor(
     private val bip39WordList by lazy { wally.bip39Wordlist(BIP39_WORD_LIST_LANG) }
 
     init {
-        gdk.init(JsonConverter(developmentFlavor, !BuildConfig.DEBUG, extraLogger), InitConfig(dataDir.absolutePath))
+        gdk.init(
+            JsonConverter(developmentFlavor, !BuildConfig.DEBUG, extraLogger),
+            InitConfig(datadir = dataDir.absolutePath, logLevel = if (BuildConfig.DEBUG) "debug" else "none")
+        )
         wally.init(0, randomBytes(KotlinWally.WALLY_SECP_RANDOMIZE_LEN))
 
         sharedPreferences.getString(KEY_CUSTOM_NETWORK, null)?.let {
@@ -100,19 +103,13 @@ class GreenWallet constructor(
     }
 
     fun createSession() = gdk.createSession()
-
-    // Destroing a session can be dangerous if of some reason the session is reused. eg in rx thread
-    // fun destroySession(session: GASession) = gdk.destroySession(session)
+    fun destroySession(session: GASession) = gdk.destroySession(session)
 
     fun connect(session: GASession, params: ConnectionParams) {
         gdk.connect(session, params)
     }
 
-    fun reconnectHint(session: GASession) = gdk.reconnectHint(session, ReconnectHintParams())
-
-    fun disconnect(session: GASession) {
-        gdk.disconnect(session)
-    }
+    fun reconnectHint(session: GASession, hint: ReconnectHintParams) = gdk.reconnectHint(session, hint)
 
     fun httpRequest(session: GASession, data: JsonElement) = gdk.httpRequest(session, data) as JsonElement
 

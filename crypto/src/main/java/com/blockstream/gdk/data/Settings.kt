@@ -23,9 +23,8 @@ data class Settings(
 ): GAJson<Settings>() {
     override val encodeDefaultsValues: Boolean = false
 
-    override fun kSerializer(): KSerializer<Settings> {
-        return serializer()
-    }
+    override fun kSerializer() = serializer()
+
 
     val unitKey : String
         get() {

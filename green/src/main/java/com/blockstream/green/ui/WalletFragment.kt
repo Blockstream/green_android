@@ -6,6 +6,7 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
+import com.blockstream.gdk.params.ReconnectHintParams
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
@@ -119,7 +120,9 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                                 networkSnackbar?.setAction(null, null)
                             }else{
                                 networkSnackbar?.setAction(R.string.id_now){
-                                    session.reconnectHint()
+                                    session.reconnectHint(ReconnectHintParams(
+                                        hint = ReconnectHintParams.KEY_CONNECT
+                                    ))
                                     networkSnackbar = null
                                 }
                             }

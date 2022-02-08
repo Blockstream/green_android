@@ -9,7 +9,7 @@ data class Notification(
     @SerialName("block") val block: Block? = null,
     @SerialName("twofactor_reset") val twoFactorReset: TwoFactorReset? = null,
     @SerialName("settings") val settings: Settings? = null,
-    @SerialName("tor") val torStatus: TORStatus? = null,
+    @SerialName("tor") val tor: TorEvent? = null,
     @SerialName("network") val network: NetworkEvent? = null,
     @SerialName("transaction") val transaction: TransactionEvent? = null,
 )
