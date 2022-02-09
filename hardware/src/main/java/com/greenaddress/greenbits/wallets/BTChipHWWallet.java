@@ -166,19 +166,14 @@ public class BTChipHWWallet extends HWWallet {
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
-                                        final List<String> addressTypes,
                                         final boolean useAeProtocol) {
-        final HashSet<String> addrTypes = new HashSet<>(addressTypes);
         try {
             if (useAeProtocol) {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
 
-            final boolean sw = addrTypes.contains("p2wsh") || addrTypes.contains("csv");
-            final boolean p2sh = addrTypes.contains("p2sh");
-
-            if (addrTypes.contains("p2pkh"))
-                throw new RuntimeException("Hardware Wallet cannot sign sweep inputs");
+            final boolean sw = inputs.stream().anyMatch(it -> !it.getAddressType().equals("p2sh"));
+            final boolean p2sh = inputs.stream().anyMatch(it -> it.getAddressType().equals("p2sh"));
 
             // Sanity check on the firmware version, in case devices have been swapped
             if (sw && !mDongle.shouldUseNewSigningApi())
@@ -206,16 +201,11 @@ public class BTChipHWWallet extends HWWallet {
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String, String> transactions,
-                                              final List<String> addressTypes,
                                               final boolean useAeProtocol) {
-        final HashSet<String> addrTypes = new HashSet<>(addressTypes);
         try {
             if (useAeProtocol) {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
-
-            if (addrTypes.contains("p2pkh"))
-                throw new RuntimeException("Hardware Wallet cannot sign sweep inputs");
 
             // Sanity check on the firmware version, in case devices have been swapped
             if (!mDongle.shouldUseNewSigningApi())

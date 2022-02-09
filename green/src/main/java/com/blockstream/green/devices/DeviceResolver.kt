@@ -90,7 +90,6 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
                         requiredData.signingInputs,
                         requiredData.transactionOutputs,
                         requiredData.signingTransactions,
-                        requiredData.signingAddressTypes,
                         requiredData.useAeProtocol ?: false
                     )
                 } else {
@@ -100,7 +99,6 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
                         requiredData.signingInputs,
                         requiredData.transactionOutputs,
                         requiredData.signingTransactions,
-                        requiredData.signingAddressTypes,
                         requiredData.useAeProtocol ?: false
                     )
                 }

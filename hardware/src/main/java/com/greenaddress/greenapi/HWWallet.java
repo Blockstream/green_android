@@ -101,14 +101,12 @@ public abstract class HWWallet {
                                                  final List<InputOutput> inputs,
                                                  final List<InputOutput> outputs,
                                                  final Map<String,String> transactions,
-                                                 final List<String> addressTypes,
                                                  final boolean useAeProtocol);
 
     public abstract SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
                                                        final List<InputOutput> inputs,
                                                        final List<InputOutput> outputs,
                                                        final Map<String,String> transactions,
-                                                       final List<String> addressTypes,
                                                        final boolean useAeProtocol);
 
     public abstract String getMasterBlindingKey(final HWWalletBridge parent);

@@ -104,7 +104,6 @@ public class TrezorHWWallet extends HWWallet {
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
-                                        final List<String> addressTypes,
                                         final boolean useAeProtocol)
     {
         try {
@@ -112,7 +111,7 @@ public class TrezorHWWallet extends HWWallet {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
 
-            return signTransactionImpl(parent, tx, inputs, outputs, transactions, addressTypes);
+            return signTransactionImpl(parent, tx, inputs, outputs, transactions);
         } finally {
             // Free all wally txs to ensure we don't leak any memory
             for (Map.Entry<String, Object> entry : mPrevTxs.entrySet()) {
@@ -127,7 +126,6 @@ public class TrezorHWWallet extends HWWallet {
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String, String> transactions,
-                                              final List<String> addressTypes,
                                               final boolean useAeProtocol) {
         return null;
     }
@@ -135,8 +133,7 @@ public class TrezorHWWallet extends HWWallet {
     private SignTxResult signTransactionImpl(final HWWalletBridge parent, final ObjectNode tx,
                                              final List<InputOutput> inputs,
                                              final List<InputOutput> outputs,
-                                             final Map<String, String> transactions,
-                                             final List<String> addressTypes)
+                                             final Map<String, String> transactions)
     {
         final String[] signatures = new String[inputs.size()];
 

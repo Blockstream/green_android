@@ -234,13 +234,9 @@ public class JadeHWWallet extends HWWallet {
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
-                                        final List<String> addressTypes,
                                         final boolean useAeProtocol) {
         Log.d(TAG, "signTransaction() called for " + inputs.size() + " inputs");
         try {
-            if (addressTypes.contains("p2pkh")) {
-                throw new RuntimeException("Hardware Wallet cannot sign sweep inputs");
-            }
             if (transactions == null || transactions.isEmpty()) {
                 throw new RuntimeException("Input transactions missing");
             }
@@ -376,14 +372,9 @@ public class JadeHWWallet extends HWWallet {
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String,String> transactions,
-                                              final List<String> addressTypes,
                                               final boolean useAeProtocol) {
         Log.d(TAG, "signLiquidTransaction() called for " + inputs.size() + " inputs");
         try {
-            if (addressTypes.contains("p2pkh")) {
-                throw new RuntimeException("Hardware Wallet cannot sign sweep inputs");
-            }
-
             final int combinedSize = inputs.size() + outputs.size();
             final List<byte[]> inputPrevouts = new ArrayList<>(2*inputs.size());
             final List<Long> values = new ArrayList<>(combinedSize);

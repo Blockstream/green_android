@@ -12,7 +12,6 @@ data class DeviceRequest(
     @SerialName("path") val path: List<Int>,
     @SerialName("message") val message: String,
     @SerialName("transaction") val transaction: JsonElement,
-    @SerialName("signing_address_types") val signingAddressTypes: List<String>,
 
     // TODO InputOutputData
     @SerialName("signing_inputs") val signingInputs: List<JsonElement>,

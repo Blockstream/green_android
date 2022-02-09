@@ -22,7 +22,6 @@ data class DeviceRequiredData constructor(
     @SerialName("signing_inputs") val signingInputs: List<InputOutput>? = null,
     @SerialName("transaction_outputs") val transactionOutputs: List<InputOutput>? = null,
     @SerialName("signing_transactions") val signingTransactions: Map<String, String>? = null,
-    @SerialName("signing_address_types") val signingAddressTypes: List<String>? = null,
 
     @SerialName("scripts") val scripts: List<String>? = null,
     @SerialName("public_keys") val publicKeys: List<String>? = null,
