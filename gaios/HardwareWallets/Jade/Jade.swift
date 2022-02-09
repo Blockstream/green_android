@@ -326,7 +326,7 @@ final class Jade: JadeChannel, HWProtocol {
                 if let addressType = output["address_type"] as? String, addressType == "csv" {
                     csvBlock = output["subtype"] as? Int  ?? 0
                 }
-                return TxChangeOutput(path: output["user_path"] as? [UInt32] ?? [], recoveryxpub: output["service_xpub"] as? String ?? "", csvBlocks: csvBlock)
+                return TxChangeOutput(path: output["user_path"] as? [UInt32] ?? [], recoveryxpub: output["recovery_xpub"] as? String ?? "", csvBlocks: csvBlock)
             }
     }
 
