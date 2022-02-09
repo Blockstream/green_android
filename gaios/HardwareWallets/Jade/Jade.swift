@@ -146,11 +146,8 @@ final class Jade: JadeChannel, HWProtocol {
     }
 
     // swiftlint:disable:next function_parameter_count
-    func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
-        if addressTypes.contains("p2pkh") {
-            return Observable.error(JadeError.Abort("Hardware Wallet cannot sign sweep inputs"))
-        }
         if transactions.isEmpty {
             return Observable.error(JadeError.Abort("Input transactions missing"))
         }
@@ -547,11 +544,7 @@ extension Jade {
     }
 
     // swiftlint:disable:next function_parameter_count
-    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
-
-        if addressTypes.contains("p2pkh") {
-            return Observable.error(JadeError.Abort("Hardware Wallet cannot sign sweep inputs"))
-        }
+    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         let txInputs = inputs.map { input -> TxInputLiquid? in
             let swInput = !(input["address_type"] as? String == "p2sh")

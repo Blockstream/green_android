@@ -10,7 +10,7 @@ final class Ledger: LedgerCommands, HWProtocol {
 
     // swiftlint:disable:next function_parameter_count
     func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],
-                         transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+                         transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
         return signSW(tx: tx, inputs: inputs, outputs: outputs)
             .compactMap { sigs in
                 return ["signatures": sigs, "signer_commitments": []]
@@ -127,7 +127,7 @@ final class Ledger: LedgerCommands, HWProtocol {
     }
 
     // swiftlint:disable:next function_parameter_count
-    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
         return Observable.error(JadeError.Abort(""))
     }
 

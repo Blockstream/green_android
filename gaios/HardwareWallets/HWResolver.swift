@@ -100,7 +100,6 @@ class HWResolver {
             let tx = params["transaction"] as? [String: Any]
             let signingInputs = params["signing_inputs"] as? [[String: Any]]
             let txOutputs = params["transaction_outputs"] as? [[String: Any]]
-            let signingAddressTypes = params["signing_address_types"] as? [String]
             let signingTxs = params["signing_transactions"] as? [String: String]
             let useAeProtocol = params["use_ae_protocol"] as? Bool
             let account = AccountsManager.shared.current
@@ -109,9 +108,9 @@ class HWResolver {
             _ = Observable.just(hw)
                 .flatMap { hw -> Observable<[String: Any]> in
                     if account?.gdkNetwork?.liquid ?? false {
-                        return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
+                        return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], useAeProtocol: useAeProtocol ?? false)
                     }
-                    return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
+                    return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], useAeProtocol: useAeProtocol ?? false)
                 }.subscribe(onNext: { res in
                     seal.fulfill(res)
                     Ledger.shared.TIMEOUT = 30

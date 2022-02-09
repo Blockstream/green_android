@@ -19,7 +19,6 @@ protocol HWProtocol {
                          inputs: [[String: Any]],
                          outputs: [[String: Any]],
                          transactions: [String: String],
-                         addressTypes: [String],
                          useAeProtocol: Bool) -> Observable<[String: Any]>
 
     // swiftlint:disable:next function_parameter_count
@@ -35,6 +34,5 @@ protocol HWProtocol {
                                inputs: [[String: Any]],
                                outputs: [[String: Any]],
                                transactions: [String: String],
-                               addressTypes: [String],
                                useAeProtocol: Bool) -> Observable<[String: Any]>
 }
