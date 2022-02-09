@@ -223,7 +223,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     }
 
     private fun updateMenu(){
-        menuHelp?.isVisible = !wallet.isHardware && !viewModel.wallet.isWatchOnly && (viewModel.pinCredentials.value == null && viewModel.passwordCredentials.value == null)
+        menuHelp?.isVisible = !wallet.isHardware && !viewModel.wallet.isWatchOnly && viewModel.pinCredentials.isReadyAndNull && viewModel.passwordCredentials.isReadyAndNull
         menuRename?.isVisible = !wallet.isHardware
         menuDelete?.isVisible = !wallet.isHardware
     }

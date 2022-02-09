@@ -131,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:enabled="@{!vm.isBumpOrSweep}"
+                android:enabled="@{!vm.isBumpOrSweep &amp;&amp; liveData.assetBip21 == false}"
                 android:hint="@{vm.session.network.isLiquid ? @string/id_asset : @string/id_coin}"
                 app:endIconDrawable="@drawable/ic_baseline_arrow_drop_down_24"
                 app:endIconMode="custom"
@@ -196,7 +196,7 @@
                     style="@style/Widget.Green.Button.Outlined.Tiny"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:enabled="@{!ExtensionsKt.isBlank(liveData.assetId) &amp;&amp; assetSatoshi != 0}"
+                    android:enabled="@{!ExtensionsKt.isBlank(liveData.assetId) &amp;&amp; assetSatoshi != 0 &amp;&amp; liveData.amountBip21 == false}"
                     android:paddingEnd="16dp"
                     android:text="@string/id_send_all_funds" />
 

@@ -354,8 +354,7 @@ class SendViewModel @AssistedInject constructor(
     }
 
     // This method helps between differences between multisig/singlesig returned values
-    private fun getSendAmountCompat(recipient: AddressParamsLiveData, tx: CreateTransaction) =
-        if (tx.isSendAll && session.isElectrum) tx.addressees[recipient.index].satoshi else tx.satoshi[recipient.assetId.value]
+    private fun getSendAmountCompat(index: Int, assetId: String, tx: CreateTransaction) = if (session.isElectrum && tx.isSendAll) tx.addressees[index].satoshi else tx.satoshi[assetId]
 
     var pendingCheck = false
     var isCheckingTransaction = AtomicBoolean(false)
@@ -412,8 +411,9 @@ class SendViewModel @AssistedInject constructor(
                             if(!assetId.isPolicyAsset(session)){
                                 recipient.isFiat.postValue(false)
                             }
+
                             recipient.amount.postValue(
-                                getSendAmountCompat(recipient, tx)
+                                getSendAmountCompat(recipient.index, assetId, tx)
                                     ?.toAmountLook(
                                         session = session,
                                         assetId = assetId,
@@ -548,7 +548,7 @@ class SendViewModel @AssistedInject constructor(
             val amountToConvert = if(checkedTransaction?.isSendAll == true){
                 addressParams.assetId.value?.let { assetId ->
                     checkedTransaction?.let {
-                        getSendAmountCompat(addressParams, it)
+                        getSendAmountCompat(addressParams.index, assetId, it)
                     }
                     ?.toAmountLook(session, assetId = assetId , withUnit = false, withMinimumDigits = false, withGrouping = false)
                 }

@@ -10,6 +10,7 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.gdk.*
+import com.blockstream.green.lifecycle.PendingLiveData
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
@@ -35,8 +36,8 @@ class LoginViewModel @AssistedInject constructor(
 
     var biometricsCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
     var keystoreCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
-    var pinCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
-    var passwordCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
+    var pinCredentials: PendingLiveData<LoginCredentials> = PendingLiveData()
+    var passwordCredentials: PendingLiveData<LoginCredentials> = PendingLiveData()
 
     var password = MutableLiveData("")
     var watchOnlyPassword = MutableLiveData("")
@@ -86,10 +87,10 @@ class LoginViewModel @AssistedInject constructor(
                 },
                 onNext = {
                     loginCredentialsInitialized = true
-                    biometricsCredentials.postValue(it.biometrics)
-                    keystoreCredentials.postValue(it.keystore)
-                    pinCredentials.postValue(it.pin)
-                    passwordCredentials.postValue(it.password)
+                    biometricsCredentials.value = it.biometrics
+                    keystoreCredentials.value = it.keystore
+                    pinCredentials.value = it.pin
+                    passwordCredentials.value = it.password
                 }
             ).addTo(disposables)
 

@@ -1,33 +1,13 @@
 package com.blockstream.green.utils
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.annotation.IdRes
-import androidx.annotation.MenuRes
-import androidx.appcompat.widget.PopupMenu
-import androidx.biometric.BiometricPrompt
-import androidx.core.app.ShareCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
-import com.blockstream.green.gdk.isConnectionError
-import com.blockstream.green.gdk.isNotAuthorized
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
-import java.util.*
 
 
 fun <T> Fragment.getNavigationResult(key: String = "result") =
@@ -58,7 +38,9 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     val navOptionsBuilder = optionsBuilder ?: NavOptions.Builder()
 
     // Don't animate on overview change
-    val animate = !(navController.currentDestination?.id == R.id.overviewFragment && resId == R.id.action_global_overviewFragment)
+    val animate =
+        !(navController.currentDestination?.id == R.id.overviewFragment && resId == R.id.action_global_overviewFragment)
+                && !(navController.currentDestination?.id == R.id.loginFragment && (resId == R.id.action_global_loginFragment || resId == R.id.action_loginFragment_self))
 
     if (animate) {
         navOptionsBuilder.setEnterAnim(R.anim.nav_enter_anim)
@@ -68,11 +50,11 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     }
 
     if (isLogout || resId == R.id.action_global_overviewFragment) {
-        if(navController.backStack.isNotEmpty()) {
-            navOptionsBuilder.setPopUpTo(navController.backStack.first.destination.id, true)
+        navController.backStack.firstOrNull()?.let {
+            navOptionsBuilder.setPopUpTo(it.destination.id, true)
         }
         navOptionsBuilder.setLaunchSingleTop(true) // this is only needed on lateral movements
-    } else if (resId == R.id.action_global_loginFragment) {
+    } else if (resId == R.id.action_global_loginFragment || resId == R.id.action_loginFragment_self) {
         // Allow only one Login screen
         navOptionsBuilder.setLaunchSingleTop(true)
     }else if (resId == R.id.action_global_addWalletFragment){

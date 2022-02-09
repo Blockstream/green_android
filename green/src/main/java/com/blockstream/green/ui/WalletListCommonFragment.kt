@@ -4,11 +4,13 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.blockstream.DeviceBrand
 import com.blockstream.green.NavGraphDirections
+import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.WalletListCommonBinding
-import com.blockstream.DeviceBrand
 import com.blockstream.green.ui.items.DeviceBrandListItem
 import com.blockstream.green.ui.items.WalletListItem
 import com.blockstream.green.ui.wallet.LoginFragmentDirections
@@ -81,9 +83,13 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         val walletSession = sessionManager.getWalletSession(wallet)
 
         if(walletSession.isConnected){
-            navigate(LoginFragmentDirections.actionGlobalOverviewFragment(wallet))
+            navigate(NavGraphDirections.actionGlobalOverviewFragment(wallet))
         }else{
-            navigate(NavGraphDirections.actionGlobalLoginFragment(wallet = wallet, autoLogin = true))
+            if(findNavController().currentDestination?.id == R.id.loginFragment){
+                navigate(LoginFragmentDirections.actionLoginFragmentSelf(wallet = wallet, autoLogin = true))
+            }else{
+                navigate(NavGraphDirections.actionGlobalLoginFragment(wallet = wallet, autoLogin = true))
+            }
         }
     }
 }
