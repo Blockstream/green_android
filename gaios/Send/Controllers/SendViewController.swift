@@ -113,8 +113,6 @@ class SendViewController: KeyboardViewController {
                 recipient.amount = amount
             }
             recipient.txError = transaction?.error ?? ""
-            recipient.fee = transaction?.fee
-            recipient.feeRate = transaction?.feeRate
         }
 
         recipient.assetId = isBtc ? "btc" : nil
@@ -258,8 +256,6 @@ class SendViewController: KeyboardViewController {
 
     func bindRecipients() {
         recipients.first?.txError = self.transaction?.error ?? ""
-        recipients.first?.fee = self.transaction?.fee
-        recipients.first?.feeRate = self.transaction?.feeRate
         recipients.first?.satoshi = self.transaction?.satoshi
         recipients.first?.assetId = isLiquid ? self.transaction?.addressees.first?.assetId : "btc"
         recipients.first?.amounts = self.transaction?.amounts
@@ -328,7 +324,9 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case SendSection.fee.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeEditCell") as? FeeEditCell {
-                cell.configure(recipient: recipients[indexPath.row],
+                cell.configure(fee: self.transaction?.fee,
+                               feeRate: self.transaction?.feeRate,
+                               txError: self.transaction?.error,
                                transactionPriority: self.transactionPriority)
                 cell.delegate = self
                 cell.selectionStyle = .none

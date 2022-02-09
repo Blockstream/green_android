@@ -28,7 +28,9 @@ class FeeEditCell: UITableViewCell {
     @IBOutlet weak var lblTipHigh: UILabel!
     @IBOutlet weak var lblInvalidFee: UILabel!
 
-    var recipient: Recipient?
+    var fee: UInt64?
+    var feeRate: UInt64?
+    var txError: String?
     var transactionPriority: TransactionPriority?
     weak var delegate: FeeEditCellDelegate?
 
@@ -66,10 +68,14 @@ class FeeEditCell: UITableViewCell {
         lblTipCustom.textColor = .white
     }
 
-    func configure(recipient: Recipient,
+    func configure(fee: UInt64?,
+                   feeRate: UInt64?,
+                   txError: String?,
                    transactionPriority: TransactionPriority
     ) {
-        self.recipient = recipient
+        self.fee = fee
+        self.feeRate = feeRate
+        self.txError = txError
         lblFeeValue.isHidden = true
         lblFeeRate.isHidden = true
         lblFeeFiat.isHidden = true
@@ -89,7 +95,7 @@ class FeeEditCell: UITableViewCell {
             lblTipCustom.textColor = UIColor.customMatrixGreen()
         }
 
-        if (recipient.txError.isEmpty || recipient.txError == "id_invalid_replacement_fee_rate"), let fee = recipient.fee, let feeRate = recipient.feeRate {
+        if ((txError ?? "").isEmpty || txError == "id_invalid_replacement_fee_rate"), let fee = fee, let feeRate = feeRate {
             if let balance = Balance.convert(details: ["satoshi": fee]) {
                 let (amount, denom) = balance.get(tag: btc)
                 lblFeeValue.text = "\(amount ?? "") \(denom)"
@@ -101,7 +107,7 @@ class FeeEditCell: UITableViewCell {
                 lblFeeFiat.isHidden = false
             }
         }
-        lblInvalidFee.isHidden = !(recipient.txError == "id_invalid_replacement_fee_rate")
+        lblInvalidFee.isHidden = !(txError == "id_invalid_replacement_fee_rate")
     }
 
     func setPriority(_ switchIndex: Int) {
