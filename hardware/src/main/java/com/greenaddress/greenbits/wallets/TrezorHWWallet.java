@@ -334,7 +334,7 @@ public class TrezorHWWallet extends HWWallet {
                .addAllAddressN(in.getUserPathAsInts())
                .setMultisig(makeRedeemScript(parent, in));
 
-        if (in.getScriptType() == 14 || in.getScriptType() == 15)
+        if (in.getAddressType().equals("p2wsh") || in.getAddressType().equals("csv"))
             return txin.setScriptType(TrezorType.InputScriptType.SPENDP2SHWITNESS)
                    .setAmount(in.getSatoshi());
         return txin.setScriptType(TrezorType.InputScriptType.SPENDMULTISIG);
