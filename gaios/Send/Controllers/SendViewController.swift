@@ -244,7 +244,7 @@ class SendViewController: KeyboardViewController {
         }.finally {
             self.hideIndicator()
             self.updateBtnNext()
-            self.bindRecipients()
+            self.bindRecipients(tx: self.transaction)
             let vc = self.tableView.visibleCells
             vc.forEach({ item in
                 if let cell = item as? RecipientCell {
@@ -258,24 +258,28 @@ class SendViewController: KeyboardViewController {
         DropAlert().error(message: msg)
     }
 
-    func bindRecipients() {
-        recipients.first?.txError = self.transaction?.error ?? ""
-        recipients.first?.assetId = isLiquid ? self.transaction?.addressees.first?.assetId : "btc"
+    func bindRecipients(tx: Transaction?) {
+        let addreessee = tx?.addressees.first
+        var value = addreessee?.satoshi ?? 0
+        let asset =  isLiquid ? addreessee?.assetId ?? "" : "btc"
+        recipients.first?.txError = tx?.error ?? ""
+        recipients.first?.assetId = asset
 
-        if let asset = recipients.first?.assetId {
-            if asset == "btc" {
-                if let satoshi = self.transaction?.satoshi, let balance = Balance.convert(details: ["satoshi": satoshi]) {
-                    let (value, _) = satoshi == 0 ? ("", "") : balance.get(tag: btc)
-                    recipients.first?.amount = value ?? ""
-                }
-            } else {
-                let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-                if let amounts = self.transaction?.amounts, let satoshi = amounts[asset], let assetInfo = info.encode() {
-                    let details = ["satoshi": satoshi, "asset_info": assetInfo] as [String: Any]
-                    if let balance = Balance.convert(details: details) {
-                        let (amount, _) = satoshi == 0 ? ("", "") : balance.get(tag: asset)
-                        recipients.first?.amount = amount ?? ""
-                    }
+        if tx?.sendAll ?? false {
+            value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
+        }
+        if asset == "btc" {
+            if let balance = Balance.convert(details: ["satoshi": value]) {
+                let (value, _) = value == 0 ? ("", "") : balance.get(tag: btc)
+                recipients.first?.amount = value ?? ""
+            }
+        } else {
+            let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+            if let assetInfo = info.encode() {
+                let details = ["satoshi": value, "asset_info": assetInfo] as [String: Any]
+                if let balance = Balance.convert(details: details) {
+                    let (amount, _) = value == 0 ? ("", "") : balance.get(tag: asset)
+                    recipients.first?.amount = amount ?? ""
                 }
             }
         }
