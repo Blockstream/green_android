@@ -6,8 +6,7 @@ class Recipient: Codable {
     var assetId: String?
     var isFiat: Bool = false
     var txError = ""
-    var satoshi: UInt64?
-    var amounts: [String: UInt64]?
+
     var isSendAll: Bool = false
 
     private var asset: AssetInfo? {

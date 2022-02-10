@@ -262,7 +262,7 @@ class RecipientCell: UITableViewCell {
             updateAmountTextField()
         }
 
-        if let satoshi = recipient?.satoshi, (recipient?.txError ?? "").isEmpty, let asset = recipient?.assetId {
+        if let satoshi = getSatoshi(), (recipient?.txError ?? "").isEmpty, let asset = recipient?.assetId {
             if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
                 lblAmountExchange.isHidden = false
                 if let balance = Balance.convert(details: ["satoshi": satoshi]) {
@@ -273,41 +273,8 @@ class RecipientCell: UITableViewCell {
         }
     }
 
-    func updateUIBipAddress() {
-        if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
-            iconAsset.image = UIImage(named: "default_asset_icon")
-            lblAssetName.text = NSLocalizedString("id_asset", comment: "")
-            lblCurrency.text = ""
-            lblAvailableFunds.text = ""
-            amountTextField.text = ""
-        } else {
-            iconAsset.image = Registry.shared.image(for: recipient?.assetId)
-            lblAssetName.text = getDenomination()
-            lblCurrency.text = getDenomination()
-            lblAvailableFunds.text = getBalance()
-            updateAmountTextField()
-        }
-    }
-
     func updateAmountTextField() {
-        amountTextField.text = ""
-        if let asset = recipient?.assetId {
-            if asset == "btc" {
-                if let satoshi = recipient?.satoshi, let balance = Balance.convert(details: ["satoshi": satoshi]) {
-                    let (value, _) = satoshi == 0 ? ("", "") : balance.get(tag: btc)
-                    amountTextField.text = value ?? ""
-                }
-            } else {
-                let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-                if let amounts = recipient?.amounts, let satoshi = amounts[asset], let assetInfo = info.encode() {
-                    let details = ["satoshi": satoshi, "asset_info": assetInfo] as [String: Any]
-                    if let balance = Balance.convert(details: details) {
-                        let (amount, _) = satoshi == 0 ? ("", "") : balance.get(tag: asset)
-                        amountTextField.text = amount ?? ""
-                    }
-                }
-            }
-        }
+        amountTextField.text = recipient?.amount
     }
 
     func getBalance() -> String {

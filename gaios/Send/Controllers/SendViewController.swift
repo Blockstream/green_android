@@ -37,6 +37,10 @@ class SendViewController: KeyboardViewController {
         }
     }
 
+    private var btc: String {
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+    }
+
     private var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
         guard let estimates = getFeeEstimates() else {
@@ -256,9 +260,25 @@ class SendViewController: KeyboardViewController {
 
     func bindRecipients() {
         recipients.first?.txError = self.transaction?.error ?? ""
-        recipients.first?.satoshi = self.transaction?.satoshi
         recipients.first?.assetId = isLiquid ? self.transaction?.addressees.first?.assetId : "btc"
-        recipients.first?.amounts = self.transaction?.amounts
+
+        if let asset = recipients.first?.assetId {
+            if asset == "btc" {
+                if let satoshi = self.transaction?.satoshi, let balance = Balance.convert(details: ["satoshi": satoshi]) {
+                    let (value, _) = satoshi == 0 ? ("", "") : balance.get(tag: btc)
+                    recipients.first?.amount = value ?? ""
+                }
+            } else {
+                let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+                if let amounts = self.transaction?.amounts, let satoshi = amounts[asset], let assetInfo = info.encode() {
+                    let details = ["satoshi": satoshi, "asset_info": assetInfo] as [String: Any]
+                    if let balance = Balance.convert(details: details) {
+                        let (amount, _) = satoshi == 0 ? ("", "") : balance.get(tag: asset)
+                        recipients.first?.amount = amount ?? ""
+                    }
+                }
+            }
+        }
     }
 
     override func keyboardWillShow(notification: Notification) {
