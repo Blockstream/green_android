@@ -20,6 +20,7 @@
 "id_6_months_25920_blocks" = "6 месяцев (25920 блоков)";
 "id_a_2of3_account_requires_two_out" = "Аккаунт 2из3 требует двух подписей из трех, чтобы тратить монеты. Третья подпись - это резервный ключ, известный только вам. Это дает вам преимущества безопасности стандартной учетной записи, в то же время позволяя вам перемещать свои монеты независимо в любой момент времени.";
 "id_a_new_transaction_has_just" = "Новая транзакция только что поступила на ваш кошелек.";
+"id_a_newer_version_of_blockstream" = "A newer version of Blockstream Green is now available";
 "id_a_screen_lock_must_be_enabled" = "Блокировка экрана должна быть включена в настройках Android";
 "id_a_wallet_is_detected_on_this" = "На этом устройстве обнаружен кошелек:";
 "id_about" = "О";
@@ -29,8 +30,10 @@
 "id_account_id" = "ID аккаунта";
 "id_account_name" = "Имя учетной записи";
 "id_account_type" = "Тип учетной записи";
+"id_accounts" = "Accounts";
 "id_accounts_summary" = "Сводка по счетам";
 "id_action_canceled" = "Действие отменено";
+"id_actions" = "Actions";
 "id_add_a_note_only_you_can_see_it" = "Добавить заметку (будет видна только вам)";
 "id_add_a_pgp_public_key_to_receive" = "Добавить PGP ключ для получения электронной почты в зашифрованном виде и сохранения приватности";
 "id_add_amount" = "Добавить сумму";
@@ -54,6 +57,8 @@
 "id_advanced_options_for_your_third" = "Расширенные параметры для вашего третьего ключа восстановления";
 "id_all" = "Все";
 "id_all_assets" = "All Assets";
+"id_all_coins" = "All coins";
+"id_all_networks" = "All networks";
 "id_all_of_the_accounts_in_your" = "Перед удалением все аккаунты в вашем кошельке должны быть пустыми.";
 "id_all_the_coins_received_or" = "Все монеты, полученные или созданные в качестве сдачи.";
 "id_all_wallets" = "Все кошельки";
@@ -64,8 +69,12 @@
 "id_amp_account" = "Учетная запись AMP";
 "id_amp_accounts_are_only_available" = "Учетные записи AMP доступны только в кошельках Liquid. Для получения актива AMP от вас может потребоваться предоставить идентификатор вашей учетной записи эмитентам.";
 "id_amp_id" = "AMP ID";
+"id_amp_wallet" = "AMP Wallet";
 "id_another_2fa_method_is_already" = "Другой метод 2FA уже активен. Подтвердите через 2FA, что вы разрешаете это изменение.";
 "id_app_settings" = "Настройки приложения";
+"id_archive" = "Archive";
+"id_archived" = "Archived";
+"id_archived_accounts" = "Archived Accounts";
 "id_are_you_sure_you_want_to_view" = "Вы уверены, что хотите просмотреть транзакцию, используя %@?";
 "id_as_easy_as_snapping_a_photo" = "Просто, как сделать снимок с помощью телефона. Если у вас есть кошелек, отсканируйте фразу восстановления в настройках.";
 "id_asset" = "Актив";
@@ -74,6 +83,7 @@
 "id_asset_id" = "ID актива";
 "id_asset_name" = "Наименование актива";
 "id_assets" = "Активы";
+"id_assets_cannot_be_used_on_bitcoin" = "Assets cannot be used on Bitcoin";
 "id_attempts_remaining_d" = "Осталось попыток: %d";
 "id_authenticate_to_view_the" = "Выполните аутентификацию, чтобы просмотреть фразу восстановления";
 "id_authentication_error_s" = "Authentication error: %@";
@@ -84,6 +94,7 @@
 "id_auto_logout_timeout" = "Автоматический выход";
 "id_auto_logout_timeout_expired" = "Auto logout timeout expired";
 "id_autolock_after" = "Автоматическая блокировка";
+"id_available" = "Available";
 "id_back" = "Назад";
 "id_back_up_recovery_phrase" = "Бэкап фразы восстановления";
 "id_backup_the_recovery_mnemonic" = "Сделайте резервную копию мнемоники восстановления и восстановления xpub, чтобы восстановить средства со своей учетной записи 2из3.";
@@ -95,6 +106,7 @@
 "id_biometrics_authentication" = "Biometrics Authentication";
 "id_bip49_accounts_allow_you_to" = "Учетные записи BIP49 позволяют разделять средства и получать их на SegWit адреса, обеспечивая тем самым высочайшую обратную совместимость при получении средств от кого-либо в сети.";
 "id_bip84_accounts_allow_you_to" = "Учетные записи BIP84 позволяют разделять ваши средства и получать их на собственные SegWit адреса в формате bech32. Этот тип счета обеспечивает более дешевые транзакции при отправке средств, но пока не все сервисы поддерживают адреса в формате bech32.";
+"id_bitcoin_and_liquid" = "Bitcoin and Liquid";
 "id_bitcoin_denomination" = "Деноминация биткоина";
 "id_bitcoin_electrum_server" = "Electrum-сервер для Bitcoin";
 "id_bitcoin_is_the_worlds_leading" = "Bitcoin - ведущая в мире сеть криптовалют P2P. Выберите, чтобы отправлять и получать биткоины.";
@@ -105,11 +117,13 @@
 "id_block_height_1d" = "Высота блока: %1$d";
 "id_blocks" = "блоки";
 "id_blocks_confirmed" = "подтвержденные блоки";
+"id_blockstream_devices" = "Blockstream Devices";
 "id_blockstream_does_not_have" = "Blockstream не имеет доступа к сохраненной копии вашего кошелька и не сможет помочь вам в случае его утери ";
 "id_blockstream_green_needs_access" = "Blockstream Green необходим доступ к Bluetooth для подключения к аппаратным кошелькам. Данные о местоположении не используются и не хранятся компанией Blockstream.";
 "id_blockstream_green_supports_both" = "Blockstream Green поддерживает как Bitcoin, так и Liquid Network. Не волнуйтесь, вы можете создать еще один кошелек для другой сети в любое время.";
 "id_blockstream_greennsimple_and" = "Blockstream Green:\nПросто и безопасно";
 "id_blockstream_store" = "Магазин Blockstream";
+"id_bluetooth" = "Bluetooth";
 "id_btchip_is_not_set_up_please_set" = "BTChip не установлен. Для того, чтобы использовать BTChip, пожалуйста, установите десктоп-приложение.";
 "id_by_proceeding_to_the_next_steps" = "Переходя к следующему шагу, вы соглашаетесь с %@";
 "id_cable" = "Кабель";
@@ -149,6 +163,7 @@
 "id_coins_locked" = "Монеты заблокированы";
 "id_coins_protected_by_the_legacy" = "Монеты, защищенные устаревшим скриптом, могут быть восстановлены с помощью вашего файла nlocktimes.zip.";
 "id_coins_protected_by_the_new" = "Монеты защищены новым скриптом со встроенным истечением срока действия 2FA через CheckSequenceVerify.";
+"id_coins_received_or_created" = "Coins received or created before SegWit was activated.";
 "id_coins_unlocked" = "Монеты разблокированы";
 "id_coins_whose_asset_and_amount" = "Монеты, актив и количество которых публично видны.";
 "id_coins_with_a_value_lower_than" = "Монеты стоимостью менее 1092 сатоши, которые невыгодно тратить; Эти монеты могут быть созданы вашим кошельком в качестве сдачи или отправлены вам третьими лицами, пытающимися спамить или деанонимизировать ваш кошелек.";
@@ -221,6 +236,8 @@
 "id_d_asset_in_this_account" = "%d актив на этом аккаунте";
 "id_d_assets" = "%d активы";
 "id_d_assets_in_this_account" = "%d активов на этом аккаунте";
+"id_d_coins_selected" = "%d coins selected";
+"id_d_words" = "%d words";
 "id_data_directory" = "Каталог данных";
 "id_date" = "Дата";
 "id_day" = "день";
@@ -274,6 +291,7 @@
 "id_enable_spv" = "Включить SPV";
 "id_enable_spv_and_modify_spv" = "Включить SPV и изменить настройки SPV";
 "id_enable_testnet" = "Включить тестнет";
+"id_enable_testnet_in_app_settings" = "Enable testnet in app settings to use Jade";
 "id_enable_touch_id" = "Включить Touch ID";
 "id_enable_twofactor_authentication" = "Включить двухфакторную аутентификацию для защиты средств и критически важных настроек от несанкционированного доступа ";
 "id_enabled" = "Включено";
@@ -408,6 +426,7 @@
 "id_insufficient_lbtc_to_send_a" = "Недостаточно L-BTC для отправки транзакции. В Liquid L-BTC необходимы для оплаты комиссии за транзакцию. Сгенерируйте адрес для получения L-BTC";
 "id_invalid_address" = "Невалидный адрес";
 "id_invalid_amount" = "Недопустимая сумма";
+"id_invalid_asset_id" = "Invalid Asset ID";
 "id_invalid_clipboard_contents" = "Неверное содержимое буфера обмена";
 "id_invalid_merkle_proof" = "Invalid Merkle proof";
 "id_invalid_mnemonic" = "Недопустимая мнемоническая фраза";
@@ -433,12 +452,14 @@
 "id_issuer_domain_s" = "Домен эмитента: %@";
 "id_it_looks_like_you_have_no" = "Похоже, у вас нет кошельков. Щелкните ниже, чтобы его добавить.";
 "id_jade_unlocked" = "Jade разблокирован";
+"id_jade_was_initialized_for_testnet" = "Jade was initialized for testnet";
 "id_just_a_few_more_steps_to_get" = "Еще несколько шагов для настройки.";
 "id_label" = "Метка";
 "id_language" = "Язык";
 "id_last_attempt_if_failed_you_will" = "Последняя попытка: в случае неудачи вам придется восстановить свой кошелек с помощью фразы восстановления.";
 "id_last_ping_1d_ms" = "Последний сигнал: %1$d мс";
 "id_later" = "ПОЗЖЕ";
+"id_latest_transactions" = "Latest transactions";
 "id_lbtc_has_no_issuer_and_is" = "L-BTC не имеет эмитента и вместо этого создается в сети посредством привязки.";
 "id_learn_more" = "Узнать больше";
 "id_learn_more_about_s" = "Узнать больше о %@.";
@@ -451,8 +472,9 @@
 "id_liquid_electrum_server" = "Сервер Liquid Electrum";
 "id_liquid_is_a_sidechainbased" = "Liquid - это расчетная сеть на основе сайдчейна для трейдеров и бирж, позволяющая осуществлять более быстрые и конфиденциальные биткоин-транзакции и выпуск цифровых активов.";
 "id_liquid_securities" = "Ценные бумаги Liquid";
-"id_liquid_testnet_electrum_server" = "Liquid Testnet Electrum Server";
+"id_liquid_testnet_electrum_server" = "Liquid Testnet Electrum server";
 "id_liquid_testnet_wallets" = "Кошельки Liquid Testnet";
+"id_liquid_wallet" = "Liquid Wallet";
 "id_liquid_wallets" = "Liquid-кошельки";
 "id_loading" = "Загрузка";
 "id_loading_accounts" = "Загрузка аккаунтов…";
@@ -490,6 +512,7 @@
 "id_managed_assets" = "Managed Assets";
 "id_managed_assets_account" = "Аккаунт Managed Assets";
 "id_managed_assets_accounts_are" = "Аккаунты с управляемыми активами доступны только на кошельках Liquid. Для получения Managed Asset может потребоваться предоставить ID вашей учетной записи эмитентам.";
+"id_manual_coin_selection" = "Manual coin selection";
 "id_medium" = "Средний";
 "id_memo" = "Уведомление";
 "id_message" = "Сообщение";
@@ -515,6 +538,7 @@
 "id_network_configuration" = "Конфигурация сети";
 "id_network_fee" = "КОМИССИЯ СЕТИ";
 "id_network_monitor" = "Сетевой монитор";
+"id_networks" = "Networks";
 "id_new_account_created" = "Создана новая учетная запись";
 "id_new_accounts_functionality" = "Ожидается добавление функции “новый аккаунт”!";
 "id_new_fee" = "Новая комиссия";
@@ -534,6 +558,7 @@
 "id_no_amount_specified" = "Сумма не указана";
 "id_no_asset_in_this_account" = "No asset in this account";
 "id_no_attempts_remaining" = "Попыток не осталось";
+"id_no_coins_selected" = "No coins selected";
 "id_no_device_connected" = "Устройство не подключено";
 "id_no_more_assets" = "У вас больше нет активов.";
 "id_no_peers_connected" = "Нет подключенных узлов";
@@ -550,6 +575,7 @@
 "id_not_a_valid_email_address" = "Недействительный адрес электронной почты";
 "id_not_a_valid_phone_number" = "Неверный номер телефона";
 "id_not_a_valid_word" = "Неверное слово";
+"id_not_available_noradio_build" = "Not available (No-radio build)";
 "id_not_confidential" = "Not confidential";
 "id_not_connected_connecting_in_ds_" = "Нет соединения. Соединение произойдет через%d сек...";
 "id_not_initialized" = "Не инициализировано";
@@ -578,6 +604,7 @@
 "id_outdated_hardware_wallet" = "Устаревшая аппаратная прошивка кошелька. Обновите последнюю версию прошивки с настольного компьютера.";
 "id_outgoing" = "Исходящий";
 "id_overview" = "Обзор";
+"id_p2sh" = "P2sh";
 "id_p2wsh" = "P2wsh";
 "id_password" = "Пароль";
 "id_password_protected" = "Защищено паролем";
@@ -629,6 +656,7 @@
 "id_radio_firmware" = "Radio firmware";
 "id_read_more" = "Read more";
 "id_read_more_at_our_s" = "Узнайте больше на нашем %@";
+"id_ready" = "Ready";
 "id_ready_to_start" = "Готов начать";
 "id_receive" = "Получить";
 "id_receive_email_notifications_for" = "Получать уведомления по электронной почте об отправленных и полученных транзакциях";
@@ -657,6 +685,7 @@
 "id_remove" = "Удалить";
 "id_remove_custom_network" = "Удалить настраиваемую сеть";
 "id_remove_wallet" = "Удалить кошелек";
+"id_rename" = "Rename";
 "id_rename_account" = "Переименовать аккаунт";
 "id_rename_wallet" = "Переименовать кошелек";
 "id_replaceable" = "заменяемый";
@@ -712,6 +741,7 @@
 "id_select_word_number_d" = "Выберите слово номер %d";
 "id_select_your_jade_to_login" = "Чтобы войти, выберите свой Jade";
 "id_send" = "Отправить";
+"id_send_all" = "Send all";
 "id_send_all_funds" = "Отправить всю сумму";
 "id_send_all_requires_a_single" = "Для отправки всей суммы требуется один получатель";
 "id_send_and_receive_liquidbased" = "Отправляйте и получайте управляемые активы на основе Liquid";
@@ -752,6 +782,8 @@
 "id_share_nonconfidential" = "Поделиться неконфиденциальной транзакцией";
 "id_share_unblinding_data" = "Поделиться данными для отмены ослепления";
 "id_show" = "Показать";
+"id_show_advanced_options" = "Show advanced options";
+"id_show_all" = "Show all";
 "id_show_all_assets" = "Показать все активы";
 "id_show_bitcoin_amounts_in" = "Показать количество биткоинов в";
 "id_show_coins_with_expiring" = "Показать монеты с истекающим сроком двухфакторной аутентификации.";
@@ -806,6 +838,7 @@
 "id_telegram" = "Telegram";
 "id_terms_of_service" = "Условия обслуживания";
 "id_terms_of_use" = "Условия использования";
+"id_testnet_and_liquid_testnet" = "Testnet and Liquid Testnet";
 "id_testnet_electrum_server" = "Сервер Testnet Electrum";
 "id_testnet_wallets" = "Testnet-кошельки";
 "id_thank_you_for_downloading_green" = "Благодарим вас за загрузку кошелька Green! Пожалуйста, оставьте свой отзыв, если у вас будет такая возможность";
@@ -876,6 +909,7 @@
 "id_twofactor_threshold" = "Двухфакторный порог";
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Не удалось связаться со службой поддержки Green. Проверьте соединение и дождитесь повторного подключения.";
+"id_unarchive" = "Unarchive";
 "id_unblinding_data" = "Раскрытие данных";
 "id_unconfirmed" = "Неподтвержденная";
 "id_undo_2fa_dispute" = "Отменить оспаривание 2FA";
@@ -894,6 +928,7 @@
 "id_uploading_firmware" = "Загрузка прошивки";
 "id_use_a_hardware_wallet_as_your" = "Используйте аппаратный кошелек в качестве третьего ключа восстановления.";
 "id_use_a_public_key" = "Используйте открытый ключ";
+"id_use_all_available_coins" = "Use all available coins";
 "id_use_an_existing_recovery_phrase" = "Используйте существующую фразу восстановления в качестве третьего ключа восстановления.";
 "id_use_an_xpub_for_which_you_own" = "Используйте xpub, для которого у вас есть соответствующий приватный ключ, в качестве третьего ключа восстановления.";
 "id_use_android_screen_lock_to_log" = "Используйте блокировку экрана Android для входа в систему";
@@ -903,6 +938,7 @@
 "id_username_not_available" = "Имя пользователя недоступно";
 "id_value_must_be_between_144_and" = "Значение должно быть от 144 до 200000.";
 "id_verified" = "Верифицировано";
+"id_verify" = "Verify";
 "id_verify_on_device" = "Проверить на устройстве";
 "id_verify_your_bitcoin" = "Verify your bitcoin transactions are included on the blockchain";
 "id_verify_your_pin" = "Проверьте PIN-код";
@@ -910,15 +946,20 @@
 "id_version" = "Версия";
 "id_version_1s" = "Версия: %1$@";
 "id_version_1s_2s" = "Версия %1$@ %2$@";
+"id_view_archived_accounts_d" = "View archived accounts (%d)";
 "id_view_in_explorer" = "Посмотреть в обозревателе";
 "id_view_more" = "View More";
 "id_visit_s_for_further_information" = "Посетите %@ для получения дополнительной информации о программном обеспечении";
 "id_visit_the_blockstream_help" = "Посетите Blockstream Help Center";
 "id_waiting_for_transaction" = "Ожидание транзакции ...";
+"id_wallet" = "Wallet";
+"id_wallet_already_restored" = "Wallet already restored";
 "id_wallet_backup" = "Резервное копирование кошелька";
 "id_wallet_coins_will_require" = "Монеты кошелька требуют двухфакторной реактивации один раз в год, чтобы оставаться защищенными двухфакторной аутентификацией.";
 "id_wallet_creation_failed" = "Не удалось создать кошелек";
+"id_wallet_found" = "Wallet found";
 "id_wallet_name" = "Название кошелька";
+"id_wallet_not_found" = "Wallet not found";
 "id_wallets" = "Кошельки";
 "id_warning" = "Внимание!";
 "id_warning_no_trusted_node_set" = "Предупреждение: доверенный узел не установлен!";
@@ -968,6 +1009,7 @@
 "id_you_must_save_this_mnemonic_now" = "Вы ДОЛЖНЫ сохранить эту мнемоническую фразу СЕЙЧАС";
 "id_you_only_have_one_twofactor" = "У вас включен только один метод двухфакторной аутентификации";
 "id_you_will_need_to_reenter_your" = "Если вы не установите PIN-код, каждый раз, чтобы войти, вам придется вводить вашу мнемоническую фразу. Нажмите \"OK\" для продолжения.";
+"id_you_will_see_your_coins_here" = "You will see your coins here";
 "id_youll_need_to_back_up_your" = "Вам нужно будет создать резервную копию фразы восстановления, прежде чем вы сможете отправлять или получать средства, но пока вы все равно можете проверять свой кошелек.";
 "id_youll_need_your_pin_to_log_in" = "Вам понадобится PIN-код, чтобы войти в свой кошелек. Этот PIN-код защищает кошелек только на этом устройстве.";
 "id_youll_need_your_recovery_phrase" = "Вам понадобится фраза восстановления, чтобы восстановить этот кошелек";
