@@ -119,7 +119,7 @@ class WalletNameViewController: UIViewController {
         }.catch { error in
             switch error {
             case LoginError.walletNotFound:
-                self.error(session, message: NSLocalizedString("wallet not found", comment: ""))
+                self.error(session, message: NSLocalizedString("id_wallet_not_found", comment: ""))
             case LoginError.walletsJustRestored:
                 self.error(session, message: NSLocalizedString("id_wallet_already_restored", comment: ""))
             case LoginError.invalidMnemonic:

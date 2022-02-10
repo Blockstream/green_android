@@ -157,7 +157,7 @@ class RecipientCell: UITableViewCell {
     func setContent() {
         lblAssetHint.text = NSLocalizedString("id_asset", comment: "")
         lblAvailableFunds.text = ""
-        btnSendAll.setTitle(NSLocalizedString(("id_send_all_funds"), comment: ""), for: .normal)
+        btnSendAll.setTitle(NSLocalizedString("id_send_all_funds", comment: ""), for: .normal)
         lblAmountHint.text = NSLocalizedString("id_amount", comment: "")
         lblCurrency.text = ""
         lblRecipientNum.text = "#"

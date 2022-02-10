@@ -24,7 +24,7 @@ class ExistingWalletCell: UITableViewCell {
 
     func configure(_ wallet: ExistingWallet) {
         lblSecurity.text = wallet.isSingleSig ? NSLocalizedString("id_singlesig", comment: "") : NSLocalizedString("id_multisig_shield", comment: "")
-        lblStatus.text = wallet.isFound ? "Wallet found" : "Wallet not found"
+        lblStatus.text = NSLocalizedString(wallet.isFound ? "id_wallet_found" : "id_wallet_not_found", comment: "")
         if wallet.isJustRestored {
             lblStatus.text = NSLocalizedString("id_wallet_already_restored", comment: "")
         }
