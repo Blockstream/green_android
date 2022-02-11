@@ -32,6 +32,10 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
     // Warning: Be careful when you call wallet as it maybe null
     override val wallet by lazy { args.wallet!! }
 
+    override val screenName = "RecoveryIntro"
+
+    override val segmentation by lazy { super.segmentation ?: (args.wallet?.network ?: args.onboardingOptions?.network?.id)?.let { countly.networkSegmentation(it) }  }
+
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory
     val viewModel: WalletViewModel by viewModels {

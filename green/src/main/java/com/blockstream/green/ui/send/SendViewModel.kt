@@ -10,7 +10,7 @@ import com.blockstream.gdk.params.AddressParams
 import com.blockstream.gdk.params.BalanceParams
 import com.blockstream.gdk.params.CreateTransactionParams
 import com.blockstream.green.Preferences
-import com.blockstream.green.data.NavigateEvent
+import com.blockstream.green.data.*
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.*
@@ -36,11 +36,12 @@ class SendViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     sharedPreferences: SharedPreferences,
+    countly: Countly,
     @Assisted wallet: Wallet,
     @Assisted val isSweep: Boolean,
     @Assisted address: String?,
     @Assisted val bumpTransaction: JsonElement?,
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
     val isBump = bumpTransaction != null
     val isBumpOrSweep = isBump || isSweep
 
@@ -78,6 +79,8 @@ class SendViewModel @AssistedInject constructor(
     val handledGdkErrors = listOf("id_insufficient_funds", "id_invalid_private_key", "id_invalid_address", "id_invalid_amount", "id_invalid_asset_id",)
 
     init {
+        countly.startSendTransaction()
+
         updateFeeEstimation()
 
         session
@@ -136,6 +139,18 @@ class SendViewModel @AssistedInject constructor(
         recipients.value?.getOrNull(0)?.let {
             setupChangeObserve(it)
         }
+    }
+
+    fun createTransactionSegmentation(): TransactionSegmentation {
+        return TransactionSegmentation(
+            transactionType = when{
+                isSweep -> TransactionType.SWEEP
+                isBump -> TransactionType.BUMP
+                else -> TransactionType.SEND
+            },
+            addressInputType = recipients.value?.get(0)?.addressInputType,
+            sendAll = isSendAll()
+        )
     }
 
     private fun getBumpTransactionFeeRate(): Long? {
@@ -497,8 +512,11 @@ class SendViewModel @AssistedInject constructor(
         recipients.value?.getOrNull(activeRecipient)?.address?.value = bip21Uri
     }
 
-    fun setAddress(index: Int, address: String) {
-        recipients.value?.getOrNull(index)?.address?.value = address
+    fun setScannedAddress(index: Int, address: String) {
+        recipients.value?.getOrNull(index)?.let {
+            it.address.value = address
+            it.addressInputType = AddressInputType.SCAN
+        }
     }
 
     fun setAsset(index: Int, assetId: String) {
@@ -613,6 +631,7 @@ class SendViewModel @AssistedInject constructor(
 data class AddressParamsLiveData constructor(
     val index: Int,
     val address: MutableLiveData<String>,
+    var addressInputType: AddressInputType?,
     val assetId: MutableLiveData<String>,
     val amount: MutableLiveData<String>,
     val isSendAll: MutableLiveData<Boolean> = MutableLiveData(false),
@@ -647,6 +666,7 @@ data class AddressParamsLiveData constructor(
         fun create(index: Int, address: String? = null) = AddressParamsLiveData(
             index = index,
             address = MutableLiveData(address ?: ""),
+            addressInputType = if(address.isNullOrBlank()) null else AddressInputType.BIP21,
             assetId = MutableLiveData(""),
             amount = MutableLiveData("")
         )

@@ -4,6 +4,7 @@ import android.util.Base64
 import androidx.lifecycle.*
 import com.blockstream.gdk.data.TorEvent
 import com.blockstream.green.ApplicationScope
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -27,10 +28,11 @@ class LoginViewModel @AssistedInject constructor(
     private var appKeystore: AppKeystore,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     private val applicationScope: ApplicationScope,
     @Assisted wallet: Wallet,
     @Assisted val device: Device?
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     val onErrorMessage = MutableLiveData<ConsumableEvent<Throwable>>()
 
@@ -220,14 +222,22 @@ class LoginViewModel @AssistedInject constructor(
                     onError.postValue(ConsumableEvent(it))
                     // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
                     onProgress.postValue(false)
+                    countly.failedWalletLogin(session, it)
+                    countly.recordException(it)
                 },
                 onSuccess = {
+                    countly.loginWallet(
+                        wallet = wallet,
+                        session = session,
+                        loginCredentials = loginCredentials
+                    )
                     actionLogin.postValue(true)
                 }
             )
     }
 
     fun loginWithDevice(device: Device) {
+
         session.observable {
             it.loginWithDevice(it.networks.getNetworkById(wallet.network),
                 registerUser = true,
@@ -244,8 +254,11 @@ class LoginViewModel @AssistedInject constructor(
                 onErrorMessage.postValue(ConsumableEvent(it))
                 // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
                 onProgress.postValue(false)
+                countly.failedWalletLogin(session, it)
+                countly.recordException(it)
             },
             onSuccess = {
+                countly.loginWallet(wallet = wallet, session = session)
                 actionLogin.postValue(true)
             }
         )

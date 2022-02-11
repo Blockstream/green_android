@@ -19,6 +19,7 @@
 
 package com.btchip.comm.android;
 
+import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
@@ -45,13 +46,15 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 	private byte transferBuffer[];
 	private boolean debug;
 	private boolean ledger;
+	private UsbDevice mUsb;
 	
-	public BTChipTransportAndroidHID(UsbDeviceConnection connection, UsbInterface dongleInterface, UsbEndpoint in, UsbEndpoint out, int timeout, boolean ledger) {
+	public BTChipTransportAndroidHID(UsbDevice device, UsbDeviceConnection connection, UsbInterface dongleInterface, UsbEndpoint in, UsbEndpoint out, int timeout, boolean ledger) {
 		this.connection = connection;
 		this.dongleInterface = dongleInterface;
 		this.in = in;
 		this.out = out;
 		this.ledger = ledger;
+		this.mUsb = device;
 		// Compatibility with old prototypes, to be removed
 		if (!this.ledger) {
 			this.ledger = (in.getEndpointNumber() != out.getEndpointNumber());
@@ -160,6 +163,10 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 	@Override
 	public Boolean isUsb() {
 		return true;
+	}
+
+	public UsbDevice getUsbDevice() {
+		return mUsb;
 	}
 
 	private static final int HID_BUFFER_SIZE = 64;

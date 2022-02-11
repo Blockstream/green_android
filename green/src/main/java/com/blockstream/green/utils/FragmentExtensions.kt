@@ -2,6 +2,7 @@ package com.blockstream.green.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -20,8 +21,8 @@ import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.wallet.SystemMessageBottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -208,12 +209,4 @@ fun Fragment.showPopupMenu(
     popup.menuInflater.inflate(menuRes, popup.menu)
     popup.setOnMenuItemClickListener(listener)
     popup.show()
-}
-
-fun Fragment.showDialog(dialog: DialogFragment){
-    dialog.show(childFragmentManager, dialog.toString())
-}
-
-fun DialogFragment.show(fragment: AppFragment<*>){
-    show(fragment.childFragmentManager, this.toString())
 }

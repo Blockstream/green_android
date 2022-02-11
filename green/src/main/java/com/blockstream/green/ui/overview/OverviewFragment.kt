@@ -21,18 +21,16 @@ import com.blockstream.gdk.BalancePair
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ListItemAccountBinding
 import com.blockstream.green.databinding.OverviewFragmentBinding
 import com.blockstream.green.gdk.getConfirmationsMax
-import com.blockstream.green.ui.TwoFactorResetBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.*
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.looks.AssetLook
-import com.blockstream.green.ui.wallet.AccountIdBottomSheetDialogFragment
-import com.blockstream.green.ui.wallet.RenameAccountBottomSheetDialogFragment
-import com.blockstream.green.ui.wallet.SystemMessageBottomSheetDialogFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.blockstream.green.views.NpaLinearLayoutManager
@@ -51,6 +49,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -65,6 +64,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
     @Inject
     lateinit var assetManager: AssetManager
+
+    @Inject
+    lateinit var applicationScope: ApplicationScope
 
     @Inject
     lateinit var viewModelFactory: OverviewViewModel.AssistedFactory
@@ -119,6 +121,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             updateToolbar()
         }
     }
+
+    override val screenName = "Overview"
 
     companion object {
         const val SET_ACCOUNT = "SET_ACCOUNT"
@@ -224,6 +228,13 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         })
 
+        if(countly.analyticsFeatureEnabled && !settingsManager.isAskedAboutAnalyticsConsent()){
+            applicationScope.launch {
+                delay(1500)
+                ConsentBottomSheetDialogFragment.show(childFragmentManager)
+            }
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
     }
 
@@ -302,9 +313,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     managedAssetsAccountIdAdapter.set(
                         listOf(
                             AccountIdListItem { _ ->
-                                AccountIdBottomSheetDialogFragment(subAccount).also {
-                                    it.show(childFragmentManager, it.toString())
-                                }
+                                AccountIdBottomSheetDialogFragment.show(subAccount, childFragmentManager)
                             }
                         )
                     )
@@ -352,9 +361,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             AlertListItem(it) { _ ->
                 when(it){
                     is AlertType.Abstract2FA -> {
-                        TwoFactorResetBottomSheetDialogFragment.newInstance(it.twoFactorReset).also { dialog ->
-                            dialog.show(childFragmentManager, dialog.toString())
-                        }
+                        TwoFactorResetBottomSheetDialogFragment.show(it.twoFactorReset, childFragmentManager)
                     }
                 }
             }
@@ -371,7 +378,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     if (it) {
                         systemMessageAdapter.clear()
                     } else {
-                        SystemMessageBottomSheetDialogFragment.newInstance(message).show(this)
+                        SystemMessageBottomSheetDialogFragment.show(message, childFragmentManager)
                     }
                 }))
             }
@@ -498,9 +505,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 showPopupMenu(view,  menu) { menuItem ->
                     when (menuItem.itemId) {
                         R.id.rename -> {
-                            RenameAccountBottomSheetDialogFragment.newInstance(
-                                item.subAccount
-                            ).show(this)
+                            RenameAccountBottomSheetDialogFragment.show(item.subAccount, childFragmentManager)
                         }
                         R.id.archive -> {
                             viewModel.archiveSubAccount(item.subAccount)
@@ -544,9 +549,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     if (AssetFilteringIsEnabled && isOverviewState && viewModel.wallet.isLiquid) {
                         viewModel.setAsset(item.balancePair)
                     } else {
-                        AssetBottomSheetFragment.newInstance(item.balancePair.first).also {
-                            it.show(childFragmentManager, it.toString())
-                        }
+                        AssetBottomSheetFragment.show(item.balancePair.first, childFragmentManager)
                     }
                 }
                 is TransactionListItem -> {

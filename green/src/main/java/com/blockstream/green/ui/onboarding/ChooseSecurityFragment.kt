@@ -24,6 +24,8 @@ class ChooseSecurityFragment :
 
     private val args: ChooseSecurityFragmentArgs by navArgs()
 
+    override val screenName = "OnBoardChooseSecurity"
+
     @Inject
     lateinit var viewModelFactory: ChooseSecurityViewModel.AssistedFactory
     val viewModel: ChooseSecurityViewModel by viewModels {

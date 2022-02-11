@@ -1082,5 +1082,21 @@
   <string name="id_view_account">View account</string>
   <string name="id_view_archived_accounts">View Archived Accounts</string>
   <string name="id_no_archived_accounts">No archived accounts</string>
+  <string name="id_enable_anonymous_data_collection">Enable anonymous data collection</string>
+  <string name="id_copy_device_id">Copy Device ID</string>
+  <string name="id_help_green_improve">Help Green improve</string>
+  <string name="id_if_you_agree_green_will_collect_anonymous_data">If you agree, Green will collect anonymous data to optimize the user experience. No individual user or walet can be identified.</string>
+  <string name="id_whats_collected">What\'s collected</string>
+  <string name="id_whats_not_collected">What\'s NOT collected</string>
+  <string name="id_allow_collection">Allow collection</string>
+  <string name="id_dont_collect_data">Don\'t collect data</string>
+  <string name="id_page_visits_button_presses">Page visits, button presses, general app configuration</string>
+  <string name="id_os_app_version_loading_times_crashes">OS &amp; app version, loading times, crashes</string>
+  <string name="id_recovery_phrases_key_material_addresses">Recovery phrases, key material, addresses</string>
+  <string name="id_user_contact_info_ip_address_location">User contact info, IP address, location</string>
+
+  <string name="id_show_details">Show details</string>
+  <string name="id_hide_details">Hide details</string>
+
 
 </resources>

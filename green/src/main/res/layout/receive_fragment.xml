@@ -77,13 +77,13 @@
                             android:layout_gravity="center"
                             android:indeterminate="true"
                             isVisible="@{vm.onProgress &amp;&amp; vm.address == null}"
-                            app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
-                            app:layout_constraintEnd_toEndOf="@+id/materialCardView"
-                            app:layout_constraintStart_toStartOf="@+id/materialCardView"
-                            app:layout_constraintTop_toTopOf="@+id/materialCardView" />
+                            app:layout_constraintBottom_toBottomOf="@+id/addressQrWrap"
+                            app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                            app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
+                            app:layout_constraintTop_toTopOf="@+id/addressQrWrap" />
 
                         <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/materialCardView"
+                            android:id="@+id/addressQrWrap"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             android:layout_marginStart="42dp"
@@ -125,9 +125,9 @@
                             app:drawableEndCompat="@drawable/ic_baseline_content_copy_18"
                             app:drawableTint="@color/color_on_surface_emphasis_low"
                             app:layout_constraintBottom_toTopOf="@+id/wrap"
-                            app:layout_constraintEnd_toEndOf="@+id/materialCardView"
-                            app:layout_constraintStart_toStartOf="@+id/materialCardView"
-                            app:layout_constraintTop_toBottomOf="@+id/materialCardView"
+                            app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                            app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
+                            app:layout_constraintTop_toBottomOf="@+id/addressQrWrap"
                             tools:text="bitcoin:VJLAD343588Ub82r23tnFfadsfafadfafasdfaiiiiii?amopas=234" />
 
                         <LinearLayout
@@ -139,8 +139,8 @@
                             android:clipToPadding="false"
                             android:orientation="vertical"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="@+id/materialCardView"
-                            app:layout_constraintStart_toStartOf="@+id/materialCardView">
+                            app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                            app:layout_constraintStart_toStartOf="@+id/addressQrWrap">
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/buttonEdit"
@@ -153,8 +153,8 @@
                                 app:icon="@drawable/ic_baseline_edit_24"
                                 app:iconGravity="textStart"
                                 app:layout_constraintBottom_toTopOf="@id/buttonShare"
-                                app:layout_constraintEnd_toEndOf="@+id/materialCardView"
-                                app:layout_constraintStart_toStartOf="@+id/materialCardView"
+                                app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                                app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
                                 app:layout_constraintTop_toBottomOf="@+id/address" />
 
                             <com.google.android.material.button.MaterialButton
@@ -165,8 +165,8 @@
                                 app:icon="@drawable/ic_baseline_share_18"
                                 app:iconGravity="textStart"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="@+id/materialCardView"
-                                app:layout_constraintStart_toStartOf="@+id/materialCardView" />
+                                app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                                app:layout_constraintStart_toStartOf="@+id/addressQrWrap" />
 
                         </LinearLayout>
 

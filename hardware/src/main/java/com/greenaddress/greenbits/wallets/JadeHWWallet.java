@@ -47,10 +47,13 @@ public class JadeHWWallet extends HWWallet {
 
     private final JadeAPI jade;
 
-    public JadeHWWallet(final JadeAPI jade, final Device device, final HardwareQATester hardwareQATester) {
+
+    public JadeHWWallet(final JadeAPI jade, final Device device, final VersionInfo verInfo, final HardwareQATester hardwareQATester) {
         super.mDevice = device;
         this.jade = jade;
         this.mHardwareQATester = hardwareQATester;
+        this.mFirmwareVersion = verInfo.getJadeVersion();
+        this.mModel = verInfo.getBoardType();
     }
 
     @Override

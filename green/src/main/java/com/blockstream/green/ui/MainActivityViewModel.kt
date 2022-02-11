@@ -1,8 +1,10 @@
 package com.blockstream.green.ui
 
 import android.content.Context
-import androidx.lifecycle.*
-import com.blockstream.green.database.Wallet
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.AppKeystore
@@ -23,8 +25,6 @@ class MainActivityViewModel @Inject constructor(
     val lockScreen = MutableLiveData(canLock())
     val buildVersion = MutableLiveData("")
 
-    val wallets: LiveData<List<Wallet>> = walletRepository.getWallets()
-
     init {
         // Listen to foreground / background events
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
@@ -37,10 +37,12 @@ class MainActivityViewModel @Inject constructor(
     }
 
     override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
         lockTimer?.cancel()
     }
 
     override fun onPause(owner: LifecycleOwner) {
+        super.onPause(owner)
         if(canLock()){
             val lockAfterSeconds = settingsManager.getApplicationSettings().screenLockInSeconds
             if(lockAfterSeconds > 0){

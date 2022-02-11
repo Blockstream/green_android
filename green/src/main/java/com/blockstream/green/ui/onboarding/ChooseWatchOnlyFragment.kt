@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseWatchOnlyFragmentBinding
-import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -13,6 +13,8 @@ class ChooseWatchOnlyFragment :
         R.layout.choose_watch_only_fragment,
         menuRes = 0
     ) {
+
+    override val screenName = "OnBoardWatchOnlyChooseSecurity"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -24,9 +26,7 @@ class ChooseWatchOnlyFragment :
         }
 
         binding.buttonWatchOnly.setOnClickListener {
-            ComingSoonBottomSheetDialogFragment().also {
-                it.show(childFragmentManager, it.toString())
-            }
+            ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
         }
     }
 }

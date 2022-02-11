@@ -8,6 +8,8 @@ import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
 import com.blockstream.green.ApplicationScope
+import com.blockstream.gdk.data.Network
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.settings.SettingsManager
@@ -26,6 +28,7 @@ class SessionManager constructor(
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
+    private val countly: Countly,
     qaTester: QATester,
 ) : DefaultLifecycleObserver {
     private val greenSessions = mutableSetOf<GreenSession>()
@@ -141,6 +144,7 @@ class SessionManager constructor(
             settingsManager = settingsManager,
             assetsManager = assetManager,
             greenWallet = greenWallet,
+            countly = countly
         )
 
         greenSessions.add(session)

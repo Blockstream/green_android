@@ -7,6 +7,7 @@ import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceResolver
@@ -39,11 +40,15 @@ class GreenSession constructor(
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
     private val assetsManager: AssetManager,
-    private val greenWallet: GreenWallet
+    private val greenWallet: GreenWallet,
+    private val countly: Countly
 ) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
     var isWatchOnly: Boolean = false
 
     var activeAccount = 0L
+        private set
+
+    var activeAccountData: SubAccount? = null
         private set
 
     // Active Account
@@ -147,6 +152,16 @@ class GreenSession constructor(
 
     fun setActiveAccount(account: Long){
         activeAccount = account
+        activeAccountData = null
+
+        applicationScope.launch(context = Dispatchers.IO) {
+            try{
+                getActiveSubAccount()
+            }catch (e: Exception){
+                activeAccountData = null
+            }
+        }
+
         updateTransactionsAndBalance(isReset = true, isLoadMore = false)
     }
 
@@ -244,6 +259,7 @@ class GreenSession constructor(
         authenticationRequired = false
 
         activeAccount = 0L
+        activeAccountData = null
 
         // Recreate subject so that can be sure we have fresh data, especially on shared sessions eg. HWW sessions
         balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
@@ -548,8 +564,14 @@ class GreenSession constructor(
     fun getSubAccounts(params: SubAccountsParams = SubAccountsParams()) = AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession, params))
         .result<SubAccounts>(hardwareWalletResolver = DeviceResolver(this))
 
+    fun getActiveSubAccount() = getSubAccount(activeAccount)
+
     fun getSubAccount(index: Long) = AuthHandler(greenWallet, greenWallet.getSubAccount(gaSession, index)
-        ).result<SubAccount>(hardwareWalletResolver = DeviceResolver(this))
+        ).result<SubAccount>(hardwareWalletResolver = DeviceResolver(this)).also {
+            if(it.pointer == activeAccount){
+                activeAccountData = it
+            }
+    }
 
     fun updateSubAccount(params: UpdateSubAccountParams) = greenWallet.updateSubAccount(gaSession, params)
 
@@ -781,6 +803,8 @@ class GreenSession constructor(
                         walletBalances.put(subaccount.pointer.toInt(), accountBalances)
                     }
                 }
+
+                countly.activeWallet(session = this, walletBalances = walletBalances, subAccounts = it.subaccounts)
             }
         }
         .retry(1)

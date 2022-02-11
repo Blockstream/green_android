@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
-import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.data.NavigateEvent
@@ -26,6 +25,7 @@ import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.NetworkSmallListItem
+import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
@@ -44,6 +44,8 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     val args: DeviceInfoFragmentArgs by navArgs()
 
     val device by lazy { deviceManager.getDevice(args.deviceId) }
+
+    override val screenName = "DeviceInfo"
 
     @Inject
     lateinit var viewModelFactory: DeviceInfoViewModel.AssistedFactory
@@ -176,7 +178,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         }
 
         binding.buttonAppSettings.setOnClickListener {
-            navigate(NavGraphDirections.actionGlobalAppSettingsDialogFragment())
+            AppSettingsDialogFragment.show(childFragmentManager)
         }
     }
 

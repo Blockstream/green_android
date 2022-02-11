@@ -8,28 +8,16 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.green.R
-import com.blockstream.green.Urls
-import com.blockstream.green.data.Countries
-import com.blockstream.green.data.Country
-import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.databinding.RecoveryPhraseFragmentBinding
-import com.blockstream.green.databinding.RecoverySetupWordsFragmentBinding
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.items.CountryListItem
-import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.RecoveryWordListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.createQrBitmap
-import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.AlphaInAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -41,6 +29,9 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
 ) {
     private val args: RecoveryPhraseFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet!! }
+
+    override val screenName = "RecoveryPhrase"
+    override val segmentation: HashMap<String, Any>? = null
 
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory

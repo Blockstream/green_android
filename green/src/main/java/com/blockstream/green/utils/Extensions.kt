@@ -1,8 +1,10 @@
 package com.blockstream.green.utils
 
-import android.view.ViewParent
+import android.util.SparseArray
 import android.view.View
+import android.view.ViewParent
 import android.widget.ImageView
+import androidx.core.util.valueIterator
 import androidx.core.widget.doAfterTextChanged
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
@@ -10,7 +12,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 
-fun TextInputLayout.endIconCopyMode() {
+fun TextInputLayout.endIconCopyMode(pasteListener: (() -> Unit)? = null ) {
     endIconMode = TextInputLayout.END_ICON_CUSTOM
     // don't replace custom icon with the error exclamation mark
     errorIconDrawable = null
@@ -24,6 +26,7 @@ fun TextInputLayout.endIconCopyMode() {
     setEndIconOnClickListener {
         if (editText?.text.isNullOrBlank()) {
             editText?.setText(getClipboard(context))
+            pasteListener?.invoke()
         } else {
             editText?.text?.clear()
         }
@@ -58,3 +61,5 @@ fun <E: View> Collection<E>.setOnClickListener(onClickListener: (e: View) -> Uni
         it.setOnClickListener(onClickListener)
     }
 }
+
+inline fun <reified V> SparseArray<V>.toList() = valueIterator().asSequence().toList()

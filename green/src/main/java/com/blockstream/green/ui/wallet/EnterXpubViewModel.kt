@@ -2,6 +2,7 @@ package com.blockstream.green.ui.wallet;
 
 import androidx.lifecycle.*
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
@@ -17,8 +18,9 @@ class EnterXpubViewModel @AssistedInject constructor(
     greenWallet: GreenWallet,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted wallet: Wallet,
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     val xpub = MutableLiveData<String>()
     val isXpubValid = MutableLiveData(false)

@@ -17,9 +17,11 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ReceiveFragmentBinding
-import com.blockstream.green.ui.MenuBottomSheetDialogFragment
-import com.blockstream.green.ui.MenuDataProvider
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.MenuDataProvider
+import com.blockstream.green.ui.bottomsheets.RequestAmountLabelBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.VerifyAddressBottomSheetDialogFragment
 import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
@@ -36,6 +38,9 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
 ) {
     val args: ReceiveFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
+
+    override val screenName = "Receive"
+    override val segmentation by lazy { countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) }
 
     @Inject
     lateinit var viewModelFactory: ReceiveViewModel.AssistedFactory
@@ -61,10 +66,15 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         binding.address.setOnClickListener {
             copyToClipboard("Address", binding.address.text.toString(), requireContext(), animateView = binding.address)
             snackbar(R.string.id_address_copied_to_clipboard)
+            if(viewModel.isAddressUri.value == true){
+                countly.receiveAddress(isUri = true, subAccount = viewModel.getSubAccountLiveData().value, session = session)
+            }else{
+                countly.receiveAddress(subAccount = viewModel.getSubAccountLiveData().value, session = session)
+            }
         }
 
         binding.buttonShare.setOnClickListener {
-            MenuBottomSheetDialogFragment(object : MenuDataProvider {
+            MenuBottomSheetDialogFragment.show(object : MenuDataProvider {
                 override fun getTitle() = getString(R.string.id_share)
                 override fun getSubtitle() = null
 
@@ -76,15 +86,17 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
                 override fun menuItemClicked(item: GenericItem, position: Int) {
                     if(position == 0){
                         share(binding.address.text.toString())
+                        countly.receiveAddress(isShare = true, subAccount = viewModel.getSubAccountLiveData().value, session = session)
                     }else{
-                        createQRImage()
+                        createQRImageAndShare()
+                        countly.receiveAddress(isShare = true, isQR = true, subAccount = viewModel.getSubAccountLiveData().value, session = session)
                     }
                 }
-            }).show(childFragmentManager)
+            }, childFragmentManager)
         }
 
         binding.buttonMore.setOnClickListener {
-            MenuBottomSheetDialogFragment(object : MenuDataProvider {
+            MenuBottomSheetDialogFragment.show(object : MenuDataProvider {
                 override fun getTitle() = getString(R.string.id_more_options)
                 override fun getSubtitle() = null
 
@@ -97,9 +109,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
 
                 override fun menuItemClicked(item: GenericItem, position: Int) {
                     if(position == 0){
-                        RequestAmountLabelBottomSheetDialogFragment().also {
-                            it.show(childFragmentManager, it.toString())
-                        }
+                        RequestAmountLabelBottomSheetDialogFragment.show(childFragmentManager)
                     }else{
                         navigate(
                             ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
@@ -109,7 +119,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
                         )
                     }
                 }
-            }).show(childFragmentManager)
+            }, childFragmentManager)
 
         }
 
@@ -123,15 +133,18 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonEdit.setOnClickListener {
-            RequestAmountLabelBottomSheetDialogFragment().also {
-                it.show(childFragmentManager, it.toString())
-            }
+            RequestAmountLabelBottomSheetDialogFragment.show(childFragmentManager)
         }
 
-        binding.materialCardView.setOnClickListener {
+        binding.addressQrWrap.setOnClickListener {
             copyToClipboard("Address", binding.address.text.toString(), requireContext())
             snackbar(R.string.id_address_copied_to_clipboard)
             it.pulse()
+            if(viewModel.isAddressUri.value == true){
+                countly.receiveAddress(isUri = true, subAccount = viewModel.getSubAccountLiveData().value, session = session)
+            }else {
+                countly.receiveAddress(subAccount = viewModel.getSubAccountLiveData().value, session = session)
+            }
         }
 
         binding.assetWhitelistWarning.setOnClickListener {
@@ -139,9 +152,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonVerify.setOnClickListener {
-            VerifyAddressBottomSheetDialogFragment().also {
-                it.show(childFragmentManager, it.toString())
-            }
+            VerifyAddressBottomSheetDialogFragment.show(childFragmentManager)
 
             if(viewModel.onProgress.value == false) {
                 viewModel.validateAddressInDevice()
@@ -178,7 +189,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
     }
 
-    private fun createQRImage() {
+    private fun createQRImageAndShare() {
         viewModel.addressQRBitmap.value?.let { qrBitmap ->
 
             try {

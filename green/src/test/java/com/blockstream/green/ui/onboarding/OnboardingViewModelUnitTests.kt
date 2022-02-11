@@ -4,6 +4,7 @@ import androidx.lifecycle.Observer
 import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.TestViewModel
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
@@ -27,6 +28,9 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
 
     @Mock
     private lateinit var walletRepository: WalletRepository
+
+    @Mock
+    private lateinit var countly: Countly
 
     @Mock
     private lateinit var session: GreenSession
@@ -84,6 +88,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         viewModel = OnboardingViewModel(
             sessionManager,
             walletRepository,
+            countly,
             if (withRestoreWallet) restoreWallet else null
         )
 

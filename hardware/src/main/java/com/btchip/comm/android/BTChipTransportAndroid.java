@@ -19,153 +19,19 @@
 
 package com.btchip.comm.android;
 
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
-import android.nfc.Tag;
-import android.util.Log;
 
 import com.btchip.comm.BTChipTransport;
-import com.btchip.comm.BTChipTransportFactory;
-import com.btchip.comm.BTChipTransportFactoryCallback;
 
 import java.util.HashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 
-public class BTChipTransportAndroid implements BTChipTransportFactory {
-	
-	private UsbManager usbManager;
-	private BTChipTransport transport;
-	private final LinkedBlockingQueue<Boolean> gotRights = new LinkedBlockingQueue<Boolean>(1);
-	private Tag detectedTag;
-	private byte[] aid;
-	
-	private static final String LOG_TAG = "BTChipTransportAndroid";
-	
-	private static final String ACTION_USB_PERMISSION = "USB_PERMISSION";
-	
-	private static final byte TEST_APDU[] = { (byte)0xe0, (byte)0xc4, (byte)0x00, (byte)0x00, (byte)0x00 };
+public class BTChipTransportAndroid {
 
-	/**
-	 * Receives broadcast when a supported USB device is attached, detached or
-	 * when a permission to communicate to the device has been granted.
-	 */
-	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-			String deviceName = usbDevice.getDeviceName();
-
-			if (ACTION_USB_PERMISSION.equals(action)) {
-				boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED,
-						false);
-	            Log.d(LOG_TAG, "ACTION_USB_PERMISSION: " + permission + " Device: " + deviceName);
-
-	            // sync with connect
-	            gotRights.add(permission);
-			}
-		}
-	};
-		
-	public BTChipTransportAndroid(Context context) {
-		usbManager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
-	}
-	
-	@Override
-	public boolean isPluggedIn() {
-		if (transport != null) {
-			Log.d(LOG_TAG, "Check if transport is still valid");
-			try {
-				transport.exchange(TEST_APDU);
-			}
-			catch(Exception e) {
-				Log.d(LOG_TAG, "Error reported by transport");
-				try {
-					transport.close();
-				}
-				catch(Exception e1) {					
-				}
-				transport = null;
-				detectedTag = null;
-			}			
-		}
-		/*
-		if (detectedTag != null) {
-			Log.d(LOG_TAG, "Has an NFC tag");
-			try {
-				IsoDep card = IsoDep.get(detectedTag);
-				card.connect();
-				if (!card.isConnected()) {
-					Log.d(LOG_TAG, "Tag disconnected, clearing");
-					detectedTag = null;
-				}
-				else {
-					card.close();
-				}
-			}
-			catch(Throwable t) {
-				Log.d(LOG_TAG, "Failed to retrieve NFC tag", t);
-				detectedTag = null;
-			}
-			Log.d(LOG_TAG, "Tag still connected : " + detectedTag);
-		}
-		*/		
-		return ((getDevice(usbManager) != null) || (detectedTag != null));
-	}
-	
-	@Override
-	public BTChipTransport getTransport() {
-		return transport;
-	}
-	
-	@Override
-	public boolean connect(final Context context, final BTChipTransportFactoryCallback callback) {
-		if (transport != null) {
-			try {
-				Log.d(LOG_TAG, "Closing previous transport");
-				transport.close();
-				Log.d(LOG_TAG, "Previous transport closed");
-			}
-			catch(Exception e) {				
-			}
-		}
-
-		final IntentFilter filter = new IntentFilter();
-		filter.addAction(ACTION_USB_PERMISSION);
-		context.registerReceiver(mUsbReceiver, filter);
-
-		final UsbDevice device = getDevice(usbManager);
-		final Intent intent = new Intent(ACTION_USB_PERMISSION);
-
-		usbManager.requestPermission(device, PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE));
-		// retry because of InterruptedException
-		while (true) {
-			try {
-				// gotRights.take blocks until the UsbManager gives us the rights via callback to the BroadcastReceiver
-	            // this might need an user interaction
-				if (gotRights.take()) {
-					transport = open(usbManager, device);
-					callback.onConnected(true);
-					return true;
-				}
-				else {
-					callback.onConnected(false);
-					return true;
-				}
-	         } catch (InterruptedException ignored) {
-	        }
-		}
-	}	
-			
 	public static UsbDevice getDevice(UsbManager manager) {
 		HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
 		for (UsbDevice device : deviceList.values()) {
@@ -208,7 +74,7 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
         	return new BTChipTransportAndroidWinUSB(connection, dongleInterface, in, out, TIMEOUT);
         }
         else {
-        	return new BTChipTransportAndroidHID(connection, dongleInterface, in, out, TIMEOUT, ledger);
+        	return new BTChipTransportAndroidHID(device, connection, dongleInterface, in, out, TIMEOUT, ledger);
         }
 	}
 	
@@ -218,6 +84,11 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 		final int pId = d.getProductId();
 		final boolean screenDevice = pId == PID_NANOS_LEGACY || pId == PID_NANOX_LEGACY || pId >> 8 == PID_NANOS || pId >> 8 == PID_NANOX;
 		return screenDevice && d.getVendorId() == VID2;
+	}
+
+	public static boolean isNanoX(final UsbDevice d) {
+		final int pId = d.getProductId();
+		return pId == PID_NANOX_LEGACY || pId == PID_NANOX;
 	}
 	
 	private static final int VID = 0x2581;

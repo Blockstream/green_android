@@ -1,9 +1,11 @@
 package com.blockstream.green.database
 
 import android.os.Parcelable
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.blockstream.gdk.data.Network
-
 import kotlinx.parcelize.Parcelize
 import mu.KLogging
 

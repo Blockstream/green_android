@@ -42,6 +42,8 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 ) {
     private val args: DeviceListFragmentArgs by navArgs()
 
+    override val screenName = "DeviceList"
+
     @Inject
     lateinit var viewModelFactory: DeviceListViewModel.AssistedFactory
 

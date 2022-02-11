@@ -9,10 +9,10 @@ import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseAccountTypeFragmentBinding
-import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
-import com.blockstream.green.ui.MenuBottomSheetDialogFragment
-import com.blockstream.green.ui.MenuDataProvider
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.MenuDataProvider
 import com.blockstream.green.ui.items.AccountTypeListItem
 import com.blockstream.green.ui.items.ContentCardListItem
 import com.blockstream.green.ui.items.MenuListItem
@@ -31,6 +31,8 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
 ) {
     val args: ChooseAccountTypeFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
+
+    override val screenName by lazy { if (args.accountType == AccountType.UNKNOWN) "AddAccountChooseType" else "AddAccountChooseRecovery" }
 
     @Inject
     lateinit var greenWallet: GreenWallet
@@ -52,9 +54,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
             if(item is AccountTypeListItem){
                 if(item.accountType == AccountType.TWO_OF_THREE){
                     if (wallet.isLiquid) {
-                        ComingSoonBottomSheetDialogFragment().also {
-                            it.show(childFragmentManager, it.toString())
-                        }
+                        ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
                     }else{
                         navigate(
                             ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentSelf(
@@ -70,7 +70,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
                 when(item.key){
                     TwoOfThreeRecovery.NEW_RECOVERY -> {
 
-                        MenuBottomSheetDialogFragment(object : MenuDataProvider {
+                        MenuBottomSheetDialogFragment.show(object : MenuDataProvider {
                             override fun getTitle() = getString(R.string.id_new_recovery_phrase)
                             override fun getSubtitle() = getString(R.string.id_choose_recovery_phrase_length)
 
@@ -84,7 +84,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
                                 navigate(ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToRecoveryIntroFragment(wallet = args.wallet, mnemonic = mnemonic))
                             }
 
-                        }).show(childFragmentManager)
+                        }, childFragmentManager)
 
                     }
                     TwoOfThreeRecovery.EXISTING_RECOVERY -> {
@@ -94,9 +94,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
                         navigate(ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToEnterXpubFragment(wallet = args.wallet, accountType = args.accountType))
                     }
                     else -> {
-                        ComingSoonBottomSheetDialogFragment().also {
-                            it.show(childFragmentManager, it.toString())
-                        }
+                        ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
                     }
                 }
             }
@@ -156,7 +154,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
 
                 adapter.getExpandableExtension()
                 adapter.add(expandable)
-            }else {
+            } else {
                 adapter.add(AccountTypeListItem(AccountType.STANDARD))
 
                 if (wallet.isLiquid) {

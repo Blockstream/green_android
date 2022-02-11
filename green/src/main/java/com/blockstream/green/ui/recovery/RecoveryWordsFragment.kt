@@ -16,8 +16,9 @@ class RecoveryWordsFragment : AppFragment<RecoverySetupWordsFragmentBinding>(
 ) {
     private val args: RecoveryWordsFragmentArgs by navArgs()
 
-    private val viewModel: RecoveryWordsViewModel by viewModels {
+    override val screenName = "RecoveryWords"
 
+    private val viewModel: RecoveryWordsViewModel by viewModels {
         RecoveryWordsViewModel.provideFactory(
             args.mnemonic.split(" "),
             args.page

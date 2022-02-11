@@ -16,8 +16,12 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.data.AppEvent
+import com.blockstream.green.data.Countly
+import com.blockstream.green.data.ScreenView
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
 import com.blockstream.green.ui.devices.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.clearNavigationResult
@@ -45,7 +49,7 @@ import javax.inject.Inject
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
-) : Fragment() {
+) : Fragment(), ScreenView {
 
     sealed class DeviceRequestEvent : AppEvent {
         object RequestPinMatrix: DeviceRequestEvent()
@@ -57,6 +61,9 @@ abstract class AppFragment<T : ViewDataBinding>(
     internal lateinit var binding: T
 
     @Inject
+    internal lateinit var countly: Countly
+
+    @Inject
     internal lateinit var sessionManager: SessionManager
 
     @Inject
@@ -65,6 +72,9 @@ abstract class AppFragment<T : ViewDataBinding>(
     open fun getAppViewModel(): AppViewModel? = null
 
     open val title : String? = null
+
+    override var screenIsRecorded = false
+    override val segmentation: HashMap<String, Any>? = null
 
     protected val toolbar: GreenToolbar
         get() = (requireActivity() as AppActivity).toolbar
@@ -147,8 +157,8 @@ abstract class AppFragment<T : ViewDataBinding>(
         // Prevent DrawerFragment from corrupting the main fragment
         if (this !is DrawerFragment) {
             requireActivity().window.setSoftInputMode(if (isAdjustResize) WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE else WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-
             updateToolbar()
+            countly.screenView(this)
         }
     }
 
@@ -196,15 +206,11 @@ abstract class AppFragment<T : ViewDataBinding>(
     }
 
     private fun requestPinMatrix() {
-        PinMatrixBottomSheetDialogFragment().also {
-            it.show(childFragmentManager, it.toString())
-        }
+        PinMatrixBottomSheetDialogFragment.show(childFragmentManager)
     }
 
     private fun requestPassphrase() {
-        PassphraseBottomSheetDialogFragment().also {
-            it.show(childFragmentManager, it.toString())
-        }
+        PassphraseBottomSheetDialogFragment.show(childFragmentManager)
     }
 
     companion object: KLogging()

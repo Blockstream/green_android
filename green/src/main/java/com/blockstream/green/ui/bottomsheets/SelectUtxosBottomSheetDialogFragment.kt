@@ -1,10 +1,11 @@
-package com.blockstream.green.ui
+package com.blockstream.green.ui.bottomsheets
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.params.BalanceParams
-import com.blockstream.green.R
 import com.blockstream.green.databinding.SelectUtxosBottomSheetBinding
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.items.UtxoListItem
@@ -12,13 +13,16 @@ import com.blockstream.green.ui.send.SendViewModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import mu.KLogging
 
 // WIP
-class SelectUtxosBottomSheetDialogFragment :
-    WalletBottomSheetDialogFragment<SelectUtxosBottomSheetBinding, SendViewModel>(
-        layout = R.layout.select_utxos_bottom_sheet
-    ) {
+@AndroidEntryPoint
+class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<SelectUtxosBottomSheetBinding, SendViewModel>() {
+    override val screenName = "SelectUTXO"
+
+    override fun inflate(layoutInflater: LayoutInflater) = SelectUtxosBottomSheetBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,6 +66,12 @@ class SelectUtxosBottomSheetDialogFragment :
             itemAnimator = SlideDownAlphaAnimator()
             adapter = FastAdapter.with(utxoAdapter)
             // addItemDecoration(SpaceItemDecoration(toPixels(24)))
+        }
+    }
+
+    companion object : KLogging() {
+        fun show(fragmentManager: FragmentManager){
+            show(SelectUtxosBottomSheetDialogFragment(), fragmentManager)
         }
     }
 }

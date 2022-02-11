@@ -27,6 +27,8 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
     private var networkSnackbar: Snackbar? = null
 
+    override val segmentation by lazy { if(isSessionAndWalletRequired() && session.isConnected) countly.sessionSegmentation(session) else null }
+
     override fun updateToolbar() {
         super.updateToolbar()
         if (isSessionAndWalletRequired()) {

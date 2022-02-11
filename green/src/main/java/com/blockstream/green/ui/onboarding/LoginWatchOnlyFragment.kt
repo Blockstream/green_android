@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LoginWatchOnlyFragmentBinding
 import com.blockstream.green.gdk.getGDKErrorCode
-import com.blockstream.green.ui.CameraBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
+import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragmentDirections
 import com.blockstream.green.utils.*
 import com.blockstream.libgreenaddress.KotlinGDK
@@ -21,6 +21,8 @@ class LoginWatchOnlyFragment :
         R.layout.login_watch_only_fragment,
         menuRes = 0
     ) {
+
+    override val screenName = "OnBoardWatchOnlyCredentials"
 
     override val isAdjustResize: Boolean = true
 
@@ -52,11 +54,11 @@ class LoginWatchOnlyFragment :
         binding.extendedPublicKeyTextInputLayout.endIconCopyMode()
 
         binding.buttonAppSettings.setOnClickListener {
-            navigate(NavGraphDirections.actionGlobalAppSettingsDialogFragment())
+            AppSettingsDialogFragment.show(childFragmentManager)
         }
 
         binding.buttonScan.setOnClickListener {
-            CameraBottomSheetDialogFragment.open(this)
+            CameraBottomSheetDialogFragment.showSingle(childFragmentManager)
         }
 
         settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner){

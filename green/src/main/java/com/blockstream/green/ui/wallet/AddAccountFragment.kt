@@ -24,6 +24,8 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
 
     override val wallet by lazy { args.wallet }
 
+    override val screenName = "AddAccountConfirm"
+
     override val isAdjustResize: Boolean = true
 
     @Inject

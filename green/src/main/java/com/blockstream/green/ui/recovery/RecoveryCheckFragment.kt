@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.RecoveryCheckFragmentBinding
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.isDevelopmentFlavor
@@ -21,6 +22,11 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
     layout = R.layout.recovery_check_fragment,
     menuRes = 0
 ) {
+    private val args: RecoveryCheckFragmentArgs by navArgs()
+
+    override val screenName = "RecoveryCheck"
+    override val segmentation by lazy {  (args.wallet?.network ?: args.onboardingOptions?.network?.id)?.let { countly.networkSegmentation(it) }  }
+
     @Inject
     lateinit var viewModelFactory: RecoveryCheckViewModel.AssistedFactory
 
@@ -29,11 +35,10 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
             viewModelFactory,
             args.mnemonic.split(" "),
             args.page,
+            args.onboardingOptions?.network?.id ?: args.wallet?.network,
             requireContext().isDevelopmentFlavor()
         )
     }
-
-    private val args: RecoveryCheckFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,8 +46,9 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
         binding.vm = viewModel
         binding.isDevelopmentFlavor = requireContext().isDevelopmentFlavor()
 
-        binding.clickListener = View.OnClickListener { button ->
-            if (viewModel.selectWord((button as Button).text.toString())) {
+        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
+
+            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
                 if (viewModel.isLastPage) {
                     if(args.wallet == null) {
                         navigate(
@@ -73,10 +79,16 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
                         )
                     )
                 }
-            } else {
+            }
+
+            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
                 snackbar(R.string.id_wrong_choice_check_your)
                 findNavController().popBackStack(R.id.recoveryIntroFragment, false)
             }
+        }
+
+        binding.clickListener = View.OnClickListener { button ->
+            viewModel.selectWord((button as Button).text.toString())
         }
     }
 }

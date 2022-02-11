@@ -140,14 +140,21 @@
                         android:text="@string/id_scan_the_qr_code_with_an"
                         android:gravity="center" />
 
-                    <ImageView
-                        android:id="@+id/authenticatorQR"
-                        android:layout_width="170dp"
-                        android:layout_height="170dp"
-                        android:layout_gravity="center_horizontal"
-                        android:background="@color/white"
-                        android:contentDescription="@string/id_authenticator_qr_code"
-                        android:padding="4dp" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/white"
+                        android:layout_gravity="center_horizontal">
+
+                        <ImageView
+                            android:id="@+id/authenticatorQR"
+                            android:layout_width="170dp"
+                            android:layout_height="170dp"
+                            android:contentDescription="@string/id_authenticator_qr_code"
+                            android:layout_margin="8dp"
+                            />
+
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -171,6 +178,7 @@
                         android:textSize="13sp"
                         android:text="@{vm.authenticatorCode}"
                         android:layout_marginTop="16dp"
+                        android:textStyle="bold"
                         app:drawableEndCompat="@drawable/ic_baseline_content_copy_18"
                         app:drawableTint="@color/color_on_surface_emphasis_low"
                         tools:text="fafadfafasdfaiiiiii" />

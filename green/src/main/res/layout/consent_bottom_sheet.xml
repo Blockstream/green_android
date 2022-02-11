@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="detailsAreVisible"
+            type="Boolean" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
+
+        <ImageButton
+            android:id="@+id/buttonMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/transparent"
+            android:padding="16dp"
+            android:src="@drawable/ic_baseline_more_vert_24"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/color_on_surface_emphasis_very_low" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_help_green_improve"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_if_you_agree_green_will_collect_anonymous_data"
+            android:textAppearance="?attr/textAppearanceBody1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="@color/brand_surface_light"
+            app:layout_constraintBottom_toTopOf="@+id/buttonDisable"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView12">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/switcher"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:text="@{detailsAreVisible ? @string/id_hide_details : @string/id_show_details}"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textColor="@color/material_on_background_emphasis_high_type"
+                        tools:text="@string/id_show_details" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@{detailsAreVisible ? @drawable/ic_baseline_arrow_drop_up_24 : @drawable/ic_baseline_arrow_drop_down_24}"
+                        tools:src="@drawable/ic_baseline_arrow_drop_down_24" />
+
+                </LinearLayout>
+
+                <com.blockstream.green.views.DividerView
+                    isVisible="@{detailsAreVisible}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <com.blockstream.green.views.GappedLinearLayout
+                    android:id="@+id/wrap"
+                    isVisible="@{detailsAreVisible}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingStart="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="4dp"
+                    app:gap="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_whats_collected"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textColor="@color/material_on_background_emphasis_high_type" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:text="@string/id_page_visits_button_presses"
+                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textColor="@color/material_on_background_emphasis_high_type"
+                        app:drawableStartCompat="@drawable/ic_baseline_circle_4"
+                        app:drawableTint="@color/material_on_background_emphasis_high_type" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:text="@string/id_os_app_version_loading_times_crashes"
+                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textColor="@color/material_on_background_emphasis_high_type"
+                        app:drawableStartCompat="@drawable/ic_baseline_circle_4"
+                        app:drawableTint="@color/material_on_background_emphasis_high_type" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/id_whats_not_collected"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textColor="@color/material_on_background_emphasis_high_type" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:text="@string/id_recovery_phrases_key_material_addresses"
+                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textColor="@color/material_on_background_emphasis_high_type"
+                        app:drawableStartCompat="@drawable/ic_baseline_circle_4"
+                        app:drawableTint="@color/material_on_background_emphasis_high_type" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:text="@string/id_user_contact_info_ip_address_location"
+                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textColor="@color/material_on_background_emphasis_high_type"
+                        app:drawableStartCompat="@drawable/ic_baseline_circle_4"
+                        app:drawableTint="@color/material_on_background_emphasis_high_type" />
+
+                    <Button
+                        android:id="@+id/buttonLearnMore"
+                        style="@style/Widget.Green.Button.Text.Tiny"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_learn_more" />
+
+                </com.blockstream.green.views.GappedLinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <Button
+            android:id="@+id/buttonDisable"
+            style="@style/Widget.Green.Button.Outlined.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_dont_collect_data"
+            app:layout_constraintBottom_toTopOf="@+id/buttonEnable"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/buttonEnable"
+            style="@style/Widget.Green.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/id_allow_collection"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

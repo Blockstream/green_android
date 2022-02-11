@@ -1,7 +1,9 @@
-package com.blockstream.green.ui
+package com.blockstream.green.ui.bottomsheets
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.TwoFactorReset
@@ -21,24 +23,18 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
+import dagger.hilt.android.AndroidEntryPoint
 
-class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, AbstractWalletViewModel>(
-    layout = R.layout.recycler_bottom_sheet
-) {
+@AndroidEntryPoint
+class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, AbstractWalletViewModel>() {
     private lateinit var twoFactorReset: TwoFactorReset
 
     var cancelItem : HelpListItem? = null
     var disputeItem : HelpListItem? = null
 
-    companion object{
-        private const val TWO_FACTOR_RESET = "TWO_FACTOR_RESET"
+    override val screenName = "TwoFactorReset"
 
-        fun newInstance(twoFactorReset: TwoFactorReset): TwoFactorResetBottomSheetDialogFragment = TwoFactorResetBottomSheetDialogFragment().also {
-            it.arguments = Bundle().also { bundle ->
-                bundle.putParcelable(TWO_FACTOR_RESET, twoFactorReset)
-            }
-        }
-    }
+    override fun inflate(layoutInflater: LayoutInflater) = RecyclerBottomSheetBinding.inflate(layoutInflater)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,5 +140,17 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
         }
 
         return fastAdapter
+    }
+
+    companion object{
+        private const val TWO_FACTOR_RESET = "TWO_FACTOR_RESET"
+
+        fun show(twoFactorReset: TwoFactorReset, fragmentManager: FragmentManager) {
+            show(TwoFactorResetBottomSheetDialogFragment().also {
+                it.arguments = Bundle().also { bundle ->
+                    bundle.putParcelable(TWO_FACTOR_RESET, twoFactorReset)
+                }
+            }, fragmentManager)
+        }
     }
 }

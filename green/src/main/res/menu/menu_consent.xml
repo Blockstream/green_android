@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/copy_device_id"
+        android:title="@string/id_copy_device_id" />
+
+    <item
+        android:id="@+id/reset_device_id"
+        android:title="Reset Device ID" />
+
+</menu>

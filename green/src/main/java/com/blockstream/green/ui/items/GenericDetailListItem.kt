@@ -7,7 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.ListItemGenericDetailBinding
+import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.copyToClipboard
 import com.blockstream.green.utils.snackbar
@@ -20,7 +22,9 @@ class GenericDetailListItem constructor(
     val copyOnClick: Boolean = false,
     val liveContent: MutableLiveData<String>? = null,
     val buttonText: StringHolder = StringHolder(null),
-    val enableButton: LiveData<Boolean>? = MutableLiveData(true)
+    val enableButton: LiveData<Boolean>? = MutableLiveData(true),
+    val countly: Countly? = null,
+    val session: GreenSession? = null
 ) : AbstractBindingItem<ListItemGenericDetailBinding>() {
     override val type: Int
         get() = R.id.fastadapter_generic_detail_item_id
@@ -61,6 +65,7 @@ class GenericDetailListItem constructor(
                     binding.content
                 )
                 binding.root.snackbar(R.string.id_copied_to_clipboard)
+                session?.let { session -> countly?.shareTransaction(session = session) }
             }
         }
 

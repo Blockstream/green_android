@@ -38,8 +38,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TwoFactorAuthenticationFragment :
     WalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
-    val args: WalletSettingsFragmentArgs by navArgs()
+    val args: TwoFactorAuthenticationFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
+
+    override val screenName = "WalletSettings2FA"
 
     private val itemAdapter = ItemAdapter<GenericItem>()
 

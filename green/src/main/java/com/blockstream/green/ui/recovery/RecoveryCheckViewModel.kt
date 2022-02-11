@@ -4,7 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.green.data.Countly
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.security.SecureRandom
@@ -12,8 +15,10 @@ import kotlin.random.asKotlinRandom
 
 class RecoveryCheckViewModel @AssistedInject constructor(
     greenWallet: GreenWallet,
+    val countly: Countly,
     @Assisted val mnemonic: List<String>,
     @Assisted val page: Int,
+    @Assisted val networkId: String?,
     @Assisted val isDevelopmentFlavor: Boolean,
 ) : AppViewModel() {
     val wordLeft = MutableLiveData<String>()
@@ -53,13 +58,25 @@ class RecoveryCheckViewModel @AssistedInject constructor(
         pointer.value = (wordsPerPage * page) + wordIndex + 1
     }
 
-    fun selectWord(selectedWord: String): Boolean = correctWord == selectedWord
+    fun selectWord(selectedWord: String) {
+        onEvent.postValue(
+            ConsumableEvent(
+                if (correctWord == selectedWord) {
+                    NavigateEvent.Navigate
+                } else {
+                    networkId?.let { countly.recoveryPhraseCheckFailed(networkId = networkId, page = page + 1) }
+                    NavigateEvent.NavigateBack()
+                }
+            )
+        )
+    }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
             mnemonic: List<String>,
             page: Int,
+            networkId: String?,
             isDevelopmentFlavor: Boolean
         ): RecoveryCheckViewModel
     }
@@ -69,11 +86,12 @@ class RecoveryCheckViewModel @AssistedInject constructor(
             assistedFactory: AssistedFactory,
             mnemonic: List<String>,
             page: Int,
+            networkId: String?,
             isDevelopmentFlavor: Boolean
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(mnemonic, page, isDevelopmentFlavor) as T
+                return assistedFactory.create(mnemonic, page, networkId, isDevelopmentFlavor) as T
             }
         }
     }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.params.TransactionParams
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -25,9 +26,10 @@ import kotlinx.serialization.json.jsonPrimitive
 class TransactionDetailsViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted wallet: Wallet,
     @Assisted  val initialTransaction: Transaction
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     val transaction = MutableLiveData<Transaction>()
     val editableNote = MutableLiveData(initialTransaction.memo)

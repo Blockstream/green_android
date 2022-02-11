@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.SubAccount
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
@@ -16,8 +17,9 @@ import io.reactivex.rxjava3.kotlin.addTo
 class ArchivedAccountsViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted wallet: Wallet,
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     private val archivedSubAccountsLiveData: MutableLiveData<List<SubAccount>> = MutableLiveData()
     fun getArchivedSubAccountsLiveData(): LiveData<List<SubAccount>> = archivedSubAccountsLiveData

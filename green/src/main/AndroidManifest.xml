@@ -63,7 +63,6 @@
         android:theme="@style/Theme.Green"
         android:hardwareAccelerated="true">
 
-
         <!--In v4 we have to change launch mode to singleTask-->
         <!--Setting launchMode="singleTask" prevents Android,-->
         <!--from starting a new Activity on new USB devices-->
@@ -115,6 +114,13 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths"/>
         </provider>
+
+
+        <receiver android:name="ly.count.android.sdk.ReferrerReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

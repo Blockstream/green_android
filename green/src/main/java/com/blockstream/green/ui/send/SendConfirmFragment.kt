@@ -11,6 +11,7 @@ import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.ListItemTransactionAmountBinding
 import com.blockstream.green.databinding.SendConfirmFragmentBinding
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.VerifyTransactionBottomSheetDialogFragment
 import com.blockstream.green.ui.items.GenericDetailListItem
 import com.blockstream.green.ui.items.TransactionAmountListItem
 import com.blockstream.green.ui.items.TransactionFeeListItem
@@ -36,10 +37,13 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
 
     override val wallet by lazy { args.wallet }
 
+    override val screenName = "SendConfirm"
+    override val segmentation by lazy { countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) }
+
     @Inject
     lateinit var viewModelFactory: SendConfirmViewModel.AssistedFactory
     val viewModel: SendConfirmViewModel by viewModels {
-        SendConfirmViewModel.provideFactory(viewModelFactory, wallet)
+        SendConfirmViewModel.provideFactory(viewModelFactory, wallet, args.transactionSegmentation)
     }
 
     override fun getWalletViewModel() = viewModel
@@ -60,9 +64,7 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
 
         viewModel.deviceAddressValidationEvent.observe(viewLifecycleOwner){
             if(it.peekContent() == null){ // open if null
-                TransactionVerifyAddressBottomSheetDialogFragment().also {
-                    it.show(childFragmentManager, it.toString())
-                }
+                VerifyTransactionBottomSheetDialogFragment.show(childFragmentManager)
             }
         }
 

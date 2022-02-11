@@ -1,31 +1,26 @@
-package com.blockstream.green.ui
+package com.blockstream.green.ui.bottomsheets
 
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.databinding.PinMatrixBottomSheetBinding
 import com.blockstream.green.utils.setNavigationResult
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
 @AndroidEntryPoint
-class PinMatrixBottomSheetDialogFragment: BottomSheetDialogFragment(){
-
-    private lateinit var binding: PinMatrixBottomSheetBinding
+class PinMatrixBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PinMatrixBottomSheetBinding>(){
+    override val screenName = "PinMatrix"
 
     val pin = StringBuffer()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = PinMatrixBottomSheetBinding.inflate(layoutInflater)
-        binding.lifecycleOwner = viewLifecycleOwner
+    override fun inflate(layoutInflater: LayoutInflater) = PinMatrixBottomSheetBinding.inflate(layoutInflater)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         isCancelable = false
 
@@ -42,11 +37,11 @@ class PinMatrixBottomSheetDialogFragment: BottomSheetDialogFragment(){
         )
 
         for (i in buttons.indices) {
-            buttons[i].setOnClickListener { view: View ->
+            buttons[i].setOnClickListener { button: View ->
                 if (pin.length < 9) {
                     pin.append(i + 1)
                     updatePinView()
-                    view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    button.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                 }
             }
         }
@@ -75,9 +70,6 @@ class PinMatrixBottomSheetDialogFragment: BottomSheetDialogFragment(){
             setNavigationResult(result = pin.toString(), key = PIN_RESULT, destinationId = findNavController().currentDestination?.id)
             dismiss()
         }
-
-
-        return binding.root
     }
 
     private fun updatePinView() {
@@ -86,5 +78,9 @@ class PinMatrixBottomSheetDialogFragment: BottomSheetDialogFragment(){
 
     companion object : KLogging() {
         const val PIN_RESULT = "PIN_RESULT"
+
+        fun show(fragmentManager: FragmentManager) {
+            show(PinMatrixBottomSheetDialogFragment(), fragmentManager)
+        }
     }
 }

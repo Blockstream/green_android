@@ -1,28 +1,23 @@
-package com.blockstream.green.ui
+package com.blockstream.green.ui.bottomsheets
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.databinding.PassphraseBottomSheetBinding
 import com.blockstream.green.utils.setNavigationResult
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
 @AndroidEntryPoint
-class PassphraseBottomSheetDialogFragment: BottomSheetDialogFragment(){
+class PassphraseBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PassphraseBottomSheetBinding>(){
+    override val screenName = "Passphrase"
 
-    private lateinit var binding: PassphraseBottomSheetBinding
+    override fun inflate(layoutInflater: LayoutInflater) = PassphraseBottomSheetBinding.inflate(layoutInflater)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = PassphraseBottomSheetBinding.inflate(layoutInflater)
-        binding.lifecycleOwner = viewLifecycleOwner
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.passphrase = ""
         binding.passphraseConfirm = ""
@@ -38,12 +33,14 @@ class PassphraseBottomSheetDialogFragment: BottomSheetDialogFragment(){
             setNavigationResult(result = binding.passphrase?.trim(), key = PASSPHRASE_RESULT, destinationId = findNavController().currentDestination?.id)
             dismiss()
         }
-
-        return binding.root
     }
 
     companion object : KLogging() {
         const val PASSPHRASE_RESULT = "PASSPHRASE_RESULT"
         const val PASSPHRASE_CANCEL_RESULT = "PASSPHRASE_CANCEL_RESULT"
+
+        fun show(fragmentManager: FragmentManager){
+            show(PassphraseBottomSheetDialogFragment(), fragmentManager)
+        }
     }
 }

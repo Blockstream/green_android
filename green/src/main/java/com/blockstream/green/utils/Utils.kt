@@ -22,6 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
 
+// WIP log open urls
 fun AppFragment<*>.openBrowser(url: String) {
     openBrowser(settingsManager.getApplicationSettings(), url)
 }
@@ -141,6 +142,7 @@ fun String?.nameCleanup(): String? = if (isNullOrBlank()) null else trim().repla
 
 fun Context.isDebug() = BuildConfig.DEBUG
 fun Context.isDevelopmentOrDebug() = isDevelopmentFlavor() || isDebug()
+fun Context.isDevelopmentAndDebug() = isDevelopmentFlavor() && isDebug()
 fun Context.isDevelopmentFlavor() = packageName.contains(".dev")
 fun Context.isProductionFlavor() = !this.isDevelopmentFlavor()
 

@@ -48,7 +48,7 @@ data class Network(
             }
 
     val canonicalNetworkId: String
-        get() = network.removePrefix("electrum-")
+        get() = canonicalNetworkId(network)
 
     val productName: String
         get() = if (isElectrum) {
@@ -89,7 +89,12 @@ data class Network(
         const val ElectrumTestnet = "electrum-testnet"
         const val ElectrumTestnetLiquid = "electrum-testnet-liquid"
 
+        fun canonicalNetworkId(id: String) = id.removePrefix("electrum-")
+
         fun isElectrum(id: String) = id.contains("electrum")
+
+        fun isSinglesig(id: String) = isElectrum(id)
+        fun isMultisig(id: String) = !isElectrum(id)
 
         fun isMainnet(id: String) = (id == GreenMainnet || id == ElectrumMainnet)
         fun isLiquid(id: String) = (id == GreenLiquid || id == ElectrumLiquid)

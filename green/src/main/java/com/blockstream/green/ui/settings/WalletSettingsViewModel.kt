@@ -11,6 +11,7 @@ import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.gdk.params.Limits
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.CredentialType
@@ -34,11 +35,12 @@ import javax.crypto.Cipher
 open class WalletSettingsViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     val appKeystore: AppKeystore,
     val greenWallet: GreenWallet,
     val applicationScope: ApplicationScope,
     @Assisted wallet: Wallet
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     val onErrorStringRes = MutableLiveData<ConsumableEvent<Int>>()
 

@@ -14,6 +14,8 @@ import com.blockstream.green.ApplicationScope
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.QaTesterActivityBinding
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.QTNotificationDelay
@@ -96,9 +98,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
         }
 
         binding.buttonCreateCustomNetwork.setOnClickListener {
-            FilterBottomSheetDialogFragment().also {
-                it.show(supportFragmentManager, it.toString())
-            }
+            FilterBottomSheetDialogFragment.show(supportFragmentManager)
         }
 
         binding.buttonClearGdk.setOnClickListener {

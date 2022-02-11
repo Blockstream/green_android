@@ -11,9 +11,9 @@ import com.blockstream.green.data.Country
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorSetupFragmentBinding
-import com.blockstream.green.ui.FilterBottomSheetDialogFragment
-import com.blockstream.green.ui.FilterableDataProvider
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -33,6 +33,29 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
     val args: TwoFactorSetupFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
+    override val screenName by lazy{
+        when (args.action) {
+            TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
+                "Setup"
+            }
+            TwoFactorSetupAction.RESET -> {
+                "Reset"
+            }
+            TwoFactorSetupAction.CANCEL -> {
+                "Cancel"
+            }
+            TwoFactorSetupAction.DISPUTE -> {
+                "Dispute"
+            }
+            TwoFactorSetupAction.UNDO_DISPUTE -> {
+                "UndoDispute"
+            }
+        }.let {
+            "WalletSettings2FA$it"
+        }
+    }
+    override val segmentation by lazy { countly.twoFactorSegmentation(session, viewModel.getSubAccountLiveData().value, args.method)}
+
     override val isAdjustResize: Boolean = true
 
     @Inject
@@ -46,10 +69,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
             val methodLocalized = requireContext().localized2faMethod(args.method.gdkType)
 
             return when (args.action) {
-                TwoFactorSetupAction.SETUP -> {
-                    getString(R.string.id_1s_twofactor_setup, methodLocalized)
-                }
-                TwoFactorSetupAction.SETUP_EMAIL -> {
+                TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
                     getString(R.string.id_1s_twofactor_setup, methodLocalized)
                 }
                 TwoFactorSetupAction.RESET -> {
@@ -187,9 +207,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
     }
 
     private fun openCountryFilter(){
-        FilterBottomSheetDialogFragment().also {
-            it.show(childFragmentManager, it.toString())
-        }
+        FilterBottomSheetDialogFragment.show(childFragmentManager)
     }
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel

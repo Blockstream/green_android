@@ -1,5 +1,6 @@
-package com.blockstream.green.ui
+package com.blockstream.green.ui.bottomsheets
 
+import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ListItemHelpBinding
@@ -11,10 +12,12 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import dagger.hilt.android.AndroidEntryPoint
+import mu.KLogging
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HelpBottomSheetDialogFragment : RecyclerBottomSheetDialogFragment() {
+class HelpBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
+    override val screenName = "Help"
 
     @Inject
     lateinit var settingsManager: SettingsManager
@@ -39,5 +42,11 @@ class HelpBottomSheetDialogFragment : RecyclerBottomSheetDialogFragment() {
         }
 
         return fastAdapter
+    }
+
+    companion object : KLogging() {
+        fun show(fragmentManager: FragmentManager){
+            show(HelpBottomSheetDialogFragment(), fragmentManager)
+        }
     }
 }

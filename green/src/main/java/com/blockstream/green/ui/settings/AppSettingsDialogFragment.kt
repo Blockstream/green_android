@@ -4,25 +4,27 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import com.blockstream.green.R
 import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
+import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.utils.endIconCopyMode
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import mu.KLogging
 
 
 @AndroidEntryPoint
-class AppSettingsDialogFragment : BottomSheetDialogFragment() {
+class AppSettingsDialogFragment : AbstractBottomSheetDialogFragment<DialogAppSettingsBottomSheetBinding>() {
+    override val screenName = "AppSettings"
+
     private val viewModel: AppSettingsViewModel by viewModels()
 
-    private lateinit var binding: DialogAppSettingsBottomSheetBinding
+    override fun inflate(layoutInflater: LayoutInflater) = DialogAppSettingsBottomSheetBinding.inflate(layoutInflater)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -30,19 +32,11 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
         return dialog
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.dialog_app_settings_bottom_sheet,
-            container,
-            false
-        )
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding.vm = viewModel
+        binding.isDevelopment = isDevelopmentFlavor()
 
         val screenLockSettings = ScreenLockSetting.getStringList(requireContext())
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, screenLockSettings)
@@ -65,15 +59,9 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
         binding.testnetSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_TESTNET_URL
         binding.testnetLiquidSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL
 
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.vm = viewModel
-
-        binding.isDevelopment = isDevelopmentFlavor()
+        binding.buttonAnalyticsMoreInfo.setOnClickListener {
+            ConsentBottomSheetDialogFragment.show(childFragmentManager)
+        }
 
         binding.personalBitcoinElectrumServerInputLayout.endIconCopyMode()
         binding.personalLiquidElectrumServerInputLayout.endIconCopyMode()
@@ -95,5 +83,11 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
         }
 
         isCancelable = false
+    }
+
+    companion object : KLogging() {
+        fun show(fragmentManager: FragmentManager){
+            show(AppSettingsDialogFragment(), fragmentManager)
+        }
     }
 }

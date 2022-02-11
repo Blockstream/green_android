@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.Address
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
@@ -21,8 +22,9 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 class ReceiveViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted wallet: Wallet,
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet){
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet){
     var address = MutableLiveData<Address>()
     var addressUri = MutableLiveData<String>()
 
@@ -78,7 +80,7 @@ class ReceiveViewModel @AssistedInject constructor(
             deviceAddressValidationEvent.value = ConsumableEvent(null)
 
             session.hwWallet?.observable(timeout = 30) {
-                val subAccount = session.getSubAccount(session.activeAccount)
+                val subAccount = session.getActiveSubAccount()
                 it.getGreenAddress(session.network, subAccount, address.userPath, address.subType ?: 0)
             }?.subscribeBy(
                 onError = {

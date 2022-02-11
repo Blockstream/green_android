@@ -1,33 +1,28 @@
-package com.blockstream.green.ui
+package com.blockstream.green.ui.bottomsheets
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.green.databinding.MenuBottomSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
+import mu.KLogging
 
 @AndroidEntryPoint
-class MenuBottomSheetDialogFragment constructor(private val dataProvider: MenuDataProvider) :
-    BottomSheetDialogFragment() {
+class MenuBottomSheetDialogFragment constructor(private val dataProvider: MenuDataProvider) : AbstractBottomSheetDialogFragment<MenuBottomSheetBinding>() {
+    override val screenName: String? = null
 
-    private lateinit var binding: MenuBottomSheetBinding
+    override fun inflate(layoutInflater: LayoutInflater) = MenuBottomSheetBinding.inflate(layoutInflater)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = MenuBottomSheetBinding.inflate(layoutInflater)
-        
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.title = dataProvider.getTitle()
         binding.subtitle = dataProvider.getSubtitle()
 
@@ -57,12 +52,12 @@ class MenuBottomSheetDialogFragment constructor(private val dataProvider: MenuDa
                 )
             )
         }
-
-        return binding.root
     }
 
-    fun show(childFragmentManager: FragmentManager) {
-        show(childFragmentManager, this.toString())
+    companion object : KLogging() {
+        fun show(dataProvider: MenuDataProvider, fragmentManager: FragmentManager){
+            show(MenuBottomSheetDialogFragment(dataProvider), fragmentManager)
+        }
     }
 }
 

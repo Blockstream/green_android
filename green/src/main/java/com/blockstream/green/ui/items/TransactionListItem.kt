@@ -26,7 +26,7 @@ data class TransactionListItem constructor(
     private val look: TransactionListLook
 
     init {
-        identifier = (if(tx.txHash.isBlank()) "TransactionListItem" else tx.txHash).hashCode().toLong()
+        identifier = (tx.txHash.ifBlank { "TransactionListItem" }).hashCode().toLong()
         look = TransactionListLook(session, tx)
     }
 

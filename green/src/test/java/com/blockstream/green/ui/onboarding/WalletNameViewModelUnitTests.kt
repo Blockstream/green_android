@@ -1,19 +1,20 @@
 package com.blockstream.green.ui.onboarding
 
 import com.blockstream.green.TestViewModel
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.mock
 
 @RunWith(MockitoJUnitRunner::class)
 class WalletNameViewModelUnitTests : TestViewModel<WalletNameViewModel>(){
 
     @Before
     fun setup(){
-        viewModel = WalletNameViewModel(mock(), mock(), mock(), mock())
+        viewModel = WalletNameViewModel(mock(), mock(), mock(), mock(), mock())
     }
 
     @Test

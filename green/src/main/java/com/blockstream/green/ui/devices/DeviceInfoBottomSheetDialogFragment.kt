@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.NavGraphDirections
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceInfoBottomSheetBinding
@@ -49,6 +50,9 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(), DeviceI
 
     @Inject
     lateinit var sessionManager: SessionManager
+
+    @Inject
+    lateinit var countly: Countly
 
     @Inject
     lateinit var viewModelFactory: DeviceInfoViewModel.AssistedFactory

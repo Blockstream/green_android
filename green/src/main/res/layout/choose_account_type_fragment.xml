@@ -35,46 +35,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/subtitle" />
 
-<!--        <ScrollView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:scrollbars="none"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/textView3">-->
-
-<!--            <com.blockstream.green.views.GappedLinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="24dp"-->
-<!--                android:layout_marginTop="24dp"-->
-<!--                android:layout_marginEnd="24dp"-->
-<!--                android:orientation="vertical"-->
-<!--                app:gap="24dp">-->
-
-<!--                <com.blockstream.green.views.GreenContentCardView-->
-<!--                    android:id="@+id/buttonStandard"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:captionText="@string/id_standard_accounts_allow_you_to"-->
-<!--                    app:titleText="@string/id_standard_account" />-->
-
-<!--                <com.blockstream.green.views.GreenContentCardView-->
-<!--                    android:id="@+id/buttonManagedAssets"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:captionText="@string/id_amp_accounts_are_only_available"-->
-<!--                    app:titleText="@string/id_amp_account" />-->
-
-<!--                <com.blockstream.green.views.GreenContentCardView-->
-<!--                    android:id="@+id/button2of3"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:captionText="@string/id_a_2of3_account_requires_two_out"-->
-<!--                    app:titleText="@string/id_2of3_account" />-->
-
-<!--            </com.blockstream.green.views.GappedLinearLayout>-->
-
-<!--        </ScrollView>-->
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

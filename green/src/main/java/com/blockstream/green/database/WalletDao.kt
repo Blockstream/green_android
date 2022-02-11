@@ -21,6 +21,9 @@ interface WalletDao {
     @Update
     fun updateSync(vararg wallet: Wallet)
 
+    @Update
+    suspend fun updateSuspend(vararg wallet: Wallet)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSync(loginCredentials: LoginCredentials)
 
@@ -49,7 +52,7 @@ interface WalletDao {
     suspend fun getWalletSuspend(id: WalletId): Wallet?
 
     @Query("SELECT * FROM wallets")
-    fun getWallets(): LiveData<List<Wallet>>
+    fun getWalletsLiveData(): LiveData<List<Wallet>>
 
     @Query("SELECT * FROM wallets")
     suspend fun getWalletsSuspend(): List<Wallet>

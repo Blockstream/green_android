@@ -21,6 +21,8 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
 
     private val args: SetPinFragmentArgs by navArgs()
 
+    override val screenName = "OnBoardPin"
+
     @Inject
     lateinit var viewModelFactory: SetPinViewModel.AssistedFactory
     val viewModel: SetPinViewModel by viewModels {

@@ -48,6 +48,8 @@ class WalletSettingsFragment :
     val args: WalletSettingsFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
+    override val screenName by lazy { if(args.showRecoveryTransactions) "WalletSettingsRecoveryTransactions" else "WalletSettings" }
+
     private val itemAdapter = ItemAdapter<GenericItem>()
 
     private lateinit var logoutPreference: PreferenceListItem

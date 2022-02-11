@@ -10,15 +10,13 @@ import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.GreenApplication
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.QATester
-import com.blockstream.green.utils.isDevelopmentFlavor
-import com.blockstream.green.utils.isDevelopmentOrDebug
+import com.blockstream.green.utils.*
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
 import com.pandulapeter.beagle.Beagle
@@ -89,15 +87,22 @@ class GreenModules {
         settingsManager: SettingsManager,
         assetManager: AssetManager,
         greenWallet: GreenWallet,
+        countly: Countly,
         qaTester: QATester
     ): SessionManager {
-        return SessionManager(applicationScope, settingsManager, assetManager, greenWallet, qaTester)
+        return SessionManager(applicationScope, settingsManager, assetManager, greenWallet, countly, qaTester)
     }
 
     @Singleton
     @Provides
     fun provideAssetManager(@ApplicationContext context: Context, applicationScope: ApplicationScope, QATester: QATester): AssetManager {
         return AssetManager(context, applicationScope, QATester)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCountly(@ApplicationContext context: Context, settingsManager: SettingsManager, walletRepository: WalletRepository): Countly {
+        return Countly(context, settingsManager, walletRepository)
     }
 
     @Singleton
@@ -165,9 +170,9 @@ class GreenModules {
                 context as GreenApplication,
                 behavior = Behavior(
                     bugReportingBehavior = Behavior.BugReportingBehavior(
-                        crashLoggers = listOf(
-                            BeagleCrashLogger
-                        )
+                        // Enabling this feature will disable the crash collection of Firebase Crashlytics,
+                        // as using the two simultaneously has proved to be unreliable.
+                        crashLoggers = if (context.isDebug()) listOf(BeagleCrashLogger) else listOf()
                     )
                 )
             )

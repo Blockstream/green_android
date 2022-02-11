@@ -97,3 +97,7 @@
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
 }
+
+# Countly
+-keep class org.openudid.** { *; }
+-keep class ly.count.android.sdk.** { *; }

@@ -1,15 +1,19 @@
 package com.blockstream.green.ui.settings
 
-import com.blockstream.green.settings.SettingsManager
+import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.settings.ApplicationSettings
+import com.blockstream.green.settings.SettingsManager
 import junit.framework.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
 class AppSettingsViewModelUnitTests : TestViewModel<AppSettingsViewModel>() {
@@ -20,7 +24,8 @@ class AppSettingsViewModelUnitTests : TestViewModel<AppSettingsViewModel>() {
     @Before
     fun setup() {
         whenever(settingsManager.getApplicationSettings()).thenReturn(ApplicationSettings())
-        viewModel = AppSettingsViewModel(settingsManager)
+        whenever(settingsManager.getApplicationSettingsLiveData()).thenReturn(MutableLiveData(ApplicationSettings()))
+        viewModel = AppSettingsViewModel(settingsManager, mock())
     }
 
     @Test

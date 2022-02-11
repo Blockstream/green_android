@@ -33,6 +33,8 @@ class WatchOnlyDetailsFragment :
     val args: WatchOnlyDetailsFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
+    override val screenName = "WatchOnlyDetails"
+
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory
     val viewModel: WalletViewModel by viewModels {

@@ -24,6 +24,8 @@ class ScanWalletFragment :
 
     private val args: ScanWalletFragmentArgs by navArgs()
 
+    override val screenName = "OnBoardScan"
+
     @Inject
     lateinit var viewModelFactory: ScanWalletViewModel.AssistedFactory
     val viewModel: ScanWalletViewModel by viewModels {

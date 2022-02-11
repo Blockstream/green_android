@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.data.OnboardingOptions
@@ -23,6 +22,9 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.LoginFragmentBinding
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
+import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenPinViewListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,6 +64,8 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
     var biometricPrompt : BiometricPrompt? = null
 
+    override val screenName = "Login"
+
 
     override fun isLoggedInRequired(): Boolean = false
 
@@ -72,6 +76,10 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
+
+        viewModel.getWalletLiveData().observe(viewLifecycleOwner){
+            updateToolbar()
+        }
 
         viewModel.actionLogin.observe(viewLifecycleOwner) {
             if (it) {
@@ -144,7 +152,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         }
 
         binding.buttonAppSettings.setOnClickListener {
-            navigate(NavGraphDirections.actionGlobalAppSettingsDialogFragment())
+            AppSettingsDialogFragment.show(childFragmentManager)
         }
 
         binding.buttonLoginWithBiometrics.setOnClickListener {
@@ -227,15 +235,11 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.delete -> {
-                DeleteWalletBottomSheetDialogFragment().also {
-                    it.show(childFragmentManager, it.toString())
-                }
+                DeleteWalletBottomSheetDialogFragment.show(wallet, childFragmentManager)
             }
 
             R.id.rename -> {
-                RenameWalletBottomSheetDialogFragment().also {
-                    it.show(childFragmentManager, it.toString())
-                }
+                RenameWalletBottomSheetDialogFragment.show(wallet, childFragmentManager)
             }
 
             R.id.help -> {

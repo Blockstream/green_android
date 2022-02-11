@@ -4,7 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.TwoFactorResolver
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
+import com.blockstream.green.data.TransactionSegmentation
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
@@ -20,8 +22,10 @@ import mu.KLogging
 class SendConfirmViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
-    @Assisted wallet: Wallet
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+    countly: Countly,
+    @Assisted wallet: Wallet,
+    @Assisted val transactionSegmentation: TransactionSegmentation
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     val editableNote = MutableLiveData(session.pendingTransaction?.second?.memo ?: "") // bump memo
     val deviceAddressValidationEvent = MutableLiveData<ConsumableEvent<Boolean?>>()
@@ -57,14 +61,24 @@ class SendConfirmViewModel @AssistedInject constructor(
             onSuccess = {
                 deviceAddressValidationEvent.value = ConsumableEvent(true)
                 onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
+                countly.sendTransaction(
+                    session = session,
+                    subAccount = getSubAccountLiveData().value,
+                    transactionSegmentation = transactionSegmentation,
+                    withMemo = !editableNote.value.isNullOrBlank()
+                )
                 session.pendingTransaction = null // clear pending transaction
             },
             onError = {
                 it.printStackTrace()
                 deviceAddressValidationEvent.value = ConsumableEvent(false)
                 onError.postValue(ConsumableEvent(it))
+
                 // Set progress to false only onError as expected behavior for success is to navigate away and we want to avoid animation glitches
                 onProgress.postValue(false)
+
+                countly.recordException(it)
+                countly.failedTransaction(session = session, error = it)
             }
         )
     }
@@ -73,18 +87,20 @@ class SendConfirmViewModel @AssistedInject constructor(
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            wallet: Wallet
+            wallet: Wallet,
+            transactionSegmentation: TransactionSegmentation
         ): SendConfirmViewModel
     }
 
     companion object : KLogging() {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            wallet: Wallet
+            wallet: Wallet,
+            transactionSegmentation: TransactionSegmentation
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet) as T
+                return assistedFactory.create(wallet, transactionSegmentation) as T
             }
         }
     }

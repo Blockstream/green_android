@@ -9,17 +9,20 @@ import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.WalletNameFragmentBinding
+import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.dialog
 import com.blockstream.green.utils.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WalletNameFragment :
-    AbstractOnboardingFragment<WalletNameFragmentBinding>(
-        R.layout.wallet_name_fragment,
-        menuRes = 0
-    ) {
+class WalletNameFragment : AbstractOnboardingFragment<WalletNameFragmentBinding>(
+    R.layout.wallet_name_fragment,
+    menuRes = 0
+) {
+    private val args: WalletNameFragmentArgs by navArgs()
+
+    override val screenName = "OnBoardWalletName"
 
     override val isAdjustResize: Boolean = true
 
@@ -28,7 +31,6 @@ class WalletNameFragment :
     val viewModel: WalletNameViewModel by viewModels {
         WalletNameViewModel.provideFactory(viewModelFactory, args.onboardingOptions, args.restoreWallet)
     }
-    private val args: WalletNameFragmentArgs by navArgs()
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -54,7 +56,7 @@ class WalletNameFragment :
         }
 
         binding.buttonSettings.setOnClickListener {
-            navigate(WalletNameFragmentDirections.actionGlobalAppSettingsDialogFragment())
+            AppSettingsDialogFragment.show(childFragmentManager)
         }
 
         viewModel.onError.observe(viewLifecycleOwner){

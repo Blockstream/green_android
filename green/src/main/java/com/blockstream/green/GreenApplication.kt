@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.managers.NotificationManager
@@ -57,8 +58,13 @@ class GreenApplication : Application(){
     @Inject
     lateinit var notificationManager: NotificationManager
 
+    @Inject
+    lateinit var countly: Countly
+
     override fun onCreate() {
         super.onCreate()
+
+        countly.applicationOnCreate()
 
         applicationScope.launch {
             migrator.migrate()

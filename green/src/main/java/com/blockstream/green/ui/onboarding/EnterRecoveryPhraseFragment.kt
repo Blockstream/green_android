@@ -16,7 +16,7 @@ import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.EnterRecoveryPhraseFragmentBinding
-import com.blockstream.green.ui.HelpBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.HelpBottomSheetDialogFragment
 import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
 import com.blockstream.green.utils.endIconCopyMode
 import com.blockstream.green.utils.getClipboard
@@ -38,9 +38,10 @@ class EnterRecoveryPhraseFragment :
         menuRes = R.menu.menu_help
     ) {
 
-    private var itemAdapter: FastItemAdapter<RecoveryPhraseWordListItem> = FastItemAdapter()
-
     val args: EnterRecoveryPhraseFragmentArgs by navArgs()
+
+    override val screenName = "OnBoardEnterRecovery"
+    override val segmentation: HashMap<String, Any>? = null
 
     @Inject
     lateinit var appWallet: GreenWallet
@@ -54,6 +55,7 @@ class EnterRecoveryPhraseFragment :
         )
     }
 
+    private var itemAdapter: FastItemAdapter<RecoveryPhraseWordListItem> = FastItemAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -137,7 +139,7 @@ class EnterRecoveryPhraseFragment :
         }
 
         binding.buttonHelp.setOnClickListener {
-            navigate(EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToHelpBottomSheetDialogFragment())
+            HelpBottomSheetDialogFragment.show(childFragmentManager)
         }
 
         binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, _ ->
@@ -200,9 +202,7 @@ class EnterRecoveryPhraseFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.help -> {
-                HelpBottomSheetDialogFragment().also {
-                    it.show(childFragmentManager, it.toString())
-                }
+                HelpBottomSheetDialogFragment.show(childFragmentManager)
                 return true
             }
         }

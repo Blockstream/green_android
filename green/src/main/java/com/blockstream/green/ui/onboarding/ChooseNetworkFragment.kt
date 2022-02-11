@@ -9,10 +9,8 @@ import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseNetworkFragmentBinding
-import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
-import com.blockstream.green.utils.isDevelopmentFlavor
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
@@ -33,6 +31,8 @@ class ChooseNetworkFragment :
 
     private val args: ChooseNetworkFragmentArgs by navArgs()
 
+    override val screenName = "OnBoardChooseNetwork"
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -45,7 +45,7 @@ class ChooseNetworkFragment :
                 is NetworkListItem -> {
                     options?.apply {
                         if(isRestoreFlow){
-                            navigate(createCopyForNetwork(greenWallet, item.network, isSingleSig))
+                            navigate(createCopyForNetwork(greenWallet, item.network, isSingleSig == true))
                         }else{
                             navigate(copy(networkType = item.network))
                         }

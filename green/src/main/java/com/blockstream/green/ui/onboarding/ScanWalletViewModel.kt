@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.params.SubAccountsParams
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.data.Countly
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.ConsumableEvent
@@ -16,9 +17,10 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 class ScanWalletViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted val onboardingOptions: OnboardingOptions,
     @Assisted mnemonic: String
-) : OnboardingViewModel(sessionManager, walletRepository, null) {
+) : OnboardingViewModel(sessionManager, walletRepository, countly,null) {
     val multiSig = MutableLiveData<Boolean?>(null) // true = can be added , false -> already in app , null -> not available
     val singleSig = MutableLiveData<Boolean?>(null)
 

@@ -3,6 +3,7 @@ package com.blockstream.green.ui.settings
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
 import com.blockstream.green.lifecycle.ListenableLiveData
 import com.blockstream.green.settings.ApplicationSettings
 import com.blockstream.green.settings.SettingsManager
@@ -12,9 +13,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppSettingsViewModel @Inject constructor(
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    countly: Countly
 ) : AppViewModel() {
     private var appSettings: ApplicationSettings = settingsManager.getApplicationSettings()
+
+    val analyticsFeatureEnabled = countly.analyticsFeatureEnabled
 
     val proxyURLInvalid = MutableLiveData(true)
 
@@ -26,6 +30,7 @@ class AppSettingsViewModel @Inject constructor(
     // screenLockSetting must be optional as is accessed by enableEnhancedPrivacy before being initialized
     val screenLockSetting : MutableLiveData<Int> = MutableLiveData(appSettings.screenLockInSeconds)
     val enableTestnet = MutableLiveData(appSettings.testnet)
+    val enableAnalytics = MutableLiveData(appSettings.analytics)
     val enableTorRouting = MutableLiveData(appSettings.tor)
     val enableProxy = MutableLiveData(appSettings.proxyUrl != null)
 
@@ -54,10 +59,22 @@ class AppSettingsViewModel @Inject constructor(
     val spvTestnetElectrumServer = MutableLiveData(appSettings.spvTestnetElectrumServer ?: "")
     val spvTestnetLiquidElectrumServer = MutableLiveData(appSettings.spvTestnetLiquidElectrumServer ?: "")
 
+    init {
+        settingsManager
+            .getApplicationSettingsLiveData()
+            .observe(lifecycleOwner){
+            appSettings = it
+
+            // Only analytics is changed from an outside scope
+            enableAnalytics.postValue(appSettings.analytics)
+        }
+    }
+
     fun getSettings() = ApplicationSettings(
         enhancedPrivacy = enableEnhancedPrivacy.value ?: false,
         screenLockInSeconds = screenLockSetting.value ?: ScreenLockSetting.LOCK_IMMEDIATELY.seconds,
         testnet = enableTestnet.value ?: false,
+        analytics = enableAnalytics.value ?: false,
         proxyUrl = if (enableProxy.value == true && !proxyURL.value.isNullOrBlank()) proxyURL.value else null,
         electrumNode = enableElectrumNode.value ?: false,
         tor = enableTorRouting.value ?: false,

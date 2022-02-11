@@ -1,6 +1,7 @@
 package com.blockstream.green.ui
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
@@ -20,10 +21,13 @@ import androidx.transition.TransitionManager
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
+import com.blockstream.green.data.ScreenView
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.ui.devices.DeviceInfoBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragment
 import com.blockstream.green.utils.*
@@ -50,6 +54,9 @@ class MainActivity : AppActivity() {
     @Inject
     lateinit var applicationScope: ApplicationScope
 
+    @Inject
+    lateinit var countly: Countly
+
     private var unlockPrompt: BiometricPrompt? = null
 
     private lateinit var binding: MainActivityBinding
@@ -57,6 +64,9 @@ class MainActivity : AppActivity() {
 
     override val toolbar: GreenToolbar
         get() = binding.toolbar
+
+    val navHostFragment: NavHostFragment
+        get() = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,8 +125,6 @@ class MainActivity : AppActivity() {
             it.setDisplayShowTitleEnabled(false)
         }
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration(
@@ -127,7 +135,7 @@ class MainActivity : AppActivity() {
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 
         binding.toolbar.setLogoClickListener {
-            navHostFragment.childFragmentManager.fragments.firstOrNull()?.let { fragment ->
+            getVisibleFragment()?.let { fragment ->
                 // Except LoginFragment as we don't want concurrent login requests to happen
                 if(fragment is WalletFragment<*> && fragment !is LoginFragment){
                     fragment.session.device?.let {
@@ -144,6 +152,14 @@ class MainActivity : AppActivity() {
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
+
+            getVisibleFragment()?.let {
+                if(it is ScreenView){
+                    // Mark it as not recorded
+                    it.screenIsRecorded = false
+                }
+            }
+
             binding.appBarLayout.isInvisible =
                 (destination.id == R.id.introFragment || destination.id == R.id.onBoardingCompleteFragment)
         }
@@ -167,6 +183,26 @@ class MainActivity : AppActivity() {
                 return super.onPreBind(binding)
             }
         })
+
+        //
+        if(settingsManager.getApplicationSettings().analytics == null) {
+            ConsentBottomSheetDialogFragment.show(navHostFragment.childFragmentManager)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        countly.onStart(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        countly.onStop()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        countly.onConfigurationChanged(newConfig)
     }
 
     override fun onResume() {
@@ -285,6 +321,8 @@ class MainActivity : AppActivity() {
             super.onBackPressed()
         }
     }
+
+    fun getVisibleFragment() = navHostFragment.childFragmentManager.fragments.firstOrNull()
 
     companion object: KLogging() {
         const val OPEN_WALLET = "OPEN_WALLET"

@@ -7,6 +7,10 @@
 
         <variable
             name="vm"
+            type="com.blockstream.green.ui.WalletListCommonViewModel" />
+
+        <variable
+            name="activityVm"
             type="com.blockstream.green.ui.MainActivityViewModel" />
     </data>
 
@@ -48,53 +52,86 @@
             <androidx.core.widget.NestedScrollView
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/bottom"
+                app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <include
-                    android:id="@+id/common"
-                    layout="@layout/wallet_list_common" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <include
+                        android:id="@+id/common"
+                        layout="@layout/wallet_list_common" />
+
+                    <LinearLayout
+                        android:id="@+id/helpCenter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="16dp">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginStart="16dp"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_baseline_help_outline_18"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/color_on_surface_emphasis_low" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="24dp"
+                            android:layout_marginBottom="16dp"
+                            android:textColor="@color/color_on_surface_emphasis_low"
+                            android:text="@string/id_help"
+                            android:drawablePadding="8dp"
+                            android:textAppearance="?attr/textAppearanceBody1"
+                            android:gravity="center_vertical"
+                            app:drawableEndCompat="@drawable/ic_baseline_link_18"
+                            app:drawableTint="@color/color_on_surface_emphasis_very_low" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </androidx.core.widget.NestedScrollView>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAppSettings"
+                style="@style/Widget.Green.Button.Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/id_app_settings"
+                android:textColor="@color/color_on_surface_emphasis_low"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-            <com.blockstream.green.views.GappedLinearLayout
-                android:id="@+id/bottom"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
-                android:orientation="vertical"
-                app:gap="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonAppSettings"
-                    style="@style/Widget.Green.Button.Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="24dp"
-                    android:text="@string/id_app_settings"
-                    android:textColor="@color/color_on_surface_emphasis_low"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <TextView
-                    android:id="@+id/textView6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{vm.buildVersion}"
-                    android:textAppearance="?attr/textAppearanceCaption"
-                    android:textColor="@color/color_on_surface_emphasis_very_low"
-                    android:textSize="12sp"
-                    tools:text="Build 3.14.00" />
-
-            </com.blockstream.green.views.GappedLinearLayout>
+                android:text="@{activityVm.buildVersion}"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_on_surface_emphasis_very_low"
+                android:textSize="12sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/buttonAppSettings"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Build 3.14.00" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

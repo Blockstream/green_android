@@ -5,6 +5,7 @@ import android.util.Patterns
 import androidx.lifecycle.*
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.ApplicationScope
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -20,13 +21,14 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 class TwoFactorSetupViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     appKeystore: AppKeystore,
     greenWallet: GreenWallet,
     applicationScope: ApplicationScope,
     @Assisted wallet: Wallet,
     @Assisted val method: TwoFactorMethod,
     @Assisted val action: TwoFactorSetupAction
-) : WalletSettingsViewModel(sessionManager, walletRepository, appKeystore, greenWallet, applicationScope, wallet) {
+) : WalletSettingsViewModel(sessionManager, walletRepository, countly, appKeystore, greenWallet, applicationScope, wallet) {
 
     var authenticatorUrl: String? = null
     val country = MutableLiveData("")

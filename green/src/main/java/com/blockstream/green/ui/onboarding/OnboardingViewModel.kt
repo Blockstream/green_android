@@ -1,9 +1,8 @@
 package com.blockstream.green.ui.onboarding
 
 import com.blockstream.gdk.data.Network
-
 import com.blockstream.gdk.data.PinData
-
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.CredentialType
@@ -17,9 +16,10 @@ import com.blockstream.green.utils.ConsumableEvent
 import mu.KLogging
 
 
-open class OnboardingViewModel(
+open class OnboardingViewModel constructor(
     val sessionManager: SessionManager,
     val walletRepository: WalletRepository,
+    val countly: Countly,
     private val restoreWallet: Wallet?
 ) : AppViewModel() {
     val session = sessionManager.getOnBoardingSession(restoreWallet)
@@ -60,6 +60,8 @@ open class OnboardingViewModel(
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
 
+            countly.createWallet(session)
+
             wallet
         }.doOnSubscribe {
             onProgress.value = true
@@ -92,7 +94,7 @@ open class OnboardingViewModel(
                 // Check if wallet already exists
                 it.walletHashId?.let { walletHashId ->
                     if (walletRepository.walletsExistsSync(walletHashId, false)) {
-                        throw Exception("id_wallet_already_exists")
+                        throw Exception("id_wallet_already_restored")
                     }
                 }
             }else{
@@ -156,6 +158,8 @@ open class OnboardingViewModel(
             }
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+
+            countly.restoreWallet(session)
 
             wallet
         }.doOnSubscribe {

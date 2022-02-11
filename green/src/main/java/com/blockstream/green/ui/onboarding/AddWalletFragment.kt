@@ -3,13 +3,15 @@ package com.blockstream.green.ui.onboarding
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.AddWalletFragmentBinding
-import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.devices.DeviceInfoFragmentDirections
+import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.DismissBottomSheetDialogListener
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.utils.setNavigationResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,9 +19,13 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddWalletFragment :
-    AbstractOnboardingFragment<AddWalletFragmentBinding>(R.layout.add_wallet_fragment, menuRes = 0) {
+    AbstractOnboardingFragment<AddWalletFragmentBinding>(R.layout.add_wallet_fragment, menuRes = 0),
+    DismissBottomSheetDialogListener {
 
+    private var pendingNavigation: NavDirections? = null
     val args: AddWalletFragmentArgs by navArgs()
+
+    override val screenName = "OnBoardIntro"
 
     @Inject
     lateinit var assistedFactory: AddWalletViewModel.AssistedFactory
@@ -45,20 +51,35 @@ class AddWalletFragment :
 
         binding.buttonNewWallet.setOnClickListener {
             val options = OnboardingOptions(isRestoreFlow = false)
-            navigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseNetworkFragment(options))
+            askForAnalyticsConsentAndNavigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseNetworkFragment(options))
+            countly.startCreateWallet()
         }
 
         binding.buttonRestoreWallet.setOnClickListener {
             val options = OnboardingOptions(isRestoreFlow = true)
-            navigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseNetworkFragment(options))
+            askForAnalyticsConsentAndNavigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseNetworkFragment(options))
+            countly.startRestoreWallet()
         }
 
         binding.buttonWatchOnly.setOnClickListener {
-             navigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseWatchOnlyFragment())
+            askForAnalyticsConsentAndNavigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseWatchOnlyFragment())
         }
 
         binding.termsLink.setOnClickListener {
             openBrowser(settingsManager.getApplicationSettings(), Urls.TERMS_OF_SERVICE)
         }
+    }
+
+    private fun askForAnalyticsConsentAndNavigate(directions: NavDirections){
+        if(countly.analyticsFeatureEnabled && !settingsManager.isAskedAboutAnalyticsConsent()){
+            pendingNavigation = directions
+            ConsentBottomSheetDialogFragment.show(childFragmentManager)
+        }else{
+            navigate(directions)
+        }
+    }
+
+    override fun dialogDismissed(dialog: AbstractBottomSheetDialogFragment<*>) {
+        pendingNavigation?.let { navigate(it) }
     }
 }

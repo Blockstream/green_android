@@ -11,6 +11,7 @@ import com.blockstream.gdk.Balances
 import com.blockstream.gdk.data.Block
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
@@ -26,8 +27,9 @@ import kotlin.properties.Delegates
 class OverviewViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted initWallet: Wallet,
-) : AbstractWalletViewModel(sessionManager, walletRepository, initWallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, initWallet) {
 
     enum class State {
         Overview, Account, Asset

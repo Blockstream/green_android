@@ -13,6 +13,8 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 public abstract class HWWallet {
     protected Device mDevice;
     protected HardwareQATester mHardwareQATester;
+    protected String mFirmwareVersion;
+    protected String mModel;
 
     public static class SignMsgResult {
         private final String signature;
@@ -132,4 +134,12 @@ public abstract class HWWallet {
         return mHardwareQATester;
     }
 
+    @Nullable
+    public String getFirmwareVersion() {
+        return mFirmwareVersion;
+    }
+
+    public String getModel(){
+        return mModel;
+    }
 }

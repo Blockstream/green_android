@@ -59,7 +59,7 @@
                 android:id="@+id/walletName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
+                android:imeOptions="actionDone"
                 android:inputType="textShortMessage"
                 android:singleLine="true"
                 android:maxLength="42"

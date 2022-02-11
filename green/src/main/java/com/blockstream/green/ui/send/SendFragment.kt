@@ -18,13 +18,18 @@ import com.blockstream.gdk.BalancePair
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.R
 import com.blockstream.green.Urls
+import com.blockstream.green.data.AddressInputType
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.ListItemTransactionRecipientBinding
 import com.blockstream.green.databinding.SendFragmentBinding
 import com.blockstream.green.filters.NumberValueFilter
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.ui.*
+import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
+import com.blockstream.green.ui.bottomsheets.SelectUtxosBottomSheetDialogFragment
 import com.blockstream.green.ui.items.AssetListItem
 import com.blockstream.green.ui.looks.AssetLook
 import com.blockstream.green.utils.*
@@ -60,6 +65,9 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     // Store bindings as weak reference to allow them to be GC'ed
     val bindings = mutableListOf<WeakReference<ListItemTransactionRecipientBinding>>()
+
+    override val screenName = "Send"
+    override val segmentation by lazy { countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) }
 
     @Inject
     lateinit var viewModelFactory: SendViewModel.AssistedFactory
@@ -112,7 +120,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         ) {
             it?.let { result ->
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.setAddress(viewModel.activeRecipient, result)
+                viewModel.setScannedAddress(viewModel.activeRecipient, result)
             }
         }
 
@@ -129,9 +137,9 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
-
                 navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
-                    wallet = wallet
+                    wallet = wallet,
+                    transactionSegmentation = viewModel.createTransactionSegmentation()
                 ))
             }
 
@@ -226,7 +234,11 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     }
 
     private fun initRecipientBinging(recipientBinding: ListItemTransactionRecipientBinding) {
-        recipientBinding.addressInputLayout.endIconCopyMode()
+        recipientBinding.addressInputLayout.endIconCopyMode {
+            viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
+                it.addressInputType = AddressInputType.PASTE
+            }
+        }
         if(!isBump && !isSweep) {
             recipientBinding.amountTextInputLayout.endIconCopyMode()
         }
@@ -235,7 +247,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
         recipientBinding.buttonScan.setOnClickListener {
             viewModel.activeRecipient = recipientBinding.index ?: 0
-            CameraBottomSheetDialogFragment.open(this)
+            CameraBottomSheetDialogFragment.showSingle(childFragmentManager)
         }
 
         recipientBinding.assetInputEditText.setOnClickListener {
@@ -249,9 +261,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
                 viewModel.activeRecipient = recipientBinding.index ?: 0
 
-                FilterBottomSheetDialogFragment().also {
-                    it.show(childFragmentManager, it.toString())
-                }
+                FilterBottomSheetDialogFragment.show(childFragmentManager)
             }
         }
 
@@ -280,9 +290,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             viewModel.activeRecipient = recipientBinding.index ?: 0
 
             // WIP
-            SelectUtxosBottomSheetDialogFragment().also {
-                it.show(childFragmentManager, it.toString())
-            }
+            SelectUtxosBottomSheetDialogFragment.show(childFragmentManager)
         }
     }
 

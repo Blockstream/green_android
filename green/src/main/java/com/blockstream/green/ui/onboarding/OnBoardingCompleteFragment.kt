@@ -18,6 +18,8 @@ class OnBoardingCompleteFragment :
 
     private val args: OnBoardingCompleteFragmentArgs by navArgs()
 
+    override val screenName = "OnBoardSuccess"
+
     private val onBackCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             // Prevent back

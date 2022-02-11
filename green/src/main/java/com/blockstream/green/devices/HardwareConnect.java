@@ -185,7 +185,7 @@ public class HardwareConnect {
                         DeviceSupportsLiquid.Lite,
                         DeviceSupportsAntiExfilProtocol.Optional))
                 .map(device -> {
-                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, device, qaTester);
+                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, device, verInfo, qaTester);
                     return jadeWallet;
                 })
                 .flatMap(jadeWallet -> jadeWallet.authenticate(interaction.getConnectionNetwork(), interaction, jadeFirmwareManager != null ? jadeFirmwareManager : new JadeFirmwareManager(interaction, interaction.getGreenSession())).as(RxJavaBridge.toV3Single()))
@@ -243,6 +243,7 @@ public class HardwareConnect {
             return;
 
         final List<Integer> version = t.getFirmwareVersion();
+        String firmware = version.get(0) + "." + version.get(1) + "." + version.get(2);
         final int vendorId = t.getVendorId();
         Log.d(TAG,"Trezor Version: " + version + " vendorid:" + vendorId + " productid:" + t.getProductId());
 
@@ -254,7 +255,7 @@ public class HardwareConnect {
         if (isFirmwareOutdated) {
             interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Trezor, true,null, null, null, null, !isDevelopmentFlavor), isPositive -> {
                 if (isPositive != null) {
-                    onTrezorConnected(interaction, t);
+                    onTrezorConnected(interaction, t, firmware);
                 }else{
                     closeTrezor(interaction, t);
                 }
@@ -263,15 +264,16 @@ public class HardwareConnect {
             return;
         }
 
+
+
         // All good
-        onTrezorConnected(interaction, t);
+        onTrezorConnected(interaction, t, firmware);
     }
 
-    private void onTrezorConnected(final HardwareConnectInteraction interaction, final Trezor t) {
+    private void onTrezorConnected(final HardwareConnectInteraction interaction, final Trezor t, final String firmwareVersion) {
         Log.d(TAG, "Creating Trezor HW wallet");
         final Device device = new Device("Trezor", false , false, false, DeviceSupportsLiquid.None, DeviceSupportsAntiExfilProtocol.None);
-        mHwWallet = new TrezorHWWallet(t, device);
-
+        mHwWallet = new TrezorHWWallet(t, device, firmwareVersion);
         doLogin(interaction);
     }
 
@@ -329,7 +331,7 @@ public class HardwareConnect {
             if (isFirmwareOutdated) {
                 interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Ledger, transport.isUsb(), null, null, null,null, !isDevelopmentFlavor), isPositive -> {
                     if (isPositive != null) {
-                        onLedgerConnected(interaction, dongle, bleDisconnectEvent);
+                        onLedgerConnected(interaction, dongle, fw.toString(), bleDisconnectEvent);
                     } else {
                         closeLedger(interaction, transport);
                     }
@@ -340,7 +342,7 @@ public class HardwareConnect {
             }
 
             // All good
-            onLedgerConnected(interaction, dongle, bleDisconnectEvent);
+            onLedgerConnected(interaction, dongle, fw.toString(), bleDisconnectEvent);
         } catch (final BTChipException e) {
             if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
                 e.printStackTrace();
@@ -354,7 +356,7 @@ public class HardwareConnect {
         }
     }
 
-    private void onLedgerConnected(final HardwareConnectInteraction interaction, final BTChipDongle dongle, @Nullable final PublishSubject<Boolean> bleDisconnectEvent) {
+    private void onLedgerConnected(final HardwareConnectInteraction interaction, final BTChipDongle dongle, final String firmwareVersion, @Nullable final PublishSubject<Boolean> bleDisconnectEvent) {
         mDisposables.add(Single
                 .just(interaction.getGreenSession())
                 .subscribeOn(Schedulers.io())
@@ -366,7 +368,7 @@ public class HardwareConnect {
 
                     Log.d(TAG, "Creating Ledger HW wallet" + (pin != null ? " with PIN" : ""));
                     final Device device = new Device("Ledger", true,false, false, DeviceSupportsLiquid.Lite, DeviceSupportsAntiExfilProtocol.None);
-                    mHwWallet = new BTChipHWWallet(dongle, pin , device, bleDisconnectEvent);
+                    mHwWallet = new BTChipHWWallet(dongle, pin , device, firmwareVersion, bleDisconnectEvent);
                     return mHwWallet;
                 })
                 .observeOn(AndroidSchedulers.mainThread())

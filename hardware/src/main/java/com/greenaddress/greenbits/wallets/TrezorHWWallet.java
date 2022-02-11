@@ -41,9 +41,16 @@ public class TrezorHWWallet extends HWWallet {
     private final Map<String, TrezorType.HDNodeType> mRecoveryXPubs = new HashMap<>();
     private final Map<String, Object> mPrevTxs = new HashMap<>();
 
-    public TrezorHWWallet(final Trezor t, final Device device) {
+    public TrezorHWWallet(final Trezor t, final Device device, final String firmwareVersion) {
         mTrezor = t;
         mDevice = device;
+        mFirmwareVersion = firmwareVersion;
+        if(t.getProductId() == 1 || t.getProductId() == 60032){
+            mModel = "Trezor One";
+        }else{
+            mModel = "Trezor T";
+        }
+
     }
 
     @Override

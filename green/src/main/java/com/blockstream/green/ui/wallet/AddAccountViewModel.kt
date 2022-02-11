@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.params.SubAccountParams
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.DeviceResolver
@@ -20,11 +21,12 @@ import dagger.assisted.AssistedInject
 class AddAccountViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted wallet: Wallet,
     @Assisted val accountType: AccountType,
     @Assisted("mnemonic") val mnemonic: String?,
     @Assisted("xpub") val xpub: String?,
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     val isEnabled = MutableLiveData(false)
 
@@ -51,6 +53,7 @@ class AddAccountViewModel @AssistedInject constructor(
             isEnabled.postValue(true)
         }.subscribe({
             accountCreated.value = it
+            countly.createAccount(session, it)
         }, {
             onError.value = ConsumableEvent(it)
         })

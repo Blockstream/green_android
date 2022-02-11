@@ -12,6 +12,9 @@ import com.blockstream.libwally.Wally;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
 import com.btchip.BitcoinTransaction;
+import com.btchip.comm.BTChipTransport;
+import com.btchip.comm.android.BTChipTransportAndroid;
+import com.btchip.comm.android.BTChipTransportAndroidHID;
 import com.btchip.utils.BufferUtils;
 import com.btchip.utils.KeyUtils;
 import com.btchip.utils.VarintUtils;
@@ -46,10 +49,24 @@ public class BTChipHWWallet extends HWWallet {
 
     public BTChipHWWallet(final BTChipDongle dongle, final String pin,
                           @Nullable final Device device,
+                          final String firmwareVersion,
                           PublishSubject<Boolean> bleDisconnectEvent) {
         mDongle = dongle;
         mPin = pin;
         mDevice = device;
+        if(dongle.getTransport().isUsb()){
+            if(dongle.getTransport() instanceof BTChipTransportAndroidHID){
+                if(BTChipTransportAndroid.isNanoX(((BTChipTransportAndroidHID) dongle.getTransport()).getUsbDevice())){
+                    mModel = "Ledger Nano S";
+                }else{
+                    mModel = "Ledger Nano X";
+                }
+            }
+        } else{
+            mModel = "Ledger Nano X";
+        }
+        mFirmwareVersion = firmwareVersion;
+
         mBleDisconnectEvent = bleDisconnectEvent;
         if (pin == null)
             return;

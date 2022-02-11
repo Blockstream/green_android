@@ -14,12 +14,12 @@ import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemGenericDetailBinding
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
 import com.blockstream.green.gdk.getConfirmationsMax
-import com.blockstream.green.ui.MenuBottomSheetDialogFragment
-import com.blockstream.green.ui.MenuDataProvider
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.AssetBottomSheetFragment
+import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.MenuDataProvider
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.looks.TransactionDetailsLook
-import com.blockstream.green.ui.overview.AssetBottomSheetFragment
 import com.blockstream.green.utils.*
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -41,6 +41,8 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
     val args: TransactionDetailsFragmentArgs by navArgs()
 
     override val wallet by lazy { args.wallet }
+
+    override val screenName = "TransactionDetails"
 
     private val amountsAdapter: GenericFastItemAdapter = FastItemAdapter()
     private val detailsAdapter: GenericFastItemAdapter = FastItemAdapter()
@@ -110,7 +112,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             } else {
                 if (session.isLiquid) {
 
-                    MenuBottomSheetDialogFragment(object : MenuDataProvider {
+                    MenuBottomSheetDialogFragment.show(object : MenuDataProvider {
                         override fun getTitle() = getString(R.string.id_view_in_explorer)
                         override fun getSubtitle() = null
 
@@ -126,7 +128,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
                             share("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
                         }
-                    }).show(childFragmentManager)
+                    }, childFragmentManager)
                 } else {
                     openBrowser("${session.network.explorerUrl}${args.transaction.txHash}")
                 }
@@ -136,9 +138,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         fastAdapter.onClickListener = { _, _, item: GenericItem, _: Int ->
             when (item) {
                 is TransactionAmountListItem -> {
-                    AssetBottomSheetFragment.newInstance(item.assetId).also {
-                        it.show(childFragmentManager, it.toString())
-                    }
+                    AssetBottomSheetFragment.show(item.assetId, childFragmentManager)
                 }
             }
 
@@ -162,7 +162,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         when (item.itemId) {
             R.id.share -> {
                 if (session.isLiquid) {
-                    MenuBottomSheetDialogFragment(object : MenuDataProvider {
+                    MenuBottomSheetDialogFragment.show(object : MenuDataProvider {
                         override fun getTitle() = getString(R.string.id_share)
                         override fun getSubtitle() = null
 
@@ -180,16 +180,18 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
                                     }
 
                                     share("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
+                                    countly.shareTransaction(session = session, isShare = true)
                                 }
                                 else -> {
                                     share(args.transaction.getUnblindedData().toString())
                                 }
                             }
                         }
-                    }).show(childFragmentManager)
+                    }, childFragmentManager)
 
                 } else {
                     share("${session.network.explorerUrl}${args.transaction.txHash}")
+                    countly.shareTransaction(session = session, isShare = true)
                 }
 
                 return true
@@ -229,6 +231,8 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             title = StringHolder(R.string.id_transaction_id),
             content = StringHolder(transaction.txHash),
             copyOnClick = true,
+            session = session,
+            countly = countly,
             buttonText = StringHolder(R.string.id_view_in_explorer)
         )
 

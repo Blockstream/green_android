@@ -1,18 +1,18 @@
-package com.blockstream.green.ui.receive
+package com.blockstream.green.ui.bottomsheets
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
-import com.blockstream.gdk.params.Convert
-import com.blockstream.green.R
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
-import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.ui.WalletBottomSheetDialogFragment
-import com.blockstream.green.ui.looks.AssetLook
-import com.blockstream.green.utils.*
+import com.blockstream.green.ui.receive.ReceiveViewModel
+import com.blockstream.green.ui.receive.RequestAmountLabelViewModel
+import com.blockstream.green.utils.AmountTextWatcher
+import com.blockstream.green.utils.UserInput
+import com.blockstream.green.utils.endIconCopyMode
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import mu.KLogging
 import javax.inject.Inject
 
 
@@ -21,12 +21,15 @@ import javax.inject.Inject
  * to save the address label
  */
 @AndroidEntryPoint
-class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding, ReceiveViewModel>(
-    layout = R.layout.request_amount_label_bottom_sheet
-) {
+class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding, ReceiveViewModel>() {
     val session by lazy {
         viewModel.session
     }
+
+    override val screenName = "RequestAmount"
+    override val segmentation by lazy { countly.subAccountSegmentation(session, viewModel.getSubAccountLiveData().value) }
+
+    override fun inflate(layoutInflater: LayoutInflater) = RequestAmountLabelBottomSheetBinding.inflate(layoutInflater)
 
     @Inject
     lateinit var viewModelFactory: RequestAmountLabelViewModel.AssistedFactory
@@ -85,6 +88,12 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
         binding.buttonClose.setOnClickListener {
             dismiss()
+        }
+    }
+
+    companion object : KLogging() {
+        fun show(fragmentManager: FragmentManager) {
+            show(RequestAmountLabelBottomSheetDialogFragment(), fragmentManager)
         }
     }
 }

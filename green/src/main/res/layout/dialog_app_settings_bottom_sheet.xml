@@ -163,6 +163,37 @@
                 app:icon="@drawable/ic_bitcoin_testnet_network_60"
                 app:titleText="@string/id_enable_testnet" />
 
+            <com.blockstream.green.views.DividerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_element_margin" />
+
+            <com.blockstream.green.views.GreenSwitch
+                android:id="@+id/switchAnalytics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="@={vm.enableAnalytics}"
+                isVisible="@{vm.analyticsFeatureEnabled}"
+                app:icon="@drawable/ic_analytics"
+                app:titleText="@string/id_help_green_improve"
+                app:captionText="@string/id_enable_anonymous_data_collection"/>
+
+            <Button
+                android:id="@+id/buttonAnalyticsMoreInfo"
+                style="@style/Widget.Green.Button.Text.Tiny"
+                isVisible="@{vm.analyticsFeatureEnabled}"
+                android:paddingStart="0dp"
+                android:text="@string/id_more_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_element_margin"/>
+
+            <com.blockstream.green.views.DividerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                isVisible="@{vm.analyticsFeatureEnabled}"
+                android:layout_marginStart="@dimen/settings_element_margin" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

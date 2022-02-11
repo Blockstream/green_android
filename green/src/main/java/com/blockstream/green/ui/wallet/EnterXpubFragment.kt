@@ -6,8 +6,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.EnterXpubFragmentBinding
-import com.blockstream.green.ui.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.utils.clearNavigationResult
 import com.blockstream.green.utils.endIconCopyMode
 import com.blockstream.green.utils.getNavigationResult
@@ -25,6 +25,8 @@ class EnterXpubFragment : WalletFragment<EnterXpubFragmentBinding>(
     val args: EnterXpubFragmentArgs by navArgs()
 
     override val wallet by lazy { args.wallet }
+
+    override val screenName = "AddAccountPublicKey"
 
     @Inject
     lateinit var viewModelFactory: EnterXpubViewModel.AssistedFactory
@@ -46,7 +48,7 @@ class EnterXpubFragment : WalletFragment<EnterXpubFragmentBinding>(
         }
 
         binding.buttonScan.setOnClickListener {
-            CameraBottomSheetDialogFragment.open(this)
+            CameraBottomSheetDialogFragment.showSingle(childFragmentManager)
         }
 
         binding.buttonContinue.setOnClickListener {

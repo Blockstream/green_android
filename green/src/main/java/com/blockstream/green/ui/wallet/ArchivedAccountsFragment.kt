@@ -10,11 +10,11 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemAccountBinding
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.RenameAccountBottomSheetDialogFragment
 import com.blockstream.green.ui.items.AccountListItem
 import com.blockstream.green.ui.overview.OverviewFragment
 import com.blockstream.green.utils.observeList
 import com.blockstream.green.utils.setNavigationResult
-import com.blockstream.green.utils.show
 import com.blockstream.green.utils.showPopupMenu
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -28,6 +28,8 @@ class ArchivedAccountsFragment :
     WalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: ArchivedAccountsFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
+
+    override val screenName = "ArchivedAccounts"
 
     @Inject
     lateinit var viewModelFactory: ArchivedAccountsViewModel.AssistedFactory
@@ -78,7 +80,7 @@ class ArchivedAccountsFragment :
         showPopupMenu(view.findViewById(R.id.buttonAccountMenu),  R.menu.menu_account_unarchive ) { menuItem ->
             when (menuItem.itemId) {
                 R.id.rename -> {
-                    RenameAccountBottomSheetDialogFragment.newInstance(subaccount).show(this)
+                    RenameAccountBottomSheetDialogFragment.show(subaccount, childFragmentManager)
                 }
 //                R.id.archive -> {
 //                    viewModel.updateSubAccountVisibility(subaccount, isHidden = true)

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.params.UpdateSubAccountParams
 import com.blockstream.green.data.AppEvent
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.DeviceResolver
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit
 abstract class AbstractWalletViewModel constructor(
     val sessionManager: SessionManager,
     val walletRepository: WalletRepository,
+    val countly: Countly,
     var wallet: Wallet,
 ) : AppViewModel() {
 
@@ -86,14 +88,17 @@ abstract class AbstractWalletViewModel constructor(
         // Only on Login Screen
         if (session.isConnected) {
 
-            session.observable {
-                it.getSubAccount(session.activeAccount)
-            }.subscribe({
-                subAccountLiveData.value = it
-            }, {
-                it.printStackTrace()
-            }).addTo(disposables)
-
+            session.activeAccountData?.let {
+                subAccountLiveData.value = session.activeAccountData
+            } ?: run {
+                session.observable {
+                    it.getActiveSubAccount()
+                }.subscribe({
+                    subAccountLiveData.value = it
+                }, {
+                    it.printStackTrace()
+                }).addTo(disposables)
+            }
 
             session
                 .getNetworkEventObservable()
@@ -143,21 +148,7 @@ abstract class AbstractWalletViewModel constructor(
     }
 
     fun deleteWallet() {
-        wallet.observable {
-            sessionManager.destroyWalletSession(wallet)
-            walletRepository.deleteWallet(wallet)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                onEvent.postValue(ConsumableEvent(WalletEvent.DeleteWallet))
-            }
-        )
+        deleteWallet(wallet, sessionManager, walletRepository, countly)
     }
 
     fun renameSubAccount(index: Long, name: String) {
@@ -222,6 +213,7 @@ abstract class AbstractWalletViewModel constructor(
             },
             onSuccess = {
                 onEvent.postValue(ConsumableEvent(WalletEvent.RenameWallet))
+                countly.renameAccount(session)
             }
         )
     }

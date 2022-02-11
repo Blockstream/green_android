@@ -1,10 +1,11 @@
-package com.blockstream.green.ui.overview
+package com.blockstream.green.ui.bottomsheets
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AssetDetailsBottomSheetBinding
-import com.blockstream.green.ui.WalletBottomSheetDialogFragment
 import com.blockstream.green.ui.items.OverlineTextListItem
 import com.blockstream.green.ui.looks.AssetLook
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -19,22 +20,13 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 
 
 @AndroidEntryPoint
-class AssetBottomSheetFragment : WalletBottomSheetDialogFragment<AssetDetailsBottomSheetBinding, AbstractWalletViewModel>(
-    layout = R.layout.asset_details_bottom_sheet
-) {
-
-    companion object {
-        private const val ASSET_ID = "ASSET_ID"
-
-        fun newInstance(message: String): AssetBottomSheetFragment =
-            AssetBottomSheetFragment().also {
-                it.arguments = Bundle().also { bundle ->
-                    bundle.putString(ASSET_ID, message)
-                }
-            }
-    }
-
+class AssetBottomSheetFragment : WalletBottomSheetDialogFragment<AssetDetailsBottomSheetBinding, AbstractWalletViewModel>() {
     private val disposables = CompositeDisposable()
+
+    override val screenName = "AssetDetails"
+    override val segmentation: HashMap<String, Any>? = null
+
+    override fun inflate(layoutInflater: LayoutInflater) = AssetDetailsBottomSheetBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -97,5 +89,17 @@ class AssetBottomSheetFragment : WalletBottomSheetDialogFragment<AssetDetailsBot
     override fun onDestroy() {
         super.onDestroy()
         disposables.clear()
+    }
+
+    companion object {
+        private const val ASSET_ID = "ASSET_ID"
+
+        fun show(assetId: String, fragmentManager: FragmentManager) {
+            show(AssetBottomSheetFragment().also {
+                it.arguments = Bundle().also { bundle ->
+                    bundle.putString(ASSET_ID, assetId)
+                }
+            }, fragmentManager)
+        }
     }
 }

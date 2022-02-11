@@ -65,9 +65,21 @@ android {
             versionNameSuffix "-dev" + appendGdkCommitHash(true)
             resValue "string", "app_name", "Green Dev"
             resValue "string", "application_id", applicationId
+            resValue "bool", "feature_analytics", "false"
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher_dev",
                     appIconRound: "@mipmap/ic_launcher_dev_round"
+            ]
+        }
+
+        productionGoogle {
+            applicationId "com.greenaddress.greenbits_android_wallet"
+            resValue "string", "app_name", "Green"
+            resValue "string", "application_id", applicationId
+            resValue "bool", "feature_analytics", "false"
+            manifestPlaceholders = [
+                    appIcon: "@mipmap/ic_launcher",
+                    appIconRound: "@mipmap/ic_launcher_round"
             ]
         }
 
@@ -76,6 +88,7 @@ android {
             versionNameSuffix appendGdkCommitHash(false)
             resValue "string", "app_name", "Green"
             resValue "string", "application_id", applicationId
+            resValue "bool", "feature_analytics", "false"
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher",
                     appIconRound: "@mipmap/ic_launcher_round"
@@ -101,6 +114,7 @@ android {
             if(signingConfigs.sign.storeFile != null){
                 productFlavors.development.signingConfig signingConfigs.sign
                 productFlavors.production.signingConfig signingConfigs.sign
+                productFlavors.productionGoogle.signingConfig signingConfigs.sign
             }
         }
     }
@@ -237,6 +251,9 @@ dependencies {
     /**  --- Beagle  ---------------------------------------------------------------------------- */
     developmentImplementation "com.github.pandulapeter.beagle:ui-drawer:2.6.5"
     developmentImplementation "com.github.pandulapeter.beagle:log-crash:2.6.5"
+
+    productionGoogleImplementation "com.github.pandulapeter.beagle:noop:2.6.5"
+    productionGoogleImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.5"
 
     productionImplementation "com.github.pandulapeter.beagle:noop:2.6.5"
     productionImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.5"

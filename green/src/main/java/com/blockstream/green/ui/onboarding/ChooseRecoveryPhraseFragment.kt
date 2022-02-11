@@ -5,14 +5,18 @@ import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseRecoveryPhraseFragmentBinding
-import com.blockstream.green.ui.CameraBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.utils.clearNavigationResult
 import com.blockstream.green.utils.getNavigationResult
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ChooseRecoveryPhraseFragment :
     AbstractOnboardingFragment<ChooseRecoveryPhraseFragmentBinding>(R.layout.choose_recovery_phrase_fragment, menuRes = 0) {
 
     val args: ChooseRecoveryPhraseFragmentArgs by navArgs()
+
+    override val screenName = "OnBoardChooseRecovery"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -29,7 +33,7 @@ class ChooseRecoveryPhraseFragment :
         options = args.onboardingOptions
 
         binding.cardQRCode.setOnClickListener {
-            CameraBottomSheetDialogFragment.open(this)
+            CameraBottomSheetDialogFragment.showSingle(childFragmentManager)
         }
 
         binding.cardRecoveryPhrase.setOnClickListener {

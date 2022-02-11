@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
@@ -14,9 +15,10 @@ import dagger.assisted.AssistedInject
 class ChooseSecurityViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted val onboardingOptions: OnboardingOptions,
     @Assisted val isManualRestore: Boolean,
-) : OnboardingViewModel(sessionManager, walletRepository, null) {
+) : OnboardingViewModel(sessionManager, walletRepository, countly, null) {
 
     var recoverySize = MutableLiveData(R.id.button12)
 

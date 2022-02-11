@@ -6,6 +6,10 @@
     <data>
         <variable
             name="vm"
+            type="com.blockstream.green.ui.WalletListCommonViewModel" />
+
+        <variable
+            name="activityVm"
             type="com.blockstream.green.ui.MainActivityViewModel" />
     </data>
 
@@ -58,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
-            android:text="@{vm.buildVersion}"
+            android:text="@{activityVm.buildVersion}"
             android:textAppearance="?attr/textAppearanceCaption"
             android:textColor="@color/color_on_surface_emphasis_very_low"
             android:textSize="12sp"

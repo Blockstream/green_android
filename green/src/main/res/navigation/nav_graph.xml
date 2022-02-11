@@ -273,9 +273,6 @@
             app:argType="com.blockstream.green.data.OnboardingOptions"
             app:nullable="true"
             android:defaultValue="@null" />
-        <action
-            android:id="@+id/action_enterRecoveryPhraseFragment_to_helpBottomSheetDialogFragment"
-            app:destination="@id/helpBottomSheetDialogFragment" />
         <argument
             android:name="scannedInput"
             android:defaultValue="@null"
@@ -530,9 +527,6 @@
             android:defaultValue="@null" />
     </fragment>
     <action
-        android:id="@+id/action_global_appSettingsDialogFragment"
-        app:destination="@id/appSettingsDialogFragment" />
-    <action
         android:id="@+id/action_global_loginFragment"
         app:destination="@id/loginFragment" />
     <fragment
@@ -584,19 +578,6 @@
     <action
         android:id="@+id/action_global_deviceListFragment"
         app:destination="@id/deviceListFragment" />
-
-    <dialog
-        android:id="@+id/deviceBottomSheetDialogFragment"
-        android:name="com.blockstream.green.ui.devices.DeviceBottomSheetDialogFragment"
-        tools:layout="@layout/device_bottom_sheet_fragment">
-        <argument
-            android:name="deviceId"
-            app:argType="string" />
-    </dialog>
-
-    <action
-        android:id="@+id/action_global_deviceBottomSheetDialogFragment"
-        app:destination="@id/deviceBottomSheetDialogFragment" />
     <action android:id="@+id/action_global_twoFractorAuthenticationFragment" app:destination="@id/twoFractorAuthenticationFragment" />
     <action android:id="@+id/action_global_twoFactorSetupFragment" app:destination="@id/twoFactorSetupFragment" /><action android:id="@+id/action_global_introFragment" app:destination="@id/introFragment"/>
     <fragment
@@ -648,6 +629,9 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="transactionSegmentation"
+            app:argType="com.blockstream.green.data.TransactionSegmentation" />
     </fragment>
     <fragment
         android:id="@+id/enterXpubFragment"
