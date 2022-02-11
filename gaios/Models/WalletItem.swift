@@ -1,7 +1,7 @@
 import Foundation
 import PromiseKit
 
-class WalletItem: Codable {
+class WalletItem: Codable, Equatable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -79,5 +79,14 @@ class WalletItem: Codable {
             }
             return 0
         }
+    }
+
+    static func == (lhs: WalletItem, rhs: WalletItem) -> Bool {
+        return lhs.name == rhs.name &&
+            lhs.pointer == rhs.pointer &&
+            lhs.receivingId == rhs.receivingId &&
+            lhs.type == rhs.type &&
+            lhs.recoveryChainCode == rhs.recoveryChainCode &&
+            lhs.recoveryPubKey == rhs.recoveryPubKey
     }
 }

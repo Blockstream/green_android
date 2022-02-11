@@ -20,7 +20,6 @@ class OverviewViewController: UIViewController {
     @IBOutlet weak var receiveLabel: UILabel!
     @IBOutlet weak var receiveImage: UIImageView!
 
-    var presentingWallet: WalletItem?
     private var transactions: [Transaction] = []
     private var fetchTxs: Promise<Void>?
     var callPage: UInt32 = 0
@@ -48,6 +47,18 @@ class OverviewViewController: UIViewController {
                 return subAccounts.filter { $0.pointer == SessionsManager.current.activeWallet} + subAccounts.filter { $0.pointer != SessionsManager.current.activeWallet}
             } else {
                 return subAccounts.filter { $0.pointer == SessionsManager.current.activeWallet}
+            }
+        }
+    }
+    var presentingWallet: WalletItem? {
+        didSet {
+            guard let presentingWallet = presentingWallet else {
+                return
+            }
+            if let index = subAccounts.firstIndex(where: {$0.pointer == presentingWallet.pointer}) {
+                subAccounts[index] = presentingWallet
+            } else {
+                subAccounts += [presentingWallet]
             }
         }
     }
