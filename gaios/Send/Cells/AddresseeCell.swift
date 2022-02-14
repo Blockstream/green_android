@@ -41,10 +41,16 @@ class AddresseeCell: UITableViewCell {
         lblRecipientTitle.text = NSLocalizedString("id_recipient", comment: "")
         lblRecipientAddress.text = addressee.address
 
-        let asset = transaction.defaultAsset
-        if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
-            if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
-                let (value, denom) = balance.get(tag: btc)
+        let addreessee = transaction.addressees.first
+        var value = addreessee?.satoshi ?? 0
+        let network = AccountsManager.shared.current?.gdkNetwork
+        let asset = (network?.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
+        if transaction.sendAll {
+            value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
+        }
+        if asset == "btc" {
+            if let balance = Balance.convert(details: ["satoshi": value]) {
+                let (value, denom) = value == 0 ? ("", "") : balance.get(tag: btc)
                 lblAmount.text = value ?? ""
                 lblDenomination.text = "\(denom)"
                 let (fiat, fiatCurrency) = balance.get(tag: "fiat")
@@ -52,18 +58,20 @@ class AddresseeCell: UITableViewCell {
             }
         } else {
             let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-            let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
-            if let balance = Balance.convert(details: details) {
-                let (amount, ticker) = balance.get(tag: transaction.defaultAsset)
-                lblAmount.text = amount ?? "N.A."
-                lblDenomination.text = "\(ticker)"
-                lblFiat.isHidden = true
+            if let assetInfo = info.encode() {
+                let details = ["satoshi": value, "asset_info": assetInfo] as [String: Any]
+                if let balance = Balance.convert(details: details) {
+                    let (amount, ticker) = value == 0 ? ("", "") : balance.get(tag: asset)
+                    lblAmount.text = amount ?? "N.A."
+                    lblDenomination.text = "\(ticker)"
+                    lblFiat.isHidden = true
+                }
             }
         }
         icon.image = UIImage(named: "default_asset_icon")!
-        if network == "mainnet" {
+        if network?.network == "mainnet" {
             icon.image = UIImage(named: "ntw_btc")
-        } else if network == "testnet" {
+        } else if network?.network == "testnet" {
             icon.image = UIImage(named: "ntw_testnet")
         } else {
             icon.image = Registry.shared.image(for: asset)
