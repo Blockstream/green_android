@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Restore: detect wallet already restored on device
 
 ### Fixed
+- Subaccounts discovery on overview refresh for singlesig
 
 ## [3.7.8] - 2022-01-20
 
