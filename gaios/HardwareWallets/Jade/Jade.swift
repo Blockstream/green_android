@@ -145,7 +145,6 @@ final class Jade: JadeChannel, HWProtocol {
             }
     }
 
-    // swiftlint:disable:next function_parameter_count
     func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         if transactions.isEmpty {
@@ -543,7 +542,6 @@ extension Jade {
             }
     }
 
-    // swiftlint:disable:next function_parameter_count
     func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         let txInputs = inputs.map { input -> TxInputLiquid? in

@@ -84,8 +84,7 @@
 		345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142802693148B00E8BE1B /* TransactionsUITests.swift */; };
 		345142832693154100E8BE1B /* XCTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142822693154100E8BE1B /* XCTestBase.swift */; };
 		3451428526932B9300E8BE1B /* Receive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428426932B9300E8BE1B /* Receive.swift */; };
-		3451428726933C6E00E8BE1B /* SendBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428626933C6E00E8BE1B /* SendBtc.swift */; };
-		345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142882693445000E8BE1B /* SendBtcDetails.swift */; };
+		3451428726933C6E00E8BE1B /* Send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428626933C6E00E8BE1B /* Send.swift */; };
 		3452E6002696E2F4003F3FAA /* ChangePinUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */; };
 		3453C73626A5A1A100451FB3 /* DrawerMenuUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */; };
 		3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73726A5A41A00451FB3 /* Drawer.swift */; };
@@ -106,7 +105,6 @@
 		3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */; };
 		3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9EF2600A8D7009B5E33 /* Bundle.swift */; };
 		3470F9F52600D1A3009B5E33 /* WalletCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9F42600D1A3009B5E33 /* WalletCell.swift */; };
-		34767E0E269439F4005F938B /* SendBtcConfirmation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34767E0D269439F4005F938B /* SendBtcConfirmation.swift */; };
 		3479429F275615560020D60F /* AutomaticRestore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3479429E275615560020D60F /* AutomaticRestore.storyboard */; };
 		347942A2275615FC0020D60F /* ExistingWalletsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347942A1275615FC0020D60F /* ExistingWalletsViewController.swift */; };
 		347942A527561AAC0020D60F /* ExistingWalletCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347942A427561AAC0020D60F /* ExistingWalletCell.swift */; };
@@ -147,6 +145,7 @@
 		349DB75F26A84D17004FF265 /* TorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB75E26A84D17004FF265 /* TorUITests.swift */; };
 		349DB76126A84D20004FF265 /* WalletSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB76026A84D20004FF265 /* WalletSettings.swift */; };
 		349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */; };
+		34A2AEFE27BA9B4D006A01E9 /* SendConfirm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */; };
 		34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B30F78277C693700D37A3C /* SendConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B30F77277C693700D37A3C /* SendConfirmViewController.swift */; };
@@ -412,8 +411,7 @@
 		345142802693148B00E8BE1B /* TransactionsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsUITests.swift; sourceTree = "<group>"; };
 		345142822693154100E8BE1B /* XCTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestBase.swift; sourceTree = "<group>"; };
 		3451428426932B9300E8BE1B /* Receive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receive.swift; sourceTree = "<group>"; };
-		3451428626933C6E00E8BE1B /* SendBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtc.swift; sourceTree = "<group>"; };
-		345142882693445000E8BE1B /* SendBtcDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetails.swift; sourceTree = "<group>"; };
+		3451428626933C6E00E8BE1B /* Send.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Send.swift; sourceTree = "<group>"; };
 		3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePinUITests.swift; sourceTree = "<group>"; };
 		3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerMenuUITests.swift; sourceTree = "<group>"; };
 		3453C73726A5A41A00451FB3 /* Drawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawer.swift; sourceTree = "<group>"; };
@@ -434,7 +432,6 @@
 		3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFeeViewController.swift; sourceTree = "<group>"; };
 		3470F9EF2600A8D7009B5E33 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		3470F9F42600D1A3009B5E33 /* WalletCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCell.swift; sourceTree = "<group>"; };
-		34767E0D269439F4005F938B /* SendBtcConfirmation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcConfirmation.swift; sourceTree = "<group>"; };
 		3479429E275615560020D60F /* AutomaticRestore.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AutomaticRestore.storyboard; sourceTree = "<group>"; };
 		347942A1275615FC0020D60F /* ExistingWalletsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingWalletsViewController.swift; sourceTree = "<group>"; };
 		347942A427561AAC0020D60F /* ExistingWalletCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingWalletCell.swift; sourceTree = "<group>"; };
@@ -475,6 +472,7 @@
 		349DB75E26A84D17004FF265 /* TorUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorUITests.swift; sourceTree = "<group>"; };
 		349DB76026A84D20004FF265 /* WalletSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettings.swift; sourceTree = "<group>"; };
 		349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRegistryFailViewController.swift; sourceTree = "<group>"; };
+		34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirm.swift; sourceTree = "<group>"; };
 		34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorAuthenticationViewController.swift; sourceTree = "<group>"; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
@@ -815,9 +813,8 @@
 				34C978A4268DAF740061264D /* Settings.swift */,
 				34C978A9268DDD8C0061264D /* WatchOnly.swift */,
 				3451428426932B9300E8BE1B /* Receive.swift */,
-				3451428626933C6E00E8BE1B /* SendBtc.swift */,
-				345142882693445000E8BE1B /* SendBtcDetails.swift */,
-				34767E0D269439F4005F938B /* SendBtcConfirmation.swift */,
+				3451428626933C6E00E8BE1B /* Send.swift */,
+				34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */,
 				20516D032693969B00BA1F4C /* DialogWalletRename.swift */,
 				3412133D269EFC2D00CC8112 /* Accounts.swift */,
 				3412136726A07A6A00CC8112 /* AccountCreateSelectType.swift */,
@@ -2048,6 +2045,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34A2AEFE27BA9B4D006A01E9 /* SendConfirm.swift in Sources */,
 				349D7FED268D9470009E1815 /* Constants.swift in Sources */,
 				344FE3492684BD9700C087A5 /* RecoverySuccess.swift in Sources */,
 				343476662682299B00D7AD43 /* Screen.swift in Sources */,
@@ -2072,7 +2070,7 @@
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
 				3498806426A9692A00E11216 /* DialogTorSingleSig.swift in Sources */,
 				20516D062698A2C600BA1F4C /* EditWalletUITests.swift in Sources */,
-				3451428726933C6E00E8BE1B /* SendBtc.swift in Sources */,
+				3451428726933C6E00E8BE1B /* Send.swift in Sources */,
 				344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */,
 				344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */,
 				342560A8268B2BB900136ACC /* Login.swift in Sources */,
@@ -2080,11 +2078,9 @@
 				34347675268247F400D7AD43 /* RecoveryCreate.swift in Sources */,
 				34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */,
 				34237FC9276A520800618502 /* ManualRestore.swift in Sources */,
-				34767E0E269439F4005F938B /* SendBtcConfirmation.swift in Sources */,
 				344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */,
 				3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */,
 				34C978A8268DC14D0061264D /* Extensions.swift in Sources */,
-				345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */,
 				3451428526932B9300E8BE1B /* Receive.swift in Sources */,
 				349DB75F26A84D17004FF265 /* TorUITests.swift in Sources */,
 				344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */,

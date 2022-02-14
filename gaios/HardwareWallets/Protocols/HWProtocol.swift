@@ -14,7 +14,6 @@ protocol HWProtocol {
                      aeHostEntropy: String?)
     -> Observable<(signature: String?, signerCommitment: String?)>
 
-    // swiftlint:disable:next function_parameter_count
     func signTransaction(tx: [String: Any],
                          inputs: [[String: Any]],
                          outputs: [[String: Any]],
@@ -29,7 +28,7 @@ protocol HWProtocol {
     // Liquid calls
     func getBlindingKey(scriptHex: String) -> Observable<String?>
     func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?>
-    // swiftlint:disable:next function_parameter_count
+
     func signLiquidTransaction(tx: [String: Any],
                                inputs: [[String: Any]],
                                outputs: [[String: Any]],

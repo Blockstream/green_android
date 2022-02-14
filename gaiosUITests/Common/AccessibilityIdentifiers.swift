@@ -157,22 +157,16 @@ struct AccessibilityIdentifiers {
         static let qrCodeBtn = "qr_code_btn"
     }
     
-    struct SendBtcScreen {
-        static let view = "view_send_btc"
-        static let textView = "text_view"
+    struct SendScreen {
+        static let view = "view_send"
+        static let pasteAddressBtn = "paste_address_btn"
+        static let amountField = "amount_field"
         static let nextBtn = "next_btn"
     }
-    
-    struct SendBtcDetailsScreen {
-        static let view = "view_send_btc_details"
-        static let amountTextField = "amount_text_field"
-        static let recipientTitle = "recipient_title"
-        static let reviewBtn = "review_btn"
-    }
-    
-    struct SendBtcConfirmationScreen {
-        static let view = "view_send_btc_confirmation"
-        static let slidingBtn = "sliding_btn"
+
+    struct SendConfirmScreen {
+        static let view = "view_send_confirmation"
+        static let nextBtn = "next_btn"
     }
     
     struct AccountsScreen {
@@ -227,5 +221,9 @@ struct AccessibilityIdentifiers {
         static let view = "view_manual_restore"
         static let singleSigCard = "single_sig_card"
         static let multiSigCard = "multi_sig_card"
+    }
+
+    struct KeyboardView {
+        static let done = "done_btn"
     }
 }

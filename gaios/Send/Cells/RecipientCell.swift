@@ -135,6 +135,9 @@ class RecipientCell: UITableViewCell {
         onChange()
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
         addressTextView.textContainer.maximumNumberOfLines = 10
+
+        btnPasteAddress.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.pasteAddressBtn
+        amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.amountField
     }
 
     func setStyle() {

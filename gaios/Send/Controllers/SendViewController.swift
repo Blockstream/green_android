@@ -93,6 +93,9 @@ class SendViewController: KeyboardViewController {
         updateBtnNext()
         transactionPriority = defaultTransactionPriority
         activityIndicator.hidesWhenStopped = true
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
+        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
     }
 
     func setContent() {

@@ -3,9 +3,6 @@ import XCTest
 
 class TransactionstUITests: XCTestBase {
     
-    var interruptionMonitor: NSObjectProtocol!
-    let alertDescription = "System Dialog"
-    
     func testTransaction() {
         
         prepareWallet()
@@ -19,33 +16,25 @@ class TransactionstUITests: XCTestBase {
             .tapQrCode()
             .pause(1)
             .tapBack()
-
-        addUIInterruptionMonitor()
         
         Overview()
             .pause(1)
             .tapSend()
-            .appTap()
         
-        SendBtc()
+        Send()
             .pause(1)
-            .copyClipboard()
-            .pause(1)
-            .closeKey()
-            .tapNext()
-        
-        SendBtcDetails()
+            .pasteAddress()
             .pause(1)
             .typeAmount("0.00001")
             .pause(1)
-            .closeKey()
-            .pause(1)
-            .tapReview()
-        
-        SendBtcConfirmation()
-            .pause(1)
-            .drag()
+            .tapDone()
+            .pause(2)
+            .tapNext()
 
+        SendConfirm()
+            .pause(2)
+            .tapNext()
+        
         Overview()
             .pause(3)
     }
@@ -69,13 +58,4 @@ class TransactionstUITests: XCTestBase {
         
     }
     
-    func addUIInterruptionMonitor() {
-        self.interruptionMonitor = addUIInterruptionMonitor(withDescription: self.alertDescription) { (alert) -> Bool in
-            if alert.buttons["OK"].exists {
-                alert.buttons["OK"].tap()
-                return true
-            }
-            return false
-        }
-    }
 }

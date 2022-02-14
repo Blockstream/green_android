@@ -25,6 +25,9 @@ class SendConfirmViewController: KeyboardViewController {
         updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
         setContent()
         setStyle()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.view
+        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.nextBtn
     }
 
     func setContent() {
