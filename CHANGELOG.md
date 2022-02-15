@@ -3,18 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [3.7.9] - 2022-02-15
 
 ### Added
-- Support multiple active session
+- Streamlined wallet navigation: switch between your wallets without needing to log out every time
+- Romanian localization
 
 ### Changed
-- Refactoring send flow
-- Jade: enabled testnet-liquid when in test mode
-- Restore: detect wallet already restored on device
-
-### Fixed
-- Subaccounts discovery on overview refresh for singlesig
+- Improved swifter Send flow, easier to use, easier to read
+- Enabled Liquid testnet for Jade when in test mode
+- Restoring an already available wallet is detected, preventing duplicates
 
 ## [3.7.8] - 2022-01-20
 
