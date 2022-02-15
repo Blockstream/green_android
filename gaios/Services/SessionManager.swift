@@ -254,6 +254,8 @@ class SessionManager: Session {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .map(on: bgq) {
+                try self.connect()
+            }.map(on: bgq) {
                 if let hwDevice = hwDevice,
                     let data = try? JSONEncoder().encode(hwDevice),
                     let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
