@@ -100,11 +100,8 @@ class OverviewViewController: UIViewController {
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
 
-        isLoading = true
-
         tableView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.view
         settingsBtn.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.settingsBtn
-
         sendView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.sendView
         receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
         reloadData(refreshSubaccounts: true)
@@ -270,14 +267,14 @@ class OverviewViewController: UIViewController {
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
-        Promise().asVoid().then { [self] _ -> Promise<Void> in
-            if showAccounts {
-                return discoverySubaccounts(singlesig: account?.isSingleSig ?? false).asVoid()
+        Promise().asVoid().then { _ -> Promise<Void> in
+            if self.showAccounts {
+                return self.discoverySubaccounts(singlesig: self.account?.isSingleSig ?? false).asVoid()
             } else {
                 return Promise().asVoid()
             }
-        }.done { [self] in
-            reloadData(refreshSubaccounts: showAccounts)
+        }.done { _ in
+            self.reloadData(refreshSubaccounts: self.showAccounts)
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)
@@ -285,17 +282,21 @@ class OverviewViewController: UIViewController {
     }
 
     func reloadData(refreshSubaccounts: Bool) {
-        self.isLoading = true
         let refresh = refreshSubaccounts || subAccounts.count == 0
-        self.loadSubaccounts(refreshBalance: refresh)
-        .then {
+        firstly {
+            self.isLoading = true
+            return Guarantee()
+        }.then {
+            self.loadSubaccounts(refreshBalance: refresh)
+        }.then {
             self.loadWallet()
         }.compactMap {
             self.loadAssets()
         }.then {
             self.loadTransactions()
+        }.ensure {
+             self.isLoading = false
         }.done { _ in
-            self.isLoading = false
             self.showTransactions()
         }.catch { err in
             print(err.localizedDescription)
@@ -755,7 +756,6 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 showAccounts = !showAccounts
                 self.transactions.removeAll()
                 assets = [(key: String, value: UInt64)]()
-                isLoading = true
                 tableView.reloadData { [weak self] in
                     self?.handleRefresh()
                 }
