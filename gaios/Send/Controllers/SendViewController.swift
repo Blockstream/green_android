@@ -271,9 +271,9 @@ class SendViewController: KeyboardViewController {
         if tx?.sendAll ?? false {
             value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        if asset == "btc" {
+        if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
             if let balance = Balance.convert(details: ["satoshi": value]) {
-                let (value, _) = value == 0 ? ("", "") : balance.get(tag: btc)
+                let (value, _) = value == 0 ? ("", "") : balance.get(tag: recipients.first?.isFiat ?? false ? "fiat" : asset)
                 recipients.first?.amount = value ?? ""
             }
         } else {
