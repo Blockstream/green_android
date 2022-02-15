@@ -173,8 +173,12 @@ class RecoveryVerifyViewController: UIViewController {
     func reload() {
         // update buttons
         buttonsArray.enumerated().forEach { (offset, element) in
-            element.setTitle(String(mnemonic[selectionWordNumbers[offset]]), for: .normal)
+            let word = String(mnemonic[selectionWordNumbers[offset]])
+            element.setTitle(word, for: .normal)
             element.isSelected = false
+            #if DEBUG
+            element.isSelected = mnemonic[questionPosition] == word
+            #endif
         }
         // update subtitle
         let rangeStart: Int
