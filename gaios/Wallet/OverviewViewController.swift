@@ -104,7 +104,10 @@ class OverviewViewController: UIViewController {
         settingsBtn.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.settingsBtn
         sendView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.sendView
         receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
-        reloadData(refreshSubaccounts: true)
+
+        _ = loadSubaccounts().done {
+            self.reloadData()
+        }
     }
 
     func reloadSections(_ sections: [OverviewSection], animated: Bool) {
@@ -273,21 +276,20 @@ class OverviewViewController: UIViewController {
             } else {
                 return Promise().asVoid()
             }
+        }.then {
+            self.loadSubaccounts()
         }.done { _ in
-            self.reloadData(refreshSubaccounts: self.showAccounts)
+            self.reloadData()
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)
         }
     }
 
-    func reloadData(refreshSubaccounts: Bool) {
-        let refresh = refreshSubaccounts || subAccounts.count == 0
+    func reloadData() {
         firstly {
             self.isLoading = true
             return Guarantee()
-        }.then {
-            self.loadSubaccounts(refreshBalance: refresh)
         }.then {
             self.loadWallet()
         }.compactMap {
@@ -379,14 +381,11 @@ class OverviewViewController: UIViewController {
         return Promise().asVoid()
     }
 
-    func loadSubaccounts(refreshBalance: Bool) -> Promise<Void> {
+    func loadSubaccounts() -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().then(on: bgq) {
                 SessionsManager.current.subaccounts()
             }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
-                if !refreshBalance {
-                    return Promise().compactMap { _ in wallets }
-                }
                 let balances = wallets.map { wallet in { wallet.getBalance() } }
                 return Promise.chain(balances).compactMap { _ in wallets }
             }.map { wallets in
@@ -435,7 +434,7 @@ class OverviewViewController: UIViewController {
     }
 
     func onAccountChange() {
-        reloadData(refreshSubaccounts: true)
+        reloadData()
     }
 
     func showAccountId() {
@@ -982,7 +981,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.reloadData(refreshSubaccounts: true)
+            self.reloadData()
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)
