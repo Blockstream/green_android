@@ -48,7 +48,7 @@ class AddresseeCell: UITableViewCell {
         if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
             value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        if asset == "btc" {
+        if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
             if let balance = Balance.convert(details: ["satoshi": value]) {
                 let (value, denom) = value == 0 ? ("", "") : balance.get(tag: btc)
                 lblAmount.text = value ?? ""
