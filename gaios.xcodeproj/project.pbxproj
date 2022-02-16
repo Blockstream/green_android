@@ -149,6 +149,8 @@
 		349DB76126A84D20004FF265 /* WalletSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB76026A84D20004FF265 /* WalletSettings.swift */; };
 		349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */; };
 		34A2AEFE27BA9B4D006A01E9 /* SendConfirm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */; };
+		34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFF27BBECD0006A01E9 /* WordCell.swift */; };
+		34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */; };
 		34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B30F78277C693700D37A3C /* SendConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B30F77277C693700D37A3C /* SendConfirmViewController.swift */; };
@@ -475,6 +477,8 @@
 		349DB76026A84D20004FF265 /* WalletSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettings.swift; sourceTree = "<group>"; };
 		349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRegistryFailViewController.swift; sourceTree = "<group>"; };
 		34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirm.swift; sourceTree = "<group>"; };
+		34A2AEFF27BBECD0006A01E9 /* WordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCell.swift; sourceTree = "<group>"; };
+		34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterQrCell.swift; sourceTree = "<group>"; };
 		34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorAuthenticationViewController.swift; sourceTree = "<group>"; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
@@ -936,6 +940,8 @@
 				344F1C0B26B7CC4D009293E6 /* TwoFaMethodsCell.swift */,
 				34C9E10626B91F2500200D2F /* TwoFaCsvTimeCell.swift */,
 				093544D7212E86DF00134235 /* CurrencyCell.swift */,
+				34A2AEFF27BBECD0006A01E9 /* WordCell.swift */,
+				34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1953,6 +1959,7 @@
 				3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */,
 				34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,
+				34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */,
 				34C2464F2670ECE0009E8FCE /* AccountType.swift in Sources */,
 				FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */,
 				81E0B4D725531AD6001C8544 /* TxInputLiquid.swift in Sources */,
@@ -1992,6 +1999,7 @@
 				81D671F126C80D4E00682508 /* Connection.swift in Sources */,
 				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
 				340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */,
+				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,
 				81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */,
 				6D8099DB23021D0F0069A69F /* PopoverMenuViewController.swift in Sources */,
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,

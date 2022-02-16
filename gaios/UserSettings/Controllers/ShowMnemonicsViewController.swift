@@ -2,71 +2,69 @@ import Foundation
 import UIKit
 
 class ShowMnemonicsViewController: UIViewController {
-    var viewArray: [UIView] = []
-    var viewWidth: CGFloat {
-        get { return ((UIScreen.main.bounds.width / 3) - 10) }
-    }
-    var viewHeight: CGFloat {
-        get { return viewWidth / 1.75 }
-    }
+
+    @IBOutlet weak var collectionView: UICollectionView!
+    var items: [String] = []
+    var mnemonic: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        createViews()
+
+        mnemonic = try? SessionsManager.current.getMnemonicPassphrase(password: "")
+        if let words = mnemonic?.split(separator: " ").map(String.init) {
+            items = words
+        }
+        collectionView.reloadData()
         title = NSLocalizedString("id_recovery_phrase", comment: "")
     }
+}
 
-    func createViews() {
-        let res = try? SessionsManager.current.getMnemonicPassphrase(password: "")
-        guard let mnemonic = res?.split(separator: " ") else { return }
-        for index in 0..<mnemonic.count {
-            let myView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: viewHeight))
-            myView.translatesAutoresizingMaskIntoConstraints = false
-            myView.borderWidth = 5
-            myView.borderColor = UIColor.customTitaniumDark()
-            myView.backgroundColor = UIColor.customMnemonicDark()
-            viewArray.append(myView)
-            //index label
-            let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
-            label.textAlignment = .center
-            label.text = String(index + 1)
-            label.font = UIFont.systemFont(ofSize: 12)
-            label.textColor = UIColor.customMatrixGreen()
-            label.translatesAutoresizingMaskIntoConstraints = false
-            myView.addSubview(label)
-            NSLayoutConstraint(item: label, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: myView, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0).isActive = true
-            NSLayoutConstraint(item: label, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal, toItem: myView, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: 10).isActive = true
-            NSLayoutConstraint(item: label, attribute: NSLayoutConstraint.Attribute.width, relatedBy: NSLayoutConstraint.Relation.equal, toItem: myView, attribute: NSLayoutConstraint.Attribute.width, multiplier: 1, constant: 0).isActive = true
+extension ShowMnemonicsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return items.count
+    }
 
-            //mnemonic label
-            let mnemonicLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
-            mnemonicLabel.textAlignment = .center
-            mnemonicLabel.text = String(mnemonic[index])
-            mnemonicLabel.font = UIFont.systemFont(ofSize: 14)
-            mnemonicLabel.textColor = UIColor.white
-            mnemonicLabel.adjustsFontSizeToFitWidth = true
-            mnemonicLabel.minimumScaleFactor = 0.5
-            mnemonicLabel.translatesAutoresizingMaskIntoConstraints = false
-            myView.addSubview(mnemonicLabel)
-            NSLayoutConstraint(item: mnemonicLabel, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: myView, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: 0).isActive = true
-            NSLayoutConstraint(item: mnemonicLabel, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: myView, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: 3).isActive = true
-            NSLayoutConstraint(item: mnemonicLabel, attribute: NSLayoutConstraint.Attribute.width, relatedBy: NSLayoutConstraint.Relation.equal, toItem: myView, attribute: NSLayoutConstraint.Attribute.width, multiplier: 1, constant: 0).isActive = true
-
-            self.view.addSubview(myView)
-            //left constraint
-            NSLayoutConstraint(item: myView, attribute: NSLayoutConstraint.Attribute.width, relatedBy: NSLayoutConstraint.Relation.equal, toItem: nil, attribute: NSLayoutConstraint.Attribute.width, multiplier: 1, constant: viewWidth).isActive = true
-            NSLayoutConstraint(item: myView, attribute: NSLayoutConstraint.Attribute.height, relatedBy: NSLayoutConstraint.Relation.equal, toItem: nil, attribute: NSLayoutConstraint.Attribute.height, multiplier: 1, constant: viewHeight).isActive = true
-            if index == 0 || index % 3 == 0 {
-                NSLayoutConstraint(item: myView, attribute: NSLayoutConstraint.Attribute.leading, relatedBy: NSLayoutConstraint.Relation.equal, toItem: view, attribute: NSLayoutConstraint.Attribute.leading, multiplier: 1, constant: 20).isActive = true
-            } else {
-                NSLayoutConstraint(item: myView, attribute: NSLayoutConstraint.Attribute.leading, relatedBy: NSLayoutConstraint.Relation.equal, toItem: viewArray[index - 1], attribute: NSLayoutConstraint.Attribute.trailing, multiplier: 1, constant: -1).isActive = true
-            }
-            //top constraint
-            if index < 3 {
-                NSLayoutConstraint(item: myView, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self.view, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: 10).isActive = true
-            } else {
-                NSLayoutConstraint(item: myView, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal, toItem: viewArray[index - 3], attribute: NSLayoutConstraint.Attribute.bottom, multiplier: 1, constant: -1).isActive = true
-            }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WordCell", for: indexPath) as? WordCell {
+            cell.configure(num: indexPath.item, word: items[indexPath.item])
+            return cell
         }
+        return UICollectionViewCell()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+      switch kind {
+      case UICollectionView.elementKindSectionFooter:
+          if let fView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                         withReuseIdentifier: "FooterQrCell",
+                                                                         for: indexPath) as? FooterQrCell {
+              fView.configure(mnemonic: self.mnemonic)
+              return fView
+          }
+          return UICollectionReusableView()
+      default:
+          return UICollectionReusableView()
+      }
+    }
+}
+
+extension ShowMnemonicsViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = (collectionView.bounds.width - 20.0) / 3.0
+        let height = 70.0
+
+        return CGSize(width: width, height: height)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets.zero
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
     }
 }
