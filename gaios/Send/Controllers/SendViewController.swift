@@ -268,7 +268,7 @@ class SendViewController: KeyboardViewController {
         recipients.first?.txError = tx?.error ?? ""
         recipients.first?.assetId = asset
 
-        if tx?.sendAll ?? false {
+        if !(AccountsManager.shared.current?.isSingleSig ?? false) && tx?.sendAll ?? false {
             value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
         if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
