@@ -233,6 +233,14 @@ class TransactionViewController: UIViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
+    func getFeeRate() -> UInt64 {
+        var fee: UInt64 = self.transaction.feeRate
+        if let estimates = getFeeEstimates(), estimates.count > 2 {
+            fee = estimates[3]
+        }
+        return fee
+    }
+
     func increaseFeeTapped() {
         if self.cantBumpFees { return }
         firstly {
@@ -244,7 +252,7 @@ class TransactionViewController: UIViewController {
             let result = data["result"] as? [String: Any]
             let unspent = result?["unspent_outputs"] as? [String: Any]
             return ["previous_transaction": self.transaction.details,
-                    "fee_rate": self.transaction.feeRate,
+                    "fee_rate": self.getFeeRate(),
                     "subaccount": self.wallet.pointer,
                     "utxos": unspent ?? [:]]
         }.then { details in
