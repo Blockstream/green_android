@@ -183,16 +183,18 @@ class SessionManager: Session {
         }
     }
 
-    func discover(mnemonic: String, password: String?, hwDevice: HWDevice?) -> Promise<Void> {
+    func discover(mnemonic: String?, password: String?, hwDevice: HWDevice?) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         let isSingleSig = account?.isSingleSig ?? false
         return Guarantee()
             .map(on: bgq) { _ in
-                guard try gaios.validateMnemonic(mnemonic: mnemonic) else {
-                    throw LoginError.invalidMnemonic
+                if let mnemonic = mnemonic {
+                    guard try gaios.validateMnemonic(mnemonic: mnemonic) else {
+                        throw LoginError.invalidMnemonic
+                    }
                 }
             }.then(on: bgq) {
-                self.login(details: ["mnemonic": mnemonic, "password": password ?? ""], hwDevice: hwDevice)
+                self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hwDevice: hwDevice)
             }.recover { err in
                 switch err {
                 case TwoFactorCallError.failure(let localizedDescription):
@@ -224,7 +226,7 @@ class SessionManager: Session {
             }.asVoid()
     }
 
-    func restore(mnemonic: String, password: String?, hwDevice: HWDevice? = nil) -> Promise<Void> {
+    func restore(mnemonic: String?, password: String?, hwDevice: HWDevice? = nil) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         let isSingleSig = account?.isSingleSig ?? false
         return self.discover(mnemonic: mnemonic, password: password, hwDevice: hwDevice)
@@ -265,7 +267,7 @@ class SessionManager: Session {
             }.then(on: bgq) { device in
                 try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve()
             }.then(on: bgq) { _ in
-                self.restore(mnemonic: mnemonic ?? "", password: password, hwDevice: hwDevice)
+                self.restore(mnemonic: mnemonic, password: password, hwDevice: hwDevice)
             }.recover { err in
                 switch err {
                 case LoginError.walletNotFound,
@@ -283,14 +285,14 @@ class SessionManager: Session {
         return Guarantee()
             .map(on: bgq) {
                 try self.connect()
-            }.map(on: bgq) {
+            }.compactMap(on: bgq) { _ in
                 if let hwDevice = hwDevice,
                     let data = try? JSONEncoder().encode(hwDevice),
                     let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
-                    return ["device": device]
+                    return ([:], ["device": device])
                 }
-                return [:]
-            }.then(on: bgq) { device in
+                return (details, [:])
+            }.then(on: bgq) { (details, device) in
                 try super.loginUser(details: details, hw_device: device).resolve()
             }.compactMap { res in
                 self.logged = true
