@@ -91,7 +91,7 @@ class SendViewController: KeyboardViewController {
         setStyle()
         addRecipient()
         updateBtnNext()
-        transactionPriority = defaultTransactionPriority
+        transactionPriority = inputType == .bumpFee ? .High : defaultTransactionPriority
         activityIndicator.hidesWhenStopped = true
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
