@@ -105,9 +105,8 @@ class OverviewViewController: UIViewController {
         sendView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.sendView
         receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
 
-        _ = loadSubaccounts().done {
-            self.reloadData()
-        }
+        startAnimating()
+        reloadData()
     }
 
     func reloadSections(_ sections: [OverviewSection], animated: Bool) {
@@ -279,7 +278,7 @@ class OverviewViewController: UIViewController {
         }.then {
             self.loadSubaccounts()
         }.done { _ in
-            self.reloadData()
+            self.reloadWallet()
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)
@@ -287,6 +286,22 @@ class OverviewViewController: UIViewController {
     }
 
     func reloadData() {
+        isLoading = true
+        transactions.removeAll()
+        assets = [(key: String, value: UInt64)]()
+        tableView.reloadData {
+            self.loadSubaccounts()
+            .ensure {
+                self.stopAnimating()
+            }.done {
+                self.reloadWallet()
+            }.catch { err in
+                print(err.localizedDescription)
+            }
+        }
+    }
+
+    func reloadWallet() {
         firstly {
             self.isLoading = true
             return Guarantee()
@@ -434,7 +449,7 @@ class OverviewViewController: UIViewController {
     }
 
     func onAccountChange() {
-        reloadData()
+        reloadWallet()
     }
 
     func showAccountId() {
@@ -753,11 +768,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 SessionsManager.current.activeWallet = accounts[indexPath.row].pointer
                 presentingWallet = accounts[indexPath.row]
                 showAccounts = !showAccounts
-                self.transactions.removeAll()
-                assets = [(key: String, value: UInt64)]()
-                tableView.reloadData { [weak self] in
-                    self?.handleRefresh()
-                }
+                reloadData()
             }
         case OverviewSection.asset.rawValue:
             let storyboard = UIStoryboard(name: "Assets", bundle: nil)
