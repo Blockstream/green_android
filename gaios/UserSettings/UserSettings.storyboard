@@ -544,7 +544,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Db6-fP-c63">
-                                <rect key="frame" x="10" y="88" width="394" height="774"/>
+                                <rect key="frame" x="10" y="98" width="394" height="764"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="rVS-Ko-fRd">
                                     <size key="itemSize" width="128" height="128"/>
@@ -652,7 +652,7 @@
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="Db6-fP-c63" firstAttribute="leading" secondItem="yzP-cE-6RF" secondAttribute="leading" constant="10" id="NBV-2Q-YjQ"/>
-                            <constraint firstItem="Db6-fP-c63" firstAttribute="top" secondItem="yzP-cE-6RF" secondAttribute="top" id="bmk-bd-ubS"/>
+                            <constraint firstItem="Db6-fP-c63" firstAttribute="top" secondItem="yzP-cE-6RF" secondAttribute="top" constant="10" id="bmk-bd-ubS"/>
                             <constraint firstItem="yzP-cE-6RF" firstAttribute="trailing" secondItem="Db6-fP-c63" secondAttribute="trailing" constant="10" id="s35-nb-ApN"/>
                             <constraint firstItem="yzP-cE-6RF" firstAttribute="bottom" secondItem="Db6-fP-c63" secondAttribute="bottom" id="wVD-ht-4xz"/>
                         </constraints>
