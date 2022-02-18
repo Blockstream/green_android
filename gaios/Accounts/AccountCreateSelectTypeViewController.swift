@@ -108,16 +108,17 @@ class AccountCreateSelectTypeViewController: UIViewController {
     }
 
     @objc func didPressCard2of3() {
-        DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateRecoveryKeyViewController") as? AccountCreateRecoveryKeyViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     func next(_ accountType: AccountType) {
-        performSegue(withIdentifier: "set-name", sender: accountType)
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? AccountCreateSetNameViewController, let accountType = sender as? AccountType {
-            nextController.accountType = accountType
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
+            vc.accountType = accountType
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

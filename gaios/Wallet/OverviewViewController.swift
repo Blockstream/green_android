@@ -444,7 +444,7 @@ class OverviewViewController: UIViewController {
     @objc func addAccount() {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSelectTypeViewController") as? AccountCreateSelectTypeViewController {
-            show(vc, sender: self)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 

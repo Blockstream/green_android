@@ -24,3 +24,10 @@ enum AccountType: String, CaseIterable {
         }
     }
 }
+
+enum RecoveryKeyType: String, CaseIterable {
+    case hw
+    case newPhrase
+    case existingPhrase
+    case publicKey
+}
