@@ -57,11 +57,7 @@ class AccountCreateSetNameViewController: UIViewController {
     func dismiss() {
         DispatchQueue.main.async {
             for controller in self.navigationController!.viewControllers as Array {
-                //supports old transactions screen
-                if controller.isKind(of: AccountsViewController.self) {
-                    self.navigationController!.popToViewController(controller, animated: true)
-                    break
-                } else if controller.isKind(of: OverviewViewController.self) {
+                if controller.isKind(of: OverviewViewController.self) {
                     if let vc = controller as? OverviewViewController {
                         vc.onAccountChange()
                     }
