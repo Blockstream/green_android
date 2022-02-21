@@ -64,7 +64,12 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
     }
 
     @objc func didPressCardNewPhrase() {
-        next(.newPhrase)
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogMnemonicLengthViewController") as? DialogMnemonicLengthViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     @objc func didPressCardExistingPhrase() {
@@ -76,11 +81,24 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
     }
 
     func next(_ recoveryKeyType: RecoveryKeyType) {
-        print(recoveryKeyType)
-//        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
-//            vc.accountType = accountType
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
+        switch recoveryKeyType {
+        case .hw:
+            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
+        case .newPhrase(let lenght):
+            print(lenght)
+        case .existingPhrase:
+            break
+        case .publicKey:
+            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreatePublicKeyViewController") as? AccountCreatePublicKeyViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+}
+
+extension AccountCreateRecoveryKeyViewController: DialogMnemonicLengthViewControllerDelegate {
+    func didSelect(_ option: MnemonicLegthOption) {
+        next(.newPhrase(lenght: option.rawValue))
     }
 }

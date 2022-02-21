@@ -25,9 +25,9 @@ enum AccountType: String, CaseIterable {
     }
 }
 
-enum RecoveryKeyType: String, CaseIterable {
+enum RecoveryKeyType {
     case hw
-    case newPhrase
+    case newPhrase(lenght: Int)
     case existingPhrase
     case publicKey
 }
