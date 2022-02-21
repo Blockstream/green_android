@@ -59,7 +59,7 @@ class ScanWalletViewModel @AssistedInject constructor(
                         null
                     }
                 }.also {
-                    session.disconnect(disconnectDevice = true)
+                    session.disconnect(disconnectDevice = false)
                 }
 
             }catch (e: Exception){

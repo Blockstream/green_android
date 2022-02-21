@@ -1,6 +1,10 @@
 package com.blockstream.green.gdk
 
-import androidx.lifecycle.*
+
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
@@ -15,6 +19,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import mu.KLogging
 import java.util.*
+import kotlin.collections.set
 import kotlin.concurrent.schedule
 
 class SessionManager constructor(
@@ -23,11 +28,13 @@ class SessionManager constructor(
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
     qaTester: QATester,
-) : LifecycleObserver {
+) : DefaultLifecycleObserver {
     private val greenSessions = mutableSetOf<GreenSession>()
     private val walletSessions = mutableMapOf<WalletId, GreenSession>()
     private var onBoardingSession: GreenSession? = null
-    private var hardwareSessionV3: GreenSession? = null
+    private var hardwareSession: GreenSession? = null
+
+    private var isOnForeground: Boolean = false
 
     private var timeoutTimers = mutableListOf<Timer>()
 
@@ -60,7 +67,7 @@ class SessionManager constructor(
     fun getWalletSession(wallet: Wallet): GreenSession {
         // If id == -1 is a hardware wallet connection, we emulate it as currently we don't save the Wallet
         if(wallet.isHardwareEmulated){
-            return getHardwareSessionV3()
+            return getHardwareSession()
         }
 
         if (walletSessions[wallet.id] == null) {
@@ -71,6 +78,18 @@ class SessionManager constructor(
         return walletSessions[wallet.id]!!
     }
 
+    fun getWalletIdFromSession(session: GreenSession): WalletId {
+        for (key in walletSessions.keys){
+            if(walletSessions[key] == session){
+                return key
+            }
+        }
+
+        return -1
+    }
+
+    fun getSessions() : Set<GreenSession> = greenSessions
+
     fun destroyWalletSession(wallet: Wallet){
         walletSessions[wallet.id]?.let{
             it.destroy()
@@ -80,12 +99,12 @@ class SessionManager constructor(
         walletSessions.remove(wallet.id)
     }
 
-    fun getHardwareSessionV3(): GreenSession {
-        if (hardwareSessionV3 == null) {
-            hardwareSessionV3 = createSession()
+    fun getHardwareSession(): GreenSession {
+        if (hardwareSession == null) {
+            hardwareSession = createSession()
         }
 
-        return hardwareSessionV3!!
+        return hardwareSession!!
     }
 
     fun getOnBoardingSession(wallet: Wallet? = null): GreenSession {
@@ -93,7 +112,7 @@ class SessionManager constructor(
             return getWalletSession(it)
         }
 
-        // OnBoardingSession waits petiently to be upgraded to a proper wallet session
+        // OnBoardingSession waits patiently to be upgraded to a proper wallet session
 
         if (onBoardingSession == null) {
             onBoardingSession = createSession()
@@ -109,6 +128,8 @@ class SessionManager constructor(
     fun upgradeOnBoardingSessionToWallet(wallet: Wallet) {
         onBoardingSession?.let {
             walletSessions[wallet.id] = it
+            // fire connection change event so that all listeners can track the new session status
+            fireConnectionChangeEvent()
             onBoardingSession = null
         }
     }
@@ -128,16 +149,15 @@ class SessionManager constructor(
         return session
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onEnterForeground() {
+    override fun onResume(owner: LifecycleOwner) {
+        isOnForeground = true
         timeoutTimers.forEach { it.cancel() }
         timeoutTimers.clear()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onEnterBackground() {
+    override fun onPause(owner: LifecycleOwner) {
+        isOnForeground = false
         for(session in greenSessions.filter { it.isConnected }){
-
             val sessionTimeout = (session.getSettings()?.altimeout ?: 1) * 60 * 1000L
 
             timeoutTimers += Timer().also {

@@ -11,6 +11,7 @@ import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.QATesterActivity
@@ -52,6 +53,9 @@ class GreenApplication : Application(){
 
     @Inject
     lateinit var applicationScope: ApplicationScope
+
+    @Inject
+    lateinit var notificationManager: NotificationManager
 
     override fun onCreate() {
         super.onCreate()

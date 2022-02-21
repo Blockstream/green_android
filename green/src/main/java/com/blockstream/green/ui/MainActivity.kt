@@ -17,7 +17,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.transition.TransitionManager
+import com.blockstream.green.ApplicationScope
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
+import com.blockstream.green.database.Wallet
+import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.ui.devices.DeviceInfoBottomSheetDialogFragment
@@ -26,6 +30,7 @@ import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import mu.KLogging
 import javax.inject.Inject
 
@@ -38,6 +43,12 @@ class MainActivity : AppActivity() {
 
     @Inject
     lateinit var appKeystore: AppKeystore
+
+    @Inject
+    lateinit var walletRepository: WalletRepository
+
+    @Inject
+    lateinit var applicationScope: ApplicationScope
 
     private var unlockPrompt: BiometricPrompt? = null
 
@@ -238,6 +249,19 @@ class MainActivity : AppActivity() {
                 }.show()
             }
         }
+
+        if(intent?.action == OPEN_WALLET){
+            applicationScope.launch {
+                intent.getParcelableExtra<Wallet>(WALLET)?.let { wallet ->
+                    NavGraphDirections.actionGlobalLoginFragment(
+                        wallet = wallet,
+                        deviceId = intent.getStringExtra(DEVICE_ID)
+                    ).let {
+                        navigate(navController, resId = it.actionId, args = it.arguments)
+                    }
+                }
+            }
+        }
     }
 
     override fun isDrawerOpen(): Boolean = binding.drawerLayout.isDrawerOpen(GravityCompat.START)
@@ -263,6 +287,10 @@ class MainActivity : AppActivity() {
     }
 
     companion object: KLogging() {
+        const val OPEN_WALLET = "OPEN_WALLET"
+        const val WALLET = "WALLET"
+        const val DEVICE_ID = "DEVICE_ID"
+
         const val ENABLE_TESTNET = "ENABLE_TESTNET"
         const val ENABLE_TOR = "ENABLE_TOR"
         const val PROXY_URL = "PROXY_URL"

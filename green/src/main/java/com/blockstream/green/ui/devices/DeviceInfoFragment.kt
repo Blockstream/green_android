@@ -98,7 +98,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
             onEvent.getContentIfNotHandledForType<DeviceInfoViewModel.DeviceInfoEvent>()?.let {
                 when(it){
                     is DeviceInfoViewModel.DeviceInfoEvent.DeviceReady -> {
-                        viewModel.hardwareWallet?.let{ wallet ->
+                        viewModel.getGreenSession().hardwareWallet?.let{ wallet ->
                             navigate(
                                 DeviceInfoFragmentDirections.actionGlobalLoginFragment(wallet, deviceId = args.deviceId)
                             )
@@ -240,7 +240,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         )
 
         device?.let {
-            viewModel.connectDevice(sessionManager.getHardwareSessionV3(), it, hardwareWallet)
+            viewModel.connectDevice(sessionManager.getHardwareSession(), it, hardwareWallet)
         }
     }
 

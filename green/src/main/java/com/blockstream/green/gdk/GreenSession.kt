@@ -73,6 +73,8 @@ class GreenSession constructor(
     var device: Device? = null
         private set
 
+    var hardwareWallet: Wallet? = null
+
     lateinit var network: Network
         private set
 
@@ -232,7 +234,7 @@ class GreenSession constructor(
             }
         }
 
-    fun disconnect(disconnectDevice : Boolean = true) {
+    fun disconnect(disconnectDevice: Boolean) {
         isConnected = false
         if(disconnectDevice){
             device?.disconnect()
@@ -267,14 +269,16 @@ class GreenSession constructor(
     }
 
     fun disconnectAsync() {
-        isConnected = false
-
-        try {
-            applicationScope.launch(Dispatchers.IO) {
-                disconnect()
+        // Disconnect only if needed
+        if(isConnected) {
+            isConnected = false
+            try {
+                applicationScope.launch(Dispatchers.IO) {
+                    disconnect(disconnectDevice = false)
+                }
+            }catch (e: Exception) {
+                e.printStackTrace()
             }
-        }catch (e: Exception){
-            e.printStackTrace()
         }
     }
 
@@ -893,7 +897,7 @@ class GreenSession constructor(
     fun getAssetDrawableOrDefault(assetId : String): Drawable = assetsManager.getAssetDrawableOrDefault(assetId)
 
     internal fun destroy() {
-        disconnect()
+        disconnect(disconnectDevice = true)
         disposables.clear()
     }
 

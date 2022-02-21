@@ -17,7 +17,11 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
 
     internal val disposables = CompositeDisposable()
-    private var lifecycleRegistry: LifecycleRegistry? = null
+    private val lifecycleRegistry: LifecycleRegistry by lazy {
+        LifecycleRegistry(this).apply {
+            currentState = Lifecycle.State.STARTED
+        }
+    }
 
     val onEvent = MutableLiveData<ConsumableEvent<AppEvent>>()
     val onProgress = MutableLiveData(false)
@@ -55,17 +59,10 @@ open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
     override fun onCleared() {
         super.onCleared()
         disposables.clear()
-        lifecycleRegistry?.currentState = Lifecycle.State.DESTROYED
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
 
-    override fun getLifecycle(): Lifecycle {
-        if(lifecycleRegistry == null) {
-            lifecycleRegistry = LifecycleRegistry(this)
-            lifecycleRegistry?.currentState = Lifecycle.State.STARTED
-        }
-
-        return lifecycleRegistry!!
-    }
+    override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     val viewLifecycleOwner: LifecycleOwner
         get() = this

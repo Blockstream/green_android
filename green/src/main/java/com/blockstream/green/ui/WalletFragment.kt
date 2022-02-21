@@ -65,6 +65,13 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                 }
             }
 
+            // Check if we have a disconnect event eg. the Notification button
+            sessionManager.connectionChangeEvent.observe(viewLifecycleOwner) {
+                if(isLoggedInRequired() && !session.isConnected){
+                    getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.USER_ACTION)
+                }
+            }
+
             getWalletViewModel().let{
 
                 setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
@@ -99,6 +106,10 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                         NavGraphDirections.actionGlobalIntroFragment().let { directions ->
                             navigate(directions.actionId, directions.arguments, isLogout = true)
                         }
+                    }
+
+                    consumableEvent?.getContentIfNotHandledForType<AbstractWalletViewModel.WalletEvent.RenameWallet>()?.let {
+                        updateToolbar()
                     }
                 }
 

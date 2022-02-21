@@ -59,8 +59,6 @@ class DeviceInfoViewModel @AssistedInject constructor(
     @Inject
     lateinit var greenWallet: GreenWallet
 
-    var hardwareWallet: Wallet? = null
-
     val error = MutableLiveData<ConsumableEvent<String>>()
     val instructions = MutableLiveData<ConsumableEvent<Int>>()
 
@@ -68,8 +66,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         getGreenSession().observable {
             // Disconnect any previous hww connection
             it.disconnect(disconnectDevice = true)
-
-            hardwareWallet = wallet
+            it.hardwareWallet = wallet
             hardwareConnect.connectDevice(this, requestProvider, device)
         }.doOnSubscribe {
             onProgress.postValue(true)
@@ -83,6 +80,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     fun changeNetwork(wallet: Wallet){
         getGreenSession().observable {
             it.disconnect(disconnectDevice = false)
+            it.hardwareWallet = wallet
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
@@ -110,15 +108,15 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     override fun getGreenSession(): GreenSession {
-        return sessionManager.getHardwareSessionV3()
+        return sessionManager.getHardwareSession()
     }
+
+    override fun getConnectionNetwork() = getGreenSession().network
 
     override fun showError(err: String) {
         logger.info { "Shown error $error" }
         error.postValue(ConsumableEvent(err))
     }
-
-    override fun getConnectionNetwork() = greenWallet.networks.getNetworkById(hardwareWallet!!.network)
 
     override fun onDeviceReady() {
         logger.info { "onDeviceReady" }

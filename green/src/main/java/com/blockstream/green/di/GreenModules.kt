@@ -13,6 +13,7 @@ import com.blockstream.green.R
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.lifecycle.AppLifecycleObserver
+import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.AppKeystore
@@ -134,6 +135,32 @@ class GreenModules {
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return PreferenceManager.getDefaultSharedPreferences(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAndroidNotificationManager(@ApplicationContext context: Context): android.app.NotificationManager {
+        return context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+    }
+
+    @Singleton
+    @Provides
+    fun provideNotificationManager(
+        @ApplicationContext context: Context,
+        applicationScope: ApplicationScope,
+        androidNotificationManager: android.app.NotificationManager,
+        sessionManager: SessionManager,
+        settingsManager: SettingsManager,
+        walletRepository: WalletRepository
+    ): NotificationManager {
+        return NotificationManager(
+            context,
+            applicationScope,
+            androidNotificationManager,
+            sessionManager,
+            settingsManager,
+            walletRepository
+        )
     }
 
     @Singleton

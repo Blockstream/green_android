@@ -28,7 +28,6 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import mu.KLogging
 import java.lang.ref.WeakReference
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -226,7 +225,7 @@ class DeviceManager constructor(
     }
 
     private fun addBleConnectedDevices(){
-        sessionManager.getHardwareSessionV3().device?.let { device ->
+        sessionManager.getHardwareSession().device?.let { device ->
             if(device.isBle){
                 addBluetoothDevice(device)
             }

@@ -1068,4 +1068,5 @@
   <string name="id_hold_button_to_send">Hold button to Send</string>
   <string name="id_coin">Coin</string>
   <string name="id_check_device">Check Device</string>
+  <string name="id_connected_wallets">Connected wallets</string>
 </resources>

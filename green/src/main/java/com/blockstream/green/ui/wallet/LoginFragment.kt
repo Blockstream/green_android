@@ -70,7 +70,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     override fun getWalletViewModel() = viewModel
 
     override val title: String
-        get() = wallet.name
+        get() = viewModel.wallet.name
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel

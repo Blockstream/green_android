@@ -46,7 +46,7 @@ interface WalletDao {
     fun getWalletObservable(id: WalletId): Observable<Wallet>
 
     @Query("SELECT * FROM wallets WHERE id = :id")
-    suspend fun getWalletSuspend(id: WalletId): Wallet
+    suspend fun getWalletSuspend(id: WalletId): Wallet?
 
     @Query("SELECT * FROM wallets")
     fun getWallets(): LiveData<List<Wallet>>

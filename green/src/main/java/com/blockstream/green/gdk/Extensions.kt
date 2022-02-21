@@ -55,6 +55,12 @@ fun String.getNetworkIcon(): Int{
     return R.drawable.ic_unknown_network_60
 }
 
+fun String.getNetworkColor(): Int = when {
+    Network.isMainnet(this) -> R.color.bitcoin
+    Network.isLiquid(this) -> R.color.liquid
+    else -> R.color.testnet
+}
+
 fun String.getAssetIcon(context: Context, session: GreenSession): Drawable {
     return if (session.network.policyAsset == this) {
         ContextCompat.getDrawable(
