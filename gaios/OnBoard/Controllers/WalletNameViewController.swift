@@ -134,8 +134,7 @@ class WalletNameViewController: UIViewController {
 
     func error(_ session: SessionManager, message: String) {
         DropAlert().error(message: NSLocalizedString(message, comment: ""))
-        session.disconnect()
-        session.remove()
+        session.destroy()
     }
 
     func next() {

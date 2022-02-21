@@ -93,7 +93,7 @@ class ScreenLocker {
         SessionsManager.shared.forEach { (id, session) in
             if let settings = session.settings,
                Int(countdown) >= settings.altimeout * 60 {
-                session.disconnect()
+                session.destroy()
 
                 if id == AccountsManager.shared.current?.id ?? "" {
                     self.isScreenLockLocked = true

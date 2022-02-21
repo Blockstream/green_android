@@ -157,7 +157,7 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onAuthenticate(p, network: network, firstInitialization: false)
             }, onError: { err in
-                session.disconnect()
+                session.destroy()
                 self.onError(err, network: network)
             })
     }
@@ -195,7 +195,7 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onAuthenticate(p, network: network, firstInitialization: !hasPin)
             }, onError: { err in
-                session.disconnect()
+                session.destroy()
                 self.onError(err, network: network)
             })
     }
@@ -300,7 +300,7 @@ class BLEManager {
                 case BLEManagerError.firmwareErr(_): // nothing to do
                     return
                 default:
-                    session.disconnect()
+                    session.destroy()
                     self.onError(err, network: nil)
                 }
             })

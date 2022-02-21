@@ -191,7 +191,7 @@ class LoginViewController: UIViewController {
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
-            session.disconnect()
+            session.destroy()
             self.stopLoader()
             switch error {
             case AuthenticationTypeHandler.AuthError.CanceledByUser:

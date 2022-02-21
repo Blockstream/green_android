@@ -41,25 +41,13 @@ class SessionManager: Session {
     }
 
     deinit {
-        if connected {
-            disconnect()
-        }
-        remove()
+        setNotificationHandler(notificationCompletionHandler: nil)
     }
 
-    public func remove() {
+    public func destroy() {
         if let id = account?.id {
             SessionsManager.shared.removeValue(forKey: id)
         }
-    }
-
-    public override func disconnect() {
-        try? super.disconnect()
-        setNotificationHandler(notificationCompletionHandler: nil)
-        connected = false
-        logged = false
-        twoFactorConfig = nil
-        settings = nil
     }
 
     public func connect() throws {

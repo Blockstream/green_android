@@ -23,7 +23,7 @@ class SessionsManager {
 
     static func new(for account: Account) -> SessionManager {
         if let session = shared[account.id] {
-            session.remove()
+            session.destroy()
         }
         let session = SessionManager(account: account)
         shared[account.id] = session

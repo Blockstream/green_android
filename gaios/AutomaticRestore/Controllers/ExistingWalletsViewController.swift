@@ -76,8 +76,7 @@ class ExistingWalletsViewController: UIViewController {
         return Promise { seal in
             session.discover(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, hwDevice: nil)
             .ensure {
-                session.disconnect()
-                session.remove()
+                session.destroy()
             }.done { _ in
                 seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: true, isJustRestored: false))
             }.catch { error in
@@ -95,7 +94,6 @@ class ExistingWalletsViewController: UIViewController {
                 default:
                     print(error)
                     DropAlert().error(message: error.localizedDescription)
-                    session.disconnect()
                     seal.reject(error)
                 }
             }

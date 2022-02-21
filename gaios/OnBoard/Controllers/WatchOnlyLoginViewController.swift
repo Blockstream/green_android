@@ -151,7 +151,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
-            session.disconnect()
+            session.destroy()
             switch error {
             case LoginError.connectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))

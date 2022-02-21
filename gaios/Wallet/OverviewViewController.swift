@@ -1013,8 +1013,7 @@ extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faVi
                        BLEManager.shared.dispose()
                    }
                     if let session = SessionsManager.get(for: account) {
-                        session.disconnect()
-                        session.remove()
+                        session.destroy()
                     }
                 }
                 self.stopLoader()

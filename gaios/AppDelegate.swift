@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController?.startAnimating()
             return Guarantee()
         }.map(on: bgq) {
-            session.disconnect()
+            session.destroy()
         }.ensure {
             self.window?.rootViewController?.stopAnimating()
         }.done {
