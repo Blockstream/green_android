@@ -6,11 +6,19 @@ class AccountCreateSetNameViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var fieldName: UITextField!
     @IBOutlet weak var lblHint: UILabel!
+
+    @IBOutlet weak var containerViewAccountType: UIView!
     @IBOutlet weak var lblAccountTypeTitle: UILabel!
     @IBOutlet weak var lblAccountTypeHint: UILabel!
+
+    @IBOutlet weak var containerViewRecoveryKeyType: UIView!
+    @IBOutlet weak var lblRecoveryKeyTypeTitle: UILabel!
+    @IBOutlet weak var lblRecoveryKeyTypeHint: UILabel!
+
     @IBOutlet weak var btnNext: UIButton!
 
     var accountType: AccountType!
+    var recoveryKeyType: RecoveryKeyType?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +40,22 @@ class AccountCreateSetNameViewController: UIViewController {
         lblHint.text = NSLocalizedString("id_account_name", comment: "")
         lblAccountTypeTitle.text = NSLocalizedString("id_account_type", comment: "").uppercased()
         lblAccountTypeHint.text = accountType.name
+        lblRecoveryKeyTypeTitle.text = "Recovery key type".uppercased()
         btnNext.setTitle(NSLocalizedString("id_add_new_account", comment: ""), for: .normal)
+        containerViewRecoveryKeyType.isHidden = true
+        if accountType == .twoOfThree, let recoveryKeyType = recoveryKeyType {
+            containerViewRecoveryKeyType.isHidden = false
+            switch recoveryKeyType {
+            case .hw:
+                lblRecoveryKeyTypeHint.text = "Hardware Wallet"
+            case .newPhrase:
+                lblRecoveryKeyTypeHint.text = "New Phrase"
+            case .existingPhrase:
+                lblRecoveryKeyTypeHint.text = "Existing Phrase"
+            case .publicKey:
+                lblRecoveryKeyTypeHint.text = "Public Key"
+            }
+        }
     }
 
     func setStyle() {
@@ -66,10 +89,6 @@ class AccountCreateSetNameViewController: UIViewController {
                 }
             }
         }
-    }
-
-    deinit {
-        print("Deinit AccountCreateSetName")
     }
 
     func createAccount(name: String, type: AccountType) {
