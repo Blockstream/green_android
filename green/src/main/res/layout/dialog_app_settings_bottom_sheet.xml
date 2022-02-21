@@ -214,7 +214,7 @@
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_liquid_electrum_server"
-                app:isVisible="@{vm.enableElectrumNode &amp;&amp; isDevelopment}"
+                app:isVisible="@{vm.enableElectrumNode}"
                 tools:ignore="HardcodedText">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
