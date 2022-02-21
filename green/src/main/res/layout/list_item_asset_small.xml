@@ -22,7 +22,7 @@
             android:layout_height="32dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_btc" />
+            android:src="@drawable/ic_bitcoin_network_60" />
 
         <TextView
             android:id="@+id/name"

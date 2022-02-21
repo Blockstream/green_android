@@ -213,7 +213,9 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     private fun initRecipientBinging(recipientBinding: ListItemTransactionRecipientBinding) {
         recipientBinding.addressInputLayout.endIconCopyMode()
-        recipientBinding.amountTextInputLayout.endIconCopyMode()
+        if(!isBump && !isSweep) {
+            recipientBinding.amountTextInputLayout.endIconCopyMode()
+        }
 
         AmountTextWatcher.watch(recipientBinding.amountInputEditText)
 
