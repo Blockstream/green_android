@@ -19,8 +19,8 @@ class AccountCreateSetNameViewController: UIViewController {
 
     var accountType: AccountType!
     var recoveryKeyType: RecoveryKeyType?
-    var mnemonic: String?
-    var xPub: String?
+    var recoveryMnemonic: String?
+    var recoveryXpub: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,7 +75,7 @@ class AccountCreateSetNameViewController: UIViewController {
 
     func next() {
         if let name = fieldName.text {
-            createAccount(name: name, type: accountType)
+            createSubaccount(name: name, type: accountType, recoveryMnemonic: recoveryMnemonic, recoveryXpub: recoveryXpub)
         }
     }
 
@@ -93,16 +93,20 @@ class AccountCreateSetNameViewController: UIViewController {
         }
     }
 
-    func createAccount(name: String, type: AccountType) {
+    func createSubaccount(name: String, type: AccountType, recoveryMnemonic: String? = nil, recoveryXpub: String? = nil) {
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            // to handle 2of3
-            try SessionsManager.current.createSubaccount(details: ["name": name, "type": type.rawValue])
-        }.then(on: bgq) { call in
-            call.resolve()
+        }.then(on: bgq) { () -> Promise<[String: Any]> in
+            var subaccount = ["name": name, "type": type.rawValue]
+            if let recoveryMnemonic = recoveryMnemonic {
+                subaccount["recovery_mnemonic"] = recoveryMnemonic
+            }
+            if let recoveryXpub = recoveryXpub {
+                subaccount["recovery_xpub"] = recoveryXpub
+            }
+            return try SessionsManager.current.createSubaccount(details: subaccount).resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

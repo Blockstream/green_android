@@ -218,7 +218,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                 if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
                     vc.accountType = .twoOfThree
                     vc.recoveryKeyType = .existingPhrase
-                    vc.mnemonic = mnemonic
+                    vc.recoveryMnemonic = mnemonic
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             }

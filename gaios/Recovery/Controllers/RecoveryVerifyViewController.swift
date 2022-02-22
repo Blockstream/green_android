@@ -105,7 +105,7 @@ class RecoveryVerifyViewController: UIViewController {
                         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
                             vc.accountType = .twoOfThree
                             vc.recoveryKeyType = .newPhrase(lenght: subAccountCreateMnemonicLength.rawValue)
-                            vc.mnemonic = self.mnemonic.joined(separator: " ")
+                            vc.recoveryMnemonic = self.mnemonic.joined(separator: " ")
                             self.navigationController?.pushViewController(vc, animated: true)
                         }
                     } else {

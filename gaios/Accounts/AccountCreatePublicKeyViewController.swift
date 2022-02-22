@@ -69,7 +69,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
             vc.accountType = .twoOfThree
             vc.recoveryKeyType = .publicKey
-            vc.xPub = textViewKey.text ?? ""
+            vc.recoveryXpub = textViewKey.text ?? ""
             navigationController?.pushViewController(vc, animated: true)
         }
     }

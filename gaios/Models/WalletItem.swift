@@ -13,6 +13,7 @@ class WalletItem: Codable, Equatable {
         case recoveryChainCode = "recovery_chain_code"
         case recoveryPubKey = "recovery_pub_key"
         case bip44Discovered = "bip44_discovered"
+        case recoveryXpub = "recovery_xpub"
     }
 
     private let name: String
@@ -24,6 +25,7 @@ class WalletItem: Codable, Equatable {
     var recoveryChainCode: String?
     var recoveryPubKey: String?
     let bip44Discovered: Bool?
+    let recoveryXpub: String?
 
     func localizedName() -> String {
         if !name.isEmpty {
