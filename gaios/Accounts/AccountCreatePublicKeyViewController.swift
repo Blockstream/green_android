@@ -65,12 +65,13 @@ class AccountCreatePublicKeyViewController: UIViewController {
     }
 
     func next() {
-        print("next")
-//        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
-//            vc.accountType = accountType
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
+            vc.accountType = .twoOfThree
+            vc.recoveryKeyType = .publicKey
+            vc.xPub = textViewKey.text ?? ""
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnCancel(_ sender: Any) {

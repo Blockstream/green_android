@@ -6,11 +6,17 @@ enum RecoveryType {
     case phrase
 }
 
+enum MnemonicActionType {
+    case recoverWallet
+    case addSubaccount
+}
+
 class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     @IBOutlet weak var doneButton: UIButton!
 
     @IBOutlet weak var mnemonicWords: UICollectionView!
+    @IBOutlet weak var passwordProtectedView: UIView!
     @IBOutlet weak var passwordProtectedSwitch: UISwitch!
     @IBOutlet weak var passwordProtectedLabel: UILabel!
     @IBOutlet weak var header: UIView!
@@ -30,13 +36,19 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     var currIndexPath: IndexPath?
     var recoveryType = RecoveryType.qr
+    var mnemonicActionType: MnemonicActionType = .recoverWallet
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = ""
         updateLblTitle()
-        doneButton.setTitle(NSLocalizedString("id_restore", comment: ""), for: .normal)
+        switch mnemonicActionType {
+        case .recoverWallet:
+            doneButton.setTitle(NSLocalizedString("id_restore", comment: ""), for: .normal)
+        case .addSubaccount:
+            doneButton.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
+        }
         passwordProtectedLabel.text = NSLocalizedString("id_password_protected", comment: "")
 
         mnemonicWords.delegate = self
@@ -52,6 +64,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             updateNavigationItem()
         }
 
+        passwordProtectedView.isHidden = mnemonicActionType == .addSubaccount
         view.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.view
         lblTitle.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.titleLbl
         doneButton.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.doneBtn
@@ -193,11 +206,22 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            OnBoardManager.shared.params?.mnemonic = mnemonic
-            OnBoardManager.shared.params?.mnemomicPassword = password
-            let storyboard = UIStoryboard(name: "AutomaticRestore", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ExistingWalletsViewController")
-            self.navigationController?.pushViewController(vc, animated: true)
+            switch self.mnemonicActionType {
+            case .recoverWallet:
+                OnBoardManager.shared.params?.mnemonic = mnemonic
+                OnBoardManager.shared.params?.mnemomicPassword = password
+                let storyboard = UIStoryboard(name: "AutomaticRestore", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "ExistingWalletsViewController")
+                self.navigationController?.pushViewController(vc, animated: true)
+            case .addSubaccount:
+                let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
+                    vc.accountType = .twoOfThree
+                    vc.recoveryKeyType = .existingPhrase
+                    vc.mnemonic = mnemonic
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }
         }.catch { error in
             DropAlert().error(message: "Invalid Recovery Phrase")
         }

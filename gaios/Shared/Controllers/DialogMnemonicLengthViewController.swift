@@ -3,10 +3,10 @@ import UIKit
 import PromiseKit
 
 protocol DialogMnemonicLengthViewControllerDelegate: AnyObject {
-    func didSelect(_ option: MnemonicLegthOption)
+    func didSelect(_ option: MnemonicLengthOption)
 }
 
-enum MnemonicLegthOption: Int {
+enum MnemonicLengthOption: Int {
     case _12 = 12
     case _24 = 24
 }
@@ -51,7 +51,7 @@ class DialogMnemonicLengthViewController: UIViewController {
         }
     }
 
-    func dismiss(_ value: MnemonicLegthOption?) {
+    func dismiss(_ value: MnemonicLengthOption?) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in

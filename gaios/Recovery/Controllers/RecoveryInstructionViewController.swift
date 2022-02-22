@@ -12,6 +12,8 @@ class RecoveryInstructionViewController: UIViewController {
     @IBOutlet weak var lblTos: UILabel!
     @IBOutlet weak var btnNext: UIButton!
 
+    var subAccountCreateMnemonicLength: MnemonicLengthOption?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -62,8 +64,10 @@ class RecoveryInstructionViewController: UIViewController {
 
     @IBAction func btnNext(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+            vc.subAccountCreateMnemonicLength = subAccountCreateMnemonicLength
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
 }

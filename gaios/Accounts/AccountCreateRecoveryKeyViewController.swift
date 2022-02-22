@@ -84,10 +84,23 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         switch recoveryKeyType {
         case .hw:
             DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
-        case .newPhrase(let lenght):
-            print(lenght)
+        case .newPhrase(let length):
+            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController") as? RecoveryInstructionViewController {
+                if length == MnemonicLengthOption._24.rawValue {
+                    vc.subAccountCreateMnemonicLength = MnemonicLengthOption._24
+                } else {
+                    vc.subAccountCreateMnemonicLength = MnemonicLengthOption._12
+                }
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .existingPhrase:
-            break
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
+                vc.recoveryType = .phrase
+                vc.mnemonicActionType = .addSubaccount
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .publicKey:
             let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreatePublicKeyViewController") as? AccountCreatePublicKeyViewController {
@@ -98,7 +111,7 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
 }
 
 extension AccountCreateRecoveryKeyViewController: DialogMnemonicLengthViewControllerDelegate {
-    func didSelect(_ option: MnemonicLegthOption) {
+    func didSelect(_ option: MnemonicLengthOption) {
         next(.newPhrase(lenght: option.rawValue))
     }
 }

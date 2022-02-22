@@ -19,6 +19,8 @@ class AccountCreateSetNameViewController: UIViewController {
 
     var accountType: AccountType!
     var recoveryKeyType: RecoveryKeyType?
+    var mnemonic: String?
+    var xPub: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -97,6 +99,7 @@ class AccountCreateSetNameViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
+            // to handle 2of3
             try SessionsManager.current.createSubaccount(details: ["name": name, "type": type.rawValue])
         }.then(on: bgq) { call in
             call.resolve()

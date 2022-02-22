@@ -27,6 +27,9 @@ class RecoveryVerifyViewController: UIViewController {
     lazy var processConnectors: [UIView] = [progressBarConnector1, progressBarConnector2, progressBarConnector3]
 
     private var mnemonicSize: Int {
+        if let subAccountCreateMnemonicLength = subAccountCreateMnemonicLength {
+            return subAccountCreateMnemonicLength.rawValue
+        }
         if OnBoardManager.shared.params?.mnemonicSize == MnemonicSize._24.rawValue {
             return MnemonicSize._24.rawValue
         }
@@ -38,6 +41,8 @@ class RecoveryVerifyViewController: UIViewController {
     var questionCounter: Int = 0
     var questionPosition: Int = 0
     var numberOfSteps: Int = 4
+
+    var subAccountCreateMnemonicLength: MnemonicLengthOption?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,10 +100,20 @@ class RecoveryVerifyViewController: UIViewController {
         if selectedWord != nil, selectedWord == String(mnemonic[questionPosition]) {
             if isComplete() {
                 DispatchQueue.main.async {
-                    OnBoardManager.shared.params?.mnemonic = self.mnemonic.joined(separator: " ")
-                    let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-                    let vc = storyboard.instantiateViewController(withIdentifier: "RecoverySuccessViewController")
-                    self.navigationController?.pushViewController(vc, animated: true)
+                    if let subAccountCreateMnemonicLength = self.subAccountCreateMnemonicLength {
+                        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+                        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
+                            vc.accountType = .twoOfThree
+                            vc.recoveryKeyType = .newPhrase(lenght: subAccountCreateMnemonicLength.rawValue)
+                            vc.mnemonic = self.mnemonic.joined(separator: " ")
+                            self.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    } else {
+                        OnBoardManager.shared.params?.mnemonic = self.mnemonic.joined(separator: " ")
+                        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+                        let vc = storyboard.instantiateViewController(withIdentifier: "RecoverySuccessViewController")
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
                 }
             } else {
                 questionCounter += 1

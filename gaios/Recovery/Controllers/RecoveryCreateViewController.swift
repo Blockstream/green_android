@@ -15,26 +15,28 @@ class RecoveryCreateViewController: UIViewController {
     @IBOutlet weak var word5: UILabel!
     @IBOutlet weak var word6: UILabel!
 
+    var subAccountCreateMnemonicLength: MnemonicLengthOption?
+
     lazy var arrayLabels: [UILabel] = [self.word1, self.word2, self.word3, self.word4, self.word5, self.word6]
 
     private var mnemonicSize: Int {
+        if let subAccountCreateMnemonicLength = subAccountCreateMnemonicLength {
+            return subAccountCreateMnemonicLength.rawValue
+        }
         if OnBoardManager.shared.params?.mnemonicSize == MnemonicSize._24.rawValue {
             return MnemonicSize._24.rawValue
         }
         return MnemonicSize._12.rawValue
     }
 
-    private var mnemonic: [Substring] = {
-        if OnBoardManager.shared.params?.mnemonicSize == MnemonicSize._24.rawValue {
-            return try! generateMnemonic().split(separator: " ")
-        } else {
-            return try! generateMnemonic12().split(separator: " ")
-        }
-    }()
+    private var mnemonic: [Substring]!
+
     private var pageCounter = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        mnemonicCreate()
 
         let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(RecoveryCreateViewController.back(sender:)))
         navigationItem.leftBarButtonItem = newBackButton
@@ -79,6 +81,14 @@ class RecoveryCreateViewController: UIViewController {
         }
     }
 
+    func mnemonicCreate() {
+        if mnemonicSize == MnemonicSize._24.rawValue {
+            mnemonic = try! generateMnemonic().split(separator: " ")
+        } else {
+            mnemonic = try! generateMnemonic12().split(separator: " ")
+        }
+    }
+
     func loadWords() {
         progressView.progress = Float(pageCounter + 1) / Float((mnemonicSize / Constants.wordsPerPage))
         let start = pageCounter * Constants.wordsPerPage
@@ -97,6 +107,7 @@ class RecoveryCreateViewController: UIViewController {
             let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryVerifyViewController") as? RecoveryVerifyViewController {
                 vc.mnemonic = mnemonic
+                vc.subAccountCreateMnemonicLength = subAccountCreateMnemonicLength
                 navigationController?.pushViewController(vc, animated: true)
             }
         } else {
