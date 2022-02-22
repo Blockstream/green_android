@@ -74,9 +74,9 @@
   <string name="id_amp_wallet">AMP peněženka</string>
   <string name="id_another_2fa_method_is_already">Další metoda 2FA je již aktivní. Prostřednictvím 2FA potvrďte, že tuto změnu autorizujete.</string>
   <string name="id_app_settings">Nastavení aplikace</string>
-  <string name="id_archive">Archive</string>
-  <string name="id_archived">Archived</string>
-  <string name="id_archived_accounts">Archived Accounts</string>
+  <string name="id_archive">Archivovat</string>
+  <string name="id_archived">Archivováno</string>
+  <string name="id_archived_accounts">Archivované účty</string>
   <string name="id_are_you_sure_you_want_to_view">Opravdu chcete transakci zobrazit pomocí %s?</string>
   <string name="id_as_easy_as_snapping_a_photo">Stejně snadné jako fotografování pomocí telefonu. Pokud máte existující peněženku, naskenujte frázi pro obnovení z nastavení.</string>
   <string name="id_asset">Aktivum</string>
@@ -165,7 +165,7 @@
   <string name="id_coins_locked">Mince uzamčeny</string>
   <string name="id_coins_protected_by_the_legacy">Mince chráněné starším skriptem lze obnovit pomocí souboru nlocktimes.zip.</string>
   <string name="id_coins_protected_by_the_new">Mince chráněné novým skriptem s vloženým vypršením platnosti 2FA prostřednictvím CheckSequenceVerify.</string>
-  <string name="id_coins_received_or_created">Coins received or created before SegWit was activated.</string>
+  <string name="id_coins_received_or_created">Mince přijaté nebo vytvořené před aktivací SegWit.</string>
   <string name="id_coins_unlocked">Mince jsou odemčené</string>
   <string name="id_coins_whose_asset_and_amount">Mince, jejichž aktivum a množství jsou veřejně viditelné.</string>
   <string name="id_coins_with_a_value_lower_than">Mince s hodnotou nižší než 1092 satoshi, které jsou neekonomické utratit; tyto mince může generovat vaše peněženka jako drobné nebo vám je mohou poslat třetí strany, které se pokoušejí spamovat nebo deanonymizovat vaši peněženku.</string>
@@ -687,7 +687,7 @@
   <string name="id_remove">Odstranit</string>
   <string name="id_remove_custom_network">Odebrat vlastní síť</string>
   <string name="id_remove_wallet">Odebrat peněženku</string>
-  <string name="id_rename">Rename</string>
+  <string name="id_rename">Přejmenovat</string>
   <string name="id_rename_account">Přejmenovat účet</string>
   <string name="id_rename_wallet">Přejmenovat peněženku</string>
   <string name="id_replaceable">zaměnitelný</string>
@@ -911,7 +911,7 @@
   <string name="id_twofactor_threshold">Limit 2-Faktorů</string>
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Nelze kontaktovat Green službu. Zkontrolujte připojení k síti a počkejte, až se znovu připojí.</string>
-  <string name="id_unarchive">Unarchive</string>
+  <string name="id_unarchive">Odarchivovat</string>
   <string name="id_unblinding_data">Odtajněná data</string>
   <string name="id_unconfirmed">Nepotvrzeno</string>
   <string name="id_undo_2fa_dispute">Vzít zpět 2FA spor</string>
@@ -948,7 +948,7 @@
   <string name="id_version">Verze</string>
   <string name="id_version_1s">Verze: %1$s</string>
   <string name="id_version_1s_2s">Verze %1$s %2$s</string>
-  <string name="id_view_archived_accounts_d">View archived accounts (%d)</string>
+  <string name="id_view_archived_accounts_d">Zobrazit archivované účty (%d)</string>
   <string name="id_view_in_explorer">Zobrazit v průzkumníku</string>
   <string name="id_view_more">Zobrazit více</string>
   <string name="id_visit_s_for_further_information">Navštivte %s pro další informace o softwaru</string>
