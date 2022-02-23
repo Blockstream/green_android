@@ -21,11 +21,12 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
     suspend fun getWalletSuspend(id: WalletId) = walletDao.getWalletSuspend(id)
 
     fun addWallet(wallet: Wallet) = walletDao.insert(wallet)
+    suspend fun addWalletSuspend(wallet: Wallet) = walletDao.insertSuspend(wallet)
 
     fun addLoginCredentialsSync(loginCredentials: LoginCredentials) = walletDao.insertSync(loginCredentials)
+    suspend fun addLoginCredentialsSuspend(loginCredentials: LoginCredentials) = walletDao.insertSuspend(loginCredentials)
     fun updateLoginCredentialsSync(vararg loginCredentials: LoginCredentials) = walletDao.updateLoginCredentialsSync(*loginCredentials)
     fun deleteLoginCredentialsSync(loginCredentials: LoginCredentials) = walletDao.deleteLoginCredentialsSync(loginCredentials)
-
     suspend fun deleteLoginCredentialsSuspend(loginCredentials: LoginCredentials) = walletDao.deleteLoginCredentialsSuspend(loginCredentials)
 
     fun getWalletLoginCredentials(id: WalletId) = walletDao.getWalletLoginCredentials(id)

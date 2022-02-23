@@ -114,8 +114,8 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideMigrator(@ApplicationContext context: Context, walletRepository: WalletRepository, greenWallet: GreenWallet, settingsManager: SettingsManager): Migrator {
-        return Migrator(context, walletRepository, greenWallet, settingsManager)
+    fun provideMigrator(@ApplicationContext context: Context, walletRepository: WalletRepository, greenWallet: GreenWallet, settingsManager: SettingsManager, applicationScope: ApplicationScope): Migrator {
+        return Migrator(context, walletRepository, greenWallet, settingsManager, applicationScope)
     }
 
     @Singleton

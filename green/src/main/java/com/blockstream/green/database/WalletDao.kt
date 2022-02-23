@@ -9,6 +9,9 @@ interface WalletDao {
     @Insert
     fun insert(wallet: Wallet) : Long
 
+    @Insert
+    suspend fun insertSuspend(wallet: Wallet) : Long
+
     @Delete
     fun deleteSync(wallet: Wallet)
 
@@ -20,6 +23,9 @@ interface WalletDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSync(loginCredentials: LoginCredentials)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSuspend(loginCredentials: LoginCredentials)
 
     @Update
     fun updateLoginCredentialsSync(vararg loginCredentials: LoginCredentials)

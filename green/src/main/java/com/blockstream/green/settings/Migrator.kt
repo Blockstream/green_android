@@ -6,6 +6,7 @@ import android.util.Base64
 import androidx.preference.PreferenceManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.PinData
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.Preferences
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
@@ -17,11 +18,12 @@ import mu.KLogging
 import java.security.KeyStore
 import java.security.UnrecoverableKeyException
 
-class Migrator(
+class Migrator constructor(
     val context: Context,
     val walletRepository: WalletRepository,
     val greenWallet: GreenWallet,
     val settingsManager: SettingsManager,
+    val applicationScope: ApplicationScope
 ) {
 
     var keyStore: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply {
@@ -29,14 +31,13 @@ class Migrator(
     }
 
     suspend fun migrate(){
-
         MigratorJava.migratePreferencesFromV2(context)
 
         migratePreferencesFromV3()
         fixV4Migration()
     }
 
-    private fun migratePreferencesFromV3(){
+    private suspend fun migratePreferencesFromV3(){
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
         if(sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4_1, false) || sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4_2, false)){
@@ -84,7 +85,7 @@ class Migrator(
                 activeAccount = networkPreferences.getInt(ACTIVE_SUBACCOUNT, 0).toLong()
             )
 
-            wallet.id = walletRepository.addWallet(wallet)
+            wallet.id = walletRepository.addWalletSuspend(wallet)
 
             for(pinPreference in pinPreferences){
                 if(pinPreference.contains("ident")){
@@ -110,7 +111,7 @@ class Migrator(
                         encryptedData = EncryptedData(nativePIN, nativeIV ?: "")
                     }
 
-                    walletRepository.addLoginCredentialsSync(
+                    walletRepository.addLoginCredentialsSuspend(
                         LoginCredentials(
                             walletId = wallet.id,
                             credentialType = credentialType,
@@ -203,12 +204,12 @@ class Migrator(
 
             // As we change the primary key, we have to first delete the old record
             for(deleteLoginCredentials in batchDelete){
-                walletRepository.deleteLoginCredentialsSync(deleteLoginCredentials)
+                walletRepository.deleteLoginCredentialsSuspend(deleteLoginCredentials)
             }
 
             // and insert the new login credentials
             for(inserLoginCredentials in batchUpdate){
-                walletRepository.addLoginCredentialsSync(inserLoginCredentials)
+                walletRepository.addLoginCredentialsSuspend(inserLoginCredentials)
             }
         }
 
@@ -251,8 +252,6 @@ class Migrator(
 
     companion object: KLogging(){
         const val NETWORK_ID_ACTIVE = "network_id_active"
-        const val UNIT = "unit"
-        const val DEFAULT_FEERATE_SATBYTE = "default_feerate_satbyte"
         const val VERSION = "version"
         const val PROXY_ENABLED = "proxy_enabled"
         const val PROXY_HOST = "proxy_host"
@@ -261,6 +260,5 @@ class Migrator(
         const val TRUSTED_ADDRESS = "trusted_address"
         const val SPV_ENABLED = "spv_enabled"
         const val ACTIVE_SUBACCOUNT = "active_subaccount"
-        const val SWEEP = "sweep"
     }
 }
