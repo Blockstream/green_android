@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+ 
+## Unreleased
+
+### Added
+- Create sub accounts of type 2of3
+
+### Changed
+- Select mnemonic length while restoring wallet
+
+### Fixed
+
 
 ## [3.7.9] - 2022-02-15
 
