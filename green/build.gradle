@@ -9,6 +9,22 @@ plugins {
     id 'com.adarshr.test-logger' version '2.1.1'
 }
 
+//https://developer.android.com/studio/publish/app-signing#secure-key
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+// Load your keystore.properties file into the keystoreProperties object.
+if (keystorePropertiesFile.exists()){
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+} else { // or if not exists get them from env variables
+    keystoreProperties.put("storeFile",  System.getenv("KEYSTORE_FILE") ?: "")
+    keystoreProperties.put("storePassword", System.getenv("KEYSTORE_PASSWORD") ?: "")
+    keystoreProperties.put("keyAlias", System.getenv("KEY_ALIAS") ?: "")
+    keystoreProperties.put("keyPassword", System.getenv("KEY_PASSWORD") ?: "")
+}
+
 android {
     compileSdkVersion 31
     buildToolsVersion "31.0.0"
@@ -30,6 +46,16 @@ android {
 
         testApplicationId "com.blockstream.green.test"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        sign {
+            var keystoreFile = keystoreProperties["storeFile"] != null && keystoreProperties["storeFile"] != "" ? rootProject.file(keystoreProperties["storeFile"]) : null
+            storeFile keystoreFile != null && keystoreFile.exists() ? keystoreFile : null
+            storePassword keystoreProperties.containsKey("storePassword") ? keystoreProperties["storePassword"] : ""
+            keyAlias keystoreProperties.containsKey("keyAlias") ? keystoreProperties["keyAlias"] : ""
+            keyPassword keystoreProperties.containsKey("keyPassword") ? keystoreProperties["keyPassword"] : ""
+        }
     }
 
     flavorDimensions "normal"
@@ -70,6 +96,11 @@ android {
             shrinkResources true
             matchingFallbacks = ['normal']
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            if(signingConfigs.sign.storeFile != null){
+                productFlavors.development.signingConfig signingConfigs.sign
+                productFlavors.production.signingConfig signingConfigs.sign
+            }
         }
     }
     splits {

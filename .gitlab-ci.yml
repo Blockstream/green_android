@@ -1,68 +1,85 @@
 #####################################
-# Build
+# Build Signed APKs
 
-build_development:
+signed_production:
   image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
   stage: build
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    expire_in: 14 days
+    when: on_success
+    paths:
+      - green/build/outputs/apk/production/release/*.apk
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - ./gradlew assembleProductionRelease
+
+signed_development:
+  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  stage: build
+  when: manual
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 14 days
     when: on_success
     paths:
       - green/build/outputs/apk/development/release/*.apk
-      - green/build/outputs/mapping/*/mapping.txt
   tags:
     - ga
   script:
     - cd $CI_PROJECT_DIR
-    - apt-get update && apt-get install -y jq
-    - ./gradlew lintDevelopmentRelease
+    - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
     - ./gradlew assembleDevelopmentRelease
 
-build_production:
+signed_production_debug:
   image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
   stage: build
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 1 hour
-    when: on_success
-    paths:
-    - green/build/outputs/apk/production/release/*.apk
-    - green/build/outputs/mapping/*/mapping.txt
-  tags:
-    - ga
-  script:
-    - cd $CI_PROJECT_DIR
-    - apt-get update && apt-get install -y jq
-    - ./gradlew lintProductionRelease
-    - ./gradlew assembleProductionRelease
-
-build_tag_osx_release:
-  stage: build
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - brew install jq
-    - ./gradlew assembleProductionRelease
-
-build_debug:
-  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
-  stage: build
+  when: manual
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 14 days
     when: on_success
     paths:
-      - green/build/outputs/apk/*/debug/*.apk
-      - green/build/outputs/mapping/*/debug/mapping.txt
+      - green/build/outputs/apk/production/debug/*.apk
   tags:
     - ga
-  when: manual
   script:
     - cd $CI_PROJECT_DIR
-    - apt-get update && apt-get install -y jq
-    - ./gradlew assembleDevelopmentDebug
+    - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - ./gradlew assembleProductionDebug
+
+#####################################
+# Build Unsigned APK
+
+build_google_play:
+  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  stage: build
+  when: manual
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    expire_in: 1 hour
+    when: on_success
+    paths:
+      - green/build/outputs/apk/production/release/*.apk
+      - green/build/outputs/mapping/*/mapping.txt
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./gradlew lintProductionRelease
+    - ./gradlew assembleProductionRelease
+
+build_osx:
+  stage: build
+  when: manual
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./gradlew assembleProductionRelease
 
 #####################################
 # Test
@@ -75,13 +92,13 @@ unit_tests:
     - ga
   script:
     - cd $CI_PROJECT_DIR
-    - apt-get update && apt-get install -y jq
+    - ./gradlew lintProductionRelease
     - ./gradlew test
 
 #####################################
-# Sign builds
+# Sign production build
 
-package_development:
+sign_google_play:
   tags:
     - garelease
   stage: deploy
@@ -89,24 +106,9 @@ package_development:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 14 days
     paths:
-      - green/build/outputs/*
+    - green/build/outputs/apk/production/release/
     when: on_success
   script: cd $CI_PROJECT_DIR/green/build/outputs/apk && /opt/process_release
   needs:
     - unit_tests
-    - build_development
-
-package_production:
-  tags:
-    - garelease
-  stage: deploy
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 14 days
-    paths:
-    - green/build/outputs/*
-    when: on_success
-  script: cd $CI_PROJECT_DIR/green/build/outputs/apk && /opt/process_release
-  needs:
-    - unit_tests
-    - build_production
+    - build_google_play
