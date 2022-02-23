@@ -16,9 +16,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     @IBOutlet weak var doneButton: UIButton!
 
     @IBOutlet weak var mnemonicWords: UICollectionView!
-    @IBOutlet weak var passwordProtectedView: UIView!
-    @IBOutlet weak var passwordProtectedSwitch: UISwitch!
-    @IBOutlet weak var passwordProtectedLabel: UILabel!
+    @IBOutlet weak var segmentMnemonicSize: UISegmentedControl!
     @IBOutlet weak var header: UIView!
     @IBOutlet weak var lblTitle: UILabel!
     let helpButton = UIButton(type: .system)
@@ -28,11 +26,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     var suggestions: KeyboardSuggestions?
     var mnemonic = [String](repeating: String(), count: 27)
     var qrCodeReader: QRCodeReaderView?
-    var isPasswordProtected = false {
-        willSet {
-            passwordProtectedSwitch.isOn = newValue
-        }
-    }
 
     var currIndexPath: IndexPath?
     var recoveryType = RecoveryType.qr
@@ -49,7 +42,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case .addSubaccount:
             doneButton.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
         }
-        passwordProtectedLabel.text = NSLocalizedString("id_password_protected", comment: "")
 
         mnemonicWords.delegate = self
         mnemonicWords.dataSource = self
@@ -63,11 +55,35 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case .phrase:
             updateNavigationItem()
         }
+        setStyle()
 
-        passwordProtectedView.isHidden = mnemonicActionType == .addSubaccount
+//        passwordProtectedView.isHidden = mnemonicActionType == .addSubaccount
         view.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.view
         lblTitle.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.titleLbl
         doneButton.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.doneBtn
+    }
+
+    func setStyle() {
+        if mnemonicActionType == .addSubaccount {
+            segmentMnemonicSize.removeSegment(at: 2, animated: false)
+        }
+        if #available(iOS 13.0, *) {
+            segmentMnemonicSize.backgroundColor = UIColor.clear
+            segmentMnemonicSize.layer.borderColor = UIColor.customMatrixGreen().cgColor
+            segmentMnemonicSize.selectedSegmentTintColor = UIColor.customMatrixGreen()
+             let titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.customMatrixGreen()]
+            segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes, for: .normal)
+             let titleTextAttributes1 = [NSAttributedString.Key.foregroundColor: UIColor.white]
+            segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes1, for: .selected)
+         } else {
+             segmentMnemonicSize.tintColor = UIColor.customMatrixGreen()
+             segmentMnemonicSize.layer.borderWidth = 1
+             segmentMnemonicSize.layer.borderColor = UIColor.customMatrixGreen().cgColor
+             let titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.customMatrixGreen()]
+            segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes, for: .normal)
+             let titleTextAttributes1 = [NSAttributedString.Key.foregroundColor: UIColor.white]
+            segmentMnemonicSize.setTitleTextAttributes(titleTextAttributes1, for: .selected)
+       }
     }
 
     func updateNavigationItem() {
@@ -146,7 +162,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             mnemonicWords.reloadItems(at: [currIndexPath])
 
             let nextRow = (currIndexPath.row + 1) % 3
-            let nextSection = nextRow == 0 ? (currIndexPath.section + 1) % (isPasswordProtected ? 9 : 8) : currIndexPath.section
+            let nextSection = nextRow == 0 ? (currIndexPath.section + 1) % (numberOfSections()) : currIndexPath.section
             let nextIndexPath = IndexPath(row: nextRow, section: nextSection)
             if let cell = mnemonicWords.cellForItem(at: nextIndexPath) as? MnemonicCell {
                 mnemonicWords.selectItem(at: nextIndexPath, animated: false, scrollPosition: UICollectionView.ScrollPosition.centeredVertically)
@@ -158,7 +174,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     func getMnemonicString() -> Promise<(String, String)> {
         return Promise { seal in
-            if self.isPasswordProtected {
+            if self.itemsCount() == 27 {
                 let alert = UIAlertController(title: NSLocalizedString("id_encryption_passphrase", comment: ""), message: NSLocalizedString("id_please_provide_your_passphrase", comment: ""), preferredStyle: .alert)
                 alert.addTextField { textField in
                     textField.keyboardType = .asciiCapable
@@ -241,10 +257,33 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }
     }
 
-    @IBAction func switchChanged(_ sender: UISwitch) {
-        isPasswordProtected = sender.isOn
+    func itemsCount() -> Int {
+        if segmentMnemonicSize.selectedSegmentIndex == 2 { return 27 }
+        if segmentMnemonicSize.selectedSegmentIndex == 1 { return 24 }
+        return 12
+    }
+
+    func numberOfSections() -> Int {
+        return itemsCount() == 27 ? 9 : (itemsCount() == 24 ? 8 : 4)
+    }
+
+    @IBAction func segmentMnemonicChange(_ sender: UISegmentedControl) {
+        var limit = 0
+        let index = sender.selectedSegmentIndex
+        switch mnemonicActionType {
+        case .recoverWallet:
+            limit = index == 2 ? 27 : (index == 1 ? 24 : 12)
+        case .addSubaccount:
+            limit = index == 1 ? 24 : 12
+        }
+
+        mnemonic = mnemonic.enumerated().map { (i, e) in
+            if i < limit { return e }
+            return String()
+        }
+
         mnemonicWords.reloadData()
-        let foundEmpty = mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24).contains(where: { $0.isEmpty })
+        let foundEmpty = mnemonic.prefix(upTo: itemsCount()).contains(where: { $0.isEmpty })
         updateDoneButton(!foundEmpty)
     }
 
@@ -280,9 +319,20 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         onPaste(mnemonic)
     }
 
-    @objc func onTap(sender: UITapGestureRecognizer?) {
+    @objc func onTap(sender: UITapGestureRecognizer?) { }
 
-//        stopScan()
+    func isValidCount(_ count: Int) -> Bool {
+        switch mnemonicActionType {
+        case .recoverWallet:
+            guard count == 12 || count == 24 || count == 27 else {
+                return false
+            }
+        case .addSubaccount:
+            guard count == 12 || count == 24 else {
+                return false
+            }
+        }
+        return true
     }
 }
 
@@ -299,12 +349,11 @@ extension MnemonicViewController: QRCodeReaderDelegate {
 
     private func onPaste(_ result: String) {
         let words = result.split(separator: " ")
-        guard words.count == 12 || words.count == 24 || words.count == 27 else {
-            return
-        }
+        if !isValidCount(words.count) { return }
+        mnemonic = [String](repeating: String(), count: 27)
 
         words.enumerated().forEach { mnemonic[$0.0] = String($0.1) }
-        isPasswordProtected = words.count == 27
+        segmentMnemonicSize.selectedSegmentIndex = words.count == 27 ? 2 : (words.count == 24 ? 1 : 0)
 
         mnemonicWords.reloadData()
         updateDoneButton(true)
@@ -336,7 +385,7 @@ extension MnemonicViewController: UICollectionViewDataSource {
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return isPasswordProtected ? 9 : 8
+        return numberOfSections()
     }
 }
 
@@ -366,11 +415,6 @@ extension MnemonicViewController: MnemonicCellDelegate {
             suggestions!.isHidden = true
         }
 
-        // pass focus to next item for valid words of length >= 3
-//        if text.count >= 3 && WL.contains(text) && WL.filter({ $0.contains(text) }).count == 1 {
-//            suggestionWasTapped(suggestion: text)
-//        }
-
         if text.count >= 3 {
             let filtered = WL.filter({ $0.hasPrefix(text) })
             if filtered.count == 1 {
@@ -381,7 +425,7 @@ extension MnemonicViewController: MnemonicCellDelegate {
         }
 
         let len = mnemonic.filter { !$0.isEmpty }.count
-        updateDoneButton((isPasswordProtected && len == 27) || [12, 24].contains(len))
+        updateDoneButton(len == itemsCount())
     }
 
     func collectionView(pastedIn text: String, from cell: MnemonicCell) {
@@ -392,13 +436,9 @@ extension MnemonicViewController: MnemonicCellDelegate {
 
 extension MnemonicViewController: DialogRecoveryHelpViewControllerDelegate {
     func didTapHelpCenter() {
-        if let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/900001388566-Why-is-my-mnemonic-backup-not-working-") {
-            UIApplication.shared.open(url)
-        }
+        UIApplication.shared.open(ExternalUrls.mnemonicNotWorking)
     }
 
-    func didCancel() {
-        //
-    }
+    func didCancel() { }
 
 }
