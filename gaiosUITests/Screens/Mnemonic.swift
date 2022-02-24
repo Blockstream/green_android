@@ -28,4 +28,10 @@ class Mnemonic: Screen {
         return self
     }
     
+    @discardableResult
+    func selectLenght(_ count: Int) -> Self {
+        let index = count == 24 ? 1 : 0
+        app.otherElements[AccessibilityIdentifiers.MnemonicScreen.view].segmentedControls.buttons.element(boundBy: index).tap()
+        return self
+    }
 }

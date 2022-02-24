@@ -51,6 +51,7 @@ class XCTestBase: XCTestCase {
         
         Mnemonic()
             .pause(1)
+            .selectLenght(words.count)
             .typeWords(words)
             .closeKey()
             .pause(1)

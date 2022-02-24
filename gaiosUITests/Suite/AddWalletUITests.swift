@@ -183,7 +183,36 @@ class AddWalletUITests: XCTestBase {
         
         restoreWallet(walletName: walletName, words: words, isSingleSig: false)
     }
-    
+
+    func testRestoreWallet24() {
+        let walletName = Constants.walletName24
+        let words = Constants.mnemonic24
+        
+        if Home().existsWallet(named: walletName) {
+            
+            Home()
+                .selectWallet(named: walletName)
+
+            Login()
+                .pause(1)
+                .tapMenu()
+                .pause(1)
+            
+            PopoverMenuWallet()
+                .pause(1)
+                .tapRemoveWallet()
+                .pause(1)
+            
+            DialogWalletDelete()
+                .pause(1)
+                .tapDelete()
+                .pause(1)
+                .tapDelete()
+        }
+        
+        restoreWallet(walletName: walletName, words: words, isSingleSig: false)
+    }
+
     func testWatchOnlySetUp() {
         let walletName = Constants.walletName
         let words = Constants.mnemonic

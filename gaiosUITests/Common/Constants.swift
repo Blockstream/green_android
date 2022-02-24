@@ -10,4 +10,7 @@ class Constants {
     
     static var walletNameSingleSig = "crypto_singlesig"
     static var mnemonicSingleSig = ["mask", "sleep", "indoor", "later", "powder", "save", "tissue", "talent", "vendor", "prevent", "donor", "marine"]
+    
+    static var walletName24 = "crypto24"
+    static var mnemonic24 = ["medal", "snow", "involve", "joke", "control", "avoid", "cage", "success", "cherry", "axis", "scheme", "photo", "parent", "width", "proud", "someone", "thumb", "hint", "screen", "ensure", "short", "illegal", "adult", "midnight"]
 }
