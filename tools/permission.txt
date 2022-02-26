@@ -1,0 +1,4 @@
+"id_we_use_the_camera_to_scan_qr" = "NSCameraUsageDescription";
+"id_green_uses_biometric" = "NSFaceIDUsageDescription";
+"id_green_uses_bluetooth_for" = "NSBluetoothAlwaysUsageDescription";
+"id_green_uses_bluetooth_to_connect" = "NSBluetoothPeripheralUsageDescription";
