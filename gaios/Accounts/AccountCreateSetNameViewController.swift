@@ -14,6 +14,7 @@ class AccountCreateSetNameViewController: UIViewController {
     @IBOutlet weak var containerViewRecoveryKeyType: UIView!
     @IBOutlet weak var lblRecoveryKeyTypeTitle: UILabel!
     @IBOutlet weak var lblRecoveryKeyTypeHint: UILabel!
+    @IBOutlet weak var lblRecoveryKeyTypeInfo: UILabel!
 
     @IBOutlet weak var btnNext: UIButton!
 
@@ -47,6 +48,7 @@ class AccountCreateSetNameViewController: UIViewController {
         containerViewRecoveryKeyType.isHidden = true
         if accountType == .twoOfThree, let recoveryKeyType = recoveryKeyType {
             containerViewRecoveryKeyType.isHidden = false
+            lblRecoveryKeyTypeInfo.isHidden = true
             switch recoveryKeyType {
             case .hw:
                 lblRecoveryKeyTypeHint.text = "Hardware Wallet"
@@ -55,7 +57,9 @@ class AccountCreateSetNameViewController: UIViewController {
             case .existingPhrase:
                 lblRecoveryKeyTypeHint.text = NSLocalizedString("id_recovery_phrase", comment: "")
             case .publicKey:
-                lblRecoveryKeyTypeHint.text = "Public Key"
+                lblRecoveryKeyTypeHint.text = "xPub"
+                lblRecoveryKeyTypeInfo.isHidden = false
+                lblRecoveryKeyTypeInfo.text = recoveryXpub ?? ""
             }
         }
     }
