@@ -29,4 +29,10 @@ class Send: Screen {
         tap(button: AccessibilityIdentifiers.SendScreen.nextBtn)
         return self
     }
+    
+    @discardableResult
+    func tapCustomFee() -> Self {
+        tap(button: AccessibilityIdentifiers.SendScreen.setCutomFeeBtn)
+        return self
+    }
 }

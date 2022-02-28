@@ -54,6 +54,10 @@ class DialogCustomFeeViewController: KeyboardViewController {
         feeTextField.attributedPlaceholder = NSAttributedString(string: String(Double(storedFeeRate ?? 1000) / 1000),
                                                                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         updateUI()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogCustomFeeScreen.view
+        feeTextField.accessibilityIdentifier = AccessibilityIdentifiers.DialogCustomFeeScreen.feeField
+        btnSave.accessibilityIdentifier = AccessibilityIdentifiers.DialogCustomFeeScreen.saveBtn
     }
 
     override func viewDidAppear(_ animated: Bool) {

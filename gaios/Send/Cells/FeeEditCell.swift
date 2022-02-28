@@ -108,6 +108,8 @@ class FeeEditCell: UITableViewCell {
             }
         }
         lblInvalidFee.isHidden = !(txError == "id_invalid_replacement_fee_rate")
+
+        btnCustomFee.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.setCutomFeeBtn
     }
 
     func setPriority(_ switchIndex: Int) {

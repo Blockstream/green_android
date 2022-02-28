@@ -20,4 +20,10 @@ class Receive: Screen {
         return self
     }
     
+    @discardableResult
+    func tapMoreOptions() -> Self {
+        tap(button: AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn)
+        return self
+    }
+    
 }

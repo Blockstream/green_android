@@ -47,6 +47,10 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
                 }
             }
         }
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.view
+        amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.amountField
+        btnConfirm.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.confirmBtn
     }
 
     func setContent() {

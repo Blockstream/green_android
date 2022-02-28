@@ -33,6 +33,9 @@ class DialogReceiveMoreOptionsViewController: UIViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveMoreOptionsScreen.view
+        btnRequestAmount.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveMoreOptionsScreen.requestAmountBtn
     }
 
     func setContent() {

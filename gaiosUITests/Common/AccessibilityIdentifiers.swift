@@ -155,6 +155,7 @@ struct AccessibilityIdentifiers {
     struct ReceiveScreen {
         static let view = "view_receive"
         static let qrCodeBtn = "qr_code_btn"
+        static let moreOptionsBtn = "more_options_btn"
     }
     
     struct SendScreen {
@@ -162,6 +163,7 @@ struct AccessibilityIdentifiers {
         static let pasteAddressBtn = "paste_address_btn"
         static let amountField = "amount_field"
         static let nextBtn = "next_btn"
+        static let setCutomFeeBtn = "set_custom_fee_btn"
     }
 
     struct SendConfirmScreen {
@@ -229,6 +231,23 @@ struct AccessibilityIdentifiers {
         static let length24Btn = "length_24_btn"
     }
     
+    struct DialogReceiveMoreOptionsScreen {
+        static let view = "view_dialog_receive_more_option"
+        static let requestAmountBtn = "request_amount_btn"
+    }
+
+    struct DialogReceiveRequestAmountScreen {
+        static let view = "view_dialog_receive_request_amount"
+        static let amountField = "amount_field"
+        static let confirmBtn = "confirm_btn"
+    }
+
+    struct DialogCustomFeeScreen {
+        static let view = "view_dialog_custom_fee"
+        static let feeField = "fee_field"
+        static let saveBtn = "save_btn"
+    }
+
     struct KeyboardView {
         static let done = "done_btn"
     }
