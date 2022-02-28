@@ -52,9 +52,9 @@ class ContainerViewController: UIViewController {
 
     func updateConnection(_ notification: Notification) {
         let currentState = notification.userInfo?["current_state"] as? String
-        let backoffMs = notification.userInfo?["backoff_ms"] as? Int
+        let waitMs = notification.userInfo?["wait_ms"] as? Int
         let connected = currentState == "connected"
-        self.seconds = backoffMs ?? 0
+        self.seconds = waitMs ?? 0
         DispatchQueue.main.async {
             if self.timer.isValid { self.timer.invalidate() }
             if connected {

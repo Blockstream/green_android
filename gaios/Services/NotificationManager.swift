@@ -58,11 +58,13 @@ class NotificationManager {
                   let connection = try? JSONDecoder().decode(Connection.self, from: json) else {
                 return
             }
+
             // avoid handling notification for unlogged session
-            guard let session = session,
-                  session.connected && session.logged else {
+            guard let session = session, session.connected && session.logged else {
                 return
             }
+
+            session.currentConnected = connection.currentState == "connected"
             // notify disconnected network state
             if connection.currentState == "disconnected" {
                 self.post(event: EventType.Network, data: data)

@@ -13,6 +13,7 @@ class SessionManager: Session {
     var account: Account?
     var connected = false
     var logged = false
+    var currentConnected = false
     var notificationManager: NotificationManager
     var twoFactorConfig: TwoFactorConfig?
     var settings: Settings?
@@ -94,6 +95,7 @@ class SessionManager: Session {
             setNotificationHandler(notificationCompletionHandler: notificationManager.newNotification)
             try super.connect(netParams: netParams)
             connected = true
+            currentConnected = true
         } catch {
             throw LoginError.connectionFailed
         }
