@@ -23,7 +23,11 @@ class AddWalletUITests: XCTestBase {
     
         ChooseSecurity()
             .tapMultiSigCard()
-            
+        
+        DialogMnemonicLenght()
+            .pause(1)
+            .tap12()
+        
         RecoveryInstructions()
             .tapContinue()
         
@@ -91,9 +95,12 @@ class AddWalletUITests: XCTestBase {
             .tapTestnetCard()
     
         ChooseSecurity()
-            .select24()
             .tapMultiSigCard()
-            
+        
+        DialogMnemonicLenght()
+            .pause(1)
+            .tap24()
+        
         RecoveryInstructions()
             .tapContinue()
         
@@ -283,7 +290,11 @@ class AddWalletUITests: XCTestBase {
     
         ChooseSecurity()
             .tapSingleSigCard()
-            
+        
+        DialogMnemonicLenght()
+            .pause(1)
+            .tap12()
+        
         RecoveryInstructions()
             .tapContinue()
         

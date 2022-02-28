@@ -194,6 +194,7 @@
 		34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */; };
 		34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */; };
 		34FC83A326EA66B10087EE8B /* OverviewAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FC83A226EA66B10087EE8B /* OverviewAssetCell.swift */; };
+		34FF27B027CD0689008FD72C /* DialogMnemonicLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27AF27CD0689008FD72C /* DialogMnemonicLength.swift */; };
 		3646136400F243CBF6DB750F /* libPods-gaiosTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 88A86540174AD367FC26E586 /* libPods-gaiosTests.a */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
 		6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */; };
@@ -520,6 +521,7 @@
 		34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDeleteViewController.swift; sourceTree = "<group>"; };
 		34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWalletViewController.swift; sourceTree = "<group>"; };
 		34FC83A226EA66B10087EE8B /* OverviewAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewAssetCell.swift; sourceTree = "<group>"; };
+		34FF27AF27CD0689008FD72C /* DialogMnemonicLength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogMnemonicLength.swift; sourceTree = "<group>"; };
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.release.xcconfig"; sourceTree = "<group>"; };
@@ -823,6 +825,7 @@
 				3498806326A9692A00E11216 /* DialogTorSingleSig.swift */,
 				34237FC6276A479700618502 /* ExistingWallets.swift */,
 				34237FC8276A520800618502 /* ManualRestore.swift */,
+				34FF27AF27CD0689008FD72C /* DialogMnemonicLength.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -2070,6 +2073,7 @@
 				34C978A8268DC14D0061264D /* Extensions.swift in Sources */,
 				3451428526932B9300E8BE1B /* Receive.swift in Sources */,
 				349DB75F26A84D17004FF265 /* TorUITests.swift in Sources */,
+				34FF27B027CD0689008FD72C /* DialogMnemonicLength.swift in Sources */,
 				344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */,
 				3434767026823B1A00D7AD43 /* ChooseNetwork.swift in Sources */,
 				20516D042693969B00BA1F4C /* DialogWalletRename.swift in Sources */,

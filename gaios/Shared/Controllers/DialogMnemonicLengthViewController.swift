@@ -15,7 +15,7 @@ class DialogMnemonicLengthViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var btnLenght12: UIButton!
+    @IBOutlet weak var btnLength12: UIButton!
     @IBOutlet weak var btnLength24: UIButton!
     @IBOutlet weak var btnDismiss: UIButton!
     @IBOutlet weak var bgLayer: UIView!
@@ -30,12 +30,16 @@ class DialogMnemonicLengthViewController: UIViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogMnemonicLengthScreen.view
+        btnLength12.accessibilityIdentifier = AccessibilityIdentifiers.DialogMnemonicLengthScreen.length12Btn
+        btnLength24.accessibilityIdentifier = AccessibilityIdentifiers.DialogMnemonicLengthScreen.length24Btn
     }
 
     func setContent() {
         lblTitle.text = NSLocalizedString("id_new_recovery_phrase", comment: "")
         lblHint.text = NSLocalizedString("id_choose_recovery_phrase_length", comment: "")
-        btnLenght12.setTitle(String(format: NSLocalizedString("id_d_words", comment: ""), 12), for: .normal)
+        btnLength12.setTitle(String(format: NSLocalizedString("id_d_words", comment: ""), 12), for: .normal)
         btnLength24.setTitle(String(format: NSLocalizedString("id_d_words", comment: ""), 24), for: .normal)
     }
 
@@ -62,7 +66,7 @@ class DialogMnemonicLengthViewController: UIViewController {
         })
     }
 
-    @IBAction func btnLenght12(_ sender: Any) {
+    @IBAction func btnLength12(_ sender: Any) {
         dismiss(._12)
     }
 

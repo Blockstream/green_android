@@ -115,6 +115,10 @@ class XCTestBase: XCTestCase {
         ChooseSecurity()
             .tapMultiSigCard()
             
+        DialogMnemonicLenght()
+            .pause(1)
+            .tap12()
+        
         RecoveryInstructions()
             .tapContinue()
         

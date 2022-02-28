@@ -457,7 +457,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZM9-pc-N6g">
-                                <rect key="frame" x="0.0" y="88" width="375" height="584"/>
+                                <rect key="frame" x="0.0" y="88" width="375" height="690"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="InQ-pz-F9k">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="561.33333333333337"/>
@@ -576,47 +576,14 @@
                                 <viewLayoutGuide key="contentLayoutGuide" id="Y9g-wj-6Sl"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="67b-D9-m3h"/>
                             </scrollView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HP0-tc-fJY">
-                                <rect key="frame" x="36" y="696" width="303" height="58"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Mnemonic word size" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ywx-MA-TDT">
-                                        <rect key="frame" x="24" y="20" width="165" height="18"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <color key="textColor" name="customGrayLight"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="dR2-9h-6UA">
-                                        <rect key="frame" x="199" y="13.666666666666629" width="80" height="32"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="80" id="pta-Up-4xT"/>
-                                        </constraints>
-                                        <segments>
-                                            <segment title="12"/>
-                                            <segment title="24"/>
-                                        </segments>
-                                    </segmentedControl>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="ywx-MA-TDT" firstAttribute="top" secondItem="HP0-tc-fJY" secondAttribute="top" constant="20" id="K3N-x5-dd2"/>
-                                    <constraint firstAttribute="bottom" secondItem="ywx-MA-TDT" secondAttribute="bottom" constant="20" id="UBP-6j-zMj"/>
-                                    <constraint firstItem="dR2-9h-6UA" firstAttribute="centerY" secondItem="ywx-MA-TDT" secondAttribute="centerY" id="X79-Jh-rpt"/>
-                                    <constraint firstAttribute="trailing" secondItem="dR2-9h-6UA" secondAttribute="trailing" constant="24" id="bAz-Kj-2cQ"/>
-                                    <constraint firstItem="dR2-9h-6UA" firstAttribute="leading" secondItem="ywx-MA-TDT" secondAttribute="trailing" constant="10" id="qre-4k-oQv"/>
-                                    <constraint firstItem="ywx-MA-TDT" firstAttribute="leading" secondItem="HP0-tc-fJY" secondAttribute="leading" constant="24" id="srK-n2-fK7"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="beH-sn-8wa"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="beH-sn-8wa" firstAttribute="top" secondItem="ZM9-pc-N6g" secondAttribute="top" id="7kE-Ow-c0L"/>
-                            <constraint firstItem="HP0-tc-fJY" firstAttribute="leading" secondItem="beH-sn-8wa" secondAttribute="leading" constant="36" id="FRX-YR-Uyx"/>
-                            <constraint firstItem="beH-sn-8wa" firstAttribute="bottom" secondItem="HP0-tc-fJY" secondAttribute="bottom" constant="24" id="HTo-2I-I4b"/>
-                            <constraint firstItem="beH-sn-8wa" firstAttribute="trailing" secondItem="HP0-tc-fJY" secondAttribute="trailing" constant="36" id="IxG-kM-qgM"/>
                             <constraint firstItem="beH-sn-8wa" firstAttribute="trailing" secondItem="ZM9-pc-N6g" secondAttribute="trailing" id="ZZJ-aE-M7c"/>
+                            <constraint firstItem="beH-sn-8wa" firstAttribute="bottom" secondItem="ZM9-pc-N6g" secondAttribute="bottom" id="e3l-wp-72G"/>
                             <constraint firstItem="InQ-pz-F9k" firstAttribute="width" secondItem="qHK-rl-V2C" secondAttribute="width" id="mbW-7x-DWX"/>
-                            <constraint firstItem="HP0-tc-fJY" firstAttribute="top" secondItem="ZM9-pc-N6g" secondAttribute="bottom" constant="24" id="sI3-gA-9hB"/>
                             <constraint firstItem="ZM9-pc-N6g" firstAttribute="leading" secondItem="beH-sn-8wa" secondAttribute="leading" id="v3Z-FB-yi4"/>
                         </constraints>
                     </view>
@@ -629,12 +596,9 @@
                         <outlet property="lblAdvancedHint" destination="kmd-RI-Ysq" id="pQb-C7-ecR"/>
                         <outlet property="lblAdvancedTitle" destination="6do-Km-hoL" id="USG-DX-G2I"/>
                         <outlet property="lblHint" destination="Mh1-Rc-lg3" id="VjQ-IX-KEk"/>
-                        <outlet property="lblMnemonicSize" destination="ywx-MA-TDT" id="84l-Aj-0R4"/>
                         <outlet property="lblSimpleHint" destination="umk-6W-kXs" id="0AY-Ap-Fka"/>
                         <outlet property="lblSimpleTitle" destination="pkX-rT-Rl0" id="uv4-Lw-Yb1"/>
                         <outlet property="lblTitle" destination="nBk-kL-ffE" id="7IB-oW-qbe"/>
-                        <outlet property="segmentMnemonicSize" destination="dR2-9h-6UA" id="PN6-7w-iiV"/>
-                        <outlet property="viewMnemonicSize" destination="HP0-tc-fJY" id="w8C-c4-u95"/>
                         <segue destination="Jkm-iH-Us0" kind="show" id="2ZM-1Y-8E6"/>
                     </connections>
                 </viewController>

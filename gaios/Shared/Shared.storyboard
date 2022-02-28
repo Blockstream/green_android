@@ -2436,7 +2436,7 @@
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                 <state key="normal" title="length_12"/>
                                                                 <connections>
-                                                                    <action selector="btnLenght12:" destination="XkJ-K8-Y07" eventType="touchUpInside" id="VdM-FP-dZn"/>
+                                                                    <action selector="btnLength12:" destination="XkJ-K8-Y07" eventType="touchUpInside" id="qHf-hA-2qD"/>
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eTk-Eg-vas">
@@ -2520,7 +2520,7 @@
                     <connections>
                         <outlet property="bgLayer" destination="nWC-a3-Itj" id="XIb-7D-YdP"/>
                         <outlet property="btnDismiss" destination="D0U-JI-c4e" id="xPS-SK-yOF"/>
-                        <outlet property="btnLenght12" destination="l4o-Sx-uAh" id="oHS-fL-iMp"/>
+                        <outlet property="btnLength12" destination="l4o-Sx-uAh" id="zyC-ZV-wye"/>
                         <outlet property="btnLength24" destination="eTk-Eg-vas" id="EEu-kW-zQ3"/>
                         <outlet property="cardView" destination="d5K-bQ-Nh2" id="mqs-0D-h7z"/>
                         <outlet property="lblHint" destination="Fuf-ei-8aC" id="xII-5s-Z3w"/>

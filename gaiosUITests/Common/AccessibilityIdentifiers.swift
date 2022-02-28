@@ -223,6 +223,12 @@ struct AccessibilityIdentifiers {
         static let multiSigCard = "multi_sig_card"
     }
 
+    struct DialogMnemonicLengthScreen {
+        static let view = "view_dialog_mnemonic_lenght"
+        static let length12Btn = "length_12_btn"
+        static let length24Btn = "length_24_btn"
+    }
+    
     struct KeyboardView {
         static let done = "done_btn"
     }
