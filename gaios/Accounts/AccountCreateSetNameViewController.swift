@@ -51,9 +51,9 @@ class AccountCreateSetNameViewController: UIViewController {
             case .hw:
                 lblRecoveryKeyTypeHint.text = "Hardware Wallet"
             case .newPhrase:
-                lblRecoveryKeyTypeHint.text = "New Phrase"
+                lblRecoveryKeyTypeHint.text = NSLocalizedString("id_recovery_phrase", comment: "")
             case .existingPhrase:
-                lblRecoveryKeyTypeHint.text = "Existing Phrase"
+                lblRecoveryKeyTypeHint.text = NSLocalizedString("id_recovery_phrase", comment: "")
             case .publicKey:
                 lblRecoveryKeyTypeHint.text = "Public Key"
             }
