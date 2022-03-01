@@ -98,21 +98,4 @@ class DrawerMenuUITests: XCTestBase {
             .pause(1)
             .checkTitle(name)
     }
-    
-    func prepareWallet(walletName: String, words: [String], isSingleSig: Bool) {
-        
-        if Home().existsWallet(named: walletName) {
-            
-            Home()
-                .selectWallet(named: walletName)
-
-            Login()
-                .pause(1)
-                .digitPin()
-            
-        } else {
-            restoreWallet(walletName: walletName, words: words, isSingleSig: isSingleSig)
-        }
-        
-    }
 }

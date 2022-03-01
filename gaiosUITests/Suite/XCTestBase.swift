@@ -102,59 +102,10 @@ class XCTestBase: XCTestCase {
     func setTor(_ value: Bool) {
         
         Home()
-            .tapAddWalletView()
+            .tapAppSettings()
         
-        Landing()
-            .tapAcceptTerms()
-            .pause(1)
-            .tapNewWallet()
-        
-        ChooseNetwork()
-            .tapTestnetCard()
-    
-        ChooseSecurity()
-            .tapMultiSigCard()
-            
-        DialogMnemonicLenght()
-            .pause(1)
-            .tap12()
-        
-        RecoveryInstructions()
-            .tapContinue()
-        
-        RecoveryCreate()
-            .cleanWords()
-            .readWords()
-            .pause(1)
-            .tapNext()
-            .pause(1)
-            .readWords()
-            .pause(1)
-            .tapNext()
-            .pause(1)
-        
-        RecoveryVerify()
-            .pause(1)
-            .chooseWord()
-            .pause(1)
-            .chooseWord()
-            .pause(1)
-            .chooseWord()
-            .pause(1)
-            .chooseWord()
-            .pause(1)
-        
-        RecoverySuccess()
-            .pause(1)
-            .tapNext()
-
-        WalletName()
-            .pause(1)
-            .tapSettings()
-
         WalletSettings()
             .pause(1)
-
 
         if WalletSettings().isTorSetTo(value) {
 
@@ -167,6 +118,23 @@ class XCTestBase: XCTestCase {
                 .tapTorSwitch()
                 .pause(1)
                 .tapSave()
+        }
+        
+    }
+    
+    func prepareWallet(walletName: String, words: [String], isSingleSig: Bool) {
+        
+        if Home().existsWallet(named: walletName) {
+            
+            Home()
+                .selectWallet(named: walletName)
+
+            Login()
+                .pause(1)
+                .digitPin()
+            
+        } else {
+            restoreWallet(walletName: walletName, words: words, isSingleSig: isSingleSig)
         }
         
     }

@@ -1,11 +1,11 @@
 import XCTest
 @testable import gaios
 
-class TransactionstUITests: XCTestBase {
+class SendFlowUITests: XCTestBase {
     
     func testTransaction() {
         
-        prepareWallet()
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
         
         Overview()
             .pause(1)
@@ -41,7 +41,7 @@ class TransactionstUITests: XCTestBase {
     
     func testSendBipAmount() {
         
-        prepareWallet()
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
         
         Overview()
             .pause(1)
@@ -88,7 +88,7 @@ class TransactionstUITests: XCTestBase {
     
     func testSendBipFee() {
         
-        prepareWallet()
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
         
         Overview()
             .pause(1)
@@ -142,24 +142,4 @@ class TransactionstUITests: XCTestBase {
             .checkRate("( 1.15 satoshi / vbyte )")
             .pause(2)
     }
-    
-    func prepareWallet() {
-        let walletName = Constants.walletName
-        let words = Constants.mnemonic
-        
-        if Home().existsWallet(named: walletName) {
-            
-            Home()
-                .selectWallet(named: walletName)
-
-            Login()
-                .pause(1)
-                .digitPin()
-            
-        } else {
-            restoreWallet(walletName: walletName, words: words, isSingleSig: false)
-        }
-        
-    }
-    
 }

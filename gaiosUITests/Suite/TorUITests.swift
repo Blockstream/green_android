@@ -9,7 +9,7 @@ class EditUITests: XCTestBase {
         
         XCUIApplication().launch()
         
-        prepareWallet()
+        prepareWallet(walletName: Constants.walletNameSingleSig, words: Constants.mnemonicSingleSig, isSingleSig: true)
 
         Overview()
             .pause(1)
@@ -53,24 +53,5 @@ class EditUITests: XCTestBase {
 
         Overview()
             .pause(1)
-    }
-    
-    func prepareWallet() {
-        let walletName = Constants.walletNameSingleSig
-        let words = Constants.mnemonicSingleSig
-        
-        if Home().existsWallet(named: walletName) {
-            
-            Home()
-                .selectWallet(named: walletName)
-
-            Login()
-                .pause(1)
-                .digitPin()
-            
-        } else {
-            restoreWallet(walletName: walletName, words: words, isSingleSig: false)
-        }
-        
     }
 }
