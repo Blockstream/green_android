@@ -13,4 +13,6 @@ class Constants {
     
     static var walletName24 = "crypto24"
     static var mnemonic24 = ["medal", "snow", "involve", "joke", "control", "avoid", "cage", "success", "cherry", "axis", "scheme", "photo", "parent", "width", "proud", "someone", "thumb", "hint", "screen", "ensure", "short", "illegal", "adult", "midnight"]
+    static var walletNameLiquid = "crypto_liquid"
+    static var mnemonicLiquid = ["shine", "maid", "nature", "account", "mimic", "tent", "blossom", "symbol", "pass", "wink", "lift", "possible"]
 }

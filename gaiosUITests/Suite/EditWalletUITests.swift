@@ -8,7 +8,7 @@ class EditWalletUITests: XCTestBase {
         let walletNameRenamed = Constants.walletNameRenamed
         
         if !Home().existsWallet(named: walletName) {
-            restoreWallet(walletName: walletName, words: words, isSingleSig: false)
+            restoreWallet(walletName: walletName, words: words, isSingleSig: false, isLiquid: false)
 
             Overview()
                 .pause(1)

@@ -7,7 +7,7 @@ class DrawerMenuUITests: XCTestBase {
     
     func testSwitchWallet() {
 
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
   
         Overview()
             .pause(1)
@@ -16,7 +16,7 @@ class DrawerMenuUITests: XCTestBase {
         Settings()
             .tapLogOut()
         
-        prepareWallet(walletName: Constants.walletNameSingleSig, words: Constants.mnemonic, isSingleSig: true)
+        prepareWallet(walletName: Constants.walletNameSingleSig, words: Constants.mnemonic, isSingleSig: true, isLiquid: false)
         
         
         Overview()
@@ -48,7 +48,7 @@ class DrawerMenuUITests: XCTestBase {
     
     func testAddWalletBtnFromDrawerMenu() {
         
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
         
         Overview()
             .pause(1)
@@ -65,7 +65,7 @@ class DrawerMenuUITests: XCTestBase {
     
     func testJadeBtnFromDrawerMenu() {
         let name = "Blockstream Jade"
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
         
         Overview()
             .pause(1)
@@ -83,7 +83,7 @@ class DrawerMenuUITests: XCTestBase {
     
     func testLedgerBtnFromDrawerMenu() {
         let name = "Ledger Nano X"
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
         
         Overview()
             .pause(1)

@@ -11,4 +11,10 @@ class ChooseNetwork: Screen {
         tap(app.otherElements[AccessibilityIdentifiers.ChooseNetworkScreen.testnetCard])
         return self
     }
+    
+    @discardableResult
+    func tapLiquidTestnetCard() -> Self {
+        tap(app.otherElements[AccessibilityIdentifiers.ChooseNetworkScreen.liquidTestnetCard])
+        return self
+    }
 }

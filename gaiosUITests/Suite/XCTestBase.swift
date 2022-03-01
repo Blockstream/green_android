@@ -33,7 +33,7 @@ class XCTestBase: XCTestCase {
         super.tearDown()
     }
     
-    func restoreWallet(walletName: String, words: [String], isSingleSig: Bool) {
+    func restoreWallet(walletName: String, words: [String], isSingleSig: Bool, isLiquid: Bool) {
         
         Home()
             .tapAddWalletView()
@@ -43,8 +43,13 @@ class XCTestBase: XCTestCase {
             .pause(1)
             .tapRestoreWallet()
 
-        ChooseNetwork()
-            .tapTestnetCard()
+        if isLiquid {
+            ChooseNetwork()
+                .tapLiquidTestnetCard()
+        } else {
+            ChooseNetwork()
+                .tapTestnetCard()
+        }
         
         RecoveryPhrase()
             .tapPhraseCard()
@@ -122,7 +127,7 @@ class XCTestBase: XCTestCase {
         
     }
     
-    func prepareWallet(walletName: String, words: [String], isSingleSig: Bool) {
+    func prepareWallet(walletName: String, words: [String], isSingleSig: Bool, isLiquid: Bool) {
         
         if Home().existsWallet(named: walletName) {
             
@@ -134,7 +139,7 @@ class XCTestBase: XCTestCase {
                 .digitPin()
             
         } else {
-            restoreWallet(walletName: walletName, words: words, isSingleSig: isSingleSig)
+            restoreWallet(walletName: walletName, words: words, isSingleSig: isSingleSig, isLiquid: isLiquid)
         }
         
     }

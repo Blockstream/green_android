@@ -7,7 +7,7 @@ class PinUITests: XCTestBase {
     
     func testChangePin() {
 
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
         
         Overview()
             .pause(1)
@@ -69,7 +69,7 @@ class PinUITests: XCTestBase {
     
     func testWrongPin() {
 
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
         
         Overview()
             .pause(1)

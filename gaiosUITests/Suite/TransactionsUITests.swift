@@ -5,7 +5,43 @@ class SendFlowUITests: XCTestBase {
     
     func testTransaction() {
         
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
+        
+        Overview()
+            .pause(1)
+            .tapReceive()
+        
+        Receive()
+            .pause(1)
+            .tapQrCode()
+            .pause(1)
+            .tapBack()
+        
+        Overview()
+            .pause(1)
+            .tapSend()
+        
+        Send()
+            .pause(1)
+            .pasteAddress()
+            .pause(1)
+            .typeAmount("0.00001")
+            .pause(1)
+            .tapDone()
+            .pause(2)
+            .tapNext()
+
+        SendConfirm()
+            .pause(2)
+            .tapNext()
+        
+        Overview()
+            .pause(3)
+    }
+    
+    func testTransactionSingleSig() {
+        
+        prepareWallet(walletName: Constants.walletNameSingleSig, words: Constants.mnemonicSingleSig, isSingleSig: true, isLiquid: false)
         
         Overview()
             .pause(1)
@@ -41,7 +77,7 @@ class SendFlowUITests: XCTestBase {
     
     func testSendBipAmount() {
         
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
         
         Overview()
             .pause(1)
@@ -88,7 +124,7 @@ class SendFlowUITests: XCTestBase {
     
     func testSendBipFee() {
         
-        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
         
         Overview()
             .pause(1)

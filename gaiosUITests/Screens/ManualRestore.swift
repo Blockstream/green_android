@@ -11,5 +11,11 @@ class ManualRestore: Screen {
         tap(app.otherElements[AccessibilityIdentifiers.ManualRestoreScreen.singleSigCard])
         return self
     }
+    
+    @discardableResult
+    func tapMultiSigCard() -> Self {
+        tap(app.otherElements[AccessibilityIdentifiers.ManualRestoreScreen.multiSigCard])
+        return self
+    }
 }
 

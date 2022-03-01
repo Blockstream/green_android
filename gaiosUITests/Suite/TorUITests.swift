@@ -9,7 +9,7 @@ class EditUITests: XCTestBase {
         
         XCUIApplication().launch()
         
-        prepareWallet(walletName: Constants.walletNameSingleSig, words: Constants.mnemonicSingleSig, isSingleSig: true)
+        prepareWallet(walletName: Constants.walletNameSingleSig, words: Constants.mnemonicSingleSig, isSingleSig: true, isLiquid: false)
 
         Overview()
             .pause(1)

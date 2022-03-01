@@ -24,6 +24,7 @@ struct AccessibilityIdentifiers {
     struct ChooseNetworkScreen {
         static let view = "view_choose_network"
         static let testnetCard = "testnet_card"
+        static let liquidTestnetCard = "liquid_testnet_card"
     }
     
     struct ChooseSecurityScreen {
