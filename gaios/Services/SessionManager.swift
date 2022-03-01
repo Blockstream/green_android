@@ -68,9 +68,6 @@ class SessionManager: Session {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
         let userAgent = String(format: "green_ios_%@", version)
         var netParams: [String: Any] = ["name": network, "use_tor": useTor, "proxy": proxyURI, "user_agent": userAgent]
-        #if DEBUG
-        netParams["log_level"] = "debug"
-        #endif
 
         // SPV available only for btc singlesig
         if let spvEnabled = networkSettings[Constants.spvEnabled] as? Bool,

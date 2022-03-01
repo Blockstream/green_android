@@ -109,7 +109,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func gdkinitialize() throws {
         if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
             try FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
-            try gdkInit(config: ["datadir": url.path])
+            var config = ["datadir": url.path]
+            #if DEBUG
+            config["log_level"] = "debug"
+            #endif
+            try gdkInit(config: config)
         }
     }
 
