@@ -66,10 +66,10 @@ class UserSettingsViewController: UIViewController {
         if let settings = try session.getSettings() {
             SessionsManager.current.settings = Settings.from(settings)
         }
-        self.username = try session.getWatchOnlyUsername()
-        let dataTwoFactorConfig = try session.getTwoFactorConfig()
-        if dataTwoFactorConfig != nil {
-            self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+        if let account = account, let network = account.gdkNetwork,
+           !(account.isSingleSig ?? false) && !network.liquid {
+            // watchonly available on multisig for not liquid networks
+                self.username = try session.getWatchOnlyUsername()
         }
     }
 
