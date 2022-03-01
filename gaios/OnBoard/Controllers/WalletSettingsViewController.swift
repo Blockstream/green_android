@@ -49,6 +49,10 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblSPVtestnetServer: UILabel!
     @IBOutlet weak var fieldSPVtestnetServer: UITextField!
 
+    @IBOutlet weak var cardSPVliquidTestnetServer: UIView!
+    @IBOutlet weak var lblSPVliquidTestnetServer: UILabel!
+    @IBOutlet weak var fieldSPVliquidTestnetServer: UITextField!
+
     @IBOutlet weak var cardTxCheck: UIView!
     @IBOutlet weak var lblTxCheckTitle: UILabel!
     @IBOutlet weak var lblTxCheckHint: UILabel!
@@ -57,14 +61,6 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var cardMulti: UIView!
     @IBOutlet weak var lblMultiTitle: UILabel!
     @IBOutlet weak var lblMultiHint: UILabel!
-
-    @IBOutlet weak var cardElectBtc: UIView!
-    @IBOutlet weak var lblElectBtcTitle: UILabel!
-    @IBOutlet weak var lblElectBtcHint: UILabel!
-
-    @IBOutlet weak var cardElectLiquid: UIView!
-    @IBOutlet weak var lblElectLiquidTitle: UILabel!
-    @IBOutlet weak var lblElectLiquidHint: UILabel!
 
     @IBOutlet weak var toolBar: UIToolbar!
 
@@ -91,6 +87,7 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldSPVbtcServer.delegate = self
         fieldSPVliquidServer.delegate = self
         fieldSPVtestnetServer.delegate = self
+        fieldSPVliquidTestnetServer.delegate = self
 
         setContent()
         setStyle()
@@ -122,6 +119,7 @@ class WalletSettingsViewController: KeyboardViewController {
         lblSPVPersonalNodeHint.text = NSLocalizedString("id_choose_the_electrum_servers_you", comment: "")
         lblSPVbtcServer.text = NSLocalizedString("id_bitcoin_electrum_server", comment: "")
         lblSPVliquidServer.text = NSLocalizedString("id_liquid_electrum_server", comment: "")
+        lblSPVliquidTestnetServer.text = NSLocalizedString("id_liquid_testnet_electrum_server", comment: "")
         lblSPVtestnetServer.text = NSLocalizedString("id_testnet_electrum_server", comment: "")
         fieldSPVbtcServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         fieldSPVliquidServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
@@ -130,10 +128,6 @@ class WalletSettingsViewController: KeyboardViewController {
         lblTxCheckHint.text = NSLocalizedString("id_verify_your_bitcoin", comment: "")
         lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
         lblMultiHint.text = NSLocalizedString("id_double_check_spv_with_other", comment: "")
-        lblElectBtcTitle.text = NSLocalizedString("id_bitcoin_electrum_server", comment: "")
-        lblElectBtcHint.text = NSLocalizedString("id_choose_the_electrum_servers_you", comment: "")
-        lblElectLiquidTitle.text = NSLocalizedString("id_liquid_electrum_server", comment: "")
-        lblElectLiquidHint.text = NSLocalizedString("", comment: "")
 
         btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
@@ -141,20 +135,18 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldSPVbtcServer.placeholder = Constants.btcElectrumSrvDefaultEndPoint
         fieldSPVliquidServer.placeholder = Constants.liquidElectrumSrvDefaultEndPoint
         fieldSPVtestnetServer.placeholder = Constants.testnetElectrumSrvDefaultEndPoint
+        fieldSPVliquidTestnetServer.placeholder = Constants.liquidTestnetElectrumSrvDefaultEndPoint
     }
 
     func setStyle() {
         btnCancel.cornerRadius = 4.0
         btnSave.cornerRadius = 4.0
-        let fields = [fieldProxyIp, fieldSPVbtcServer, fieldSPVliquidServer, fieldSPVtestnetServer]
+        let fields = [fieldProxyIp, fieldSPVbtcServer, fieldSPVliquidServer, fieldSPVtestnetServer, fieldSPVliquidTestnetServer]
         fields.forEach {
             $0?.setLeftPaddingPoints(10.0)
             $0?.setRightPaddingPoints(10.0)
         }
-
         cardMulti.alpha = 0.5
-        cardElectBtc.alpha = 0.5
-        cardElectLiquid.alpha = 0.5
 
         let flexButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(image: UIImage(named: "cancel"),
@@ -191,6 +183,9 @@ class WalletSettingsViewController: KeyboardViewController {
         }
         if let uri = networkSettings[Constants.testnetElectrumSrv] as? String, !uri.isEmpty {
             fieldSPVtestnetServer.text = uri
+        }
+        if let uri = networkSettings[Constants.liquidTestnetElectrumSrv] as? String, !uri.isEmpty {
+            fieldSPVliquidTestnetServer.text = uri
         }
 
         switchPSPVPersonalNode(switchPSPVPersonalNode)
@@ -250,7 +245,8 @@ class WalletSettingsViewController: KeyboardViewController {
             Constants.personalNodeEnabled: switchPSPVPersonalNode.isOn,
             Constants.btcElectrumSrv: fieldSPVbtcServer.text ?? "",
             Constants.liquidElectrumSrv: fieldSPVliquidServer.text ?? "",
-            Constants.testnetElectrumSrv: fieldSPVtestnetServer.text ?? ""
+            Constants.testnetElectrumSrv: fieldSPVtestnetServer.text ?? "",
+            Constants.liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text ?? ""
         ]
         UserDefaults.standard.set(switchTestnet.isOn, forKey: AppStorage.testnetIsVisible)
         delegate?.didSet(tor: switchTor.isOn)

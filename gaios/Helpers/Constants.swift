@@ -13,11 +13,12 @@ enum Constants {
     static let btcElectrumSrv = "btc_electrum_srv"
     static let liquidElectrumSrv = "liquid_electrum_srv"
     static let testnetElectrumSrv = "testnet_electrum_srv"
+    static let liquidTestnetElectrumSrv = "liquid_testnet_electrum_srv"
 
     static let btcElectrumSrvDefaultEndPoint = "blockstream.info:700"
     static let liquidElectrumSrvDefaultEndPoint = "blockstream.info:995"
     static let testnetElectrumSrvDefaultEndPoint = "blockstream.info:993"
-//    static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
+    static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
 }
 
 enum AppStorage {
