@@ -155,6 +155,10 @@ class DeviceInfoViewModel @AssistedInject constructor(
         }.subscribeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun getAntiExfilCorruptionForMessageSign() = qaTester.getAntiExfilCorruptionForMessageSign()
+    override fun getAntiExfilCorruptionForTxSign() = qaTester.getAntiExfilCorruptionForTxSign()
+    override fun getFirmwareCorruption() = qaTester.getFirmwareCorruption()
+
     fun setJadeFirmwareManager(jadeFirmwareManager: JadeFirmwareManager) {
         hardwareConnect.setJadeFirmwareManager(jadeFirmwareManager)
     }

@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 class QATester(val context: Context) : HardwareQATester, AssetQATester {
     val corruptedHardwareMessageSign = MutableLiveData(false)
     val corruptedHardwareTxSign = MutableLiveData(false)
+    val corruptedJadeFirmwareHash = MutableLiveData(false)
 
     val assetsFetchDisabled = MutableLiveData(false)
     val assetsIconsFetchDisabled = MutableLiveData(false)
@@ -28,6 +29,10 @@ class QATester(val context: Context) : HardwareQATester, AssetQATester {
 
     override fun getAntiExfilCorruptionForTxSign(): Boolean {
         return corruptedHardwareTxSign.value ?: false
+    }
+
+    override fun getFirmwareCorruption(): Boolean {
+        return corruptedJadeFirmwareHash.value ?: false
     }
 
     override fun isAssetGdkCacheDisabled(): Boolean {

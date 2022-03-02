@@ -188,7 +188,7 @@ public class JadeFirmwareManager {
             // NOTE: the return value is not that useful, as the OTA may have look like it has succeeded
             // but when jade boots it may decide that new partition is not good, and boot the prior one.
             Log.i(TAG, "Uploading firmware, compressed size: " + fwFile.getFirmware().length);
-            final boolean updated = jade.otaUpdate(fwFile.getFirmware(), fwFile.fwSize, chunksize, null);
+            final boolean updated = jade.otaUpdate(fwFile.getFirmware(), fwFile.fwSize, chunksize, firmwareInteraction.getFirmwareCorruption(), null);
             Log.i(TAG, "Jade OTA Update returned: " + updated);
             jade.disconnect();
 

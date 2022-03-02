@@ -84,6 +84,19 @@
                         <com.blockstream.green.views.GreenSwitch
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:checked="@={qaTester.corruptedJadeFirmwareHash}"
+                            app:captionText="Corrupt firmware hash"
+                            app:icon="@drawable/blockstream_jade_device"
+                            app:titleText="Corrupt Jade Firmware" />
+
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
+
+                        <com.blockstream.green.views.GreenSwitch
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:checked="@={qaTester.assetsGdkCacheDisabled}"
                             app:captionText="Disable Assets GDK Cache"
                             app:icon="@drawable/ic_unknown_asset_60"

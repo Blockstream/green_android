@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.hash.Hashing;
 import com.greenaddress.jade.entities.JadeError;
 import com.greenaddress.jade.entities.Commitment;
 import com.greenaddress.jade.entities.SignMessageResult;
@@ -22,13 +21,13 @@ import com.polidea.rxandroidble2.RxBleDevice;
 import com.polidea.rxandroidble2.exceptions.BleException;
 
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
@@ -264,11 +263,15 @@ public class JadeAPI {
     public boolean otaUpdate(final byte[] compressed_firmware,
                              final int uncompressed_size,
                              final int chunksize,
+                             final boolean corruptHash,
                              final OtaProgressCallback cb) throws Exception {
 
-        final byte[] cmphash = Hashing.sha256()
-                .hashBytes(compressed_firmware)
-                .asBytes();
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        if(corruptHash) {
+            // Corrupt hash (for testing purposes)
+            md.update(compressed_firmware);
+        }
+        final byte[] cmphash = md.digest(compressed_firmware);
         final int compressed_size = compressed_firmware.length;
 
         // Initiate OTA

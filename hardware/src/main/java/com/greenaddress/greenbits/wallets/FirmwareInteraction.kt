@@ -2,8 +2,9 @@ package com.greenaddress.greenbits.wallets;
 
 import androidx.arch.core.util.Function
 import com.blockstream.DeviceBrand
+import com.greenaddress.greenapi.HardwareQATester
 
-interface FirmwareInteraction {
+interface FirmwareInteraction: HardwareQATester {
     fun askForFirmwareUpgrade(
         firmwareUpgradeRequest: FirmwareUpgradeRequest,
         callback: Function<Int?, Void>
