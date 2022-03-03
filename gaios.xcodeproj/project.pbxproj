@@ -117,6 +117,7 @@
 		347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347FD0B025FFA98300BB3FAB /* HomeViewController.swift */; };
 		347FD0BC25FFC0E100BB3FAB /* WalletHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347FD0BB25FFC0E100BB3FAB /* WalletHDCell.swift */; };
 		3484118C265E6113002D2202 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3484118B265E6113002D2202 /* Constants.swift */; };
+		3486AD7227CFC5060013D8FF /* AssetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3486AD7127CFC5060013D8FF /* AssetsList.swift */; };
 		349365FB2758C2DD003EC603 /* ManualRestoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349365FA2758C2DD003EC603 /* ManualRestoreViewController.swift */; };
 		34959D3826EF7D8400EAF853 /* OverviewAlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34959D3726EF7D8400EAF853 /* OverviewAlertCardCell.swift */; };
 		34959D3A26F0739700EAF853 /* OverviewAccountIdCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34959D3926F0739700EAF853 /* OverviewAccountIdCell.swift */; };
@@ -448,6 +449,7 @@
 		347FD0B025FFA98300BB3FAB /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		347FD0BB25FFC0E100BB3FAB /* WalletHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHDCell.swift; sourceTree = "<group>"; };
 		3484118B265E6113002D2202 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		3486AD7127CFC5060013D8FF /* AssetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsList.swift; sourceTree = "<group>"; };
 		349365FA2758C2DD003EC603 /* ManualRestoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualRestoreViewController.swift; sourceTree = "<group>"; };
 		34959D3726EF7D8400EAF853 /* OverviewAlertCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewAlertCardCell.swift; sourceTree = "<group>"; };
 		34959D3926F0739700EAF853 /* OverviewAccountIdCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewAccountIdCell.swift; sourceTree = "<group>"; };
@@ -839,6 +841,7 @@
 				34FF27A427C7E5A7008FD72C /* DialogReceiveMoreOptions.swift */,
 				34FF27A227C7E45C008FD72C /* DialogReceiveRequestAmount.swift */,
 				34FF27AD27CCE926008FD72C /* DialogCustomFee.swift */,
+				3486AD7127CFC5060013D8FF /* AssetsList.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -2097,6 +2100,7 @@
 				344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */,
 				3434767026823B1A00D7AD43 /* ChooseNetwork.swift in Sources */,
 				20516D042693969B00BA1F4C /* DialogWalletRename.swift in Sources */,
+				3486AD7227CFC5060013D8FF /* AssetsList.swift in Sources */,
 				344FE35326850C8500C087A5 /* Container.swift in Sources */,
 				34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */,
 				345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */,

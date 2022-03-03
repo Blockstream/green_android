@@ -165,6 +165,8 @@ struct AccessibilityIdentifiers {
         static let amountField = "amount_field"
         static let nextBtn = "next_btn"
         static let setCutomFeeBtn = "set_custom_fee_btn"
+        static let chooseAssetBtn = "choose_asset_btn"
+        static let sendAllBtn = "send_all_btn"
     }
 
     struct SendConfirmScreen {
@@ -247,6 +249,11 @@ struct AccessibilityIdentifiers {
         static let view = "view_dialog_custom_fee"
         static let feeField = "fee_field"
         static let saveBtn = "save_btn"
+    }
+
+    struct AssetsListScreen {
+        static let view = "view_assets_list"
+        static let table = "table_essets_list"
     }
 
     struct KeyboardView {

@@ -178,4 +178,49 @@ class SendFlowUITests: XCTestBase {
             .checkRate("( 1.15 satoshi / vbyte )")
             .pause(2)
     }
+    
+    func testTransactionLiquid() {
+        
+        prepareWallet(walletName: Constants.walletNameLiquid, words: Constants.mnemonicLiquid, isSingleSig: false, isLiquid: true)
+        
+        Overview()
+            .pause(1)
+            .tapReceive()
+        
+        Receive()
+            .pause(1)
+            .tapQrCode()
+            .pause(1)
+            .tapBack()
+        
+        Overview()
+            .pause(1)
+            .tapSend()
+        
+        Send()
+            .pause(1)
+            .pasteAddress()
+            .pause(1)
+            .chooseAsset()
+            .pause(1)
+        
+        AssetsList()
+            .pause(2)
+            .selectLBtc()
+            .pause(1)
+        
+        Send()
+            .typeAmount("0.00001")
+            .pause(1)
+            .tapDone()
+            .pause(2)
+            .tapNext()
+
+        SendConfirm()
+            .pause(2)
+            .tapNext()
+
+        Overview()
+            .pause(3)
+    }
 }

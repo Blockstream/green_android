@@ -138,6 +138,8 @@ class RecipientCell: UITableViewCell {
 
         btnPasteAddress.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.pasteAddressBtn
         amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.amountField
+        btnChooseAsset.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.chooseAssetBtn
+        btnSendAll.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.sendAllBtn
     }
 
     func setStyle() {
