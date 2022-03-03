@@ -9,6 +9,9 @@ class TransactionAmountCell: UITableViewCell {
     @IBOutlet weak var lblFiat: UILabel!
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblRecipient: UILabel!
+    @IBOutlet weak var copyIcon: UIImageView!
+
+    var copyAmount: ((String) -> Void)?
 
     private var btc: String {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
@@ -31,12 +34,14 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = true
     }
 
-    func configure(transaction: Transaction, network: String?, index: Int) {
+    func configure(transaction: Transaction, network: String?, index: Int, copyAmount: ((String) -> Void)?) {
+
+        self.copyAmount = copyAmount
 
         let isIncoming = transaction.type == "incoming"
         let isOutgoing = transaction.type == "outgoing"
         let color: UIColor = isOutgoing ? UIColor.white : UIColor.customMatrixGreen()
-
+        copyIcon.image = copyIcon.image?.maskWithColor(color: color)
         lblTitle.text = NSLocalizedString("id_recipient", comment: "")
         if isIncoming {
             lblTitle.text = NSLocalizedString("id_received", comment: "")
@@ -85,5 +90,9 @@ class TransactionAmountCell: UITableViewCell {
                 }
             }
         }
+    }
+
+    @IBAction func copyAmountBtn(_ sender: Any) {
+        copyAmount?(lblAmount.text ?? "")
     }
 }

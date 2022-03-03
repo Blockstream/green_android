@@ -8,8 +8,11 @@ class TransactionFeeCell: UITableViewCell {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var feeBtnView: UIView!
     @IBOutlet weak var btnFee: UIButton!
+    @IBOutlet weak var copyIcon: UIImageView!
 
     var feeAction: VoidToVoid?
+    var copyFee: ((String) -> Void)?
+    var amount: String?
 
     private var btc: String {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
@@ -32,7 +35,11 @@ class TransactionFeeCell: UITableViewCell {
         lblHint.text = ""
     }
 
-    func configure(transaction: Transaction, isLiquid: Bool, feeAction: VoidToVoid?) {
+    func configure(transaction: Transaction, isLiquid: Bool, feeAction: VoidToVoid?, copyFee: ((String) -> Void)?) {
+
+        self.copyFee = copyFee
+        let color: UIColor = .white
+        copyIcon.image = copyIcon.image?.maskWithColor(color: color)
         lblFee.text = NSLocalizedString("id_fee", comment: "")
 
         btnFee.setTitle(NSLocalizedString("id_increase_fee", comment: "") + " »", for: .normal)
@@ -42,6 +49,7 @@ class TransactionFeeCell: UITableViewCell {
         if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
             let (amount, denom) = balance.get(tag: btc)
             lblValue.text = "\(amount ?? "") \(denom)"
+            self.amount = amount
             let (fiat, fiatCurrency) = balance.get(tag: "fiat")
             lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
             lblHint.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(transaction.feeRate) / 1000))"
@@ -54,4 +62,9 @@ class TransactionFeeCell: UITableViewCell {
     @IBAction func btnFee(_ sender: Any) {
         feeAction?()
     }
+
+    @IBAction func copyFeeBtn(_ sender: Any) {
+        copyFee?(amount ?? "")
+    }
+
 }

@@ -227,8 +227,8 @@ class TransactionViewController: UIViewController {
         }
     }
 
-    func copyToClipboard() {
-        UIPasteboard.general.string = self.transaction.hash
+    func copyToClipboard(_ value: String) {
+        UIPasteboard.general.string = value
         DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
@@ -340,18 +340,26 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
 
         switch indexPath.section {
         case TransactionSection.amount.rawValue:
+            let copyAmount: ((String) -> Void)? = { [weak self] value in
+                self?.copyToClipboard(value)
+            }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
-                cell.configure(transaction: transaction, network: account?.network, index: indexPath.row)
+                cell.configure(transaction: transaction, network: account?.network, index: indexPath.row, copyAmount: copyAmount)
                 cell.selectionStyle = .none
                 return cell
             }
         case TransactionSection.fee.rawValue:
+            let feeAction: VoidToVoid? = { [weak self] in
+                self?.increaseFeeTapped()
+            }
+            let copyFee: ((String) -> Void)? = { [weak self] value in
+                self?.copyToClipboard(value)
+            }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionFeeCell") as? TransactionFeeCell {
                 cell.configure(transaction: transaction,
                                isLiquid: isLiquid,
-                               feeAction: { [weak self] in
-                    self?.increaseFeeTapped()
-                })
+                               feeAction: feeAction,
+                               copyFee: copyFee)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -368,15 +376,15 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             let explorerAction: VoidToVoid? = { [weak self] in
                 self?.explorerAction()
             }
-            let copyAction: VoidToVoid? = { [weak self] in
-                self?.copyToClipboard()
+            let copyHash: ((String) -> Void)? = { [weak self] value in
+                self?.copyToClipboard(value)
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailCell") as? TransactionDetailCell {
                 cell.configure(
                     transaction: transaction,
                     noteAction: noteAction,
                     explorerAction: explorerAction,
-                    copyAction: copyAction
+                    copyHash: copyHash
                 )
                 cell.selectionStyle = .none
                 return cell

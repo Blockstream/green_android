@@ -11,9 +11,11 @@ class TransactionDetailCell: UITableViewCell {
     @IBOutlet weak var lblNoteTitle: UILabel!
     @IBOutlet weak var lblNoteTxt: UILabel!
     @IBOutlet weak var bgNote: UIView!
+    @IBOutlet weak var copyIcon: UIImageView!
+
     var noteAction: VoidToVoid?
     var explorerAction: VoidToVoid?
-    var copyAction: VoidToVoid?
+    var copyHash: ((String) -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,9 +34,11 @@ class TransactionDetailCell: UITableViewCell {
     func configure(transaction: Transaction,
                    noteAction: VoidToVoid?,
                    explorerAction: VoidToVoid?,
-                   copyAction: VoidToVoid?) {
+                   copyHash: ((String) -> Void)?) {
+        let color: UIColor = .white
+        copyIcon.image = copyIcon.image?.maskWithColor(color: color)
         lblConfirmationsTitle.text = NSLocalizedString("id_confirmations", comment: "")
-        confirmationsView.isHidden = transaction.blockHeight == 0
+        confirmationsView.isHidden = true // transaction.blockHeight == 0
         lblConfirmationsHint.text = "\(SessionsManager.current.notificationManager.blockHeight  - transaction.blockHeight + 1)"
         lblTxidTitle.text = NSLocalizedString("id_transaction_id", comment: "")
         lblTxidHint.text = transaction.hash
@@ -47,11 +51,11 @@ class TransactionDetailCell: UITableViewCell {
         }
         self.noteAction = noteAction
         self.explorerAction = explorerAction
-        self.copyAction = copyAction
+        self.copyHash = copyHash
     }
 
     @IBAction func btnCopy(_ sender: Any) {
-        copyAction?()
+        copyHash?( lblTxidHint.text ?? "" )
     }
 
     @IBAction func btnExplorer(_ sender: Any) {
