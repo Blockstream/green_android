@@ -172,6 +172,7 @@ struct AccessibilityIdentifiers {
     struct SendConfirmScreen {
         static let view = "view_send_confirmation"
         static let nextBtn = "next_btn"
+        static let amountLbl = "amount_lbl"
     }
     
     struct AccountsScreen {

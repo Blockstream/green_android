@@ -47,4 +47,10 @@ class Send: Screen {
         tap(button: AccessibilityIdentifiers.SendScreen.sendAllBtn)
         return self
     }
+    
+    @discardableResult
+    func getAmount() -> String {
+        let e = app.textFields[AccessibilityIdentifiers.SendScreen.amountField]
+        return e.value as! String
+    }
 }

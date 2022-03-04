@@ -3,6 +3,8 @@ import XCTest
 
 class SendFlowUITests: XCTestBase {
     
+    var amountCache = "empty"
+
     func testTransaction() {
         
         prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
@@ -222,5 +224,86 @@ class SendFlowUITests: XCTestBase {
 
         Overview()
             .pause(3)
+    }
+    
+    func testSendAllAmount() {
+        
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false, isLiquid: false)
+        
+        Overview()
+            .pause(1)
+            .tapReceive()
+        
+        Receive()
+            .pause(1)
+            .tapQrCode()
+            .pause(1)
+            .tapBack()
+        
+        Overview()
+            .pause(1)
+            .tapSend()
+        
+        Send()
+            .pause(1)
+            .pasteAddress()
+            .pause(1)
+            .tapSendAll()
+            .pause(1)
+        
+        amountCache = Send().getAmount()
+        
+        Send()
+            .tapNext()
+
+        SendConfirm()
+            .pause(2)
+            .checkAmount(amountCache)
+            .pause(2)
+    }
+    
+    func testSendAllAmountLiquid() {
+        
+        prepareWallet(walletName: Constants.walletNameLiquid, words: Constants.mnemonicLiquid, isSingleSig: false, isLiquid: true)
+        
+        Overview()
+            .pause(1)
+            .tapReceive()
+        
+        Receive()
+            .pause(1)
+            .tapQrCode()
+            .pause(1)
+            .tapBack()
+        
+        Overview()
+            .pause(1)
+            .tapSend()
+        
+        Send()
+            .pause(1)
+            .pasteAddress()
+            .pause(1)
+            .chooseAsset()
+            .pause(1)
+        
+        AssetsList()
+            .pause(2)
+            .selectLBtc()
+            .pause(1)
+        
+        Send()
+            .tapSendAll()
+            .pause(1)
+        
+        amountCache = Send().getAmount()
+        
+        Send()
+            .tapNext()
+
+        SendConfirm()
+            .pause(2)
+            .checkAmount(amountCache)
+            .pause(2)
     }
 }
