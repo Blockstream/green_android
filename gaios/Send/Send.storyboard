@@ -782,7 +782,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="H4N-tC-s7o">
-                                <rect key="frame" x="0.0" y="88" width="414" height="1163"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="1117"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="AddresseeCell" rowHeight="219" id="rHe-0h-zLy" customClass="AddresseeCell" customModule="gaios" customModuleProvider="target">
@@ -1107,31 +1107,24 @@
                                     <outlet property="delegate" destination="urc-5z-fa7" id="b9Y-xV-9Wx"/>
                                 </connections>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zpq-J5-JVw" userLabel="Next">
-                                <rect key="frame" x="36" y="1271" width="342" height="40"/>
-                                <color key="backgroundColor" name="customMatrixGreen"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iId-QH-flW" customClass="SliderView" customModule="gaios" customModuleProvider="target">
+                                <rect key="frame" x="36" y="1241" width="342" height="54"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="Hly-xE-hlj"/>
+                                    <constraint firstAttribute="height" constant="54" id="cwX-IE-qjG"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                <state key="normal" title="Next">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="btnNext:" destination="urc-5z-fa7" eventType="touchUpInside" id="eAy-Ck-jyJ"/>
-                                </connections>
-                            </button>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="GYc-5U-A2j"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
-                            <constraint firstItem="GYc-5U-A2j" firstAttribute="bottom" secondItem="zpq-J5-JVw" secondAttribute="bottom" constant="20" id="1UN-5S-72m"/>
-                            <constraint firstItem="zpq-J5-JVw" firstAttribute="leading" secondItem="GYc-5U-A2j" secondAttribute="leading" constant="36" id="KFS-Vh-FfN"/>
-                            <constraint firstItem="zpq-J5-JVw" firstAttribute="top" secondItem="H4N-tC-s7o" secondAttribute="bottom" constant="20" id="Te7-x4-MOf"/>
+                            <constraint firstItem="iId-QH-flW" firstAttribute="top" secondItem="H4N-tC-s7o" secondAttribute="bottom" constant="36" id="7kd-ar-c1H"/>
+                            <constraint firstItem="iId-QH-flW" firstAttribute="leading" secondItem="GYc-5U-A2j" secondAttribute="leading" constant="36" id="8su-Tk-tjK"/>
+                            <constraint firstItem="GYc-5U-A2j" firstAttribute="bottom" secondItem="iId-QH-flW" secondAttribute="bottom" constant="36" id="Q3z-0j-mg9"/>
+                            <constraint firstItem="GYc-5U-A2j" firstAttribute="trailing" secondItem="iId-QH-flW" secondAttribute="trailing" constant="36" id="VVx-6i-G1X"/>
                             <constraint firstItem="H4N-tC-s7o" firstAttribute="leading" secondItem="GYc-5U-A2j" secondAttribute="leading" id="adZ-Gu-wva"/>
                             <constraint firstItem="H4N-tC-s7o" firstAttribute="top" secondItem="GYc-5U-A2j" secondAttribute="top" id="e7h-CY-250"/>
                             <constraint firstItem="GYc-5U-A2j" firstAttribute="trailing" secondItem="H4N-tC-s7o" secondAttribute="trailing" id="em6-tZ-D1b"/>
-                            <constraint firstItem="GYc-5U-A2j" firstAttribute="trailing" secondItem="zpq-J5-JVw" secondAttribute="trailing" constant="36" id="f0j-17-0Z7"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="lhC-kT-HMm">
@@ -1139,7 +1132,7 @@
                     </navigationItem>
                     <size key="freeformSize" width="414" height="1365"/>
                     <connections>
-                        <outlet property="btnNext" destination="zpq-J5-JVw" id="P5I-RL-Kk9"/>
+                        <outlet property="sliderView" destination="iId-QH-flW" id="mxF-el-E4S"/>
                         <outlet property="tableView" destination="H4N-tC-s7o" id="c11-Ge-flV"/>
                     </connections>
                 </viewController>

@@ -12,7 +12,7 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var btnNext: UIButton!
+    @IBOutlet weak var sliderView: SliderView!
 
     var wallet: WalletItem?
     var transaction: Transaction?
@@ -22,21 +22,17 @@ class SendConfirmViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        sliderView.delegate = self
+
         updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
         setContent()
-        setStyle()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.view
-        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.nextBtn
+//        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.nextBtn
     }
 
     func setContent() {
         title = NSLocalizedString("id_review", comment: "")
-        btnNext.setTitle(NSLocalizedString("id_send", comment: ""), for: .normal)
-    }
-
-    func setStyle() {
-        btnNext.setStyle(.primary)
     }
 
     func editNote() {
@@ -65,7 +61,7 @@ class SendConfirmViewController: KeyboardViewController {
         guard let transaction = transaction else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
-            btnNext.isUserInteractionEnabled = false
+            sliderView.isUserInteractionEnabled = false
             let account = AccountsManager.shared.current
             if account?.isHW ?? false {
                 self.startAnimating()
@@ -95,7 +91,8 @@ class SendConfirmViewController: KeyboardViewController {
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
-            self.btnNext.isUserInteractionEnabled = true
+            self.sliderView.isUserInteractionEnabled = true
+            self.sliderView.reset()
             switch error {
             case JadeError.Abort(let desc),
                  JadeError.Declined(let desc):
@@ -131,10 +128,6 @@ class SendConfirmViewController: KeyboardViewController {
             NotificationCenter.default.removeObserver(token)
             updateToken = nil
         }
-    }
-
-    @IBAction func btnNext(_ sender: Any) {
-        send()
     }
 }
 
@@ -234,5 +227,16 @@ extension SendConfirmViewController: NoteCellDelegate {
 
     func noteAction() {
         editNote()
+    }
+}
+
+extension SendConfirmViewController: SliderViewDelegate {
+    func sliderThumbIsMoving(_ sliderView: SliderView) {
+    }
+
+    func sliderThumbDidStopMoving(_ position: Int) {
+        if position == 1 {
+            send()
+        }
     }
 }
