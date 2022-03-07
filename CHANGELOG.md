@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Create sub accounts of type 2of3
+- Settings: show mnemonic as QR code
 
 ### Changed
 - Select mnemonic length while restoring wallet
