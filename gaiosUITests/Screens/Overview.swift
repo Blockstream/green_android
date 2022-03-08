@@ -36,4 +36,36 @@ class Overview: Screen {
         return self
     }
 
+    @discardableResult
+    func waitIsReady() -> Self {
+        
+        let btn = app.buttons[AccessibilityIdentifiers.OverviewScreen.settingsBtn]
+        var numberTry = 0
+        while numberTry < 15 {
+            if btn.isHittable {
+                return self
+            } else {
+                sleep(1)
+                numberTry += 1
+            }
+        }
+        return self
+    }
+    
+    @discardableResult
+    func waitTransactionsLoad() -> Self {
+        
+        var numberTry = 0
+        while numberTry < 30 {
+            let exists = app.staticTexts["id_your_transactions_will_be_shown".localized(for: Self.self)].waitForExistence(timeout: 1)
+            if exists == true {
+                sleep(1)
+                numberTry += 1
+            } else {
+                return self
+            }
+        }
+        return self
+    }
+    
 }

@@ -11,6 +11,7 @@ class PinUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSettings()
         
         Settings()
@@ -38,6 +39,7 @@ class PinUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSettings()
         
         Settings()
@@ -73,6 +75,7 @@ class PinUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSettings()
         
         Settings()

@@ -26,12 +26,28 @@ class Send: Screen {
     
     @discardableResult
     func tapNext() -> Self {
+        
+        let btn = app.buttons[AccessibilityIdentifiers.SendScreen.nextBtn]
+        var numberTry = 0
+        while numberTry < 20 {
+            if btn.isHittable {
+                break
+            } else {
+                sleep(1)
+                numberTry += 1
+            }
+        }
         tap(button: AccessibilityIdentifiers.SendScreen.nextBtn)
         return self
     }
     
     @discardableResult
     func tapCustomFee() -> Self {
+        var numberTry = 0
+        while numberTry < 5 {
+            sleep(1)
+            numberTry += 1
+        }
         tap(button: AccessibilityIdentifiers.SendScreen.setCutomFeeBtn)
         return self
     }
@@ -44,6 +60,11 @@ class Send: Screen {
     
     @discardableResult
     func tapSendAll() -> Self {
+        var numberTry = 0
+        while numberTry < 5 {
+            sleep(1)
+            numberTry += 1
+        }
         tap(button: AccessibilityIdentifiers.SendScreen.sendAllBtn)
         return self
     }

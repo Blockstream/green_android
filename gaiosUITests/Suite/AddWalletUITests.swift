@@ -239,6 +239,7 @@ class AddWalletUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSettings()
         
         Settings()

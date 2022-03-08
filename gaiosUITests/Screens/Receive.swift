@@ -9,7 +9,19 @@ class Receive: Screen {
     
     @discardableResult
     func tapQrCode() -> Self {
-        tap(button: AccessibilityIdentifiers.ReceiveScreen.qrCodeBtn)
+
+        let btn = app.buttons[AccessibilityIdentifiers.ReceiveScreen.addressBtn]
+        var numberTry = 0
+        while numberTry < 20 {
+            if btn.label.count > 1 {
+                break
+            } else {
+                sleep(1)
+                numberTry += 1
+            }
+        }
+        
+        tap(button: AccessibilityIdentifiers.ReceiveScreen.addressBtn)
         return self
     }
     

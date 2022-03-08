@@ -157,6 +157,7 @@ struct AccessibilityIdentifiers {
         static let view = "view_receive"
         static let qrCodeBtn = "qr_code_btn"
         static let moreOptionsBtn = "more_options_btn"
+        static let addressBtn = "address_btn"
     }
     
     struct SendScreen {

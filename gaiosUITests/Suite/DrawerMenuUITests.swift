@@ -11,6 +11,7 @@ class DrawerMenuUITests: XCTestBase {
   
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSettings()
         
         Settings()
@@ -21,6 +22,7 @@ class DrawerMenuUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapDrawerBtn(Constants.walletNameSingleSig)
             .pause(1)
 
@@ -52,6 +54,7 @@ class DrawerMenuUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapDrawerBtn(Constants.walletName)
         
         Drawer()
@@ -69,6 +72,7 @@ class DrawerMenuUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapDrawerBtn(Constants.walletName)
         
         Drawer()
@@ -87,6 +91,7 @@ class DrawerMenuUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapDrawerBtn(Constants.walletName)
         
         Drawer()

@@ -13,6 +13,7 @@ class EditUITests: XCTestBase {
 
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSettings()
 
         Settings()

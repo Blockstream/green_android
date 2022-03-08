@@ -45,6 +45,7 @@ class ReceiveViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.view
         btnQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.qrCodeBtn
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
+        btnAddress.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.addressBtn
     }
 
     override func viewWillAppear(_ animated: Bool) {

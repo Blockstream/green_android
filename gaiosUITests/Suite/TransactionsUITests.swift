@@ -11,6 +11,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitTransactionsLoad()
             .tapReceive()
         
         Receive()
@@ -21,6 +22,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitTransactionsLoad()
             .tapSend()
         
         Send()
@@ -47,6 +49,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitTransactionsLoad()
             .tapReceive()
         
         Receive()
@@ -57,6 +60,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSend()
         
         Send()
@@ -83,6 +87,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitTransactionsLoad()
             .tapReceive()
         
         Receive()
@@ -110,6 +115,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSend()
         
         Send()
@@ -130,6 +136,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitTransactionsLoad()
             .tapReceive()
         
         Receive()
@@ -157,6 +164,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSend()
         
         Send()
@@ -187,6 +195,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapReceive()
         
         Receive()
@@ -197,6 +206,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSend()
         
         Send()
@@ -232,6 +242,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitTransactionsLoad()
             .tapReceive()
         
         Receive()
@@ -242,6 +253,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSend()
         
         Send()
@@ -268,6 +280,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapReceive()
         
         Receive()
@@ -278,6 +291,7 @@ class SendFlowUITests: XCTestBase {
         
         Overview()
             .pause(1)
+            .waitIsReady()
             .tapSend()
         
         Send()
