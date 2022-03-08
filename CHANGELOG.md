@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Select mnemonic length while restoring wallet
 - Access app settings screen from hardware wallet connecting screen
 - Converted send transaction button to "slide to send" control
+- Update GDK to version 0.50
 
 ### Fixed
 

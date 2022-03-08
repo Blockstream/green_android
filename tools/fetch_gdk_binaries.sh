@@ -6,16 +6,16 @@ set -e
 if [[ $1 == "--simulator" ]]; then
     # Get version for iphone simulator
     NAME="gdk-iphone-sim"
-    SHA256_IPHONESIM="e5c0abd187a19ef1cc61d5b5ab8027c4737965fdb78a79179c919beb7ced68e4"
+    SHA256_IPHONESIM="70d59f7663976eac2e53fc69b92b866d6dece12578546572b0c4e6c039e1660e"
     SHA256=${SHA256_IPHONESIM}
 else
     NAME="gdk-iphone"
-    SHA256_IPHONE="26bbbc920048f62c40773e7d8a50a30d88e773ee682281bbee2ed058f412a7df"
+    SHA256_IPHONE="4b4819ca3b3c3e5e0420a7a47197c580cb5c181119a0f39cbd0a8f63f084c35b"
     SHA256=${SHA256_IPHONE}
 fi
 
 # Setup gdk version and url
-TAGNAME="release_0.0.49"
+TAGNAME="release_0.0.50"
 TARBALL="${NAME}.tar.gz"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
 
