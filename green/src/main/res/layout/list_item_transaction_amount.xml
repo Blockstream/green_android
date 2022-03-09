@@ -54,7 +54,6 @@
                 android:textSize="14sp"
                 android:text="@{address}"
                 android:includeFontPadding="false"
-                android:textIsSelectable="true"
                 isVisible="@{address != null}"
                 tools:text="33ttwPQbgNkKvQbW8KaVp3tDNaxa3f1MAA" />
 

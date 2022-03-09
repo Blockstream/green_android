@@ -49,20 +49,22 @@
                 android:text="@{fee}"
                 android:textAlignment="viewEnd"
                 android:textAppearance="@style/TextAppearance.Green.Body1"
+                android:textIsSelectable="true"
                 tools:text="0.000001123 BTC" />
 
             <TextView
+                isVisible="@{feeFiat != null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 android:singleLine="true"
+                android:text="@{feeFiat}"
                 android:textAlignment="textEnd"
                 android:textAppearance="?attr/textAppearanceBody1"
+                android:textIsSelectable="true"
                 android:textSize="11sp"
-                isVisible="@{feeFiat != null}"
-                android:text="@{feeFiat}"
                 tools:text="~ 3434.34 USD" />
 
             <TextView
@@ -72,8 +74,8 @@
                 android:includeFontPadding="false"
                 android:text="@{`(`+feeRate+`)`}"
                 android:textAlignment="viewEnd"
-                android:textSize="11sp"
                 android:textColor="@color/color_on_surface_emphasis_medium"
+                android:textSize="11sp"
                 tools:text="(fee / rate)" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 

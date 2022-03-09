@@ -56,6 +56,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/amountTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -71,6 +72,7 @@
                 tools:text="1532.12345678" />
 
             <TextView
+                android:id="@+id/fiatTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

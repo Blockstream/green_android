@@ -3,7 +3,6 @@ package com.blockstream.green.ui.wallet
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.navArgs
@@ -13,7 +12,6 @@ import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemGenericDetailBinding
-import com.blockstream.green.databinding.ListItemTransactionAmountBinding
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
 import com.blockstream.green.gdk.getConfirmationsMax
 import com.blockstream.green.ui.MenuBottomSheetDialogFragment
@@ -141,11 +139,6 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             }
         }
 
-        fastAdapter.addClickListener<ListItemTransactionAmountBinding, GenericItem>({ binding -> binding.addressTextView }) { view, i: Int, fastAdapter: FastAdapter<GenericItem>, item: GenericItem ->
-            copyToClipboard("Address", (view as TextView).text.toString(), animateView = view)
-            snackbar(R.string.id_address_copied_to_clipboard)
-        }
-
         fastAdapter.onClickListener = { _, _, item: GenericItem, position: Int ->
             when (item) {
                 is TransactionAmountListItem -> {
@@ -234,13 +227,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         )
 
         list += TitleListItem(title = StringHolder(R.string.id_transaction_details))
-        val confirmations = transaction.getConfirmations(session.blockHeight)
-        if (confirmations > session.network.confirmationsRequired && transaction.spv.disabledOrVerified()) {
-            list += GenericDetailListItem(
-                title = StringHolder(R.string.id_confirmations),
-                content = StringHolder("$confirmations")
-            )
-        }
+
         list += GenericDetailListItem(
             title = StringHolder(R.string.id_transaction_id),
             content = StringHolder(transaction.txHash),

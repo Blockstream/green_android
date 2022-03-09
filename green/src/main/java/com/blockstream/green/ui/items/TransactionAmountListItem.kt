@@ -34,6 +34,11 @@ data class TransactionAmountListItem constructor(
             binding.card.strokeColor = ContextCompat.getColor(binding.root.context, R.color.color_on_surface_divider)
         }
         look.setAssetToBinding(index, binding.amount)
+
+        // make address,amount & fee selectable
+        binding.addressTextView.setTextIsSelectable(true)
+        binding.amount.amountTextView.setTextIsSelectable(true)
+        binding.amount.fiatTextView.setTextIsSelectable(true)
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemTransactionAmountBinding {

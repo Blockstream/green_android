@@ -2,11 +2,13 @@ package com.blockstream.green.ui.send
 
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
+import com.blockstream.green.databinding.ListItemTransactionAmountBinding
 import com.blockstream.green.databinding.SendConfirmFragmentBinding
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.GenericDetailListItem
@@ -18,6 +20,7 @@ import com.blockstream.green.utils.*
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -63,6 +66,11 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
         }
 
         val fastAdapter = FastAdapter.with(createAdapter(isAddressVerification = false))
+
+        fastAdapter.addClickListener<ListItemTransactionAmountBinding, GenericItem>({ binding -> binding.addressTextView }) { view, _: Int, _: FastAdapter<GenericItem>, _: GenericItem ->
+            copyToClipboard("Address", (view as TextView).text.toString(), animateView = view)
+            snackbar(R.string.id_address_copied_to_clipboard)
+        }
 
         binding.recycler.apply {
             adapter = fastAdapter
