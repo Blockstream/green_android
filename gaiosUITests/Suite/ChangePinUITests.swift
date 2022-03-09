@@ -75,7 +75,7 @@ class PinUITests: XCTestBase {
         
         Overview()
             .pause(1)
-            .waitIsReady()
+            .waitTransactionsLoad()
             .tapSettings()
         
         Settings()

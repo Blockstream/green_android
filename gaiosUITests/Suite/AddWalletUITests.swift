@@ -217,7 +217,7 @@ class AddWalletUITests: XCTestBase {
                 .tapDelete()
         }
         
-        restoreWallet(walletName: walletName, words: words, isSingleSig: false)
+        restoreWallet(walletName: walletName, words: words, isSingleSig: false, isLiquid: false)
     }
 
     func testWatchOnlySetUp() {
@@ -394,6 +394,10 @@ class AddWalletUITests: XCTestBase {
         ChooseSecurity()
             .tapMultiSigCard()
             
+        DialogMnemonicLenght()
+            .pause(1)
+            .tap12()
+        
         RecoveryInstructions()
             .tapContinue()
         
