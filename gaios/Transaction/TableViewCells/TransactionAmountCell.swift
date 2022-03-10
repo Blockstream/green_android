@@ -48,6 +48,7 @@ class TransactionAmountCell: UITableViewCell {
             // lblRecipient.isHidden = true
         }
         lblRecipient.text = transaction.address()
+        lblRecipient.isHidden = false
         lblAmount.textColor = color
         lblFiat.textColor = color
 
@@ -69,6 +70,7 @@ class TransactionAmountCell: UITableViewCell {
                 }
                 let (fiat, fiatCurrency) = balance.get(tag: "fiat")
                 lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+                lblFiat.isHidden = false
             }
         } else {
             let amounts = Transaction.sort(transaction.amounts)
