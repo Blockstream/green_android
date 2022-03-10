@@ -2,6 +2,7 @@ package com.blockstream.gdk.data
 
 import android.graphics.Bitmap
 import com.blockstream.gdk.serializers.BitmapSerializer
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

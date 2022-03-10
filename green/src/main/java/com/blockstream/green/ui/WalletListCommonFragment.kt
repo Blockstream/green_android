@@ -4,16 +4,13 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import com.blockstream.DeviceBrand
 import com.blockstream.green.NavGraphDirections
-import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.WalletListCommonBinding
 import com.blockstream.green.ui.items.DeviceBrandListItem
 import com.blockstream.green.ui.items.WalletListItem
-import com.blockstream.green.ui.wallet.LoginFragmentDirections
 import com.blockstream.green.utils.observeList
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -85,11 +82,7 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         if(walletSession.isConnected){
             navigate(NavGraphDirections.actionGlobalOverviewFragment(wallet))
         }else{
-            if(findNavController().currentDestination?.id == R.id.loginFragment){
-                navigate(LoginFragmentDirections.actionLoginFragmentSelf(wallet = wallet, autoLogin = true))
-            }else{
-                navigate(NavGraphDirections.actionGlobalLoginFragment(wallet = wallet, autoLogin = true))
-            }
+            navigate(NavGraphDirections.actionGlobalLoginFragment(wallet = wallet, autoLogin = true))
         }
     }
 }

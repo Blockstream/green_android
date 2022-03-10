@@ -40,7 +40,7 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     // Don't animate on overview change
     val animate =
         !(navController.currentDestination?.id == R.id.overviewFragment && resId == R.id.action_global_overviewFragment)
-                && !(navController.currentDestination?.id == R.id.loginFragment && (resId == R.id.action_global_loginFragment || resId == R.id.action_loginFragment_self))
+                && !(navController.currentDestination?.id == R.id.loginFragment && (resId == R.id.action_global_loginFragment))
 
     if (animate) {
         navOptionsBuilder.setEnterAnim(R.anim.nav_enter_anim)
@@ -50,12 +50,13 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     }
 
     if (isLogout || resId == R.id.action_global_overviewFragment) {
-        navController.backStack.firstOrNull()?.let {
+        navController.backQueue.firstOrNull()?.let {
             navOptionsBuilder.setPopUpTo(it.destination.id, true)
         }
         navOptionsBuilder.setLaunchSingleTop(true) // this is only needed on lateral movements
-    } else if (resId == R.id.action_global_loginFragment || resId == R.id.action_loginFragment_self) {
+    } else if (resId == R.id.action_global_loginFragment) {
         // Allow only one Login screen
+        navOptionsBuilder.setPopUpTo(R.id.loginFragment, true)
         navOptionsBuilder.setLaunchSingleTop(true)
     }else if (resId == R.id.action_global_addWalletFragment){
         // Allow a single onboarding path

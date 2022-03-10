@@ -93,13 +93,6 @@ class AssetManager constructor(
         updateMetadata(provider, false)
     }
 
-    fun updateAssetsAsync(provider: AssetsProvider) {
-        // Use ApplicationScope
-        //applicationScope.launch {
-        //    updateMetadata(provider, true)
-        //}
-    }
-
     private fun updateMetadata(provider: AssetsProvider, forceUpdate: Boolean) {
         // Update from Network if needed
         if (forceUpdate || status.metadataStatus != CacheStatus.Latest) {

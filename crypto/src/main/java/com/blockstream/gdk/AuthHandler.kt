@@ -88,7 +88,7 @@ class AuthHandler(
                             }
                         }else{
                             hardwareWalletResolver?.also {
-                                var dataFromDevice : String? = null
+                                val dataFromDevice: String?
 
                                 try {
                                      dataFromDevice = it.requestDataFromDevice(twoFactorStatus.requiredData).blockingGet()
@@ -104,7 +104,7 @@ class AuthHandler(
                                 }
 
                                 try {
-                                    resolveCode(dataFromDevice!!)
+                                    resolveCode(dataFromDevice)
                                 }catch (e: Exception){
                                     e.printStackTrace()
                                     throw e

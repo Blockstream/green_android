@@ -56,14 +56,17 @@ data class Network(
             "Multisig $canonicalName"
         }
 
+    @IgnoredOnParcel
     val defaultFee by lazy {
         if (isLiquid) 100L else 1000L
     }
 
+    @IgnoredOnParcel
     val blocksPerHour by lazy {
         if (isLiquid) 60 else 6
     }
 
+    @IgnoredOnParcel
     val confirmationsRequired by lazy {
         if(isLiquid) 2 else 6
     }

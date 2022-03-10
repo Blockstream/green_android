@@ -38,7 +38,7 @@ case $key in
       GRADLE="local"
       shift ;;
     -b | --build)
-      TASK="assembleDevelopmentDebug"
+      TASK="verifyDependencies"
       shift ;;
     -a | --add | --only-add)
       OVERWRITE=false

@@ -478,9 +478,6 @@
             android:name="autoLogin"
             app:argType="boolean"
             android:defaultValue="false" />
-        <action
-            android:id="@+id/action_loginFragment_self"
-            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/chooseAccountTypeFragment"

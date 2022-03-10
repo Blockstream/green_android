@@ -4,6 +4,7 @@ package com.blockstream.gdk.data
 import android.os.Parcelable
 import com.blockstream.gdk.BalancePair
 import com.blockstream.gdk.serializers.DateAsMicrosecondsSerializer
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -75,6 +76,7 @@ data class Transaction(
     val isOut
         get() = txType == Type.OUT
 
+    @IgnoredOnParcel
     val spv: SPVResult by lazy{
         when (spvVerified) {
             "in_progress" -> SPVResult.InProgress

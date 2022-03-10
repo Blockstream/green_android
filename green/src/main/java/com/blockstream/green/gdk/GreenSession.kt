@@ -34,7 +34,6 @@ import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
-
 class GreenSession constructor(
     private val applicationScope: ApplicationScope,
     private val sessionManager: SessionManager,
