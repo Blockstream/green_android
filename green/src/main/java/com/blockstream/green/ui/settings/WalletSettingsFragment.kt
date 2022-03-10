@@ -258,7 +258,7 @@ class WalletSettingsFragment :
                 true
             }
 
-        fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, item ->
+        fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, _ ->
             openBrowser(Urls.HELP_NLOCKTIMES)
         }
 

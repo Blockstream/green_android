@@ -21,7 +21,7 @@ layout = R.layout.transaction_verify_address_bottom_sheet
 
         viewModel.also { receiveViewModel ->
             receiveViewModel.deviceAddressValidationEvent.observe(viewLifecycleOwner) {
-                it?.getContentIfNotHandledOrReturnNull()?.let { addressMatch ->
+                it?.getContentIfNotHandledOrReturnNull()?.let {
                     dismiss()
                 }
             }

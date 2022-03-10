@@ -28,7 +28,7 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
     val recoveryWords = MutableLiveData<List<RecoveryPhraseWordListItem>>()
     var isEncryptionPasswordRequired = false
 
-    var recoverySize: Int by Delegates.observable(recoveryPhraseState.value?.phrase?.size ?: 0) { property, oldValue, newValue ->
+    var recoverySize: Int by Delegates.observable(recoveryPhraseState.value?.phrase?.size ?: 0) { _, _, _ ->
         recoveryPhraseState.value?.let {
             updateRecoveryPhrase(it)
         }

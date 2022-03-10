@@ -12,7 +12,7 @@ interface HardwareConnectInteraction : FirmwareInteraction, HWWalletBridge {
     fun context(): Context
     fun showInstructions(resId: Int)
     fun getGreenSession(): GreenSession
-    fun showError(error: String)
+    fun showError(err: String)
     fun getConnectionNetwork(): Network
     
     

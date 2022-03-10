@@ -181,7 +181,6 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
                     true
                 }
                 other is Rect -> {
-                    val other = other
                     left == other.left && top == other.top && right == other.right && bottom == other.bottom
                 }
                 else -> {
@@ -191,7 +190,7 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
         }
 
         override fun toString(): String {
-            return "[(" + left + "; " + top + ") - (" + right + "; " + bottom + ")]"
+            return "[($left; $top) - ($right; $bottom)]"
         }
     }
 

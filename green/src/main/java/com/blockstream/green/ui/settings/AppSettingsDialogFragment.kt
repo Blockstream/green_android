@@ -1,7 +1,6 @@
 package com.blockstream.green.ui.settings
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -48,11 +47,11 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
         val screenLockSettings = ScreenLockSetting.getStringList(requireContext())
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, screenLockSettings)
         binding.screenLockSetting.setAdapter(adapter)
-        binding.screenLockSetting.setText(screenLockSettings[ScreenLockSetting.bySeconds(viewModel.screenLockSetting?.value ?: 0).ordinal], false)
+        binding.screenLockSetting.setText(screenLockSettings[ScreenLockSetting.bySeconds(viewModel.screenLockSetting.value ?: 0).ordinal], false)
 
         binding.screenLockSetting.setOnItemClickListener { _, _, position, _ ->
             ScreenLockSetting.byPosition(position).let {
-                viewModel.screenLockSetting?.value = it.seconds
+                viewModel.screenLockSetting.value = it.seconds
             }
         }
 

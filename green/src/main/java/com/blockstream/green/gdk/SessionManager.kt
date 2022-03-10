@@ -1,6 +1,5 @@
 package com.blockstream.green.gdk
 
-
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData

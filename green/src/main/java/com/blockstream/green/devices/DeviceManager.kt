@@ -132,7 +132,7 @@ class DeviceManager constructor(
             .doOnNext { addBleConnectedDevices() }
             .map { SystemClock.elapsedRealtimeNanos() - 5000000000 } // 5 seconds
             .subscribe{ ts ->
-                bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value.filter {
+                bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value?.filter {
                     it.timeout == 0L || it.timeout > ts
                 })
 
@@ -196,7 +196,7 @@ class DeviceManager constructor(
                         addBluetoothDevice(device)
 
                     } else if (it.callbackType == ScanCallbackType.CALLBACK_TYPE_MATCH_LOST) {
-                        bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value.filter { dev ->
+                        bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value?.filter { dev ->
                             dev.id != device.id
                         })
                     }
@@ -205,13 +205,13 @@ class DeviceManager constructor(
     }
 
     private fun addBluetoothDevice(newDevice: Device){
-        bluetoothDevicesSubject.value.find { it.id == newDevice.id }?.also { oldDevice ->
+        bluetoothDevicesSubject.value?.find { it.id == newDevice.id }?.also { oldDevice ->
             newDevice.bleDevice?.let{
                 oldDevice.updateFromScan(it)
             }
         } ?: run {
             // Add it if new
-            bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value + newDevice)
+            bluetoothDevicesSubject.onNext((bluetoothDevicesSubject.value ?: listOf()) + newDevice)
         }
     }
 
@@ -255,14 +255,14 @@ class DeviceManager constructor(
         val newUsbDevices = usbManager.deviceList.values
 
         // Disconnect devices
-        val oldDevices = usbDevicesSubject.value.filter {
+        val oldDevices = usbDevicesSubject.value?.filter {
             if(newUsbDevices.contains(it.usbDevice)){
                 true
             }else{
                 it.offline()
                 false
             }
-        }
+        } ?: listOf()
 
         val newDevices = mutableListOf<Device>()
         for (usbDevice in newUsbDevices){
@@ -298,7 +298,7 @@ class DeviceManager constructor(
     }
 
     fun getDevice(deviceId: String?): Device? {
-        return usbDevicesSubject.value.find { it.id == deviceId } ?: bluetoothDevicesSubject.value.find { it.id == deviceId }
+        return usbDevicesSubject.value?.find { it.id == deviceId } ?: bluetoothDevicesSubject.value?.find { it.id == deviceId }
     }
 
     companion object : KLogging() {

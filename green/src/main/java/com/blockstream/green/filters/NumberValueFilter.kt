@@ -8,13 +8,13 @@ import android.text.method.DigitsKeyListener
 class NumberValueFilter(private val digits: Int = 2) : DigitsKeyListener(false, true) {
 
     override fun filter(
-        source: CharSequence, start: Int, end: Int,
+        s: CharSequence, st: Int, e: Int,
         dest: Spanned, dstart: Int, dend: Int
     ): CharSequence {
         // replace ',' to '.'
-        var source : CharSequence = source.replace(Regex(","), ".")
-        var start = start
-        var end = end
+        var source : CharSequence = s.replace(Regex(","), ".")
+        var start = st
+        var end = e
         val out = super.filter(source, start, end, dest, dstart, dend)
 
         // if changed, replace the source

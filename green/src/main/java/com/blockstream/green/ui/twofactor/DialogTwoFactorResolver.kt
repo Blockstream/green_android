@@ -41,8 +41,8 @@ class DialogTwoFactorResolver : TwoFactorResolver {
         Single.create<String> { emitter ->
 
             // Method is already selected in the constructor
-            if (selectedMethod != null) {
-                emitter.onSuccess(selectedMethod)
+            selectedMethod?.let {
+                emitter.onSuccess(it)
                 return@create
             }
 

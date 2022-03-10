@@ -100,6 +100,9 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                             AbstractWalletViewModel.LogoutReason.DEVICE_DISCONNECTED -> {
                                 snackbar(R.string.id_your_device_was_disconnected)
                             }
+                            AbstractWalletViewModel.LogoutReason.USER_ACTION -> {
+
+                            }
                         }
                     }
                 }

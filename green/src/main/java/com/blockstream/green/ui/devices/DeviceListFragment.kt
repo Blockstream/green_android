@@ -56,7 +56,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     lateinit var deviceManager: DeviceManager
 
     private val requestPermission =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             // Nothing to do here, it's already handled by DeviceManager
         }
 

@@ -105,7 +105,7 @@ class GreenSession constructor(
     val isMainnet
         get() = network.isMainnet
 
-    var isConnected : Boolean by Delegates.observable(false) { property, oldValue, newValue ->
+    var isConnected : Boolean by Delegates.observable(false) { _, oldValue, newValue ->
         if(oldValue != newValue){
             sessionManager.fireConnectionChangeEvent()
         }

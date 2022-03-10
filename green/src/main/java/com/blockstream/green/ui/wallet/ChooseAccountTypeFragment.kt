@@ -48,7 +48,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         val fastItemAdapter = createAdapter()
 
-        fastItemAdapter.onClickListener = { _, _, item: GenericItem, position: Int ->
+        fastItemAdapter.onClickListener = { _, _, item: GenericItem, _: Int ->
             if(item is AccountTypeListItem){
                 if(item.accountType == AccountType.TWO_OF_THREE){
                     if (wallet.isLiquid) {

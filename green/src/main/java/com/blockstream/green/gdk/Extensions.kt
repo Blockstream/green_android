@@ -135,7 +135,7 @@ fun String.isConnectionError() = this.contains("failed to connect")
 
 // Run mapper on IO, observer in Android Main
 @Suppress("UNCHECKED_CAST")
-fun <T, R> T.observable(timeout: Long = 0, mapper: (T) -> R): Single<R> =
+fun <T, R: Any> T.observable(timeout: Long = 0, mapper: (T) -> R): Single<R> =
     Single.just(this)
         .subscribeOn(Schedulers.io())
         .let {
@@ -148,7 +148,7 @@ fun <T, R> T.observable(timeout: Long = 0, mapper: (T) -> R): Single<R> =
         .map(mapper)
         .observeOn(AndroidSchedulers.mainThread())
 
-fun <T> Single<T>.async(mapper: (T) -> T = { it : T -> it }): Single<T> =
+fun <T: Any> Single<T>.async(mapper: (T) -> T = { it : T -> it }): Single<T> =
     this.subscribeOn(Schedulers.io())
         .map(mapper)
         .observeOn(AndroidSchedulers.mainThread())
@@ -157,6 +157,6 @@ fun Completable.async(): Completable =
     this.subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
 
-fun <T> Observable<T>.async(): Observable<T> =
+fun <T: Any> Observable<T>.async(): Observable<T> =
     this.subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())

@@ -43,9 +43,9 @@ class LoginWatchOnlyFragment :
         binding.isMultisig = args.isMultisig
 
         getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
-            result?.let { result ->
+            result?.let {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.extenedPublicKey.postValue(result)
+                viewModel.extenedPublicKey.postValue(it)
             }
         }
 

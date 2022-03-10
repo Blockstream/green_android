@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.onboarding
 
-import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
 
 import com.blockstream.gdk.data.PinData
@@ -87,7 +86,7 @@ open class OnboardingViewModel(
 
     fun checkRecoveryPhrase(network: Network , mnemonic: String, mnemonicPassword: String) {
         session.observable {
-            val loginData = it.loginWithMnemonic(network, mnemonic, mnemonicPassword)
+            it.loginWithMnemonic(network, mnemonic, mnemonicPassword)
 
             if(restoreWallet == null) {
                 // Check if wallet already exists

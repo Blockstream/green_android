@@ -22,6 +22,7 @@ abstract class WalletBottomSheetDialogFragment<T : ViewDataBinding, VM : Abstrac
 ) : BottomSheetDialogFragment() {
     internal lateinit var binding: T
 
+    @Suppress("UNCHECKED_CAST")
     internal val viewModel : VM by lazy {
         (requireParentFragment() as WalletFragment<*>).getWalletViewModel() as VM
     }

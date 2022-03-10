@@ -3,6 +3,7 @@ package com.blockstream.gdk.data
 import android.os.Parcelable
 import com.blockstream.gdk.GAJson
 import com.blockstream.libwally.Wally
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName

@@ -99,11 +99,11 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
         val fastAdapter = FastAdapter.with(listOf(amountsAdapter, detailsAdapter))
 
-        fastAdapter.addClickListener<ListItemTransactionProgressBinding, GenericItem>({ binding -> binding.buttonIncreaseFee }) { _, _, _, item ->
+        fastAdapter.addClickListener<ListItemTransactionProgressBinding, GenericItem>({ binding -> binding.buttonIncreaseFee }) { _, _, _, _ ->
             viewModel.bumpFee()
         }
 
-        fastAdapter.addClickListener<ListItemGenericDetailBinding, GenericItem>({ binding -> binding.button }) { _, i: Int, _: FastAdapter<GenericItem>, item: GenericItem ->
+        fastAdapter.addClickListener<ListItemGenericDetailBinding, GenericItem>({ binding -> binding.button }) { _, _: Int, _: FastAdapter<GenericItem>, item: GenericItem ->
             if (item == noteListItem) {
                 viewModel.saveNote()
                 hideKeyboard()
@@ -133,7 +133,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             }
         }
 
-        fastAdapter.onClickListener = { _, _, item: GenericItem, position: Int ->
+        fastAdapter.onClickListener = { _, _, item: GenericItem, _: Int ->
             when (item) {
                 is TransactionAmountListItem -> {
                     AssetBottomSheetFragment.newInstance(item.assetId).also {

@@ -109,19 +109,15 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
             hideKeyboard()
 
             if(action == TwoFactorSetupAction.SETUP || action == TwoFactorSetupAction.SETUP_EMAIL){
-                var data = ""
-                when(viewModel.method){
+                var data = when(viewModel.method){
                     TwoFactorMethod.SMS, TwoFactorMethod.PHONE, TwoFactorMethod.TELEGRAM -> {
-                        data = viewModel.getPhoneNumberValue()
+                        viewModel.getPhoneNumberValue()
                     }
                     TwoFactorMethod.EMAIL -> {
-                        data = viewModel.getEmailValue()
+                        viewModel.getEmailValue()
                     }
                     TwoFactorMethod.AUTHENTICATOR -> {
-                        data = viewModel.authenticatorUrl ?: ""
-                    }
-                    TwoFactorMethod.AUTHENTICATOR -> {
-                        data = viewModel.authenticatorUrl ?: ""
+                        viewModel.authenticatorUrl ?: ""
                     }
                 }
                 // setupEmail is used only to setup the email address for recovery transactions legacy option
@@ -159,7 +155,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
             binding.authenticatorCode.pulse()
         }
 
-        binding.countryEditText.setOnFocusChangeListener { v, hasFocus ->
+        binding.countryEditText.setOnFocusChangeListener { _, hasFocus ->
             if(hasFocus){
                 openCountryFilter()
             }

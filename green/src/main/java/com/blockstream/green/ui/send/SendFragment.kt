@@ -325,7 +325,6 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
                     recipientBinding.canConvert = assetId == session.network.policyAsset
 
-
                     recipientBinding.amountCurrency = it.assetId.value?.let { assetId ->
                         if (it.isFiat.value == true) {
                             getFiatCurrency(session)

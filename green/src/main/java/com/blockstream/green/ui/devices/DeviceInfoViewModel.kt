@@ -114,7 +114,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     override fun getConnectionNetwork() = getGreenSession().networkFromWallet(getGreenSession().hardwareWallet!!)
 
     override fun showError(err: String) {
-        logger.info { "Shown error $error" }
+        logger.info { "Shown error $err" }
         error.postValue(ConsumableEvent(err))
     }
 

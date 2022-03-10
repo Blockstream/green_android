@@ -18,7 +18,7 @@ class ChooseRecoveryPhraseFragment :
         super.onViewCreated(view, savedInstanceState)
 
         getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
-            result?.let { result ->
+            if (result != null) {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
                 navigate(ChooseRecoveryPhraseFragmentDirections.actionChooseRecoveryPhraseFragmentToEnterRecoveryPhraseFragment(
                     args.onboardingOptions, result, wallet = args.restoreWallet

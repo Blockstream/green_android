@@ -39,9 +39,9 @@ class EnterXpubFragment : WalletFragment<EnterXpubFragmentBinding>(
         binding.textInputLayout.endIconCopyMode()
 
         getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
-            result?.let { result ->
+            result?.let {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.xpub.postValue(result)
+                viewModel.xpub.postValue(it)
             }
         }
 

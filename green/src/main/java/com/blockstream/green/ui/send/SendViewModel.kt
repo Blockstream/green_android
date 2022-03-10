@@ -429,7 +429,7 @@ class SendViewModel @AssistedInject constructor(
             }
 
             // Check if the specified asset in the uri exists in the wallet, we do this check only if it's final
-            balance?.let { balance ->
+            if(balance != null){
                 for (addressee in tx.addressees) {
                     addressee.assetId?.let { assetId ->
                         if (!balance.containsKey(assetId)) {

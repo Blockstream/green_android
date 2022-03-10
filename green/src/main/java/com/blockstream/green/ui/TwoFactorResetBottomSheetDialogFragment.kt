@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
-import com.blockstream.green.databinding.ListItemExtendedPublicKeyBinding
 import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.ui.items.HelpListItem
@@ -142,11 +141,6 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
             navigate(findNavController(), directions.actionId, directions.arguments, false)
 
             dismiss()
-        }
-
-        // fastAdapter.addClickListener<ListItemAccountExtendedPublicKeyBinding, AccountExtendedPublicKeyListItem>({ binding -> binding.buttonCopy }) { _, _, _, item ->
-        fastAdapter.addClickListener<ListItemExtendedPublicKeyBinding, HelpListItem>({ binding -> binding.buttonCopy }) { _, _, _, item ->
-            true
         }
 
         return fastAdapter

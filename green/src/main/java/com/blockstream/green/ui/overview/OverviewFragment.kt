@@ -304,8 +304,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         }
 
-        viewModel.getFilteredSubAccounts().observe(viewLifecycleOwner) { it ->
-            topAccount?.let { it -> updateTopAccountCard(it, topAccountAdapter) }
+        viewModel.getFilteredSubAccounts().observe(viewLifecycleOwner) {
+            topAccount?.let { topAccount -> updateTopAccountCard(topAccount, topAccountAdapter) }
         }
 
         // Account Cards

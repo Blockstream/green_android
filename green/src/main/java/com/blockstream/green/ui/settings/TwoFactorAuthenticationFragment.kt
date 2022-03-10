@@ -139,7 +139,7 @@ class TwoFactorAuthenticationFragment :
 
                         else -> {
                             if (csvBucketPreferences.contains(item)) {
-                                csvBucketPreferences.forEach { it -> it.radioChecked = false }
+                                csvBucketPreferences.forEach { it1 -> it1.radioChecked = false }
                                 (item as PreferenceListItem).radioChecked = true
                                 notifyDataSetChanged()
 
@@ -159,7 +159,7 @@ class TwoFactorAuthenticationFragment :
                 true
             }
 
-        fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.button }) { _, _, _, item ->
+        fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
             openBrowser(settingsManager.getApplicationSettings(), Urls.RECOVERY_TOOL)
         }
 
@@ -360,7 +360,7 @@ class TwoFactorAuthenticationFragment :
             binding.message =
                 getString(if (it.enabledMethods.size == 1) R.string.id_confirm_via_2fa_that_you else R.string.id_another_2fa_method_is_already)
 
-            val methods = if(it.enabledMethods.size > 1) it.enabledMethods.filter { it -> it != method.gdkType } else it.enabledMethods
+            val methods = if(it.enabledMethods.size > 1) it.enabledMethods.filter { it1 -> it1 != method.gdkType } else it.enabledMethods
 
             MaterialAlertDialogBuilder(requireContext())
                 .setCustomTitle(binding.root)

@@ -48,13 +48,13 @@ class CameraBottomSheetDialogFragment: BottomSheetDialogFragment(){
 
         // Open a single instance of CameraBottomSheetDialogFragment
         fun open(fragment: AppFragment<*>){
-            val cameraFragmentTag = this.javaClass.simpleName
+            val cameraFragmentTag = this::class.java.simpleName
             if(fragment.childFragmentManager.findFragmentByTag(cameraFragmentTag) == null) {
                 CameraBottomSheetDialogFragment().also {
                     it.show(fragment.childFragmentManager, cameraFragmentTag)
                 }
             }else{
-                logger.info { "Thre is already an open istance of ${this.javaClass.simpleName}" }
+                logger.info { "Thre is already an open istance of ${this::class.java.simpleName}" }
             }
         }
     }

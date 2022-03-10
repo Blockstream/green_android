@@ -12,7 +12,6 @@ import com.blockstream.green.GreenApplication
 import com.blockstream.green.R
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.lifecycle.AppLifecycleObserver
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
@@ -117,12 +116,6 @@ class GreenModules {
     @Provides
     fun provideMigrator(@ApplicationContext context: Context, walletRepository: WalletRepository, greenWallet: GreenWallet, settingsManager: SettingsManager, applicationScope: ApplicationScope): Migrator {
         return Migrator(context, walletRepository, greenWallet, settingsManager, applicationScope)
-    }
-
-    @Singleton
-    @Provides
-    fun provideAppLifecycleObserver(): AppLifecycleObserver {
-        return AppLifecycleObserver()
     }
 
     @Singleton

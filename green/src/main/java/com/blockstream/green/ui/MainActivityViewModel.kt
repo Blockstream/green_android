@@ -18,7 +18,7 @@ class MainActivityViewModel @Inject constructor(
     val walletRepository: WalletRepository,
     val settingsManager: SettingsManager,
     val appKeystore: AppKeystore
-) : AppViewModel(), LifecycleObserver {
+) : AppViewModel(), DefaultLifecycleObserver {
     private var lockTimer: Timer? = null
     val lockScreen = MutableLiveData(canLock())
     val buildVersion = MutableLiveData("")
@@ -36,13 +36,11 @@ class MainActivityViewModel @Inject constructor(
         lockScreen.value = false
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onEnterForeground() {
+    override fun onResume(owner: LifecycleOwner) {
         lockTimer?.cancel()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onEnterBackground() {
+    override fun onPause(owner: LifecycleOwner) {
         if(canLock()){
             val lockAfterSeconds = settingsManager.getApplicationSettings().screenLockInSeconds
             if(lockAfterSeconds > 0){

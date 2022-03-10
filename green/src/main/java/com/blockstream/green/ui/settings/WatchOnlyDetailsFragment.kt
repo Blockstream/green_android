@@ -84,7 +84,7 @@ class WatchOnlyDetailsFragment :
             )
         )
 
-        fastAdapter.addClickListener<ListItemExtendedPublicKeyBinding, GenericItem>({ binding -> binding.buttonQR }) { v, _, _, item ->
+        fastAdapter.addClickListener<ListItemExtendedPublicKeyBinding, GenericItem>({ binding -> binding.buttonQR }) { _, _, _, item ->
             if(item is ExtendedPublicKeyListItem){
                 QrBottomSheetDialogFragment.open(
                     fragment = this,
@@ -95,7 +95,7 @@ class WatchOnlyDetailsFragment :
             }
         }
 
-        fastAdapter.addClickListener<ListItemExtendedPublicKeyBinding, GenericItem>({ binding -> binding.buttonCopy }) { v, _, _, item ->
+        fastAdapter.addClickListener<ListItemExtendedPublicKeyBinding, GenericItem>({ binding -> binding.buttonCopy }) { _, _, _, item ->
             if(item is ExtendedPublicKeyListItem){
                 copyToClipboard(
                     label = "Extended Public Key",

@@ -101,7 +101,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                         }
                     }
                     is DeviceInfoViewModel.DeviceInfoEvent.RequestPin -> {
-                        requestPin(it.deviceBrand)
+                        requestPin()
                     }
                     is DeviceInfoViewModel.DeviceInfoEvent.AskForFirmwareUpgrade -> {
                         askForFirmwareUpgrade(it.request, it.callback)
@@ -246,7 +246,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         }
     }
 
-    private fun requestPin(deviceBrand: DeviceBrand){
+    private fun requestPin() {
         val dialogBinding = PinTextDialogBinding.inflate(LayoutInflater.from(context))
 
         dialogBinding.hint = getString(R.string.id_pin)
@@ -256,7 +256,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
             .setTitle(R.string.id_pin)
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                viewModel.requestPinEmitter?.onSuccess(dialogBinding.pin)
+                viewModel.requestPinEmitter?.onSuccess(dialogBinding.pin ?: "")
             }
             .setNegativeButton(android.R.string.cancel, null)
             .setOnDismissListener {

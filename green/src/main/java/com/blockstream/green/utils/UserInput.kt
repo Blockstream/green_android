@@ -30,7 +30,7 @@ data class UserInput constructor(val amount: String, val decimals: Int, val unit
     companion object{
 
         @Throws
-        private fun parse(session: GreenSession, input: String?, assetId: String? = null, isFiat: Boolean = false, locale: Locale = Locale.getDefault(), throws : Boolean = true): UserInput {
+        private fun parse(session: GreenSession, i: String?, assetId: String? = null, isFiat: Boolean = false, locale: Locale = Locale.getDefault(), throws : Boolean = true): UserInput {
             val unitKey : String
             // Users Locale
             val userNumberFormat : DecimalFormat
@@ -62,7 +62,7 @@ data class UserInput constructor(val amount: String, val decimals: Int, val unit
             }
 
             return try{
-                val input = if(input.isNullOrBlank()) "" else input
+                val input = if(i.isNullOrBlank()) "" else i
                 val position = ParsePosition(0)
 
                 val parsed = userNumberFormat.parse(input, position)
