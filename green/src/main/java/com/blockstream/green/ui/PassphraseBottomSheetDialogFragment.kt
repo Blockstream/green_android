@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import com.blockstream.green.R
 import com.blockstream.green.databinding.PassphraseBottomSheetBinding
-import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.setNavigationResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,10 +24,13 @@ class PassphraseBottomSheetDialogFragment: BottomSheetDialogFragment(){
         binding = PassphraseBottomSheetBinding.inflate(layoutInflater)
         binding.lifecycleOwner = viewLifecycleOwner
 
+        binding.passphrase = ""
+        binding.passphraseConfirm = ""
+
         isCancelable = false
 
         binding.buttonCancel.setOnClickListener {
-            setNavigationResult(result = "", key = PASSPHRASE_RESULT, destinationId = findNavController().currentDestination?.id)
+            setNavigationResult(result = true, key = PASSPHRASE_CANCEL_RESULT, destinationId = findNavController().currentDestination?.id)
             dismiss()
         }
 
@@ -43,5 +44,6 @@ class PassphraseBottomSheetDialogFragment: BottomSheetDialogFragment(){
 
     companion object : KLogging() {
         const val PASSPHRASE_RESULT = "PASSPHRASE_RESULT"
+        const val PASSPHRASE_CANCEL_RESULT = "PASSPHRASE_CANCEL_RESULT"
     }
 }

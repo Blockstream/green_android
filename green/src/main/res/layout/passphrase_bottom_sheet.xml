@@ -108,7 +108,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
             android:text="@string/id_continue"
-            android:enabled="@{ExtensionsKt.isNotBlank(passphrase.trim()) &amp;&amp; passphrase.equals(passphraseConfirm)}"
+            android:enabled="@{passphrase.equals(passphraseConfirm)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

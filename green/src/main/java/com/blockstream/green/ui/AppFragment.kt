@@ -115,11 +115,15 @@ abstract class AppFragment<T : ViewDataBinding>(
             getNavigationResult<String>(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)?.observe(viewLifecycleOwner) { result ->
                 result?.let {
                     clearNavigationResult(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)
-                    if(result.isBlank()){
-                        getAppViewModel()?.requestPinPassphraseEmitter?.onError(Exception("id_action_canceled"))
-                    }else{
-                        getAppViewModel()?.requestPinPassphraseEmitter?.onSuccess(result)
-                    }
+                    getAppViewModel()?.requestPinPassphraseEmitter?.onSuccess(result)
+                }
+            }
+
+            // Register listener for Passphrase cancel result as empty string is a valid passphrase
+            getNavigationResult<Boolean>(PassphraseBottomSheetDialogFragment.PASSPHRASE_CANCEL_RESULT)?.observe(viewLifecycleOwner) { result ->
+                result?.let {
+                    clearNavigationResult(PassphraseBottomSheetDialogFragment.PASSPHRASE_CANCEL_RESULT)
+                    getAppViewModel()?.requestPinPassphraseEmitter?.onError(Exception("id_action_canceled"))
                 }
             }
 
