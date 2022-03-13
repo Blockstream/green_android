@@ -164,13 +164,9 @@ class ScreenLocker {
             return
         }
         clear()
-        if let account = AccountsManager.shared.current,
-           let session = SessionsManager.get(for: account),
-           !session.logged {
-            DispatchQueue.main.async {
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                appDelegate?.logout(with: false)
-            }
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.logout(with: false)
         }
     }
 }
