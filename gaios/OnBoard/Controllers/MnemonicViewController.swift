@@ -109,12 +109,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         mnemonicWords.scrollIndicatorInsets = contentInset
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        doneButton.updateGradientLayerFrame()
-    }
-
     func updateLblTitle() {
         switch recoveryType {
         case .qr:
@@ -127,11 +121,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     func updateDoneButton(_ enable: Bool) {
         doneButton.isEnabled = enable
         if enable {
-            doneButton.backgroundColor = UIColor.customMatrixGreen()
-            doneButton.setTitleColor(.white, for: .normal)
+            doneButton.setStyle(.primary)
         } else {
-            doneButton.backgroundColor = UIColor.customBtnOff()
-            doneButton.setTitleColor(UIColor.customGrayLight(), for: .normal)
+            doneButton.setStyle(.primaryDisabled)
         }
     }
 

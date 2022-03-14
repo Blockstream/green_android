@@ -1,6 +1,6 @@
 import UIKit
 
-protocol MnemonicCellDelegate: class {
+protocol MnemonicCellDelegate: AnyObject {
     func collectionView(valueChangedIn textField: UITextField, from cell: MnemonicCell)
     func collectionView(pastedIn text: String, from cell: MnemonicCell)
 }
@@ -29,10 +29,16 @@ class MnemonicCell: UICollectionViewCell {
 extension MnemonicCell: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if !string.isEmpty {
+        if string.isEmpty {
             delegate?.collectionView(pastedIn: string, from: self)
+            return true
         }
-        return true
+        let s = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !s.isEmpty {
+            delegate?.collectionView(pastedIn: s, from: self)
+            return true
+        }
+        return false
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
