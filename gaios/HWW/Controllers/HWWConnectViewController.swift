@@ -21,16 +21,12 @@ class HWWConnectViewController: UIViewController {
     @IBOutlet weak var singleSigWarnCard: UIView!
     @IBOutlet weak var lblSingleSigWarn: UILabel!
     @IBOutlet weak var iconSingleSigWarn: UIImageView!
+    @IBOutlet weak var btnSettings: UIButton!
 
     var account: Account!
     var peripheral: Peripheral!
 
-    var networks: [AvailableNetworks] = {
-        if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) {
-            return AvailableNetworks.allCases
-        }
-        return [AvailableNetworks.bitcoin, AvailableNetworks.liquid]
-    }()
+    var networks: [AvailableNetworks] = []
 
     var cellH = 70.0
 
@@ -55,6 +51,7 @@ class HWWConnectViewController: UIViewController {
 
         hwwState = .connecting
         BLEManager.shared.prepare(peripheral)
+        loadNetworks()
 
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
@@ -67,6 +64,7 @@ class HWWConnectViewController: UIViewController {
         btnNeedHelp.setTitle(NSLocalizedString("id_need_help", comment: ""), for: .normal)
         btnLogin.setTitle(NSLocalizedString("id_login", comment: ""), for: .normal)
         lblSingleSigWarn.text = NSLocalizedString("id_singlesig_wallets_are_not_yet", comment: "")
+        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -97,7 +95,6 @@ class HWWConnectViewController: UIViewController {
         btnNeedHelp.cornerRadius = 4.0
         arrowImage.image = UIImage(named: "ic_hww_arrow")?.maskWithColor(color: UIColor.customMatrixGreen())
         faailureImage.image = UIImage(named: "cancel")?.maskWithColor(color: UIColor.white)
-        tableViewHeight.constant = CGFloat(networks.count) * CGFloat(cellH)
         deviceImage.image = account.deviceImage()
         deviceImageAlign.constant = account.alignConstraint()
         lblSingleSigWarn.textColor = UIColor.customGrayLight()
@@ -105,6 +102,24 @@ class HWWConnectViewController: UIViewController {
         singleSigWarnCard.layer.borderWidth = 1.0
         singleSigWarnCard.layer.borderColor = UIColor.customGrayLight().cgColor
         singleSigWarnCard.cornerRadius = 8.0
+    }
+
+    func loadNetworks() {
+        if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) {
+            if self.account.isLedger {
+                self.networks = [AvailableNetworks.bitcoin, AvailableNetworks.testnet]
+            } else {
+                networks = AvailableNetworks.allCases
+            }
+        } else {
+            if self.account.isLedger {
+                self.networks = [AvailableNetworks.bitcoin]
+            } else {
+                networks = [AvailableNetworks.bitcoin, AvailableNetworks.liquid]
+            }
+        }
+        tableViewHeight.constant = CGFloat(networks.count) * CGFloat(cellH)
+        tableView.reloadData()
     }
 
     func updateState() {
@@ -118,6 +133,7 @@ class HWWConnectViewController: UIViewController {
         arrowImage.isHidden = true
         tableView.isHidden = true
         singleSigWarnCard.isHidden = true
+        btnSettings.isHidden = true
 
         switch hwwState {
         case .connecting:
@@ -139,6 +155,7 @@ class HWWConnectViewController: UIViewController {
             deviceImage.isHidden = true
             tableView.isHidden = false
             singleSigWarnCard.isHidden = false
+            btnSettings.isHidden = false
         case .followDevice:
             hideLoader()
             lblStateHint.text = NSLocalizedString("id_follow_the_instructions_on_your", comment: "")
@@ -183,6 +200,14 @@ class HWWConnectViewController: UIViewController {
         } else {
             hwwState = .connected
             BLEManager.shared.login(peripheral)
+        }
+    }
+
+    @IBAction func btnSettings(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            vc.delegate = self
+            present(vc, animated: true) {}
         }
     }
 
@@ -296,10 +321,6 @@ extension HWWConnectViewController: BLEManagerDelegate {
 
     func onPrepare(_: Peripheral) {
         DispatchQueue.main.async {
-            if self.account.isLedger {
-                self.networks = [AvailableNetworks.bitcoin, AvailableNetworks.testnet]
-                self.tableView.reloadData()
-            }
             self.hwwState = .selectNetwork
         }
     }
@@ -370,5 +391,14 @@ extension HWWConnectViewController: BLEManagerDelegate {
             })
             self.present(alert, animated: true, completion: nil)
         }
+    }
+}
+
+extension HWWConnectViewController: WalletSettingsViewControllerDelegate {
+    func didSet(tor: Bool) {
+        //
+    }
+    func didSet(testnet: Bool) {
+        loadNetworks()
     }
 }
