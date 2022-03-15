@@ -771,15 +771,15 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 reloadData()
             }
         case OverviewSection.asset.rawValue:
-            let storyboard = UIStoryboard(name: "Assets", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetDetailTableViewController") as? AssetDetailTableViewController {
+            if !isLiquid { return }
+            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
                 let tag = assets[indexPath.row].key
                 vc.tag = tag
                 vc.asset = Registry.shared.infos[tag]
                 vc.satoshi = presentingWallet?.satoshi?[tag]
-                if isLiquid {
-                    present(vc, animated: true, completion: nil)
-                }
+                vc.modalPresentationStyle = .overFullScreen
+                present(vc, animated: false, completion: nil)
             }
         case OverviewSection.transaction.rawValue:
             let transaction = transactions[indexPath.row]

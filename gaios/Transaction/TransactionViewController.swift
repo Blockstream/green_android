@@ -273,22 +273,24 @@ class TransactionViewController: UIViewController {
     }
 
     func didSelectAmountAt(_ index: Int) {
-        let storyboard = UIStoryboard(name: "Assets", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetDetailTableViewController") as? AssetDetailTableViewController {
-            if isLiquid {
-                if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
-                    vc.tag = amount.key
-                    if let asset = Registry.shared.infos[amount.key] {
-                        vc.asset = asset
-                    } else {
-                        vc.asset = AssetInfo(assetId: amount.key,
-                                             name: NSLocalizedString("id_no_registered_name_for_this", comment: ""),
-                                             precision: 0,
-                                             ticker: NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
-                    }
-                    vc.satoshi = wallet?.satoshi?[amount.key] ?? 0
-                    present(vc, animated: true) {}
+        if !isLiquid { return }
+
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
+
+            if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
+                vc.tag = amount.key
+                if let asset = Registry.shared.infos[amount.key] {
+                    vc.asset = asset
+                } else {
+                    vc.asset = AssetInfo(assetId: amount.key,
+                                         name: NSLocalizedString("id_no_registered_name_for_this", comment: ""),
+                                         precision: 0,
+                                         ticker: NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
                 }
+                vc.satoshi = wallet?.satoshi?[amount.key] ?? 0
+                vc.modalPresentationStyle = .overFullScreen
+                present(vc, animated: false, completion: nil)
             }
         }
     }
