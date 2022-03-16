@@ -192,7 +192,11 @@ class SessionManager: Session {
                     throw err
                 }
             }.then(on: bgq) {
-                self.subaccounts(true)
+                self.subaccounts(true).recover { _ in
+                    Promise { _ in
+                        throw LoginError.connectionFailed
+                    }
+                }
             }.get(on: bgq) { wallets in
                 // check account discover if singlesig
                 if isSingleSig {
