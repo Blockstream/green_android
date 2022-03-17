@@ -37,7 +37,7 @@ class SendFlowUITests: XCTestBase {
 
         SendConfirm()
             .pause(2)
-            .tapNext()
+            .drag()
         
         Overview()
             .pause(3)
@@ -75,7 +75,7 @@ class SendFlowUITests: XCTestBase {
 
         SendConfirm()
             .pause(2)
-            .tapNext()
+            .drag()
         
         Overview()
             .pause(3)
@@ -230,7 +230,7 @@ class SendFlowUITests: XCTestBase {
 
         SendConfirm()
             .pause(2)
-            .tapNext()
+            .drag()
 
         Overview()
             .pause(3)

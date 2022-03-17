@@ -28,7 +28,7 @@ class SendConfirmViewController: KeyboardViewController {
         setContent()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.view
-//        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.nextBtn
+        sliderView.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.viewSlider
     }
 
     func setContent() {
