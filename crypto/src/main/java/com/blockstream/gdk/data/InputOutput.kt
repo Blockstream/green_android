@@ -69,6 +69,14 @@ data class InputOutput(
         return assetId != null && satoshi != null && assetblinder != null && amountblinder != null && assetId.isNotEmpty() && amountblinder.isNotEmpty() && assetblinder.isNotEmpty()
     }
 
+    // FIXME: May soon be available as a json attribute - until then ...
+    fun isSegwit(): Boolean {
+        return when (addressType) {
+            "csv", "p2wsh", "p2wpkh", "p2sh-p2wpkh" -> true
+            else -> false
+        }
+    }
+
     fun getAssetIdBytes(): ByteArray {
         return Wally.hex_to_bytes(assetId)
     }

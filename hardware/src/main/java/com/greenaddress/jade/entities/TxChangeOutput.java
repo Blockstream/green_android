@@ -10,12 +10,14 @@ public class TxChangeOutput {
     private final List<Long> path;
     private final String recoveryxpub;
     private final Integer csvBlocks;
+    private final String variant;
 
-    public TxChangeOutput(final List<Long> path, final String recoveryxpub, final Integer csvBlocks) {
+    public TxChangeOutput(final List<Long> path, final String recoveryxpub, final Integer csvBlocks, final String variant) {
         // Convert path to strings
         this.path = path;
         this.recoveryxpub = recoveryxpub;
         this.csvBlocks = csvBlocks;
+        this.variant = variant;
     }
 
     @JsonGetter("path")
@@ -31,5 +33,10 @@ public class TxChangeOutput {
     @JsonGetter("csv_blocks")
     public Integer getCsvBlocks() {
         return csvBlocks;
+    }
+
+    @JsonGetter("variant")
+    public String getVariant() {
+        return variant;
     }
 }

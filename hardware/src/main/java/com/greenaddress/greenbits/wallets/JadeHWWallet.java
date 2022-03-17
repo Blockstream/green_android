@@ -59,6 +59,16 @@ public class JadeHWWallet extends HWWallet {
         this.jade.disconnect();
     }
 
+    // Helper to map a [single-sig] address type into a jade descriptor variant string
+    private static String mapAddressType(final String addrType) {
+        switch (addrType) {
+            case "p2pkh": return "pkh(k)";
+            case "p2wpkh": return "wpkh(k)";
+            case "p2sh-p2wpkh": return "sh(wpkh(k))";
+            default: return null;
+        }
+    }
+
     // Helper to push entropy into jade, and then call 'authUser()' in a loop
     // (until correctly setup and user authenticated etc).
     private boolean authUser(final HWWalletBridge hwWalletBridge) throws IOException {
@@ -219,7 +229,8 @@ public class JadeHWWallet extends HWWallet {
                 // change - get path
                 change.add(new TxChangeOutput(output.getUserPath(),
                                               output.getRecoveryXpub(),
-                                              "csv".equals(output.getAddressType()) ? output.getSubtype() : 0));
+                                              "csv".equals(output.getAddressType()) ? output.getSubtype() : 0,
+                                              mapAddressType(output.getAddressType())));
             } else {
                 // Not change, put null place holder
                 change.add(null);
@@ -244,7 +255,7 @@ public class JadeHWWallet extends HWWallet {
             // Get the inputs in the form Jade expects
             final List<TxInput> txInputs = new ArrayList<>(inputs.size());
             for (final InputOutput input : inputs) {
-                final boolean swInput = !input.getAddressType().equals("p2sh");
+                final boolean swInput = input.isSegwit();
                 final byte[] script = hexToBytes(input.getPrevoutScript());
 
                 if (swInput && inputs.size() == 1) {
@@ -385,10 +396,9 @@ public class JadeHWWallet extends HWWallet {
             final List<TxInputLiquid> txInputs = new ArrayList<>(inputs.size());
             for (final InputOutput input : inputs) {
                 // Get the input in the form Jade expects
-                final boolean swInput = !input.getAddressType().equals("p2sh");
                 final byte[] script = hexToBytes(input.getPrevoutScript());
                 final byte[] commitment = hexToBytes(input.getCommitment());
-                txInputs.add(new TxInputLiquid(swInput,
+                txInputs.add(new TxInputLiquid(input.isSegwit(),
                                                script,
                                                commitment,
                                                input.getUserPath(),
