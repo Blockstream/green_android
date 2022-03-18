@@ -29,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.rxjava3.subjects.CompletableSubject;
-import io.reactivex.rxjava3.subjects.PublishSubject;
-import kotlin.UInt;
-import kotlin.UIntKt;
 
 
 public class TrezorHWWallet extends HWWallet {
@@ -146,11 +143,13 @@ public class TrezorHWWallet extends HWWallet {
         }
 
         // Fetch and cache all required pubkeys before signing
-        for (final InputOutput in : inputs)
-            makeRedeemScript(parent, in);
-        for (final InputOutput out : outputs)
-            if (out.isChange())
-                makeRedeemScript(parent, out);
+        if (getNetwork().isMultisig()) {
+            for (final InputOutput in : inputs)
+                makeMultisigRedeemScript(parent, in);
+            for (final InputOutput out : outputs)
+                if (out.isChange())
+                    makeMultisigRedeemScript(parent, out);
+        }
 
         Message m = mTrezor.io(TrezorMessage.SignTx.newBuilder()
                                .setInputsCount(inputs.size())
@@ -270,15 +269,15 @@ public class TrezorHWWallet extends HWWallet {
         return TrezorType.HDNodePathType.newBuilder().setNode(node).addAddressN(pointer).build();
     }
 
-    private TrezorType.MultisigRedeemScriptType makeRedeemScript(final HWWalletBridge parent, final InputOutput in) {
+    private TrezorType.MultisigRedeemScriptType makeMultisigRedeemScript(final HWWalletBridge parent, final InputOutput in) {
         final int pointer = in.getPointer();
         final TrezorType.HDNodeType serviceParent = getXpub(mServiceXPubs, in.getServiceXpub());
         final TrezorType.HDNodeType userParent =
-            getUserXpub(parent, in.getUserPathAsInts().subList(0, in.getUserPath().size() - 1));
+                getUserXpub(parent, in.getUserPathAsInts().subList(0, in.getUserPath().size() - 1));
 
         TrezorType.MultisigRedeemScriptType.Builder b = TrezorType.MultisigRedeemScriptType.newBuilder()
-                                                        .addPubkeys(makeHDNode(serviceParent, pointer))
-                                                        .addPubkeys(makeHDNode(userParent, pointer));
+                .addPubkeys(makeHDNode(serviceParent, pointer))
+                .addPubkeys(makeHDNode(userParent, pointer));
         if (in.getRecoveryXpub() != null) {
             // 2of3
             final TrezorType.HDNodeType recoveryParent = getXpub(mRecoveryXPubs, in.getRecoveryXpub());
@@ -294,10 +293,30 @@ public class TrezorHWWallet extends HWWallet {
         final TrezorType.TxOutputType.Builder b = TrezorType.TxOutputType.newBuilder().setAmount(out.getSatoshi());
 
         if (out.isChange()) {
-            b.setScriptType(out.getAddressType().equals("p2sh") ?
-                            TrezorType.OutputScriptType.PAYTOMULTISIG : TrezorType.OutputScriptType.PAYTOP2SHWITNESS);
-            return b.addAllAddressN(out.getUserPathAsInts()).setMultisig(makeRedeemScript(parent, out));
+            final TrezorType.OutputScriptType type;
+            switch (out.getAddressType()) {
+                case "p2sh":
+                    type = TrezorType.OutputScriptType.PAYTOMULTISIG;
+                    break;
+                case "p2pkh":
+                    type = TrezorType.OutputScriptType.PAYTOADDRESS;
+                    break;
+                case "p2wpkh":
+                    type = TrezorType.OutputScriptType.PAYTOWITNESS;
+                    break;
+                default:
+                    type = TrezorType.OutputScriptType.PAYTOP2SHWITNESS;
+            }
+            b.setScriptType(type);
+            if (getNetwork().isMultisig()) {
+                // Green Multisig Shield
+                return b.addAllAddressN(out.getUserPathAsInts()).setMultisig(makeMultisigRedeemScript(parent, out));
+            } else {
+                // Green Electrum Singlesig
+                return b.setAddress(out.getAddress());
+            }
         } else {
+            // Not a change output - just use generic type
             return b.setAddress(out.getAddress()).setScriptType(TrezorType.OutputScriptType.PAYTOADDRESS);
         }
     }
@@ -331,13 +350,24 @@ public class TrezorHWWallet extends HWWallet {
                .setPrevHash(ByteString.copyFrom(Wally.hex_to_bytes(in.getTxHash())))
                .setPrevIndex(in.getPtIdxInt())
                .setSequence(in.getSequenceInt())
-               .addAllAddressN(in.getUserPathAsInts())
-               .setMultisig(makeRedeemScript(parent, in));
+               .addAllAddressN(in.getUserPathAsInts());
 
-        if (in.getAddressType().equals("p2wsh") || in.getAddressType().equals("csv"))
-            return txin.setScriptType(TrezorType.InputScriptType.SPENDP2SHWITNESS)
-                   .setAmount(in.getSatoshi());
-        return txin.setScriptType(TrezorType.InputScriptType.SPENDMULTISIG);
+        if (getNetwork().isMultisig()) {
+            txin.setMultisig(makeMultisigRedeemScript(parent, in));
+        }
+
+        switch (in.getAddressType()) {
+            case "p2sh":
+                return txin.setScriptType(TrezorType.InputScriptType.SPENDMULTISIG);
+            case "p2pkh":
+                return txin.setScriptType(TrezorType.InputScriptType.SPENDADDRESS);
+            case "p2wpkh":
+                return txin.setScriptType(TrezorType.InputScriptType.SPENDWITNESS)
+                        .setAmount(in.getSatoshi());
+            default:
+                return txin.setScriptType(TrezorType.InputScriptType.SPENDP2SHWITNESS)
+                        .setAmount(in.getSatoshi());
+        }
     }
 
     private Message handleCommon(final HWWalletBridge parent, final Message m) {
