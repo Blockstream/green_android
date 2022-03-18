@@ -181,8 +181,8 @@ public class BTChipHWWallet extends HWWallet {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
 
-            final boolean sw = inputs.stream().anyMatch(it -> !it.getAddressType().equals("p2sh"));
-            final boolean p2sh = inputs.stream().anyMatch(it -> it.getAddressType().equals("p2sh"));
+            final boolean sw = inputs.stream().anyMatch(InputOutput::isSegwit);
+            final boolean p2sh = inputs.stream().anyMatch(it -> !it.isSegwit());
 
             // Sanity check on the firmware version, in case devices have been swapped
             if (sw && !mDongle.shouldUseNewSigningApi())
@@ -194,8 +194,7 @@ public class BTChipHWWallet extends HWWallet {
 
             final List<String> sigs = new ArrayList<>(inputs.size());
             for (final InputOutput in : inputs) {
-                final boolean swInput = !in.getAddressType().equals("p2sh");
-                final byte[] sig = (swInput ? swSigs : p2shSigs).remove(0);
+                final byte[] sig = (in.isSegwit() ? swSigs : p2shSigs).remove(0);
                 sigs.add(Wally.hex_from_bytes(sig));
             }
             return new SignTxResult(sigs, null);
@@ -423,7 +422,7 @@ public class BTChipHWWallet extends HWWallet {
 
         for (int i = 0; i < hwInputs.length; ++i) {
             final InputOutput in = inputs.get(i);
-            if (in.getAddressType().equals("p2sh"))
+            if (!in.isSegwit())
                 continue; // sign segwit only
             singleInput[0] = hwInputs[i];
             final byte[] script = Wally.hex_to_bytes(in.getPrevoutScript());
@@ -455,7 +454,7 @@ public class BTChipHWWallet extends HWWallet {
             }
             mDongle.finalizeInputFull(outputData);
 
-            if (in.getAddressType().equals("p2sh")) // sign p2sh/non-segwit only
+            if (!in.isSegwit()) // sign p2sh/non-segwit only
                 sigs.add(mDongle.untrustedHashSign(in.getUserPathAsInts(),"0", locktime, SIGHASH_ALL));
         }
         return sigs;
@@ -518,12 +517,12 @@ public class BTChipHWWallet extends HWWallet {
         return res;
     }
 
-    private byte[] inputBytes(final InputOutput in, final boolean isSegwit) {
-        final ByteArrayOutputStream os = new ByteArrayOutputStream(32 + (isSegwit ? 12 : 4));
+    private byte[] inputBytes(final InputOutput in, final boolean segwit) {
+        final ByteArrayOutputStream os = new ByteArrayOutputStream(32 + (segwit ? 12 : 4));
         final byte[] txid = in.getTxid();
         os.write(txid, 0, txid.length);
         BufferUtils.writeUint32LE(os, in.getPtIdxInt());
-        if (isSegwit)
+        if (segwit)
             BufferUtils.writeUint64LE(os, in.getSatoshi());
         return os.toByteArray();
     }
