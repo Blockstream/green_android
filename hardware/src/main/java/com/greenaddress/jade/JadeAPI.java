@@ -23,6 +23,7 @@ import com.polidea.rxandroidble2.exceptions.BleException;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -314,15 +315,35 @@ public class JadeAPI {
         return result.asBoolean();
     }
 
-    // Get (receive) green address
+    // Get (receive) green address - multisig shield
     public String getReceiveAddress(final String network, final long subaccount, final long branch, final long pointer, final String recoveryxpub, final Long csvBlocks) throws IOException {
         testConnection();
-        final JsonNode params = makeParams("network", network)
+
+        final ObjectNode params = makeParams("network", network)
                 .put("subaccount", subaccount)
                 .put("branch", branch)
-                .put("pointer", pointer)
-                .put("recovery_xpub", recoveryxpub)
-                .put("csv_blocks", csvBlocks);
+                .put("pointer", pointer);
+
+        // Optional fields
+        if (recoveryxpub != null && recoveryxpub.length() > 0) {
+            params.put("recovery_xpub", recoveryxpub);
+        }
+        if (csvBlocks != null && csvBlocks > 0) {
+            params.put("csv_blocks", csvBlocks);
+        }
+
+        final JsonNode result = this.jadeRpc("get_receive_address", params, TIMEOUT_USER_INTERACTION);
+        return result.asText();
+    }
+
+    // Get (receive) green address - singlesig
+    public String getReceiveAddress(final String network, final String variant, final List<Long> path) throws IOException {
+        testConnection();
+
+        final JsonNode params = makeParams("path", path)
+                .put("network", network)
+                .put("variant", variant);
+
         final JsonNode result = this.jadeRpc("get_receive_address", params, TIMEOUT_USER_INTERACTION);
         return result.asText();
     }

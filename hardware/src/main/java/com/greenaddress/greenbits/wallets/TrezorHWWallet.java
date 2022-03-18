@@ -387,8 +387,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final SubAccount subaccount, final long branch, final long pointer,
-                                  final long csvBlocks) {
+    public String getGreenAddress(final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
         return null;
     }
 }

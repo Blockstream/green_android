@@ -134,9 +134,18 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final SubAccount subaccount, final long branch, final long pointer,
-                                  final long csvBlocks) throws BTChipException {
-        return mDongle.getGreenAddress(csvBlocks > 0, subaccount.getPointer(), branch, pointer, csvBlocks);
+    public String getGreenAddress(final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws BTChipException {
+        // Only supported for liquid mutisig shield
+        if (getNetwork().isSinglesig() || getNetwork().isLiquid()) {
+            return null;
+        }
+
+        // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
+        // In any case the last two entries are 'branch' and 'pointer'
+        final int pathlen = path.size();
+        final long branch = path.get(pathlen - 2);
+        final long pointer = path.get(pathlen - 1);
+        return mDongle.getGreenAddress(csvBlocks> 0, subaccount.getPointer(), branch, pointer, csvBlocks);
     }
 
     @Nullable

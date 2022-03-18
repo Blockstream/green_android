@@ -117,7 +117,7 @@ public abstract class HWWallet {
 
     public abstract int getIconResourceId();
 
-    public abstract String getGreenAddress(final SubAccount subaccount, final long branch, final long pointer, final long csvBlocks) throws Exception;
+    public abstract String getGreenAddress(final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws Exception;
 
     public Network getNetwork() {
         return mNetwork;

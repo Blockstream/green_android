@@ -526,36 +526,48 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final SubAccount subaccount, final long branch, final long pointer,
-                                  final long csvBlocks) {
-        Log.d(TAG,
-              "getGreenAddress() for subaccount: " + subaccount.getPointer() + ", branch: " + branch + ", pointer " +
-              pointer);
-
+    public String getGreenAddress(final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
         try {
             final String network = getNetwork().getCanonicalNetworkId();
-            String recoveryxpub = null;
+            if (getNetwork().isMultisig()) {
+                // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
+                // In any case the last two entries are 'branch' and 'pointer'
+                final int pathlen = path.size();
+                final long branch = path.get(pathlen - 2);
+                final long pointer = path.get(pathlen - 1);
+                String recoveryxpub = null;
 
-            // Jade expects any 'recoveryxpub' to be at the subact/branch level, consistent with tx outputs - but gdk
-            // subaccount data has the base subaccount chain code and pubkey - so we apply the branch derivation here.
-            if (subaccount.getRecoveryChainCode() != null && subaccount.getRecoveryChainCode().length() > 0) {
-                final Object subactkey = Wally.bip32_pub_key_init(
-                    getNetwork().getVerPublic(), 0, 0,
-                    subaccount.getRecoveryChainCodeAsBytes(), subaccount.getRecoveryPubKeyAsBytes());
-                final Object branchkey = Wally.bip32_key_from_parent(subactkey, branch,
-                                                                     Wally.BIP32_FLAG_KEY_PUBLIC |
-                                                                     Wally.BIP32_FLAG_SKIP_HASH);
-                recoveryxpub = Wally.bip32_key_to_base58(branchkey, Wally.BIP32_FLAG_KEY_PUBLIC);
-                Wally.bip32_key_free(branchkey);
-                Wally.bip32_key_free(subactkey);
+                Log.d(TAG,"getGreenAddress() (multisig shield) for subaccount: " + subaccount.getPointer() + ", branch: "
+                        + branch + ", pointer " + pointer);
+
+                // Jade expects any 'recoveryxpub' to be at the subact/branch level, consistent with tx outputs - but gdk
+                // subaccount data has the base subaccount chain code and pubkey - so we apply the branch derivation here.
+                if (subaccount.getRecoveryChainCode() != null && subaccount.getRecoveryChainCode().length() > 0) {
+                    final Object subactkey = Wally.bip32_pub_key_init(
+                            getNetwork().getVerPublic(), 0, 0,
+                            subaccount.getRecoveryChainCodeAsBytes(), subaccount.getRecoveryPubKeyAsBytes());
+                    final Object branchkey = Wally.bip32_key_from_parent(subactkey, branch,
+                            Wally.BIP32_FLAG_KEY_PUBLIC |
+                                    Wally.BIP32_FLAG_SKIP_HASH);
+                    recoveryxpub = Wally.bip32_key_to_base58(branchkey, Wally.BIP32_FLAG_KEY_PUBLIC);
+                    Wally.bip32_key_free(branchkey);
+                    Wally.bip32_key_free(subactkey);
+                }
+
+                // Get receive address from Jade for the path elements given
+                final String address = this.jade.getReceiveAddress(network,
+                        subaccount.getPointer(), branch, pointer,
+                        recoveryxpub, csvBlocks);
+                Log.d(TAG, "Got green address for branch: " + branch + ", pointer: " + pointer + ": " + address);
+                return address;
+            } else {
+                // Green Electrum Singlesig
+                Log.d(TAG,"getGreenAddress() (singlesig) for path: " + path);
+                final String variant = mapAddressType(subaccount.getType().getGdkType());
+                final String address = this.jade.getReceiveAddress(network, variant, path);
+                Log.d(TAG, "Got green address for path: " + path + ", type: " + variant + ": " + address);
+                return address;
             }
-
-            // Get receive address from Jade for the path elements given
-            final String address = this.jade.getReceiveAddress(network,
-                                                               subaccount.getPointer(), branch, pointer,
-                                                               recoveryxpub, csvBlocks);
-            Log.d(TAG, "Got green address for branch: " + branch + ", pointer: " + pointer + ": " + address);
-            return address;
         } catch (final JadeError e) {
             if (e.getCode() == JadeError.CBOR_RPC_USER_CANCELLED) {
                 // User cancelled on the device - treat as mismatch (rather than error)
