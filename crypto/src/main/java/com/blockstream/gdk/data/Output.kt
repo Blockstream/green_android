@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Output(
+data class Output constructor(
     @SerialName("address") val address: String? = null,
     @SerialName("asset_id") val assetId: String? = null,
     @SerialName("is_change") val isChange: Boolean,

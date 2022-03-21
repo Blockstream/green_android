@@ -377,7 +377,7 @@ class GreenSession constructor(
 
     fun loginWithDevice(
         network: Network,
-        registerUser: Boolean,
+        registerUser: Boolean = true,
         device: Device,
         hardwareWalletResolver: HardwareWalletResolver
     ): LoginData {
@@ -401,6 +401,20 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = DeviceParams(gdkDevice))
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
+
+            if(network.isElectrum){
+                // On Singlesig, check if there is a SegWit account already restored or create one
+                val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
+
+                if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
+                    // Create SegWit Account
+                    AuthHandler(greenWallet,
+                        greenWallet
+                            .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
+                    ).resolve(hardwareWalletResolver = hardwareWalletResolver)
+                }
+            }
+
             onLoginSuccess(it, 0)
         }
     }

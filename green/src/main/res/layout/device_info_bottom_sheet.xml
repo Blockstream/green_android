@@ -11,9 +11,6 @@
             name="vm"
             type="com.blockstream.green.ui.devices.DeviceInfoViewModel" />
 
-        <variable
-            name="isBottomSheet"
-            type="Boolean" />
     </data>
 
 

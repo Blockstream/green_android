@@ -8,9 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.gdk.data.Network
 import com.blockstream.green.NavGraphDirections
-import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceInfoBottomSheetBinding
@@ -19,19 +17,15 @@ import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.items.NetworkSmallListItem
-import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.blockstream.green.utils.navigate
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.FastItemAdapter
-import com.mikepenz.fastadapter.expandable.getExpandableExtension
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(){
+class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(), DeviceInfoCommon{
 
     companion object{
         const val DEVICE_ID = "DEVICE_ID"
@@ -75,7 +69,6 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(){
     ): View {
 
         binding = DeviceInfoBottomSheetBinding.inflate(layoutInflater)
-        binding.isBottomSheet = true
 
         if (deviceManager.getDevice(deviceId) == null) {
             dismiss()
@@ -100,7 +93,13 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(){
             }
         }
 
-        val fastItemAdapter = createNetworkAdapter()
+        val fastItemAdapter = createNetworkAdapter(
+            context = requireContext(),
+            viewLifecycleOwner = viewLifecycleOwner,
+            device = device,
+            greenWallet = greenWallet,
+            settingsManager = settingsManager
+        )
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
             when (item) {
@@ -125,53 +124,5 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(){
         }
 
         return binding.root
-    }
-
-    private fun createNetworkAdapter(): FastItemAdapter<GenericItem> {
-        val fastItemAdapter = FastItemAdapter<GenericItem>()
-        fastItemAdapter.getExpandableExtension()
-
-        // Listen for app settings changes to enable/disable testnet networks
-        settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner) { applicationSettings ->
-            fastItemAdapter.clear()
-
-            fastItemAdapter.add(NetworkSmallListItem(Network.GreenMainnet, greenWallet.networks.bitcoinGreen.productName))
-            if(device?.supportsLiquid == true){
-                fastItemAdapter.add(NetworkSmallListItem(Network.GreenLiquid, greenWallet.networks.liquidGreen.productName))
-            }
-
-            if(applicationSettings.testnet) {
-                val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
-
-                expandable.subItems.add(
-                    NetworkSmallListItem(
-                        Network.GreenTestnet,
-                        greenWallet.networks.testnetGreen.productName
-                    )
-                )
-
-                if (device?.supportsLiquid == true) {
-                    expandable.subItems.add(
-                        NetworkSmallListItem(
-                            Network.GreenTestnetLiquid,
-                            greenWallet.networks.testnetLiquidGreen.productName
-                        )
-                    )
-                }
-
-                greenWallet.networks.customNetwork?.let {
-                    expandable.subItems.add(
-                        NetworkSmallListItem(
-                            it.id,
-                            it.name
-                        )
-                    )
-                }
-
-                fastItemAdapter.add(expandable)
-            }
-        }
-
-        return fastItemAdapter
     }
 }

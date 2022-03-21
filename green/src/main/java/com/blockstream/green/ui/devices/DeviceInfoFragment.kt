@@ -26,16 +26,12 @@ import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.NetworkSmallListItem
-import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import com.greenaddress.jade.entities.JadeVersion
 import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.FastItemAdapter
-import com.mikepenz.fastadapter.expandable.getExpandableExtension
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -44,7 +40,7 @@ import javax.inject.Inject
 class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     layout = R.layout.device_info_fragment,
     menuRes = R.menu.menu_device_jade
-) {
+), DeviceInfoCommon {
     val args: DeviceInfoFragmentArgs by navArgs()
 
     val device by lazy { deviceManager.getDevice(args.deviceId) }
@@ -63,7 +59,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     lateinit var greenWallet: GreenWallet
 
     override val title: String?
-        get() = if(device?.deviceBrand == DeviceBrand.Blockstream) null else device?.deviceBrand?.name
+        get() = if(device?.deviceBrand == DeviceBrand.Blockstream) "" else device?.deviceBrand?.name
 
     override fun getAppViewModel(): AppViewModel = viewModel
 
@@ -149,7 +145,13 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
             }
         }
 
-        val fastItemAdapter = createNetworkAdapter()
+        val fastItemAdapter = createNetworkAdapter(
+            context = requireContext(),
+            viewLifecycleOwner = viewLifecycleOwner,
+            device = device,
+            greenWallet = greenWallet,
+            settingsManager = settingsManager
+        )
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
             when (item) {
@@ -242,54 +244,6 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         device?.let {
             viewModel.connectDevice(sessionManager.getHardwareSession(), it, hardwareWallet)
         }
-    }
-
-    private fun createNetworkAdapter(): FastItemAdapter<GenericItem> {
-        val fastItemAdapter = FastItemAdapter<GenericItem>()
-        fastItemAdapter.getExpandableExtension()
-
-        // Listen for app settings changes to enable/disable testnet networks
-        settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner) { applicationSettings ->
-            fastItemAdapter.clear()
-
-            fastItemAdapter.add(NetworkSmallListItem(Network.GreenMainnet, greenWallet.networks.bitcoinGreen.productName))
-            if(device?.supportsLiquid == true){
-                fastItemAdapter.add(NetworkSmallListItem(Network.GreenLiquid, greenWallet.networks.liquidGreen.productName))
-            }
-
-            if(applicationSettings.testnet) {
-                val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
-
-                expandable.subItems.add(
-                    NetworkSmallListItem(
-                        Network.GreenTestnet,
-                        greenWallet.networks.testnetGreen.productName
-                    )
-                )
-
-                if (device?.supportsLiquid == true) {
-                    expandable.subItems.add(
-                        NetworkSmallListItem(
-                            Network.GreenTestnetLiquid,
-                            greenWallet.networks.testnetLiquidGreen.productName
-                        )
-                    )
-                }
-
-                greenWallet.networks.customNetwork?.let {
-                    expandable.subItems.add(
-                        NetworkSmallListItem(
-                            it.id,
-                            it.name
-                        )
-                    )
-                }
-
-                fastItemAdapter.add(expandable)
-            }
-        }
-
-        return fastItemAdapter
     }
 
     private fun requestPin(deviceBrand: DeviceBrand){

@@ -82,7 +82,7 @@ public class JadeHWWallet extends HWWallet {
             try {
                 // Authenticate with pinserver (loop/retry on failure)
                 // Note: this should be a no-op if the user is already authenticated on the device.
-                while (!this.jade.authUser(getNetwork().getNetwork())) {
+                while (!this.jade.authUser(getNetwork().getCanonicalNetworkId())) {
                     Log.w(TAG, "Jade authentication failed");
                 }
                 completable.onComplete();
@@ -161,7 +161,7 @@ public class JadeHWWallet extends HWWallet {
     public List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths) {
         Log.d(TAG, "getXpubs() for " + paths.size() + " paths.");
 
-        final String network = getNetwork().getNetwork();
+        final String network = getNetwork().getCanonicalNetworkId();
         try {
             // paths.stream.map(jade::get_xpub).collect(Collectors.toList());
             final List<String> xpubs = new ArrayList<>(paths.size());
@@ -278,7 +278,7 @@ public class JadeHWWallet extends HWWallet {
             final List<TxChangeOutput> change = getChangeData(outputs);
 
             // Make jade-api call
-            final String network = getNetwork().getNetwork();
+            final String network = getNetwork().getCanonicalNetworkId();
             final String txhex = tx.get("transaction").asText();
             final byte[] txn = hexToBytes(txhex);
             final SignTxInputsResult result = this.jade.signTx(network, useAeProtocol, txn, txInputs, change);
@@ -451,7 +451,7 @@ public class JadeHWWallet extends HWWallet {
             final List<TxChangeOutput> change = getChangeData(outputs);
 
             // Make jade-api call to sign the txn
-            final String network = getNetwork().getNetwork();
+            final String network = getNetwork().getCanonicalNetworkId();
             final String txhex = tx.get("transaction").asText();
             final byte[] txn = hexToBytes(txhex);
             final SignTxInputsResult result = this.jade.signLiquidTx(network, useAeProtocol, txn,
@@ -523,7 +523,7 @@ public class JadeHWWallet extends HWWallet {
               pointer);
 
         try {
-            final String network = getNetwork().getNetwork();
+            final String network = getNetwork().getCanonicalNetworkId();
             String recoveryxpub = null;
 
             // Jade expects any 'recoveryxpub' to be at the subact/branch level, consistent with tx outputs - but gdk

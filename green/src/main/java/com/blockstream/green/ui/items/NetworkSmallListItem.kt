@@ -3,6 +3,7 @@ package com.blockstream.green.ui.items
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.gdk.getNetworkIcon
 import com.mikepenz.fastadapter.FastAdapter
@@ -33,7 +34,7 @@ class NetworkSmallListItem constructor(val network: String, val networkName: Str
 
         override fun bindView(item: NetworkSmallListItem, payloads: List<Any>) {
             title.text = item.networkName
-            icon.setImageResource(R.drawable.ic_multisig)
+            icon.setImageResource(if(Network.isElectrum(item.network)) R.drawable.ic_singlesig else R.drawable.ic_multisig)
             networkIcon.setImageResource(item.network.getNetworkIcon())
         }
 
