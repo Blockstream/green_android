@@ -272,7 +272,6 @@
 		81A062D0245322B0003464A0 /* HWResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062CF245322B0003464A0 /* HWResolver.swift */; };
 		81A062D224532454003464A0 /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
 		81A062D624532643003464A0 /* HWChannelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWChannelProtocol.swift */; };
-		81A8EBC82224524A00F5C577 /* SystemMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81A8EBC72224524A00F5C577 /* SystemMessageView.xib */; };
 		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
 		81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */; };
 		81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2722E9E9EA005A04C6 /* Ledger.swift */; };
@@ -638,7 +637,6 @@
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
 		81A062D524532643003464A0 /* HWChannelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWChannelProtocol.swift; sourceTree = "<group>"; };
-		81A8EBC72224524A00F5C577 /* SystemMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SystemMessageView.xib; sourceTree = "<group>"; };
 		81ACC4B0227337F3004B1E92 /* Wallet.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Wallet.storyboard; sourceTree = "<group>"; };
 		81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMessageViewController.swift; sourceTree = "<group>"; };
 		81BF4E2722E9E9EA005A04C6 /* Ledger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
@@ -1433,12 +1431,11 @@
 				81A3B5442244B2790091B6BC /* Views */,
 				81A3B5432244B23F0091B6BC /* TableViewCells */,
 				34C3020326E7531E00A3F910 /* OverviewViewController.swift */,
-				81A8EBC72224524A00F5C577 /* SystemMessageView.xib */,
-				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
 				81ACC4B0227337F3004B1E92 /* Wallet.storyboard */,
 				81FE672423EB1D22001B2E48 /* ContainerViewController.swift */,
 				3403BDAB2630282600118C64 /* Learn2faViewController.swift */,
 				34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */,
+				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
 				34128F9C27391A99002E19F5 /* Receive */,
 			);
 			path = Wallet;
@@ -1718,7 +1715,6 @@
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
 				3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */,
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
-				81A8EBC82224524A00F5C577 /* SystemMessageView.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
 				81286119222212DB005598D3 /* SetGauthView.xib in Resources */,
