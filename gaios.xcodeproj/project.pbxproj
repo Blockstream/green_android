@@ -84,6 +84,7 @@
 		344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34C2684CB3900C087A5 /* SetPin.swift */; };
 		344FE34F2684D2E800C087A5 /* WalletSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34E2684D2E800C087A5 /* WalletSuccess.swift */; };
 		344FE35326850C8500C087A5 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE35226850C8500C087A5 /* Container.swift */; };
+		3451017827EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451017727EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift */; };
 		345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142802693148B00E8BE1B /* TransactionsUITests.swift */; };
 		345142832693154100E8BE1B /* XCTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142822693154100E8BE1B /* XCTestBase.swift */; };
 		3451428526932B9300E8BE1B /* Receive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428426932B9300E8BE1B /* Receive.swift */; };
@@ -162,7 +163,6 @@
 		34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */; };
 		34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */; };
 		34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D12636A12700FB8011 /* HWWCell.swift */; };
-		34BAD9DA2636A12700FB8011 /* HWWNetworkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D22636A12700FB8011 /* HWWNetworkCell.swift */; };
 		34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D42636A12700FB8011 /* Enums.swift */; };
 		34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34BAD9D52636A12700FB8011 /* HWW.storyboard */; };
 		34BAD9DD2636A12700FB8011 /* HWWConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */; };
@@ -400,6 +400,7 @@
 		344FE34C2684CB3900C087A5 /* SetPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPin.swift; sourceTree = "<group>"; };
 		344FE34E2684D2E800C087A5 /* WalletSuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSuccess.swift; sourceTree = "<group>"; };
 		344FE35226850C8500C087A5 /* Container.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Container.swift; sourceTree = "<group>"; };
+		3451017727EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWWNetworkSecurityCaseCell.swift; sourceTree = "<group>"; };
 		345142802693148B00E8BE1B /* TransactionsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsUITests.swift; sourceTree = "<group>"; };
 		345142822693154100E8BE1B /* XCTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestBase.swift; sourceTree = "<group>"; };
 		3451428426932B9300E8BE1B /* Receive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receive.swift; sourceTree = "<group>"; };
@@ -479,7 +480,6 @@
 		34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCreateViewController.swift; sourceTree = "<group>"; };
 		34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerifyViewController.swift; sourceTree = "<group>"; };
 		34BAD9D12636A12700FB8011 /* HWWCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWCell.swift; sourceTree = "<group>"; };
-		34BAD9D22636A12700FB8011 /* HWWNetworkCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWNetworkCell.swift; sourceTree = "<group>"; };
 		34BAD9D42636A12700FB8011 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		34BAD9D52636A12700FB8011 /* HWW.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HWW.storyboard; sourceTree = "<group>"; };
 		34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWConnectViewController.swift; sourceTree = "<group>"; };
@@ -1122,7 +1122,7 @@
 			isa = PBXGroup;
 			children = (
 				34BAD9D12636A12700FB8011 /* HWWCell.swift */,
-				34BAD9D22636A12700FB8011 /* HWWNetworkCell.swift */,
+				3451017727EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1836,6 +1836,7 @@
 				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
 				347942A527561AAC0020D60F /* ExistingWalletCell.swift in Sources */,
 				819DFBA826038E800022BD85 /* AccountsManager.swift in Sources */,
+				3451017827EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
 				3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
@@ -1948,7 +1949,6 @@
 				34477D392771F7090021698B /* AddRecipientCell.swift in Sources */,
 				81D671EF26C80D3400682508 /* EventType.swift in Sources */,
 				34BD7E76278C2EB6004AEC6F /* FeeSummaryCell.swift in Sources */,
-				34BAD9DA2636A12700FB8011 /* HWWNetworkCell.swift in Sources */,
 				3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */,
 				34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */,
 				34477D352771D34D0021698B /* Recipient.swift in Sources */,

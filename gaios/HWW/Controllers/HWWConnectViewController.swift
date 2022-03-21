@@ -2,6 +2,12 @@ import UIKit
 import PromiseKit
 import RxBluetoothKit
 
+enum NetworkSection: Int, CaseIterable {
+    case mainnet = 0
+    case liquid = 1
+    case testnet = 2
+}
+
 class HWWConnectViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -16,19 +22,16 @@ class HWWConnectViewController: UIViewController {
     @IBOutlet weak var deviceImage: UIImageView!
     @IBOutlet weak var arrowImage: UIImageView!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var deviceImageAlign: NSLayoutConstraint!
-    @IBOutlet weak var singleSigWarnCard: UIView!
-    @IBOutlet weak var lblSingleSigWarn: UILabel!
-    @IBOutlet weak var iconSingleSigWarn: UIImageView!
     @IBOutlet weak var btnSettings: UIButton!
 
     var account: Account!
     var peripheral: Peripheral!
-
-    var networks: [AvailableNetworks] = []
-
+    var data: [[NetworkSecurityCase]] = [[]]
     var cellH = 70.0
+    var headerH: CGFloat = 44.0
+    var headerH2: CGFloat = 64.0
+    var isHiddenTestnet: Bool = true
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -51,7 +54,7 @@ class HWWConnectViewController: UIViewController {
 
         hwwState = .connecting
         BLEManager.shared.prepare(peripheral)
-        loadNetworks()
+        loadData()
 
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
@@ -63,7 +66,6 @@ class HWWConnectViewController: UIViewController {
         btnTryAgain.setTitle(NSLocalizedString("id_try_again", comment: ""), for: .normal)
         btnNeedHelp.setTitle(NSLocalizedString("id_need_help", comment: ""), for: .normal)
         btnLogin.setTitle(NSLocalizedString("id_login", comment: ""), for: .normal)
-        lblSingleSigWarn.text = NSLocalizedString("id_singlesig_wallets_are_not_yet", comment: "")
         btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
@@ -97,28 +99,30 @@ class HWWConnectViewController: UIViewController {
         faailureImage.image = UIImage(named: "cancel")?.maskWithColor(color: UIColor.white)
         deviceImage.image = account.deviceImage()
         deviceImageAlign.constant = account.alignConstraint()
-        lblSingleSigWarn.textColor = UIColor.customGrayLight()
-        self.iconSingleSigWarn.image = UIImage(named: "ic_logo_green")!.maskWithColor(color: UIColor.customGrayLight())
-        singleSigWarnCard.layer.borderWidth = 1.0
-        singleSigWarnCard.layer.borderColor = UIColor.customGrayLight().cgColor
-        singleSigWarnCard.cornerRadius = 8.0
     }
 
-    func loadNetworks() {
+    func loadData() {
         if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) {
-            if self.account.isLedger {
-                self.networks = [AvailableNetworks.bitcoin, AvailableNetworks.testnet]
+            if isHiddenTestnet == false {
+                if self.account.isLedger {
+                    data = [[.bitcoinMS], [], [.testnetMS]]
+                } else {
+                    data = [[.bitcoinSS, .bitcoinMS], [.liquidMS], [.testnetSS, .testnetMS, .testnetLiquidMS]]
+                }
             } else {
-                networks = AvailableNetworks.allCases
+                if self.account.isLedger {
+                    data = [[.bitcoinMS], [], []]
+                } else {
+                    data = [[.bitcoinSS, .bitcoinMS], [.liquidMS], []]
+                }
             }
         } else {
             if self.account.isLedger {
-                self.networks = [AvailableNetworks.bitcoin]
+                data = [[.bitcoinMS], [], []]
             } else {
-                networks = [AvailableNetworks.bitcoin, AvailableNetworks.liquid]
+                data = [[.bitcoinSS, .bitcoinMS], [.liquidMS], []]
             }
         }
-        tableViewHeight.constant = CGFloat(networks.count) * CGFloat(cellH)
         tableView.reloadData()
     }
 
@@ -132,7 +136,6 @@ class HWWConnectViewController: UIViewController {
         deviceImage.isHidden = false
         arrowImage.isHidden = true
         tableView.isHidden = true
-        singleSigWarnCard.isHidden = true
         btnSettings.isHidden = true
 
         switch hwwState {
@@ -154,7 +157,6 @@ class HWWConnectViewController: UIViewController {
             lblStateHint.text = NSLocalizedString("id_select_network", comment: "")
             deviceImage.isHidden = true
             tableView.isHidden = false
-            singleSigWarnCard.isHidden = false
             btnSettings.isHidden = false
         case .followDevice:
             hideLoader()
@@ -174,6 +176,37 @@ class HWWConnectViewController: UIViewController {
             btnLogin.isHidden = false
         case .none:
             break
+        }
+    }
+
+    func isTestnetVisible() -> Bool {
+        return UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
+    }
+
+    @objc func toggleTestnet() {
+        isHiddenTestnet = !isHiddenTestnet
+        loadData()
+        tableView.reloadData()
+    }
+
+    func connect(_ peripheral: Peripheral, network: String) {
+        hwwState = .connecting
+        account?.network = network
+        AccountsManager.shared.current = account
+        if BLEManager.shared.isLedger(peripheral) {
+            BLEManager.shared.connect(peripheral, network: network)
+            return
+        }
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            BLEManager.shared.dispose()
+            BLEManager.shared.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
+            return Guarantee()
+        }.then(on: bgq) {
+            after(seconds: 1)
+        }.done { _ in
+            self.hwwState = .followDevice
+            BLEManager.shared.connect(peripheral, network: network)
         }
     }
 
@@ -210,43 +243,69 @@ class HWWConnectViewController: UIViewController {
             present(vc, animated: true) {}
         }
     }
-
-    func connect(_ peripheral: Peripheral, network: String) {
-        hwwState = .connecting
-        account?.network = network
-        AccountsManager.shared.current = account
-        if BLEManager.shared.isLedger(peripheral) {
-            BLEManager.shared.connect(peripheral, network: network)
-            return
-        }
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            BLEManager.shared.dispose()
-            BLEManager.shared.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
-            return Guarantee()
-        }.then(on: bgq) {
-            after(seconds: 1)
-        }.done { _ in
-            self.hwwState = .followDevice
-            BLEManager.shared.connect(peripheral, network: network)
-        }
-    }
 }
 
 extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
 
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return  isTestnetVisible() ? NetworkSection.allCases.count : NetworkSection.allCases.count - 1
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return networks.count
+        switch section {
+        case NetworkSection.mainnet.rawValue:
+            return data[0].count
+        case NetworkSection.liquid.rawValue:
+            return data[1].count
+        case NetworkSection.testnet.rawValue:
+            return data[2].count
+        default:
+            return 0
+        }
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch section {
+        case NetworkSection.mainnet.rawValue:
+            return headerH
+        case NetworkSection.liquid.rawValue:
+            return headerH
+        case NetworkSection.testnet.rawValue:
+            return headerH2
+        default:
+            return 1
+        }
+    }
+
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        switch section {
+        case NetworkSection.mainnet.rawValue:
+            return headerView("Bitcoin")
+        case NetworkSection.liquid.rawValue:
+            if data[section].count == 0 {
+                return headerView("")
+            }
+            return headerView("Liquid")
+        default:
+            return headerDisclosureView()
+        }
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return nil
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "HWWNetworkCell") as? HWWNetworkCell {
-            cell.configure(networks[indexPath.row])
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "HWWNetworkSecurityCaseCell") as? HWWNetworkSecurityCaseCell {
+            cell.configure(data[indexPath.section][indexPath.item])
             cell.selectionStyle = .none
             return cell
         }
-
         return UITableViewCell()
     }
 
@@ -255,7 +314,26 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        connect(peripheral, network: networks[indexPath.row].rawValue)
+        let item: NetworkSecurityCase = data[indexPath.section][indexPath.row]
+        switch item {
+        case .bitcoinMS:
+            print(item.name())
+        case .bitcoinSS:
+            print(item.name())
+        case .liquidMS:
+            print(item.name())
+        case .liquidSS:
+            print(item.name())
+        case .testnetMS:
+            print(item.name())
+        case .testnetSS:
+            print(item.name())
+        case .testnetLiquidMS:
+            print(item.name())
+        case .testnetLiquidSS:
+            print(item.name())
+        }
+//        connect(peripheral, network: networks[indexPath.row].rawValue)
     }
 }
 
@@ -399,6 +477,93 @@ extension HWWConnectViewController: WalletSettingsViewControllerDelegate {
         //
     }
     func didSet(testnet: Bool) {
-        loadNetworks()
+        loadData()
+    }
+}
+
+extension HWWConnectViewController {
+    func headerView(_ txt: String) -> UIView {
+        if txt == "" {
+            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
+            section.backgroundColor = .clear
+            return section
+        }
+        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
+        section.backgroundColor = UIColor.customTitaniumDark()
+        let title = UILabel(frame: .zero)
+        title.font = .systemFont(ofSize: 20.0, weight: .heavy)
+        title.text = txt
+        title.textColor = .white
+        title.numberOfLines = 0
+
+        title.translatesAutoresizingMaskIntoConstraints = false
+        section.addSubview(title)
+
+        NSLayoutConstraint.activate([
+            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 24),
+            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
+        ])
+
+        return section
+    }
+
+    func headerDisclosureView() -> UIView {
+        let color = UIColor.accountGray()
+        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH2))
+        section.backgroundColor = UIColor.customTitaniumDark()
+        let title = UILabel(frame: .zero)
+        title.font = .systemFont(ofSize: 16.0, weight: .regular)
+        title.text = NSLocalizedString("id_additional_networks", comment: "")
+        title.textColor = color
+        title.numberOfLines = 0
+
+        title.translatesAutoresizingMaskIntoConstraints = false
+        section.addSubview(title)
+
+        NSLayoutConstraint.activate([
+            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 30),
+            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
+        ])
+
+        let line = UIView(frame: .zero)
+        line.backgroundColor = color
+        line.translatesAutoresizingMaskIntoConstraints = false
+        section.addSubview(line)
+
+        NSLayoutConstraint.activate([
+            line.leftAnchor.constraint(equalTo: section.leftAnchor),
+            line.rightAnchor.constraint(equalTo: section.rightAnchor),
+            line.topAnchor.constraint(equalTo: section.topAnchor, constant: 10.0),
+            line.heightAnchor.constraint(equalToConstant: 1.0)
+        ])
+
+        let arrow = UIImageView(frame: .zero)
+        arrow.image = UIImage(named: "rightArrow")?.maskWithColor(color: color)
+        if !isHiddenTestnet {
+            arrow.transform = CGAffineTransform(rotationAngle: CGFloat.pi/2)
+        }
+        arrow.translatesAutoresizingMaskIntoConstraints = false
+        section.addSubview(arrow)
+
+        NSLayoutConstraint.activate([
+            arrow.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            arrow.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 10.0)
+        ])
+
+        let toggleBtn = UIButton(frame: .zero)
+        toggleBtn.setTitle("", for: .normal)
+        toggleBtn.translatesAutoresizingMaskIntoConstraints = false
+        toggleBtn.addTarget(self, action: #selector(toggleTestnet), for: .touchUpInside)
+        section.addSubview(toggleBtn)
+
+        NSLayoutConstraint.activate([
+            toggleBtn.topAnchor.constraint(equalTo: section.topAnchor, constant: 0.0),
+            toggleBtn.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: -10.0),
+            toggleBtn.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 20.0),
+            toggleBtn.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20.0)
+        ])
+        return section
     }
 }

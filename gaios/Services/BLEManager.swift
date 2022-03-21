@@ -163,7 +163,11 @@ class BLEManager {
     }
 
     func connectJade(_ p: Peripheral, network: String) {
-        let account = AccountsManager.shared.current
+        var account = AccountsManager.shared.current
+        account?.network = "mainnet"
+        account?.isSingleSig = true
+        let network = "mainnet"
+        //let network = network_
         let session = SessionsManager.new(for: account!)
         var hasPin = false
         enstablishDispose = p.establishConnection()
