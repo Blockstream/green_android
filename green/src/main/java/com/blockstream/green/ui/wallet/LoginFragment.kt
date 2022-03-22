@@ -12,7 +12,6 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.NavGraphDirections
@@ -24,7 +23,6 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.LoginFragmentBinding
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.dialogs.showTorSinglesigWarningIfNeeded
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenPinViewListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -208,15 +206,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             if(viewModel.initialAction.value == false){
                 viewModel.initialAction.value = true
                 viewModel.loginWithDevice(device)
-            }
-        }
-
-        // Show Singlesig Tor warning
-        settingsManager.getApplicationSettingsLiveData().distinctUntilChanged().observe(viewLifecycleOwner) {
-            it?.let { applicationSettings ->
-                if(applicationSettings.tor && !session.networkFromWallet(wallet).supportTorConnection){
-                    showTorSinglesigWarningIfNeeded(settingsManager)
-                }
             }
         }
     }

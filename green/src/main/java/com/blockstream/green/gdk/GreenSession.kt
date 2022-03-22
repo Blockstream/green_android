@@ -204,7 +204,7 @@ class GreenSession constructor(
 
         return ConnectionParams(
             networkName = network.id,
-            useTor = applicationSettings.tor && network.supportTorConnection, // Exclude Singlesig from Tor connection
+            useTor = applicationSettings.tor,
             userAgent = userAgent,
             proxy = applicationSettings.proxyUrl ?: "",
             spvEnabled = spvEnabled,

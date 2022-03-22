@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.WalletNameFragmentBinding
-import com.blockstream.green.ui.dialogs.showTorSinglesigWarningIfNeeded
 import com.blockstream.green.utils.dialog
 import com.blockstream.green.utils.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,17 +86,6 @@ class WalletNameFragment :
 
             event.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
                 navigateToPin()
-            }
-        }
-
-        // Show Singlesig Tor warning
-        settingsManager.getApplicationSettingsLiveData().distinctUntilChanged().observe(viewLifecycleOwner) {
-            it?.let { applicationSettings ->
-                options?.network?.let { network ->
-                    if(applicationSettings.tor && !network.supportTorConnection){
-                        showTorSinglesigWarningIfNeeded(settingsManager)
-                    }
-                }
             }
         }
 
