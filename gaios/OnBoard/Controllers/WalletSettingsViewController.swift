@@ -218,10 +218,12 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBAction func switchPSPVPersonalNode(_ sender: UISwitch) {
         cardSPVPersonalNodeDetails.isHidden = !sender.isOn
         cardSPVtestnetServer.isHidden = !switchTestnet.isOn
+        cardSPVliquidTestnetServer.isHidden = !switchTestnet.isOn
     }
 
     @IBAction func switchTestnet(_ sender: Any) {
         cardSPVtestnetServer.isHidden = !switchTestnet.isOn
+        cardSPVliquidTestnetServer.isHidden = !switchTestnet.isOn
     }
 
     @IBAction func btnCancel(_ sender: Any) {
