@@ -25,10 +25,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout(with pin: Bool) {
-        guard let account = AccountsManager.shared.current,
-              let session = SessionsManager.get(for: account) else {
-                return
+        guard let account = AccountsManager.shared.current else {
+            fatalError("disconnection error never happens")
         }
+        let session = SessionsManager.get(for: account)
         if account.isJade || account.isLedger {
             BLEManager.shared.dispose()
         }
@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController?.startAnimating()
             return Guarantee()
         }.map(on: bgq) {
-            session.destroy()
+            session?.destroy()
         }.ensure {
             self.window?.rootViewController?.stopAnimating()
         }.done {
