@@ -30,7 +30,7 @@ data class ConfirmTransactionLook constructor(val session: GreenSession, val tx:
 
     override val feeFiat: String?
         get() = session.convertAmount(Convert(satoshi = tx.fee))
-            ?.toAmountLook(session = session, withUnit = true)?.let {
+            ?.toAmountLook(session = session, isFiat = true, withUnit = true)?.let {
             "≈ $it"
         }
 
