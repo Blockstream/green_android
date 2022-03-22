@@ -4,7 +4,13 @@ import PromiseKit
 
 class SetGauthViewController: UIViewController {
 
-    @IBOutlet var content: SetGauthView!
+    @IBOutlet weak var subtitleLabel: UILabel!
+    @IBOutlet weak var qrCodeImageView: UIImageView!
+    @IBOutlet weak var warningLabel: UILabel!
+    @IBOutlet weak var secretLabel: UILabel!
+    @IBOutlet weak var copyImage: UIImageView!
+    @IBOutlet weak var nextButton: UIButton!
+
     private var gauthData: String?
     private var connected = true
     private var updateToken: NSObjectProtocol?
@@ -21,17 +27,17 @@ class SetGauthViewController: UIViewController {
             DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return
         }
-        content.secretLabel.text = secret
-        content.qrCodeImageView.image = QRImageGenerator.imageForTextWhite(text: gauthData!, frame: content.qrCodeImageView.frame)
-        content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
-        content.subtitleLabel.text = NSLocalizedString("id_scan_the_qr_code_with_an", comment: "")
-        content.warningLabel.text = NSLocalizedString("id_the_recovery_key_below_will_not", comment: "")
-        content.secretLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
-        content.copyImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
-        content.secretLabel.isUserInteractionEnabled = true
-        content.copyImage.isUserInteractionEnabled = true
-        content.nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-        content.nextButton.setGradient(true)
+        secretLabel.text = secret
+        qrCodeImageView.image = QRImageGenerator.imageForTextWhite(text: gauthData!, frame: qrCodeImageView.frame)
+        nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
+        subtitleLabel.text = NSLocalizedString("id_scan_the_qr_code_with_an", comment: "")
+        warningLabel.text = NSLocalizedString("id_the_recovery_key_below_will_not", comment: "")
+        secretLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
+        copyImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
+        secretLabel.isUserInteractionEnabled = true
+        copyImage.isUserInteractionEnabled = true
+        nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
+        nextButton.setStyle(.primary)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -47,7 +53,7 @@ class SetGauthViewController: UIViewController {
     }
 
     @objc func copyToClipboard(_ sender: UIButton) {
-        UIPasteboard.general.string = content.secretLabel.text
+        UIPasteboard.general.string = secretLabel.text
         DropAlert().info(message: NSLocalizedString("id_copy_to_clipboard", comment: ""))
     }
 
@@ -86,30 +92,5 @@ class SetGauthViewController: UIViewController {
                 DropAlert().error(message: error.localizedDescription)
             }
         }
-    }
-}
-
-@IBDesignable
-class SetGauthView: UIView {
-    @IBOutlet weak var qrCodeImageView: UIImageView!
-    @IBOutlet weak var secretLabel: UILabel!
-    @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var subtitleLabel: UILabel!
-    @IBOutlet weak var warningLabel: UILabel!
-    @IBOutlet weak var copyImage: UIImageView!
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        setup()
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        nextButton.updateGradientLayerFrame()
     }
 }

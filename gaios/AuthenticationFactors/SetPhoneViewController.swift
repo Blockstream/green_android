@@ -4,7 +4,12 @@ import PromiseKit
 
 class SetPhoneViewController: KeyboardViewController {
 
-    @IBOutlet var content: SetPhoneView!
+    @IBOutlet weak var headerTitle: UILabel!
+    @IBOutlet weak var countryCodeField: UITextField!
+    @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
+
     var sms = false
     var phoneCall = false
     private var connected = true
@@ -12,15 +17,15 @@ class SetPhoneViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        content.headerTitle.text = NSLocalizedString("id_enter_phone_number", comment: "")
-        content.countryCodeField.becomeFirstResponder()
-        content.countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
-        content.textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
-        content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
-        content.nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-        content.nextButton.setGradient(true)
-        content.textField.layer.cornerRadius = 5.0
-        content.countryCodeField.layer.cornerRadius = 5.0
+        headerTitle.text = NSLocalizedString("id_enter_phone_number", comment: "")
+        countryCodeField.becomeFirstResponder()
+        countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
+        textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
+        nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
+        nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
+        nextButton.setStyle(.primary)
+        textField.layer.cornerRadius = 5.0
+        countryCodeField.layer.cornerRadius = 5.0
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -35,14 +40,9 @@ class SetPhoneViewController: KeyboardViewController {
         }
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        content.nextButton.updateGradientLayerFrame()
-    }
-
     override func keyboardWillShow(notification: Notification) {
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
+        nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }
 
     func updateConnection(_ notification: Notification) {
@@ -53,7 +53,7 @@ class SetPhoneViewController: KeyboardViewController {
     @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
         let method = self.sms == true ? TwoFactorType.sms : TwoFactorType.phone
-        guard let countryCode = content.countryCodeField.text, let phone = content.textField.text else { return }
+        guard let countryCode = countryCodeField.text, let phone = textField.text else { return }
         if countryCode.isEmpty || phone.isEmpty {
             DropAlert().warning(message: NSLocalizedString("id_invalid_phone_number_format", comment: ""))
             return
@@ -85,29 +85,5 @@ class SetPhoneViewController: KeyboardViewController {
                 DropAlert().error(message: error.localizedDescription)
             }
         }
-    }
-}
-
-@IBDesignable
-class SetPhoneView: UIView {
-    @IBOutlet weak var countryCodeField: UITextField!
-    @IBOutlet weak var textField: UITextField!
-    @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
-    @IBOutlet weak var headerTitle: UILabel!
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        setup()
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        nextButton.updateGradientLayerFrame()
     }
 }

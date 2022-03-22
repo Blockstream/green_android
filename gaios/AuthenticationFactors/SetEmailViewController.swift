@@ -4,7 +4,12 @@ import PromiseKit
 
 class SetEmailViewController: KeyboardViewController {
 
-    @IBOutlet var content: SetEmailView!
+    @IBOutlet weak var headerTitle: UILabel!
+    @IBOutlet weak var setRecoveryLabel: UILabel!
+    @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
+
     private var connected = true
     private var updateToken: NSObjectProtocol?
 
@@ -12,14 +17,14 @@ class SetEmailViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        content.headerTitle.text = NSLocalizedString("id_enter_your_email_address", comment: "")
-        content.textField.becomeFirstResponder()
-        content.textField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
+        headerTitle.text = NSLocalizedString("id_enter_your_email_address", comment: "")
+        textField.becomeFirstResponder()
+        textField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                              attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
-        content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
-        content.nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-        content.nextButton.setGradient(true)
-        content.setRecoveryLabel.text = isSetRecovery ?
+        nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
+        nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
+        nextButton.setStyle(.primary)
+        setRecoveryLabel.text = isSetRecovery ?
             NSLocalizedString("id_set_up_an_email_to_get", comment: "") :
             NSLocalizedString("id_the_email_will_also_be_used_to", comment: "")
     }
@@ -38,7 +43,7 @@ class SetEmailViewController: KeyboardViewController {
 
     override func keyboardWillShow(notification: Notification) {
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
+        nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }
 
     func updateConnection(_ notification: Notification) {
@@ -48,7 +53,7 @@ class SetEmailViewController: KeyboardViewController {
 
     @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let text = content.textField.text else { return }
+        guard let text = textField.text else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -76,29 +81,5 @@ class SetEmailViewController: KeyboardViewController {
                 DropAlert().error(message: error.localizedDescription)
             }
         }
-    }
-}
-
-@IBDesignable
-class SetEmailView: UIView {
-    @IBOutlet weak var textField: UITextField!
-    @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
-    @IBOutlet weak var headerTitle: UILabel!
-    @IBOutlet weak var setRecoveryLabel: UILabel!
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        setup()
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        nextButton.updateGradientLayerFrame()
     }
 }

@@ -18,7 +18,6 @@
 		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
 		09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */; };
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
-		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
 		0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */; };
@@ -243,9 +242,6 @@
 		81205D6921C3B7EB005180CF /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81205D6821C3B7EB005180CF /* Events.swift */; };
 		8122D7292554848C003F2785 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8122D7282554848C003F2785 /* Promise.swift */; };
 		8124524225D6B0DD00537238 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8124524125D6B0DD00537238 /* Address.swift */; };
-		81286115222212B5005598D3 /* SetEmailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286114222212B5005598D3 /* SetEmailView.xib */; };
-		81286117222212C7005598D3 /* SetPhoneView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286116222212C7005598D3 /* SetPhoneView.xib */; };
-		81286119222212DB005598D3 /* SetGauthView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286118222212DB005598D3 /* SetGauthView.xib */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		813D053A27AD7D9700AA6655 /* SessionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813D053927AD7D9700AA6655 /* SessionsManager.swift */; };
 		815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
@@ -343,7 +339,6 @@
 		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
 		09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLimitViewController.swift; sourceTree = "<group>"; };
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
-		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
@@ -585,9 +580,6 @@
 		81205D6821C3B7EB005180CF /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		8122D7282554848C003F2785 /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
 		8124524125D6B0DD00537238 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
-		81286114222212B5005598D3 /* SetEmailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetEmailView.xib; sourceTree = "<group>"; };
-		81286116222212C7005598D3 /* SetPhoneView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetPhoneView.xib; sourceTree = "<group>"; };
-		81286118222212DB005598D3 /* SetGauthView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetGauthView.xib; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		813D053927AD7D9700AA6655 /* SessionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsManager.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
@@ -1469,12 +1461,8 @@
 			isa = PBXGroup;
 			children = (
 				818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */,
-				095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */,
-				81286114222212B5005598D3 /* SetEmailView.xib */,
 				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
-				81286116222212C7005598D3 /* SetPhoneView.xib */,
 				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
-				81286118222212DB005598D3 /* SetGauthView.xib */,
 				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
 			);
 			path = AuthenticationFactors;
@@ -1695,7 +1683,6 @@
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				6D7B5F9422E6852D00DE049D /* AccountMiniCollection.xib in Resources */,
-				81286117222212C7005598D3 /* SetPhoneView.xib in Resources */,
 				349D1ED927424F200095B5CA /* Transaction.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
@@ -1711,13 +1698,11 @@
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
 				3479429F275615560020D60F /* AutomaticRestore.storyboard in Resources */,
 				34DDD0A9260A486300020380 /* Shared.storyboard in Resources */,
-				81286115222212B5005598D3 /* SetEmailView.xib in Resources */,
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
 				3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */,
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
-				81286119222212DB005598D3 /* SetGauthView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1844,7 +1829,6 @@
 				3497936625F8B18C0029ECB1 /* ChooseNetworkViewController.swift in Sources */,
 				3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */,
 				3418BABC2743984400F9B2D0 /* TransactionDetailCell.swift in Sources */,
-				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
 				34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */,
 				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,
 				344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */,
