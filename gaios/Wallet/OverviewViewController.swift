@@ -42,14 +42,14 @@ class OverviewViewController: UIViewController {
     var isLoading = false
     var accounts: [WalletItem] {
         get {
-            guard let session = SessionsManager.current,
-                    subAccounts.count != 0 else {
-                        return []
+            if subAccounts.count == 0 {
+                return []
             }
+            let activeWallet = SessionsManager.current?.activeWallet ?? 0
             if showAccounts {
-                return subAccounts.filter { $0.pointer == session.activeWallet} + subAccounts.filter { $0.pointer != session.activeWallet}
+                return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet}
             } else {
-                return subAccounts.filter { $0.pointer == session.activeWallet}
+                return subAccounts.filter { $0.pointer == activeWallet}
             }
         }
     }
