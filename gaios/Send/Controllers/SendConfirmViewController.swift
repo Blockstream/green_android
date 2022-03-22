@@ -59,6 +59,7 @@ class SendConfirmViewController: KeyboardViewController {
 
     func send() {
         guard let transaction = transaction else { return }
+        guard let session = SessionsManager.current else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             sliderView.isUserInteractionEnabled = false
@@ -78,10 +79,10 @@ class SendConfirmViewController: KeyboardViewController {
             let result = resultDict["result"] as? [String: Any]
             if transaction.isSweep {
                 let tx = result!["transaction"] as? String
-                _ = try SessionsManager.current.broadcastTransaction(tx_hex: tx!)
+                _ = try session.broadcastTransaction(tx_hex: tx!)
                 return nil
             } else {
-                return try SessionsManager.current.sendTransaction(details: result!)
+                return try session.sendTransaction(details: result!)
             }
         }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
             call?.resolve(connected: {

@@ -10,9 +10,9 @@ class ShowMnemonicsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        mnemonic = try? SessionsManager.current.getMnemonicPassphrase(password: "")
-        if let words = mnemonic?.split(separator: " ").map(String.init) {
-            items = words
+        if let session = SessionsManager.current,
+           let mnemonic = try? session.getMnemonicPassphrase(password: "") {
+            items = mnemonic.split(separator: " ").map(String.init)
         }
         collectionView.reloadData()
         title = NSLocalizedString("id_recovery_phrase", comment: "")

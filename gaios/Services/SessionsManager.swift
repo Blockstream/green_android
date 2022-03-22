@@ -4,14 +4,11 @@ class SessionsManager {
 
     static var shared = [String: SessionManager]()
 
-    static var current: SessionManager {
+    static var current: SessionManager? {
         guard let account = AccountsManager.shared.current else {
             fatalError("no account selected or found")
         }
-        guard let session = get(for: account) else {
-            return new(for: account)
-        }
-        return session
+        return get(for: account)
     }
 
     static func get(for account: Account) -> SessionManager? {

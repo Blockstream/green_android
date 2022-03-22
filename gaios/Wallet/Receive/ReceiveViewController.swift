@@ -82,10 +82,12 @@ class ReceiveViewController: UIViewController {
     func newAddress(_ notification: Notification?) {
         let dict = notification?.userInfo as NSDictionary?
         let pointer = dict?["pointer"] as? UInt32
-        guard wallet?.pointer == pointer else {
+        guard let session = SessionsManager.current,
+              let wallet = wallet,
+              wallet.pointer == pointer else {
             return
         }
-        Address.generate(with: wallet!)
+        Address.generate(with: session, wallet: wallet)
             .done { [weak self] addr in
                 self?.address = addr
                 self?.wallet?.receiveAddress = addr.address

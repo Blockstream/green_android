@@ -19,9 +19,9 @@ class SetGauthViewController: UIViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_authenticator_qr_code", comment: "")
 
-        let dataTwoFactorConfig = try? SessionsManager.current.getTwoFactorConfig()
-        guard dataTwoFactorConfig != nil else { return }
-        guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
+        guard let session = SessionsManager.current,
+              let dataTwoFactorConfig = try? session.getTwoFactorConfig(),
+              let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
         gauthData = twoFactorConfig.gauth.data
         guard let secret = twoFactorConfig.gauthSecret() else {
             DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
@@ -63,7 +63,8 @@ class SetGauthViewController: UIViewController {
     }
 
     @objc func click(_ sender: UIButton) {
-        guard let gauth = gauthData else { return }
+        guard let gauth = gauthData,
+              let session = SessionsManager.current else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()
@@ -73,11 +74,11 @@ class SetGauthViewController: UIViewController {
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try SessionsManager.current.changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
+            try session.changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(connected: { self.connected })
         }.then(on: bgq) { _ in
-            SessionsManager.current.loadTwoFactorConfig()
+            session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

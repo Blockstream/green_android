@@ -58,6 +58,7 @@ class SetPhoneViewController: KeyboardViewController {
             DropAlert().warning(message: NSLocalizedString("id_invalid_phone_number_format", comment: ""))
             return
         }
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -66,11 +67,11 @@ class SetPhoneViewController: KeyboardViewController {
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try SessionsManager.current.changeSettingsTwoFactor(method: method.rawValue, details: details)
+            try session.changeSettingsTwoFactor(method: method.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(connected: { self.connected })
         }.then(on: bgq) { _ in
-            SessionsManager.current.loadTwoFactorConfig()
+            session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

@@ -27,7 +27,7 @@ final class Jade: JadeChannel, HWProtocol {
         if let rootCert = httpParams?["root_certificates"] as? [String], rootCert.count == 1 && rootCert.contains(Jade.EXCLUDED_CERTIFICATE) {
             httpParams?.removeValue(forKey: "root_certificates")
         }
-        let httpResponse = try? SessionsManager.current.httpRequest(params: httpParams ?? [:])
+        let httpResponse = try? SessionsManager.current?.httpRequest(params: httpParams ?? [:])
         let httpResponseBody = httpResponse?["body"] as? [String: Any]
         return httpResponseBody
     }
@@ -402,7 +402,7 @@ extension Jade {
             "accept": base64 ? "base64": "text",
             "urls": ["\(Jade.FW_SERVER_HTTPS)\(fwpath)",
                      "\(Jade.FW_SERVER_ONION)\(fwpath)"] ]
-        return try? SessionsManager.current.httpRequest(params: params)
+        return try? SessionsManager.current?.httpRequest(params: params)
     }
 
     func checkFirmware(_ verInfo: [String: Any]) throws -> [String: String]? {

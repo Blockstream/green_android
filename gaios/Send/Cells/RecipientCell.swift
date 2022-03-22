@@ -317,7 +317,7 @@ class RecipientCell: UITableViewCell {
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
         let isBtc = assetId == btc
-        guard let settings = SessionsManager.current.settings else {
+        guard let settings = SessionsManager.current?.settings else {
             return nil
         }
         let denominationBtc = settings.denomination.rawValue

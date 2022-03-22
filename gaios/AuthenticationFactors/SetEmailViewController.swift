@@ -54,6 +54,7 @@ class SetEmailViewController: KeyboardViewController {
     @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
         guard let text = textField.text else { return }
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -62,11 +63,11 @@ class SetEmailViewController: KeyboardViewController {
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try SessionsManager.current.changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: details)
+            try SessionsManager.current?.changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(connected: { self.connected })
         }.then(on: bgq) { _ in
-            SessionsManager.current.loadTwoFactorConfig()
+            session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

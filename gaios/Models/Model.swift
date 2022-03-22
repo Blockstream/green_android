@@ -30,7 +30,10 @@ struct Balance: Codable {
     var asset: [String: String]?
 
     static func convert(details: [String: Any]) -> Balance? {
-        guard var res = try? SessionsManager.current.convertAmount(input: details) else { return nil}
+        guard let session = SessionsManager.current,
+            var res = try? session.convertAmount(input: details) else {
+                return nil
+        }
         res["asset_info"] = details["asset_info"]
         var balance = try? JSONDecoder().decode(Balance.self, from: JSONSerialization.data(withJSONObject: res, options: []))
         if let assetInfo = balance?.assetInfo {
@@ -47,7 +50,7 @@ struct Balance: Codable {
             return (fiat?.localeFormattedString(2), mainnet ? fiatCurrency : "FIAT")
         }
         if feeAsset == tag {
-            let denomination = SessionsManager.current.settings?.denomination ?? .BTC
+            let denomination = SessionsManager.current?.settings?.denomination ?? .BTC
             let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
             let value = res![denomination.rawValue] as? String
             return (value!.localeFormattedString(denomination.digits), denomination.string)
@@ -62,14 +65,14 @@ struct Balance: Codable {
 func getTransactionDetails(txhash: String) -> Promise<[String: Any]> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
-        try SessionsManager.current.getTransactionDetails(txhash: txhash)
+        try SessionsManager.current?.getTransactionDetails(txhash: txhash)
     }
 }
 
 func createTransaction(details: [String: Any]) -> Promise<Transaction> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
-        try SessionsManager.current.createTransaction(details: details)
+        try SessionsManager.current?.createTransaction(details: details)
     }.then(on: bgq) { call in
         call.resolve()
     }.map(on: bgq) { data in
@@ -81,7 +84,7 @@ func createTransaction(details: [String: Any]) -> Promise<Transaction> {
 func signTransaction(details: [String: Any]) -> Promise<TwoFactorCall> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
-        try SessionsManager.current.signTransaction(details: details)
+        try SessionsManager.current?.signTransaction(details: details)
     }
 }
 
@@ -94,11 +97,11 @@ func signTransaction(transaction: Transaction) -> Promise<TwoFactorCall> {
 }
 
 func convertAmount(details: [String: Any]) -> [String: Any]? {
-    return try? SessionsManager.current.convertAmount(input: details)
+    return try? SessionsManager.current?.convertAmount(input: details)
 }
 
 func getFeeEstimates() -> [UInt64]? {
-    let estimates = try? SessionsManager.current.getFeeEstimates()
+    let estimates = try? SessionsManager.current?.getFeeEstimates()
     return estimates == nil ? nil : estimates!["fees"] as? [UInt64]
 }
 

@@ -19,7 +19,7 @@ class UserSettingsViewController: UIViewController {
     var twoFactorConfig: TwoFactorConfig?
     var isResetActive: Bool {
         get {
-            SessionsManager.current.isResetActive ?? false
+            SessionsManager.current?.isResetActive ?? false
         }
     }
     var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
@@ -62,14 +62,15 @@ class UserSettingsViewController: UIViewController {
     }
 
     func load() throws {
-        let session = SessionsManager.current
-        if let settings = try session.getSettings() {
-            SessionsManager.current.settings = Settings.from(settings)
-        }
-        if let account = account, let network = account.gdkNetwork,
-           !(account.isSingleSig ?? false) && !network.liquid {
-            // watchonly available on multisig for not liquid networks
-                self.username = try session.getWatchOnlyUsername()
+        if let session = SessionsManager.current {
+            if let settings = try session.getSettings() {
+                SessionsManager.current?.settings = Settings.from(settings)
+            }
+            if let account = account, let network = account.gdkNetwork,
+               !(account.isSingleSig ?? false) && !network.liquid {
+                // watchonly available on multisig for not liquid networks
+                    self.username = try session.getWatchOnlyUsername()
+            }
         }
     }
 
@@ -105,7 +106,7 @@ class UserSettingsViewController: UIViewController {
         if isLiquid || isSingleSig || isWatchOnly || isResetActive || isHW {} else {
             items += [watchOnly]
         }
-        if let settings = SessionsManager.current.settings {
+        if let settings = SessionsManager.current?.settings {
             let bitcoinDenomination = UserSettingsItem(
                 title: NSLocalizedString("id_bitcoin_denomination", comment: ""),
                 subtitle: settings.denomination.string,
@@ -159,7 +160,7 @@ class UserSettingsViewController: UIViewController {
             }
         }
 
-        if let settings = SessionsManager.current.settings {
+        if let settings = SessionsManager.current?.settings {
             let autolock = UserSettingsItem(
                 title: NSLocalizedString("id_auto_logout_timeout", comment: ""),
                 subtitle: settings.autolock.string,
@@ -233,7 +234,7 @@ class UserSettingsViewController: UIViewController {
             items += [backUpRecoveryPhrase]
         }
 
-        if let settings = SessionsManager.current.settings {
+        if let settings = SessionsManager.current?.settings {
             var locktimeRecoveryEnable = false
             if let notifications = settings.notifications {
                 locktimeRecoveryEnable = notifications.emailOutgoing == true
@@ -277,7 +278,7 @@ class UserSettingsViewController: UIViewController {
 
     func getSwitchValue() -> Bool {
 
-        guard let screenlock = SessionsManager.current.settings?.getScreenLock() else {
+        guard let screenlock = SessionsManager.current?.settings?.getScreenLock() else {
             DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return false
         }
@@ -468,7 +469,7 @@ extension UserSettingsViewController {
 
     func showBitcoinDenomination() {
         let list = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats].map { DenominationType.denominations[$0]! }
-        let settings = SessionsManager.current.settings!
+        guard let settings = SessionsManager.current?.settings else { return }
         let selected = settings.denomination.string
         let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
@@ -509,11 +510,12 @@ extension UserSettingsViewController {
             return
         }
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionsManager.current.setWatchOnly(username: username, password: password)
+            try session.setWatchOnly(username: username, password: password)
             try self.load()
         }.ensure {
             self.stopAnimating()
@@ -525,8 +527,8 @@ extension UserSettingsViewController {
     }
 
     func showAutoLogout() {
+        guard let settings = SessionsManager.current?.settings else { return }
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
-        let settings = SessionsManager.current.settings!
         let selected = settings.autolock.string
         let alert = UIAlertController(title: NSLocalizedString("id_auto_logout_timeout", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
@@ -541,7 +543,7 @@ extension UserSettingsViewController {
 
     func changeSettings(_ settings: Settings) {
         let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-        let session = SessionsManager.current
+        guard let session = SessionsManager.current else { return }
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {_ in
             self.startAnimating()
@@ -560,8 +562,8 @@ extension UserSettingsViewController {
     }
 
     func showRecoveryTransactions() {
-        let settings = SessionsManager.current.settings!
         var enabled = false
+        guard let settings = SessionsManager.current?.settings else { return }
         if let notifications = settings.notifications {
             enabled = notifications.emailOutgoing == true
         }
@@ -605,11 +607,12 @@ extension UserSettingsViewController {
             return
         }
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try self.account?.addBioPin(session: SessionsManager.current)
+            try self.account?.addBioPin(session: session)
         }.ensure {
             self.stopAnimating()
         }.catch { error in

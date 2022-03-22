@@ -51,7 +51,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         setContent()
         setStyle()
 
-        currentCsv = SessionsManager.current.settings?.csvtime
+        currentCsv = SessionsManager.current?.settings?.csvtime
         tableViewCsvTime.estimatedRowHeight = 80
         tableViewCsvTime.rowHeight = UITableView.automaticDimension
 
@@ -123,9 +123,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func reloadData() {
-        let dataTwoFactorConfig = try? SessionsManager.current.getTwoFactorConfig()
-        guard dataTwoFactorConfig != nil else { return }
-        guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
+        guard let dataTwoFactorConfig = try? SessionsManager.current?.getTwoFactorConfig() else { return }
+        guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
         self.twoFactorConfig = twoFactorConfig
         factors.removeAll()
         factors.append(TwoFactorItem(name: NSLocalizedString("id_email", comment: ""), enabled: twoFactorConfig.email.enabled && twoFactorConfig.email.confirmed, maskedData: twoFactorConfig.email.data, type: .email))
@@ -137,7 +136,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
         thresholdView.isHidden = true
         if self.twoFactorConfig?.anyEnabled ?? false,
-            let settings = SessionsManager.current.settings,
+            let session = SessionsManager.current,
+            let settings = session.settings,
             let twoFactorConfig = self.twoFactorConfig {
 
             var balance: Balance?
@@ -164,6 +164,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func disable(_ type: TwoFactorType) {
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -172,9 +173,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.then(on: bgq) { details in
-            try SessionsManager.current.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
+            try session.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
         }.then(on: bgq) { _ in
-            SessionsManager.current.loadTwoFactorConfig()
+            session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -197,13 +198,14 @@ class TwoFactorAuthenticationViewController: UIViewController {
         var details = [String: Any]()
         details["value"] = csv.value()
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try SessionsManager.current.setCSVTime(details: details).resolve()
+            try session.setCSVTime(details: details).resolve()
         }.then(on: bgq) { _ in
-            SessionsManager.current.loadSettings()
+            session.loadSettings()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -245,13 +247,14 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func resetTwoFactor(email: String) {
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try SessionsManager.current.resetTwoFactor(email: email, isDispute: false).resolve()
+            try session.resetTwoFactor(email: email, isDispute: false).resolve()
         }.then(on: bgq) {_ in
-            SessionsManager.current.loadTwoFactorConfig()
+            session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

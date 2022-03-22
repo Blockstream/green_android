@@ -42,11 +42,14 @@ class OverviewViewController: UIViewController {
     var isLoading = false
     var accounts: [WalletItem] {
         get {
-            if subAccounts.count == 0 { return [] }
+            guard let session = SessionsManager.current,
+                    subAccounts.count != 0 else {
+                        return []
+            }
             if showAccounts {
-                return subAccounts.filter { $0.pointer == SessionsManager.current.activeWallet} + subAccounts.filter { $0.pointer != SessionsManager.current.activeWallet}
+                return subAccounts.filter { $0.pointer == session.activeWallet} + subAccounts.filter { $0.pointer != session.activeWallet}
             } else {
-                return subAccounts.filter { $0.pointer == SessionsManager.current.activeWallet}
+                return subAccounts.filter { $0.pointer == session.activeWallet}
             }
         }
     }
@@ -216,11 +219,12 @@ class OverviewViewController: UIViewController {
     func loadAlertCards() {
         alertCards = []
         // load reset card
-        if SessionsManager.current.isResetActive ?? false {
-            if SessionsManager.current.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
+        if let session = SessionsManager.current,
+           session.isResetActive ?? false {
+            if session.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
                 alertCards.append(AlertCardType.dispute)
             } else {
-                let resetDaysRemaining = SessionsManager.current.twoFactorConfig?.twofactorReset.daysRemaining
+                let resetDaysRemaining = session.twoFactorConfig?.twofactorReset.daysRemaining
                 alertCards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
             }
         }
@@ -241,8 +245,9 @@ class OverviewViewController: UIViewController {
         }
         reloadSections([OverviewSection.card], animated: false)
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         Guarantee().map(on: bgq) {
-            try SessionsManager.current.getSystemMessage()
+            try session.getSystemMessage()
         }.done { text in
             if !text.isEmpty {
                 self.alertCards.append(AlertCardType.systemMessage(text))
@@ -322,7 +327,8 @@ class OverviewViewController: UIViewController {
     }
 
     func loadWallet() -> Promise<Void> {
-        return SessionsManager.current.subaccount().then { wallet in
+        guard let session = SessionsManager.current else { return Promise().asVoid() }
+        return session.subaccount().then { wallet in
             wallet.getBalance().compactMap { _ in wallet }
         }.map { wallet in
             self.presentingWallet = wallet
@@ -331,7 +337,8 @@ class OverviewViewController: UIViewController {
     }
 
     func loadTransactions(_ pageId: Int = 0) -> Promise<Void> {
-        return SessionsManager.current.transactions(first: UInt32(pageId))
+        guard let session = SessionsManager.current else { return Promise().asVoid() }
+        return session.transactions(first: UInt32(pageId))
         .map { page in
             self.transactions.removeAll()
             self.transactions += page.list
@@ -354,8 +361,9 @@ class OverviewViewController: UIViewController {
     }
 
     func onAssetsUpdated(_ notification: Notification) {
+        guard let session = SessionsManager.current else { return }
         Guarantee()
-            .compactMap { Registry.shared.cache(session: SessionsManager.current) }
+            .compactMap { Registry.shared.cache(session: session) }
             .done {
                 self.reloadSections([OverviewSection.asset], animated: true)
                 self.showTransactions()
@@ -366,9 +374,10 @@ class OverviewViewController: UIViewController {
     }
 
     func onNewTransaction(_ notification: Notification) {
-        guard let dict = notification.userInfo as NSDictionary? else { return }
-        guard let subaccounts = dict["subaccounts"] as? [UInt32] else { return }
-        if subaccounts.contains(SessionsManager.current.activeWallet) {
+        if let dict = notification.userInfo as NSDictionary?,
+           let subaccounts = dict["subaccounts"] as? [UInt32],
+           let session = SessionsManager.current,
+           subaccounts.contains(session.activeWallet) {
             handleRefresh()
         }
     }
@@ -390,16 +399,17 @@ class OverviewViewController: UIViewController {
     }
 
     func discoverySubaccounts(singlesig: Bool) -> Promise<Void> {
-        if singlesig {
-            return SessionsManager.current.subaccounts(true).asVoid()
+        if let session = SessionsManager.current, singlesig {
+            return session.subaccounts(true).asVoid()
         }
         return Promise().asVoid()
     }
 
     func loadSubaccounts() -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return Promise().asVoid() }
         return Guarantee().then(on: bgq) {
-                SessionsManager.current.subaccounts()
+                session.subaccounts()
             }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
                 let balances = wallets.map { wallet in { wallet.getBalance() } }
                 return Promise.chain(balances).compactMap { _ in wallets }
@@ -435,7 +445,8 @@ class OverviewViewController: UIViewController {
 
     func reloadRegistry() {
         self.startAnimating()
-        Registry.shared.load(session: SessionsManager.current).done { () in
+        guard let session = SessionsManager.current else { return }
+        Registry.shared.load(session: session).done { () in
             self.stopAnimating()
             self.loadAlertCards()
         }.catch { _ in }
@@ -678,7 +689,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewTransactionCell", for: indexPath) as? OverviewTransactionCell {
                 let transaction = transactions[indexPath.row]
                 cell.setup(transaction: transaction, network: account?.network)
-                cell.checkBlockHeight(transaction: transaction, blockHeight: SessionsManager.current.notificationManager.blockHeight)
+                cell.checkBlockHeight(transaction: transaction, blockHeight: SessionsManager.current?.notificationManager.blockHeight ?? 0)
                 cell.checkTransactionType(transaction: transaction)
                 return cell
             }
@@ -746,7 +757,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case OverviewSection.account.rawValue:
             let isWatchonly = account?.isWatchonly ?? false
-            let isResetActive = SessionsManager.current.isResetActive ?? false
+            let isResetActive = SessionsManager.current?.isResetActive ?? false
             return showAccounts && !isWatchonly && !isResetActive ? footerView(.addAccount) : footerView(.none)
         case OverviewSection.transaction.rawValue:
             return transactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
@@ -765,7 +776,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 reloadSections([OverviewSection.account], animated: true)
                 return
             } else {
-                SessionsManager.current.activeWallet = accounts[indexPath.row].pointer
+                SessionsManager.current?.activeWallet = accounts[indexPath.row].pointer
                 presentingWallet = accounts[indexPath.row]
                 showAccounts = !showAccounts
                 reloadData()
@@ -806,7 +817,7 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
                     print("----> null or pending")
                     return
                 }
-                self.fetchTxs = SessionsManager.current.transactions(first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
+                self.fetchTxs = SessionsManager.current?.transactions(first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
                     let c = self.transactions.count
                     self.transactions += page.list
                     self.callPage += 1
@@ -984,11 +995,12 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
 
     func didSave(_ name: String) {
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionsManager.current.renameSubaccount(subaccount: SessionsManager.current.activeWallet, newName: name)
+            try session.renameSubaccount(subaccount: session.activeWallet, newName: name)
         }.ensure {
             self.stopAnimating()
         }.done { _ in

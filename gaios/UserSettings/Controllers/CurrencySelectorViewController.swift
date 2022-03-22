@@ -37,7 +37,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func getCurrentRate() {
-        if let settings = SessionsManager.current.settings {
+        if let settings = SessionsManager.current?.settings {
             currentCurrency.text = settings.pricing["currency"] ?? ""
             currentExchange.text = settings.pricing["exchange"]?.capitalized ?? ""
         }
@@ -81,7 +81,8 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func setExchangeRate(_ currency: CurrencyItem) {
-        guard let settings = SessionsManager.current.settings else { return }
+        guard let session = SessionsManager.current else { return }
+        guard let settings = session.settings else { return }
         let bgq = DispatchQueue.global(qos: .background)
 
         var pricing = [String: String]()
@@ -93,7 +94,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         }.compactMap(on: bgq) {
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try SessionsManager.current.changeSettings(details: details)
+            try session.changeSettings(details: details)
         }.then(on: bgq) { call in
             call.resolve()
         }.done { _ in
@@ -106,8 +107,9 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
 
     func getExchangeRate() {
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         Guarantee().compactMap(on: bgq) {
-            try SessionsManager.current.getAvailableCurrencies()
+            try session.getAvailableCurrencies()
         }.done { (data: [String: Any]?) in
             guard let json = data else { return }
             guard let perExchange = json["per_exchange"] as? [String: [String]] else { throw GaError.GenericError }

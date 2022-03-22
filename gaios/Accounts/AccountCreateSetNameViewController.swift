@@ -99,6 +99,7 @@ class AccountCreateSetNameViewController: UIViewController {
 
     func createSubaccount(name: String, type: AccountType, recoveryMnemonic: String? = nil, recoveryXpub: String? = nil) {
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -110,7 +111,7 @@ class AccountCreateSetNameViewController: UIViewController {
             if let recoveryXpub = recoveryXpub {
                 subaccount["recovery_xpub"] = recoveryXpub
             }
-            return try SessionsManager.current.createSubaccount(details: subaccount).resolve()
+            return try session.createSubaccount(details: subaccount).resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

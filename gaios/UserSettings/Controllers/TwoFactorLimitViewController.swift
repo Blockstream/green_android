@@ -29,13 +29,13 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     var limits: TwoFactorConfigLimits? {
-        guard let dataTwoFactorConfig = try? SessionsManager.current.getTwoFactorConfig() else { return nil }
+        guard let dataTwoFactorConfig = try? SessionsManager.current?.getTwoFactorConfig() else { return nil }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return nil }
         return twoFactorConfig.limits
     }
 
     var denomination: DenominationType {
-        return SessionsManager.current.settings?.denomination ?? .BTC
+        return SessionsManager.current?.settings?.denomination ?? .BTC
     }
 
     override func viewDidLoad() {
@@ -101,7 +101,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionsManager.current.setTwoFactorLimit(details: details)
+            try SessionsManager.current?.setTwoFactorLimit(details: details)
         }.then(on: bgq) { call in
             call.resolve()
         }.ensure {

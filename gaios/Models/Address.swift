@@ -8,10 +8,10 @@ class Address: Codable {
     var branch: UInt32?
     let subtype: UInt32?
 
-    static func generate(with wallet: WalletItem) -> Promise<Address> {
+    static func generate(with session: SessionManager, wallet: WalletItem) -> Promise<Address> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().then(on: bgq) {_ in
-            try SessionsManager.current.getReceiveAddress(details: ["subaccount": wallet.pointer]).resolve()
+            try session.getReceiveAddress(details: ["subaccount": wallet.pointer]).resolve()
         }.compactMap(on: bgq) { res in
             let result = res["result"] as? [String: Any]
             let data = try? JSONSerialization.data(withJSONObject: result!, options: [])

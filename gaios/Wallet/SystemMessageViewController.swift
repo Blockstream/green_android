@@ -48,8 +48,8 @@ class SystemMessageViewController: UIViewController {
 
     @IBAction func confirmBtn(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map(on: bgq) {
-            try SessionsManager.current.ackSystemMessage(message: self.text ?? "")
+        Guarantee().compactMap(on: bgq) {
+            try? SessionsManager.current?.ackSystemMessage(message: self.text ?? "")
         }.then(on: bgq) { twoFactorCall in
             twoFactorCall.resolve()
         }.done { _ in
