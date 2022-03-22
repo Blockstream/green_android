@@ -10,8 +10,8 @@ class ShowMnemonicsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let session = SessionsManager.current,
-           let mnemonic = try? session.getMnemonicPassphrase(password: "") {
+        mnemonic = try? SessionsManager.current?.getMnemonicPassphrase(password: "")
+        if let mnemonic = mnemonic {
             items = mnemonic.split(separator: " ").map(String.init)
         }
         collectionView.reloadData()
