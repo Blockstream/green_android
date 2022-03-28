@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Converted send transaction button to "slide to send" control
 - Update GDK to version 0.50
 - Refactoring asset detail screen
+- Enabled tor for singlesig
 
 ### Fixed
 - Fix session autologout on background after timeout

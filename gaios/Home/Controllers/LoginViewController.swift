@@ -90,29 +90,8 @@ class LoginViewController: UIViewController {
         reload()
     }
 
-    func presentDialogTorUnavailable() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogTorSingleSigViewController") as? DialogTorSingleSigViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.present(vc, animated: false, completion: nil)
-            }
-        }
-    }
-
     override func viewDidAppear(_ animated: Bool) {
 
-        if networkSettings["tor"] as? Bool ?? false &&
-            account?.isSingleSig ?? false &&
-            !UserDefaults.standard.bool(forKey: AppStorage.dontShowTorAlert) {
-            presentDialogTorUnavailable()
-        } else {
-            torCheckDone()
-        }
-    }
-
-    func torCheckDone() {
         if account?.hasBioPin ?? false {
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil)
         } else if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
@@ -370,19 +349,9 @@ extension LoginViewController: UIPopoverPresentationControllerDelegate {
     }
 }
 
-extension LoginViewController: DialogTorSingleSigViewControllerDelegate {
-    func didContinue() {
-        torCheckDone()
-    }
-}
-
 extension LoginViewController: WalletSettingsViewControllerDelegate {
     func didSet(tor: Bool) {
-        if tor == true && account?.isSingleSig ?? false {
-            DispatchQueue.main.async {
-                self.presentDialogTorUnavailable()
-            }
-        }
+        //
     }
     func didSet(testnet: Bool) {
         //
