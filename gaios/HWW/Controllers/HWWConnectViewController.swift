@@ -91,8 +91,8 @@ class HWWConnectViewController: UIViewController {
         failureCircle.borderWidth = 2.0
         failureCircle.layer.cornerRadius = successCircle.frame.size.width / 2.0
         failureCircle.borderColor = UIColor.white
-        btnTryAgain.cornerRadius = 4.0
-        btnNeedHelp.cornerRadius = 4.0
+        btnTryAgain.setStyle(.primary)
+        btnNeedHelp.setStyle(.outlined)
         arrowImage.image = UIImage(named: "ic_hww_arrow")?.maskWithColor(color: UIColor.customMatrixGreen())
         faailureImage.image = UIImage(named: "cancel")?.maskWithColor(color: UIColor.white)
         deviceImage.image = account.deviceImage()
