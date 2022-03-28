@@ -343,8 +343,11 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             let copyAmount: ((String) -> Void)? = { [weak self] value in
                 self?.copyToClipboard(value)
             }
+            let copyRecipient: ((String) -> Void)? = { [weak self] value in
+                self?.copyToClipboard(value)
+            }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
-                cell.configure(transaction: transaction, network: account?.network, index: indexPath.row, copyAmount: copyAmount)
+                cell.configure(transaction: transaction, network: account?.network, index: indexPath.row, copyAmount: copyAmount, copyRecipient: copyRecipient)
                 cell.selectionStyle = .none
                 return cell
             }

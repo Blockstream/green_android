@@ -9,9 +9,11 @@ class TransactionAmountCell: UITableViewCell {
     @IBOutlet weak var lblFiat: UILabel!
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblRecipient: UILabel!
-    @IBOutlet weak var copyIcon: UIImageView!
+    @IBOutlet weak var copyRecipientIcon: UIImageView!
+    @IBOutlet weak var copyAmountIcon: UIImageView!
 
     var copyAmount: ((String) -> Void)?
+    var copyRecipient: ((String) -> Void)?
 
     private var btc: String {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
@@ -34,14 +36,16 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = true
     }
 
-    func configure(transaction: Transaction, network: String?, index: Int, copyAmount: ((String) -> Void)?) {
+    func configure(transaction: Transaction, network: String?, index: Int, copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
 
         self.copyAmount = copyAmount
+        self.copyRecipient = copyRecipient
 
+        copyRecipientIcon.image = copyRecipientIcon.image?.maskWithColor(color: .white)
         let isIncoming = transaction.type == "incoming"
         let isOutgoing = transaction.type == "outgoing"
         let color: UIColor = isOutgoing ? UIColor.white : UIColor.customMatrixGreen()
-        copyIcon.image = copyIcon.image?.maskWithColor(color: color)
+        copyAmountIcon.image = copyAmountIcon.image?.maskWithColor(color: color)
         lblTitle.text = NSLocalizedString("id_recipient", comment: "")
         if isIncoming {
             lblTitle.text = NSLocalizedString("id_received", comment: "")
@@ -51,6 +55,7 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = false
         lblAmount.textColor = color
         lblFiat.textColor = color
+        copyRecipientIcon.isHidden = (transaction.address() ?? "").isEmpty
 
         if network == "mainnet" {
             icon.image = UIImage(named: "ntw_btc")
@@ -89,9 +94,14 @@ class TransactionAmountCell: UITableViewCell {
                     self.icon.image = icon
                     lblFiat.isHidden = true
                     lblRecipient.isHidden = true
+                    copyRecipientIcon.isHidden = true
                 }
             }
         }
+    }
+
+    @IBAction func copyRecipientBtn(_ sender: Any) {
+        copyRecipient?(lblRecipient.text ?? "")
     }
 
     @IBAction func copyAmountBtn(_ sender: Any) {
