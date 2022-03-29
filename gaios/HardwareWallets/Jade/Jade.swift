@@ -152,7 +152,8 @@ final class Jade: JadeChannel, HWProtocol {
         }
 
         let txInputs = inputs.map { input -> TxInputBtc? in
-            let swInput = !(input["address_type"] as? String == "p2sh")
+            let addressType = input["address_type"] as? String
+            let swInput = isSegwit(addressType)
             let prevoutScript = input["prevout_script"] as? String
             let script = hexToData(prevoutScript!)
             let userPath = input["user_path"] as? [UInt32]
@@ -315,18 +316,36 @@ final class Jade: JadeChannel, HWProtocol {
         }
     }
 
+    func isSegwit(_ addrType: String?) -> Bool {
+        return ["csv", "p2wsh", "p2wpkh", "p2sh-p2wpkh"].contains(addrType)
+    }
+
+    func mapAddressType(_ addrType: String?) -> String? {
+        switch addrType {
+            case "p2pkh": return "pkh(k)"
+            case "p2wpkh": return "wpkh(k)"
+            case "p2sh-p2wpkh": return "sh(wpkh(k))"
+            default: return nil
+        }
+    }
+
     // Helper to get the change paths for auto-validation
     func getChangeData(outputs: [[String: Any]]) -> [TxChangeOutput?] {
         return outputs.map { output -> TxChangeOutput? in
-            if !(output["is_change"] as? Bool ?? true) {
-                    return nil
-                }
-                var csvBlock = 0
-                if let addressType = output["address_type"] as? String, addressType == "csv" {
-                    csvBlock = output["subtype"] as? Int  ?? 0
-                }
-                return TxChangeOutput(path: output["user_path"] as? [UInt32] ?? [], recoveryxpub: output["recovery_xpub"] as? String ?? "", csvBlocks: csvBlock)
+            let isChange = output["is_change"] as? Bool
+            if isChange == false {
+                return nil
             }
+            var csvBlock = 0
+            let addressType = output["address_type"] as? String
+            if addressType == "csv" {
+                csvBlock = output["subtype"] as? Int  ?? 0
+            }
+            return TxChangeOutput(path: output["user_path"] as? [UInt32] ?? [],
+                                  recoveryxpub: output["recovery_xpub"] as? String ?? "",
+                                  csvBlocks: csvBlock,
+                                  variant: mapAddressType(addressType))
+        }
     }
 
     func inputBytes(_ input: [String: Any], isSegwit: Bool) -> Data? {
