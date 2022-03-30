@@ -210,6 +210,10 @@ dependencies {
     productionImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.5"
     /** ----------------------------------------------------------------------------------------- */
 
+    /**  --- Slide To Act ----------------------------------------------------------------------- */
+    implementation "com.ncorti:slidetoact:0.9.0"
+    /** ----------------------------------------------------------------------------------------- */
+
     testImplementation fileTree(dir: 'libs', include: ['.jar', '.so'])
 
     testImplementation 'junit:junit:4.13.2'

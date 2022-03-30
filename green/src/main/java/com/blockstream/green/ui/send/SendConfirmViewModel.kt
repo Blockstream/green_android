@@ -52,8 +52,6 @@ class SendConfirmViewModel @AssistedInject constructor(
 
         }.doOnSubscribe {
             onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
         }
         .subscribeBy(
             onSuccess = {
@@ -65,6 +63,8 @@ class SendConfirmViewModel @AssistedInject constructor(
                 it.printStackTrace()
                 deviceAddressValidationEvent.value = ConsumableEvent(false)
                 onError.postValue(ConsumableEvent(it))
+                // Set progress to false only onError as expected behavior for success is to navigate away and we want to avoid animation glitches
+                onProgress.postValue(false)
             }
         )
     }

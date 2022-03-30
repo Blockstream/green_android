@@ -21,6 +21,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
+import com.ncorti.slidetoact.SlideToActView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -76,14 +77,10 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
             adapter = fastAdapter
         }
 
-        binding.buttonSend.progressIndicator = binding.sendIndicator
-        binding.buttonSend.setOnClickListener {
-            binding.buttonSendHelp.starWarsAndHide(offset = binding.buttonSendHelp.height * 2, duration = 1000)
-        }
-
-        binding.buttonSend.setOnLongClickListener {
-            viewModel.broadcastTransaction(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
-            true
+        binding.buttonSend.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener{
+            override fun onSlideComplete(view: SlideToActView) {
+                viewModel.broadcastTransaction(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+            }
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
@@ -95,6 +92,9 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
 
         viewModel.onError.observe(viewLifecycleOwner){
             it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
+                // Reset send slider
+                binding.buttonSend.resetSlider()
+
                 when {
                     // If the error is the Anti-Exfil validation violation we show that prominently.
                     // Otherwise show a toast of the error text.

@@ -15,7 +15,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
@@ -43,38 +44,30 @@
             app:layout_constraintStart_toStartOf="@+id/buttonSend"
             app:layout_constraintTop_toTopOf="@+id/buttonSend" />
 
-        <com.blockstream.green.views.LongClickButton
+        <com.ncorti.slidetoact.SlideToActView
             android:id="@+id/buttonSend"
-            style="@style/Widget.Green.Button"
+            isInvisible="@{vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:enabled="@{!vm.onProgress}"
-            android:text="@string/id_send"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            app:animate_completion="false"
+            app:area_margin="-8dp"
+            app:bump_vibration="50"
+            app:icon_margin="4dp"
+            app:inner_color="@color/brand_green"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/sendIndicator"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            android:layout_marginBottom="8dp"
-            android:elevation="16dp"
-            tools:progress="25"
-            app:indicatorColor="@color/white"
-            app:hideAnimationBehavior="inward"
-            app:trackThickness="2dp"
-            app:trackCornerRadius="2dp"
-            app:trackColor="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
-            app:layout_constraintEnd_toEndOf="@+id/buttonSend"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/buttonSend" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:outer_color="@color/brand_surface_light"
+            app:rotate_icon="false"
+            app:slider_height="34dp"
+            app:slider_icon="@drawable/ic_send"
+            app:slider_icon_color="@color/white"
+            app:text="@string/id_send"
+            app:text_color="@color/white"
+            app:text_style="bold" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/linearProgressIndicator"
