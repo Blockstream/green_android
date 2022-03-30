@@ -3,10 +3,18 @@ import PromiseKit
 
 class Address: Codable {
 
+    enum CodingKeys: String, CodingKey {
+        case address = "address"
+        case pointer = "pointer"
+        case branch = "branch"
+        case userPath = "user_path"
+    }
+
     let address: String
-    let pointer: UInt32?
-    var branch: UInt32?
-    let subtype: UInt32?
+    let pointer: UInt32? = nil
+    var branch: UInt32? = nil
+    let subtype: UInt32? = nil
+    let userPath: [UInt32]? = nil
 
     static func generate(with session: SessionManager, wallet: WalletItem) -> Promise<Address> {
         let bgq = DispatchQueue.global(qos: .background)
@@ -20,10 +28,8 @@ class Address: Codable {
     }
 
     static func validate(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String) -> Promise<String> {
-        let csv = wallet.type == "2of2"
-        let csvBlocks = csv ? addr.subtype ?? 0 : 0
         return Promise { seal in
-            _ = hw.newReceiveAddress(network: network, subaccount: wallet.pointer, branch: addr.branch!, pointer: addr.pointer!, recoveryChainCode: wallet.recoveryChainCode, recoveryPubKey: wallet.recoveryPubKey, csvBlocks: csvBlocks)
+            _ = hw.newReceiveAddress(network: getGdkNetwork(network), wallet: wallet, path: addr.userPath!, csvBlocks: addr.subtype ?? 0)
                 .subscribe(onNext: { data in
                     seal.fulfill(data)
                 }, onError: { err in

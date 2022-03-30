@@ -355,20 +355,49 @@ final class Jade: JadeChannel, HWProtocol {
         return Data(txId! + ptIdx!.uint32LE() + (isSegwit ? (input["satoshi"] as? UInt64)!.uint64LE() : []))
     }
 
-    // Get (receive) green address
-    // swiftlint:disable:next function_parameter_count
-    func newReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryChainCode: String?, recoveryPubKey: String?, csvBlocks: UInt32) -> Observable<String> {
-        // Jade expects any 'recoveryxpub' to be at the subact/branch level, consistent with tx outputs - but gdk
-        // subaccount data has the base subaccount chain code and pubkey - so we apply the branch derivation here.
-        var recoveryxpub: String?
-        if let chaincode = recoveryChainCode, !chaincode.isEmpty {
-            let isNetworkMainnet = ["mainnet", "liquid"].contains(network)
-            recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: isNetworkMainnet, pubKey: [UInt8](hexToData(recoveryPubKey!)), chainCode: [UInt8](hexToData(chaincode)), branch: branch)
+    func newReceiveAddress(network: GdkNetwork, wallet: WalletItem, path: [UInt32], csvBlocks: UInt32) -> Observable<String> {
+        if network.multisig {
+            // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
+            // In any case the last two entries are 'branch' and 'pointer'
+            let pathlen = path.count
+            let branch = path[pathlen - 2]
+            let pointer = path[pathlen - 1]
+            var recoveryxpub: String?
+            if let chaincode = wallet.recoveryChainCode, !chaincode.isEmpty {
+                recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: !network.mainnet,
+                                                               pubKey: [UInt8](hexToData(wallet.recoveryPubKey!)),
+                                                               chainCode: [UInt8](hexToData(chaincode)),
+                                                               branch: branch)
+            }
+            // Get receive address from Jade for the path elements given
+            return newReceiveAddress(network: network.network,
+                                     subaccount: wallet.pointer,
+                                     branch: branch,
+                                     pointer: pointer,
+                                     recoveryPubKey: recoveryxpub,
+                                     csvBlocks: csvBlocks)
+        } else {
+            // Green Electrum Singlesig
+            let variant = mapAddressType(wallet.type)
+            return newReceiveAddress(network: network.network,
+                                     variant: variant ?? "",
+                                     path: path)
         }
-        let params = [ "network": network, "subaccount": subaccount, "pointer": pointer,
-                       "branch": branch, "recovery_xpub": recoveryxpub ?? "", "csv_blocks": csvBlocks
-        ] as [String: Any]
+    }
 
+    // Get (receive) green address - multisig
+    // swiftlint:disable:next function_parameter_count
+    func newReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryPubKey: String?, csvBlocks: UInt32) -> Observable<String> {
+        var params = [ "network": network,
+                       "subaccount": subaccount,
+                       "branch": branch ] as [String: Any]
+        // Optional fields
+        if let recoveryPubKey = recoveryPubKey, !recoveryPubKey.isEmpty {
+            params["recovery_xpub"] = recoveryPubKey
+        }
+        if csvBlocks > 0 {
+            params["csv_blocks"] = csvBlocks
+        }
         return Jade.shared.exchange(method: "get_receive_address", params: params)
         .flatMap { res -> Observable<String> in
             guard let result = res["result"] as? String else {
@@ -377,6 +406,21 @@ final class Jade: JadeChannel, HWProtocol {
             return Observable.just(result)
         }
     }
+
+    // Get (receive) green address - singlesig
+    func newReceiveAddress(network: String, variant: String, path: [UInt32]) -> Observable<String> {
+        let params = [ "network": network,
+                       "path": path,
+                       "variant": variant ] as [String: Any]
+        return Jade.shared.exchange(method: "get_receive_address", params: params)
+        .flatMap { res -> Observable<String> in
+            guard let result = res["result"] as? String else {
+                return Observable.error(JadeError.Abort(""))
+            }
+            return Observable.just(result)
+        }
+    }
+
 }
 // Jade ota
 extension Jade {

@@ -20,8 +20,7 @@ protocol HWProtocol {
                          transactions: [String: String],
                          useAeProtocol: Bool) -> Observable<[String: Any]>
 
-    // swiftlint:disable:next function_parameter_count
-    func newReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryChainCode: String?, recoveryPubKey: String?, csvBlocks: UInt32) -> Observable<String>
+    func newReceiveAddress(network: GdkNetwork, wallet: WalletItem, path: [UInt32], csvBlocks: UInt32) -> Observable<String>
 
     func getMasterBlindingKey() -> Observable<String>
 

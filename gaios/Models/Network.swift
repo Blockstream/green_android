@@ -31,6 +31,14 @@ struct GdkNetwork: Codable, Equatable {
     func getFeeAsset() -> String {
         return self.liquid ? self.policyAsset ?? "" : "btc"
     }
+
+    var electrum: Bool {
+        "electrum" == serverType
+    }
+
+    var multisig: Bool {
+        !electrum
+    }
 }
 
 var cachedNetworks: [String: Any]?
