@@ -181,8 +181,15 @@ public class BTChipHWWallet extends HWWallet {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
 
-            final boolean sw = inputs.stream().anyMatch(InputOutput::isSegwit);
-            final boolean p2sh = inputs.stream().anyMatch(it -> !it.isSegwit());
+            boolean sw = false;
+            boolean p2sh = false;
+            for (final InputOutput in : inputs) {
+                if (in.isSegwit()) {
+                    sw = true;
+                } else {
+                    p2sh = true;
+                }
+            }
 
             // Sanity check on the firmware version, in case devices have been swapped
             if (sw && !mDongle.shouldUseNewSigningApi())
