@@ -13,7 +13,7 @@ class ValidateTask {
     private var task: DispatchWorkItem?
 
     init(details: [String: Any], inputType: InputType) {
-        
+
         guard let session = SessionsManager.current else { return }
         task = DispatchWorkItem {
             var details = details

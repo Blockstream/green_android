@@ -109,7 +109,6 @@ class OverviewViewController: UIViewController {
         receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
 
         startAnimating()
-        reloadData()
     }
 
     func reloadSections(_ sections: [OverviewSection], animated: Bool) {
@@ -217,60 +216,71 @@ class OverviewViewController: UIViewController {
     }
 
     func loadAlertCards() {
-        alertCards = []
-        // load reset card
-        if let session = SessionsManager.current,
-           session.isResetActive ?? false {
+
+        var cards: [AlertCardType] = []
+        guard let session = SessionsManager.current else {
+            self.alertCards = cards
+            self.reloadSections([OverviewSection.card], animated: false)
+            return
+        }
+        if session.isResetActive ?? false {
             if session.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
-                alertCards.append(AlertCardType.dispute)
+                cards.append(AlertCardType.dispute)
             } else {
                 let resetDaysRemaining = session.twoFactorConfig?.twofactorReset.daysRemaining
-                alertCards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
+                cards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
             }
         }
         // load testnet card
         if let network = account?.gdkNetwork, !network.mainnet {
-            alertCards.append(AlertCardType.testnetNoValue)
+            cards.append(AlertCardType.testnetNoValue)
         }
         // load registry cards
         if let network = account?.gdkNetwork, network.liquid {
             switch Registry.shared.failStatus() {
             case .assets, .all:
-                alertCards.append(AlertCardType.assetsRegistryFail)
+                cards.append(AlertCardType.assetsRegistryFail)
             case .icons:
-                alertCards.append(AlertCardType.iconsRegistryFail)
+                cards.append(AlertCardType.iconsRegistryFail)
             case .none:
                 break
             }
         }
-        reloadSections([OverviewSection.card], animated: false)
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
         Guarantee().map(on: bgq) {
             try session.getSystemMessage()
-        }.done { text in
+        }.compactMap { text in
             if !text.isEmpty {
-                self.alertCards.append(AlertCardType.systemMessage(text))
-                self.reloadSections([OverviewSection.card], animated: false)
+                cards.append(AlertCardType.systemMessage(text))
             }
-        }.catch { err in
-            print(err.localizedDescription)
-        }
-        //We will use Card2faType.reactivate for expired coins
-
-        let bgqu = DispatchQueue.global(qos: .background)
-        firstly {
-            return Guarantee()
-        }.map(on: bgqu) { () -> (String?, String) in
+            return nil
+        }.map(on: bgq) { () -> (String?, String) in
             return Balance.convert(details: ["satoshi": 0])?.get(tag: "fiat") ?? (nil, "")
         }.done { (amount, _) in
             if amount == nil {
-                self.alertCards.append(AlertCardType.fiatMissing)
-                self.reloadSections([OverviewSection.card], animated: false)
+                cards.append(AlertCardType.fiatMissing)
             }
-        }.catch { err in
+        }.ensure {
+            self.alertCards = cards
+            self.reloadSections([OverviewSection.card], animated: false)
+        }
+        .catch { err in
             print(err.localizedDescription)
         }
+//        //We will use Card2faType.reactivate for expired coins
+//
+//        let bgqu = DispatchQueue.global(qos: .background)
+//        firstly {
+//            return Guarantee()
+//        }.map(on: bgqu) { () -> (String?, String) in
+//            return Balance.convert(details: ["satoshi": 0])?.get(tag: "fiat") ?? (nil, "")
+//        }.done { (amount, _) in
+//            if amount == nil {
+//                cards.append(AlertCardType.fiatMissing)
+//            }
+//        }.catch { err in
+//            print(err.localizedDescription)
+//        }
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
@@ -317,7 +327,8 @@ class OverviewViewController: UIViewController {
         }.then {
             self.loadTransactions()
         }.ensure {
-             self.isLoading = false
+            self.isLoading = false
+            self.stopAnimating()
         }.done { _ in
             self.showTransactions()
         }.catch { err in
