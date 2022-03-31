@@ -312,6 +312,9 @@ class BLEManager {
 
     func onError(_ err: Error, network: String?) {
         switch err {
+        case BluetoothError.peripheralConnectionFailed(_, let error):
+            let err = BLEManagerError.bleErr(txt: error?.localizedDescription ?? err.localizedDescription)
+            self.delegate?.onError(err)
         case is BluetoothError, is GaError:
             let err = BLEManagerError.bleErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
             self.delegate?.onError(err)
