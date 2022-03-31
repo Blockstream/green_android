@@ -81,7 +81,6 @@ class DeviceInfoViewModel @AssistedInject constructor(
         getGreenSession().observable {
             it.disconnect(disconnectDevice = false)
             it.hardwareWallet = wallet
-            it.hwWallet!!.network = it.networkFromWallet(wallet)
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {

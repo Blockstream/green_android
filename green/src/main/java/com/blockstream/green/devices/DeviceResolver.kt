@@ -3,9 +3,9 @@ package com.blockstream.green.devices
 import com.blockstream.gdk.HardwareWalletResolver
 import com.blockstream.gdk.data.DeviceRequiredData
 import com.blockstream.gdk.data.DeviceResolvedData
+import com.blockstream.green.gdk.GreenSession
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWallet.SignTxResult
 import com.greenaddress.greenapi.HWWalletBridge
 import io.reactivex.rxjava3.core.Single
@@ -13,7 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hwWallet: HWWallet?) :
+class DeviceResolver constructor(private val session: GreenSession, private val hwWalletBridge: HWWalletBridge? = null) :
     HardwareWalletResolver {
     private val objectMapper by lazy { ObjectMapper() }
 
@@ -40,13 +40,11 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
     @Synchronized
     fun requestDataFromHardware(requiredData: DeviceRequiredData): String? {
 
-        if(hwWallet == null){
-            return null
-        }
+        val hwWallet = session.hwWallet ?: return null
 
         return when (requiredData.action) {
             "get_xpubs" -> {
-                hwWallet.getXpubs(hwWalletBridge, requiredData.paths?.map { it.map { it.toInt() } }).let {
+                hwWallet.getXpubs(session.network, hwWalletBridge, requiredData.paths?.map { it.map { it.toInt() } }).let {
                     DeviceResolvedData(
                         xpubs = it
                     )
@@ -83,8 +81,9 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
 
             "sign_tx" -> {
                 val result: SignTxResult
-                if (hwWallet.network.isLiquid) {
+                if (session.network.isLiquid) {
                     result = hwWallet.signLiquidTransaction(
+                        session.network,
                         hwWalletBridge,
                         toObjectNode(requiredData.transaction),
                         requiredData.signingInputs,
@@ -94,6 +93,7 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
                     )
                 } else {
                     result = hwWallet.signTransaction(
+                        session.network,
                         hwWalletBridge,
                         toObjectNode(requiredData.transaction),
                         requiredData.signingInputs,
@@ -115,7 +115,7 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
                 }
 
 
-                if (hwWallet.network.isLiquid) {
+                if (session.network.isLiquid) {
                     DeviceResolvedData(
                         signatures = signatures,
                         signerCommitments = result.signerCommitments,

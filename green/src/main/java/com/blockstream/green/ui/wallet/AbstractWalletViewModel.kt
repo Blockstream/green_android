@@ -188,7 +188,7 @@ abstract class AbstractWalletViewModel constructor(
     fun ackSystemMessage(message : String){
         session.observable {
             session.ackSystemMessage(message)
-                .resolve(hardwareWalletResolver = DeviceResolver(null, session.hwWallet))
+                .resolve(hardwareWalletResolver = DeviceResolver(session))
             session.updateSystemMessage()
         }.doOnSubscribe {
             onProgress.postValue(true)

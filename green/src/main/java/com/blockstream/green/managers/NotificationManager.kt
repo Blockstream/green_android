@@ -43,7 +43,11 @@ class NotificationManager constructor(
             intent.extras?.getLong(WALLET_ID, -1)?.let { walletId ->
                 if (intent.action == ACTION_LOGOUT) {
                     applicationScope.launch {
-                        walletRepository.getWalletSuspend(walletId)?.let {
+                        if(walletId == -1L){
+                            sessionManager.getHardwareSession().hardwareWallet
+                        }else{
+                            walletRepository.getWalletSuspend(walletId)
+                        }?.let {
                             sessionManager.getWalletSession(it).disconnectAsync()
                         }
                     }

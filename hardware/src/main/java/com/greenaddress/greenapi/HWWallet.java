@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public abstract class HWWallet {
-    protected Network mNetwork;
     protected Device mDevice;
     protected HardwareQATester mHardwareQATester;
 
@@ -90,20 +89,20 @@ public abstract class HWWallet {
     public abstract void disconnect();
 
     // Return the base58check encoded xpubs for each path in paths
-    public abstract List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths);
+    public abstract List<String> getXpubs(final Network network, final HWWalletBridge parent, final List<List<Integer>> paths);
 
     // Sign message with the key resulting from path, and return it as hex encoded DER
     // If using Anti-Exfil protocol, also return the signerCommitment (if not this can be null).
     public abstract SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
                                               final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy);
 
-    public abstract SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public abstract SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                                  final List<InputOutput> inputs,
                                                  final List<InputOutput> outputs,
                                                  final Map<String,String> transactions,
                                                  final boolean useAeProtocol);
 
-    public abstract SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public abstract SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                                        final List<InputOutput> inputs,
                                                        final List<InputOutput> outputs,
                                                        final Map<String,String> transactions,
@@ -117,15 +116,7 @@ public abstract class HWWallet {
 
     public abstract int getIconResourceId();
 
-    public abstract String getGreenAddress(final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws Exception;
-
-    public Network getNetwork() {
-        return mNetwork;
-    }
-
-    public void setNetwork(Network network) {
-        mNetwork = network;
-    }
+    public abstract String getGreenAddress(final Network network, final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws Exception;
 
     public Device getDevice() {
         return mDevice;

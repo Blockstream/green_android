@@ -226,7 +226,7 @@ class LoginViewModel @AssistedInject constructor(
             it.loginWithDevice(it.networks.getNetworkById(wallet.network),
                 registerUser = true,
                 device = device,
-                hardwareWalletResolver = DeviceResolver(this, device.hwWallet!!)
+                hardwareWalletResolver = DeviceResolver(session, this)
             )
         }
         .observeOn(AndroidSchedulers.mainThread())

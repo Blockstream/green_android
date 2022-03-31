@@ -47,8 +47,7 @@ public class JadeHWWallet extends HWWallet {
 
     private final JadeAPI jade;
 
-    public JadeHWWallet(final JadeAPI jade, final Network network, final Device device, final HardwareQATester hardwareQATester) {
-        super.mNetwork = network;
+    public JadeHWWallet(final JadeAPI jade, final Device device, final HardwareQATester hardwareQATester) {
         super.mDevice = device;
         this.jade = jade;
         this.mHardwareQATester = hardwareQATester;
@@ -71,7 +70,7 @@ public class JadeHWWallet extends HWWallet {
 
     // Helper to push entropy into jade, and then call 'authUser()' in a loop
     // (until correctly setup and user authenticated etc).
-    private boolean authUser(final HWWalletBridge hwWalletBridge) throws IOException {
+    private boolean authUser(final Network network, final HWWalletBridge hwWalletBridge) throws IOException {
         // Push some extra entropy into Jade
         jade.addEntropy(GDK.get_random_bytes(32));
 
@@ -92,7 +91,7 @@ public class JadeHWWallet extends HWWallet {
             try {
                 // Authenticate with pinserver (loop/retry on failure)
                 // Note: this should be a no-op if the user is already authenticated on the device.
-                while (!this.jade.authUser(getNetwork().getCanonicalNetworkId())) {
+                while (!this.jade.authUser(network.getCanonicalNetworkId())) {
                     Log.w(TAG, "Jade authentication failed");
                 }
                 completable.onComplete();
@@ -106,7 +105,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     // Authenticate Jade with pinserver and check firmware version with fw-server
-    public Single<JadeHWWallet> authenticate(final HWWalletBridge hwWalletBridge, final JadeFirmwareManager jadeFirmwareManager) throws Exception {
+    public Single<JadeHWWallet> authenticate(final Network network, final HWWalletBridge hwWalletBridge, final JadeFirmwareManager jadeFirmwareManager) throws Exception {
         /*
          * 1. check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
          * 2. authenticate the user (see above)
@@ -115,11 +114,11 @@ public class JadeHWWallet extends HWWallet {
          */
         return Single.just(this)
                 .flatMap(hww -> jadeFirmwareManager.checkFirmware(jade, false))
-                .map(fwValid -> authUser(hwWalletBridge))
+                .map(fwValid -> authUser(network, hwWalletBridge))
                 .flatMap(authed -> jadeFirmwareManager.checkFirmware(jade, true))
                 .flatMap(fwValid -> {
                     if (fwValid) {
-                        authUser(hwWalletBridge);  // re-auth if required
+                        authUser(network, hwWalletBridge);  // re-auth if required
                         return Single.just(this);
                     } else {
                         return Single.error(new JadeError(JadeError.UNSUPPORTED_FIRMWARE_VERSION,
@@ -168,16 +167,16 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public List<String> getXpubs(final Network network, final HWWalletBridge parent, final List<List<Integer>> paths) {
         Log.d(TAG, "getXpubs() for " + paths.size() + " paths.");
 
-        final String network = getNetwork().getCanonicalNetworkId();
+         final String canonicalNetworkId = network.getCanonicalNetworkId();
         try {
             // paths.stream.map(jade::get_xpub).collect(Collectors.toList());
             final List<String> xpubs = new ArrayList<>(paths.size());
             for (final List<Integer> path : paths) {
                 final List<Long> unsignedPath = getUnsignedPath(path);
-                final String xpub = this.jade.getXpub(network, unsignedPath);
+                final String xpub = this.jade.getXpub(canonicalNetworkId, unsignedPath);
                 Log.d(TAG, "Got xpub for " + path + ": " + xpub);
                 xpubs.add(xpub);
             }
@@ -240,7 +239,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signTransaction(final HWWalletBridge parent,
+    public SignTxResult signTransaction(final Network network, final HWWalletBridge parent,
                                         final ObjectNode tx,
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
@@ -289,10 +288,10 @@ public class JadeHWWallet extends HWWallet {
             final List<TxChangeOutput> change = getChangeData(outputs);
 
             // Make jade-api call
-            final String network = getNetwork().getCanonicalNetworkId();
+            final String canonicalNetworkId = network.getCanonicalNetworkId();
             final String txhex = tx.get("transaction").asText();
             final byte[] txn = hexToBytes(txhex);
-            final SignTxInputsResult result = this.jade.signTx(network, useAeProtocol, txn, txInputs, change);
+            final SignTxInputsResult result = this.jade.signTx(canonicalNetworkId, useAeProtocol, txn, txInputs, change);
 
             Log.d(TAG, "signTransaction() returning " + result.getSignatures().size() + " signatures");
             return new SignTxResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
@@ -379,7 +378,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String,String> transactions,
@@ -461,10 +460,10 @@ public class JadeHWWallet extends HWWallet {
             final List<TxChangeOutput> change = getChangeData(outputs);
 
             // Make jade-api call to sign the txn
-            final String network = getNetwork().getCanonicalNetworkId();
+            final String canonicalNetworkId = network.getCanonicalNetworkId();
             final String txhex = tx.get("transaction").asText();
             final byte[] txn = hexToBytes(txhex);
-            final SignTxInputsResult result = this.jade.signLiquidTx(network, useAeProtocol, txn,
+            final SignTxInputsResult result = this.jade.signLiquidTx(canonicalNetworkId, useAeProtocol, txn,
                                                                      txInputs, trustedCommitments, change);
             // Pivot data into return structure
             Log.d(TAG, "signLiquidTransaction() returning " + result.getSignatures().size() + " signatures");
@@ -526,10 +525,10 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
+    public String getGreenAddress(final Network network, final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
         try {
-            final String network = getNetwork().getCanonicalNetworkId();
-            if (getNetwork().isMultisig()) {
+            final String canonicalNetworkId = network.getCanonicalNetworkId();
+            if (network.isMultisig()) {
                 // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
                 // In any case the last two entries are 'branch' and 'pointer'
                 final int pathlen = path.size();
@@ -544,7 +543,7 @@ public class JadeHWWallet extends HWWallet {
                 // subaccount data has the base subaccount chain code and pubkey - so we apply the branch derivation here.
                 if (subaccount.getRecoveryChainCode() != null && subaccount.getRecoveryChainCode().length() > 0) {
                     final Object subactkey = Wally.bip32_pub_key_init(
-                            getNetwork().getVerPublic(), 0, 0,
+                            network.getVerPublic(), 0, 0,
                             subaccount.getRecoveryChainCodeAsBytes(), subaccount.getRecoveryPubKeyAsBytes());
                     final Object branchkey = Wally.bip32_key_from_parent(subactkey, branch,
                             Wally.BIP32_FLAG_KEY_PUBLIC |
@@ -555,7 +554,7 @@ public class JadeHWWallet extends HWWallet {
                 }
 
                 // Get receive address from Jade for the path elements given
-                final String address = this.jade.getReceiveAddress(network,
+                final String address = this.jade.getReceiveAddress(canonicalNetworkId,
                         subaccount.getPointer(), branch, pointer,
                         recoveryxpub, csvBlocks);
                 Log.d(TAG, "Got green address for branch: " + branch + ", pointer: " + pointer + ": " + address);
@@ -564,7 +563,7 @@ public class JadeHWWallet extends HWWallet {
                 // Green Electrum Singlesig
                 Log.d(TAG,"getGreenAddress() (singlesig) for path: " + path);
                 final String variant = mapAddressType(subaccount.getType().getGdkType());
-                final String address = this.jade.getReceiveAddress(network, variant, path);
+                final String address = this.jade.getReceiveAddress(canonicalNetworkId, variant, path);
                 Log.d(TAG, "Got green address for path: " + path + ", type: " + variant + ": " + address);
                 return address;
             }

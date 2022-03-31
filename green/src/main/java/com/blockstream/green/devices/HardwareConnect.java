@@ -185,10 +185,10 @@ public class HardwareConnect {
                         DeviceSupportsLiquid.Lite,
                         DeviceSupportsAntiExfilProtocol.Optional))
                 .map(device -> {
-                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, interaction.getConnectionNetwork(), device, qaTester);
+                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, device, qaTester);
                     return jadeWallet;
                 })
-                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction, jadeFirmwareManager != null ? jadeFirmwareManager : new JadeFirmwareManager(interaction, interaction.getGreenSession())).as(RxJavaBridge.toV3Single()))
+                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction.getConnectionNetwork(), interaction, jadeFirmwareManager != null ? jadeFirmwareManager : new JadeFirmwareManager(interaction, interaction.getGreenSession())).as(RxJavaBridge.toV3Single()))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
                 .observeOn(AndroidSchedulers.mainThread())
@@ -270,7 +270,7 @@ public class HardwareConnect {
     private void onTrezorConnected(final HardwareConnectInteraction interaction, final Trezor t) {
         Log.d(TAG, "Creating Trezor HW wallet");
         final Device device = new Device("Trezor", false , false, false, DeviceSupportsLiquid.None, DeviceSupportsAntiExfilProtocol.None);
-        mHwWallet = new TrezorHWWallet(t, interaction.getConnectionNetwork(), device);
+        mHwWallet = new TrezorHWWallet(t, device);
 
         doLogin(interaction);
     }
@@ -366,7 +366,7 @@ public class HardwareConnect {
 
                     Log.d(TAG, "Creating Ledger HW wallet" + (pin != null ? " with PIN" : ""));
                     final Device device = new Device("Ledger", true,false, false, DeviceSupportsLiquid.Lite, DeviceSupportsAntiExfilProtocol.None);
-                    mHwWallet = new BTChipHWWallet(dongle, pin , interaction.getConnectionNetwork(), device, bleDisconnectEvent);
+                    mHwWallet = new BTChipHWWallet(dongle, pin , device, bleDisconnectEvent);
                     return mHwWallet;
                 })
                 .observeOn(AndroidSchedulers.mainThread())

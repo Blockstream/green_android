@@ -41,9 +41,8 @@ public class TrezorHWWallet extends HWWallet {
     private final Map<String, TrezorType.HDNodeType> mRecoveryXPubs = new HashMap<>();
     private final Map<String, Object> mPrevTxs = new HashMap<>();
 
-    public TrezorHWWallet(final Trezor t, final Network network, final Device device) {
+    public TrezorHWWallet(final Trezor t, final Device device) {
         mTrezor = t;
-        mNetwork = network;
         mDevice = device;
     }
 
@@ -53,13 +52,13 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> getXpubs(@Nullable final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public List<String> getXpubs(final Network network, @Nullable final HWWalletBridge parent, final List<List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
 
         for (List<Integer> path : paths) {
             final TrezorType.HDNodeType xpub = getUserXpub(parent, path);
 
-            final Object hdkey = Wally.bip32_pub_key_init(mNetwork.getVerPublic(),
+            final Object hdkey = Wally.bip32_pub_key_init(network.getVerPublic(),
                                                           1, 1, xpub.getChainCode().toByteArray(),
                                                           xpub.getPublicKey().toByteArray());
 
@@ -97,7 +96,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
@@ -108,7 +107,7 @@ public class TrezorHWWallet extends HWWallet {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
 
-            return signTransactionImpl(parent, tx, inputs, outputs, transactions);
+            return signTransactionImpl(network, parent, tx, inputs, outputs, transactions);
         } finally {
             // Free all wally txs to ensure we don't leak any memory
             for (Map.Entry<String, Object> entry : mPrevTxs.entrySet()) {
@@ -119,7 +118,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String, String> transactions,
@@ -127,7 +126,7 @@ public class TrezorHWWallet extends HWWallet {
         return null;
     }
 
-    private SignTxResult signTransactionImpl(final HWWalletBridge parent, final ObjectNode tx,
+    private SignTxResult signTransactionImpl(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                              final List<InputOutput> inputs,
                                              final List<InputOutput> outputs,
                                              final Map<String, String> transactions)
@@ -143,7 +142,7 @@ public class TrezorHWWallet extends HWWallet {
         }
 
         // Fetch and cache all required pubkeys before signing
-        if (getNetwork().isMultisig()) {
+        if (network.isMultisig()) {
             for (final InputOutput in : inputs)
                 makeMultisigRedeemScript(parent, in);
             for (final InputOutput out : outputs)
@@ -154,7 +153,7 @@ public class TrezorHWWallet extends HWWallet {
         Message m = mTrezor.io(TrezorMessage.SignTx.newBuilder()
                                .setInputsCount(inputs.size())
                                .setOutputsCount(outputs.size())
-                               .setCoinName(mNetwork.isMainnet() ? "Bitcoin" : "Testnet")
+                               .setCoinName(network.isMainnet() ? "Bitcoin" : "Testnet")
                                .setVersion(txVersion)
                                .setLockTime(txLocktime));
         while (true) {
@@ -175,13 +174,13 @@ public class TrezorHWWallet extends HWWallet {
                 TrezorType.TransactionType.Builder ack = TrezorType.TransactionType.newBuilder();
 
                 if (r.getRequestType().equals(TrezorType.RequestType.TXINPUT)) {
-                    m = txio(ack.addInputs(createInput(parent, txRequest, inputs)));
+                    m = txio(ack.addInputs(createInput(network, parent, txRequest, inputs)));
                     continue;
                 } else if (r.getRequestType().equals(TrezorType.RequestType.TXOUTPUT)) {
                     if (txRequest.hasTxHash())
                         m = txio(ack.addBinOutputs(createBinOutput(txRequest)));
                     else
-                        m = txio(ack.addOutputs(createOutput(parent, txRequest, outputs)));
+                        m = txio(ack.addOutputs(createOutput(network, parent, txRequest, outputs)));
                     continue;
                 } else if (r.getRequestType().equals(TrezorType.RequestType.TXMETA)) {
                     if (txRequest.hasTxHash()) {
@@ -286,7 +285,7 @@ public class TrezorHWWallet extends HWWallet {
         return b.setM(2).build();
     }
 
-    private TrezorType.TxOutputType.Builder createOutput(final HWWalletBridge parent,
+    private TrezorType.TxOutputType.Builder createOutput(final Network network, final HWWalletBridge parent,
                                                          final TrezorType.TxRequestDetailsType txRequest,
                                                          final List<InputOutput> outputs) {
         final InputOutput out = outputs.get(txRequest.getRequestIndex());
@@ -308,7 +307,7 @@ public class TrezorHWWallet extends HWWallet {
                     type = TrezorType.OutputScriptType.PAYTOP2SHWITNESS;
             }
             b.setScriptType(type);
-            if (getNetwork().isMultisig()) {
+            if (network.isMultisig()) {
                 // Green Multisig Shield
                 return b.addAllAddressN(out.getUserPathAsInts()).setMultisig(makeMultisigRedeemScript(parent, out));
             } else {
@@ -328,7 +327,7 @@ public class TrezorHWWallet extends HWWallet {
                .setScriptPubkey(ByteString.copyFrom(Wally.tx_get_output_script(prevTx, txRequest.getRequestIndex())));
     }
 
-    private TrezorType.TxInputType.Builder createInput(final HWWalletBridge parent,
+    private TrezorType.TxInputType.Builder createInput(final Network network, final HWWalletBridge parent,
                                                        final TrezorType.TxRequestDetailsType txRequest,
                                                        final List<InputOutput> inputs) {
         final int index = txRequest.getRequestIndex();
@@ -352,7 +351,7 @@ public class TrezorHWWallet extends HWWallet {
                .setSequence(in.getSequenceInt())
                .addAllAddressN(in.getUserPathAsInts());
 
-        if (getNetwork().isMultisig()) {
+        if (network.isMultisig()) {
             txin.setMultisig(makeMultisigRedeemScript(parent, in));
         }
 
@@ -417,7 +416,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
+    public String getGreenAddress(final Network network, final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
         return null;
     }
 }

@@ -46,12 +46,10 @@ public class BTChipHWWallet extends HWWallet {
     private final PublishSubject<Boolean> mBleDisconnectEvent;
 
     public BTChipHWWallet(final BTChipDongle dongle, final String pin,
-                          final Network network,
                           @Nullable final Device device,
                           PublishSubject<Boolean> bleDisconnectEvent) {
         mDongle = dongle;
         mPin = pin;
-        mNetwork = network;
         mDevice = device;
         mBleDisconnectEvent = bleDisconnectEvent;
         if (pin == null)
@@ -83,7 +81,7 @@ public class BTChipHWWallet extends HWWallet {
         // No-op
     }
 
-    public List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public List<String> getXpubs(final Network network, final HWWalletBridge parent, final List<List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
         try {
             for (final List<Integer> path : paths) {
@@ -91,7 +89,7 @@ public class BTChipHWWallet extends HWWallet {
                 if (!mUserXPubs.containsKey(key)) {
                     final BTChipDongle.BTChipPublicKey pubKey = mDongle.getWalletPublicKey(path);
                     final byte[] compressed = KeyUtils.compressPublicKey(pubKey.getPublicKey());
-                    final Object hdkey = Wally.bip32_key_init(mNetwork.getVerPublic(), 1 /*FIXME: wally bug*/, 0,
+                    final Object hdkey = Wally.bip32_key_init(network.getVerPublic(), 1 /*FIXME: wally bug*/, 0,
                                                               pubKey.getChainCode(), compressed,null, null, null);
                     mUserXPubs.put(key, Wally.bip32_key_to_base58(hdkey, Wally.BIP32_FLAG_KEY_PUBLIC));
                     Wally.bip32_key_free(hdkey);
@@ -134,9 +132,9 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws BTChipException {
+    public String getGreenAddress(final Network network, final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws BTChipException {
         // Only supported for liquid mutisig shield
-        if (getNetwork().isSinglesig() || getNetwork().isLiquid()) {
+        if (network.isSinglesig() || network.isLiquid()) {
             return null;
         }
 
@@ -171,7 +169,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
@@ -212,7 +210,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String, String> transactions,
