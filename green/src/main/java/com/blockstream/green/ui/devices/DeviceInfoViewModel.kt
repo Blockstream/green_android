@@ -81,6 +81,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         getGreenSession().observable {
             it.disconnect(disconnectDevice = false)
             it.hardwareWallet = wallet
+            it.hwWallet!!.network = it.networkFromWallet(wallet)
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
@@ -111,7 +112,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         return sessionManager.getHardwareSession()
     }
 
-    override fun getConnectionNetwork() = getGreenSession().network
+    override fun getConnectionNetwork() = getGreenSession().networkFromWallet(getGreenSession().hardwareWallet!!)
 
     override fun showError(err: String) {
         logger.info { "Shown error $error" }

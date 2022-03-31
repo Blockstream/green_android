@@ -54,7 +54,7 @@ interface DeviceInfoCommon{
                     fastItemAdapter.add(
                         NetworkSmallListItem(
                             Network.ElectrumLiquid,
-                            greenWallet.networks.liquidElectrum.productName
+                            greenWallet.networks.liquidElectrum.productName + " Dev"
                         )
                     )
                 }
@@ -85,7 +85,7 @@ interface DeviceInfoCommon{
                         expandable.subItems.add(
                             NetworkSmallListItem(
                                 Network.ElectrumTestnetLiquid,
-                                greenWallet.networks.testnetLiquidElectrum.productName
+                                greenWallet.networks.testnetLiquidElectrum.productName + " Dev"
                             )
                         )
                     }

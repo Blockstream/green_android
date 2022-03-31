@@ -123,6 +123,10 @@ public abstract class HWWallet {
         return mNetwork;
     }
 
+    public void setNetwork(Network network) {
+        mNetwork = network;
+    }
+
     public Device getDevice() {
         return mDevice;
     }
