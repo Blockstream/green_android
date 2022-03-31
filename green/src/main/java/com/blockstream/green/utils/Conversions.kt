@@ -178,6 +178,7 @@ fun Long?.toAmountLook(session: GreenSession, assetId: String? = null, isFiat: B
         // withMinimumDigits is not used on asset amounts
         session.convertAmount(Convert(satoshi = this, session.getAsset(assetId)), isAsset = true)?.toAmountLook(
             session = session,
+            assetId = assetId,
             withUnit = withUnit,
             withGrouping = withGrouping,
             withMinimumDigits = withMinimumDigits
