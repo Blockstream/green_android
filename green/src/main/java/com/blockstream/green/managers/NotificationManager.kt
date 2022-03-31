@@ -129,13 +129,13 @@ class NotificationManager constructor(
             }
         }
         val pendingIntent = PendingIntent.getActivity(
-            context, notificationId(wallet), intent,
+            context, requestCode(wallet), intent,
             PendingIntent.FLAG_IMMUTABLE
         )
 
         val logoutIntent = PendingIntent.getBroadcast(
             context,
-            notificationId(wallet),
+            requestCode(wallet),
             Intent(ACTION_LOGOUT).also {
                 it.putExtra(WALLET_ID, wallet.id)
             },
@@ -181,6 +181,9 @@ class NotificationManager constructor(
 
     // Make hardware wallet id positive
     private fun notificationId(wallet: Wallet): Int = (10000 + wallet.id).toInt()
+
+    // Intents are cached by the requestCode, in order for wallet to be updated we have to provide a unique requestCode
+    private fun requestCode(wallet: Wallet): Int = wallet.hashCode()
 
     companion object : KLogging() {
         const val WALLETS_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.WALLETS_CHANNEL_ID"
