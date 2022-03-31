@@ -11,7 +11,7 @@ target 'gaios' do
   pod 'SwiftLint', '0.35.0'
   pod 'RxSwift', '~> 5.1'
   pod 'RxBluetoothKit', :git => 'https://github.com/chamira-at/RxBluetoothKit.git', :branch => 'ios-15-support'
-  pod 'SwiftCBOR', :git => 'https://github.com/lvaccaro/SwiftCBOR.git', :branch => 'green'
+  pod 'SwiftCBOR', '0.4.5'
 
 end
 

@@ -10,13 +10,18 @@ struct TxInputLiquid: TxInputProtocol {
         case aeHostCommitment = "ae_host_commitment"
     }
     let isWitness: Bool
-    let script: [UInt8]?
-    let valueCommitment: [UInt8]?
+    let script: Data?
+    let valueCommitment: Data?
     let path: [UInt32]?
-    let aeHostEntropy: [UInt8]?
-    let aeHostCommitment: [UInt8]?
-
-    func encode() -> [String: Any] {
-        return try! JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any] ?? [:]
+    let aeHostEntropy: Data?
+    let aeHostCommitment: Data?
+    
+    init(isWitness: Bool, scriptHex: String?, valueCommitmentHex: String?, path: [UInt32]?, aeHostEntropyHex: String?, aeHostCommitmentHex: String?) {
+        self.isWitness = isWitness
+        self.script = hexToDataNil(scriptHex)
+        self.valueCommitment = hexToDataNil(valueCommitmentHex)
+        self.path = path
+        self.aeHostEntropy = hexToDataNil(aeHostEntropyHex)
+        self.aeHostCommitment = hexToDataNil(aeHostCommitmentHex)
     }
 }

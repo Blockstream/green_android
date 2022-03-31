@@ -243,6 +243,7 @@
 		816282B5260BB3C6003E5FA6 /* OnBoardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
+		8164909027F4C4FF0097B2E4 /* JadeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */; };
 		81683F9026BC022C0058982E /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F8F26BC022C0058982E /* Transaction.swift */; };
 		81683F9226BC02960058982E /* Transactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9126BC02960058982E /* Transactions.swift */; };
 		81683F9426BC088E0058982E /* WalletItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9326BC088E0058982E /* WalletItem.swift */; };
@@ -277,7 +278,6 @@
 		81D94CF121B93905003B03F9 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
 		81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D922541F0D1001159D6 /* TxInputBtc.swift */; };
 		81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D962541F110001159D6 /* TxChangeOutput.swift */; };
-		81E0B4C3255302BB001C8544 /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4C2255302BB001C8544 /* CBOR.swift */; };
 		81E0B4CB25531470001C8544 /* Commitment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4CA25531470001C8544 /* Commitment.swift */; };
 		81E0B4D725531AD6001C8544 /* TxInputLiquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */; };
 		81F74BA52278857800A397C9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F74BA42278857800A397C9 /* Network.swift */; };
@@ -572,6 +572,7 @@
 		816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardManager.swift; sourceTree = "<group>"; };
 		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
 		81640CDF21FB2B4200E7F79C /* FeeButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeeButton.xib; sourceTree = "<group>"; };
+		8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeMessage.swift; sourceTree = "<group>"; };
 		81683F8F26BC022C0058982E /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		81683F9126BC02960058982E /* Transactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transactions.swift; sourceTree = "<group>"; };
 		81683F9326BC088E0058982E /* WalletItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletItem.swift; sourceTree = "<group>"; };
@@ -629,7 +630,6 @@
 		81D94CF021B93905003B03F9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81DA3D922541F0D1001159D6 /* TxInputBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputBtc.swift; sourceTree = "<group>"; };
 		81DA3D962541F110001159D6 /* TxChangeOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxChangeOutput.swift; sourceTree = "<group>"; };
-		81E0B4C2255302BB001C8544 /* CBOR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBOR.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
 		81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputLiquid.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
@@ -1363,8 +1363,8 @@
 			children = (
 				8169EBBC2445F16F0053BC73 /* Jade.swift */,
 				815431952445C0EE00EE34DB /* JadeChannel.swift */,
-				81E0B4C2255302BB001C8544 /* CBOR.swift */,
 				8158974A2701980700DDF6D4 /* JadeError.swift */,
+				8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */,
 			);
 			path = Jade;
 			sourceTree = "<group>";
@@ -1851,6 +1851,7 @@
 				34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */,
 				34D678AF261F060F00DBC0BB /* WalletDrawerCell.swift in Sources */,
 				34477D3B277216640021698B /* FeeEditCell.swift in Sources */,
+				8164909027F4C4FF0097B2E4 /* JadeMessage.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
@@ -1879,7 +1880,6 @@
 				8169EBBD2445F16F0053BC73 /* Jade.swift in Sources */,
 				34BAD9DE2636A12700FB8011 /* HWWScanViewController.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
-				81E0B4C3255302BB001C8544 /* CBOR.swift in Sources */,
 				6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */,
 				34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */,
 				347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */,

@@ -11,12 +11,12 @@ struct Commitment: Codable {
         case hmac = "hmac"
         case blindingKey = "blinding_key"
     }
-    let assetId: [UInt8]
+    let assetId: Data
     let value: UInt32
-    let abf: [UInt8]
-    let vbf: [UInt8]
-    let assetGenerator: [UInt8]
-    let valueCommitment: [UInt8]
-    let hmac: [UInt8]
-    var blindingKey: [UInt8]?
+    let abf: Data
+    let vbf: Data
+    let assetGenerator: Data
+    let valueCommitment: Data
+    let hmac: Data
+    var blindingKey: Data?
 }

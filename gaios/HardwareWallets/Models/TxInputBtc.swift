@@ -1,8 +1,6 @@
 import Foundation
 
-protocol TxInputProtocol: Codable {
-    func encode() -> [String: Any]
-}
+protocol TxInputProtocol: Codable {}
 
 struct TxInputBtc: TxInputProtocol {
     enum CodingKeys: String, CodingKey {
@@ -15,14 +13,20 @@ struct TxInputBtc: TxInputProtocol {
         case aeHostCommitment = "ae_host_commitment"
     }
     let isWitness: Bool
-    let inputTx: [UInt8]?
-    let script: [UInt8]?
+    let inputTx: Data?
+    let script: Data?
     let satoshi: UInt64?
     let path: [UInt32]?
-    let aeHostEntropy: [UInt8]?
-    let aeHostCommitment: [UInt8]?
-
-    func encode() -> [String: Any] {
-        return try! JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any] ?? [:]
+    let aeHostEntropy: Data?
+    let aeHostCommitment: Data?
+    
+    init(isWitness: Bool, inputTxHex: String?, scriptHex: String?, satoshi: UInt64?, path: [UInt32]?, aeHostEntropyHex: String?, aeHostCommitmentHex: String?) {
+        self.isWitness = isWitness
+        self.inputTx = hexToDataNil(inputTxHex)
+        self.script = hexToDataNil(scriptHex)
+        self.satoshi = satoshi
+        self.path = path
+        self.aeHostEntropy = hexToDataNil(aeHostEntropyHex)
+        self.aeHostCommitment = hexToDataNil(aeHostCommitmentHex)
     }
 }

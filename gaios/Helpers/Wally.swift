@@ -1,6 +1,12 @@
 import Foundation
 import ga.wally
 
+public func hexToDataNil(_ hex: String?) -> Data? {
+    guard let hex = hex else {
+        return nil
+    }
+    return hexToData(hex)
+}
 public func hexToData(_ hex: String) -> Data {
     /*let hex_bytes: UnsafePointer<Int8> = UnsafePointer(hex)
     precondition(hex.count%2 == 0)
