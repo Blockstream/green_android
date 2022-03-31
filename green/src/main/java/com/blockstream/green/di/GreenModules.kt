@@ -98,7 +98,7 @@ class GreenModules {
     @Singleton
     @Provides
     fun provideAssetManager(@ApplicationContext context: Context, QATester: QATester): AssetManager {
-        return AssetManager(context, QATester, BuildConfig.APPLICATION_ID)
+        return AssetManager(context, QATester)
     }
 
     @Singleton

@@ -2,7 +2,6 @@ package com.blockstream.gdk
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
@@ -36,10 +35,9 @@ data class AssetStatus(
  * App Cache: cached data from apk
  * GDK Cache: cached data from a previous successful fetch
  */
-class AssetManager(
+class AssetManager constructor(
     private val context: Context,
     val QATester: AssetQATester,
-    private val applicationId: String
 ) {
     private var metadata: Map<String, Asset> = mapOf()
     private var icons: Map<String, Bitmap?> = mapOf()
@@ -47,9 +45,9 @@ class AssetManager(
     // Internal representation of the Status
     private val status = AssetStatus()
 
-    val statusLiveData =  MutableLiveData(status)
+    private val statusLiveData =  MutableLiveData(status)
 
-    fun setGdkCache(assets: Assets) {
+    private fun setGdkCache(assets: Assets) {
         this.metadata = assets.assets
         this.icons = assets.icons ?: mapOf()
 
@@ -135,6 +133,8 @@ class AssetManager(
                     return
                 }
 
+                // Fetching asset registry is disabled until GDK is fixed
+                /*
                 try {
                     // Try to update the registry - only metadata
                     // Fetch assets without icons as we have better chances to complete the network call
@@ -171,6 +171,7 @@ class AssetManager(
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+                 */
 
             } finally {
                 statusLiveData.postValue(status.apply { onProgress = false })
