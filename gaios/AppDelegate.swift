@@ -25,12 +25,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout(with pin: Bool) {
-        guard let account = AccountsManager.shared.current else {
-            fatalError("disconnection error never happens")
-        }
-        let session = SessionsManager.get(for: account)
-        if account.isJade || account.isLedger {
-            BLEManager.shared.dispose()
+        var session: SessionManager?
+        if let account = AccountsManager.shared.current {
+            session = SessionsManager.get(for: account)
+            if account.isJade || account.isLedger {
+                BLEManager.shared.dispose()
+            }
         }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
