@@ -164,10 +164,8 @@ class BLEManager {
 
     func connectJade(_ p: Peripheral, network: String) {
         var account = AccountsManager.shared.current
-        account?.network = "mainnet"
-        account?.isSingleSig = true
-        let network = "mainnet"
-        //let network = network_
+        account?.network = network.replacingOccurrences(of: "electrum-", with: "")
+        account?.isSingleSig = network.contains("electrum")
         let session = SessionsManager.new(for: account!)
         var hasPin = false
         enstablishDispose = p.establishConnection()

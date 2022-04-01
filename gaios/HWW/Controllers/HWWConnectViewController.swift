@@ -315,25 +315,7 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item: NetworkSecurityCase = data[indexPath.section][indexPath.row]
-        switch item {
-        case .bitcoinMS:
-            print(item.name())
-        case .bitcoinSS:
-            print(item.name())
-        case .liquidMS:
-            print(item.name())
-        case .liquidSS:
-            print(item.name())
-        case .testnetMS:
-            print(item.name())
-        case .testnetSS:
-            print(item.name())
-        case .testnetLiquidMS:
-            print(item.name())
-        case .testnetLiquidSS:
-            print(item.name())
-        }
-//        connect(peripheral, network: networks[indexPath.row].rawValue)
+        connect(peripheral, network: item.network())
     }
 }
 
