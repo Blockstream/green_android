@@ -389,6 +389,7 @@ final class Jade: JadeChannel, HWProtocol {
     // swiftlint:disable:next function_parameter_count
     func newReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryPubKey: String?, csvBlocks: UInt32) -> Observable<String> {
         var params = [ "network": network,
+                       "pointer": pointer,
                        "subaccount": subaccount,
                        "branch": branch ] as [String: Any]
         // Optional fields
