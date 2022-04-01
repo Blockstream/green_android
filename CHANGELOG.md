@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Refactoring asset detail screen
 
 ### Fixed
-
+- Fix session autologout on background after timeout
 
 ## [3.7.9] - 2022-02-15
 
