@@ -132,9 +132,8 @@ class BLEManager {
         p.peripheral.name?.contains("Jade") ?? false
     }
 
-    func connectLedger(_ p: Peripheral, network: String) {
-        let account = AccountsManager.shared.current
-        let session = SessionsManager.new(for: account!)
+    func connectLedger(_ p: Peripheral, account: Account) {
+        let session = SessionsManager.new(for: account)
         enstablishDispose = p.establishConnection()
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p in Ledger.shared.open(p) }
@@ -145,7 +144,7 @@ class BLEManager {
                 let version = versionString.split(separator: ".").map {Int($0)}
                 if name.contains("OLOS") {
                     throw DeviceError.dashboard // open app from dashboard
-                } else if name != self.networkLabel(network) {
+                } else if name != self.networkLabel(account.network) {
                     throw DeviceError.wrong_app // change app
                 } else if name == "Bitcoin" && version[0] ?? 0 < 1 {
                     throw DeviceError.outdated_app
@@ -155,18 +154,16 @@ class BLEManager {
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onAuthenticate(p, network: network, firstInitialization: false)
+                self.delegate?.onAuthenticate(p, network: account.network, firstInitialization: false)
             }, onError: { err in
                 session.destroy()
-                self.onError(err, network: network)
+                self.onError(err, network: account.network)
             })
     }
 
-    func connectJade(_ p: Peripheral, network: String) {
-        var account = AccountsManager.shared.current
-        account?.network = network.replacingOccurrences(of: "electrum-", with: "")
-        account?.isSingleSig = network.contains("electrum")
-        let session = SessionsManager.new(for: account!)
+    func connectJade(_ p: Peripheral, account: Account) {
+        let session = SessionsManager.new(for: account)
+        let network = account.network
         var hasPin = false
         enstablishDispose = p.establishConnection()
             .flatMap { p in Jade.shared.open(p) }
@@ -190,7 +187,7 @@ class BLEManager {
             }.compactMap { _ in
                 try session.connect()
             }.flatMap { _ in
-                Jade.shared.auth(network: network)
+                Jade.shared.auth(network: account.network)
                     .retry(3)
             }
             .observeOn(MainScheduler.instance)
@@ -243,10 +240,16 @@ class BLEManager {
 
     func connect(_ p: Peripheral, network: String) {
         addStatusListener(p)
+        guard var account = AccountsManager.shared.current else {
+            return
+        }
+        account.network = network.replacingOccurrences(of: "electrum-", with: "")
+        account.isSingleSig = network.contains("electrum")
+        AccountsManager.shared.current = account
         if isJade(p) {
-            connectJade(p, network: network)
+            connectJade(p, account: account)
         } else {
-            connectLedger(p, network: network)
+            connectLedger(p, account: account)
         }
     }
 

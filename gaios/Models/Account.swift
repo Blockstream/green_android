@@ -26,7 +26,7 @@ struct Account: Codable, Equatable {
     var network: String
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
     var walletHashId: String?
-    var gdkNetwork: GdkNetwork? { get { getGdkNetwork(network) }}
+    var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
 
     init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool = false) {
         // Software / Hardware wallet account
