@@ -144,7 +144,8 @@ final class Jade: JadeChannel, HWProtocol {
                 return Observable.just(xpub ?? "")
             }
     }
-
+    
+    // swiftlint:disable:next function_parameter_count
     func signTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         if transactions.isEmpty {
@@ -321,10 +322,10 @@ final class Jade: JadeChannel, HWProtocol {
 
     func mapAddressType(_ addrType: String?) -> String? {
         switch addrType {
-            case "p2pkh": return "pkh(k)"
-            case "p2wpkh": return "wpkh(k)"
-            case "p2sh-p2wpkh": return "sh(wpkh(k))"
-            default: return nil
+        case "p2pkh": return "pkh(k)"
+        case "p2wpkh": return "wpkh(k)"
+        case "p2sh-p2wpkh": return "sh(wpkh(k))"
+        default: return nil
         }
     }
 
@@ -604,9 +605,9 @@ extension Jade {
                 return res["result"] as? [String: Any]
             }
     }
-
+    
+    // swiftlint:disable:next function_parameter_count
     func signLiquidTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
-
         let txInputs = inputs.map { input -> TxInputLiquid? in
             let swInput = !(input["address_type"] as? String == "p2sh")
             let script = hexToData(input["prevout_script"] as? String ?? "")
