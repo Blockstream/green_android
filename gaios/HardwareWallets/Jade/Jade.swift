@@ -123,11 +123,11 @@ final class Jade: JadeChannel, HWProtocol {
         }
     }
 
-    func xpubs(paths: [[Int]]) -> Observable<[String]> {
+    func xpubs(network: String, paths: [[Int]]) -> Observable<[String]> {
         let allObservables = paths
             .map {
                 Observable.just($0)
-                    .flatMap { self.xpubs(path: $0) }
+                    .flatMap { self.xpubs(network: network, path: $0) }
         }
         return Observable.concat(allObservables)
         .reduce([], accumulator: { result, element in
@@ -135,9 +135,9 @@ final class Jade: JadeChannel, HWProtocol {
         })
     }
 
-    func xpubs(path: [Int]) -> Observable<String> {
+    func xpubs(network: String, path: [Int]) -> Observable<String> {
         let pathstr: [UInt32] = path.map { UInt32($0) }
-        let params = [ "path": pathstr, "network": getNetwork()] as [String: Any]
+        let params = [ "path": pathstr, "network": network] as [String: Any]
         return Jade.shared.exchange(method: "get_xpub", params: params)
             .flatMap { res -> Observable<String> in
                 let xpub = res["result"] as? String
@@ -145,7 +145,7 @@ final class Jade: JadeChannel, HWProtocol {
             }
     }
 
-    func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    func signTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         if transactions.isEmpty {
             return Observable.error(JadeError.Abort("Input transactions missing"))
@@ -178,7 +178,6 @@ final class Jade: JadeChannel, HWProtocol {
         let change = getChangeData(outputs: outputs)
         let changeParams = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(change)) as? [String: Any] ?? [:]
 
-        let network = getNetwork()
         let txhex = tx["transaction"] as? String
         let txn = hexToData(txhex ?? "")
 
@@ -370,7 +369,7 @@ final class Jade: JadeChannel, HWProtocol {
                                                                branch: branch)
             }
             // Get receive address from Jade for the path elements given
-            return newReceiveAddress(network: network.network,
+            return newReceiveAddress(network: network.chain,
                                      subaccount: wallet.pointer,
                                      branch: branch,
                                      pointer: pointer,
@@ -379,7 +378,7 @@ final class Jade: JadeChannel, HWProtocol {
         } else {
             // Green Electrum Singlesig
             let variant = mapAddressType(wallet.type)
-            return newReceiveAddress(network: network.network,
+            return newReceiveAddress(network: network.chain,
                                      variant: variant ?? "",
                                      path: path)
         }
@@ -606,7 +605,7 @@ extension Jade {
             }
     }
 
-    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    func signLiquidTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         let txInputs = inputs.map { input -> TxInputLiquid? in
             let swInput = !(input["address_type"] as? String == "p2sh")
@@ -677,7 +676,6 @@ extension Jade {
             // Get the change outputs and paths
             let change = self.getChangeData(outputs: outputs)
             // Make jade-api call to sign the txn
-            let network = getNetwork()
             let txhex = tx["transaction"] as? String
             let txn = hexToData(txhex ?? "")
             return Jade.shared.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, changes: change, useAeProtocol: useAeProtocol)

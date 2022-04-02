@@ -5,7 +5,7 @@ import RxSwift
 
 protocol HWProtocol {
 
-    func xpubs(paths: [[Int]]) -> Observable<[String]>
+    func xpubs(network: String, paths: [[Int]]) -> Observable<[String]>
 
     func signMessage(path: [Int]?,
                      message: String?,
@@ -14,7 +14,8 @@ protocol HWProtocol {
                      aeHostEntropy: String?)
     -> Observable<(signature: String?, signerCommitment: String?)>
 
-    func signTransaction(tx: [String: Any],
+    func signTransaction(network: String,
+                         tx: [String: Any],
                          inputs: [[String: Any]],
                          outputs: [[String: Any]],
                          transactions: [String: String],
@@ -28,7 +29,8 @@ protocol HWProtocol {
     func getBlindingKey(scriptHex: String) -> Observable<String?>
     func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?>
 
-    func signLiquidTransaction(tx: [String: Any],
+    func signLiquidTransaction(network: String,
+                               tx: [String: Any],
                                inputs: [[String: Any]],
                                outputs: [[String: Any]],
                                transactions: [String: String],

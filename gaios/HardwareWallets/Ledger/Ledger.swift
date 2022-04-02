@@ -8,7 +8,7 @@ final class Ledger: LedgerCommands, HWProtocol {
     public static let shared = Ledger()
     let SIGHASH_ALL: UInt8 = 1
 
-    func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],
+    func signTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],
                          transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
         return signSW(tx: tx, inputs: inputs, outputs: outputs)
             .compactMap { sigs in
@@ -84,11 +84,11 @@ final class Ledger: LedgerCommands, HWProtocol {
         }
     }
 
-    func xpubs(paths: [[Int]]) -> Observable<[String]> {
+    func xpubs(network: String, paths: [[Int]]) -> Observable<[String]> {
         let allObservables = paths
             .map {
                 Observable.just($0)
-                    .flatMap { self.xpubs(path: $0) }
+                    .flatMap { self.xpubs(network: network, path: $0) }
                     .asObservable()
                     .take(1)
         }
@@ -98,9 +98,8 @@ final class Ledger: LedgerCommands, HWProtocol {
         })
     }
 
-    func xpubs(path: [Int]) -> Observable<String> {
-        let key = path.map { String($0) }.joined(separator: "/")
-        let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+    func xpubs(network: String, path: [Int]) -> Observable<String> {
+        let isMainnet = ["mainnet", "liquid"].contains(network)
         return self.pubKey(path: path)
             .flatMap { data -> Observable<String> in
                 let chainCode = Array((data["chainCode"] as? Data)!)
@@ -124,7 +123,7 @@ final class Ledger: LedgerCommands, HWProtocol {
         return Observable.error(JadeError.Abort(""))
     }
 
-    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    func signLiquidTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
         return Observable.error(JadeError.Abort(""))
     }
 

@@ -65,8 +65,9 @@ class HWResolver {
     }
 
     func getXpubs(hw: HWProtocol, paths: [[Int]]) -> Promise<[String]> {
+        let network = AccountsManager.shared.current?.gdkNetwork
         return Promise { seal in
-            _ = hw.xpubs(paths: paths)
+            _ = hw.xpubs(network: network?.chain ?? "mainnet", paths: paths)
                 .subscribe(onNext: { data in
                     seal.fulfill(data)
                 }, onError: { err in
@@ -102,15 +103,25 @@ class HWResolver {
             let txOutputs = params["transaction_outputs"] as? [[String: Any]]
             let signingTxs = params["signing_transactions"] as? [String: String]
             let useAeProtocol = params["use_ae_protocol"] as? Bool
-            let account = AccountsManager.shared.current
+            let network = AccountsManager.shared.current?.gdkNetwork
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
             _ = Observable.just(hw)
                 .flatMap { hw -> Observable<[String: Any]> in
-                    if account?.gdkNetwork?.liquid ?? false {
-                        return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], useAeProtocol: useAeProtocol ?? false)
+                    if network?.liquid ?? false {
+                        return hw.signLiquidTransaction(network: network?.chain ?? "mainnet",
+                                                        tx: tx!,
+                                                        inputs: signingInputs!,
+                                                        outputs: txOutputs!,
+                                                        transactions: signingTxs ?? [:],
+                                                        useAeProtocol: useAeProtocol ?? false)
                     }
-                    return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], useAeProtocol: useAeProtocol ?? false)
+                    return hw.signTransaction(network: network?.chain ?? "mainnet",
+                                              tx: tx!,
+                                              inputs: signingInputs!,
+                                              outputs: txOutputs!,
+                                              transactions: signingTxs ?? [:],
+                                              useAeProtocol: useAeProtocol ?? false)
                 }.subscribe(onNext: { res in
                     seal.fulfill(res)
                     Ledger.shared.TIMEOUT = 30

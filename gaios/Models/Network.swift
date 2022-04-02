@@ -39,6 +39,10 @@ struct GdkNetwork: Codable, Equatable {
     var multisig: Bool {
         !electrum
     }
+
+    var chain: String {
+        network.replacingOccurrences(of: "electrum-", with: "")
+    }
 }
 
 var cachedNetworks: [String: Any]?
