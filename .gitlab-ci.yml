@@ -51,6 +51,26 @@ signed_production_debug:
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
     - ./gradlew assembleProductionDebug
 
+signed_gdk_commit:
+  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  stage: build
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA-gdk-$GDK_COMMIT"
+    expire_in: 14 days
+    when: on_success
+    paths:
+      - green/build/outputs/apk/production/release/*.apk
+  tags:
+    - ga
+  when: manual
+  variables:
+    GDK_COMMIT: master
+  script:
+    - cd $CI_PROJECT_DIR
+    - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - ./crypto/fetch_gdk_binaries.sh -c $GDK_COMMIT
+    - ./gradlew assembleProductionRelease
+
 #####################################
 # Build Unsigned APK
 

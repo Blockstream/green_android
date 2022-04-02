@@ -2,17 +2,54 @@
 # Downloads and installs the pre-built gdk libraries for use by Green-Android
 set -e
 
-if [ -d gdk ]; then
-    echo "Found a 'gdk' folder, exiting now"
-    exit 0
-fi
+# ----- Help
+help_message() {
+  cat <<- _EOF_
+  Downloads and install the pre-built GDK libraries
 
-# The version of gdk to fetch and its sha256 checksum for integrity checking
+  Usage: $SCRIPT_NAME [-h|--help] [-c|--commit sha256]
+
+  Options:
+    -c, --commit Download the provided commit
+    -h, --help  Display this help message and exit
+
+_EOF_
+  exit 0
+}
+
+# ----- Vars
 NAME="gdk-android-jni"
 TARBALL="${NAME}.tar.gz"
+# The version of gdk to fetch and its sha256 checksum for integrity checking
 TAGNAME="release_0.0.51"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
 SHA256="4a9dbafbc4bf6463e4accd5beae6a7a16e9033eacd3f712b15391cd8e7fd5d09"
+VALIDATE_CHECKSUM=true
+COMMIT=false
+GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
+
+# --- Argument handling
+# https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -h | --help)
+      help_message ;;
+    -c | --commit)
+      COMMIT=${2}
+      shift 2;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+
+set -- "${POSITIONAL[@]:-}" # restore positional parameters
+
 # Pre-requisites
 function check_command() {
     command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 not found, exiting."; exit 1; }
@@ -20,6 +57,12 @@ function check_command() {
 check_command curl
 check_command gzip
 check_command shasum
+
+if [ -d gdk ]; then
+    echo "Found a 'gdk' folder, exiting now"
+    exit 0
+fi
+
 
 # Find out where we are being run from to get paths right
 OLD_PWD=$(pwd)
@@ -36,9 +79,21 @@ rm -rf gdk-android-jni* ${CRYPTO_MODULE_ROOT}/src/main/jniLibs \
   ${GDK_JAVA_DIR}/libgreenaddress/GDK.java \
   ${GDK_JAVA_DIR}/libwally/Wally.java
 
+
+if [[ $COMMIT != false ]]; then
+  URL="${GCLOUD_URL}${COMMIT}/${TARBALL}"
+  VALIDATE_CHECKSUM=false
+fi
+
+
 # Fetch, validate and decompress gdk
+echo "Downloading from $URL"
 curl -sL -o ${TARBALL} "${URL}"
-echo "${SHA256}  ${TARBALL}" | shasum -a 256 --check
+if [[ $VALIDATE_CHECKSUM = true ]]; then
+  echo "Validating checksum $SHA256"
+  echo "${SHA256}  ${TARBALL}" | shasum -a 256 --check
+fi
+
 tar xvf ${TARBALL}
 rm ${TARBALL}
 

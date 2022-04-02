@@ -257,8 +257,16 @@ dependencies {
 }
 
 def appendGdkCommitHash () {
-    def cmd = "git --git-dir=crypto/gdk/.git rev-parse --short HEAD"
-    def proc = cmd.execute ()
-    def hash = proc.text.trim()
+    def gdkCommit = System.getenv('GDK_COMMIT')
+    def hash = false
+
+    if(gdkCommit != null){
+        hash = gdkCommit
+    }else{
+        def cmd = "git --git-dir=crypto/gdk/.git rev-parse --short HEAD"
+        def proc = cmd.execute ()
+        hash = proc.text.trim()
+    }
+
     hash ? ("-gdk:" + hash) : ""
 }
