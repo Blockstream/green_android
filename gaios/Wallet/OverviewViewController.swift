@@ -582,6 +582,15 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         }
     }
 
+    func didSelectSettings() {
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+                self.present(vc, animated: true) {}
+            }
+        })
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nv = segue.destination as? Learn2faViewController {
            nv.delegate = self

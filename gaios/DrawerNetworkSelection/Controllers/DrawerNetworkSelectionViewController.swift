@@ -5,12 +5,14 @@ protocol DrawerNetworkSelectionDelegate: AnyObject {
     func didSelectAccount(account: Account)
     func didSelectHW(account: Account)
     func didSelectAddWallet()
+    func didSelectSettings()
 }
 
 class DrawerNetworkSelectionViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblVersion: UILabel!
+    @IBOutlet weak var btnSettings: UIButton!
 
     var onSelection: ((Account) -> Void)?
 
@@ -31,18 +33,15 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     func setContent() {
         lblVersion.text = String(format: NSLocalizedString("id_version_1s", comment: ""), "\(Bundle.main.versionNumber)")
-    }
-
-    @objc func dismissModal() {
-        self.dismiss(animated: true, completion: nil)
-    }
-
-    @objc func saveAndDismiss() {
-       self.dismiss(animated: true, completion: nil)
+        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
     @objc func didPressAddWallet() {
         delegate?.didSelectAddWallet()
+    }
+
+    @IBAction func btnSettings(_ sender: Any) {
+        delegate?.didSelectSettings()
     }
 }
 
