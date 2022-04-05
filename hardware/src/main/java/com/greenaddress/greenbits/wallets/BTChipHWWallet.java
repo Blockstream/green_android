@@ -27,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -498,7 +497,7 @@ public class BTChipHWWallet extends HWWallet {
                 res.add(trustedCommitment);
             }
 
-            if (out.getPublicKey() != null) {
+            if (out.getBlindingKey() != null) {
                 res.add(out.getEphKeypairPubBytes());
                 res.add(out.getPublicKeyBytes());
             } else {

@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class InputOutput(
+data class InputOutput constructor(
     @SerialName("address") val address: String? = null,
     @SerialName("addressee") val addressee: String? = null,
     @SerialName("address_type") val addressType: String? = null,
@@ -50,7 +50,7 @@ data class InputOutput(
     @SerialName("assetblinder") val assetblinder: String? = null, // asset blinding factor
     @SerialName("amountblinder") val amountblinder: String? = null, // value blinding factor
     @SerialName("asset_id") val assetId: String? = null, // asset id for Liquid txs
-    @SerialName("public_key") val publicKey: String? = null, // the pubkey embedded into the blinded address we are sending to
+    @SerialName("blinding_key") val blindingKey: String? = null, // the blinding public key embedded into the blinded address we are sending to
 
     @SerialName("eph_keypair_sec") val ephKeypairSec: String? = null, // our secret key used for the blinding
     @SerialName("eph_keypair_pub") val ephKeypairPub: String? = null, // and the public key
@@ -98,7 +98,7 @@ data class InputOutput(
     }
 
     fun getPublicKeyBytes(): ByteArray {
-        return Wally.hex_to_bytes(publicKey)
+        return Wally.hex_to_bytes(blindingKey)
     }
 
     fun getRevertedAssetIdBytes(): ByteArray {

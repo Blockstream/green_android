@@ -323,7 +323,7 @@ public class JadeHWWallet extends HWWallet {
             customVbf);
 
         // Add the script blinding key
-        final byte[] blindingKey = hexToBytes(output.getPublicKey());
+        final byte[] blindingKey = hexToBytes(output.getBlindingKey());
         commitment.setBlindingKey(blindingKey);
 
         return commitment;

@@ -20,9 +20,7 @@ data class ConfirmTransactionLook constructor(
 ) : FeeLookInterface, AddreseeLookInterface {
 
     val changeOutputs: List<Output> by lazy {
-        if (!tx.isSweep) if (session.isElectrum) {
-            tx.outputs.filter { it.isInternal == true } // WORK AROUND ON SINGLESIG
-        } else {
+        if (!tx.isSweep) {
             tx.outputs.filter { it.isChange }
         } else listOf()
     }
