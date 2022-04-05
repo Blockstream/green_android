@@ -301,7 +301,7 @@ class SessionManager: Session {
                 }
                 return Promise<Void>()
             }.then { _ -> Promise<Void> in
-                if self.account?.network == "liquid" {
+                if self.account?.network == "liquid" && (self.account?.isSingleSig ?? false) {
                     return Registry.shared.load(session: self)
                 }
                 return Promise<Void>()

@@ -236,7 +236,7 @@ class OverviewViewController: UIViewController {
             cards.append(AlertCardType.testnetNoValue)
         }
         // load registry cards
-        if let network = account?.gdkNetwork, network.liquid {
+        if let network = account?.gdkNetwork, network.liquid, (account?.isSingleSig ?? false) {
             switch Registry.shared.failStatus() {
             case .assets, .all:
                 cards.append(AlertCardType.assetsRegistryFail)

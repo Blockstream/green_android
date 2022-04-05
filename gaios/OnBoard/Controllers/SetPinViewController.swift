@@ -184,7 +184,7 @@ class SetPinViewController: UIViewController {
             account.attempts = 0
             AccountsManager.shared.current = account
         }.then { _ -> Promise<Void> in
-            if account.network == "liquid" {
+            if account.network == "liquid" && (account.isSingleSig ?? false) {
                 return Registry.shared.load(session: session)
             }
             return Promise<Void>()
