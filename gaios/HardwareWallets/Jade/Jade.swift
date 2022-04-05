@@ -653,7 +653,7 @@ extension Jade {
             .compactMap { (res: JadeResponse<Commitment>) in
                 // Add the script blinding key
                 var comm = res.result
-                comm?.blindingKey = hexToData(output["public_key"] as? String ?? "")
+                comm?.blindingKey = hexToData(output["blinding_key"] as? String ?? "")
                 return comm!
             }
     }
