@@ -114,10 +114,14 @@ class Registry: Codable {
 
     func refresh(session: SessionManager, refresh: Bool = true) {
 
+        var shouldRefresh = refresh
+        if session.account?.network == "liquid" && !(session.account?.isSingleSig ?? false) {
+            shouldRefresh = false
+        }
         iconsTask = fetchIcons(session: session, refresh: false)
-        assetsTask = fetchAssets(session: session, refresh: refresh)
+        assetsTask = fetchAssets(session: session, refresh: shouldRefresh)
 
-        if refresh && !assetsTask {
+        if shouldRefresh && !assetsTask {
             //remote refresh failed for assetes, than try refresh from cache
             fetchAssets(session: session, refresh: false)
         }
