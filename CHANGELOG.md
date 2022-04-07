@@ -3,14 +3,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [2.7.9] - 2022-02-22
+## [3.8.0] - 2022-04-13
+### Added
+- Add Bitcoin Singlesig hardware wallet support
+- Show active wallet sessions as system notification
+- Support Jade firmware sha256 file verification
+- Add ability to copy various transaction details
+- Change network with hardware wallet from the toolbar icon
+
+### Changed
+- Updated GDK to 0.0.51
+- Slide to send a transaction
+
+### Fixed
+- Fix transaction fees amounts are not converted to fiat currencies
+- Fix Trezor passphrase entry with empty string
+- Fix WalletRepository being accessed from main thread
+- Fix sharing Liquid's confidential and non confidential links
+
+
+## [3.7.9] - 2022-02-22
 ### Added
 - Romanian localization
 
 ### Changed
+- Improved transaction review layout both for software and hardware wallets
 - Update translations
-
-### Fixed
 
 ## [3.7.8] - 2022-01-20
 ### Added
