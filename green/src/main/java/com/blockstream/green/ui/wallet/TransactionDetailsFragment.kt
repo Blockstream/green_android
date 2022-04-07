@@ -151,6 +151,12 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        // Hide keyboard if entered note is not saved
+        hideKeyboard()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.share -> {
