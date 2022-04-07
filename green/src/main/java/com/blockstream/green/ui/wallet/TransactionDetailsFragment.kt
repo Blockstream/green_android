@@ -102,7 +102,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             viewModel.bumpFee()
         }
 
-        fastAdapter.addClickListener<ListItemGenericDetailBinding, GenericItem>({ binding -> binding.button }) { view, i: Int, fastAdapter: FastAdapter<GenericItem>, item: GenericItem ->
+        fastAdapter.addClickListener<ListItemGenericDetailBinding, GenericItem>({ binding -> binding.button }) { _, i: Int, _: FastAdapter<GenericItem>, item: GenericItem ->
             if (item == noteListItem) {
                 viewModel.saveNote()
                 hideKeyboard()
@@ -119,18 +119,11 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
                         )
 
                         override fun menuItemClicked(item: GenericItem, position: Int) {
-                            when (position) {
-                                0 -> {
-                                    openBrowser("${session.network.explorerUrl}${args.transaction.txHash}")
-                                }
-                                else -> {
-                                    val blinder = args.transaction.getUnblindedString().let {
-                                        if (it.isNotBlank()) "#blinded=$it" else ""
-                                    }
-
-                                    openBrowser("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
-                                }
+                            val blinder = args.transaction.getUnblindedString().takeIf { position == 1 }.let {
+                                if (!it.isNullOrBlank()) "#blinded=$it" else ""
                             }
+
+                            share("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
                         }
                     }).show(childFragmentManager)
                 } else {
@@ -174,15 +167,12 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
                         override fun menuItemClicked(item: GenericItem, position: Int) {
                             when (position) {
-                                0 -> {
-                                    val blinder = args.transaction.getUnblindedString().let {
-                                        if (it.isNotBlank()) "#blinded=$it" else ""
+                                0, 1 -> {
+                                    val blinder = args.transaction.getUnblindedString().takeIf { position == 1 }.let {
+                                        if (!it.isNullOrBlank()) "#blinded=$it" else ""
                                     }
 
                                     share("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
-                                }
-                                1 -> {
-                                    share("${session.network.explorerUrl}${args.transaction.txHash}")
                                 }
                                 else -> {
                                     share(args.transaction.getUnblindedData().toString())
