@@ -36,7 +36,7 @@ class SendConfirmViewModel @AssistedInject constructor(
 
             val transaction = it.createTransaction(params)
 
-            if(session.hasDevice && session.device?.isLedger == false){
+            if(session.hasDevice){
                 deviceAddressValidationEvent.postValue(ConsumableEvent(null))
             }
 
