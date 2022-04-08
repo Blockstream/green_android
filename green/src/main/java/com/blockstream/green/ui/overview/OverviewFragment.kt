@@ -82,6 +82,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
     }
 
+    override val title: String
+        get() = viewModel.wallet.name
+
     private fun createBottomBarAnimation(isHide : Boolean): ObjectAnimator {
         return ObjectAnimator.ofFloat(
                 binding.bottomBar,
@@ -91,10 +94,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             duration = 200
         }
     }
-
-//    private val movingBehavior by lazy {
-//        (binding.bottomBar.layoutParams as CoordinatorLayout.LayoutParams).behavior as ScrollAwareBehavior to binding.bottomBar
-//    }
 
     var showAccountInToolbar: Boolean by Delegates.observable(false) { _, oldValue, newValue ->
         if(oldValue != newValue) {
@@ -298,9 +297,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         // Account Cards
         val accountsModelAdapter = ModelAdapter { model: SubAccount ->
             AccountListItem(session, model, session.walletBalances, isTopAccount = false, isAccountListOpen = true)
-        }.observeList(viewLifecycleOwner, viewModel.getFilteredSubAccounts(),{
+        }.observeList(viewLifecycleOwner, viewModel.getFilteredSubAccounts()) {
             topAccount?.let { updateTopAccountCard(it, topAccountAdapter) }
-        }).also {
+        }.also {
             it.active = false
         }
 

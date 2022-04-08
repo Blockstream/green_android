@@ -30,6 +30,8 @@ class GreenToolbar @JvmOverloads constructor(
         binding.title.text = title
     }
 
+    override fun getTitle(): CharSequence = binding.title.text
+
     override fun setSubtitle(subtitle: CharSequence?) {
         super.setSubtitle(subtitle)
         binding.subtitle.text = subtitle

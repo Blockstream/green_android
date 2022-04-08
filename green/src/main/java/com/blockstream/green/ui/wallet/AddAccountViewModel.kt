@@ -8,6 +8,7 @@ import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.params.SubAccountParams
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.lifecycle.ListenableLiveData
@@ -35,14 +36,15 @@ class AddAccountViewModel @AssistedInject constructor(
 
     fun createAccount() {
         session.observable {
-            accountName.value.nameCleanup()!!.let { name ->
-                it.createSubAccount(SubAccountParams(
-                    name = name,
+            it.createSubAccount(
+                SubAccountParams(
+                    name = accountName.value.nameCleanup() ?: accountType.gdkType,
                     type = accountType,
                     recoveryMnemonic = mnemonic,
-                    recoveryXpub = xpub
-                ))
-            }
+                    recoveryXpub = xpub,
+                ),
+                hardwareWalletResolver = DeviceResolver(it, this)
+            )
         }.doOnSubscribe {
             isEnabled.postValue(false)
         }.doOnTerminate {

@@ -30,14 +30,17 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     override fun updateToolbar() {
         super.updateToolbar()
         if (isSessionAndWalletRequired()) {
-            toolbar.setLogo(wallet.getIcon())
-            session.hwWallet?.device?.let {
-                toolbar.setBubble(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        it.getIcon()
+            // Prevent showing network icon when the title is empty
+            if(toolbar.title.isNotBlank() || !title.isNullOrBlank()) {
+                toolbar.setLogo(wallet.getIcon())
+                session.hwWallet?.device?.let {
+                    toolbar.setBubble(
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            it.getIcon()
+                        )
                     )
-                )
+                }
             }
         }
     }

@@ -194,11 +194,19 @@ public class JadeHWWallet extends HWWallet {
                                      final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
         Log.d(TAG, "signMessage() for message of length " + message.length() + " using path " + path);
 
+        CompletableSubject completable = CompletableSubject.create();
+
         try {
             final List<Long> unsignedPath = getUnsignedPath(path);
+
+            if (parent != null) {
+                parent.interactionRequest(this, completable, "id_check_device");
+            }
+
             final SignMessageResult result = this.jade.signMessage(unsignedPath, message, useAeProtocol,
                                                                    hexToBytes(aeHostCommitment),
                                                                    hexToBytes(aeHostEntropy));
+            completable.onComplete();
 
             // Convert the signature from Base64 into into DER hex for GDK
             byte[] sigDecoded = BaseEncoding.base64().decode(result.getSignature());
@@ -215,6 +223,7 @@ public class JadeHWWallet extends HWWallet {
             Log.d(TAG, "signMessage() returning: " + sigDerHex);
             return new SignMsgResult(sigDerHex, hexFromBytes(result.getSignerCommitment()));
         } catch (final Exception e) {
+            completable.onError(e);
             throw new RuntimeException(e);
         }
     }
