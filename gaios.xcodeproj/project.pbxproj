@@ -197,6 +197,10 @@
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
 		34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */; };
 		34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */; };
+		34FB694F27FD782F00A13197 /* PopoverMenuAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB694E27FD782F00A13197 /* PopoverMenuAccountViewController.swift */; };
+		34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB695C27FDC6EC00A13197 /* AccountArchiveViewController.swift */; };
+		34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB697627FEF9D000A13197 /* AccountArchiveCell.swift */; };
+		34FB697927FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB697827FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift */; };
 		34FC83A326EA66B10087EE8B /* OverviewAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FC83A226EA66B10087EE8B /* OverviewAssetCell.swift */; };
 		34FF27A327C7E45C008FD72C /* DialogReceiveRequestAmount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27A227C7E45C008FD72C /* DialogReceiveRequestAmount.swift */; };
 		34FF27A527C7E5A7008FD72C /* DialogReceiveMoreOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FF27A427C7E5A7008FD72C /* DialogReceiveMoreOptions.swift */; };
@@ -514,6 +518,10 @@
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
 		34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDeleteViewController.swift; sourceTree = "<group>"; };
 		34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWalletViewController.swift; sourceTree = "<group>"; };
+		34FB694E27FD782F00A13197 /* PopoverMenuAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuAccountViewController.swift; sourceTree = "<group>"; };
+		34FB695C27FDC6EC00A13197 /* AccountArchiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveViewController.swift; sourceTree = "<group>"; };
+		34FB697627FEF9D000A13197 /* AccountArchiveCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveCell.swift; sourceTree = "<group>"; };
+		34FB697827FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuUnarchiveViewController.swift; sourceTree = "<group>"; };
 		34FC83A226EA66B10087EE8B /* OverviewAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewAssetCell.swift; sourceTree = "<group>"; };
 		34FF27A227C7E45C008FD72C /* DialogReceiveRequestAmount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveRequestAmount.swift; sourceTree = "<group>"; };
 		34FF27A427C7E5A7008FD72C /* DialogReceiveMoreOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveMoreOptions.swift; sourceTree = "<group>"; };
@@ -1197,6 +1205,14 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		34FB697527FEF9AF00A13197 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34FB697627FEF9D000A13197 /* AccountArchiveCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
@@ -1282,12 +1298,14 @@
 		6D56C76D235E162A00E4F990 /* Accounts */ = {
 			isa = PBXGroup;
 			children = (
+				34FB697527FEF9AF00A13197 /* Cells */,
 				6D56C771235E27F000E4F990 /* Accounts.storyboard */,
 				34C2464A26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift */,
 				34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */,
 				3423C6DD27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift */,
 				3423C6E827C39B38001D9E2C /* AccountCreatePublicKeyViewController.swift */,
 				34C2464E2670ECE0009E8FCE /* AccountType.swift */,
+				34FB695C27FDC6EC00A13197 /* AccountArchiveViewController.swift */,
 			);
 			path = Accounts;
 			sourceTree = "<group>";
@@ -1298,6 +1316,8 @@
 				6D8099D723021CEF0069A69F /* PopoverMenu.storyboard */,
 				6D8099DA23021D0F0069A69F /* PopoverMenuViewController.swift */,
 				34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */,
+				34FB694E27FD782F00A13197 /* PopoverMenuAccountViewController.swift */,
+				34FB697827FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -1841,6 +1861,7 @@
 				3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
+				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
 				3497936825F8B18C0029ECB1 /* WalletNameViewController.swift in Sources */,
 				34477D322771D2600021698B /* RecipientCell.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
@@ -1917,6 +1938,7 @@
 				81D671EB26C8007600682508 /* SessionManager.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
+				34FB694F27FD782F00A13197 /* PopoverMenuAccountViewController.swift in Sources */,
 				3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */,
 				34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,
@@ -1932,6 +1954,7 @@
 				34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */,
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
 				34C2464B26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift in Sources */,
+				34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */,
 				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
 				3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */,
@@ -1949,6 +1972,8 @@
 				34477D392771F7090021698B /* AddRecipientCell.swift in Sources */,
 				81D671EF26C80D3400682508 /* EventType.swift in Sources */,
 				34BD7E76278C2EB6004AEC6F /* FeeSummaryCell.swift in Sources */,
+				34BAD9DA2636A12700FB8011 /* HWWNetworkCell.swift in Sources */,
+				34FB697927FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift in Sources */,
 				3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */,
 				34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */,
 				34477D352771D34D0021698B /* Recipient.swift in Sources */,

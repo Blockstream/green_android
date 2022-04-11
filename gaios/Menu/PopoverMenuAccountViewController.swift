@@ -1,33 +1,28 @@
 import UIKit
 
-enum MenuOption {
-    case watchOnly
-    case hardwareWallets
-    case tempRestore
-    case help
+enum MenuAccountOption {
+    case rename
+    case archive
 }
 
-extension MenuOption: CaseIterable {}
+extension MenuAccountOption: CaseIterable {}
 
-protocol PopoverMenuDelegate: AnyObject {
-    func didSelectionMenuOption(_ menuOption: MenuOption)
+protocol PopoverMenuAccountDelegate: AnyObject {
+    func didSelectionMenuOption(option: MenuAccountOption, index: Int)
 }
 
-class PopoverMenuViewController: UIViewController {
+class PopoverMenuAccountViewController: UIViewController {
 
     @IBOutlet weak var menuTableView: UITableView!
 
-    weak var delegate: PopoverMenuDelegate?
+    weak var delegate: PopoverMenuAccountDelegate?
     private var isLiquid: Bool!
-    private var kvoContext = 0
-    private var menuOptions = MenuOption.allCases
+    private var menuOptions = MenuAccountOption.allCases
+    var index: Int?
+    var canArchive: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        isLiquid = getGdkNetwork(getNetwork()).liquid
-        if isLiquid {
-            _ = menuOptions.remove(at: menuOptions.firstIndex(of: .watchOnly)!)
-        }
         menuTableView.delegate = self
         menuTableView.dataSource = self
         menuTableView.estimatedRowHeight = 44
@@ -35,7 +30,7 @@ class PopoverMenuViewController: UIViewController {
     }
 }
 
-extension PopoverMenuViewController: UITableViewDataSource, UITableViewDelegate {
+extension PopoverMenuAccountViewController: UITableViewDataSource, UITableViewDelegate {
 
     override var preferredContentSize: CGSize {
         get {
@@ -51,22 +46,21 @@ extension PopoverMenuViewController: UITableViewDataSource, UITableViewDelegate 
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return menuOptions.count
+        if canArchive {
+            return menuOptions.count
+        } else {
+            return 1
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "MenuOptionCell") {
-            cell.textLabel?.textColor = isLiquid ?  UIColor.customMatrixGreen() : UIColor.customTitaniumLight()
             let option = menuOptions[indexPath.row]
             switch option {
-            case .watchOnly:
-                cell.textLabel?.text = NSLocalizedString("id_watchonly", comment: "")
-            case .hardwareWallets:
-                cell.textLabel?.text = NSLocalizedString("id_connect_hardware_wallet", comment: "")
-            case .tempRestore:
-                cell.textLabel?.text = NSLocalizedString("id_restore_temporary_wallet", comment: "")
-            case .help:
-                cell.textLabel?.text = NSLocalizedString("id_help", comment: "")
+            case .rename:
+                cell.textLabel?.text = NSLocalizedString("id_rename_wallet", comment: "")
+            case .archive:
+                cell.textLabel?.text = NSLocalizedString("id_archive", comment: "")
             }
             return cell
         }
@@ -75,7 +69,7 @@ extension PopoverMenuViewController: UITableViewDataSource, UITableViewDelegate 
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.dismiss(animated: true) {
-            self.delegate?.didSelectionMenuOption(self.menuOptions[indexPath.row])
+            self.delegate?.didSelectionMenuOption(option: self.menuOptions[indexPath.row], index: self.index ?? 0)
         }
     }
 }

@@ -34,6 +34,7 @@ class OverviewViewController: UIViewController {
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
+    var footerHandleAccountH: CGFloat = 118.0
 
     private var subAccounts = [WalletItem]()
 
@@ -47,7 +48,7 @@ class OverviewViewController: UIViewController {
             }
             let activeWallet = SessionsManager.current?.activeWallet ?? 0
             if showAccounts {
-                return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet}
+                return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet && $0.hidden == false}
             } else {
                 return subAccounts.filter { $0.pointer == activeWallet}
             }
@@ -78,6 +79,10 @@ class OverviewViewController: UIViewController {
     var color: UIColor = .clear
     var alertCards: [AlertCardType] = []
     var userWillLogout = false
+
+    var archivedAccount: Int {
+        return (subAccounts.filter { $0.hidden == true }).count
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -455,6 +460,13 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    @objc func viewArchivedAccounts() {
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     func onAccountChange() {
         reloadWallet()
     }
@@ -576,6 +588,44 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         })
     }
 
+    func presentAccountMenu(frame: CGRect, index: Int) {
+        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
+        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuAccountViewController") as? PopoverMenuAccountViewController {
+            popover.delegate = self
+            popover.index = index
+            popover.canArchive = (subAccounts.filter { $0.hidden == false }).count > 1
+            popover.modalPresentationStyle = .popover
+            let popoverPresentationController = popover.popoverPresentationController
+            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
+            popoverPresentationController?.delegate = self
+            popoverPresentationController?.sourceView = self.tableView
+//            popoverPresentationController?.sourceRect = CGRect(x: self.tableView.frame.width - 80.0, y: 0.0, width: 60.0, height: 60.0)
+            popoverPresentationController?.sourceRect = CGRect(x: self.tableView.frame.width - 80.0, y: frame.origin.y, width: 60.0, height: 60.0)
+            popoverPresentationController?.permittedArrowDirections = .up
+            self.present(popover, animated: true)
+        }
+    }
+
+    func archiveAccount() {
+        let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try session.updateSubaccount(details: ["subaccount": session.activeWallet, "hidden": true]).resolve()
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            SessionsManager.current?.activeWallet = self.accounts[1].pointer
+            self.presentingWallet = self.accounts[1]
+            self.reloadData()
+        }.catch { e in
+            DropAlert().error(message: e.localizedDescription)
+            print(e.localizedDescription)
+        }
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nv = segue.destination as? Learn2faViewController {
            nv.delegate = self
@@ -615,14 +665,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 var action: VoidToVoid?
                 if indexPath.row == 0 && showAccounts {
                     action = { [weak self] in
-
-                        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-                        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
-                            vc.modalPresentationStyle = .overFullScreen
-                            vc.isAccountRename = true
-                            vc.delegate = self
-                            self?.present(vc, animated: false, completion: nil)
-                        }
+                        self?.presentAccountMenu(frame: cell.frame, index: indexPath.row)
                     }
                 }
                 cell.configure(account: accounts[indexPath.row], action: action, color: color, showAccounts: showAccounts, isLiquid: isLiquid)
@@ -723,7 +766,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch section {
         case OverviewSection.account.rawValue:
-            return showAccounts ? footerH : 1.0
+            return showAccounts ? footerHandleAccountH : 1.0
         case OverviewSection.transaction.rawValue:
             return transactions.count == 0 ? footerH : 1.0
         default:
@@ -763,7 +806,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case OverviewSection.account.rawValue:
             let isWatchonly = account?.isWatchonly ?? false
             let isResetActive = SessionsManager.current?.isResetActive ?? false
-            return showAccounts && !isWatchonly && !isResetActive ? footerView(.addAccount) : footerView(.none)
+            return showAccounts && !isWatchonly && !isResetActive ? footerView(.handleAccount) : footerView(.none)
         case OverviewSection.transaction.rawValue:
             return transactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
         default:
@@ -842,7 +885,7 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
 extension OverviewViewController {
     enum FooterType {
         case noTransactions
-        case addAccount
+        case handleAccount
         case none
     }
 
@@ -879,22 +922,48 @@ extension OverviewViewController {
             let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
             section.backgroundColor = .clear
             return section
-        case .addAccount:
-            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
+        case .handleAccount:
+            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerHandleAccountH))
             section.backgroundColor = .clear
+
             let addBtn = UIButton(frame: .zero)
-            addBtn.setTitle("Add New Account", for: .normal)
+            addBtn.setTitle(NSLocalizedString("id_add_new_account", comment: ""), for: .normal)
+            addBtn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
             addBtn.setStyle(.outlinedGray)
-            addBtn.translatesAutoresizingMaskIntoConstraints = false
             addBtn.addTarget(self, action: #selector(addAccount), for: .touchUpInside)
-            section.addSubview(addBtn)
+
+            let archiveBtn = UIButton(frame: .zero)
+            let btnTitle = archivedAccount > 0 ? String(format: NSLocalizedString("id_view_archived_accounts_d", comment: ""), archivedAccount) : "No Archived Accounts"
+            archiveBtn.setTitle(btnTitle, for: .normal)
+            archiveBtn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+            archiveBtn.setStyle(.outlinedGray)
+            archiveBtn.addTarget(self, action: #selector(viewArchivedAccounts), for: .touchUpInside)
+            archiveBtn.isEnabled = archivedAccount > 0
+            archiveBtn.alpha = archivedAccount > 0 ? 1.0 : 0.5
+
+            let stackView   = UIStackView()
+            stackView.axis  = NSLayoutConstraint.Axis.vertical
+            stackView.distribution = UIStackView.Distribution.fillEqually
+            stackView.alignment = UIStackView.Alignment.center
+            stackView.spacing = 10.0
+
+            stackView.addArrangedSubview(addBtn)
+            stackView.addArrangedSubview(archiveBtn)
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+
+            section.addSubview(stackView)
 
             NSLayoutConstraint.activate([
-                addBtn.topAnchor.constraint(equalTo: section.topAnchor, constant: 0.0),
-                addBtn.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: -10.0),
-                addBtn.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 20.0),
-                addBtn.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20.0)
+                stackView.topAnchor.constraint(equalTo: section.topAnchor, constant: 10.0),
+                stackView.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: -10.0),
+                stackView.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 20.0),
+                stackView.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20.0),
+                addBtn.leadingAnchor.constraint(equalTo: stackView.leadingAnchor, constant: 0.0),
+                addBtn.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: 0.0),
+                archiveBtn.leadingAnchor.constraint(equalTo: stackView.leadingAnchor, constant: 0.0),
+                archiveBtn.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: 0.0)
             ])
+
             return section
         case .noTransactions:
             let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
@@ -1037,5 +1106,34 @@ extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faVi
                 UIApplication.shared.keyWindow?.rootViewController = nav
             }
         })
+    }
+}
+
+extension OverviewViewController: UIPopoverPresentationControllerDelegate {
+
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        return UINavigationController(rootViewController: controller.presentedViewController)
+    }
+}
+
+extension OverviewViewController: PopoverMenuAccountDelegate {
+    func didSelectionMenuOption(option: MenuAccountOption, index: Int) {
+        switch option {
+        case .rename:
+            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                vc.isAccountRename = true
+                vc.delegate = self
+                present(vc, animated: false, completion: nil)
+            }
+        case .archive:
+            // index is always 0 here
+            archiveAccount()
+        }
     }
 }
