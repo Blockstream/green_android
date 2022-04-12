@@ -66,7 +66,7 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
             }
         }
 
-        val fastAdapter = FastAdapter.with(createAdapter(isAddressVerification = false))
+        val fastAdapter = FastAdapter.with(createAdapter(isAddressVerificationOnDevice = false))
 
         fastAdapter.addClickListener<ListItemTransactionAmountBinding, GenericItem>({ binding -> binding.addressTextView }) { view, _: Int, _: FastAdapter<GenericItem>, _: GenericItem ->
             copyToClipboard("Address", (view as TextView).text.toString(), animateView = view)
@@ -113,24 +113,24 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
         }
     }
 
-    fun createAdapter(isAddressVerification: Boolean): ItemAdapter<GenericItem> {
+    fun createAdapter(isAddressVerificationOnDevice: Boolean): ItemAdapter<GenericItem> {
         val tx = session.pendingTransaction!!.second
-        val look = ConfirmTransactionLook(session, tx)
+        val look = ConfirmTransactionLook(session = session, tx = tx, overrideDenomination = isAddressVerificationOnDevice)
 
         val itemAdapter = ItemAdapter<GenericItem>()
         val list = mutableListOf<GenericItem>()
 
         for (i in 0 until look.recipients) {
-            list += TransactionAmountListItem(i, look, withStroke = isAddressVerification)
+            list += TransactionAmountListItem(i, look, withStroke = isAddressVerificationOnDevice)
         }
 
-        if(isAddressVerification && look.changeOutput != null && session.device?.isJade == false){
-            list += TransactionAmountListItem(look.recipients, look, withStroke = isAddressVerification)
+        if(isAddressVerificationOnDevice && look.changeOutput != null && session.device?.isJade == false){
+            list += TransactionAmountListItem(look.recipients, look, withStroke = isAddressVerificationOnDevice)
         }
 
         list += TransactionFeeListItem(look)
 
-        if(!isAddressVerification) {
+        if(!isAddressVerificationOnDevice) {
             if(!tx.isSweep) {
                 list += noteListItem
             }

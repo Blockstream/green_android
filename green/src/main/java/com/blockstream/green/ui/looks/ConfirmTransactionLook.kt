@@ -13,9 +13,17 @@ import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.utils.*
 
-data class ConfirmTransactionLook constructor(val session: GreenSession, val tx: CreateTransaction) : FeeLookInterface, AddreseeLookInterface {
+data class ConfirmTransactionLook constructor(
+    val session: GreenSession,
+    val tx: CreateTransaction,
+    val overrideDenomination: Boolean
+) : FeeLookInterface, AddreseeLookInterface {
 
-    var changeOutput: Output? = if(!tx.isSweep) tx.outputs.find { it.isChange } else null
+    var changeOutput: Output? = if (!tx.isSweep) if (session.isElectrum) {
+        tx.outputs.findLast { it.isChange } // WORK AROUND ON SINGLESIG
+    } else {
+        tx.outputs.find { it.isChange }
+    } else null
 
     val recipients
         get() = tx.addressees.size
@@ -25,12 +33,18 @@ data class ConfirmTransactionLook constructor(val session: GreenSession, val tx:
             session,
             withUnit = true,
             withGrouping = true,
-            withMinimumDigits = true
+            withMinimumDigits = true,
+            overrideDenomination = overrideDenomination,
         )
 
     override val feeFiat: String?
         get() = session.convertAmount(Convert(satoshi = tx.fee))
-            ?.toAmountLook(session = session, isFiat = true, withUnit = true)?.let {
+            ?.toAmountLook(
+                session = session,
+                isFiat = true,
+                withUnit = true,
+                overrideDenomination = overrideDenomination
+            )?.let {
             "≈ $it"
         }
 
@@ -63,13 +77,15 @@ data class ConfirmTransactionLook constructor(val session: GreenSession, val tx:
             withUnit = false,
             withDirection = null,
             withGrouping = true,
-            withMinimumDigits = true
+            withMinimumDigits = true,
+            overrideDenomination = overrideDenomination,
         )
-        binding.ticker.text = if(assetId.isPolicyAsset(session)) getBitcoinOrLiquidUnit(session) else session.getAsset(assetId)?.ticker ?: "n/a"
+        binding.ticker.text = if(assetId.isPolicyAsset(session)) getBitcoinOrLiquidUnit(session, BTC_UNIT.takeIf { overrideDenomination }) else session.getAsset(assetId)?.ticker ?: "n/a"
         binding.fiat = satoshi.toAmountLook(
             session = session,
             isFiat = true,
             assetId = assetId,
+            overrideDenomination = overrideDenomination
         )
         binding.icon.setImageDrawable(assetId.getAssetIcon(binding.root.context, session))
         binding.icon.updateAssetPadding(session, assetId, 3)

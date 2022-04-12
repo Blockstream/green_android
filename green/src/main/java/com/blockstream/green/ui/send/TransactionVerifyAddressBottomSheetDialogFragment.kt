@@ -29,7 +29,7 @@ layout = R.layout.transaction_verify_address_bottom_sheet
             binding.device = receiveViewModel.session.hwWallet?.device ?: Device("Jade", true ,true, true,DeviceSupportsLiquid.Full, DeviceSupportsAntiExfilProtocol.Optional)
         }
 
-        val fastAdapter = FastAdapter.with((parentFragment as SendConfirmFragment).createAdapter(isAddressVerification = true))
+        val fastAdapter = FastAdapter.with((parentFragment as SendConfirmFragment).createAdapter(isAddressVerificationOnDevice = true))
 
         binding.recycler.apply {
             adapter = fastAdapter
