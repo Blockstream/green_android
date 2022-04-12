@@ -125,7 +125,6 @@ class Registry: Codable {
             //remote refresh failed for assetes, than try refresh from cache
             fetchAssets(session: session, refresh: false)
         }
-
     }
 
     func load(session: SessionManager) -> Promise<Void> {

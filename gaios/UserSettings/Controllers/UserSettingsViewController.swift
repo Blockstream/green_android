@@ -318,7 +318,7 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         if let cell = tableView.dequeueReusableCell(withIdentifier: "UserSettingsCell") as? UserSettingsCell {
             cell.configure(item)
 
-            //customize single cells
+            // customize single cells
             if item.type == .LoginWithBiometrics {
                 cell.selectionStyle = .none
                 cell.actionSwitch.isHidden = false

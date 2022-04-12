@@ -145,7 +145,6 @@ final class Jade: JadeChannel, HWProtocol {
             let aeHostEntropy = input["ae_host_entropy"] as? String
             var satoshi = input["satoshi"] as? UInt64
             var txhash = input["txhash"] as? String
-            
             if swInput && inputs.count == 1 {
                 txhash = nil
             } else if let txhash = txhash {

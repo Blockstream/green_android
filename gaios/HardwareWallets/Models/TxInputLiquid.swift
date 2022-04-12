@@ -15,7 +15,7 @@ struct TxInputLiquid: TxInputProtocol {
     let path: [UInt32]?
     let aeHostEntropy: Data?
     let aeHostCommitment: Data?
-    
+
     init(isWitness: Bool, scriptHex: String?, valueCommitmentHex: String?, path: [UInt32]?, aeHostEntropyHex: String?, aeHostCommitmentHex: String?) {
         self.isWitness = isWitness
         self.script = hexToDataNil(scriptHex)

@@ -24,12 +24,13 @@ protocol HWProtocol {
 
     func newReceiveAddress(network: GdkNetwork, wallet: WalletItem, path: [UInt32], csvBlocks: UInt32) -> Observable<String>
 
+    // swiftlint:disable inclusive_language
     func getMasterBlindingKey() -> Observable<String>
 
     // Liquid calls
     func getBlindingKey(scriptHex: String) -> Observable<String?>
     func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?>
-    
+
     // swiftlint:disable:next function_parameter_count
     func signLiquidTransaction(network: String,
                                tx: [String: Any],

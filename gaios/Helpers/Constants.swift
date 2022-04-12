@@ -7,7 +7,7 @@ enum Constants {
     static let electrumPrefix = "electrum-"
     static let trxPerPage: UInt32 = 30
 
-    //SPV Settings
+    // SPV Settings
     static let spvEnabled = "spv_enabled"
     static let personalNodeEnabled = "personal_node_enabled"
     static let btcElectrumSrv = "btc_electrum_srv"

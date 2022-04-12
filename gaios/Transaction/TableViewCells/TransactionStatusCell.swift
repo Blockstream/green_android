@@ -68,7 +68,7 @@ class TransactionStatusCell: UITableViewCell {
             lblStatus.text = NSLocalizedString("id_completed", comment: "")
         }
 
-        //status widget
+        // status widget
         lblStep.isHidden = true
         iconCheck.isHidden = true
         if !shouldShowSpvStatus(tx: transaction) {

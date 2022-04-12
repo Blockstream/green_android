@@ -298,7 +298,7 @@ struct JadeResponse<T: Codable>: Decodable, Encodable {
             do {
                 result = try container.decode(T.self, forKey: .result)
             } catch {
-                print (error)
+                print(error)
                 throw error
             }
         } else {

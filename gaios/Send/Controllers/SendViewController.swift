@@ -140,13 +140,13 @@ class SendViewController: KeyboardViewController {
     }
 
     func isSendAll() -> Bool {
-        //handling only 1 recipient for the moment
+        // handling only 1 recipient for the moment
         let recipient = recipients.first
         return recipient?.isSendAll == true
     }
 
     func getAddressee() -> [String: Any] {
-        //handling only 1 recipient for the moment
+        // handling only 1 recipient for the moment
         let recipient = recipients.first
         let addressInput: String = recipient?.address ?? ""
 
@@ -167,7 +167,7 @@ class SendViewController: KeyboardViewController {
     }
 
     func getPrivateKey() -> String {
-        //handling only 1 recipient for the moment
+        // handling only 1 recipient for the moment
         let recipient = recipients.first
         return recipient?.address ?? ""
     }

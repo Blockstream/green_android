@@ -19,7 +19,7 @@ struct TxInputBtc: TxInputProtocol {
     let path: [UInt32]?
     let aeHostEntropy: Data?
     let aeHostCommitment: Data?
-    
+
     init(isWitness: Bool, inputTxHex: String?, scriptHex: String?, satoshi: UInt64?, path: [UInt32]?, aeHostEntropyHex: String?, aeHostCommitmentHex: String?) {
         self.isWitness = isWitness
         self.inputTx = hexToDataNil(inputTxHex)

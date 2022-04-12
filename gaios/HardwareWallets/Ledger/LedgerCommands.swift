@@ -55,13 +55,13 @@ class LedgerCommands: LedgerChannel {
         switch userConfirmationValue {
         case 0x00, 0x01: // NONE, KEYBOARD
             return ["value": value, "user_confirmation": userConfirmationValue]
-        case 0x03: //KEYCARD_SCREEN
+        case 0x03: // KEYCARD_SCREEN
             let keycardIndexesLength = Int(buffer[2 + value.count])
             let keycardIndexes = buffer[(3 + value.count)..<(3 + value.count + keycardIndexesLength)]
             let screenInfoLength = buffer.count - 3 - value.count - keycardIndexes.count
             let screenInfo = buffer[(3 + value.count + keycardIndexes.count)..<(3 + value.count + keycardIndexesLength + screenInfoLength)]
             return ["value": value, "user_confirmation": userConfirmationValue, "keycard_indexes": keycardIndexes, "screen_info": screenInfo]
-        case 0x04, 0x05: //KEYCARD, KEYCARD_NFC
+        case 0x04, 0x05: // KEYCARD, KEYCARD_NFC
             let keycardIndexesLength = Int(buffer[2 + value.count])
             let keycardIndexes = buffer[(3 + value.count)..<(3 + value.count + keycardIndexesLength)]
             return ["value": value, "user_confirmation": userConfirmationValue, "keycard_indexes": keycardIndexes]
@@ -98,7 +98,7 @@ class LedgerCommands: LedgerChannel {
         }
     }
 
-    //swiftlint:disable function_parameter_count
+    // swiftlint:disable function_parameter_count
     func startUntrustedTransaction(txVersion: UInt, newTransaction: Bool, inputIndex: Int64, usedInputList: [[String: Any]], redeemScript: Data, segwit: Bool) -> Observable<Bool> {
         // Start building a fake transaction with the passed inputs
         let buffer = txVersion.uint32LE() + UInt(usedInputList.count).varint()
@@ -118,7 +118,7 @@ class LedgerCommands: LedgerChannel {
                     .asObservable()
                     .take(1)
         }
-        //swiftlint:disable reduce_boolean
+        // swiftlint:disable reduce_boolean
         return Observable<Bool>.concat(allObservables).reduce(true, accumulator: { _, element in
             element
         })

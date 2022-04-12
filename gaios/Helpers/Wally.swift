@@ -8,16 +8,6 @@ public func hexToDataNil(_ hex: String?) -> Data? {
     return hexToData(hex)
 }
 public func hexToData(_ hex: String) -> Data {
-    /*let hex_bytes: UnsafePointer<Int8> = UnsafePointer(hex)
-    precondition(hex.count%2 == 0)
-    let length = hex.count/2
-    let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: length)
-    var written = 0
-    wally_hex_to_bytes(hex_bytes, buffer, length, &written)
-    precondition(written == length)
-    return Data(bytesNoCopy: buffer, count: length, deallocator: .custom({ (_, _)  in
-        buffer.deallocate()
-    }))*/
     precondition(hex.count%2 == 0)
     var data = Data(capacity: hex.count/2)
     var indexIsEven = true
@@ -44,7 +34,7 @@ public func sigToDer(sig: [UInt8]) throws -> [UInt8] {
         throw GaError.GenericError
     }
     let der = Array(UnsafeBufferPointer(start: derPtr, count: written))
-    //derPtr.deallocate()
+    // derPtr.deallocate()
     return der
 }
 

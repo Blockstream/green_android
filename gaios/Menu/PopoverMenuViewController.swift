@@ -27,7 +27,6 @@ class PopoverMenuViewController: UIViewController {
         isLiquid = getGdkNetwork(getNetwork()).liquid
         if isLiquid {
             _ = menuOptions.remove(at: menuOptions.firstIndex(of: .watchOnly)!)
-            //_ = menuOptions.remove(at: menuOptions.firstIndex(of: .hardwareWallets)!)
         }
         menuTableView.delegate = self
         menuTableView.dataSource = self
