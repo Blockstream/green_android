@@ -486,7 +486,7 @@ extension Jade {
             }
     }
 
-    func send(_ chunk: [UInt8]) -> Observable<Bool> {
+    func send(_ chunk: Data) -> Observable<Bool> {
         return Observable.create { observer in
             return self.exchange(JadeRequest(method: "ota_data", params: chunk))
                 .subscribe(onNext: { (res: JadeResponse<Bool>) in
@@ -502,7 +502,7 @@ extension Jade {
         let chunks = stride(from: 0, to: data.count, by: Int(chunksize)).map {
             Array(data[$0 ..< Swift.min($0 + Int(chunksize), data.count)])
         }
-        let sequence: [Observable<Bool>] = chunks.map { Observable.just($0) }
+        let sequence: [Observable<Bool>] = chunks.map { Observable.just(Data($0)) }
             .map { obs in
                 return obs.flatMap { chunk in
                     self.send(chunk)
