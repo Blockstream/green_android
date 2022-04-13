@@ -123,9 +123,11 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
         for (i in 0 until look.recipients) {
             list += TransactionAmountListItem(i, look, withStroke = isAddressVerificationOnDevice)
         }
-
-        if(isAddressVerificationOnDevice && look.changeOutput != null && session.device?.isJade == false){
-            list += TransactionAmountListItem(look.recipients, look, withStroke = isAddressVerificationOnDevice)
+        
+        if(isAddressVerificationOnDevice && session.device?.isJade == false){
+            for(i in 0 until look.changeOutputs.size){
+                list += TransactionAmountListItem(look.recipients + i, look, withStroke = isAddressVerificationOnDevice)
+            }
         }
 
         list += TransactionFeeListItem(look)

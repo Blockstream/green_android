@@ -19,14 +19,15 @@ data class ConfirmTransactionLook constructor(
     val overrideDenomination: Boolean
 ) : FeeLookInterface, AddreseeLookInterface {
 
-    var changeOutput: Output? = if (!tx.isSweep) if (session.isElectrum) {
-        tx.outputs.findLast { it.isChange } // WORK AROUND ON SINGLESIG
-    } else {
-        tx.outputs.find { it.isChange }
-    } else null
+    val changeOutputs: List<Output> by lazy {
+        if (!tx.isSweep) if (session.isElectrum) {
+            tx.outputs.filter { it.isInternal == true } // WORK AROUND ON SINGLESIG
+        } else {
+            tx.outputs.filter { it.isChange }
+        } else listOf()
+    }
 
-    val recipients
-        get() = tx.addressees.size
+    val recipients by lazy { tx.addressees.size }
 
     override val fee: String
         get() = (tx.fee ?: 0).toAmountLookOrNa(
@@ -59,17 +60,17 @@ data class ConfirmTransactionLook constructor(
     }
 
     override fun getAssetId(index: Int): String = tx.addressees.getOrNull(index)?.assetId ?: session.policyAsset // changeOutput
-    override fun getAddress(index: Int): String? = tx.addressees.getOrNull(index)?.address ?: changeOutput?.address
+    override fun getAddress(index: Int): String? = tx.addressees.getOrNull(index)?.address ?: changeOutputs.getOrNull(index - recipients)?.address
 
     override fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding) {
         binding.directionColor = ContextCompat.getColor(binding.root.context, R.color.white)
 
-        val assetId = tx.addressees.getOrNull(index)?.assetId ?: changeOutput?.assetId ?: session.policyAsset
+        val assetId = tx.addressees.getOrNull(index)?.assetId ?: changeOutputs.getOrNull(index - recipients)?.assetId ?: session.policyAsset
         val satoshi = if(!session.isElectrum && tx.isSendAll){
             tx.satoshi[assetId]
         }else{
             tx.addressees.getOrNull(index)?.satoshi
-        } ?: changeOutput?.satoshi ?: tx.satoshi[assetId] ?: 0
+        } ?: changeOutputs.getOrNull(index - recipients)?.satoshi ?: tx.satoshi[assetId] ?: 0
 
         binding.amount = satoshi.toAmountLook(
             session = session,
