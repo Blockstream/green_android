@@ -153,7 +153,7 @@ final class Jade: JadeChannel, HWProtocol {
                     return nil
                 }
             }
-            return TxInputBtc(isWitness: swInput, inputTxHex: nil, scriptHex: prevoutScript, satoshi: satoshi, path: userPath, aeHostEntropyHex: aeHostEntropy, aeHostCommitmentHex: aeHostCommitment)
+            return TxInputBtc(isWitness: swInput, inputTxHex: txhash, scriptHex: prevoutScript, satoshi: satoshi, path: userPath, aeHostEntropyHex: aeHostEntropy, aeHostCommitmentHex: aeHostCommitment)
         }
 
         if txInputs.contains(where: { $0 == nil }) {
