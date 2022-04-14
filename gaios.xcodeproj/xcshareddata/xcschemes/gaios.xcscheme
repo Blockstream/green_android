@@ -56,6 +56,11 @@
                BlueprintName = "gaiosUITests"
                ReferencedContainer = "container:gaios.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "EditUITests/testSinglesigAlertTor()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
