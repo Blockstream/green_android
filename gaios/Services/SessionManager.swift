@@ -63,7 +63,7 @@ class SessionManager: Session {
         let useProxy = networkSettings["proxy"] as? Bool ?? false
         let socks5Hostname = useProxy ? networkSettings["socks5_hostname"] as? String ?? "" : ""
         let socks5Port = useProxy ? networkSettings["socks5_port"] as? String ?? "" : ""
-        let useTor = getGdkNetwork(network).serverType == "green" ? networkSettings["tor"] as? Bool ?? false : false
+        let useTor = networkSettings["tor"] as? Bool ?? false
         let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
         let userAgent = String(format: "green_ios_%@", version)
