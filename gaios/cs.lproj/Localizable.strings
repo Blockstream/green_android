@@ -57,7 +57,7 @@
 "id_advanced_options_for_your_third" = "Rozšířené možnosti pro třetí klíč pro obnovení";
 "id_all" = "Vše";
 "id_all_assets" = "Všechna aktiva";
-"id_all_coins" = "Všechny mince";
+"id_all_coins" = "(Všechny mince)";
 "id_all_networks" = "Všechny sítě";
 "id_all_of_the_accounts_in_your" = "Před odstraněním musí být všechny účty v peněžence prázdné.";
 "id_all_the_coins_received_or" = "Všechny mince přijaté nebo vytvořené jako rozměněné.";
@@ -72,9 +72,9 @@
 "id_amp_wallet" = "AMP peněženka";
 "id_another_2fa_method_is_already" = "Další metoda 2FA je již aktivní. Prostřednictvím 2FA potvrďte, že tuto změnu autorizujete.";
 "id_app_settings" = "Nastavení aplikace";
-"id_archive" = "Archive";
-"id_archived" = "Archived";
-"id_archived_accounts" = "Archived Accounts";
+"id_archive" = "Archivovat";
+"id_archived" = "Archivováno";
+"id_archived_accounts" = "Archivované účty";
 "id_are_you_sure_you_want_to_view" = "Opravdu chcete transakci zobrazit pomocí %@?";
 "id_as_easy_as_snapping_a_photo" = "Stejně snadné jako fotografování pomocí telefonu. Pokud máte existující peněženku, naskenujte frázi pro obnovení z nastavení.";
 "id_asset" = "Aktivum";
@@ -110,6 +110,7 @@
 "id_bitcoin_denomination" = "Nominální hodnota bitcoinu";
 "id_bitcoin_electrum_server" = "Server Bitcoin Electrum";
 "id_bitcoin_is_the_worlds_leading" = "Bitcoin je přední světová P2P kryptoměnová síť. Vyberte pro odesílání a přijímání bitcoinů.";
+"id_bitcoin_testnet_and_liquid" = "Bitcoin Testnet a Liquid Testnet";
 "id_bitcoin_wallet" = "Bitcoin peněženka.";
 "id_bitcoin_wallets" = "Bitcoinové peněženky";
 "id_block" = "blok";
@@ -163,7 +164,7 @@
 "id_coins_locked" = "Mince uzamčeny";
 "id_coins_protected_by_the_legacy" = "Mince chráněné starším skriptem lze obnovit pomocí souboru nlocktimes.zip.";
 "id_coins_protected_by_the_new" = "Mince chráněné novým skriptem s vloženým vypršením platnosti 2FA prostřednictvím CheckSequenceVerify.";
-"id_coins_received_or_created" = "Coins received or created before SegWit was activated.";
+"id_coins_received_or_created" = "Mince přijaté nebo vytvořené před aktivací SegWit.";
 "id_coins_unlocked" = "Mince jsou odemčené";
 "id_coins_whose_asset_and_amount" = "Mince, jejichž aktivum a množství jsou veřejně viditelné.";
 "id_coins_with_a_value_lower_than" = "Mince s hodnotou nižší než 1092 satoshi, které jsou neekonomické utratit; tyto mince může generovat vaše peněženka jako drobné nebo vám je mohou poslat třetí strany, které se pokoušejí spamovat nebo deanonymizovat vaši peněženku.";
@@ -178,7 +179,7 @@
 "id_confirm_code" = "Potvrďte kód";
 "id_confirm_passphrase" = "Potvrďte přístupovou frázi (passphrase)";
 "id_confirm_transaction" = "Potvrdit transakci";
-"id_confirm_transaction_details_on" = "Potvrďte podrobnosti transakce na vaší hardwarové peněžence";
+"id_confirm_transaction_details_on" = "Potvrďte údaje o transakci ve své hardwarové peněžence";
 "id_confirm_update_on_your_jade" = "Potvrďte aktualizaci na svém Jade";
 "id_confirm_via_2fa_that_you" = "Prostřednictvím 2FA potvrďte, že tuto změnu autorizujete.";
 "id_confirmation_in_d_blocks" = "Potvrzení v %d blocích";
@@ -236,7 +237,7 @@
 "id_d_asset_in_this_account" = "%d aktivum v tomto účtu";
 "id_d_assets" = "%d aktiva";
 "id_d_assets_in_this_account" = "%d aktiva v tomto účtu";
-"id_d_coins_selected" = "vybrané mince %d";
+"id_d_coins_selected" = "(%d vybrané mince)";
 "id_d_words" = "%d slova";
 "id_data_directory" = "Datový adresář";
 "id_date" = "Datum";
@@ -392,6 +393,7 @@
 "id_hide_assets" = "Skrýt aktiva";
 "id_high" = "Vysoký";
 "id_hold_your_nfc_tag_close_to_the" = "Držte NFC tag v blízkosti zařízení";
+"id_home" = "Domů";
 "id_hour" = "hodina";
 "id_hours" = "hodiny";
 "id_how_to_stop_this_reset" = "Jak zastavit tento reset";
@@ -503,6 +505,7 @@
 "id_logout" = "Odhlásit se";
 "id_logout_and_switch" = "Odhlášení a přepnutí";
 "id_look_at_the_device_for_the" = "Podívejte se na zařízení na pozice čísel";
+"id_looking_for_wallets" = "Hledám peněženky...";
 "id_looks_like_you_havent_used_a" = "Vypadá to, že jste dosud nepoužili peněženku. Zkuste vytvořit novou.";
 "id_low" = "Nízký";
 "id_main_account" = "Hlavní účet";
@@ -558,7 +561,7 @@
 "id_no_amount_specified" = "Nebyla zadána žádná částka";
 "id_no_asset_in_this_account" = "Žádná aktiva na tomto účtu";
 "id_no_attempts_remaining" = "Nezbývají žádné pokusy";
-"id_no_coins_selected" = "Nebyly vybrány žádné mince";
+"id_no_coins_selected" = "(Nebyly vybrány žádné mince)";
 "id_no_device_connected" = "Není připojeno žádné zařízení";
 "id_no_more_assets" = "Žádná další aktiva.";
 "id_no_peers_connected" = "Nejsou připojeny žádné uzly";
@@ -685,7 +688,7 @@
 "id_remove" = "Odstranit";
 "id_remove_custom_network" = "Odebrat vlastní síť";
 "id_remove_wallet" = "Odebrat peněženku";
-"id_rename" = "Rename";
+"id_rename" = "Přejmenovat";
 "id_rename_account" = "Přejmenovat účet";
 "id_rename_wallet" = "Přejmenovat peněženku";
 "id_replaceable" = "zaměnitelný";
@@ -909,7 +912,7 @@
 "id_twofactor_threshold" = "Limit 2-Faktorů";
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Nelze kontaktovat Green službu. Zkontrolujte připojení k síti a počkejte, až se znovu připojí.";
-"id_unarchive" = "Unarchive";
+"id_unarchive" = "Odarchivovat";
 "id_unblinding_data" = "Odtajněná data";
 "id_unconfirmed" = "Nepotvrzeno";
 "id_undo_2fa_dispute" = "Vzít zpět 2FA spor";
@@ -946,7 +949,7 @@
 "id_version" = "Verze";
 "id_version_1s" = "Verze: %1$@";
 "id_version_1s_2s" = "Verze %1$@ %2$@";
-"id_view_archived_accounts_d" = "View archived accounts (%d)";
+"id_view_archived_accounts_d" = "Zobrazit archivované účty (%d)";
 "id_view_in_explorer" = "Zobrazit v průzkumníku";
 "id_view_more" = "Zobrazit více";
 "id_visit_s_for_further_information" = "Navštivte %@ pro další informace o softwaru";

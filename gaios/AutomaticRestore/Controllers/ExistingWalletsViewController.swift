@@ -41,13 +41,13 @@ class ExistingWalletsViewController: UIViewController {
         lblTitle.text = "Existing Wallets"
         lblHint.text = "Any wallet found will be displayed here."
         btnManualRestore.setTitle("Manual Restore", for: .normal)
-        lblLoading.text = "Looking for existing  wallets…"
+        lblLoading.text = NSLocalizedString("id_looking_for_wallets", comment: "")
     }
 
     func checkWallets() {
         self.wallets = []
         firstly {
-            startLoader(message: "Looking for existing  wallets…")
+            startLoader(message: NSLocalizedString("id_looking_for_wallets", comment: ""))
             return Guarantee()
         }.then {
             self.checkWallet(isSinglesig: true)

@@ -57,7 +57,7 @@
 "id_advanced_options_for_your_third" = "Advanced options for your third recovery key";
 "id_all" = "Tot/toate";
 "id_all_assets" = "All Assets";
-"id_all_coins" = "All coins";
+"id_all_coins" = "(All coins)";
 "id_all_networks" = "All networks";
 "id_all_of_the_accounts_in_your" = "Toate conturile din portofel trebuie să fie goale înainte de a-l șterge";
 "id_all_the_coins_received_or" = "All the coins received or created as change.";
@@ -110,6 +110,7 @@
 "id_bitcoin_denomination" = "Subunități Bitcoin";
 "id_bitcoin_electrum_server" = "Bitcoin Electrum server";
 "id_bitcoin_is_the_worlds_leading" = "Bitcoin este cea mai importantă criptomonedă din lume. Selectează pentru a trimite și primi bitcoin.";
+"id_bitcoin_testnet_and_liquid" = "Bitcoin Testnet and Liquid Testnet";
 "id_bitcoin_wallet" = "Portofel Bitcoin.";
 "id_bitcoin_wallets" = "Portofele Bitcoin";
 "id_block" = "bloc";
@@ -178,7 +179,7 @@
 "id_confirm_code" = "Confirmați codul";
 "id_confirm_passphrase" = "Confirmați parola";
 "id_confirm_transaction" = "Confirmare tranzacție";
-"id_confirm_transaction_details_on" = "Confirmați detaliile tranzacției pe portofelul fizic";
+"id_confirm_transaction_details_on" = "Confirm transaction details on your hardware wallet";
 "id_confirm_update_on_your_jade" = "Confirmați update-ul pe Jade";
 "id_confirm_via_2fa_that_you" = "Confirmați prin 2FA modificarea";
 "id_confirmation_in_d_blocks" = "Confirmare în %d blocuri";
@@ -236,7 +237,7 @@
 "id_d_asset_in_this_account" = "%d posesiuni în acest cont";
 "id_d_assets" = "%d posesiuni";
 "id_d_assets_in_this_account" = "%d posesiuni în acest cont";
-"id_d_coins_selected" = "%d coins selected";
+"id_d_coins_selected" = "(%d coins selected)";
 "id_d_words" = "%d words";
 "id_data_directory" = "Data directory";
 "id_date" = "Dată";
@@ -392,6 +393,7 @@
 "id_hide_assets" = "Ascundere posesiuni";
 "id_high" = "Ridicat";
 "id_hold_your_nfc_tag_close_to_the" = "Țineți eticheta NFC aproape de dispozitiv";
+"id_home" = "Home";
 "id_hour" = "oră";
 "id_hours" = "ore";
 "id_how_to_stop_this_reset" = "Cum să opriți resetarea";
@@ -503,6 +505,7 @@
 "id_logout" = "Delogare";
 "id_logout_and_switch" = "Delogare și Schimbare";
 "id_look_at_the_device_for_the" = "Priviți ecranul dispozitivului pentru a identifica pozițiile numerelor";
+"id_looking_for_wallets" = "Looking for wallets…";
 "id_looks_like_you_havent_used_a" = "Nu ați folosit pînă acum un portofel. Creați unul acum.";
 "id_low" = "Scăzut";
 "id_main_account" = "Contul principal";
@@ -558,7 +561,7 @@
 "id_no_amount_specified" = "Nu a fost specificată cantitatea";
 "id_no_asset_in_this_account" = "No asset in this account";
 "id_no_attempts_remaining" = "Ați rămas fără încercări";
-"id_no_coins_selected" = "No coins selected";
+"id_no_coins_selected" = "(No coins selected)";
 "id_no_device_connected" = "Niciun dispozitiv conectat";
 "id_no_more_assets" = "Nu mai există monede.";
 "id_no_peers_connected" = "Nu există participanți conectați";

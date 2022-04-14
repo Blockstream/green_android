@@ -57,7 +57,7 @@
 "id_advanced_options_for_your_third" = "Advanced options for your third recovery key";
 "id_all" = "Alles";
 "id_all_assets" = "All Assets";
-"id_all_coins" = "All coins";
+"id_all_coins" = "(All coins)";
 "id_all_networks" = "All networks";
 "id_all_of_the_accounts_in_your" = "All of the accounts in your wallet need to be empty before deleting it.";
 "id_all_the_coins_received_or" = "All the coins received or created as change.";
@@ -110,6 +110,7 @@
 "id_bitcoin_denomination" = "Bitcoin-waardevertoning";
 "id_bitcoin_electrum_server" = "Bitcoin Electrum server";
 "id_bitcoin_is_the_worlds_leading" = "Bitcoin is the world's leading P2P cryptocurrency network. Select to send and receive bitcoin.";
+"id_bitcoin_testnet_and_liquid" = "Bitcoin Testnet and Liquid Testnet";
 "id_bitcoin_wallet" = "Bitcoin-wallet";
 "id_bitcoin_wallets" = "Bitcoin wallets";
 "id_block" = "block";
@@ -178,7 +179,7 @@
 "id_confirm_code" = "Bevestig code";
 "id_confirm_passphrase" = "Bevestig passphrase";
 "id_confirm_transaction" = "Confirm transaction";
-"id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
+"id_confirm_transaction_details_on" = "Confirm transaction details on your hardware wallet";
 "id_confirm_update_on_your_jade" = "Confirm update on your Jade";
 "id_confirm_via_2fa_that_you" = "Confirm via 2FA that you authorize this change.";
 "id_confirmation_in_d_blocks" = "Bevestigd in %d blocks";
@@ -236,7 +237,7 @@
 "id_d_asset_in_this_account" = "%d asset in deze account";
 "id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d assets in deze account";
-"id_d_coins_selected" = "%d coins selected";
+"id_d_coins_selected" = "(%d coins selected)";
 "id_d_words" = "%d words";
 "id_data_directory" = "Data directory";
 "id_date" = "Datum";
@@ -392,6 +393,7 @@
 "id_hide_assets" = "Hide assets";
 "id_high" = "Hoog";
 "id_hold_your_nfc_tag_close_to_the" = "Houd je NFC-tag in de buurt van je apparaat";
+"id_home" = "Home";
 "id_hour" = "uur";
 "id_hours" = "uur";
 "id_how_to_stop_this_reset" = "How to Stop This Reset";
@@ -503,6 +505,7 @@
 "id_logout" = "Logout";
 "id_logout_and_switch" = "Uitloggen en wisselen";
 "id_look_at_the_device_for_the" = "Kijk op het apparaat voor de positie van de cijfers";
+"id_looking_for_wallets" = "Looking for wallets…";
 "id_looks_like_you_havent_used_a" = "Looks like you haven't used a wallet yet. Try creating a new one.";
 "id_low" = "Laag";
 "id_main_account" = "Hoofdaccount";
@@ -558,7 +561,7 @@
 "id_no_amount_specified" = "Geen bedrag opgegeven";
 "id_no_asset_in_this_account" = "No asset in this account";
 "id_no_attempts_remaining" = "Geen pogingen meer";
-"id_no_coins_selected" = "No coins selected";
+"id_no_coins_selected" = "(No coins selected)";
 "id_no_device_connected" = "No device connected";
 "id_no_more_assets" = "No more assets.";
 "id_no_peers_connected" = "Geen peers verbonden";
