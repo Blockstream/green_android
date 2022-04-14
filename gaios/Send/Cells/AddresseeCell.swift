@@ -69,9 +69,9 @@ class AddresseeCell: UITableViewCell {
             }
         }
         icon.image = UIImage(named: "default_asset_icon")!
-        if network?.network == "mainnet" {
+        if AccountsManager.shared.current?.network == "mainnet" {
             icon.image = UIImage(named: "ntw_btc")
-        } else if network?.network == "testnet" {
+        } else if AccountsManager.shared.current?.network == "testnet" {
             icon.image = UIImage(named: "ntw_testnet")
         } else {
             icon.image = Registry.shared.image(for: asset)
