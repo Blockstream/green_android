@@ -249,11 +249,10 @@ class OverviewViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) {
             try session.getSystemMessage()
-        }.compactMap { text in
+        }.map { text in
             if !text.isEmpty {
                 cards.append(AlertCardType.systemMessage(text))
             }
-            return nil
         }.map(on: bgq) { () -> (String?, String) in
             return Balance.convert(details: ["satoshi": 0])?.get(tag: "fiat") ?? (nil, "")
         }.done { (amount, _) in
@@ -267,20 +266,6 @@ class OverviewViewController: UIViewController {
         .catch { err in
             print(err.localizedDescription)
         }
-//        //We will use Card2faType.reactivate for expired coins
-//
-//        let bgqu = DispatchQueue.global(qos: .background)
-//        firstly {
-//            return Guarantee()
-//        }.map(on: bgqu) { () -> (String?, String) in
-//            return Balance.convert(details: ["satoshi": 0])?.get(tag: "fiat") ?? (nil, "")
-//        }.done { (amount, _) in
-//            if amount == nil {
-//                cards.append(AlertCardType.fiatMissing)
-//            }
-//        }.catch { err in
-//            print(err.localizedDescription)
-//        }
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
