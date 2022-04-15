@@ -173,16 +173,16 @@ final class Jade: JadeChannel, HWProtocol {
         return exchange(JadeRequest(method: "sign_tx", params: signtx))
             .flatMap { (_ : JadeResponse<Bool>) -> Observable<(commitments: [String], signatures: [String])> in
                 if useAeProtocol {
-                    return self.signTxInputsAntiExfil(baseId: 0, inputs: txInputs)
+                    return self.signTxInputsAntiExfil(inputs: txInputs)
                 } else {
-                    return self.signTxInputs(baseId: 0, inputs: txInputs)
+                    return self.signTxInputs(inputs: txInputs)
                 }
             }.compactMap { (commitments, signatures) in
                 return ["signatures": signatures, "signer_commitments": commitments]
             }
     }
 
-    func signTxInputsAntiExfil(baseId: Int, inputs: [TxInputProtocol?]) -> Observable<(commitments: [String], signatures: [String])> {
+    func signTxInputsAntiExfil(inputs: [TxInputProtocol?]) -> Observable<(commitments: [String], signatures: [String])> {
         /**
          * Anti-exfil protocol:
          * We send one message per input (which includes host-commitment *but
@@ -238,7 +238,7 @@ final class Jade: JadeChannel, HWProtocol {
             }
     }
 
-    func signTxInputs(baseId: Int, inputs: [TxInputProtocol?]) -> Observable<(commitments: [String], signatures: [String])> {
+    func signTxInputs(inputs: [TxInputProtocol?]) -> Observable<(commitments: [String], signatures: [String])> {
         /**
          * Legacy Protocol:
          * Send one message per input - without expecting replies.
@@ -636,9 +636,9 @@ extension Jade {
                     throw JadeError.Abort("Error response from initial sign_liquid_tx call: \(res.error?.message ?? "")")
                 }
                 if useAeProtocol {
-                    return self.signTxInputsAntiExfil(baseId: 0, inputs: inputs)
+                    return self.signTxInputsAntiExfil(inputs: inputs)
                 } else {
-                    return self.signTxInputs(baseId: 0, inputs: inputs)
+                    return self.signTxInputs(inputs: inputs)
                 }
             }
     }
