@@ -147,11 +147,11 @@ final class Jade: JadeChannel, HWProtocol {
             var txhash = input["txhash"] as? String
             if swInput && inputs.count == 1 {
                 txhash = nil
-            } else if let txhash = txhash {
+            } else if let hash = txhash, let tx = transactions[hash] {
                 satoshi = nil
-                guard transactions[txhash] != nil else {
-                    return nil
-                }
+                txhash = tx
+            } else {
+                return nil
             }
             return TxInputBtc(isWitness: swInput, inputTxHex: txhash, scriptHex: prevoutScript, satoshi: satoshi, path: userPath, aeHostEntropyHex: aeHostEntropy, aeHostCommitmentHex: aeHostCommitment)
         }
