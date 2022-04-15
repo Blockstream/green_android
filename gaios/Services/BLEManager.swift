@@ -192,7 +192,7 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onAuthenticate(p, network: network, firstInitialization: !hasPin)
             }, onError: { err in
-                session.destroy()
+                //session.destroy()
                 self.onError(err, network: network)
             })
     }
