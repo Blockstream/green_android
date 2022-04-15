@@ -1,24 +1,25 @@
-# Changelog
+\# Changelog
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
  
-## Unreleased
+## [3.8.0] - 2022-04-15
 
 ### Added
-- Create sub accounts of type 2of3
-- Settings: show mnemonic as QR code
+- Singlesig wallet support for Blockstream Jade hardware devices
+- Tor connection support also for singlesig wallets
+- 2of3 account creation on bitcoin multisig shield wallets
 
 ### Changed
 - Select mnemonic length while restoring wallet
-- Access app settings screen from hardware wallet connecting screen
-- Converted send transaction button to "slide to send" control
+- Recovery phrase in settings can also be shown as QR code, for fast import on other devices
+- Access app settings screen from hardware wallet connection screen
+- Slide to send a transaction
 - Update GDK to version 0.51
-- Refactoring asset detail screen
-- Enabled tor for singlesig
+- Improved asset details screen
 
 ### Fixed
-- Fix session autologout on background after timeout
+- Session autologout on background after timeout
 
 ## [3.7.9] - 2022-02-15
 
