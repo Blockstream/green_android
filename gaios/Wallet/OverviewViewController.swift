@@ -972,9 +972,7 @@ extension OverviewViewController {
             networkToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: onNetworkEvent)
             reset2faToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil, queue: .main, using: refresh)
 
-            if subAccounts.count > 0 {
-                handleRefresh()
-            }
+            handleRefresh()
         }
     }
 
