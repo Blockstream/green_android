@@ -86,9 +86,8 @@ final class Jade: JadeChannel, HWProtocol {
             // Standard EC signature, simple case
             let cmd = JadeSignMessage(message: message ?? "", path: pathstr ?? [], aeHostCommitment: nil)
             signMessage = exchange(JadeRequest<JadeSignMessage>(method: "sign_message", params: cmd))
-                .compactMap { (res: JadeResponse<Data>) -> (String?, String?) in
-                    let signerCommitment = res.result?.map { String(format: "%02hhx", $0) }.joined()
-                    return ("", signerCommitment)
+                .compactMap { (res: JadeResponse<String>) -> (String?, String?) in
+                    return (res.result!, "")
                 }
         }
         return signMessage!.compactMap { (sign, signerCom) -> (signature: String?, signerCommitment: String?) in
@@ -99,7 +98,7 @@ final class Jade: JadeChannel, HWProtocol {
 
             // Need to truncate lead byte if recoverable signature
             if sigDecoded.count == EC_SIGNATURE_RECOVERABLE_LEN {
-                sigDecoded = sigDecoded[1...sigDecoded.count]
+                sigDecoded = sigDecoded[1...sigDecoded.count-1]
             }
 
             let sigDer = try sigToDer(sig: Array(sigDecoded))
@@ -259,9 +258,9 @@ final class Jade: JadeChannel, HWProtocol {
                         #if DEBUG
                         print("<= " + buffer.map { String(format: "%02hhx", $0) }.joined())
                         #endif
-                        return try CodableCBORDecoder().decode(JadeResponse<[UInt8]>.self, from: buffer)
-                    }.flatMap { (res: JadeResponse<[UInt8]>) -> Observable<[UInt8]> in
-                        return Observable<[UInt8]>.create { observer in
+                        return try CodableCBORDecoder().decode(JadeResponse<Data>.self, from: buffer)
+                    }.flatMap { (res: JadeResponse<Data>) -> Observable<Data> in
+                        return Observable<Data>.create { observer in
                             if let result = res.result {
                                 observer.onNext(result)
                                 observer.onCompleted()
