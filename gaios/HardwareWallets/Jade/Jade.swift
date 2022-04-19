@@ -660,8 +660,8 @@ extension Jade {
 
     func getMasterBlindingKey() -> Observable<String> {
         return exchange(JadeRequest<JadeEmpty>(method: "get_master_blinding_key", params: nil))
-            .compactMap { (res: JadeResponse<[UInt8]>) -> String in
-                dataToHex(Data(res.result ?? []))
+            .compactMap { (res: JadeResponse<Data>) -> String in
+                dataToHex(res.result!)
             }
     }
 }
