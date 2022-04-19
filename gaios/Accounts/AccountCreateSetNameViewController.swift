@@ -117,7 +117,12 @@ class AccountCreateSetNameViewController: UIViewController {
         }.done { _ in
             self.dismiss()
         }.catch { e in
-            DropAlert().error(message: e.localizedDescription)
+            switch e {
+            case TwoFactorCallError.failure(let localizedDescription):
+                DropAlert().error(message: localizedDescription.firstUppercased + ".")
+            default:
+                DropAlert().error(message: e.localizedDescription)
+            }
             print(e.localizedDescription)
         }
     }
