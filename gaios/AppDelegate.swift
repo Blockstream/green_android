@@ -41,12 +41,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }.ensure {
             self.window?.rootViewController?.stopAnimating()
         }.done {
-            let homeS = UIStoryboard(name: "Home", bundle: nil)
-            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+            if AccountsManager.shared.current?.isWatchonly == true {
+                let homeS = UIStoryboard(name: "Home", bundle: nil)
+                let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
+                if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                   let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
+                        vc.account = AccountsManager.shared.current
+                        nav.pushViewController(vc, animated: false)
+                        UIApplication.shared.keyWindow?.rootViewController = nav
+                }
+            } else {
+                let homeS = UIStoryboard(name: "Home", bundle: nil)
+                if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                   let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
                     vc.account = AccountsManager.shared.current
                     nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
+                }
             }
         }.catch { _ in
             fatalError("disconnection error never happens")
