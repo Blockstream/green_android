@@ -49,6 +49,7 @@ class Overview: Screen {
                 numberTry += 1
             }
         }
+        XCTFail("Overview is not ready")
         return self
     }
     
@@ -65,6 +66,7 @@ class Overview: Screen {
                 return self
             }
         }
+        XCTFail("Transactions not ready")
         return self
     }
     

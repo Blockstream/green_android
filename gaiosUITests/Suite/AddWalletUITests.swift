@@ -273,7 +273,8 @@ class AddWalletUITests: XCTestBase {
             .tapLogin()
             
         Overview()
-            .pause(2)
+            .pause(1)
+            .waitTransactionsLoad()
     }
 
     func testAddSingleSigWallet() {
