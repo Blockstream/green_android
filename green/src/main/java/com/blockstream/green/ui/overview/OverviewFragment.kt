@@ -634,6 +634,11 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     override fun updateToolbar() {
         super.updateToolbar()
 
+        // Guard from Session not being initialized
+        if (!isSessionAndWalletRequired()) {
+            return
+        }
+
         var title = viewModel.wallet.name
         var subtitle: String? = null
 
