@@ -20,6 +20,7 @@ class HomeViewController: UIViewController {
         updateUI()
         view.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.view
         btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.appSettingsBtn
+        AnalyticsManager.shared.appLoadingFinished()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -91,6 +92,14 @@ class HomeViewController: UIViewController {
     }
 
     @objc func didPressAddWallet() {
+
+        let stb = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "DialogCountlyConsentViewController") as? DialogCountlyConsentViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+        return
+
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "LandingViewController")
         navigationController?.pushViewController(vc, animated: true)

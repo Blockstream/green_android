@@ -114,6 +114,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .forEach { $0.perform(setHardwareLayout, with: nil) }
         #endif
 
+        _ = AnalyticsManager.shared
+
         return true
     }
 

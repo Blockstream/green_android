@@ -12,7 +12,7 @@ target 'gaios' do
   pod 'RxSwift', '~> 5.1'
   pod 'RxBluetoothKit', :git => 'https://github.com/chamira-at/RxBluetoothKit.git', :branch => 'ios-15-support'
   pod 'SwiftCBOR', '0.4.5'
-
+  pod 'Countly', '20.11.1'
 end
 
 target 'gaiosTests' do

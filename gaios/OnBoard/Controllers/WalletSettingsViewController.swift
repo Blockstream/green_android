@@ -16,6 +16,12 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblTorHint: UILabel!
     @IBOutlet weak var switchTor: UISwitch!
 
+    @IBOutlet weak var cardAnalytics: UIView!
+    @IBOutlet weak var lblAnalyticsTitle: UILabel!
+    @IBOutlet weak var lblAnalyticsHint: UILabel!
+    @IBOutlet weak var btnAnalytics: UIButton!
+    @IBOutlet weak var switchAnalytics: UISwitch!
+
     @IBOutlet weak var cardProxy: UIView!
     @IBOutlet weak var lblProxyTitle: UILabel!
     @IBOutlet weak var lblProxyHint: UILabel!
@@ -109,6 +115,9 @@ class WalletSettingsViewController: KeyboardViewController {
         lblTorHint.text = NSLocalizedString("id_private_but_less_stable", comment: "")
         lblTestnetTitle.text = NSLocalizedString("id_enable_testnet", comment: "")
         lblTestnetHint.text = ""
+        lblAnalyticsTitle.text = "Help Green improve"
+        lblAnalyticsHint.text = "Enable anonimous data collection"
+        btnAnalytics.setTitle("More info", for: .normal)
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
         fieldProxyIp.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
@@ -139,6 +148,7 @@ class WalletSettingsViewController: KeyboardViewController {
     }
 
     func setStyle() {
+        btnAnalytics.setStyle(.inline)
         btnCancel.cornerRadius = 4.0
         btnSave.cornerRadius = 4.0
         let fields = [fieldProxyIp, fieldSPVbtcServer, fieldSPVliquidServer, fieldSPVtestnetServer, fieldSPVliquidTestnetServer]
