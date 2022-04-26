@@ -17,10 +17,8 @@ class ReceiveViewController: UIViewController {
     @IBOutlet weak var btnShare: UIButton!
     @IBOutlet weak var btnEdit: UIButton!
     @IBOutlet weak var btnOptions: UIButton!
-
-    @IBOutlet weak var cardVerifyAddress: UIView!
+    @IBOutlet weak var qrFrame: UIView!
     @IBOutlet weak var btnVerify: UIButton!
-    @IBOutlet weak var lblVerifyHint: UILabel!
 
     var wallet: WalletItem?
     var selectedType = TransactionType.BTC
@@ -35,7 +33,7 @@ class ReceiveViewController: UIViewController {
 
         setContent()
         setStyle()
-        cardVerifyAddress.isHidden = !(self.account?.isHW == true && self.account?.isLedger == false)
+        btnVerify.isHidden = !(self.account?.isHW == true && self.account?.isLedger == false)
         btnEdit.isHidden = true
         let helpBtn = UIButton(type: .system)
         helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
@@ -67,7 +65,6 @@ class ReceiveViewController: UIViewController {
         btnEdit.setTitle(NSLocalizedString("id_edit", comment: ""), for: .normal)
         btnOptions.setTitle(NSLocalizedString("id_more_options", comment: ""), for: .normal)
         btnVerify.setTitle(NSLocalizedString("id_verify_on_device", comment: ""), for: .normal)
-        lblVerifyHint.text = NSLocalizedString("id_please_verify_that_the_address", comment: "")
     }
 
     func setStyle() {
@@ -75,7 +72,6 @@ class ReceiveViewController: UIViewController {
         btnShare.setStyle(.primary)
         btnEdit.setStyle(.outlined)
         btnOptions.setStyle(.outlinedGray)
-        cardVerifyAddress.layer.cornerRadius = 5.0
         btnVerify.layer.cornerRadius = 4.0
     }
 
@@ -151,7 +147,10 @@ class ReceiveViewController: UIViewController {
         }
         let uri = uriBitcoin(address: address)
         btnAddress.setTitle(uri, for: .normal)
-        btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: btnQRCode.frame), for: .normal)
+        let dim = min(qrFrame.frame.size.width, qrFrame.frame.size.height)
+        let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
+        btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
+        btnQRCode.imageView?.contentMode = .scaleAspectFit
         btnQRCode.layer.cornerRadius = 5.0
     }
 
