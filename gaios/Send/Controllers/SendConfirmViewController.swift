@@ -104,6 +104,10 @@ class SendConfirmViewController: KeyboardViewController {
             case TwoFactorCallError.failure(let localizedDescription),
                  TwoFactorCallError.cancel(let localizedDescription):
                 self.showError(localizedDescription)
+            case TransactionError.invalid(let localizedDescription):
+                self.showError(localizedDescription)
+            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
+                self.showError(NSLocalizedString("id_you_are_not_connected", comment: ""))
             default:
                 self.showError(error.localizedDescription)
             }
