@@ -1972,7 +1972,6 @@
 				34477D392771F7090021698B /* AddRecipientCell.swift in Sources */,
 				81D671EF26C80D3400682508 /* EventType.swift in Sources */,
 				34BD7E76278C2EB6004AEC6F /* FeeSummaryCell.swift in Sources */,
-				34BAD9DA2636A12700FB8011 /* HWWNetworkCell.swift in Sources */,
 				34FB697927FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift in Sources */,
 				3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */,
 				34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */,
