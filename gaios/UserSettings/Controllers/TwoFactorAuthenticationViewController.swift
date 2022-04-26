@@ -158,8 +158,11 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func updateConnection(_ notification: Notification) {
-        let connected = notification.userInfo?["connected"] as? Bool
-        self.connected = connected ?? false
+        if let data = notification.userInfo,
+              let json = try? JSONSerialization.data(withJSONObject: data, options: []),
+              let connection = try? JSONDecoder().decode(Connection.self, from: json) {
+            self.connected = connection.connected
+        }
     }
 
     func disable(_ type: TwoFactorType) {

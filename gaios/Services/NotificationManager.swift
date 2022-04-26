@@ -64,7 +64,7 @@ class NotificationManager {
                 return
             }
 
-            session.currentConnected = connection.currentState == "connected"
+            session.currentConnected = connection.connected
             // notify disconnected network state
             if connection.currentState == "disconnected" {
                 self.post(event: EventType.Network, data: data)

@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Watch-only wallets: fix redirect on session autologout when in background
-
+- Fix reconnection notification on resolving 2fa 
 
 ## [3.8.0] - 2022-04-15
 

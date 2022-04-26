@@ -9,4 +9,8 @@ struct Connection: Codable {
     let currentState: String
     let nextState: String
     let waitMs: UInt8 = 0
+
+    var connected: Bool {
+        return currentState == "connected"
+    }
 }
