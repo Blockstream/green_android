@@ -3,16 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
  
-## Unreleased
+## [3.8.1] - 2022-04-27
 
 ### Added
+- Archive accounts you no longer use
 
 ### Changed 
-- Update GDK to version 0.0.52
+- Updates GDK to version 0.0.52
+- Improves performance of navigation between accounts
 
 ### Fixed
-- Watch-only wallets: fix redirect on session autologout when in background
-- Fix reconnection notification on resolving 2fa 
+- Fixes autologout for watch-only wallets
+- Fixes bug when pasting 2FA codes while sending
 
 ## [3.8.0] - 2022-04-15
 
