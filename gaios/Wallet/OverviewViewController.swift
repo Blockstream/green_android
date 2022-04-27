@@ -280,10 +280,8 @@ class OverviewViewController: UIViewController {
             } else {
                 return Promise().asVoid()
             }
-        }.then {
-            self.loadSubaccounts()
         }.done { _ in
-            self.reloadWallet()
+            self.reloadData()
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)
@@ -357,7 +355,7 @@ class OverviewViewController: UIViewController {
     func onNewBlock(_ notification: Notification) {
         // update txs only if pending txs > 0
         if transactions.filter({ $0.blockHeight == 0 }).first != nil {
-            handleRefresh()
+            reloadData()
         }
     }
 
@@ -379,7 +377,7 @@ class OverviewViewController: UIViewController {
            let subaccounts = dict["subaccounts"] as? [UInt32],
            let session = SessionsManager.current,
            subaccounts.contains(session.activeWallet) {
-            handleRefresh()
+            reloadData()
         }
     }
 
@@ -389,7 +387,7 @@ class OverviewViewController: UIViewController {
         guard let loginRequired = dict["login_required"] as? Bool else { return }
         if connected == true && loginRequired == false {
             DispatchQueue.main.async { [weak self] in
-                self?.handleRefresh()
+                self?.reloadData()
             }
         }
     }
@@ -1026,7 +1024,7 @@ extension OverviewViewController {
             networkToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: onNetworkEvent)
             reset2faToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil, queue: .main, using: refresh)
 
-            handleRefresh()
+            reloadData()
         }
     }
 
