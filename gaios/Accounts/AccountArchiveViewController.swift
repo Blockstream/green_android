@@ -30,9 +30,6 @@ class AccountArchiveViewController: UIViewController {
 //        guard let wallet = presentingWallet else { return false }
 //        return AccountType(rawValue: wallet.type) == AccountType.amp
 //    }
-    private var btc: String {
-        return account?.gdkNetwork?.getFeeAsset() ?? ""
-    }
 
     var color: UIColor = .clear
 
@@ -56,7 +53,7 @@ class AccountArchiveViewController: UIViewController {
         setContent()
         setStyle()
 
-        startAnimating()
+        reloadData()
     }
 
     @objc func back(sender: UIBarButtonItem) {
@@ -83,76 +80,10 @@ class AccountArchiveViewController: UIViewController {
         if account?.network == AvailableNetworks.testnetLiquid.rawValue { color = AvailableNetworks.testnetLiquid.color() }
     }
 
-    @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
-        Promise().asVoid().then { _ -> Promise<Void> in
-            return self.discoverySubaccounts(singlesig: self.account?.isSingleSig ?? false).asVoid()
-        }.then {
-            self.loadSubaccounts()
-        }.done { [weak self] _ in
-            if self?.accounts.count == 0 {
-                self?.navigationController?.popViewController(animated: true)
-            }
-        }.catch { e in
-            DropAlert().error(message: e.localizedDescription)
-            print(e.localizedDescription)
-        }
-    }
-
-//    func onNewBlock(_ notification: Notification) {
-//        // update txs only if pending txs > 0
-//        if transactions.filter({ $0.blockHeight == 0 }).first != nil {
-//            handleRefresh()
-//        }
-//    }
-
-//    func onAssetsUpdated(_ notification: Notification) {
-//        guard let session = SessionsManager.current else { return }
-//        Guarantee()
-//            .compactMap { Registry.shared.cache(session: session) }
-//            .done {
-//                self.reloadSections([AccountArchiveSection.asset], animated: true)
-//                self.showTransactions()
-//            }
-//            .catch { err in
-//                print(err.localizedDescription)
-//        }
-//    }
-
-//    func onNewTransaction(_ notification: Notification) {
-//        if let dict = notification.userInfo as NSDictionary?,
-//           let subaccounts = dict["subaccounts"] as? [UInt32],
-//           let session = SessionsManager.current,
-//           subaccounts.contains(session.activeWallet) {
-//            handleRefresh()
-//        }
-//    }
-
-//    @objc func onNetworkEvent(_ notification: Notification) {
-//        guard let dict = notification.userInfo as NSDictionary? else { return }
-//        guard let connected = dict["connected"] as? Bool else { return }
-//        guard let loginRequired = dict["login_required"] as? Bool else { return }
-//        if connected == true && loginRequired == false {
-//            DispatchQueue.main.async { [weak self] in
-//                self?.handleRefresh()
-//            }
-//        }
-//    }
-
-    func refresh(_ notification: Notification) {
-        reloadSections([AccountArchiveSection.account], animated: true)
-    }
-
-    func discoverySubaccounts(singlesig: Bool) -> Promise<Void> {
-        if let session = SessionsManager.current, singlesig {
-            return session.subaccounts(true).asVoid()
-        }
-        return Promise().asVoid()
-    }
-
-    func loadSubaccounts() -> Promise<Void> {
+    func reloadData() {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return Promise().asVoid() }
-        return Guarantee().then(on: bgq) {
+        guard let session = SessionsManager.current else { return }
+        Guarantee().then(on: bgq) {
                 session.subaccounts()
             }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
                 let balances = wallets.map { wallet in { wallet.getBalance() } }
@@ -160,8 +91,13 @@ class AccountArchiveViewController: UIViewController {
             }.map { wallets in
                 self.subAccounts = wallets.filter { $0.hidden == true }
                 self.reloadSections([AccountArchiveSection.account], animated: false)
-            }.ensure {
-                self.stopAnimating()
+            }.done {
+                if self.accounts.count == 0 {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }.catch { e in
+                DropAlert().error(message: e.localizedDescription)
+                print(e.localizedDescription)
             }
     }
 
@@ -177,7 +113,7 @@ class AccountArchiveViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.handleRefresh()
+            self.reloadData()
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)
@@ -257,14 +193,6 @@ extension AccountArchiveViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
-}
-
-extension AccountArchiveViewController {
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        handleRefresh()
-    }
 }
 
 extension AccountArchiveViewController: UIPopoverPresentationControllerDelegate {
