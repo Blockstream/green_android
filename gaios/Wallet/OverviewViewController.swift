@@ -599,26 +599,26 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
             popoverPresentationController?.backgroundColor = UIColor.customModalDark()
             popoverPresentationController?.delegate = self
             popoverPresentationController?.sourceView = self.tableView
-//            popoverPresentationController?.sourceRect = CGRect(x: self.tableView.frame.width - 80.0, y: 0.0, width: 60.0, height: 60.0)
             popoverPresentationController?.sourceRect = CGRect(x: self.tableView.frame.width - 80.0, y: frame.origin.y, width: 60.0, height: 60.0)
             popoverPresentationController?.permittedArrowDirections = .up
             self.present(popover, animated: true)
         }
     }
 
-    func archiveAccount() {
+    func archiveAccount(_ index: Int) {
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try session.updateSubaccount(details: ["subaccount": session.activeWallet, "hidden": true]).resolve()
+            try session.updateSubaccount(details: ["subaccount": self.accounts[index].pointer, "hidden": true]).resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            SessionsManager.current?.activeWallet = self.accounts[1].pointer
-            self.presentingWallet = self.accounts[1]
+            let present = (index == 0 ? self.accounts[1] : self.accounts[0])
+            SessionsManager.current?.activeWallet = present.pointer
+            self.presentingWallet = present
             self.reloadData()
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
@@ -663,7 +663,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case OverviewSection.account.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAccountCell") as? OverviewAccountCell {
                 var action: VoidToVoid?
-                if indexPath.row == 0 && showAccounts {
+                if showAccounts {
                     action = { [weak self] in
                         self?.presentAccountMenu(frame: cell.frame, index: indexPath.row)
                     }
@@ -1065,14 +1065,17 @@ extension OverviewViewController {
 
 extension OverviewViewController: DialogWalletNameViewControllerDelegate {
 
-    func didSave(_ name: String) {
+    func didRename(name: String, index: Int?) {
+        guard let index = index else {
+            return
+        }
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try session.renameSubaccount(subaccount: session.activeWallet, newName: name)
+            try session.renameSubaccount(subaccount: self.accounts[index].pointer, newName: name)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -1129,11 +1132,11 @@ extension OverviewViewController: PopoverMenuAccountDelegate {
                 vc.modalPresentationStyle = .overFullScreen
                 vc.isAccountRename = true
                 vc.delegate = self
+                vc.index = index
                 present(vc, animated: false, completion: nil)
             }
         case .archive:
-            // index is always 0 here
-            archiveAccount()
+            archiveAccount(index)
         }
     }
 }

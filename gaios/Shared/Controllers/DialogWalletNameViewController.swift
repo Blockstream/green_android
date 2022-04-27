@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol DialogWalletNameViewControllerDelegate: AnyObject {
-    func didSave(_ name: String)
+    func didRename(name: String, index: Int?)
     func didCancel()
 }
 
@@ -25,6 +25,7 @@ class DialogWalletNameViewController: KeyboardViewController {
     @IBOutlet weak var scrollView: UIScrollView!
 
     weak var delegate: DialogWalletNameViewControllerDelegate?
+    var index: Int?
 
     var buttonConstraint: NSLayoutConstraint?
     var isAccountRename = false
@@ -104,7 +105,7 @@ class DialogWalletNameViewController: KeyboardViewController {
             case .cancel:
                 self.delegate?.didCancel()
             case .save:
-                self.delegate?.didSave(self.nameTextField.text ?? "")
+                self.delegate?.didRename(name: self.nameTextField.text ?? "", index: self.index)
             }
         })
     }

@@ -283,6 +283,7 @@ class LoginViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
+            vc.index = nil
             present(vc, animated: false, completion: nil)
         }
     }
@@ -310,7 +311,7 @@ class LoginViewController: UIViewController {
 }
 
 extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
-    func didSave(_ name: String) {
+    func didRename(name: String, index: Int?) {
         self.account?.name = name
         if let account = self.account {
             AccountsManager.shared.current = account

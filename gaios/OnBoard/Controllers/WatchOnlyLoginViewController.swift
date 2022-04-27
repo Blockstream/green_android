@@ -125,6 +125,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
             vc.modalPresentationStyle = .overFullScreen
+            vc.index = nil
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
@@ -171,7 +172,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 }
 
 extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
-    func didSave(_ name: String) {
+    func didRename(name: String, index: Int?) {
         account?.name = name
         if let account = self.account {
             AccountsManager.shared.current = account

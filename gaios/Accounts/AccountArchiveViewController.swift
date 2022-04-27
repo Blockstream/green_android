@@ -256,100 +256,14 @@ extension AccountArchiveViewController: UITableViewDelegate, UITableViewDataSour
         return nil
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
-//        switch indexPath.section {
-//        case AccountArchiveSection.account.rawValue:
-//            UIView.setAnimationsEnabled(true)
-//            if indexPath.row == 0 {
-//                showAccounts = !showAccounts
-//                reloadSections([AccountArchiveSection.account], animated: true)
-//                return
-//            } else {
-//                SessionsManager.current?.activeWallet = accounts[indexPath.row].pointer
-//                presentingWallet = accounts[indexPath.row]
-//                showAccounts = !showAccounts
-//                reloadData()
-//            }
-//        default:
-//            break
-//        }
-    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
 }
 
 extension AccountArchiveViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-//        if !userWillLogout {
-//            transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
-//            blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
-//            assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
-//            settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
-//            tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Ticker.rawValue), object: nil, queue: .main, using: refresh)
-//            networkToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: onNetworkEvent)
-//            reset2faToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil, queue: .main, using: refresh)
-
-//            if subAccounts.count > 0 {
-                handleRefresh()
-//            }
-//        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-//        if let token = transactionToken {
-//            NotificationCenter.default.removeObserver(token)
-//            transactionToken = nil
-//        }
-//        if let token = blockToken {
-//            NotificationCenter.default.removeObserver(token)
-//            blockToken = nil
-//        }
-//        if let token = assetsUpdatedToken {
-//            NotificationCenter.default.removeObserver(token)
-//            assetsUpdatedToken = nil
-//        }
-//        if let token = settingsUpdatedToken {
-//            NotificationCenter.default.removeObserver(token)
-//            settingsUpdatedToken = nil
-//        }
-//        if let token = tickerUpdatedToken {
-//            NotificationCenter.default.removeObserver(token)
-//            tickerUpdatedToken = nil
-//        }
-//        if let token = networkToken {
-//            NotificationCenter.default.removeObserver(token)
-//            networkToken = nil
-//        }
-//        if let token = reset2faToken {
-//            NotificationCenter.default.removeObserver(token)
-//            reset2faToken = nil
-//        }
-    }
-}
-
-extension AccountArchiveViewController: DialogWalletNameViewControllerDelegate {
-
-    func didSave(_ name: String) {
-//        let bgq = DispatchQueue.global(qos: .background)
-//        guard let session = SessionsManager.current else { return }
-//        firstly {
-//            self.startAnimating()
-//            return Guarantee()
-//        }.compactMap(on: bgq) {
-//            try session.renameSubaccount(subaccount: session.activeWallet, newName: name)
-//        }.ensure {
-//            self.stopAnimating()
-//        }.done { _ in
-//            self.reloadData()
-//        }.catch { e in
-//            DropAlert().error(message: e.localizedDescription)
-//            print(e.localizedDescription)
-//        }
-    }
-    func didCancel() {
+        handleRefresh()
     }
 }
 
