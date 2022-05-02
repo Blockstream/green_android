@@ -15,12 +15,12 @@ import io.reactivex.rxjava3.kotlin.addTo
 
 class DeviceListViewModel @AssistedInject constructor(
     val deviceManager: DeviceManager,
-    @Assisted deviceBrand: DeviceBrand
+    @Assisted deviceBrand: DeviceBrand?
 ) : AppViewModel() {
 
     val devices = MutableLiveData(listOf<Device>())
     val bleAdapterState = deviceManager.bleAdapterState
-    val hasBleConnectivity = deviceBrand.hasBleConnectivity
+    val hasBleConnectivity = deviceBrand == null || deviceBrand.hasBleConnectivity
 
     var onSuccess: (() -> Unit)? = null
 
@@ -28,7 +28,7 @@ class DeviceListViewModel @AssistedInject constructor(
         deviceManager
             .getDevices()
             .map { devices ->
-                devices.filter { it.deviceBrand == deviceBrand }
+                deviceBrand?.let { devices.filter { it.deviceBrand == deviceBrand } } ?: devices
             }
             .subscribe(devices::postValue)
             .addTo(disposables)
@@ -39,22 +39,22 @@ class DeviceListViewModel @AssistedInject constructor(
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
         }
 
-        device.askForPermissionOrBond(onSuccess!! , {
+        device.askForPermissionOrBond(onSuccess!!) {
             onError.postValue(ConsumableEvent(it))
-        })
+        }
     }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            deviceBrand: DeviceBrand
+            deviceBrand: DeviceBrand?
         ): DeviceListViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            deviceBrand: DeviceBrand
+            deviceBrand: DeviceBrand?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {

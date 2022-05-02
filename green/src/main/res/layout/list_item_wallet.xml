@@ -8,6 +8,9 @@
         <variable
             name="wallet"
             type="com.blockstream.green.database.Wallet" />
+        <variable
+            name="device"
+            type="com.blockstream.green.devices.Device" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,11 +63,32 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="My Bitcoin Wallet" />
 
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.Green.Body1"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            android:textSize="10sp"
+            android:text="@{device.name}"
+            isVisible="@{device != null}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/title"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/title"
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            tools:text="Jade"
+            tools:visibility="visible" />
+
         <ImageView
             android:id="@+id/hardware"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
+            isVisible="@{device != null}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

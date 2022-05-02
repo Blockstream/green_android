@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
@@ -16,98 +14,12 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
 
-        <!--      animateLayoutChanges animates visibility changes       -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:animateLayoutChanges="true">
+        <include
+            android:id="@+id/common"
+            layout="@layout/device_list_common" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.blockstream.green.views.GappedLinearLayout
-                android:id="@+id/gappedLinearLayout4"
-                isVisible="@{vm.devices.empty}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:text="@string/id_no_device_connected"
-                app:gap="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:animateLayoutChanges="true">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_no_device_connected"
-                    android:textAppearance="?attr/textAppearanceBody1" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginEnd="32dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/id_make_sure_you_have_enabled_otg"
-                    android:textAlignment="center"
-                    android:textAppearance="?attr/textAppearanceCaption"
-                    android:textColor="@color/color_on_surface_emphasis_medium" />
-
-                <Button
-                    android:id="@+id/buttonEnableBluetooth"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.BLUETOOTH_NOT_ENABLED }"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_enable_bluetooth" />
-
-                <Button
-                    android:id="@+id/buttonRequestPermission"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_PERMISSION_NOT_GRANTED }"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_give_bluetooth_permissions" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_PERMISSION_NOT_GRANTED }"
-                    android:text="@string/id_blockstream_green_needs_access"
-                    android:textAlignment="center"
-                    android:textAppearance="?attr/textAppearanceCaption"
-                    android:textColor="@color/color_on_surface_emphasis_medium" />
-
-                <Button
-                    android:id="@+id/buttonLocationServiceMoreInfo"
-                    style="@style/Widget.Green.Button.Text"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_PERMISSION_NOT_GRANTED }"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_more_info" />
-
-                <Button
-                    android:id="@+id/buttonEnableLocationService"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_SERVICES_NOT_ENABLED }"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_enable_location_services" />
-
-            </com.blockstream.green.views.GappedLinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

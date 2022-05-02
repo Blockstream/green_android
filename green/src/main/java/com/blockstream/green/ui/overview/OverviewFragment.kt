@@ -643,7 +643,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         var title = viewModel.wallet.name
-        var subtitle: String? = null
+        var subtitle: String? = session.device?.name
 
         if (showAccountInToolbar) {
             if (isOverviewState) {

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.blockstream.green.R
+import com.blockstream.green.adapters.setGreenDevice
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.ListItemWalletBinding
 import com.blockstream.green.gdk.GreenSession
@@ -21,12 +22,9 @@ data class WalletListItem constructor(val wallet: Wallet, val greenSession: Gree
         binding.wallet = wallet
         binding.innerIcon.setImageResource(if (wallet.isWatchOnly) R.drawable.ic_baseline_visibility_24 else if (wallet.isElectrum) R.drawable.ic_singlesig else R.drawable.ic_multisig)
         binding.connectionIcon.isVisible = greenSession.isConnected
+        binding.device = greenSession.device
 
-        binding.hardware.isVisible = wallet.isHardware
-
-        if(wallet.isHardware) {
-            binding.hardware.setImageResource(R.drawable.ic_jade)
-        }
+        setGreenDevice(binding.hardware, greenSession.device)
     }
 
     override fun createBinding(

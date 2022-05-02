@@ -25,5 +25,4 @@ class DatabaseModule {
     fun provideWalletDao(appDatabase: AppDatabase): WalletDao {
         return appDatabase.walletDao()
     }
-
 }

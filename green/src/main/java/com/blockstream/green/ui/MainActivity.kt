@@ -139,9 +139,7 @@ class MainActivity : AppActivity() {
                 // Except LoginFragment as we don't want concurrent login requests to happen
                 if(fragment is WalletFragment<*> && fragment !is LoginFragment){
                     fragment.session.device?.let {
-                        DeviceInfoBottomSheetDialogFragment.create(it.id).also {
-                            it.show(navHostFragment.childFragmentManager, it.toString())
-                        }
+                        DeviceInfoBottomSheetDialogFragment.show(it.id, navHostFragment.childFragmentManager)
                     }
                 }
             }

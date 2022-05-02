@@ -35,7 +35,8 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
             // Prevent showing network icon when the title is empty
             if(toolbar.title.isNotBlank() || !title.isNullOrBlank()) {
                 toolbar.setLogo(wallet.getIcon())
-                session.hwWallet?.device?.let {
+                session.device?.let {
+                    toolbar.subtitle = it.name
                     toolbar.setBubble(
                         ContextCompat.getDrawable(
                             requireContext(),
@@ -51,11 +52,14 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     abstract fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?)
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val isSessionAndWalletRequired = isSessionAndWalletRequired()
+        val sessionOrNull = if(isSessionAndWalletRequired) sessionManager.getWalletSessionOrNull(wallet) else null
+        
         // Recovery intro screen is reused in onBoarding
         // where we don't have a session yet
         // Skip initializing the WalletViewModel as it doesn't exists
-        if(isSessionAndWalletRequired()){
-            session = sessionManager.getWalletSession(wallet)
+        if(isSessionAndWalletRequired && sessionOrNull != null){
+            session = sessionOrNull
 
             // Assuming we are in v4 codebase flow
             if (isLoggedInRequired() && !session.isConnected) {

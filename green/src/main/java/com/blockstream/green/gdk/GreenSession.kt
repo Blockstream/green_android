@@ -230,7 +230,7 @@ class GreenSession constructor(
     }
 
     fun connect(n: Network) {
-        disconnect(disconnectDevice = false)
+        disconnect()
         network = n
         isInitialized = true
 
@@ -249,12 +249,8 @@ class GreenSession constructor(
             }
         }
 
-    fun disconnect(disconnectDevice: Boolean) {
+    fun disconnect() {
         isConnected = false
-        if(disconnectDevice){
-            device?.disconnect()
-            device = null
-        }
         
         authenticationRequired = false
 
@@ -289,7 +285,11 @@ class GreenSession constructor(
             isConnected = false
             try {
                 applicationScope.launch(Dispatchers.IO) {
-                    disconnect(disconnectDevice = false)
+                    disconnect()
+
+                    if(hasDevice){
+                        sessionManager.destroyHardwareSession(greenSession = this@GreenSession)
+                    }
                 }
             }catch (e: Exception) {
                 e.printStackTrace()
@@ -402,6 +402,15 @@ class GreenSession constructor(
         if(!isConnected) {
             connect(network)
         }
+
+        device.deviceState
+            .async()
+            .subscribe {
+                // Device went offline
+                if(it == Device.DeviceState.DISCONNECTED){
+                    disconnectAsync()
+                }
+            }.addTo(disposables)
 
         val gdkDevice = device.hwWallet?.device
 
@@ -954,7 +963,7 @@ class GreenSession constructor(
     fun getAssetDrawableOrDefault(assetId : String): Drawable = assetsManager.getAssetDrawableOrDefault(assetId)
 
     internal fun destroy() {
-        disconnect(disconnectDevice = true)
+        disconnect()
         disposables.clear()
     }
 

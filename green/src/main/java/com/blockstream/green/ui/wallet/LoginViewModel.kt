@@ -70,7 +70,7 @@ class LoginViewModel @AssistedInject constructor(
      * If login fails, the password field is then shown.
      *
      */
-    var initialAction = MutableLiveData(false)
+    var initialAction = MutableLiveData(session.isConnected)
 
     var loginCredentialsInitialized = false
 

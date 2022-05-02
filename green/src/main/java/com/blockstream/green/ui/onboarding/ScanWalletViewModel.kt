@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.params.SubAccountsParams
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.data.Countly
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.ConsumableEvent
@@ -61,7 +61,7 @@ class ScanWalletViewModel @AssistedInject constructor(
                         null
                     }
                 }.also {
-                    session.disconnect(disconnectDevice = false)
+                    session.disconnect()
                 }
 
             }catch (e: Exception){

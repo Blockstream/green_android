@@ -40,15 +40,10 @@ class ReceiveViewModel @AssistedInject constructor(
     // only show if we are on Liquid and we are using Ledger
     val showAssetWhitelistWarning = session.network.isLiquid && session.hwWallet?.device?.isLedger == true
 
-    val canValidateAddressInDevice by lazy {
+    val canValidateAddressInDevice : Boolean by lazy {
         session.hwWallet?.device?.let { device ->
-
-            if(device.isJade || (device.isLedger && session.isLiquid)){
-                return@lazy true
-            }
-        }
-
-        false
+            device.isJade || (device.isLedger && session.isLiquid)
+        } ?: false
     }
 
     init {

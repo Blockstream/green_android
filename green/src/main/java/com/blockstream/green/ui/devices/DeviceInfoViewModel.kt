@@ -24,12 +24,12 @@ import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
-import com.greenaddress.jade.HttpRequestProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
+import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import mu.KLogging
 import javax.inject.Inject
@@ -44,7 +44,6 @@ class DeviceInfoViewModel @AssistedInject constructor(
 ) : AppViewModel(), HardwareConnectInteraction {
 
     sealed class DeviceInfoEvent : AppEvent {
-        object DeviceReady : DeviceInfoEvent()
         data class RequestPin(val deviceBrand: DeviceBrand) : DeviceInfoEvent()
         data class AskForFirmwareUpgrade(
             val request: FirmwareUpgradeRequest,
@@ -62,33 +61,67 @@ class DeviceInfoViewModel @AssistedInject constructor(
     val error = MutableLiveData<ConsumableEvent<String>>()
     val instructions = MutableLiveData<ConsumableEvent<Int>>()
 
-    fun connectDevice(requestProvider: HttpRequestProvider, device: Device, wallet: Wallet){
-        getGreenSession().observable {
-            // Disconnect any previous hww connection
-            it.disconnect(disconnectDevice = true)
-            it.hardwareWallet = wallet
-            hardwareConnect.connectDevice(this, requestProvider, device)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.subscribeBy(
-            onError = {
-                it.printStackTrace()
-            }
-        )
+    var session = sessionManager.getOnBoardingSession()
+
+    val deviceState = MutableLiveData<Device.DeviceState>()
+
+    init {
+        device
+            .deviceState
+            .subscribe {
+                deviceState.postValue(it)
+            }.addTo(disposables)
     }
 
-    fun changeNetwork(wallet: Wallet){
-        getGreenSession().observable {
-            it.disconnect(disconnectDevice = false)
-            it.hardwareWallet = wallet
+    fun connectDeviceToNetwork(network: String){
+        // Device is unlocked
+        if (device.hwWallet != null) {
+            sessionManager.getDeviceSessionForNetwork(device, network)?.also {
+                switchSessions(it)
+            } ?: run {
+                connectOnNetwork(network)
+            }
+
+        } else {
+            unlockDeviceAndConnect(network)
+        }
+    }
+
+    private fun switchSessions(session: GreenSession){
+        onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(session.hardwareWallet)))
+    }
+
+    private fun connectOnNetwork(network: String){
+        session = sessionManager.getOnBoardingSession()
+
+        session.observable { session ->
+            session.disconnect()
+            session.hardwareWallet = Wallet.createEmulatedHardwareWallet(greenWallet.networks.getNetworkById(network))
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
             onProgress.postValue(false)
         }.subscribeBy(
             onSuccess = {
-                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
+                onDeviceReady()
             },
+            onError = {
+                it.printStackTrace()
+            }
+        )
+    }
+
+    private fun unlockDeviceAndConnect(network: String){
+        session = sessionManager.getOnBoardingSession()
+
+        session.observable { session ->
+            // Disconnect any previous hww connection
+            session.disconnect()
+            session.hardwareWallet = Wallet.createEmulatedHardwareWallet(greenWallet.networks.getNetworkById(network))
+            hardwareConnect.connectDevice(this, session, device)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.subscribeBy(
             onError = {
                 it.printStackTrace()
             }
@@ -108,7 +141,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     override fun getGreenSession(): GreenSession {
-        return sessionManager.getHardwareSession()
+        return session
     }
 
     override fun getConnectionNetwork() = getGreenSession().networkFromWallet(getGreenSession().hardwareWallet!!)
@@ -119,10 +152,12 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     override fun onDeviceReady() {
-        logger.info { "onDeviceReady" }
         onProgress.postValue(false)
 
-        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.DeviceReady))
+        session.hardwareWallet?.let {
+            sessionManager.upgradeOnBoardingSessionToWallet(it)
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
+        }
     }
 
     override fun onDeviceFailed() {

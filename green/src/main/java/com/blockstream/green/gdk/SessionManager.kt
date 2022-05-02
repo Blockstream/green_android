@@ -8,10 +8,10 @@ import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
 import com.blockstream.green.ApplicationScope
-import com.blockstream.gdk.data.Network
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
+import com.blockstream.green.devices.Device
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
@@ -34,7 +34,6 @@ class SessionManager constructor(
     private val greenSessions = mutableSetOf<GreenSession>()
     private val walletSessions = mutableMapOf<WalletId, GreenSession>()
     private var onBoardingSession: GreenSession? = null
-    private var hardwareSession: GreenSession? = null
 
     private var isOnForeground: Boolean = false
 
@@ -43,6 +42,8 @@ class SessionManager constructor(
     var pendingBip21Uri = MutableLiveData<ConsumableEvent<String>>()
 
     var connectionChangeEvent = MutableLiveData<Boolean>()
+
+    var hardwareWallets = MutableLiveData<List<Wallet>>(listOf())
 
     init {
         // Listen to foreground / background events
@@ -64,20 +65,40 @@ class SessionManager constructor(
                 session.onNewNotification(notification)
             }
         }
+
+        connectionChangeEvent.observeForever {
+            getHardwareWalletSessions().filter { it.isConnected }.mapNotNull { it.hardwareWallet }.let {
+                hardwareWallets.postValue(it)
+            }
+        }
+    }
+
+    fun getDeviceSessionForNetwork(device: Device, networkId: String): GreenSession? {
+        return greenSessions.find { it.device == device && it.network.id == networkId }
+    }
+
+    fun getWalletSessionOrNull(wallet: Wallet): GreenSession? {
+        return getWalletSessionOrNull(wallet.id)
     }
 
     fun getWalletSession(wallet: Wallet): GreenSession {
-        // If id == -1 is a hardware wallet connection, we emulate it as currently we don't save the Wallet
-        if(wallet.isHardwareEmulated){
-            return getHardwareSession()
+        return getWalletSession(wallet.id)
+    }
+
+    fun getWalletSessionOrNull(walletId: WalletId): GreenSession? {
+        return walletSessions[walletId]
+    }
+
+    private fun getWalletSession(walletId: WalletId): GreenSession {
+        if(walletId < 0){
+            greenSessions.find { it.hardwareWallet?.id == walletId }?.let {
+                return it
+            }
         }
 
-        if (walletSessions[wallet.id] == null) {
-            val session = createSession()
-            walletSessions[wallet.id] = session
+        return getWalletSessionOrNull(walletId) ?: createSession().also {
+            walletSessions[walletId] = it
         }
-
-        return walletSessions[wallet.id]!!
     }
 
     fun getWalletIdFromSession(session: GreenSession): WalletId {
@@ -101,26 +122,28 @@ class SessionManager constructor(
         walletSessions.remove(wallet.id)
     }
 
-    fun getHardwareSession(): GreenSession {
-        if (hardwareSession == null) {
-            hardwareSession = createSession()
-        }
-
-        return hardwareSession!!
+    fun destroyHardwareSession(greenSession: GreenSession){
+        greenSessions.remove(greenSession)
+        greenSession.hardwareWallet?.let { walletSessions.remove(it.id) }
+        greenSession.destroy()
     }
 
+    fun getHardwareWalletSessions(): List<GreenSession>{
+        return walletSessions.values.filter { it.hardwareWallet?.isHardware == true && it.isConnected }.toList()
+    }
+
+    // OnBoardingSession waits patiently to be upgraded to a proper wallet session
     fun getOnBoardingSession(wallet: Wallet? = null): GreenSession {
         wallet?.let {
-            return getWalletSession(it)
+            getWalletSessionOrNull(wallet)?.let {
+                return it
+            }
         }
 
-        // OnBoardingSession waits patiently to be upgraded to a proper wallet session
-
-        if (onBoardingSession == null) {
-            onBoardingSession = createSession()
-        }
-
-        return onBoardingSession!!
+        // Create a new session if doesn't exists
+        return (onBoardingSession ?: createSession().also {
+            onBoardingSession = it
+        })
     }
 
     fun getConnectedSessions(): List<GreenSession> {

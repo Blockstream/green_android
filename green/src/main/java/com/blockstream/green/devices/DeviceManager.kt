@@ -225,9 +225,11 @@ class DeviceManager constructor(
     }
 
     private fun addBleConnectedDevices(){
-        sessionManager.getHardwareSession().device?.let { device ->
-            if(device.isBle){
-                addBluetoothDevice(device)
+        sessionManager.getHardwareWalletSessions().forEach {
+            it.device?.let { device ->
+                if(device.isBle){
+                    addBluetoothDevice(device)
+                }
             }
         }
     }

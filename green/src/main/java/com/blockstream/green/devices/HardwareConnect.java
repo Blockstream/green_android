@@ -53,7 +53,6 @@ public class HardwareConnect {
     private final CompositeDisposable mDisposables = new CompositeDisposable();
     private final HardwareQATester qaTester;
     private final boolean isDevelopmentFlavor;
-    private HWWallet mHwWallet;
     private com.blockstream.green.devices.Device device;
     private JadeFirmwareManager jadeFirmwareManager;
 
@@ -153,13 +152,9 @@ public class HardwareConnect {
         );
     }
 
-    private void reconnectSession(final HardwareConnectInteraction interaction) throws Exception {
+    private void reconnectSession(final HardwareConnectInteraction interaction) {
         Log.d(TAG, "(re-)connecting gdk session)");
-        interaction.getGreenSession().disconnect(false);
-        connect(interaction);
-    }
-
-    private void connect(final HardwareConnectInteraction interaction) throws Exception {
+        interaction.getGreenSession().disconnect();
         interaction.getGreenSession().connect(interaction.getGreenSession().getNetworks().getBitcoinGreen());
     }
 
@@ -185,8 +180,7 @@ public class HardwareConnect {
                         DeviceSupportsLiquid.Lite,
                         DeviceSupportsAntiExfilProtocol.Optional))
                 .map(device -> {
-                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, device, verInfo, qaTester);
-                    return jadeWallet;
+                    return new JadeHWWallet(jade, device, verInfo, qaTester);
                 })
                 .flatMap(jadeWallet -> jadeWallet.authenticate(interaction.getConnectionNetwork(), interaction, jadeFirmwareManager != null ? jadeFirmwareManager : new JadeFirmwareManager(interaction, interaction.getGreenSession())).as(RxJavaBridge.toV3Single()))
 
@@ -194,8 +188,7 @@ public class HardwareConnect {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         jadeWallet -> {
-                            mHwWallet = jadeWallet;
-                            doLogin(interaction);
+                            doLogin(jadeWallet, interaction);
                         },
                         throwable -> {
                             throwable.printStackTrace();
@@ -273,8 +266,8 @@ public class HardwareConnect {
     private void onTrezorConnected(final HardwareConnectInteraction interaction, final Trezor t, final String firmwareVersion) {
         Log.d(TAG, "Creating Trezor HW wallet");
         final Device device = new Device("Trezor", false , false, false, DeviceSupportsLiquid.None, DeviceSupportsAntiExfilProtocol.None);
-        mHwWallet = new TrezorHWWallet(t, device, firmwareVersion);
-        doLogin(interaction);
+        HWWallet hwWallet = new TrezorHWWallet(t, device, firmwareVersion);
+        doLogin(hwWallet, interaction);
     }
 
     private void closeTrezor(final HardwareConnectInteraction interaction, final Trezor t) {
@@ -368,13 +361,12 @@ public class HardwareConnect {
 
                     Log.d(TAG, "Creating Ledger HW wallet" + (pin != null ? " with PIN" : ""));
                     final Device device = new Device("Ledger", true,false, false, DeviceSupportsLiquid.Lite, DeviceSupportsAntiExfilProtocol.None);
-                    mHwWallet = new BTChipHWWallet(dongle, pin , device, firmwareVersion, bleDisconnectEvent);
-                    return mHwWallet;
+                    return new BTChipHWWallet(dongle, pin , device, firmwareVersion, bleDisconnectEvent);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         hwWallet -> {
-                            doLogin(interaction);
+                            doLogin(hwWallet, interaction);
                         },
                         throwable -> {
                             Log.e(TAG, "Connecting to Ledger HW wallet got error: " + throwable);
@@ -391,8 +383,8 @@ public class HardwareConnect {
         interaction.onDeviceFailed();
     }
 
-    private void doLogin(final HardwareConnectInteraction interaction) {
-        device.setHwWallet(mHwWallet);
+    private void doLogin(final HWWallet hwWallet, final HardwareConnectInteraction interaction) {
+        device.setHwWallet(hwWallet);
         interaction.onDeviceReady();
     }
 

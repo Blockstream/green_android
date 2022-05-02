@@ -143,7 +143,6 @@ open class OnboardingViewModel constructor(
                 wallet = restoreWallet
 
                 wallet.name = options.walletName ?: restoreWallet.name
-                wallet.isRecoveryPhraseConfirmed = true
                 walletRepository.updateWalletSync(wallet)
             }
 

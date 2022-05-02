@@ -54,6 +54,22 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
             true
         }
 
+        val hardwareWalletsModel = ModelAdapter { model: Wallet ->
+            WalletListItem(model, sessionManager.getWalletSession(model))
+        }
+
+        viewModel.hardwareWallets.observe(viewLifecycleOwner){
+            hardwareWalletsModel.set(it)
+        }
+
+        val hardwareWalletsAdapter = FastAdapter.with(hardwareWalletsModel)
+
+        hardwareWalletsAdapter.onClickListener = { _, _, item, _ ->
+            navigate(item.wallet)
+            closeDrawer()
+            true
+        }
+
         if(!isDrawer) {
             softwareWalletsAdapter.onLongClickListener = { view, _, item, _ ->
                 showPopupMenu(view, R.menu.menu_wallet) { menuItem ->
@@ -96,6 +112,11 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
 
         binding.recyclerSoftwareWallets.apply {
             adapter = softwareWalletsAdapter
+            itemAnimator = SlideDownAlphaAnimator()
+        }
+
+        binding.recyclerHardwareWallets.apply {
+            adapter = hardwareWalletsAdapter
             itemAnimator = SlideDownAlphaAnimator()
         }
 

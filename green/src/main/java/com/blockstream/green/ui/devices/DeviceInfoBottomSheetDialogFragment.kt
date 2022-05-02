@@ -3,13 +3,12 @@ package com.blockstream.green.ui.devices
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.NavGraphDirections
-import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceInfoBottomSheetBinding
@@ -17,27 +16,19 @@ import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
 import com.blockstream.green.ui.items.NetworkSmallListItem
 import com.blockstream.green.utils.navigate
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(), DeviceInfoCommon{
+class DeviceInfoBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<DeviceInfoBottomSheetBinding>(), DeviceInfoCommon{
+    override val screenName = "DeviceInfoModal"
 
-    companion object{
-        const val DEVICE_ID = "DEVICE_ID"
-
-        fun create(deviceId: String): DeviceInfoBottomSheetDialogFragment =
-            DeviceInfoBottomSheetDialogFragment().apply {
-                arguments = Bundle().apply {
-                    putString(DEVICE_ID, deviceId)
-                }
-            }
-    }
+    override fun inflate(layoutInflater: LayoutInflater) = DeviceInfoBottomSheetBinding.inflate(layoutInflater)
 
     @Inject
     lateinit var deviceManager: DeviceManager
@@ -52,9 +43,6 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(), DeviceI
     lateinit var sessionManager: SessionManager
 
     @Inject
-    lateinit var countly: Countly
-
-    @Inject
     lateinit var viewModelFactory: DeviceInfoViewModel.AssistedFactory
 
     val deviceId by lazy { arguments?.getString(DEVICE_ID) ?: "" }
@@ -64,19 +52,12 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(), DeviceI
         DeviceInfoViewModel.provideFactory(viewModelFactory, requireContext().applicationContext, device!!)
     }
 
-    private lateinit var binding: DeviceInfoBottomSheetBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        binding = DeviceInfoBottomSheetBinding.inflate(layoutInflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         if (deviceManager.getDevice(deviceId) == null) {
             dismiss()
-            return binding.root
         }
 
         binding.vm = viewModel
@@ -90,7 +71,7 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(), DeviceI
             }
         }
 
-        device?.deviceState?.observe(viewLifecycleOwner){
+        viewModel.deviceState.observe(viewLifecycleOwner){
             // Device went offline
             if(it == Device.DeviceState.DISCONNECTED){
                 dismiss()
@@ -108,13 +89,9 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(), DeviceI
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
             when (item) {
                 is NetworkSmallListItem -> {
-
-                    val hardwareWallet = Wallet.createEmulatedHardwareWallet(
-                        greenWallet.networks.getNetworkById(item.network)
-                    )
-
-                    viewModel.changeNetwork(hardwareWallet)
-
+                    device?.let {
+                        viewModel.connectDeviceToNetwork(item.network)
+                    }
                     true
                 }
                 else -> false
@@ -126,7 +103,18 @@ class DeviceInfoBottomSheetDialogFragment : BottomSheetDialogFragment(), DeviceI
             itemAnimator = AlphaCrossFadeAnimator()
             adapter = fastItemAdapter
         }
+    }
 
-        return binding.root
+
+    companion object {
+        private const val DEVICE_ID = "DEVICE_ID"
+
+        fun show(deviceId: String, fragmentManager: FragmentManager) {
+            show(DeviceInfoBottomSheetDialogFragment().also {
+                it.arguments = Bundle().apply {
+                    putString(DEVICE_ID, deviceId)
+                }
+            }, fragmentManager)
+        }
     }
 }

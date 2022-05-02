@@ -1098,5 +1098,7 @@
   <string name="id_show_details">Show details</string>
   <string name="id_hide_details">Hide details</string>
 
+  <string name="id_hardware_wallets">Hardware Wallets</string>
+
 
 </resources>

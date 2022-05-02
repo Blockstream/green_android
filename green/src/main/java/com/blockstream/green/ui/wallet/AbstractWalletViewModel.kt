@@ -70,14 +70,6 @@ abstract class AbstractWalletViewModel constructor(
                 walletUpdated()
             }.addTo(disposables)
 
-
-        session.device?.deviceState?.observe(lifecycleOwner){
-            // Device went offline
-            if(it == com.blockstream.green.devices.Device.DeviceState.DISCONNECTED){
-                logout(LogoutReason.DEVICE_DISCONNECTED)
-            }
-        }
-
         session
             .getSubAccountsObservable()
             .observeOn(AndroidSchedulers.mainThread())
@@ -138,7 +130,7 @@ abstract class AbstractWalletViewModel constructor(
 
         wallet.activeAccount = account.pointer
 
-        if(!wallet.isHardwareEmulated) {
+        if(!wallet.isHardware) {
             wallet.observable {
                 walletRepository.updateWalletSync(wallet)
             }.subscribeBy()

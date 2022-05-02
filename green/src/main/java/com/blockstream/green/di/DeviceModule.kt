@@ -29,5 +29,4 @@ class DeviceModule {
             RxBleClient.create(context)
         )
     }
-
 }

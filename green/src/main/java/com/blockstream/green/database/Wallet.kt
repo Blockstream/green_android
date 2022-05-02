@@ -27,10 +27,10 @@ data class Wallet(
     var name: String,
 
     @ColumnInfo(name = "network")
-    var network: String,
+    val network: String,
 
     @ColumnInfo(name = "is_recovery_confirmed")
-    var isRecoveryPhraseConfirmed: Boolean = false,
+    val isRecoveryPhraseConfirmed: Boolean = true,
 
     @ColumnInfo(name = "watch_only_username")
     val watchOnlyUsername: String? = null,
@@ -53,14 +53,12 @@ data class Wallet(
     val isWatchOnly
         get() = watchOnlyUsername != null
 
-    val isHardwareEmulated
-        get() = id == -1L
-
     companion object : KLogging() {
+        private var hardwareWalletIdCounter = -1L
 
         fun createEmulatedHardwareWallet(network: Network, activeAccount: Long = 0): Wallet {
             return Wallet(
-                id = -1L,
+                id = hardwareWalletIdCounter--,
                 walletHashId = network.id,
                 name = network.productName,
                 network = network.network,

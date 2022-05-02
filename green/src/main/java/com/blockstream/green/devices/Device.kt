@@ -6,6 +6,7 @@ import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.DeviceBrand
+import com.blockstream.gdk.data.Assets
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.jade.JadeBleImpl
@@ -14,6 +15,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import mu.KLogging
 import kotlin.properties.Delegates
 
@@ -32,7 +34,7 @@ class Device constructor(
         SCANNED, DISCONNECTED
     }
 
-    val deviceState = MutableLiveData(DeviceState.SCANNED)
+    val deviceState: BehaviorSubject<DeviceState> = BehaviorSubject.createDefault(DeviceState.SCANNED)
 
     private val bleDisposables = CompositeDisposable()
 
@@ -41,7 +43,7 @@ class Device constructor(
 
         bleDisposables.clear()
 
-        hwWallet?.bleDisconnectEvent?.let{
+        hwWallet?.bleDisconnectEvent?.let {
             logger.info { "Subscribe to BLE disconnect event" }
             it.observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(onError = { e ->
@@ -151,7 +153,7 @@ class Device constructor(
 
     fun offline() {
         logger.info { "Device went offline" }
-        deviceState.postValue(DeviceState.DISCONNECTED)
+        deviceState.onNext(DeviceState.DISCONNECTED)
     }
 
     fun disconnect() {
@@ -164,8 +166,6 @@ class Device constructor(
         bleDevice = newBleDevice
         // Update timeout
         timeout = SystemClock.elapsedRealtimeNanos()
-
-        deviceState.postValue(DeviceState.SCANNED)
     }
 
     enum class ConnectionType {

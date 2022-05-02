@@ -18,6 +18,7 @@ import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.database.WalletId
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
@@ -43,13 +44,7 @@ class NotificationManager constructor(
             intent.extras?.getLong(WALLET_ID, -1)?.let { walletId ->
                 if (intent.action == ACTION_LOGOUT) {
                     applicationScope.launch {
-                        if(walletId == -1L){
-                            sessionManager.getHardwareSession().hardwareWallet
-                        }else{
-                            walletRepository.getWalletSuspend(walletId)
-                        }?.let {
-                            sessionManager.getWalletSession(it).disconnectAsync()
-                        }
+                        sessionManager.getWalletSessionOrNull(walletId)?.disconnectAsync()
                     }
                 }
             }
@@ -184,7 +179,8 @@ class NotificationManager constructor(
     }
 
     // Make hardware wallet id positive
-    private fun notificationId(wallet: Wallet): Int = (10000 + wallet.id).toInt()
+    private fun notificationId(wallet: Wallet): Int = notificationId(wallet.id)
+    private fun notificationId(walletId: WalletId): Int = (10000 + walletId).toInt()
 
     // Intents are cached by the requestCode, in order for wallet to be updated we have to provide a unique requestCode
     private fun requestCode(wallet: Wallet): Int = wallet.hashCode()

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.data.NavigateEvent
@@ -83,7 +84,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
         binding.vm = viewModel
 
-        device?.deviceState?.observe(viewLifecycleOwner){
+        viewModel.deviceState.observe(viewLifecycleOwner){
             // Device went offline
             if(it == Device.DeviceState.DISCONNECTED){
                 findNavController().popBackStack()
@@ -95,13 +96,6 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
             onEvent.getContentIfNotHandledForType<DeviceInfoViewModel.DeviceInfoEvent>()?.let {
                 when(it){
-                    is DeviceInfoViewModel.DeviceInfoEvent.DeviceReady -> {
-                        viewModel.getGreenSession().hardwareWallet?.let{ wallet ->
-                            navigate(
-                                DeviceInfoFragmentDirections.actionGlobalLoginFragment(wallet, deviceId = args.deviceId)
-                            )
-                        }
-                    }
                     is DeviceInfoViewModel.DeviceInfoEvent.RequestPin -> {
                         requestPin()
                     }
@@ -112,7 +106,11 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
             }
 
             onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                if(it.data == DeviceInfoViewModel.REQUIRE_REBONDING){
+                if(it.data is Wallet){
+                    NavGraphDirections.actionGlobalLoginFragment(it.data, deviceId = device?.id).let { navDirections ->
+                        navigate(findNavController(), navDirections.actionId, navDirections.arguments, isLogout = true)
+                    }
+                } else if(it.data == DeviceInfoViewModel.REQUIRE_REBONDING){
                     MaterialAlertDialogBuilder(
                         requireContext(),
                         R.style.ThemeOverlay_Green_MaterialAlertDialog
@@ -239,12 +237,8 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         // Pause BLE scanning as can make unstable the connection to a ble device
         deviceManager.pauseBluetoothScanning()
 
-        val hardwareWallet = Wallet.createEmulatedHardwareWallet(
-            greenWallet.networks.getNetworkById(network)
-        )
-
         device?.let {
-            viewModel.connectDevice(sessionManager.getHardwareSession(), it, hardwareWallet)
+            viewModel.connectDeviceToNetwork(network)
         }
     }
 
