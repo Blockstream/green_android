@@ -28,7 +28,7 @@ open class TitleExpandableListItem(val title: StringHolder) : AbstractExpandable
     override var onItemClickListener: ClickListener<TitleExpandableListItem>? = { v: View?, adapter: IAdapter<TitleExpandableListItem>, item: TitleExpandableListItem, position: Int ->
         if (item.subItems.isNotEmpty()) {
             v?.findViewById<View>(R.id.arrow)?.let {
-                if (!item.isExpanded) {
+                if (item.isExpanded) {
                     ViewCompat.animate(it).rotation(90f).start()
                 } else {
                     ViewCompat.animate(it).rotation(0f).start()
