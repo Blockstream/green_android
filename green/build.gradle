@@ -62,7 +62,7 @@ android {
     productFlavors {
         development {
             applicationId "com.greenaddress.greenbits_android_wallet.dev"
-            versionNameSuffix "-dev" + appendGdkCommitHash()
+            versionNameSuffix "-dev" + appendGdkCommitHash(true)
             resValue "string", "app_name", "Green Dev"
             resValue "string", "application_id", applicationId
             manifestPlaceholders = [
@@ -73,6 +73,7 @@ android {
 
         production {
             applicationId "com.greenaddress.greenbits_android_wallet"
+            versionNameSuffix appendGdkCommitHash(false)
             resValue "string", "app_name", "Green"
             resValue "string", "application_id", applicationId
             manifestPlaceholders = [
@@ -256,15 +257,15 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
-def appendGdkCommitHash () {
+def appendGdkCommitHash(Boolean enableGitSubmodule) {
     def gdkCommit = System.getenv('GDK_COMMIT')
     def hash = false
 
-    if(gdkCommit != null){
+    if (gdkCommit != null) {
         hash = gdkCommit
-    }else{
+    } else if (enableGitSubmodule) {
         def cmd = "git --git-dir=crypto/gdk/.git rev-parse --short HEAD"
-        def proc = cmd.execute ()
+        def proc = cmd.execute()
         hash = proc.text.trim()
     }
 
