@@ -10,11 +10,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.BalancePair
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.SubAccount
@@ -46,6 +48,9 @@ import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -57,6 +62,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 ) {
     val args: OverviewFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
+
+    @Inject
+    lateinit var assetManager: AssetManager
 
     @Inject
     lateinit var viewModelFactory: OverviewViewModel.AssistedFactory
@@ -476,12 +484,11 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             fastAdapter.notifyAdapterDataSetChanged()
         }
 
-        // Notify adapter when we have new assets
-        viewModel.getAssetsUpdated().observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let {
-                fastAdapter.notifyAdapterDataSetChanged()
-            }
-        }
+
+        // Notify adapter when assets are updated
+        assetManager.getAssetsUpdated().asFlow().drop(1).onEach {
+            fastAdapter.notifyAdapterDataSetChanged()
+        }.launchIn(lifecycleScope)
 
         fastAdapter.addClickListener<ListItemAccountBinding, GenericItem>({ binding -> binding.buttonAccountMenu }) { view, _, _, item ->
             if(item is AccountListItem) {

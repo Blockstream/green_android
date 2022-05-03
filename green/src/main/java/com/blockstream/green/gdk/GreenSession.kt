@@ -54,7 +54,6 @@ class GreenSession constructor(
     var walletBalances : WalletBalances = SparseArray()
         private set
 
-    private var assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
     private var subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
     private var systemMessageSubject = BehaviorSubject.create<String>()
     private var blockSubject = BehaviorSubject.create<Block>()
@@ -127,7 +126,6 @@ class GreenSession constructor(
     val blockHeight
         get() = blockSubject.value?.height ?: 0
 
-    fun getAssetsObservable(): Observable<Assets> = assetsSubject.hide()
     fun getBlockObservable(): Observable<Block> = blockSubject.hide()
     fun getTransationsObservable(): Observable<List<Transaction>> = transactionsSubject.hide()
     fun getSubAccountsObservable(): Observable<List<SubAccount>> = subAccountsSubject.hide()
@@ -250,7 +248,6 @@ class GreenSession constructor(
         // Recreate subject so that can be sure we have fresh data, especially on shared sessions eg. HWW sessions
         balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
         transactionsSubject = BehaviorSubject.createDefault(listOf(Transaction.LoadingTransaction))
-        assetsSubject = BehaviorSubject.createDefault(Assets())
         subAccountsSubject = BehaviorSubject.createDefault(listOf())
         systemMessageSubject = BehaviorSubject.create()
         blockSubject = BehaviorSubject.create()
@@ -925,11 +922,6 @@ class GreenSession constructor(
                 }
             }
         }
-    }
-
-    // TODO implement
-    private fun updateAssets(assets: Assets) {
-        assetsSubject.onNext(assets)
     }
 
     fun hasAssetIcon(assetId : String) = assetsManager.hasAssetIcon(assetId)

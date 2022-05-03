@@ -9,6 +9,10 @@ import com.blockstream.crypto.R
 import com.blockstream.gdk.data.Asset
 import com.blockstream.gdk.data.Assets
 import com.blockstream.gdk.params.AssetsParams
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import mu.KLogging
 
 interface AssetQATester {
     fun isAssetGdkCacheDisabled(): Boolean
@@ -21,7 +25,7 @@ interface AssetsProvider {
 }
 
 enum class CacheStatus {
-    Empty, Cached, Latest
+    Empty, Gdk, Latest
 }
 
 data class AssetStatus(
@@ -37,6 +41,7 @@ data class AssetStatus(
  */
 class AssetManager constructor(
     private val context: Context,
+    val coroutineScope: CoroutineScope,
     val QATester: AssetQATester,
 ) {
     private var metadata: Map<String, Asset> = mapOf()
@@ -46,25 +51,30 @@ class AssetManager constructor(
     private val status = AssetStatus()
 
     private val statusLiveData =  MutableLiveData(status)
+    private val assetsUpdatedEvent =  MutableLiveData(0)
+
+    fun getAssetsUpdated() = assetsUpdatedEvent
 
     private fun setGdkCache(assets: Assets) {
+        logger.info { "Liquid Assets update from GDK" }
         this.metadata = assets.assets
         this.icons = assets.icons ?: mapOf()
 
-        // Status: Cached
-
-        status.metadataStatus = CacheStatus.Cached
-        status.iconStatus = CacheStatus.Cached
+        // Status: Gdk
+        status.metadataStatus = CacheStatus.Gdk
+        status.iconStatus = CacheStatus.Gdk
     }
 
     private fun updateMetadata(assets: Assets) {
+        logger.info { "Liquid Assets metadata update from session" }
         this.metadata = assets.assets
         // Status: Metadata Latest
         status.metadataStatus = CacheStatus.Latest
     }
 
     // Currently unused as the assets are integrated in the build
-    fun updateIcons(assets: Assets) {
+    private fun updateIcons(assets: Assets) {
+        logger.info { "Liquid Assets icon update from session" }
         this.icons = assets.icons ?: mapOf()
         // Status: Icons Latest
         status.iconStatus = CacheStatus.Latest
@@ -90,84 +100,86 @@ class AssetManager constructor(
     }
 
     fun updateAssetsIfNeeded(provider: AssetsProvider) {
-        updateMetadata(provider, false)
-    }
-
-    private fun updateMetadata(provider: AssetsProvider, forceUpdate: Boolean) {
-        // Update from Network if needed
-        if (forceUpdate || status.metadataStatus != CacheStatus.Latest) {
-
+        // Init from GDK if required
+        if (status.metadataStatus == CacheStatus.Empty && !QATester.isAssetGdkCacheDisabled()) {
             try {
                 statusLiveData.postValue(status.apply { onProgress = true })
 
-                if (!QATester.isAssetGdkCacheDisabled()) {
+                setGdkCache(
+                    provider.refreshAssets(
+                        AssetsParams(
+                            assets = true,
+                            icons = true,
+                            refresh = false
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }finally {
+                statusLiveData.postValue(status.apply { onProgress = false })
+            }
+        }
 
-                    // First try to update from GDK Cache if needed
-                    if (status.metadataStatus == CacheStatus.Empty) {
+        updateMetadataFromSession(provider, false)
+    }
+
+    private fun updateMetadataFromSession(provider: AssetsProvider, forceUpdate: Boolean) {
+
+        if (status.metadataStatus != CacheStatus.Latest || forceUpdate) {
+
+            coroutineScope.launch(context = Dispatchers.IO) {
+
+                try {
+                    statusLiveData.postValue(status.apply { onProgress = true })
+
+                    // Allow forceUpdate to override QATester settings
+                    if (QATester.isAssetFetchDisabled() && !forceUpdate) {
+                        return@launch
+                    }
+
+                    try {
+                        // Try to update the registry - only metadata
+                        // Fetch assets without icons as we have better chances to complete the network call
+                        updateMetadata(
+                            provider.refreshAssets(
+                                AssetsParams(
+                                    assets = true,
+                                    icons = false,
+                                    refresh = true
+                                )
+                            )
+                        )
+
+                        // Allow forceUpdate to override QATester settings
+                        if (QATester.isAssetIconsFetchDisabled() && !forceUpdate) {
+                            return@launch
+                        }
+
                         try {
-                            // Update from GDK Cache
-                            setGdkCache(
+                            // Try to update the registry - only icons
+                            updateIcons(
                                 provider.refreshAssets(
                                     AssetsParams(
-                                        assets = true,
+                                        assets = false,
                                         icons = true,
-                                        refresh = false
+                                        refresh = true
                                     )
                                 )
                             )
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
-                    }
-                }
 
-                // Allow forceUpdate to override QATester settings
-                if (QATester.isAssetFetchDisabled() && !forceUpdate) {
-                    return
-                }
-
-                // Fetching asset registry is disabled until GDK is fixed
-                /*
-                try {
-                    // Try to update the registry - only metadata
-                    // Fetch assets without icons as we have better chances to complete the network call
-                    updateMetadata(
-                        provider.refreshAssets(
-                            AssetsParams(
-                                assets = true,
-                                icons = false,
-                                refresh = true
-                            )
-                        )
-                    )
-
-                    // Allow forceUpdate to override QATester settings
-                    if (QATester.isAssetIconsFetchDisabled() && !forceUpdate) {
-                        return
-                    }
-
-                    try {
-                        // Try to update the registry - only icons
-                        updateIcons(
-                            provider.refreshAssets(
-                                AssetsParams(
-                                    assets = false,
-                                    icons = true,
-                                    refresh = true
-                                )
-                            )
-                        )
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
 
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                 */
 
-            } finally {
-                statusLiveData.postValue(status.apply { onProgress = false })
+                } finally {
+                    statusLiveData.postValue(status.apply { onProgress = false })
+                    assetsUpdatedEvent.postValue((assetsUpdatedEvent.value ?: 0) + 1)
+                }
             }
         }
     }
@@ -175,4 +187,6 @@ class AssetManager constructor(
     fun getAssetIcon(assetId: String): Bitmap? {
         return icons[assetId]
     }
+
+    companion object: KLogging()
 }

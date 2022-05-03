@@ -16,7 +16,6 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -48,7 +47,6 @@ class OverviewViewModel @AssistedInject constructor(
     private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData(listOf(
         Transaction.LoadingTransaction))
 
-    private val assetsUpdated: MutableLiveData<ConsumableEvent<Boolean>> = MutableLiveData()
     private val selectedAsset = MutableLiveData<String?>()
 
     private val block: MutableLiveData<Block> = MutableLiveData()
@@ -65,7 +63,6 @@ class OverviewViewModel @AssistedInject constructor(
     fun getBlock(): LiveData<Block> = block
 
     fun getSelectedAsset(): LiveData<String?> = selectedAsset
-    fun getAssetsUpdated(): MutableLiveData<ConsumableEvent<Boolean>> = assetsUpdated
 
     private var pendingSubAccountSwitch: Long = -1
 
@@ -91,12 +88,6 @@ class OverviewViewModel @AssistedInject constructor(
             .getTransationsObservable()
             .subscribe {
                 transactions.postValue(it)
-            }.addTo(disposables)
-
-        session.getAssetsObservable()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                assetsUpdated.postValue(ConsumableEvent(true))
             }.addTo(disposables)
 
         session

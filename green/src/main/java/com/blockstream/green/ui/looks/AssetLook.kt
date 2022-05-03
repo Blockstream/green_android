@@ -15,7 +15,9 @@ class AssetLook constructor(
     var amount: Long,
     val session: GreenSession
 ) {
-    private val asset = session.getAsset(id)
+    // Get asset from Session/AssetManager as it can be updated
+    private val asset
+        get() = session.getAsset(id)
     private var isLiquid: Boolean = session.network.isLiquid
     private var isMainnet: Boolean = session.network.isMainnet
 
