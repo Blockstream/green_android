@@ -40,7 +40,7 @@ platform :ios do
       export_method: "ad-hoc",
       build_path: "./dev",
       archive_path: "./dev/Green.xcarchive",
-      export_options: "./ExportOptions.plist",
+      export_method: "ad-hoc",
       xcargs: "-allowProvisioningUpdates"
     )
   end
