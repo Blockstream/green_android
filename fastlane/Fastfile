@@ -7,7 +7,6 @@ platform :ios do
   desc "Build unsigned debug"
   lane :build_unsigned_debug do
     cocoapods()
-    sh "cd .. && ./tools/fetch_gdk_binaries.sh"
     build_ios_app(
       configuration: "Debug",
       scheme: "gaios",
@@ -27,7 +26,6 @@ platform :ios do
   desc "Build signed adhoc release"
   lane :build_signed_adhoc_release do
     cocoapods()
-    sh "cd .. && ./tools/fetch_gdk_binaries.sh"
     build_ios_app(
       configuration: "Release",
       scheme: "gaios",
@@ -48,7 +46,6 @@ platform :ios do
   desc "Build signed prod release"
   lane :build_signed_prod_release do
     cocoapods()
-    sh "cd .. && ./tools/fetch_gdk_binaries.sh"
     build_ios_app(
       configuration: "Release",
       scheme: "gaios",
