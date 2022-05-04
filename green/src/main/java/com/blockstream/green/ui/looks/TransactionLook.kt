@@ -65,7 +65,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
                     withMinimumDigits = true
                 )
             } else {
-                cacheAmounts[index] = assets[index].let {
+                cacheAmounts[index] = assets.getOrNull(index)?.let {
                     it.second.toAmountLookOrNa(
                         session,
                         assetId = it.first,
@@ -74,7 +74,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
                         withGrouping = true,
                         withMinimumDigits = true
                     )
-                }
+                } ?: "-"
             }
         }
 
@@ -95,18 +95,18 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
         get() = if (tx.isIn) R.color.brand_green else R.color.white
 
     fun ticker(index: Int): String {
-        return assets[index].let{
+        return assets.getOrNull(index)?.let{
             if (it.first == session.network.policyAsset) {
                 getBitcoinOrLiquidUnit(session)
             } else {
                 val assetId = it.first
                 session.getAsset(assetId)?.ticker ?: "n/a"
             }
-        }
+        } ?: "-"
     }
 
     fun getIcon(index: Int, context: Context): Drawable? {
-        return assets[index].first.getAssetIcon(context, session)
+        return assets.getOrNull(index)?.first?.getAssetIcon(context, session)
     }
 
     override fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding) {
@@ -117,7 +117,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
 
         binding.ticker.text = ticker(index)
         binding.icon.setImageDrawable(getIcon(index, binding.icon.context))
-        binding.icon.updateAssetPadding(session, assets[index].first, 3)
+        binding.icon.updateAssetPadding(session, assets.getOrNull(index)?.first ?: "-", 3)
 
         if (hideSPVInAsset || tx.spv.disabledOrVerified()) {
             binding.spv.isVisible = false
