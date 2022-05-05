@@ -34,6 +34,22 @@ build_signed_adhoc_release:
     when: on_success
     paths:
       - dev/Green-dev.ipa
+  script:
+    - ./tools/fetch_gdk_binaries.sh
+    - fastlane build_signed_adhoc_release
+
+build_signed_adhoc_release_gdk_commit:
+  stage: build
+  when: manual
+  tags:
+    - fastosx
+    - osx
+  artifacts:
+    name: "green-ios-dev-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - dev/Green-dev.ipa
   variables:
     GDK_COMMIT: master
   script:
@@ -69,7 +85,7 @@ ui_tests:
     - cd $CI_PROJECT_DIR
     - export LC_ALL=en_US.UTF-8
     - export LANG=en_US.UTF-8
-    - ./tools/fetch_gdk_binaries.sh --simulator
+    - ./tools/fetch_gdk_binaries.sh --simulatortools/transifex.sh
     - pod install
     - fastlane ui_tests
   after_script:
