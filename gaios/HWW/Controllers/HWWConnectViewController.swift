@@ -103,25 +103,17 @@ class HWWConnectViewController: UIViewController {
 
     func loadData() {
         if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) {
-            if isHiddenTestnet == false {
-                if self.account.isLedger {
-                    data = [[.bitcoinMS], [], [.testnetMS]]
-                } else {
-                    data = [[.bitcoinSS, .bitcoinMS], [.liquidMS], [.testnetSS, .testnetMS, .testnetLiquidMS]]
-                }
-            } else {
-                if self.account.isLedger {
-                    data = [[.bitcoinMS], [], []]
-                } else {
-                    data = [[.bitcoinSS, .bitcoinMS], [.liquidMS], []]
-                }
-            }
-        } else {
-            if self.account.isLedger {
-                data = [[.bitcoinMS], [], []]
-            } else {
-                data = [[.bitcoinSS, .bitcoinMS], [.liquidMS], []]
-            }
+            let jade = self.account.isJade
+            var debug = false
+#if DEBUG
+            debug = true
+#endif
+            data = [[.bitcoinSS, .bitcoinMS], [], []]
+            data[1] += jade ? [.liquidMS] : []
+            data[1] += jade && debug ? [.liquidSS] : []
+            data[2] += !isHiddenTestnet ? [.testnetSS, .testnetMS] : []
+            data[2] += !isHiddenTestnet && jade ? [.testnetLiquidMS] : []
+            data[2] += !isHiddenTestnet && jade && debug ? [.testnetLiquidSS] : []
         }
         tableView.reloadData()
     }

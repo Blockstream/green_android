@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Ad-hoc distribution app for internal testing 
+- Add support for ledger singlesig wallet
 
 ### Changed
 - Improved CI for internal testing
