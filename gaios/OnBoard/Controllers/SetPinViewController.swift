@@ -38,6 +38,20 @@ class SetPinViewController: UIViewController {
         keyButton![0].accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.btn1
         keyButton![1].accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.btn2
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.nextBtn
+
+        if actionPin == .set {
+            switch self.pinFlow {
+            case .settings:
+                AMan.S.recordView(.walletSettingsChangePIN, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+            case .onboard:
+                switch LandingViewController.flowType {
+                case .add:
+                    AMan.S.recordView(.onBoardPin, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+                case .restore:
+                    AMan.S.recordView(.onBoardPin, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+                }
+            }
+        }
     }
 
     func setContent() {

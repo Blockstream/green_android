@@ -199,6 +199,7 @@
 		34EB670528213A8A0036D615 /* AMConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670428213A8A0036D615 /* AMConstants.swift */; };
 		34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */; };
 		34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */; };
+		34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F8E7C22823E66C00555F5B /* AMViews.swift */; };
 		34FB694F27FD782F00A13197 /* PopoverMenuAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB694E27FD782F00A13197 /* PopoverMenuAccountViewController.swift */; };
 		34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB695C27FDC6EC00A13197 /* AccountArchiveViewController.swift */; };
 		34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB697627FEF9D000A13197 /* AccountArchiveCell.swift */; };
@@ -282,7 +283,7 @@
 		81D671F126C80D4E00682508 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F026C80D4E00682508 /* Connection.swift */; };
 		81D671F326C80D6B00682508 /* TorNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F226C80D6B00682508 /* TorNotification.swift */; };
 		81D671F726C81B0800682508 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F626C81B0800682508 /* NotificationManager.swift */; };
-		81D6EA3528130E82009DB210 /* AMInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D6EA3428130E82009DB210 /* AMInstance.swift */; };
+		81D6EA3528130E82009DB210 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D6EA3428130E82009DB210 /* AnalyticsManager.swift */; };
 		81D94CF121B93905003B03F9 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
 		81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D922541F0D1001159D6 /* TxInputBtc.swift */; };
 		81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D962541F110001159D6 /* TxChangeOutput.swift */; };
@@ -524,6 +525,7 @@
 		34EB670428213A8A0036D615 /* AMConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMConstants.swift; sourceTree = "<group>"; };
 		34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDeleteViewController.swift; sourceTree = "<group>"; };
 		34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWalletViewController.swift; sourceTree = "<group>"; };
+		34F8E7C22823E66C00555F5B /* AMViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMViews.swift; sourceTree = "<group>"; };
 		34FB694E27FD782F00A13197 /* PopoverMenuAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuAccountViewController.swift; sourceTree = "<group>"; };
 		34FB695C27FDC6EC00A13197 /* AccountArchiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveViewController.swift; sourceTree = "<group>"; };
 		34FB697627FEF9D000A13197 /* AccountArchiveCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveCell.swift; sourceTree = "<group>"; };
@@ -642,7 +644,7 @@
 		81D671F026C80D4E00682508 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		81D671F226C80D6B00682508 /* TorNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorNotification.swift; sourceTree = "<group>"; };
 		81D671F626C81B0800682508 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
-		81D6EA3428130E82009DB210 /* AMInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMInstance.swift; sourceTree = "<group>"; };
+		81D6EA3428130E82009DB210 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		81D94CF021B93905003B03F9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81DA3D922541F0D1001159D6 /* TxInputBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputBtc.swift; sourceTree = "<group>"; };
 		81DA3D962541F110001159D6 /* TxChangeOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxChangeOutput.swift; sourceTree = "<group>"; };
@@ -1217,8 +1219,9 @@
 		34EB66FF28212E9C0036D615 /* AnalyticsManager */ = {
 			isa = PBXGroup;
 			children = (
-				81D6EA3428130E82009DB210 /* AMInstance.swift */,
+				81D6EA3428130E82009DB210 /* AnalyticsManager.swift */,
 				34EB670028212EBA0036D615 /* AMEvents.swift */,
+				34F8E7C22823E66C00555F5B /* AMViews.swift */,
 				34EB6702282138710036D615 /* AMSegmentation.swift */,
 				34EB670428213A8A0036D615 /* AMConstants.swift */,
 			);
@@ -1943,7 +1946,7 @@
 				813D053A27AD7D9700AA6655 /* SessionsManager.swift in Sources */,
 				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */,
-				81D6EA3528130E82009DB210 /* AMInstance.swift in Sources */,
+				81D6EA3528130E82009DB210 /* AnalyticsManager.swift in Sources */,
 				349D1EDB274250540095B5CA /* TransactionViewController.swift in Sources */,
 				347FD0BC25FFC0E100BB3FAB /* WalletHDCell.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
@@ -2013,6 +2016,7 @@
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				3484118C265E6113002D2202 /* Constants.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
+				34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */,
 				349365FB2758C2DD003EC603 /* ManualRestoreViewController.swift in Sources */,
 				816282B5260BB3C6003E5FA6 /* OnBoardManager.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,

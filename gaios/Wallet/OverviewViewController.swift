@@ -84,6 +84,8 @@ class OverviewViewController: UIViewController {
         return (subAccounts.filter { $0.hidden == true }).count
     }
 
+    private var analyticsDone = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -114,6 +116,8 @@ class OverviewViewController: UIViewController {
         receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
 
         startAnimating()
+
+        AMan.S.recordView(.overview, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
     }
 
     func reloadSections(_ sections: [OverviewSection], animated: Bool) {
@@ -160,6 +164,7 @@ class OverviewViewController: UIViewController {
         if let nvc = nvc as? UINavigationController {
             if let vc = nvc.viewControllers.first as? UserSettingsViewController {
                 vc.delegate = self
+                vc.wallet = presentingWallet
                 nvc.modalPresentationStyle = .fullScreen
                 present(nvc, animated: true, completion: nil)
             }
@@ -312,10 +317,23 @@ class OverviewViewController: UIViewController {
             self.stopAnimating()
         }.done { _ in
             self.showTransactions()
+            self.callAnalytics()
         }.catch { err in
             print(err.localizedDescription)
         }
         loadAlertCards()
+    }
+
+    func callAnalytics() {
+
+        if analyticsDone == true { return }
+        analyticsDone = true
+        let walletFunded: Bool = subAccounts.map { Balance.convert(details: ["satoshi": $0.btc])?.satoshi ?? 0 }.reduce(0, +) > 0
+        let accountsFunded: Int = ((subAccounts.map { Balance.convert(details: ["satoshi": $0.btc])?.satoshi ?? 0 }).filter { $0 > 0}).count
+        let accounts: Int = subAccounts.count
+        let accountsTypes: String = Array(Set(subAccounts.map { $0.type })).sorted().joined(separator: ",")
+
+        AMan.S.activeWallet(account: AccountsManager.shared.current, walletData: AMan.WalletData(walletFunded: walletFunded, accountsFunded: accountsFunded, accounts: accounts, accountsTypes: accountsTypes))
     }
 
     func loadWallet() -> Promise<Void> {
@@ -586,7 +604,8 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nv = segue.destination as? Learn2faViewController {
-           nv.delegate = self
+            nv.delegate = self
+            nv.wallet = presentingWallet
         }
     }
 }
@@ -1032,6 +1051,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
+            AMan.S.renameAccount(account: AccountsManager.shared.current)
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)

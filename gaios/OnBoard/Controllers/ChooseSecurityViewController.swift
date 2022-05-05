@@ -30,6 +30,14 @@ class ChooseSecurityViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.ChooseSecurityScreen.view
         cardAdvanced.accessibilityIdentifier = AccessibilityIdentifiers.ChooseSecurityScreen.multiSigCard
         cardSimple.accessibilityIdentifier = AccessibilityIdentifiers.ChooseSecurityScreen.singleSigCard
+
+        switch LandingViewController.flowType {
+        case .add:
+            AMan.S.recordView(.onBoardChooseSecurity, sgmt: AMan.S.chooseSecuritySgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+        case .restore:
+            // not used now
+            AMan.S.recordView(.onBoardChooseSecurity, sgmt: AMan.S.chooseSecuritySgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+        }
     }
 
     func setContent() {

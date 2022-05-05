@@ -35,6 +35,8 @@ class DialogRecoveryHelpViewController: KeyboardViewController {
 
         setContent()
         setStyle()
+
+        AMan.S.recordView(.help)
     }
 
     func setStyle() {

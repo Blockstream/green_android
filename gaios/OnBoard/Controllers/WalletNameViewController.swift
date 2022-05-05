@@ -31,6 +31,14 @@ class WalletNameViewController: UIViewController {
         fieldName.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.nameField
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.nextBtn
         btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.settingsBtn
+
+        switch LandingViewController.flowType {
+        case .add:
+            AMan.S.recordView(.onBoardWalletName, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+        case .restore:
+            AMan.S.recordView(.onBoardWalletName, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+        }
+
     }
 
     func setContent() {
@@ -98,6 +106,11 @@ class WalletNameViewController: UIViewController {
             self.stopLoader()
         }.done { _ in
             AccountsManager.shared.current = session.account
+            if restored {
+                AMan.S.restoreWallet(account: AccountsManager.shared.current)
+            } else {
+                AMan.S.createWallet(account: AccountsManager.shared.current)
+            }
             self.next()
         }.catch { error in
             switch error {

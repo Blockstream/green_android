@@ -30,6 +30,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     var currIndexPath: IndexPath?
     var recoveryType = RecoveryType.qr
     var mnemonicActionType: MnemonicActionType = .recoverWallet
+    var page = 0 // analytics, mnemonic fails counter
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +52,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
         switch recoveryType {
         case .qr:
+            AMan.S.recordView(.camera)
             startScan()
         case .phrase:
             updateNavigationItem()
@@ -231,6 +233,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                 }
             }
         }.catch { error in
+
+            self.page += 1
+            AMan.S.recoveryPhraseCheckFailed(onBoardParams: OnBoardManager.shared.params, page: self.page)
             DropAlert().error(message: "Invalid Recovery Phrase")
         }
     }

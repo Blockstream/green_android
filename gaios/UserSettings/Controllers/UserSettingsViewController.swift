@@ -27,6 +27,7 @@ class UserSettingsViewController: UIViewController {
     var isSingleSig: Bool { get { return account?.isSingleSig ?? false }}
 
     var headerH: CGFloat = 54.0
+    var wallet: WalletItem?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +36,8 @@ class UserSettingsViewController: UIViewController {
         let btn = UIBarButtonItem(image: UIImage(named: "cancel")?.maskWithColor(color: .white), style: .plain, target: self, action: #selector(self.close))
         self.navigationItem.rightBarButtonItem  = btn
         view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
+
+        AMan.S.recordView(.walletSettings, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
     }
 
     @objc func close() {
@@ -409,6 +412,7 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
                 navigationController?.pushViewController(vc, animated: true)
                 vc.delegate = self
+                vc.wallet = wallet
             }
 
         case .Pgp:

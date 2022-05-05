@@ -41,6 +41,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     var twoFactorConfig: TwoFactorConfig?
     var account = { AccountsManager.shared.current }()
     var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
+    var wallet: WalletItem?
 
     weak var delegate: TwoFactorAuthenticationViewControllerDelegate?
 
@@ -62,6 +63,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
             lblRecoveryTool.isHidden = true
             reset2faView.isHidden = true
         }
+
+        AMan.S.recordView(.walletSettings2FA, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {
@@ -249,6 +252,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func resetTwoFactor(email: String) {
+        AMan.S.recordView(.walletSettings2FAReset, sgmt: AMan.S.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
         firstly {
@@ -359,6 +364,8 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
                 let vc = storyboard.instantiateViewController(withIdentifier: "SetGauthViewController")
                 navigationController?.pushViewController(vc, animated: true)
             }
+
+            AMan.S.recordView(.walletSettings2FASetup, sgmt: AMan.S.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
         } else if tableView == tableViewCsvTime {
             let selected = csvTypes[indexPath.row]
             newCsv = selected.value()

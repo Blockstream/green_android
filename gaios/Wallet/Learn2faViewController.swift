@@ -17,6 +17,7 @@ class Learn2faViewController: UIViewController {
     @IBOutlet weak var lblPermanentTitle: UILabel!
     @IBOutlet weak var lblPermanentHint: UILabel!
     @IBOutlet weak var btnUndoReset: UIButton!
+    var wallet: WalletItem?
 
     weak var delegate: Learn2faViewControllerDelegate?
     let isDisputeActive = SessionsManager.current?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
@@ -56,6 +57,8 @@ class Learn2faViewController: UIViewController {
     }
 
     func canceltwoFactorReset() {
+        AMan.S.recordView(.walletSettings2FACancel, sgmt: AMan.S.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
         firstly {
@@ -81,6 +84,8 @@ class Learn2faViewController: UIViewController {
     }
 
     func disputeReset(email: String) {
+        AMan.S.recordView(.walletSettings2FADispute, sgmt: AMan.S.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
         firstly {
@@ -103,6 +108,8 @@ class Learn2faViewController: UIViewController {
     }
 
     func undoReset(email: String) {
+        AMan.S.recordView(.walletSettings2FAUndoDispute, sgmt: AMan.S.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
         firstly {

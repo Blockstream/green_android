@@ -32,6 +32,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     var isAccountRename = false
     var selectedType = TransactionType.BTC
     var prefill: UInt64?
+    var wallet: WalletItem?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +52,8 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.view
         amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.amountField
         btnConfirm.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.confirmBtn
+
+        AMan.S.recordView(.requestAmount, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     func setContent() {

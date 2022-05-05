@@ -54,6 +54,8 @@ class WatchOnlyViewController: KeyboardViewController {
         passwordTextField.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.passwordField
         testnetSwitch.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.testnetSwitch
         loginButton.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.loginBtn
+
+        AMan.S.recordView(.onBoardWatchOnlyCredentials)
     }
 
     @objc func rememberSwitchChange(_ sender: UISwitch) {
@@ -146,8 +148,10 @@ class WatchOnlyViewController: KeyboardViewController {
             self.stopLoader()
         }.done { _ in
             AccountsManager.shared.current = account
+            AMan.S.loginWallet(loginType: .watchOnly, account: AccountsManager.shared.current)
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
+            AMan.S.failedWalletLogin(account: AccountsManager.shared.current, error: error)
             session.destroy()
             switch error {
             case LoginError.connectionFailed:

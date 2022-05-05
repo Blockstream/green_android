@@ -21,6 +21,8 @@ class AccountCreatePublicKeyViewController: UIViewController {
         setContent()
         setStyle()
         textViewKey.delegate = self
+
+        AMan.S.recordView(.addAccountPublicKey, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {

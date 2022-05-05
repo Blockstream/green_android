@@ -36,6 +36,8 @@ class AccountCreateSetNameViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSetNameScreen.view
         fieldName.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSetNameScreen.nameField
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSetNameScreen.nextBtn
+
+        AMan.S.recordView(.addAccountConfirm, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {
@@ -115,6 +117,7 @@ class AccountCreateSetNameViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
+            AMan.S.createAccount(account: AccountsManager.shared.current, walletType: type.rawValue)
             self.dismiss()
         }.catch { e in
             switch e {

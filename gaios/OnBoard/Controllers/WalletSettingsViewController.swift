@@ -104,6 +104,8 @@ class WalletSettingsViewController: KeyboardViewController {
         btnSave.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.saveBtn
         btnCancel.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.cancelBtn
         switchTestnet.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.testnetSwitch
+
+        AMan.S.recordView(.appSettings)
     }
 
     func setContent() {

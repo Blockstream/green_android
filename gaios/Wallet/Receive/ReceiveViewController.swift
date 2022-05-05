@@ -44,6 +44,8 @@ class ReceiveViewController: UIViewController {
         btnQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.qrCodeBtn
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
         btnAddress.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.addressBtn
+
+        AMan.S.recordView(.receive, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -124,12 +126,21 @@ class ReceiveViewController: UIViewController {
         updateQRCode()
     }
 
+    func isBipAddress(_ addr: String) -> Bool {
+        return addr.starts(with: "bitcoin:") || addr.starts(with: "liquidnetwork:")
+    }
+
     @objc func copyToClipboard(_ sender: Any) {
+
         guard let wallet = self.wallet else { return }
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().then(on: bgq) {
             return wallet.getAddress()
         }.done { address in
+
+            let data = AMan.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AMan.ReceiveAddressType.uri : AMan.ReceiveAddressType.address, media: AMan.ReceiveAddressMedia.text, method: AMan.ReceiveAddressMethod.copy)
+            AMan.S.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
+
             UIPasteboard.general.string = self.uriBitcoin(address: address)
             DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 1.0)
             UINotificationFeedbackGenerator().notificationOccurred(.success)
@@ -224,6 +235,7 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveRequestAmountViewController") as? DialogReceiveRequestAmountViewController {
                 vc.modalPresentationStyle = .overFullScreen
                 vc.delegate = self
+                vc.wallet = wallet
                 vc.prefill = self.satoshi
                 present(vc, animated: false, completion: nil)
             }
@@ -292,6 +304,17 @@ extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
                 let image = (self.btnQRCode.imageView?.image)!
                 let share = UIActivityViewController(activityItems: [image, self], applicationActivities: nil)
                 self.present(share, animated: true, completion: nil)
+            }
+            // analytics
+            switch option {
+            case .address:
+                let data = AMan.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AMan.ReceiveAddressType.uri : AMan.ReceiveAddressType.address, media: AMan.ReceiveAddressMedia.text, method: AMan.ReceiveAddressMethod.share)
+                AMan.S.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
+            case .qr:
+                let data = AMan.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AMan.ReceiveAddressType.uri : AMan.ReceiveAddressType.address, media: AMan.ReceiveAddressMedia.image, method: AMan.ReceiveAddressMethod.share)
+                AMan.S.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
+            case .cancel:
+                break
             }
         }.catch { _ in }
     }

@@ -36,6 +36,8 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
 
         cardExistingPhrase.isHidden = true
         cardPublicKey.isHidden = true
+
+        AMan.S.recordView(.addAccountChooseRecovery, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {

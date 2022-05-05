@@ -16,6 +16,7 @@ class SendViewController: KeyboardViewController {
     var wallet: WalletItem?
     var recipients: [Recipient] = []
     var inputType: InputType = .transaction
+    var addressInputType: AMan.AddressInputType = .paste
 
     var transaction: Transaction?
     private var validateTask: ValidateTask?
@@ -96,6 +97,9 @@ class SendViewController: KeyboardViewController {
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
+
+        AMan.S.recordView(.send, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        AMan.S.startSendTransaction()
     }
 
     func setContent() {
@@ -296,10 +300,15 @@ class SendViewController: KeyboardViewController {
     }
 
     func onTransactionReady() {
+        if isBipAddress() {
+            addressInputType = .bip21 //analytics only
+        }
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController, let tx = self.transaction {
             vc.wallet = wallet
             vc.transaction = tx
+            vc.inputType = inputType
+            vc.addressInputType = addressInputType
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -422,6 +431,7 @@ extension SendViewController: DialogQRCodeScanViewControllerDelegate {
             recipients[index].address = value
             reloadSections([SendSection.recipient], animated: false)
             validateTransaction()
+            addressInputType = .scan
         }
     }
     func didStop() {

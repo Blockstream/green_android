@@ -65,6 +65,7 @@ class BLEManager {
     weak var delegate: BLEManagerDelegate?
     weak var scanDelegate: BLEManagerScanDelegate?
     var fmwVersion: String?
+    var boardType: String?
 
     init() {
         manager = CentralManager(queue: queue, options: nil)
@@ -175,6 +176,7 @@ class BLEManager {
             }.flatMap { version -> Observable<Bool> in
                 hasPin = version.jadeHasPin
                 self.fmwVersion = version.jadeVersion
+                self.boardType = version.boardType
                 let testnet = ["testnet", "testnet-liquid"].contains(network)
                 if version.jadeNetworks == "TEST" && !testnet {
                     throw JadeError.Abort("\(network) not supported in Jade \(version.jadeNetworks) mode")
@@ -308,6 +310,8 @@ class BLEManager {
     }
 
     func onError(_ err: Error, network: String?) {
+
+        AMan.S.failedWalletLogin(account: AccountsManager.shared.current, error: err)
         switch err {
         case BluetoothError.peripheralConnectionFailed(_, let error):
             let err = BLEManagerError.bleErr(txt: error?.localizedDescription ?? err.localizedDescription)

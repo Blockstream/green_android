@@ -33,6 +33,8 @@ class DialogQRCodeScanViewController: KeyboardViewController {
 
         qrScanView.delegate = self
         view.alpha = 0.0
+
+        AMan.S.recordView(.camera)
     }
 
     override func viewDidAppear(_ animated: Bool) {

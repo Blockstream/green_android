@@ -18,6 +18,8 @@ class SendConfirmViewController: KeyboardViewController {
     var transaction: Transaction?
     private var connected = true
     private var updateToken: NSObjectProtocol?
+    var inputType: InputType = .transaction // for analytics
+    var addressInputType: AMan.AddressInputType = .paste // for analytics
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +31,8 @@ class SendConfirmViewController: KeyboardViewController {
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.view
         sliderView.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.viewSlider
+
+        AMan.S.recordView(.sendConfirm, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     func setContent() {
@@ -92,6 +96,8 @@ class SendConfirmViewController: KeyboardViewController {
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
+
+            AMan.S.failedTransaction(account: AccountsManager.shared.current, error: error)
             self.sliderView.isUserInteractionEnabled = true
             self.sliderView.reset()
             switch error {
@@ -115,6 +121,16 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     func executeOnDone() {
+        let isSendAll = transaction?.sendAll ?? false
+        let withMemo = !(transaction?.memo.isEmpty ?? true)
+
+        let transSgmt = AMan.TransactionSegmentation(transactionType: inputType,
+                                                     addressInputType: addressInputType,
+                                                     sendAll: isSendAll)
+        AMan.S.sendTransaction(account: AccountsManager.shared.current,
+                               walletItem: wallet,
+                               transactionSgmt: transSgmt, withMemo: withMemo)
+
         self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()

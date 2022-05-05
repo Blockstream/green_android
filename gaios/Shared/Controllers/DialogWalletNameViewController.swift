@@ -57,6 +57,12 @@ class DialogWalletNameViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletRenameScreen.view
         nameTextField.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletRenameScreen.nameField
         btnSave.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletRenameScreen.saveBtn
+
+        if isAccountRename {
+            AMan.S.recordView(.renameAccount, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+        } else {
+            AMan.S.recordView(.renameWallet)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

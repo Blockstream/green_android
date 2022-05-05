@@ -47,6 +47,8 @@ class DialogWalletDeleteViewController: KeyboardViewController {
         view.alpha = 0.0
         view.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletDeleteScreen.view
         btnDelete.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletDeleteScreen.deleteBtn
+
+        AMan.S.recordView(.deleteWallet)
     }
 
     override func viewDidAppear(_ animated: Bool) {

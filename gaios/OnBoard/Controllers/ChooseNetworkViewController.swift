@@ -35,6 +35,13 @@ class ChooseNetworkViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.view
         cardTestnet.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.testnetCard
         cardLiquidTestnet.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.liquidTestnetCard
+
+        switch LandingViewController.flowType {
+        case .add:
+            AMan.S.recordView(.onBoardChooseNetwork, sgmt: AMan.S.chooseNtwSgmt(flow: AMan.OnBoardFlow.strCreate))
+        case .restore:
+            AMan.S.recordView(.onBoardChooseNetwork, sgmt: AMan.S.chooseNtwSgmt(flow: AMan.OnBoardFlow.strRestore))
+        }
     }
 
     func setContent() {

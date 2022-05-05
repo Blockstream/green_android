@@ -149,9 +149,11 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             self.stopLoader()
         }.done { _ in
             AccountsManager.shared.current = self.account
+            AMan.S.loginWallet(loginType: .watchOnly, account: AccountsManager.shared.current)
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
+            AMan.S.failedWalletLogin(account: self.account, error: error)
             session.destroy()
             switch error {
             case LoginError.connectionFailed:
@@ -177,12 +179,14 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
         if let account = self.account {
             AccountsManager.shared.current = account
             navigationItem.title = account.name
+            AMan.S.renameWallet()
         }
     }
     func didDelete() {
         if let account = self.account {
             AccountsManager.shared.remove(account)
             navigationController?.popViewController(animated: true)
+            AMan.S.deleteWallet()
         }
     }
     func didCancel() {

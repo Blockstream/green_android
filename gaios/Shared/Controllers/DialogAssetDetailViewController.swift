@@ -41,6 +41,8 @@ class DialogAssetDetailViewController: UIViewController {
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
             self?.tableViewHeight.constant = table.contentSize.height
         }
+
+        AMan.S.recordView(.assetDetails)
     }
 
     func setContent() {

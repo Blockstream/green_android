@@ -22,6 +22,14 @@ class RecoveryPhraseViewController: UIViewController {
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryPhraseScreen.view
         cardPhrase.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryPhraseScreen.phraseCard
+
+        switch LandingViewController.flowType {
+        case .add:
+            // not used now
+            AMan.S.recordView(.onBoardChooseRecovery, sgmt: AMan.S.chooseRecoverySgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+        case .restore:
+            AMan.S.recordView(.onBoardChooseRecovery, sgmt: AMan.S.chooseRecoverySgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+        }
     }
 
     func setContent() {

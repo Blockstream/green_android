@@ -35,6 +35,8 @@ class ExistingWalletsViewController: UIViewController {
         btnManualRestore.accessibilityIdentifier = AccessibilityIdentifiers.ExistingWalletsScreen.manualRestoreBtn
 
         checkWallets()
+
+        AMan.S.recordView(.onBoardScan, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
     }
 
     func setContent() {

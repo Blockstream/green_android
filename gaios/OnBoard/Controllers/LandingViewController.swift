@@ -35,6 +35,8 @@ class LandingViewController: UIViewController {
         btnNewWallet.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.newWalletBtn
         btnRestoreWallet.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.restoreWalletBtn
         btnWatchOnly.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.watchOnlyWalletBtn
+
+        AMan.S.recordView(.onBoardIntro)
     }
 
     func setContent() {
@@ -92,6 +94,8 @@ class LandingViewController: UIViewController {
     }
 
     @IBAction func btnNewWallet(_ sender: Any) {
+
+        AMan.S.startCreateWallet()
         LandingViewController.flowType = .add
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
@@ -99,6 +103,8 @@ class LandingViewController: UIViewController {
     }
 
     @IBAction func btnRestoreWallet(_ sender: Any) {
+
+        AMan.S.startRestoreWallet()
         LandingViewController.flowType = .restore
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")

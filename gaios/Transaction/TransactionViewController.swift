@@ -64,6 +64,8 @@ class TransactionViewController: UIViewController {
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
         navBarSetup()
+
+        AMan.S.recordView(.transactionDetails, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -82,10 +84,6 @@ class TransactionViewController: UIViewController {
             NotificationCenter.default.removeObserver(token)
             blockToken = nil
         }
-    }
-
-    deinit {
-        print("DEINIT")
     }
 
     func navBarSetup() {
@@ -125,6 +123,8 @@ class TransactionViewController: UIViewController {
     }
 
     @objc func shareButtonTapped(_ sender: UIButton) {
+
+        AMan.S.shareTransaction(account: AccountsManager.shared.current, isShare: true)
         // We have more options in liquid for confidential txs
         if isLiquid {
             let storyboard = UIStoryboard(name: "Shared", bundle: nil)
@@ -228,6 +228,9 @@ class TransactionViewController: UIViewController {
     }
 
     func copyToClipboard(_ value: String) {
+
+        AMan.S.shareTransaction(account: AccountsManager.shared.current, isShare: false)
+
         UIPasteboard.general.string = value
         DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)

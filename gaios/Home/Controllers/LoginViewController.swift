@@ -61,6 +61,8 @@ class LoginViewController: UIViewController {
         keyButton![2].accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.btn3
         attempts.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.attemptsLbl
         connectionSettingsButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.settingsBtn
+
+        AMan.S.recordView(.login, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {
@@ -162,6 +164,9 @@ class LoginViewController: UIViewController {
             }
             AccountsManager.shared.current = session.account
         }.done { wallet in
+
+            AMan.S.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: AccountsManager.shared.current)
+
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
             if let vc = nav?.topViewController as? ContainerViewController {
@@ -170,6 +175,8 @@ class LoginViewController: UIViewController {
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
+
+            AMan.S.failedWalletLogin(account: AccountsManager.shared.current, error: error)
             session.destroy()
             self.stopLoader()
             switch error {
@@ -316,12 +323,14 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
         if let account = self.account {
             AccountsManager.shared.current = account
             navigationItem.title = account.name
+            AMan.S.renameWallet()
         }
     }
     func didDelete() {
         if let account = self.account {
             AccountsManager.shared.remove(account)
             navigationController?.popViewController(animated: true)
+            AMan.S.deleteWallet()
         }
     }
     func didCancel() {
