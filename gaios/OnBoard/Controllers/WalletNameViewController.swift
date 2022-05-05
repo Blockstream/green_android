@@ -78,24 +78,7 @@ class WalletNameViewController: UIViewController {
     }
 
     @IBAction func btnNext(_ sender: Any) {
-        if networkSettings["tor"] as? Bool ?? false &&
-            OnBoardManager.shared.params?.singleSig ?? false &&
-            !UserDefaults.standard.bool(forKey: AppStorage.dontShowTorAlert) {
-            presentDialogTorUnavailable()
-        } else {
-            nameIsSet()
-        }
-    }
-
-    func presentDialogTorUnavailable() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogTorSingleSigViewController") as? DialogTorSingleSigViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.present(vc, animated: false, completion: nil)
-            }
-        }
+        nameIsSet()
     }
 
     func setup(restored: Bool) {
@@ -151,11 +134,5 @@ extension WalletNameViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
-    }
-}
-
-extension WalletNameViewController: DialogTorSingleSigViewControllerDelegate {
-    func didContinue() {
-        nameIsSet()
     }
 }

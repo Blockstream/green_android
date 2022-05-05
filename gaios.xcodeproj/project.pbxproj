@@ -140,8 +140,6 @@
 		3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3497937E25F8B3F90029ECB1 /* Loader.xib */; };
 		3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */; };
 		349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */; };
-		3498806426A9692A00E11216 /* DialogTorSingleSig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498806326A9692A00E11216 /* DialogTorSingleSig.swift */; };
-		3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */; };
 		349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75042791BCA60046DA59 /* ChangeCell.swift */; };
 		349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75212796D99E0046DA59 /* AssetsListViewController.swift */; };
 		349C75242796DBB90046DA59 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75232796DBB90046DA59 /* AssetCell.swift */; };
@@ -460,8 +458,6 @@
 		3497937E25F8B3F90029ECB1 /* Loader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Loader.xib; sourceTree = "<group>"; };
 		3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletViewController.swift; sourceTree = "<group>"; };
 		349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRecipientDeleteViewController.swift; sourceTree = "<group>"; };
-		3498806326A9692A00E11216 /* DialogTorSingleSig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSig.swift; sourceTree = "<group>"; };
-		3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSigViewController.swift; sourceTree = "<group>"; };
 		349C75042791BCA60046DA59 /* ChangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeCell.swift; sourceTree = "<group>"; };
 		349C75212796D99E0046DA59 /* AssetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsListViewController.swift; sourceTree = "<group>"; };
 		349C75232796DBB90046DA59 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
@@ -810,7 +806,6 @@
 				3453C73726A5A41A00451FB3 /* Drawer.swift */,
 				3453C74126A6BD7E00451FB3 /* HWWScan.swift */,
 				349DB76026A84D20004FF265 /* WalletSettings.swift */,
-				3498806326A9692A00E11216 /* DialogTorSingleSig.swift */,
 				34237FC6276A479700618502 /* ExistingWallets.swift */,
 				34237FC8276A520800618502 /* ManualRestore.swift */,
 				34FF27AF27CD0689008FD72C /* DialogMnemonicLength.swift */,
@@ -1186,7 +1181,6 @@
 				340F07EF2620A6BB0065A986 /* DialogRecoveryHelpViewController.swift */,
 				34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */,
 				349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */,
-				3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */,
 				34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */,
 				34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */,
 				34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */,
@@ -1939,7 +1933,6 @@
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				34FB694F27FD782F00A13197 /* PopoverMenuAccountViewController.swift in Sources */,
-				3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */,
 				34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,
 				34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */,
@@ -2049,7 +2042,6 @@
 				3434766E268233C000D7AD43 /* Landing.swift in Sources */,
 				342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */,
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
-				3498806426A9692A00E11216 /* DialogTorSingleSig.swift in Sources */,
 				20516D062698A2C600BA1F4C /* EditWalletUITests.swift in Sources */,
 				3451428726933C6E00E8BE1B /* Send.swift in Sources */,
 				344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */,

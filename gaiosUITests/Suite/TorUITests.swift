@@ -34,10 +34,6 @@ class EditUITests: XCTestBase {
             .tapSave()
         
         Login()
-            
-        DialogTorSingleSig()
-            .pause(1)
-            .tapContinue()
 
         Login()
             .pause(1)

@@ -213,11 +213,6 @@ struct AccessibilityIdentifiers {
         static let cancelBtn = "cancel_btn"
         static let testnetSwitch = "view_testnet_switch"
     }
-    
-    struct DialogTorSingleSigScreen {
-        static let view = "view_dialog_tor_singlesig"
-        static let continueBtn = "continue_btn"
-    }
 
     struct ExistingWalletsScreen {
         static let view = "view_existing_wallets"
