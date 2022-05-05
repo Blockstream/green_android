@@ -24,7 +24,6 @@ build_unsigned_debug:
 
 build_signed_adhoc_release:
   stage: build
-  when: manual
   tags:
     - fastosx
     - osx
@@ -34,27 +33,14 @@ build_signed_adhoc_release:
     when: on_success
     paths:
       - dev/Green-dev.ipa
-  script:
-    - ./tools/fetch_gdk_binaries.sh
-    - fastlane build_signed_adhoc_release
-
-build_signed_adhoc_release_gdk_commit:
-  stage: build
-  when: manual
-  tags:
-    - fastosx
-    - osx
-  artifacts:
-    name: "green-ios-dev-$CI_COMMIT_REF_NAME"
-    expire_in: 1 day
-    when: on_success
-    paths:
-      - dev/Green-dev.ipa
+      - dist
   variables:
-    GDK_COMMIT: master
+    GDK_COMMIT: latest
   script:
-    - ./tools/fetch_gdk_binaries.sh -c $GDK_COMMIT
+    - if [ "$GDK_COMMIT" == "true" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
+    - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_signed_adhoc_release
+    - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dist --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
 
 build_signed_prod_release:
   stage: deploy
@@ -90,3 +76,19 @@ ui_tests:
     - fastlane ui_tests
   after_script:
     - xcrun simctl shutdown "iPhone 11"
+
+cp_gcloud:
+  image: blockstream/gcloud-docker-tf:1.1.7
+  tags:
+    - ga
+  stage: deploy
+  script:
+    - echo gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
+    - TMPF=$(mktemp) || exit 1
+    - echo $GCLOUD_PUSH_KEY > $TMPF
+    - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
+    - gcloud auth activate-service-account --key-file=$TMPF
+    - gsutil cp -r $CI_PROJECT_DIR/dist gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
+    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
+  dependencies:
+    - build_signed_adhoc_release

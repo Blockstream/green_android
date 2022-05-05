@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Unreleased
 
 ### Added
+- Ad-hoc distribution app for internal testing 
 
 ### Changed
 - Improved CI for internal testing
@@ -17,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Archive accounts you no longer use
+- Improve CI process for testing release
 
 ### Changed 
 - Updates GDK to version 0.0.52
