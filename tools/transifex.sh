@@ -57,6 +57,7 @@ source venv/bin/activate
 pip install transifex-client lxml
 
 # --- Fetch transifex
+export TG_TOKEN=${TOKEN}
 tx pull -f -a -s
 
 function copy_translations {
