@@ -3,14 +3,14 @@ package com.blockstream.green.settings
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
-import androidx.preference.PreferenceManager
+import com.blockstream.green.utils.isDevelopmentFlavor
 
 class SettingsManager constructor(context: Context, private val sharedPreferences: SharedPreferences) {
 
     private var appSettingsSharedPreferences: SharedPreferences =
         context.getSharedPreferences(APPLICATION_SETTINGS_NAME, Context.MODE_PRIVATE)
 
-    private var appSettings = MutableLiveData(ApplicationSettings.fromSharedPreferences(appSettingsSharedPreferences))
+    private var appSettings = MutableLiveData(ApplicationSettings.fromSharedPreferences(context.isDevelopmentFlavor(), appSettingsSharedPreferences))
 
     fun getApplicationSettingsLiveData() = appSettings
 
@@ -20,12 +20,6 @@ class SettingsManager constructor(context: Context, private val sharedPreference
         appSettings.postValue(newAppSettings)
         ApplicationSettings.toSharedPreferences(newAppSettings, appSettingsSharedPreferences)
     }
-
-    fun showTorSinglesigWarning(): Boolean{
-        return !sharedPreferences.getBoolean(KEY_TOR_WARNING, false)
-    }
-
-    fun setTorSinglesigWarned() = sharedPreferences.edit().putBoolean(KEY_TOR_WARNING, true).apply()
 
     fun isDeviceTermsAccepted() = sharedPreferences.getInt(KEY_DEVICE_TERMS_ACCEPTED, 0) == 1
     fun setDeviceTermsAccepted() = sharedPreferences.edit().putInt(KEY_DEVICE_TERMS_ACCEPTED, 1).apply()

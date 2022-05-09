@@ -5,7 +5,6 @@ import android.os.Parcelable
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.ui.settings.ScreenLockSetting
 import kotlinx.parcelize.Parcelize
-import java.lang.Exception
 
 
 @Parcelize
@@ -80,12 +79,12 @@ data class ApplicationSettings constructor(
         private const val SPV_TESTNET_ELECTRUM_SERVER = "spvTestnetElectrumServer"
         private const val SPV_TESTNET_LIQUID_ELECTRUM_SERVER = "spvTestnetLiquidElectrumServer"
 
-        fun fromSharedPreferences(prefs: SharedPreferences): ApplicationSettings {
+        fun fromSharedPreferences(isDevelopmentFlavor: Boolean, prefs: SharedPreferences): ApplicationSettings {
             try{
                 return ApplicationSettings(
                     enhancedPrivacy = prefs.getBoolean(ENHANCED_PRIVACY, false),
                     screenLockInSeconds = prefs.getInt(SCREEN_LOCK_IN_SECONDS, -1),
-                    testnet = prefs.getBoolean(TESTNET, false),
+                    testnet = prefs.getBoolean(TESTNET, isDevelopmentFlavor),
                     proxyUrl = prefs.getString(PROXY_URL, null),
                     tor = prefs.getBoolean(TOR, false),
                     electrumNode = prefs.getBoolean(ELECTRUM_NODE, false),
