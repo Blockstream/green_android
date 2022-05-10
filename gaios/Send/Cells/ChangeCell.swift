@@ -28,7 +28,7 @@ class ChangeCell: UITableViewCell {
                     changeAddress.append(address)
                 }
             }
-            lblChangeHint.text = changeAddress.map { "- \($0)"}.joined(separator: "\n")
+            lblChangeHint.text = changeAddress.map { "\($0)"}.joined(separator: "\n")
         }
     }
 }

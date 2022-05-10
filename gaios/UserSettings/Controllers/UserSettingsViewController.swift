@@ -103,7 +103,7 @@ class UserSettingsViewController: UIViewController {
             subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_disabled" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .general,
             type: .WatchOnly)
-        if isLiquid || isSingleSig || isWatchOnly || isResetActive || isHW {} else {
+        if isLiquid || isSingleSig || isWatchOnly || isResetActive {} else {
             items += [watchOnly]
         }
         if let settings = SessionsManager.current?.settings {

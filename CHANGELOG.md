@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Remove tor availability alert dialog
+- Add watchonly for hw singlesig wallet
  
 ## [3.8.1] - 2022-04-27
 
