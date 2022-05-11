@@ -40,7 +40,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
     val args: TransactionDetailsFragmentArgs by navArgs()
 
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "TransactionDetails"
 

@@ -81,10 +81,9 @@ class GreenSession constructor(
     lateinit var network: Network
         private set
 
-    // Other solution is to check if lateinit var is initialized
-    // get() = this::network.isInitialized
-    var isInitialized: Boolean = false
-        private set
+    // Consider as initialized if network is set
+    val isNetworkInitialized: Boolean
+        get() = this::network.isInitialized
 
     var authenticationRequired = false
 
@@ -226,10 +225,15 @@ class GreenSession constructor(
         )
     }
 
+    fun setInitialNetworkIfNeeded(n: Network){
+        if(!isNetworkInitialized){
+            network = n
+        }
+    }
+
     fun connect(n: Network) {
         disconnect()
         network = n
-        isInitialized = true
 
         greenWallet.connect(
             gaSession,

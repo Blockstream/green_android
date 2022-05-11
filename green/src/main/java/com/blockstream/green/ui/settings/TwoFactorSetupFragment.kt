@@ -31,7 +31,7 @@ enum class TwoFactorSetupAction {
 class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.layout.twofactor_setup_fragment, 0),
     FilterableDataProvider {
     val args: TwoFactorSetupFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName by lazy{
         when (args.action) {
@@ -54,7 +54,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
             "WalletSettings2FA$it"
         }
     }
-    override val segmentation by lazy { countly.twoFactorSegmentation(session, viewModel.getSubAccountLiveData().value, args.method)}
+    override val segmentation by lazy { if(isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.twoFactorSegmentation(session, viewModel.getSubAccountLiveData().value, args.method) else null }
 
     override val isAdjustResize: Boolean = true
 

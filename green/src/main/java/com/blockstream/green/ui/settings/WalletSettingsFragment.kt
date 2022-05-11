@@ -49,7 +49,7 @@ import javax.inject.Inject
 class WalletSettingsFragment :
     WalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
     val args: WalletSettingsFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName by lazy { if(args.showRecoveryTransactions) "WalletSettingsRecoveryTransactions" else "WalletSettings" }
 

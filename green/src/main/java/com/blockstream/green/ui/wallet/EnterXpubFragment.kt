@@ -24,7 +24,7 @@ class EnterXpubFragment : WalletFragment<EnterXpubFragmentBinding>(
 
     val args: EnterXpubFragmentArgs by navArgs()
 
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "AddAccountPublicKey"
 

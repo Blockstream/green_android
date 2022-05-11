@@ -58,7 +58,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     val args: SendFragmentArgs by navArgs()
 
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
     private val isSweep by lazy { args.isSweep }
     private val isBump by lazy { !args.bumpTransaction.isNullOrBlank() }
     private val bumpTransaction by lazy { if(isBump) Json.parseToJsonElement(args.bumpTransaction ?: "") else null }
@@ -67,7 +67,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     val bindings = mutableListOf<WeakReference<ListItemTransactionRecipientBinding>>()
     
     override val screenName = "Send"
-    override val segmentation by lazy { countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) }
+    override val segmentation by lazy { if(isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) else null }
 
     @Inject
     lateinit var viewModelFactory: SendViewModel.AssistedFactory

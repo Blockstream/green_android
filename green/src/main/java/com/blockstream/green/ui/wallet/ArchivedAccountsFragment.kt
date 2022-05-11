@@ -27,7 +27,7 @@ import javax.inject.Inject
 class ArchivedAccountsFragment :
     WalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: ArchivedAccountsFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "ArchivedAccounts"
 

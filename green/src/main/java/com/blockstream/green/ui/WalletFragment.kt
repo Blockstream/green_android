@@ -13,6 +13,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.ui.wallet.LoginFragment
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
 import mu.KLogging
@@ -22,16 +23,29 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     @MenuRes menuRes: Int
 ) : AppFragment<T>(layout, menuRes) {
 
-    abstract val wallet: Wallet
+    abstract val walletOrNull: Wallet?
+
     lateinit var session: GreenSession
 
     private var networkSnackbar: Snackbar? = null
 
-    override val segmentation by lazy { if(isSessionAndWalletRequired() && session.isConnected) countly.sessionSegmentation(session) else null }
+    override val segmentation by lazy { if(isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.sessionSegmentation(session) else null }
+
+    val isSessionInitialized
+        get() = ::session.isInitialized
+
+    internal val isSessionNetworkInitialized
+        get() = isSessionInitialized && session.isNetworkInitialized
+
+    val isSessionConnected
+        get() = isSessionNetworkInitialized && session.isConnected
+
+    val wallet: Wallet
+        get() = walletOrNull!!
 
     override fun updateToolbar() {
         super.updateToolbar()
-        if (isSessionAndWalletRequired()) {
+        if (isSessionAndWalletRequired() && isSessionInitialized) {
             // Prevent showing network icon when the title is empty
             if(toolbar.title.isNotBlank() || !title.isNullOrBlank()) {
                 toolbar.setLogo(wallet.getIcon())
@@ -62,20 +76,31 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     abstract fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?)
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val isSessionAndWalletRequired = isSessionAndWalletRequired()
-        val sessionOrNull = if(isSessionAndWalletRequired) sessionManager.getWalletSessionOrNull(wallet) else null
-        
+        val sessionOrNull = walletOrNull?.let { wallet ->
+            sessionManager.getWalletSessionOrNull(wallet) ?: run {
+                // Try to recreate it from Wallet, only for sww and only on LoginFragment (to avoid view models to be initialized that require a connected session).
+                if (this is LoginFragment && !wallet.isHardware) sessionManager.getWalletSession(wallet) else null
+            }
+        }
+
         // Recovery intro screen is reused in onBoarding
         // where we don't have a session yet
         // Skip initializing the WalletViewModel as it doesn't exists
-        if(isSessionAndWalletRequired && sessionOrNull != null){
+        if (isSessionAndWalletRequired()) {
+
+            if(sessionOrNull == null){
+                return
+            }
+
             session = sessionOrNull
 
-            // Assuming we are in v4 codebase flow
-            if (isLoggedInRequired() && !session.isConnected) {
+            // Initialize network if required so that segmentation data can be used
+            session.setInitialNetworkIfNeeded(session.networkFromWallet(wallet))
+
+            if (isLoggedInRequired() && !isSessionConnected) {
                 // If session is not initialized, avoid getting the ViewModel as can use GreenSession
                 // without being properly initialized and can lead to a crash
-                if (session.isInitialized) {
+                if (isSessionInitialized) {
                     getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
                 } else {
                     navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
@@ -91,7 +116,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                 }
             }
 
-            getWalletViewModel().let{
+            getWalletViewModel().let {
 
                 setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
 
@@ -174,7 +199,10 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
         // Session must be initialized first if required as AppFragment can request appViewModel
         super.onViewCreated(view, savedInstanceState)
 
-        onViewCreatedGuarded(view, savedInstanceState)
+        // Prevent
+        if (!isSessionAndWalletRequired() || !isLoggedInRequired() || isSessionConnected) {
+            onViewCreatedGuarded(view, savedInstanceState)
+        }
     }
 
     open fun isLoggedInRequired(): Boolean = true
@@ -184,22 +212,24 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
     override fun getAppViewModel() : AppViewModel? {
         // Prevent initializing WalletViewModel if session is not initialized
-        if(isSessionAndWalletRequired() && isLoggedInRequired() && !session.isInitialized) {
+        if (isSessionAndWalletRequired() && (isLoggedInRequired() && !isSessionInitialized)) {
             return null
         }
+
         return getWalletViewModel()
     }
 
     override fun onResume() {
         super.onResume()
-
-        // Recovery screens are reused in onboarding
+        // Recovery screens are reused in onBoarding
         // where we don't have a session yet.
-        if(isSessionAndWalletRequired()) {
-            if (isLoggedInRequired() && !session.isConnected) {
+        if (isSessionAndWalletRequired()) {
+            if (!isSessionInitialized && walletOrNull?.isHardware == true) {
+                navigate(NavGraphDirections.actionGlobalIntroFragment())
+            } else if (isLoggedInRequired() && !isSessionConnected) {
                 // If session is not initialized, avoid getting the ViewModel as can use GreenSession
                 // without being properly initialized and can lead to a crash
-                if (session.isInitialized) {
+                if (isSessionNetworkInitialized) {
                     getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
                 } else {
                     navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))

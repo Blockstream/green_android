@@ -39,10 +39,10 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
     menuRes = R.menu.menu_help
 ) {
     val args: ReceiveFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "Receive"
-    override val segmentation by lazy { countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) }
+    override val segmentation by lazy { if(isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) else null }
 
     @Inject
     lateinit var viewModelFactory: ReceiveViewModel.AssistedFactory
@@ -63,6 +63,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+        println("onViewCreatedGuarded")
         binding.vm = viewModel
 
         binding.address.setOnClickListener {

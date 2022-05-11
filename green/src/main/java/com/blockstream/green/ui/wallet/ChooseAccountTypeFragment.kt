@@ -30,7 +30,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
     R.layout.choose_account_type_fragment, 0
 ) {
     val args: ChooseAccountTypeFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName by lazy { if (args.accountType == AccountType.UNKNOWN) "AddAccountChooseType" else "AddAccountChooseRecovery" }
 

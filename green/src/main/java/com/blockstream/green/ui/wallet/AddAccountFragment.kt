@@ -22,7 +22,7 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
 ) {
     val args: AddAccountFragmentArgs by navArgs()
 
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "AddAccountConfirm"
 

@@ -30,7 +30,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
     private val args: RecoveryIntroFragmentArgs by navArgs()
 
     // Warning: Be careful when you call wallet as it maybe null
-    override val wallet by lazy { args.wallet!! }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "RecoveryIntro"
 
@@ -47,6 +47,8 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
     override fun isSessionAndWalletRequired(): Boolean {
         return args.wallet != null
     }
+
+    override fun isLoggedInRequired(): Boolean = isSessionAndWalletRequired()
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.buttonNext.setOnClickListener {

@@ -21,7 +21,7 @@ import javax.inject.Inject
 class ChangePinFragment : WalletFragment<ChangePinFragmentBinding>(R.layout.change_pin_fragment, menuRes = 0) {
 
     val args : WalletSettingsFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "WalletSettingsChangePIN"
 

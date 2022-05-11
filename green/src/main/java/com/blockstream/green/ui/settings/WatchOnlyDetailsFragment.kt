@@ -31,7 +31,7 @@ import javax.inject.Inject
 class WatchOnlyDetailsFragment :
     WalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: WatchOnlyDetailsFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "WatchOnlyDetails"
 

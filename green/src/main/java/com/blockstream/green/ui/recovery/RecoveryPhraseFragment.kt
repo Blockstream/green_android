@@ -28,7 +28,7 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
     menuRes = 0
 ) {
     private val args: RecoveryPhraseFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet!! }
+    override val walletOrNull by lazy { args.wallet!! }
 
     override val screenName = "RecoveryPhrase"
     override val segmentation: HashMap<String, Any>? = null

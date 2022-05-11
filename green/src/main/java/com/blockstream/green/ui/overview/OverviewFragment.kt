@@ -60,7 +60,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     menuRes = R.menu.overview
 ) {
     val args: OverviewFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     @Inject
     lateinit var applicationScope: ApplicationScope
@@ -102,8 +102,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
     }
 
+    // Prevent ViewModel initialization if session is not initialized
     override val title: String
-        get() = viewModel.wallet.name
+        get() = if(isSessionNetworkInitialized) viewModel.wallet.name else ""
 
     private fun createBottomBarAnimation(isHide : Boolean): ObjectAnimator {
         return ObjectAnimator.ofFloat(
@@ -637,7 +638,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         super.updateToolbar()
 
         // Guard from Session not being initialized
-        if (!isSessionAndWalletRequired()) {
+        if (!isSessionConnected) {
             return
         }
 

@@ -35,10 +35,10 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
 
     val args: SendConfirmFragmentArgs by navArgs()
 
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "SendConfirm"
-    override val segmentation by lazy { countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) }
+    override val segmentation by lazy { if(isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) else null }
 
     @Inject
     lateinit var viewModelFactory: SendConfirmViewModel.AssistedFactory

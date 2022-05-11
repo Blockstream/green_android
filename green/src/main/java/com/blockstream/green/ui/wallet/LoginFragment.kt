@@ -37,7 +37,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     menuRes = R.menu.login
 ) {
     val args: LoginFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet }
+    override val walletOrNull by lazy { args.wallet }
     val device by lazy { deviceManager.getDevice(args.deviceId) }
 
     private var menuHelp: MenuItem? = null
