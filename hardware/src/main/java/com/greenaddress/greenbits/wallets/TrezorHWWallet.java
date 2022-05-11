@@ -45,12 +45,7 @@ public class TrezorHWWallet extends HWWallet {
         mTrezor = t;
         mDevice = device;
         mFirmwareVersion = firmwareVersion;
-        if(t.getProductId() == 1 || t.getProductId() == 60032){
-            mModel = "Trezor One";
-        }else{
-            mModel = "Trezor T";
-        }
-
+        mModel = "Trezor " + mTrezor.getModel();
     }
 
     @Override

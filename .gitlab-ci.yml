@@ -12,6 +12,8 @@ production:
       - green/build/outputs/apk/productionGoogle/release/*.apk
   tags:
     - ga
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
@@ -29,6 +31,8 @@ production_fdroid:
       - green/build/outputs/apk/production/release/*.apk
   tags:
     - ga
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
@@ -47,6 +51,8 @@ development:
       - green/build/outputs/apk/development/release/*.apk
   tags:
     - ga
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
@@ -64,6 +70,8 @@ production_debug:
       - green/build/outputs/apk/productionGoogle/debug/*.apk
   tags:
     - ga
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
@@ -83,6 +91,7 @@ gdk_commit:
   when: manual
   variables:
     GDK_COMMIT: master
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
@@ -105,6 +114,8 @@ build_google_play:
       - green/build/outputs/mapping/*/mapping.txt
   tags:
     - ga
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
     - ./gradlew lintProductionGoogleRelease
@@ -115,6 +126,8 @@ build_osx:
   when: manual
   tags:
     - osx
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
     - ./gradlew assembleProductionGoogleRelease
@@ -128,6 +141,8 @@ unit_tests:
   needs: []
   tags:
     - ga
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
     - ./gradlew lintProductionGoogleRelease

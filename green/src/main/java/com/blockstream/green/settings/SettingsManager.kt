@@ -3,6 +3,7 @@ package com.blockstream.green.settings
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.green.utils.SecureRandom
 import com.blockstream.green.utils.isDevelopmentFlavor
 import java.util.*
 
@@ -28,12 +29,32 @@ class SettingsManager constructor(context: Context, private val sharedPreference
     fun isAskedAboutAnalyticsConsent() = sharedPreferences.getInt(KEY_ASKED_ANALYTICS_CONSENT, 0) == 1
     fun setAskedAboutAnalyticsConsent() = sharedPreferences.edit().putInt(KEY_ASKED_ANALYTICS_CONSENT, 1).apply()
 
-    fun getDeviceId(): String {
-        return sharedPreferences.getString(KEY_DEVICE_ID, null) ?: run {
+    fun getCountlyDeviceId(): String {
+        return sharedPreferences.getString(KEY_COUNTLY_DEVICE_ID, null) ?: run {
             UUID.randomUUID().toString().also {
-                sharedPreferences.edit().putString(KEY_DEVICE_ID, it).apply()
+                sharedPreferences.edit().putString(KEY_COUNTLY_DEVICE_ID, it).apply()
             }
         }
+    }
+
+    fun resetCountlyDeviceId(){
+        sharedPreferences.edit().remove(KEY_COUNTLY_DEVICE_ID).apply()
+    }
+
+    fun getCountlyOffset(end: Long): Long {
+        return sharedPreferences.getLong(KEY_COUNTLY_OFFSET, -1).takeIf { it >= 0 } ?: run {
+            (0 .. end).random(SecureRandom).also {
+                sharedPreferences.edit().putLong(KEY_COUNTLY_OFFSET, it).apply()
+            }
+        }
+    }
+
+    fun resetCountlyOffset(){
+        sharedPreferences.edit().remove(KEY_COUNTLY_OFFSET).apply()
+    }
+
+    fun zeroCountlyOffset(){
+        sharedPreferences.edit().putLong(KEY_COUNTLY_OFFSET, 0).apply()
     }
 
     companion object {
@@ -41,6 +62,7 @@ class SettingsManager constructor(context: Context, private val sharedPreference
 
         const val KEY_DEVICE_TERMS_ACCEPTED = "device_terms_accepted"
         const val KEY_ASKED_ANALYTICS_CONSENT = "asked_analytics_consent"
-        const val KEY_DEVICE_ID = "device_id"
+        const val KEY_COUNTLY_DEVICE_ID = "countly_device_id"
+        const val KEY_COUNTLY_OFFSET = "countly_offset"
     }
 }

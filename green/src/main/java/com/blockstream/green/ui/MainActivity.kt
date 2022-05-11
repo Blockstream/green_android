@@ -188,11 +188,6 @@ class MainActivity : AppActivity() {
                 return super.onPreBind(binding)
             }
         })
-
-        //
-        if(settingsManager.getApplicationSettings().analytics == null) {
-            ConsentBottomSheetDialogFragment.show(navHostFragment.childFragmentManager)
-        }
     }
 
     override fun onStart() {

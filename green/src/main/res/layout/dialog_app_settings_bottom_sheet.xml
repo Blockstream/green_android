@@ -176,7 +176,7 @@
                 isVisible="@{vm.analyticsFeatureEnabled}"
                 app:icon="@drawable/ic_analytics"
                 app:titleText="@string/id_help_green_improve"
-                app:captionText="@string/id_enable_anonymous_data_collection"/>
+                app:captionText="@string/id_enable_limited_usage_data_collection"/>
 
             <Button
                 android:id="@+id/buttonAnalyticsMoreInfo"

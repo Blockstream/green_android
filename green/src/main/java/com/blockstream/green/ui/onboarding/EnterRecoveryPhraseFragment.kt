@@ -142,12 +142,14 @@ class EnterRecoveryPhraseFragment :
             HelpBottomSheetDialogFragment.show(childFragmentManager)
         }
 
-        binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, _ ->
-            viewModel.recoverySize = (when(checkedId){
-                R.id.button12 -> 12
-                R.id.button24 -> 24
-                else -> 27
-            })
+        binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if(isChecked) {
+                viewModel.recoverySize = (when (checkedId) {
+                    R.id.button12 -> 12
+                    R.id.button24 -> 24
+                    else -> 27
+                })
+            }
         }
         
         binding.toggleRecoverySize.check(when(viewModel.recoverySize){

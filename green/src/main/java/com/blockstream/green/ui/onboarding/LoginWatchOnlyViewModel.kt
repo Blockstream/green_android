@@ -3,6 +3,7 @@ package com.blockstream.green.ui.onboarding
 import androidx.lifecycle.*
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.data.OnboardingOptions
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -22,6 +23,7 @@ class LoginWatchOnlyViewModel @AssistedInject constructor(
     private val walletRepository: WalletRepository,
     private val sessionManager: SessionManager,
     private val appKeystore: AppKeystore,
+    private val countly: Countly,
     @Assisted val onboardingOptions: OnboardingOptions
 ) : AppViewModel() {
 
@@ -80,7 +82,7 @@ class LoginWatchOnlyViewModel @AssistedInject constructor(
                 }
 
                 sessionManager.upgradeOnBoardingSessionToWallet(wallet)
-
+                countly.restoreWatchOnlyWallet(session)
                 wallet
             }.doOnSubscribe {
                 onProgress.postValue(true)

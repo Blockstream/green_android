@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Blockstream Countly Onion Endpoint -->
+        <domain includeSubdomains="false">greciphd2z3eo6bpnvd6mctxgfs4sslx4hyvgoiew4suoxgoquzl72yd.onion</domain>
+    </domain-config>
+</network-security-config>

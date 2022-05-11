@@ -57,9 +57,9 @@ public class BTChipHWWallet extends HWWallet {
         if(dongle.getTransport().isUsb()){
             if(dongle.getTransport() instanceof BTChipTransportAndroidHID){
                 if(BTChipTransportAndroid.isNanoX(((BTChipTransportAndroidHID) dongle.getTransport()).getUsbDevice())){
-                    mModel = "Ledger Nano S";
-                }else{
                     mModel = "Ledger Nano X";
+                }else{
+                    mModel = "Ledger Nano S";
                 }
             }
         } else{

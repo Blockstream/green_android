@@ -105,9 +105,4 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-<!--    <style name="SlideDialogAnimation">-->
-<!--        <item name="android:windowEnterAnimation">@anim/enter_slide_down</item>-->
-<!--        <item name="android:windowExitAnimation">@anim/exit_slide_up</item>-->
-<!--    </style>-->
-
 </resources>

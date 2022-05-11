@@ -29,6 +29,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.MainScope
+import javax.inject.Provider
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -86,11 +87,11 @@ class GreenModules {
         applicationScope: ApplicationScope,
         settingsManager: SettingsManager,
         assetManager: AssetManager,
+        countlyProvider: Provider<Countly>,
         greenWallet: GreenWallet,
-        countly: Countly,
         qaTester: QATester
     ): SessionManager {
-        return SessionManager(applicationScope, settingsManager, assetManager, greenWallet, countly, qaTester)
+        return SessionManager(applicationScope, settingsManager, assetManager, countlyProvider, greenWallet, qaTester)
     }
 
     @Singleton
@@ -101,8 +102,8 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideCountly(@ApplicationContext context: Context, settingsManager: SettingsManager, walletRepository: WalletRepository): Countly {
-        return Countly(context, settingsManager, walletRepository)
+    fun provideCountly(@ApplicationContext context: Context, applicationScope: ApplicationScope, settingsManager: SettingsManager, sessionManager: SessionManager, walletRepository: WalletRepository): Countly {
+        return Countly(context, applicationScope, settingsManager, sessionManager, walletRepository)
     }
 
     @Singleton

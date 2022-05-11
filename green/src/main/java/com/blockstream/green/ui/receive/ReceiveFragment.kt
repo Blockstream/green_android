@@ -16,6 +16,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.Urls
+import com.blockstream.green.data.AddressType
+import com.blockstream.green.data.MediaType
 import com.blockstream.green.databinding.ReceiveFragmentBinding
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
@@ -66,11 +68,12 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         binding.address.setOnClickListener {
             copyToClipboard("Address", binding.address.text.toString(), requireContext(), animateView = binding.address)
             snackbar(R.string.id_address_copied_to_clipboard)
-            if(viewModel.isAddressUri.value == true){
-                countly.receiveAddress(isUri = true, subAccount = viewModel.getSubAccountLiveData().value, session = session)
-            }else{
-                countly.receiveAddress(subAccount = viewModel.getSubAccountLiveData().value, session = session)
-            }
+            countly.receiveAddress(
+                addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
+                mediaType = MediaType.TEXT,
+                subAccount = viewModel.getSubAccountLiveData().value,
+                session = session
+            )
         }
 
         binding.buttonShare.setOnClickListener {
@@ -84,12 +87,19 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
                 )
 
                 override fun menuItemClicked(item: GenericItem, position: Int) {
+
+                    countly.receiveAddress(
+                        addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
+                        mediaType = if (position == 0) MediaType.TEXT else MediaType.IMAGE,
+                        isShare = true,
+                        subAccount = viewModel.getSubAccountLiveData().value,
+                        session = session
+                    )
+
                     if(position == 0){
                         share(binding.address.text.toString())
-                        countly.receiveAddress(isShare = true, subAccount = viewModel.getSubAccountLiveData().value, session = session)
                     }else{
                         createQRImageAndShare()
-                        countly.receiveAddress(isShare = true, isQR = true, subAccount = viewModel.getSubAccountLiveData().value, session = session)
                     }
                 }
             }, childFragmentManager)
@@ -140,11 +150,13 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
             copyToClipboard("Address", binding.address.text.toString(), requireContext())
             snackbar(R.string.id_address_copied_to_clipboard)
             it.pulse()
-            if(viewModel.isAddressUri.value == true){
-                countly.receiveAddress(isUri = true, subAccount = viewModel.getSubAccountLiveData().value, session = session)
-            }else {
-                countly.receiveAddress(subAccount = viewModel.getSubAccountLiveData().value, session = session)
-            }
+
+            countly.receiveAddress(
+                addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
+                mediaType = MediaType.TEXT,
+                subAccount = viewModel.getSubAccountLiveData().value,
+                session = session
+            )
         }
 
         binding.assetWhitelistWarning.setOnClickListener {

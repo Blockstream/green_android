@@ -9,6 +9,14 @@
             name="detailsAreVisible"
             type="Boolean" />
 
+        <variable
+            name="hideButtons"
+            type="Boolean" />
+
+        <variable
+            name="isDevelopment"
+            type="Boolean" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,13 +29,14 @@
             android:id="@+id/buttonMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
             android:background="@android:color/transparent"
-            android:padding="16dp"
+            android:padding="8dp"
             android:src="@drawable/ic_baseline_more_vert_24"
-            android:visibility="gone"
+            isVisible="@{isDevelopment}"
+            app:layout_constraintBottom_toBottomOf="@+id/title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/title"
             app:tint="@color/color_on_surface_emphasis_very_low" />
 
         <TextView
@@ -38,7 +47,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_help_green_improve"
-            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,9 +58,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@string/id_if_you_agree_green_will_collect_anonymous_data"
+            android:text="@string/id_if_you_agree_green_will_collect"
             android:textAppearance="?attr/textAppearanceBody1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -139,7 +148,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawablePadding="8dp"
-                        android:text="@string/id_os_app_version_loading_times_crashes"
+                        android:text="@string/id_os__app_version_loading_times"
                         android:textAppearance="?attr/textAppearanceCaption"
                         android:textColor="@color/material_on_background_emphasis_high_type"
                         app:drawableStartCompat="@drawable/ic_baseline_circle_4"
@@ -149,7 +158,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="@string/id_whats_not_collected"
+                        android:text="@string/id_whatss_not_collected"
                         android:textAppearance="?attr/textAppearanceBody1"
                         android:textColor="@color/material_on_background_emphasis_high_type" />
 
@@ -157,7 +166,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawablePadding="8dp"
-                        android:text="@string/id_recovery_phrases_key_material_addresses"
+                        android:text="@string/id_recovery_phrases_key_material"
                         android:textAppearance="?attr/textAppearanceCaption"
                         android:textColor="@color/material_on_background_emphasis_high_type"
                         app:drawableStartCompat="@drawable/ic_baseline_circle_4"
@@ -167,7 +176,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawablePadding="8dp"
-                        android:text="@string/id_user_contact_info_ip_address_location"
+                        android:text="@string/id_user_contact_info_ip_address"
                         android:textAppearance="?attr/textAppearanceCaption"
                         android:textColor="@color/material_on_background_emphasis_high_type"
                         app:drawableStartCompat="@drawable/ic_baseline_circle_4"
@@ -194,6 +203,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_dont_collect_data"
+            isVisible="@{!hideButtons}"
             app:layout_constraintBottom_toTopOf="@+id/buttonEnable"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -206,7 +216,8 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:text="@string/id_allow_collection"
+            android:text="@string/id_allow_data_collection"
+            isVisible="@{!hideButtons}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

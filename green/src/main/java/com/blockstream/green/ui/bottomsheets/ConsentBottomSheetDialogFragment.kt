@@ -7,12 +7,10 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
 import com.blockstream.green.Urls
+import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.ConsentBottomSheetBinding
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.copyToClipboard
-import com.blockstream.green.utils.openBrowser
-import com.blockstream.green.utils.showPopupMenu
-import com.blockstream.green.utils.toast
+import com.blockstream.green.utils.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,10 +30,15 @@ class ConsentBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Consen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         binding.detailsAreVisible = false
+        binding.hideButtons = arguments?.getBoolean(HIDE_BUTTONS, false)
+        binding.isDevelopment = isDevelopmentFlavor()
 
         // Make it swipe-dismissible
         isCancelable = settingsManager.isAskedAboutAnalyticsConsent()
+
+
 
         binding.switcher.setOnClickListener {
             (!(binding.detailsAreVisible as Boolean)).let { detailsAreVisible ->
@@ -71,6 +74,11 @@ class ConsentBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Consen
                             toast("DeviceID copied to Clipboard $deviceId")
                         }
                     }
+                    R.id.zero_offset -> {
+                        settingsManager.zeroCountlyOffset()
+                        countly.updateOffset()
+                        toast("Countly offset reset to zero")
+                    }
                     R.id.reset_device_id -> {
                         countly.resetDeviceId()
                         toast("DeviceID reset. New DeviceId ${countly.deviceId}")
@@ -94,8 +102,18 @@ class ConsentBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Consen
     }
 
     companion object : KLogging() {
-        fun show(fragmentManager: FragmentManager){
-            show(ConsentBottomSheetDialogFragment() , fragmentManager)
+        private const val HIDE_BUTTONS = "HIDE_BUTTONS"
+
+        fun show(fragmentManager: FragmentManager, hideButtons: Boolean = false) {
+            show(ConsentBottomSheetDialogFragment().also {
+                it.arguments = Bundle().also { bundle ->
+                    bundle.putBoolean(HIDE_BUTTONS, hideButtons)
+                }
+            }, fragmentManager)
+        }
+
+        fun shouldShowConsentDialog(countly: Countly, settingsManager: SettingsManager): Boolean {
+            return countly.analyticsFeatureEnabled && (!settingsManager.isAskedAboutAnalyticsConsent() && !settingsManager.getApplicationSettings().analytics)
         }
     }
 }

@@ -42,7 +42,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                 "Reset"
             }
             TwoFactorSetupAction.CANCEL -> {
-                "Cancel"
+                "CancelDispute"
             }
             TwoFactorSetupAction.DISPUTE -> {
                 "Dispute"

@@ -22,6 +22,8 @@ class KotlinGDK {
     fun connect(session: GASession, params: ConnectionParams) = GDK.connect(session, params)
     fun reconnectHint(session: GASession, hint: ReconnectHintParams) = GDK.reconnect_hint(session, hint)
 
+    fun getProxySettings(session: GASession) = GDK.get_proxy_settings(session)
+
     fun httpRequest(session: GASession, data: JsonElement) = GDK.http_request(session, data)
 
     fun registerUser(session: GASession, deviceParams: DeviceParams, mnemonic: String): GAAuthHandler =

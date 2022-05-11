@@ -16,21 +16,56 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import mu.KLogging
 import java.util.*
+import javax.inject.Provider
 import kotlin.collections.set
 import kotlin.concurrent.schedule
+import kotlin.properties.Delegates
 
 class SessionManager constructor(
     private val applicationScope: ApplicationScope,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
+    private var countlyProvider: Provider<Countly>,
     private val greenWallet: GreenWallet,
-    private val countly: Countly,
     qaTester: QATester,
 ) : DefaultLifecycleObserver {
+
+    private val countly by lazy { countlyProvider.get() }
+
+    private val torNetworkSession : GreenSession by lazy {
+        GreenSession(
+            applicationScope = applicationScope,
+            sessionManager = this,
+            settingsManager = settingsManager,
+            assetManager = assetManager,
+            greenWallet = greenWallet,
+            countly = countly
+        )
+    }
+
+    private var torEnabled : Boolean by Delegates.observable(settingsManager.getApplicationSettings().tor) { _, oldValue, newValue ->
+        if(oldValue != newValue){
+            if (newValue) {
+                startTorNetworkSessionIfNeeded()
+            } else {
+                _torProxy.value = null
+                torNetworkSession.disconnectAsync()
+            }
+        }
+    }
+
+    private val _torProxy : MutableStateFlow<String?> = MutableStateFlow(null)
+    val torProxy
+        get() = _torProxy.asStateFlow()
+
     private val greenSessions = mutableSetOf<GreenSession>()
     private val walletSessions = mutableMapOf<WalletId, GreenSession>()
     private var onBoardingSession: GreenSession? = null
@@ -48,6 +83,10 @@ class SessionManager constructor(
     init {
         // Listen to foreground / background events
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
+        settingsManager.getApplicationSettingsLiveData().observeForever {
+            torEnabled = it.tor
+        }
 
         greenWallet.setNotificationHandler { gaSession, jsonObject ->
             greenSessions.find { it.gaSession == gaSession }?.apply {
@@ -175,10 +214,24 @@ class SessionManager constructor(
         return session
     }
 
+    private fun startTorNetworkSessionIfNeeded() {
+        if (settingsManager.getApplicationSettings().tor) {
+            if (!torNetworkSession.isConnected) {
+                // Re-initiate connection
+                applicationScope.launch(context = Dispatchers.IO) {
+                    torNetworkSession.connect(greenWallet.networks.bitcoinElectrum)
+                    _torProxy.emit(torNetworkSession.getProxySettings().proxy)
+                }
+            }
+        }
+    }
+
     override fun onResume(owner: LifecycleOwner) {
         isOnForeground = true
         timeoutTimers.forEach { it.cancel() }
         timeoutTimers.clear()
+
+        startTorNetworkSessionIfNeeded()
     }
 
     override fun onPause(owner: LifecycleOwner) {

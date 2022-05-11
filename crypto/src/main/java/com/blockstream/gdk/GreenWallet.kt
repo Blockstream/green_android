@@ -111,6 +111,8 @@ class GreenWallet constructor(
 
     fun reconnectHint(session: GASession, hint: ReconnectHintParams) = gdk.reconnectHint(session, hint)
 
+    fun getProxySettings(session: GASession): ProxySettings = JsonDeserializer.decodeFromJsonElement(gdk.getProxySettings(session) as JsonElement)
+
     fun httpRequest(session: GASession, data: JsonElement) = gdk.httpRequest(session, data) as JsonElement
 
     fun registerUser(

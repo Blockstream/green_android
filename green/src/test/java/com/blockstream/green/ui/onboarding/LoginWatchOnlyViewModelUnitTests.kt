@@ -56,6 +56,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
             walletRepository = mock(),
             sessionManager = sessionManager,
             appKeystore = mock(),
+            countly = mock(),
             onboardingOptions = OnboardingOptions(isRestoreFlow = true, isWatchOnly = true, isSinglesig = false, network = network)
         )
         viewModel.isLoginEnabled.observeForever(isLoginEnabledObserver)

@@ -223,7 +223,6 @@ class LoginViewModel @AssistedInject constructor(
                     // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
                     onProgress.postValue(false)
                     countly.failedWalletLogin(session, it)
-                    countly.recordException(it)
                 },
                 onSuccess = {
                     countly.loginWallet(
@@ -255,7 +254,6 @@ class LoginViewModel @AssistedInject constructor(
                 // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
                 onProgress.postValue(false)
                 countly.failedWalletLogin(session, it)
-                countly.recordException(it)
             },
             onSuccess = {
                 countly.loginWallet(wallet = wallet, session = session)

@@ -63,6 +63,7 @@ class AddWalletFragment :
 
         binding.buttonWatchOnly.setOnClickListener {
             askForAnalyticsConsentAndNavigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseWatchOnlyFragment())
+            countly.startRestoreWatchOnlyWallet()
         }
 
         binding.termsLink.setOnClickListener {
@@ -71,7 +72,7 @@ class AddWalletFragment :
     }
 
     private fun askForAnalyticsConsentAndNavigate(directions: NavDirections){
-        if(countly.analyticsFeatureEnabled && !settingsManager.isAskedAboutAnalyticsConsent()){
+        if(ConsentBottomSheetDialogFragment.shouldShowConsentDialog(countly, settingsManager)){
             pendingNavigation = directions
             ConsentBottomSheetDialogFragment.show(childFragmentManager)
         }else{

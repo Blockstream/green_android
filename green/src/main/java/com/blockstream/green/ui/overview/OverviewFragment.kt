@@ -227,7 +227,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         })
 
-        if(countly.analyticsFeatureEnabled && !settingsManager.isAskedAboutAnalyticsConsent()){
+        if(ConsentBottomSheetDialogFragment.shouldShowConsentDialog(countly, settingsManager)){
             applicationScope.launch {
                 delay(1500)
                 ConsentBottomSheetDialogFragment.show(childFragmentManager)

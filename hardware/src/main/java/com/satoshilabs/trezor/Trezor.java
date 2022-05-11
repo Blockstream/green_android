@@ -265,4 +265,9 @@ public class Trezor {
         final Features r = (Features) io(Initialize.newBuilder());
         return ImmutableList.of(r.getMajorVersion(), r.getMinorVersion(),r.getPatchVersion());
     }
+
+    public String getModel() {
+        final Features r = (Features) io(Initialize.newBuilder());
+        return r.getModel();
+    }
 }

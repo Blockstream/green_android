@@ -60,7 +60,7 @@ class AppSettingsDialogFragment : AbstractBottomSheetDialogFragment<DialogAppSet
         binding.testnetLiquidSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL
 
         binding.buttonAnalyticsMoreInfo.setOnClickListener {
-            ConsentBottomSheetDialogFragment.show(childFragmentManager)
+            ConsentBottomSheetDialogFragment.show(childFragmentManager, hideButtons = true)
         }
 
         binding.personalBitcoinElectrumServerInputLayout.endIconCopyMode()

@@ -63,8 +63,10 @@ class ChooseSecurityFragment :
             }
         }
 
-        binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, _ ->
-            viewModel.recoverySize.value = checkedId
+        binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if(isChecked){
+                viewModel.recoverySize.value = checkedId
+            }
         }
 
         binding.toggleRecoverySize.check(viewModel.recoverySize.value ?: R.id.button12)

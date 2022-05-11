@@ -21,8 +21,11 @@ import com.blockstream.green.ui.AppFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
+import java.security.SecureRandom
+import kotlin.random.Random
 
-// WIP log open urls
+val SecureRandom by lazy { Random(SecureRandom().nextInt()) }
+
 fun AppFragment<*>.openBrowser(url: String) {
     openBrowser(settingsManager.getApplicationSettings(), url)
 }

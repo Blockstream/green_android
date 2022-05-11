@@ -65,7 +65,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     // Store bindings as weak reference to allow them to be GC'ed
     val bindings = mutableListOf<WeakReference<ListItemTransactionRecipientBinding>>()
-
+    
     override val screenName = "Send"
     override val segmentation by lazy { countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) }
 

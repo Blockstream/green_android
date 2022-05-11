@@ -77,7 +77,6 @@ class SendConfirmViewModel @AssistedInject constructor(
                 // Set progress to false only onError as expected behavior for success is to navigate away and we want to avoid animation glitches
                 onProgress.postValue(false)
 
-                countly.recordException(it)
                 countly.failedTransaction(session = session, error = it)
             }
         )

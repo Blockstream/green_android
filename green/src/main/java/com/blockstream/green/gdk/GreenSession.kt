@@ -237,6 +237,8 @@ class GreenSession constructor(
         )
     }
 
+    fun getProxySettings() = greenWallet.getProxySettings(gaSession)
+
     fun reconnectHint(hint: ReconnectHintParams) =
         applicationScope.launch(context = Dispatchers.IO) {
             try{
@@ -815,7 +817,13 @@ class GreenSession constructor(
                     }
                 }
 
-                countly.activeWallet(session = this, walletBalances = walletBalances, subAccounts = it.subaccounts)
+                if(isInitialize) {
+                    countly.activeWallet(
+                        session = this,
+                        walletBalances = walletBalances,
+                        subAccounts = it.subaccounts
+                    )
+                }
             }
         }
         .retry(1)

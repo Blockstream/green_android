@@ -7,6 +7,10 @@
         android:title="@string/id_copy_device_id" />
 
     <item
+        android:id="@+id/zero_offset"
+        android:title="Set Offset to zero" />
+
+    <item
         android:id="@+id/reset_device_id"
         android:title="Reset Device ID" />
 
