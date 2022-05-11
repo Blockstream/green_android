@@ -34,10 +34,6 @@
         <attr name="gap" format="dimension" />
     </declare-styleable>
 
-    <declare-styleable name="PlaceholderTextInputEditText">
-        <attr name="placeholder" format="string" />
-    </declare-styleable>
-
     <!--Emphasis values are used in combination with each "on" color to create three available -->
     <!--levels of emphasis for text and content.-->
     <attr name="emphasisHighAlpha" format="float"/>

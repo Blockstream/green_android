@@ -105,16 +105,18 @@
                 isVisible="@{vm.method == TwoFactorMethod.EMAIL &amp;&amp; vm.action != TwoFactorSetupAction.CANCEL}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/id_email">
+                android:hint="@string/id_email"
+                app:expandedHintEnabled="true"
+                app:placeholderText="jane@example.com">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textWebEmailAddress"
                     android:text="@={vm.email}"
                     android:imeOptions="actionDone"
-                    app:placeholder="jane@example.com" />
+                    />
 
             </com.google.android.material.textfield.TextInputLayout>
 

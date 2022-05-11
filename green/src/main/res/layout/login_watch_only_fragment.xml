@@ -121,12 +121,14 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/id_extended_public_key"
+                    app:expandedHintEnabled="true"
+                    app:placeholderText="xPub/yPub/zPub"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/buttonScan"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <com.blockstream.green.views.PlaceholderTextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/extendedPublicKey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -135,7 +137,7 @@
                         android:inputType="textMultiLine|textNoSuggestions"
                         android:text="@={vm.extenedPublicKey}"
                         tools:text="fasdfadffasdfasdf asd fasdfads afds fasdfadsfadsfasdffas dfad"
-                        app:placeholder="xPub/yPub/zPub" />
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

@@ -194,14 +194,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
+                app:expandedHintEnabled="true"
+                app:placeholderText="@{bitcoinElectrumServerPlaceholder}"
                 android:hint="@string/id_bitcoin_electrum_server"
                 app:isVisible="@{vm.enableElectrumNode}">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    app:placeholder="@{bitcoinElectrumServerPlaceholder}"
                     android:text="@={vm.personalBitcoinElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -209,6 +210,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/personalLiquidElectrumServerInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                app:placeholderText="@{liquidElectrumServerPlaceholder}"
+                app:expandedHintEnabled="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
@@ -217,11 +220,10 @@
                 app:isVisible="@{vm.enableElectrumNode}"
                 tools:ignore="HardcodedText">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    app:placeholder="@{liquidElectrumServerPlaceholder}"
                     android:text="@={vm.personalLiquidElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -234,14 +236,15 @@
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_testnet_electrum_server"
+                app:expandedHintEnabled="true"
+                app:placeholderText="@{testnetElectrumServerPlaceholder}"
                 tools:ignore="HardcodedText"
                 app:isVisible="@{vm.enableElectrumNode &amp;&amp; vm.enableTestnet}">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    app:placeholder="@{testnetElectrumServerPlaceholder}"
                     android:text="@={vm.personalTestnetElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -255,13 +258,14 @@
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_liquid_testnet_electrum_server"
                 tools:ignore="HardcodedText"
+                app:expandedHintEnabled="true"
+                app:placeholderText="@{testnetLiquidElectrumServerPlaceholder}"
                 app:isVisible="@{vm.enableElectrumNode &amp;&amp; vm.enableTestnet}">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    app:placeholder="@{testnetLiquidElectrumServerPlaceholder}"
                     android:text="@={vm.personalTestnetLiquidElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -295,13 +299,14 @@
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_bitcoin_electrum_server"
+                app:expandedHintEnabled="true"
+                app:placeholderText="@{bitcoinSpvElectrumServerPlaceholder}"
                 app:isVisible="@{vm.enableMultiServerValidation}">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    app:placeholder="@{bitcoinSpvElectrumServerPlaceholder}"
                     android:text="@={vm.spvBitcoinElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -313,14 +318,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
+                app:expandedHintEnabled="true"
+                app:placeholderText="@{liquidSpvElectrumServerPlaceholder}"
                 android:hint="@string/id_liquid_electrum_server"
                 app:isVisible="@{vm.enableMultiServerValidation}">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    app:placeholder="@{liquidSpvElectrumServerPlaceholder}"
                     android:text="@={vm.spvLiquidElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -333,13 +339,14 @@
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_testnet_electrum_server"
+                app:expandedHintEnabled="true"
+                app:placeholderText="@{testnetSpvElectrumServerPlaceholder}"
                 app:isVisible="@{vm.enableMultiServerValidation &amp;&amp; vm.enableTestnet}">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    app:placeholder="@{testnetSpvElectrumServerPlaceholder}"
                     android:text="@={vm.spvTestnetElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -352,14 +359,15 @@
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_liquid_testnet_electrum_server"
+                app:expandedHintEnabled="true"
+                app:placeholderText="@{testnetLiquidSpvElectrumServerPlaceholder}"
                 tools:ignore="HardcodedText"
                 app:isVisible="@{vm.enableMultiServerValidation &amp;&amp; vm.enableTestnet}">
 
-                <com.blockstream.green.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    app:placeholder="@{testnetLiquidSpvElectrumServerPlaceholder}"
                     android:text="@={vm.spvTestnetLiquidElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>

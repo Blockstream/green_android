@@ -39,9 +39,10 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@{hint}">
+            android:hint="@{hint}"
+            app:expandedHintEnabled="true">
 
-        <com.blockstream.green.views.PlaceholderTextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

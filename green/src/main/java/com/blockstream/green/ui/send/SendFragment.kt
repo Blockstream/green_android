@@ -376,7 +376,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         dialogBinding.textInputLayout.endIconCopyMode()
 
         // TODO add locale
-        dialogBinding.editText.setPlaceholder("0.00")
+        dialogBinding.textInputLayout.placeholderText = "0.00"
         dialogBinding.editText.keyListener = NumberValueFilter(2)
         dialogBinding.text = (viewModel.customFee.toDouble() / 1000).toString()
 

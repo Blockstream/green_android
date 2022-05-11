@@ -36,14 +36,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            app:expandedHintEnabled="true"
+            app:placeholderText="0.00"
             android:hint="@string/id_amount">
 
-            <com.blockstream.green.views.PlaceholderTextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/amountEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal"
-                app:placeholder="0.00"
                 android:text="@={amount}" />
 
         </com.google.android.material.textfield.TextInputLayout>
