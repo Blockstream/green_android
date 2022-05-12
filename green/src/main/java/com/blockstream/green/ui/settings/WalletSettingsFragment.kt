@@ -470,12 +470,14 @@ class WalletSettingsFragment :
 
 
     private fun handleWatchOnly(): Boolean {
-        val dialogBinding =
-            SettingsWatchOnlyDialogBinding.inflate(requireActivity().layoutInflater)
+        val dialogBinding = SettingsWatchOnlyDialogBinding.inflate(requireActivity().layoutInflater)
 
         viewModel.watchOnlyUsernameLiveData.value?.let {
             dialogBinding.username = it
         }
+
+//        dialogBinding.usernameTextInputLayout.helperText = "At least 8 characters long"
+//        dialogBinding.passwordTextInputLayout.helperText = "At least 8 characters long"
 
         MaterialAlertDialogBuilder(
             requireContext(),
@@ -484,8 +486,13 @@ class WalletSettingsFragment :
             .setTitle(R.string.id_watchonly_login)
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                if (dialogBinding.username.isNullOrBlank() || dialogBinding.password.isNullOrBlank()) {
-                    snackbar(R.string.id_the_password_cant_be_empty)
+                if (dialogBinding.username.isNullOrBlank()) {
+                    errorDialog(getString(R.string.id_the_username_cant_be_empty))
+                    return@setPositiveButton
+                }
+
+                if (dialogBinding.password.isNullOrBlank()) {
+                    errorDialog(getString(R.string.id_the_password_cant_be_empty))
                     return@setPositiveButton
                 }
 
@@ -495,6 +502,13 @@ class WalletSettingsFragment :
                 )
             }
             .setNegativeButton(android.R.string.cancel, null)
+            .also {
+                if(!viewModel.watchOnlyUsernameLiveData.value.isNullOrBlank()){
+                    it.setNeutralButton(R.string.id_delete) { _, _ ->
+                        viewModel.setWatchOnly("", "")
+                    }
+                }
+            }
             .show()
 
         return true

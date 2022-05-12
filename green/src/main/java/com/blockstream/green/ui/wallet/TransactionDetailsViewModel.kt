@@ -67,7 +67,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
             // update
             session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
         }else{
-            onError.postValue(ConsumableEvent(Exception("Couldn't save note")))
+            onError.postValue(ConsumableEvent(Exception("id_error")))
         }
     }
 

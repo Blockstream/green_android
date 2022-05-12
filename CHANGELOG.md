@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.8.2] - 2022-05-18
+### Added
+- Archive accounts if they're no longer needed, then unarchive them from the archived list
+- Support multiple hardware wallet devices on multiple networks concurrently
+
+### Changed
+- Updated GDK to 0.0.54
+- Updated project dependencies
+
+### Fixed
+- Crash on Liquid transactions with unblinded amounts
+- Crash when resuming the application after prolonged period of inactivity
+
 ## [3.8.0] - 2022-04-13
 ### Added
 - Add Bitcoin Singlesig hardware wallet support

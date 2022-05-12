@@ -34,7 +34,7 @@ completely from source, you can compile
 [gdk](https://github.com/Blockstream/gdk)
 from its source code yourself.
 
-This requires the "Android NDK" (version r19b recommended) from Android
+This requires the "Android NDK" (version r23b recommended) from Android
 developer tools, as well as [SWIG](http://www.swig.org/). Most Linux
 distributions have SWIG available, on debian for example you can install it
 using:

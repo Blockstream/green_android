@@ -10,7 +10,6 @@ import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.gdk.params.Limits
 import com.blockstream.green.ApplicationScope
-import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
@@ -41,9 +40,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     val applicationScope: ApplicationScope,
     @Assisted wallet: Wallet
 ) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
-
-    val onErrorStringRes = MutableLiveData<ConsumableEvent<Int>>()
-
     val settingsLiveData = MutableLiveData<Settings>()
     val twoFactorConfigLiveData = MutableLiveData<TwoFactorConfig>()
     val watchOnlyUsernameLiveData = MutableLiveData("")
@@ -83,13 +79,13 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateWatchOnlyUsername(){
+    private fun updateWatchOnlyUsername(){
         if(!session.isWatchOnly) {
             session.observable {
                 it.getWatchOnlyUsername()
             }.subscribeBy(
                 onError = {
-                    onError.postValue(ConsumableEvent(it))
+                    onError.postValue(ConsumableEvent(Exception("id_username_not_available")))
                 },
                 onSuccess = {
                     watchOnlyUsernameLiveData.value = it
@@ -106,7 +102,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             )
         }.subscribeBy(
             onError = {
-                onErrorStringRes.value = ConsumableEvent(R.string.id_username_not_available)
+                onError.value = ConsumableEvent(it)
             },
             onSuccess = {
                 updateWatchOnlyUsername()
