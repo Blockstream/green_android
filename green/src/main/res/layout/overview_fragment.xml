@@ -53,6 +53,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/brand_surface"
                 android:paddingLeft="-12dp"
+                android:enabled="@{!(vm.isWatchOnly() &amp;&amp; vm.isLiquid())}"
                 android:text="@{vm.isWatchOnly() ? @string/id_sweep : @string/id_send}"
                 tools:text="@string/id_send"
                 app:icon="@{vm.isWatchOnly() ? @drawable/ic_sweep : @drawable/ic_send}"

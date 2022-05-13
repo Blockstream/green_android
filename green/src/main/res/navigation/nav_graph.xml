@@ -140,6 +140,9 @@
         <action
             android:id="@+id/action_chooseNetworkFragment_to_chooseRecoveryPhraseFragment"
             app:destination="@id/chooseRecoveryPhraseFragment" />
+        <action
+            android:id="@+id/action_chooseNetworkFragment_to_loginWatchOnlyFragment"
+            app:destination="@id/loginWatchOnlyFragment" />
     </fragment>
     <fragment
         android:id="@+id/chooseSecurityFragment"
@@ -436,6 +439,9 @@
         <action
             android:id="@+id/action_chooseWatchOnlyFragment_to_loginWatchOnlyFragment"
             app:destination="@id/loginWatchOnlyFragment" />
+        <action
+            android:id="@+id/action_chooseWatchOnlyFragment_to_chooseNetworkFragment"
+            app:destination="@id/chooseNetworkFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginWatchOnlyFragment"
@@ -443,8 +449,8 @@
         android:label=""
         tools:layout="@layout/login_watch_only_fragment">
         <argument
-            android:name="isMultisig"
-            app:argType="boolean" />
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
     </fragment>
     <dialog
         android:id="@+id/appSettingsDialogFragment"

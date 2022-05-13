@@ -7,13 +7,16 @@
         <variable
             name="accountId"
             type="String" />
+
+        <variable
+            name="isGaid"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="24dp">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/title"
@@ -22,8 +25,9 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
-            android:text="@string/id_amp_id"
-            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:text="@{isGaid ? `GAID` : @string/id_amp_id}"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            tools:text="@string/id_amp_id"
             app:layout_constraintEnd_toStartOf="@+id/buttonClose"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -35,6 +39,7 @@
             android:layout_marginEnd="16dp"
             android:padding="8dp"
             android:src="@drawable/ic_close"
+            app:layout_constraintBottom_toBottomOf="@+id/title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/title" />
 
@@ -45,6 +50,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
+            isVisible="@{!isGaid}"
             android:text="@string/id_provide_your_amp_id_to_the"
             android:textAppearance="?attr/textAppearanceSubtitle2"
             app:layout_constraintEnd_toEndOf="parent"
@@ -55,10 +61,14 @@
             android:id="@+id/card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
             app:cardBackgroundColor="@color/brand_surface"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/subtitle"
             app:strokeColor="@color/color_on_surface_divider"
             app:strokeWidth="1dp"
@@ -69,11 +79,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
-                app:drawableEndCompat="@drawable/ic_baseline_content_copy_18"
-                app:drawableTint="@color/color_on_surface_emphasis_low"
+                android:text="@{accountId}"
                 android:textAlignment="center"
                 android:textSize="16sp"
-                android:text="@{accountId}"
+                app:drawableEndCompat="@drawable/ic_baseline_content_copy_18"
+                app:drawableTint="@color/color_on_surface_emphasis_low"
                 tools:text="GA2sdTAAVFkUHxd6ETavU5UednixoT" />
 
         </com.google.android.material.card.MaterialCardView>

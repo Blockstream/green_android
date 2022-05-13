@@ -56,18 +56,19 @@ class ArchivedAccountsFragment :
             }
         }
 
-
         val fastAdapter = FastAdapter.with(accountsModelAdapter)
 
-        fastAdapter.addClickListener<ListItemAccountBinding, AccountListItem>({ binding -> binding.buttonAccountMenu }) { v, _, _, item ->
-            showPopupMenu(v, item.subAccount)
-        }
-
-        fastAdapter.onClickListener = { v, _, item, _ ->
-            v?.let {
-                showPopupMenu(it, item.subAccount)
+        if(!session.isWatchOnly) {
+            fastAdapter.addClickListener<ListItemAccountBinding, AccountListItem>({ binding -> binding.buttonAccountMenu }) { v, _, _, item ->
+                showPopupMenu(v, item.subAccount)
             }
-            true
+
+            fastAdapter.onClickListener = { v, _, item, _ ->
+                v?.let {
+                    showPopupMenu(it, item.subAccount)
+                }
+                true
+            }
         }
 
         binding.recycler.apply {

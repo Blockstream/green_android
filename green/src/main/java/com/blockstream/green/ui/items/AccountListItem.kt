@@ -38,8 +38,9 @@ data class AccountListItem constructor(
 
         binding.isTopAccount = isTopAccount
         binding.isAccountListOpen = isAccountListOpen
-        binding.isLiquid = session.isLiquid
         binding.isMainnet = session.isMainnet
+        binding.isLiquid = session.isLiquid
+        binding.isWatchOnly = session.isWatchOnly
         binding.subAccount = subAccount
 
         if(isTopAccount){

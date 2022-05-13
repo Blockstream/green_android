@@ -1,6 +1,8 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.*
+import com.blockstream.gdk.data.Network
+import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -20,92 +22,94 @@ class LoginWatchOnlyViewModel @AssistedInject constructor(
     private val walletRepository: WalletRepository,
     private val sessionManager: SessionManager,
     private val appKeystore: AppKeystore,
-    @Assisted val isMultisig: Boolean
+    @Assisted val onboardingOptions: OnboardingOptions
 ) : AppViewModel() {
 
     var username = MutableLiveData("")
     var password = MutableLiveData("")
     var extenedPublicKey = MutableLiveData("")
     val isRememberMe = MutableLiveData(true)
-    val isTestnet = MutableLiveData(false)
     val newWallet: MutableLiveData<Wallet> = MutableLiveData()
 
     val isLoginEnabled: LiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
             val block = { _: Any? ->
-                value = if(isMultisig)
-                    !username.value.isNullOrBlank() && !password.value.isNullOrBlank() && !onProgress.value!! else !extenedPublicKey.value.isNullOrBlank()
+                value = if (onboardingOptions.isSinglesig == true) {
+                    !extenedPublicKey.value.isNullOrBlank()
+                } else {
+                    !username.value.isNullOrBlank() && !password.value.isNullOrBlank() && !onProgress.value!!
+                }
             }
-            if(isMultisig) {
+            if (onboardingOptions.isSinglesig == true) {
+                addSource(extenedPublicKey, block)
+            } else {
                 addSource(username, block)
                 addSource(password, block)
-            }else{
-                addSource(extenedPublicKey, block)
             }
+
             addSource(onProgress, block)
         }
     }
 
-
     fun login() {
-        val session: GreenSession = sessionManager.getOnBoardingSession()
+        onboardingOptions.network?.let { network: Network ->
+            val session: GreenSession = sessionManager.getOnBoardingSession()
+            session.observable {
+                val loginData =
+                    it.loginWatchOnly(network, username.value ?: "", password.value ?: "")
 
-        session.observable {
-            val network = if (isTestnet.value == true) it.networks.testnetGreen else it.networks.bitcoinGreen
-            val loginData = it.loginWatchOnly(network, username.value ?: "", password.value ?: "")
-
-            val wallet = Wallet(
-                walletHashId = loginData.walletHashId,
-                name = "Bitcoin Watch Only",
-                network = session.network.id,
-                isRecoveryPhraseConfirmed = true,
-                watchOnlyUsername = username.value
-            )
-
-            wallet.id = walletRepository.addWallet(wallet)
-
-            if (isRememberMe.value == true) {
-                val encryptedData = appKeystore.encryptData(password.value!!.toByteArray())
-                walletRepository.addLoginCredentialsSync(
-                    LoginCredentials(
-                        walletId = wallet.id,
-                        credentialType = CredentialType.KEYSTORE,
-                        encryptedData = encryptedData
-                    )
+                val wallet = Wallet(
+                    walletHashId = loginData.walletHashId,
+                    name = network.productName,
+                    network = session.network.id,
+                    isRecoveryPhraseConfirmed = true,
+                    watchOnlyUsername = username.value
                 )
-            }
 
-            sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+                wallet.id = walletRepository.addWallet(wallet)
 
-            wallet
+                if (isRememberMe.value == true) {
+                    val encryptedData = appKeystore.encryptData(password.value!!.toByteArray())
+                    walletRepository.addLoginCredentialsSync(
+                        LoginCredentials(
+                            walletId = wallet.id,
+                            credentialType = CredentialType.KEYSTORE,
+                            encryptedData = encryptedData
+                        )
+                    )
+                }
 
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                newWallet.postValue(it)
-            }
-        ).addTo(disposables)
+                sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+
+                wallet
+            }.doOnSubscribe {
+                onProgress.postValue(true)
+            }.doOnTerminate {
+                onProgress.postValue(false)
+            }.subscribeBy(
+                onError = {
+                    onError.postValue(ConsumableEvent(it))
+                },
+                onSuccess = {
+                    newWallet.postValue(it)
+                }
+            ).addTo(disposables)
+        }
     }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
-        fun create(isMultisig: Boolean): LoginWatchOnlyViewModel
+        fun create(onboardingOptions: OnboardingOptions): LoginWatchOnlyViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            isMultisig: Boolean
+            onboardingOptions: OnboardingOptions
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(isMultisig) as T
+                return assistedFactory.create(onboardingOptions) as T
             }
         }
     }

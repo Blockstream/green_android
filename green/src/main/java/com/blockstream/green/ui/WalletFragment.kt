@@ -35,6 +35,16 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
             // Prevent showing network icon when the title is empty
             if(toolbar.title.isNotBlank() || !title.isNullOrBlank()) {
                 toolbar.setLogo(wallet.getIcon())
+
+                if(wallet.isWatchOnly){
+                    toolbar.setBubble(
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_watch_18
+                        )
+                    )
+                }
+
                 session.device?.let {
                     toolbar.subtitle = it.name
                     toolbar.setBubble(

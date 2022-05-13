@@ -6,12 +6,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LoginWatchOnlyFragmentBinding
-import com.blockstream.green.gdk.getGDKErrorCode
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragmentDirections
 import com.blockstream.green.utils.*
-import com.blockstream.libgreenaddress.KotlinGDK
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,7 +31,7 @@ class LoginWatchOnlyFragment :
 
     val viewModel: LoginWatchOnlyViewModel by viewModels{
         LoginWatchOnlyViewModel.provideFactory(
-            assistedFactory = assistedFactory, isMultisig = args.isMultisig
+            assistedFactory = assistedFactory, onboardingOptions = args.onboardingOptions
         )
     }
 
@@ -42,7 +40,7 @@ class LoginWatchOnlyFragment :
 
         binding.vm = viewModel
 
-        binding.isMultisig = args.isMultisig
+        binding.isSinglesig = args.onboardingOptions.isSinglesig
 
         getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
             result?.let {
@@ -61,14 +59,14 @@ class LoginWatchOnlyFragment :
             CameraBottomSheetDialogFragment.showSingle(childFragmentManager)
         }
 
-        settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner){
-            binding.showTestnet = it.testnet
-            viewModel.isTestnet.postValue(false)
+        binding.buttonLogin.setOnClickListener {
+            viewModel.login()
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(getString(if (it.getGDKErrorCode() == KotlinGDK.GA_ERROR) R.string.id_user_not_found_or_invalid else R.string.id_connection_failed))
+                errorDialog(it)
+                // errorDialog(getString(if (it.getGDKErrorCode() == KotlinGDK.GA_ERROR) R.string.id_user_not_found_or_invalid else R.string.id_connection_failed))
             }
         }
 

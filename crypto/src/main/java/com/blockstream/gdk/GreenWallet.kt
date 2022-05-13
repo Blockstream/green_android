@@ -34,6 +34,11 @@ class GreenWallet constructor(
 
     private val bip39WordList by lazy { wally.bip39Wordlist(BIP39_WORD_LIST_LANG) }
 
+    val networks by lazy {
+        val jsonElement = gdk.getNetworks() as JsonElement
+        Networks.fromJsonElement(JsonDeserializer, jsonElement)
+    }
+
     init {
         gdk.init(
             JsonConverter(developmentFlavor, !BuildConfig.DEBUG, extraLogger),
@@ -70,11 +75,6 @@ class GreenWallet constructor(
 
     fun setNotificationHandler(notificationHandler: GDK.NotificationHandler) =
         gdk.setNotificationHandler(notificationHandler)
-
-    val networks by lazy {
-        val jsonElement = gdk.getNetworks() as JsonElement
-        Networks.fromJsonElement(JsonDeserializer, jsonElement)
-    }
 
     fun generateMnemonic12(): String = gdk.generateMnemonic12()
     fun generateMnemonic24(): String = gdk.generateMnemonic24()

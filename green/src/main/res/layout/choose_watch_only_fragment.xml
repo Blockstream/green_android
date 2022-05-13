@@ -52,7 +52,7 @@
                 app:gap="24dp">
 
                 <com.blockstream.green.views.GreenContentCardView
-                    android:id="@+id/buttonWatchOnly"
+                    android:id="@+id/buttonSinglesig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:captionText="@string/id_enter_your_xpub_to_add_a"
@@ -60,7 +60,7 @@
                     app:titleText="@string/id_singlesig" />
 
                 <com.blockstream.green.views.GreenContentCardView
-                    android:id="@+id/buttonGreenWatchOnly"
+                    android:id="@+id/buttonMultisig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:captionText="@string/id_log_in_to_your_multisig_shield"

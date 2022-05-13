@@ -5,6 +5,7 @@ import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.Networks
 import com.blockstream.green.TestViewModel
+import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
@@ -47,17 +48,15 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
             false,
             true
         )
-        whenever(networks.bitcoinGreen).thenReturn(network)
 
         whenever(greenSession.network).thenReturn(network)
-        whenever(greenSession.networks).thenReturn(networks)
         whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(greenSession)
 
         viewModel = LoginWatchOnlyViewModel(
             walletRepository = mock(),
             sessionManager = sessionManager,
             appKeystore = mock(),
-            isMultisig = true
+            onboardingOptions = OnboardingOptions(isRestoreFlow = true, isWatchOnly = true, isSinglesig = false, network = network)
         )
         viewModel.isLoginEnabled.observeForever(isLoginEnabledObserver)
         viewModel.newWallet.observeForever(newWalletObserver)

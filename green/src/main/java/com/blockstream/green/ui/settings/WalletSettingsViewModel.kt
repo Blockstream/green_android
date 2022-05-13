@@ -4,10 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.gdk.data.Settings
-import com.blockstream.gdk.data.TwoFactorConfig
-import com.blockstream.gdk.data.TwoFactorMethodConfig
-import com.blockstream.gdk.data.TwoFactorReset
+import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.Limits
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.Countly
@@ -45,11 +42,21 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     val watchOnlyUsernameLiveData = MutableLiveData("")
     val biometricsLiveData = MutableLiveData<LoginCredentials>()
 
+    var zeroSubaccount : SubAccount? = null
+
     init {
         session
             .getSettingsObservable()
             .async()
             .subscribe(settingsLiveData::postValue)
+            .addTo(disposables)
+
+        session
+            .getSubAccountsObservable()
+            .async()
+            .subscribe{
+                zeroSubaccount = it.firstOrNull()
+            }
             .addTo(disposables)
 
         walletRepository

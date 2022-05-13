@@ -51,7 +51,7 @@ class EnterRecoveryPhraseFragment :
 
     val viewModel: EnterRecoveryPhraseViewModel by viewModels{
         EnterRecoveryPhraseViewModel.provideFactory(
-            assistedFactory = assistedFactory, recoveryPhrase = args.scannedInput , isBip39 = options?.isSingleSig ?: true
+            assistedFactory = assistedFactory, recoveryPhrase = args.scannedInput , isBip39 = options?.isSinglesig ?: true
         )
     }
 

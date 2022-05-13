@@ -13,7 +13,7 @@ data class PreferenceListItem constructor(
     var title: StringHolder = StringHolder(null),
     var subtitle: StringHolder = StringHolder(null),
     val withSwitch : Boolean = false,
-    var withButton: Boolean = false,
+    var withButton: StringHolder = StringHolder(null),
     val withRadio : Boolean = false,
     val withSubtitleRed: Boolean = false,
     val isInnerMenu: Boolean = false,
@@ -38,7 +38,7 @@ data class PreferenceListItem constructor(
         binding.switchMaterial.isChecked = switchChecked
         binding.radionMaterial.isVisible = withRadio
         binding.radionMaterial.isChecked = radioChecked
-        binding.button.isVisible = withButton
+        withButton.applyToOrHide(binding.button)
 
         if(withSubtitleRed){
             binding.subtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.red))

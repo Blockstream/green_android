@@ -24,6 +24,10 @@
             type="Boolean" />
 
         <variable
+            name="isWatchOnly"
+            type="Boolean" />
+
+        <variable
             name="subAccount"
             type="com.blockstream.gdk.data.SubAccount" />
 
@@ -100,7 +104,7 @@
 
                 <ImageButton
                     android:id="@+id/buttonAccountMenu"
-                    isVisible="@{isAccountListOpen}"
+                    isVisible="@{isAccountListOpen &amp;&amp; !isWatchOnly}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"

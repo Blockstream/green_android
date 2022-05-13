@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 data class OnboardingOptions constructor(
     val isRestoreFlow: Boolean,
     val isWatchOnly: Boolean = false,
-    val isSingleSig: Boolean? = null,
+    val isSinglesig: Boolean? = null,
     val networkType: String? = null,
     val network: Network? = null,
     val walletName: String? = null

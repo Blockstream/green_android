@@ -8,6 +8,8 @@ import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.core.text.trimmedLength
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
@@ -24,6 +26,7 @@ import com.blockstream.green.databinding.SettingsWatchOnlyDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.filters.NumberValueFilter
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.AccountIdBottomSheetDialogFragment
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
@@ -53,6 +56,7 @@ class WalletSettingsFragment :
     private val itemAdapter = ItemAdapter<GenericItem>()
 
     private lateinit var logoutPreference: PreferenceListItem
+    private lateinit var zeroAccountIdPreference: PreferenceListItem
     private lateinit var watchOnlyMultisigPreference: PreferenceListItem
     private lateinit var watchOnlySinglesigPreference: PreferenceListItem
     private lateinit var unitPreference: PreferenceListItem
@@ -107,6 +111,7 @@ class WalletSettingsFragment :
 
         binding.vm = viewModel
 
+        zeroAccountIdPreference = PreferenceListItem(StringHolder("GAID"))
         watchOnlyMultisigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
         watchOnlySinglesigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_details))
         logoutPreference = PreferenceListItem(StringHolder(wallet.name), StringHolder(R.string.id_logout), withSubtitleRed = true)
@@ -167,6 +172,11 @@ class WalletSettingsFragment :
                 when (iItem) {
                     logoutPreference -> {
                         viewModel.logout(AbstractWalletViewModel.LogoutReason.USER_ACTION)
+                    }
+                    zeroAccountIdPreference -> {
+                        viewModel.zeroSubaccount?.let{
+                            AccountIdBottomSheetDialogFragment.show(it, true, childFragmentManager)
+                        }
                     }
                     watchOnlyMultisigPreference -> {
                         handleWatchOnly()
@@ -309,7 +319,7 @@ class WalletSettingsFragment :
                     getString(R.string.id_enabled_1s, it)
                 }
             )
-
+            
             notifyDataSetChanged()
         }
 
@@ -366,7 +376,10 @@ class WalletSettingsFragment :
 
             list += logoutPreference
 
-            if(!session.isWatchOnly) {
+            if(session.isWatchOnly) {
+                list += TitleListItem(StringHolder(R.string.id_support))
+                list += zeroAccountIdPreference
+            } else {
                 val is2faReset = session.getTwoFactorReset()?.isActive == true
 
                 if (is2faReset) {
@@ -375,7 +388,7 @@ class WalletSettingsFragment :
                 } else {
                     list += TitleListItem(StringHolder(R.string.id_general))
 
-                    if (!session.isLiquid && !session.isElectrum) {
+                    if (!session.isElectrum && (isDevelopmentFlavor() || !session.isLiquid)) {
                         list += watchOnlyMultisigPreference
                     }
 
@@ -476,8 +489,15 @@ class WalletSettingsFragment :
             dialogBinding.username = it
         }
 
-//        dialogBinding.usernameTextInputLayout.helperText = "At least 8 characters long"
-//        dialogBinding.passwordTextInputLayout.helperText = "At least 8 characters long"
+        dialogBinding.usernameTextInputEditText.doOnTextChanged { text, _, _, _ ->
+            dialogBinding.usernameTextInputLayout.error =
+                if (text.isNullOrBlank() || text.trimmedLength() >= 8) null else getString(R.string.id_minimum_8_characters)
+        }
+
+        dialogBinding.passwordTextInputEditText.doOnTextChanged { text, _, _, _ ->
+            dialogBinding.passwordTextInputLayout.error =
+                if (text.isNullOrBlank() || text.trimmedLength() >= 8) null else getString(R.string.id_minimum_8_characters)
+        }
 
         MaterialAlertDialogBuilder(
             requireContext(),
@@ -497,15 +517,15 @@ class WalletSettingsFragment :
                 }
 
                 viewModel.setWatchOnly(
-                    dialogBinding.username ?: "",
-                    dialogBinding.password ?: ""
+                    username = dialogBinding.username ?: "",
+                    password = dialogBinding.password ?: ""
                 )
             }
             .setNegativeButton(android.R.string.cancel, null)
             .also {
-                if(!viewModel.watchOnlyUsernameLiveData.value.isNullOrBlank()){
+                if (!viewModel.watchOnlyUsernameLiveData.value.isNullOrBlank()) {
                     it.setNeutralButton(R.string.id_delete) { _, _ ->
-                        viewModel.setWatchOnly("", "")
+                        viewModel.setWatchOnly(username = "", password = "")
                     }
                 }
             }

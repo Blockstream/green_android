@@ -33,9 +33,11 @@
 
         <ImageView
             android:id="@+id/bubbleIcon"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:visibility="gone"
+            android:layout_marginBottom="-2dp"
+            android:layout_marginEnd="-1dp"
             tools:src="@drawable/blockstream_jade_device"
             app:layout_constraintBottom_toBottomOf="@+id/icon"
             app:layout_constraintEnd_toEndOf="@+id/icon"

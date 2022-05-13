@@ -9,7 +9,7 @@
             type="com.blockstream.green.ui.onboarding.LoginWatchOnlyViewModel" />
 
         <variable
-            name="isMultisig"
+            name="isSinglesig"
             type="Boolean" />
 
         <variable
@@ -43,7 +43,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginTop="8dp"
-            android:text="@{isMultisig ? @string/id_log_in_via_watchonly_to_receive : @string/id_scan_or_paste_your_extended_public_key}"
+            android:text="@{isSinglesig ? @string/id_scan_or_paste_your_extended_public_key : @string/id_log_in_via_watchonly_to_receive}"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout5"
             app:layout_constraintEnd_toEndOf="parent"
@@ -73,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_username"
-                isVisible="@{isMultisig}">
+                isVisible="@{!isSinglesig}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/username"
@@ -93,7 +93,7 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/id_password"
                 app:passwordToggleEnabled="true"
-                isVisible="@{isMultisig}">
+                isVisible="@{!isSinglesig}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password"
@@ -108,7 +108,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                isVisible="@{!isMultisig}"
+                isVisible="@{isSinglesig}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -163,21 +163,11 @@
                 android:text="@string/id_remember_me"
                 app:useMaterialThemeColors="false" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="@={vm.isTestnet}"
-                android:text="Testnet"
-                app:useMaterialThemeColors="false"
-                isVisible="@{showTestnet &amp;&amp; isMultisig}"
-                tools:ignore="HardcodedText" />
-
             <Button
                 android:id="@+id/buttonLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.isLoginEnabled}"
-                android:onClick="@{() -> vm.login()}"
                 android:text="@string/id_log_in" />
 
             <TextView
