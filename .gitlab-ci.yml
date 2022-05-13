@@ -37,7 +37,7 @@ build_signed_adhoc_release:
   variables:
     GDK_COMMIT: latest
   script:
-    - if [ "$GDK_COMMIT" == "true" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
+    - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_signed_adhoc_release
     - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dist --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
