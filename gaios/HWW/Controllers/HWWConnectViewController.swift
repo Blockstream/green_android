@@ -27,11 +27,12 @@ class HWWConnectViewController: UIViewController {
 
     var account: Account!
     var peripheral: Peripheral!
-    var data: [[NetworkSecurityCase]] = [[]]
-    var cellH = 70.0
-    var headerH: CGFloat = 44.0
-    var headerH2: CGFloat = 64.0
-    var isHiddenTestnet: Bool = true
+
+    private var networks = [NetworkSection: [NetworkSecurityCase]]()
+    private var cellH = 70.0
+    private var headerH: CGFloat = 44.0
+    private var headerH2: CGFloat = 64.0
+    private var openAdditionalNetworks = false
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -47,15 +48,19 @@ class HWWConnectViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        BLEManager.shared.delegate = self
 
         setContent()
         setStyle()
 
         hwwState = .connecting
-        BLEManager.shared.prepare(peripheral)
-        loadData()
+        reloadData()
 
+        BLEManager.shared.delegate = self
+        BLEManager.shared.prepare(peripheral)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(appBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
@@ -101,20 +106,20 @@ class HWWConnectViewController: UIViewController {
         deviceImageAlign.constant = account.alignConstraint()
     }
 
-    func loadData() {
-        if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) {
-            let jade = self.account.isJade
-            var debug = false
+    func reloadData() {
+        let isEnabledTestnet = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible)
+        let showTestnet = isEnabledTestnet && openAdditionalNetworks
+        let jade = self.account.isJade
+        var debug = false
 #if DEBUG
-            debug = true
+        debug = true
 #endif
-            data = [[.bitcoinSS, .bitcoinMS], [], []]
-            data[1] += jade ? [.liquidMS] : []
-            data[1] += jade && debug ? [.liquidSS] : []
-            data[2] += !isHiddenTestnet ? [.testnetSS, .testnetMS] : []
-            data[2] += !isHiddenTestnet && jade ? [.testnetLiquidMS] : []
-            data[2] += !isHiddenTestnet && jade && debug ? [.testnetLiquidSS] : []
-        }
+        networks[.mainnet] = [.bitcoinSS, .bitcoinMS]
+        networks[.liquid] = jade ? [.liquidMS] : []
+        networks[.liquid]! += jade && debug ? [.liquidSS] : []
+        networks[.testnet] = showTestnet ? [.testnetSS, .testnetMS] : []
+        networks[.testnet]! += showTestnet && jade ? [.testnetLiquidMS] : []
+        networks[.testnet]! += showTestnet && jade && debug ? [.testnetLiquidSS] : []
         tableView.reloadData()
     }
 
@@ -176,9 +181,8 @@ class HWWConnectViewController: UIViewController {
     }
 
     @objc func toggleTestnet() {
-        isHiddenTestnet = !isHiddenTestnet
-        loadData()
-        tableView.reloadData()
+        openAdditionalNetworks = !openAdditionalNetworks
+        reloadData()
     }
 
     func connect(_ peripheral: Peripheral, network: String) {
@@ -244,16 +248,10 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case NetworkSection.mainnet.rawValue:
-            return data[0].count
-        case NetworkSection.liquid.rawValue:
-            return data[1].count
-        case NetworkSection.testnet.rawValue:
-            return data[2].count
-        default:
-            return 0
+        if let networkSection = NetworkSection(rawValue: section) {
+            return networks[networkSection]?.count ?? 0
         }
+        return 0
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -278,7 +276,7 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
         case NetworkSection.mainnet.rawValue:
             return headerView("Bitcoin")
         case NetworkSection.liquid.rawValue:
-            if data[section].count == 0 {
+            if networks[.liquid]?.count ?? 0 == 0 {
                 return headerView("")
             }
             return headerView("Liquid")
@@ -293,8 +291,10 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "HWWNetworkSecurityCaseCell") as? HWWNetworkSecurityCaseCell {
-            cell.configure(data[indexPath.section][indexPath.item])
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "HWWNetworkSecurityCaseCell") as? HWWNetworkSecurityCaseCell,
+           let section = NetworkSection(rawValue: indexPath.section),
+           let networkSection = networks[section] {
+            cell.configure(networkSection[indexPath.item])
             cell.selectionStyle = .none
             return cell
         }
@@ -306,8 +306,11 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item: NetworkSecurityCase = data[indexPath.section][indexPath.row]
-        connect(peripheral, network: item.network())
+        if let section = NetworkSection(rawValue: indexPath.section),
+            let networkSection = networks[section] {
+            let item: NetworkSecurityCase = networkSection[indexPath.row]
+            connect(peripheral, network: item.network())
+        }
     }
 }
 
@@ -451,7 +454,7 @@ extension HWWConnectViewController: WalletSettingsViewControllerDelegate {
         //
     }
     func didSet(testnet: Bool) {
-        loadData()
+        reloadData()
     }
 }
 
@@ -515,7 +518,7 @@ extension HWWConnectViewController {
 
         let arrow = UIImageView(frame: .zero)
         arrow.image = UIImage(named: "rightArrow")?.maskWithColor(color: color)
-        if !isHiddenTestnet {
+        if openAdditionalNetworks {
             arrow.transform = CGAffineTransform(rotationAngle: CGFloat.pi/2)
         }
         arrow.translatesAutoresizingMaskIntoConstraints = false
