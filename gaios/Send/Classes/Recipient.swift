@@ -13,7 +13,7 @@ class Recipient: Codable {
         guard let assetId = self.assetId else {
             return nil
         }
-        return Registry.shared.infos[assetId] ?? AssetInfo(assetId: assetId, name: assetId, precision: 0, ticker: "")
+        return SessionsManager.current?.registry?.infos[assetId] ?? AssetInfo(assetId: assetId, name: assetId, precision: 0, ticker: "")
     }
 
     private var btc: String {

@@ -17,6 +17,12 @@ class SessionManager: Session {
     var notificationManager: NotificationManager
     var twoFactorConfig: TwoFactorConfig?
     var settings: Settings?
+    var registry: AssetsManager? {
+        if let network = account?.gdkNetwork, network.liquid {
+            return network.mainnet ? AssetsManager.liquid : AssetsManager.elements
+        }
+        return nil
+    }
 
     var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
@@ -300,11 +306,9 @@ class SessionManager: Session {
                     return self.loadTwoFactorConfig().then { _ in Promise<Void>() }
                 }
                 return Promise<Void>()
-            }.then { _ -> Promise<Void> in
-                if self.account?.network == "liquid" {
-                    return Registry.shared.load(session: self)
-                }
-                return Promise<Void>()
+            }.compactMap { _ in
+                self.registry?.cache(session: self)
+                return self.registry?.loadAsync(session: self)
             }
     }
 }

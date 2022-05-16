@@ -183,14 +183,9 @@ class SetPinViewController: UIViewController {
             try account.addPin(session: session, pin: pin, mnemonic: mnemonic)
             account.attempts = 0
             AccountsManager.shared.current = account
-        }.then { _ -> Promise<Void> in
-            if account.network == "liquid" {
-                return Registry.shared.load(session: session)
-            }
-            return Promise<Void>()
         }.ensure {
             self.stopLoader()
-        }.done {
+        }.done { _ in
             switch self.pinFlow {
             case .settings:
                 self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)

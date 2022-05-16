@@ -277,7 +277,7 @@ class SendViewController: KeyboardViewController {
                 recipients.first?.amount = value ?? ""
             }
         } else {
-            let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+            let info = SessionsManager.current?.registry?.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
             if let assetInfo = info.encode() {
                 let details = ["satoshi": value, "asset_info": assetInfo] as [String: Any]
                 if let balance = Balance.convert(details: details) {

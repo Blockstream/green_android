@@ -97,6 +97,7 @@ class BLEManager {
     func scan() -> Disposable {
         return manager.scanForPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID])
             .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
+            .subscribeOn(MainScheduler.instance)
             .subscribe(onNext: { p in
                 if let row = self.peripherals.firstIndex(where: { $0.advertisementData.localName == p.advertisementData.localName }) {
                     self.peripherals[row] = p

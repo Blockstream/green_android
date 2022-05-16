@@ -281,7 +281,7 @@ class TransactionViewController: UIViewController {
 
             if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
                 vc.tag = amount.key
-                if let asset = Registry.shared.infos[amount.key] {
+                if let asset = SessionsManager.current?.registry?.infos[amount.key] {
                     vc.asset = asset
                 } else {
                     vc.asset = AssetInfo(assetId: amount.key,

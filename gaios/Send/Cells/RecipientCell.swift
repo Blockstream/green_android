@@ -75,7 +75,7 @@ class RecipientCell: UITableViewCell {
 
     private var asset: AssetInfo? {
         if let assetId = recipient?.assetId {
-            return Registry.shared.infos[assetId] ?? AssetInfo(assetId: assetId, name: assetId, precision: 0, ticker: "")
+            return SessionsManager.current?.registry?.infos[assetId] ?? AssetInfo(assetId: assetId, name: assetId, precision: 0, ticker: "")
         }
         return nil
     }
@@ -128,7 +128,7 @@ class RecipientCell: UITableViewCell {
             iconAsset.image = UIImage(named: "ntw_testnet")
             lblAssetName.text = "Testnet Bitcoin"
         } else {
-            iconAsset.image = Registry.shared.image(for: asset?.assetId)
+            iconAsset.image = SessionsManager.current?.registry?.image(for: asset?.assetId)
             let name = asset?.assetId == btc ? "Liquid Bitcoin" : asset?.name
             lblAssetName.text = name ?? NSLocalizedString("id_asset", comment: "")
         }
@@ -256,7 +256,7 @@ class RecipientCell: UITableViewCell {
                 lblAvailableFunds.text = ""
                 amountTextField.text = ""
             } else {
-                iconAsset.image = Registry.shared.image(for: recipient?.assetId)
+                iconAsset.image = SessionsManager.current?.registry?.image(for: recipient?.assetId)
                 lblAssetName.text = getDenomination()
                 lblCurrency.text = getDenomination()
                 lblAvailableFunds.text = getBalance()

@@ -62,7 +62,7 @@ class TransactionAmountCell: UITableViewCell {
         } else if network == "testnet" {
             icon.image = UIImage(named: "ntw_testnet")
         } else {
-            icon.image = Registry.shared.image(for: transaction.defaultAsset)
+            icon.image = SessionsManager.current?.registry?.image(for: transaction.defaultAsset)
         }
 
         if transaction.defaultAsset == btc {
@@ -80,8 +80,8 @@ class TransactionAmountCell: UITableViewCell {
         } else {
             let amounts = Transaction.sort(transaction.amounts)
             if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
-                let info = Registry.shared.infos[amount.key]
-                let icon = Registry.shared.image(for: amount.key)
+                let info = SessionsManager.current?.registry?.infos[amount.key]
+                let icon = SessionsManager.current?.registry?.image(for: amount.key)
                 let tag = amount.key
                 let asset = info ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
                 let satoshi = transaction.amounts[amount.key] ?? 0

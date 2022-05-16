@@ -240,17 +240,6 @@ class OverviewViewController: UIViewController {
         if let network = account?.gdkNetwork, !network.mainnet {
             cards.append(AlertCardType.testnetNoValue)
         }
-        // load registry cards
-        if let network = account?.gdkNetwork, network.liquid, (account?.isSingleSig ?? false) {
-            switch Registry.shared.failStatus() {
-            case .assets, .all:
-                cards.append(AlertCardType.assetsRegistryFail)
-            case .icons:
-                cards.append(AlertCardType.iconsRegistryFail)
-            case .none:
-                break
-            }
-        }
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) {
             try session.getSystemMessage()
@@ -277,9 +266,13 @@ class OverviewViewController: UIViewController {
         Promise().asVoid().then { _ -> Promise<Void> in
             if self.showAccounts {
                 return self.discoverySubaccounts(singlesig: self.account?.isSingleSig ?? false).asVoid()
-            } else {
-                return Promise().asVoid()
             }
+            return Promise().asVoid()
+        }.then { _ -> Promise<Void> in
+            if let session = SessionsManager.current {
+                session.registry?.loadAsync(session: session)
+            }
+            return Promise().asVoid()
         }.done { _ in
             self.reloadData()
         }.catch { e in
@@ -360,16 +353,8 @@ class OverviewViewController: UIViewController {
     }
 
     func onAssetsUpdated(_ notification: Notification) {
-        guard let session = SessionsManager.current else { return }
-        Guarantee()
-            .compactMap { Registry.shared.cache(session: session) }
-            .done {
-                self.reloadSections([OverviewSection.asset], animated: true)
-                self.showTransactions()
-            }
-            .catch { err in
-                print(err.localizedDescription)
-        }
+        self.reloadSections([OverviewSection.asset], animated: true)
+        self.showTransactions()
     }
 
     func onNewTransaction(_ notification: Notification) {
@@ -430,7 +415,7 @@ class OverviewViewController: UIViewController {
     func sortAssets() {
         var tAssets: [SortingAsset] = []
         assets.forEach { asset in
-            let tAss = SortingAsset(tag: asset.key, info: Registry.shared.infos[asset.key], hasImage: Registry.shared.hasImage(for: asset.key), value: asset.value)
+            let tAss = SortingAsset(tag: asset.key, info: SessionsManager.current!.registry!.infos[asset.key], hasImage: SessionsManager.current!.registry!.hasImage(for: asset.key), value: asset.value)
             tAssets.append(tAss)
         }
         var oAssets = [(key: String, value: UInt64)]()
@@ -440,15 +425,6 @@ class OverviewViewController: UIViewController {
             oAssets.append((key:asset.tag, value: asset.value))
         }
         assets = oAssets
-    }
-
-    func reloadRegistry() {
-        self.startAnimating()
-        guard let session = SessionsManager.current else { return }
-        Registry.shared.load(session: session).done { () in
-            self.stopAnimating()
-            self.loadAlertCards()
-        }.catch { _ in }
     }
 
     @objc func addAccount() {
@@ -693,12 +669,6 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                                    onRight: {[weak self] in
                         self?.performSegue(withIdentifier: "overviewLeaarnMore2fa", sender: self)
                     })
-                case .assetsRegistryFail, .iconsRegistryFail:
-                    cell.configure(alertCards[indexPath.row],
-                                   onLeft: nil,
-                                   onRight: {[weak self] in
-                        self?.reloadRegistry()
-                    })
                 case .systemMessage(let text):
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
@@ -720,8 +690,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case OverviewSection.asset.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAssetCell", for: indexPath) as? OverviewAssetCell {
                 let tag = assets[indexPath.row].key
-                let info = Registry.shared.infos[tag]
-                var icon = Registry.shared.image(for: tag)
+                let info = SessionsManager.current?.registry?.infos[tag]
+                var icon = SessionsManager.current?.registry?.image(for: tag)
                 if account?.network == "mainnet" {
                     icon = UIImage(named: "ntw_btc")
                 } else if account?.network == "testnet" {
@@ -833,7 +803,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
                 let tag = assets[indexPath.row].key
                 vc.tag = tag
-                vc.asset = Registry.shared.infos[tag]
+                vc.asset = SessionsManager.current?.registry?.infos[tag]
                 vc.satoshi = presentingWallet?.satoshi?[tag]
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: false, completion: nil)

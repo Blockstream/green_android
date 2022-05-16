@@ -45,13 +45,7 @@ class AssetsListViewController: UIViewController {
     }
 
     @objc func onAssetsUpdated(_ notification: NSNotification) {
-        guard let session = SessionsManager.current else { return }
-        Guarantee()
-            .compactMap { Registry.shared.cache(session: session) }
-            .done { self.tableView.reloadData() }
-            .catch { err in
-                print(err.localizedDescription)
-        }
+        self.tableView.reloadData()
     }
 }
 
@@ -69,8 +63,8 @@ extension AssetsListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "AssetCell") as? AssetCell {
             let tag = assets[indexPath.row].key
-            let info = Registry.shared.infos[tag]
-            let icon = Registry.shared.image(for: tag)
+            let info = SessionsManager.current?.registry?.infos[tag]
+            let icon = SessionsManager.current?.registry?.image(for: tag)
             let satoshi = assets[indexPath.row].value
             cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi)
             cell.selectionStyle = .none

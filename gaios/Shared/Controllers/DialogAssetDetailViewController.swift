@@ -82,13 +82,7 @@ class DialogAssetDetailViewController: UIViewController {
     }
 
     func onAssetsUpdated(_ notification: Notification) {
-        guard let session = SessionsManager.current else { return }
-        Guarantee()
-            .compactMap { Registry.shared.cache(session: session) }
-            .done { self.tableView.reloadData() }
-            .catch { err in
-                print(err.localizedDescription)
-        }
+        self.tableView.reloadData()
     }
 
     @IBAction func btnDismiss(_ sender: Any) {

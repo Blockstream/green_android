@@ -66,7 +66,7 @@ class AccountArchiveCell: UITableViewCell {
         var icons: [UIImage] = []
         for asset in assets {
             let tag = asset.key
-            let icon = Registry.shared.image(for: tag)
+            let icon = SessionsManager.current?.registry?.image(for: tag)
             if icon != nil {
                 if icons.count > 0 {
                     if icon != icons.last {
@@ -85,7 +85,7 @@ class AccountArchiveCell: UITableViewCell {
     func sortAssets(assets: [(key: String, value: UInt64)]) -> [(key: String, value: UInt64)] {
         var tAssets: [SortingAsset] = []
         assets.forEach { asset in
-            let tAss = SortingAsset(tag: asset.key, info: Registry.shared.infos[asset.key], hasImage: Registry.shared.hasImage(for: asset.key), value: asset.value)
+            let tAss = SortingAsset(tag: asset.key, info: SessionsManager.current!.registry!.infos[asset.key], hasImage: SessionsManager.current!.registry!.hasImage(for: asset.key), value: asset.value)
             tAssets.append(tAss)
         }
         var oAssets = [(key: String, value: UInt64)]()

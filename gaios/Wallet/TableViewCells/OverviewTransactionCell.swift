@@ -66,7 +66,7 @@ class OverviewTransactionCell: UITableViewCell {
             }
         } else {
             let asset = transaction.defaultAsset
-            let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+            let info = SessionsManager.current?.registry?.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
             let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
             if let balance = Balance.convert(details: details) {
                 let (value, ticker) = balance.get(tag: transaction.defaultAsset)
@@ -80,10 +80,10 @@ class OverviewTransactionCell: UITableViewCell {
         let isAsset = !(assetTag == "btc")
         if !transaction.memo.isEmpty {
             lblAddress.text = transaction.memo
-        } else if isAsset && Registry.shared.infos[assetTag]?.entity?.domain != nil {
+        } else if isAsset && SessionsManager.current?.registry?.infos[assetTag]?.entity?.domain != nil {
             lblAddress.text = multipleAssets && isIncoming ?
                 NSLocalizedString("id_multiple_assets", comment: "") :
-                Registry.shared.infos[assetTag]?.entity?.domain ?? ""
+            SessionsManager.current?.registry?.infos[assetTag]?.entity?.domain ?? ""
         } else if isRedeposit {
             lblAddress.text = String(format: "%@ %@", NSLocalizedString("id_redeposited", comment: ""),
                                   isAsset ? NSLocalizedString("id_asset", comment: "") : "")
@@ -106,7 +106,7 @@ class OverviewTransactionCell: UITableViewCell {
         } else if network == "testnet" {
             icon.image = UIImage(named: "ntw_testnet")
         } else {
-            icon.image = Registry.shared.image(for: transaction.defaultAsset)
+            icon.image = SessionsManager.current?.registry?.image(for: transaction.defaultAsset)
         }
     }
 
