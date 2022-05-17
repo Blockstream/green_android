@@ -165,7 +165,7 @@ class SessionManager constructor(
             applicationScope = applicationScope,
             sessionManager = this,
             settingsManager = settingsManager,
-            assetsManager = assetManager,
+            assetManager = assetManager,
             greenWallet = greenWallet,
             countly = countly
         )

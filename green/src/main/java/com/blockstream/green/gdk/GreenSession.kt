@@ -39,7 +39,7 @@ class GreenSession constructor(
     private val applicationScope: ApplicationScope,
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
-    private val assetsManager: AssetManager,
+    private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
     private val countly: Countly
 ) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
@@ -123,6 +123,9 @@ class GreenSession constructor(
         get() = device != null
 
     var pendingTransaction: Pair<CreateTransactionParams, CreateTransaction>? = null
+
+    val networkAssetManager: NetworkAssetManager
+        get() = assetManager.getNetworkAssetManager(network)
 
     private val userAgent by lazy {
         String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
@@ -530,7 +533,7 @@ class GreenSession constructor(
 
     fun updateLiquidAssets(){
         if(isLiquid) {
-            assetsManager.updateAssetsIfNeeded(this)
+            networkAssetManager.updateAssetsIfNeeded(this)
         }
     }
 
@@ -697,11 +700,11 @@ class GreenSession constructor(
                             o1 == policyAsset -> -1
                             o2 == policyAsset -> 1
                             else -> {
-                                val asset1 = assetsManager.getAsset(o1)
-                                val icon1 = assetsManager.getAssetIcon(o1)
+                                val asset1 = networkAssetManager.getAsset(o1)
+                                val icon1 = networkAssetManager.getAssetIcon(o1)
 
-                                val asset2 = assetsManager.getAsset(o2)
-                                val icon2 = assetsManager.getAssetIcon(o2)
+                                val asset2 = networkAssetManager.getAsset(o2)
+                                val icon2 = networkAssetManager.getAssetIcon(o2)
 
                                 if ((icon1 == null) xor (icon2 == null)) {
                                     if (icon1 != null) -1 else 1
@@ -962,10 +965,10 @@ class GreenSession constructor(
         }
     }
 
-    fun hasAssetIcon(assetId : String) = assetsManager.hasAssetIcon(assetId)
-    fun getAsset(assetId : String): Asset? = assetsManager.getAsset(assetId)
-    fun getAssetDrawableOrNull(assetId : String): Drawable? = assetsManager.getAssetDrawableOrNull(assetId)
-    fun getAssetDrawableOrDefault(assetId : String): Drawable = assetsManager.getAssetDrawableOrDefault(assetId)
+    fun hasAssetIcon(assetId : String) = networkAssetManager.hasAssetIcon(assetId)
+    fun getAsset(assetId : String): Asset? = networkAssetManager.getAsset(assetId)
+    fun getAssetDrawableOrNull(assetId : String): Drawable? = networkAssetManager.getAssetDrawableOrNull(assetId)
+    fun getAssetDrawableOrDefault(assetId : String): Drawable = networkAssetManager.getAssetDrawableOrDefault(assetId)
 
     internal fun destroy() {
         disconnect()

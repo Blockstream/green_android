@@ -16,8 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.BalancePair
+import com.blockstream.gdk.NetworkAssetManager
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
@@ -63,9 +63,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     override val wallet by lazy { args.wallet }
 
     @Inject
-    lateinit var assetManager: AssetManager
-
-    @Inject
     lateinit var applicationScope: ApplicationScope
 
     @Inject
@@ -73,6 +70,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     val viewModel: OverviewViewModel by viewModels {
         OverviewViewModel.provideFactory(viewModelFactory, args.wallet)
     }
+
+    private val networkAssetManager: NetworkAssetManager by lazy { session.networkAssetManager }
 
     private val buttonAddNewAccount: ButtonActionListItem = ButtonActionListItem(
         text = StringHolder(R.string.id_add_new_account),
@@ -493,7 +492,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
 
         // Notify adapter when assets are updated
-        assetManager.getAssetsUpdated().asFlow().drop(1).onEach {
+        networkAssetManager.getAssetsUpdated().asFlow().drop(1).onEach {
             fastAdapter.notifyAdapterDataSetChanged()
         }.launchIn(lifecycleScope)
 
