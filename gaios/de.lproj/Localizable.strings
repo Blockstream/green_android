@@ -57,7 +57,7 @@
 "id_advanced_options_for_your_third" = "Fortgeschrittene Optionen für deinen dritten Wiederherstellungs-Schlüssel";
 "id_all" = "Alle";
 "id_all_assets" = "Alle Assets";
-"id_all_coins" = "(All coins)";
+"id_all_coins" = "(Alle Coins)";
 "id_all_networks" = "Alle Netzwerke";
 "id_all_of_the_accounts_in_your" = "Alle Konten in deinem Wallet müssen leer sein, bevor du sie löschst.";
 "id_all_the_coins_received_or" = "Alle Coins, die empfangen oder als Wechselgeld erhalten wurden.";
@@ -110,7 +110,7 @@
 "id_bitcoin_denomination" = "Bitcoin-Denominierung";
 "id_bitcoin_electrum_server" = "Bitcoin Electrum Server";
 "id_bitcoin_is_the_worlds_leading" = "Bitcoin ist das weltweit führende P2P-Kryptowährungs-Netzwerk. Wählen, um Bitcoin zu senden und zu empfangen.";
-"id_bitcoin_testnet_and_liquid" = "Bitcoin Testnet and Liquid Testnet";
+"id_bitcoin_testnet_and_liquid" = "Bitcoin-Testnet und Liquid-Testnet";
 "id_bitcoin_wallet" = "Bitcoin Wallet.";
 "id_bitcoin_wallets" = "Bitcoin-Wallets";
 "id_block" = "Block";
@@ -179,7 +179,7 @@
 "id_confirm_code" = "Code bestätigen";
 "id_confirm_passphrase" = "Passphrase bestätigen";
 "id_confirm_transaction" = "Transaktion bestätigen";
-"id_confirm_transaction_details_on" = "Confirm transaction details on your hardware wallet";
+"id_confirm_transaction_details_on" = "Bestätige die Transaktionsdetails auf deiner Hardware-Wallet";
 "id_confirm_update_on_your_jade" = "Bestätige das Update auf deinem Jade";
 "id_confirm_via_2fa_that_you" = "Bitte per 2FA bestätigen, dass du diese Änderunge authorisierst.";
 "id_confirmation_in_d_blocks" = "Bestätigung in %d Blöcken";
@@ -237,7 +237,7 @@
 "id_d_asset_in_this_account" = "%d Asset in diesem Konto";
 "id_d_assets" = "%d Assets";
 "id_d_assets_in_this_account" = "%d Assets in diesem Konto";
-"id_d_coins_selected" = "(%d coins selected)";
+"id_d_coins_selected" = "(%d Coins ausgewählt)";
 "id_d_words" = "%d Wörter";
 "id_data_directory" = "Datenverzeichnis";
 "id_date" = "Datum";
@@ -393,7 +393,7 @@
 "id_hide_assets" = "Assets verbergen";
 "id_high" = "Hoch";
 "id_hold_your_nfc_tag_close_to_the" = "Halten Sie Ihren NFC-Tag nahe am Gerät";
-"id_home" = "Home";
+"id_home" = "Startseite";
 "id_hour" = "Stunde";
 "id_hours" = "Stunden";
 "id_how_to_stop_this_reset" = "Wie man dieses Reset aufhält";
@@ -505,7 +505,7 @@
 "id_logout" = "Logout";
 "id_logout_and_switch" = "Logout und Wechseln";
 "id_look_at_the_device_for_the" = "Schau auf dein Gerät um die Ziffernpositionen festzustellen";
-"id_looking_for_wallets" = "Looking for wallets…";
+"id_looking_for_wallets" = "Suche nach Wallets...";
 "id_looks_like_you_havent_used_a" = "Sieht so aus, also ob du noch kein Wallet verwendet hast. Probiere, ein neues einzurichten.";
 "id_low" = "Niedrig";
 "id_main_account" = "Hauptkonto";
@@ -561,7 +561,7 @@
 "id_no_amount_specified" = "Kein Betrag angegeben";
 "id_no_asset_in_this_account" = "Keine Assets in diesem Konto";
 "id_no_attempts_remaining" = "Keine Versuche übrig";
-"id_no_coins_selected" = "(No coins selected)";
+"id_no_coins_selected" = "(Keine Coins ausgewählt)";
 "id_no_device_connected" = "Kein Gerät verbunden";
 "id_no_more_assets" = "Keine Assets mehr.";
 "id_no_peers_connected" = "Keine Peers verbunden";
@@ -854,7 +854,7 @@
 "id_the_easier_safer_and_faster" = "die einfachere, sicherere und schnellere Wallet";
 "id_the_email_will_also_be_used_to" = "Die E-Mail wird auch dazu verwendet, Wiederherstellungsdaten und Transaktionsbenachrichtigungen zu erhalten";
 "id_the_hardware_wallet_you_are" = "Die ausgewählte Hardware Wallet wird zur Zeit nicht unterstützt";
-"id_the_liquid_network_is_a_bitcoin" = "Das Liquid-Netzwerk ist eine Bitcoin-Sidechain. Auswählen, um Liquid Bitcoin (L-BTC), Tether (USDt) und andere Liquid-Assets senden und empfangen zu können.";
+"id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.";
 "id_the_network_selected_on_the" = "Das in der Green App ausgewählte Netzwerk ist nicht das im Hardware Wallet ausgewählte Netzwerk. Bitte wähle für beide Geräte dasselbe Netzwerk.";
 "id_the_new_email_will_be_used_for" = "Die neue E-Mail-Adresse wird für die Zwei-Faktor-Authentifizierung verwendet, sobald das Zurücksetzen abgeschlossen ist. Das Zurücksetzen dauert 12 Monate zuzüglich einer eventuellen restlichen Zeitsperre.";
 "id_the_password_cant_be_empty" = "Das Passwort kann nicht leer sein";

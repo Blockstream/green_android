@@ -854,7 +854,7 @@
 "id_the_easier_safer_and_faster" = "простіший, безпечніший та більш швидкий гаманець";
 "id_the_email_will_also_be_used_to" = "Електронна пошта також буде використовуватися для отримання даних для відновлення і повідомлень про транзакції";
 "id_the_hardware_wallet_you_are" = "Апаратний гаманець, який ви використовуєте, ще не підтримується";
-"id_the_liquid_network_is_a_bitcoin" = "Liquid Network - це сайдчейн мережі Bitcoin. Виберіть, щоб відправляти і отримувати Liquid-біткоіни (L-BTC), Tether (USDt) та інші Liquid-активи.";
+"id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.";
 "id_the_network_selected_on_the" = "Мережа, обрана в додатку Green, відрізняється від мережі, обраної в апаратному гаманці. Виберіть одну і ту ж мережу на обох пристроях.";
 "id_the_new_email_will_be_used_for" = "Нова адреса електронної пошти буде використовуватися для двофакторної аутентифікації після завершення скидання. Скидання займає 12 місяців плюс залишившийся час блокування.";
 "id_the_password_cant_be_empty" = "Поле пароля не може залишатись порожнім";

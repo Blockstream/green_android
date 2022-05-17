@@ -854,7 +854,7 @@
 "id_the_easier_safer_and_faster" = "Ví dễ hơn, an toàn hơn và nhanh hơn";
 "id_the_email_will_also_be_used_to" = "The email will also be used to receive recovery data and transaction notifications";
 "id_the_hardware_wallet_you_are" = "VÍ cứng bạn không được hổ trợ";
-"id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin sidechain. Select to send and receive Liquid Bitcoin (L-BTC), Tether (USDt), and other Liquid assets.";
+"id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.";
 "id_the_network_selected_on_the" = "Mạng được chọn trên ứng dụng Green khác với mạng được chọn trên ví  cứng. Chọn cùng một mạng trên cả hai thiết bị.";
 "id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
 "id_the_password_cant_be_empty" = "Mật khẩu không thể trống";

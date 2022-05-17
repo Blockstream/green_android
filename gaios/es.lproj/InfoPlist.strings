@@ -1,4 +1,4 @@
 NSFaceIDUsageDescription = "Green utiliza la autenticación biométrica para simplificar el acceso a la cartera";
-NSBluetoothAlwaysUsageDescription = "Green uses Bluetooth for communication with hardware wallets";
-NSBluetoothPeripheralUsageDescription = "Green uses Bluetooth to connect to hardware wallets";
+NSBluetoothAlwaysUsageDescription = "Green emplea Bluetooth para comunicarse con el hardware cartera.";
+NSBluetoothPeripheralUsageDescription = "Green emplea Bluetooth para conectarse con el hardware cartera.";
 NSCameraUsageDescription = "Utilizamos la cámara para escanear los códigos QR";

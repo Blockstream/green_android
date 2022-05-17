@@ -854,7 +854,7 @@
 "id_the_easier_safer_and_faster" = "the easier, safer and faster wallet";
 "id_the_email_will_also_be_used_to" = "The email will also be used to receive recovery data and transaction notifications";
 "id_the_hardware_wallet_you_are" = "The hardware wallet you are using is not yet supported";
-"id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin sidechain. Select to send and receive Liquid Bitcoin (L-BTC), Tether (USDt), and other Liquid assets.";
+"id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.";
 "id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
 "id_the_password_cant_be_empty" = "The password can't be empty";

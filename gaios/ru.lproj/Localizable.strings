@@ -854,7 +854,7 @@
 "id_the_easier_safer_and_faster" = "более простой, безопасный и быстрый кошелек";
 "id_the_email_will_also_be_used_to" = "Электронная почта также будет использоваться для получения данных для восстановления и уведомлений о транзакциях";
 "id_the_hardware_wallet_you_are" = "Используемый вами аппаратный кошелек пока не поддерживается";
-"id_the_liquid_network_is_a_bitcoin" = "Liquid Network - это сайдчейн сети Bitcoin. Выберите, чтобы отправлять и получать Liquid-биткоины (L-BTC), Tether (USDt) и другие Liquid-активы.";
+"id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.";
 "id_the_network_selected_on_the" = "Сеть, выбранная в приложении Green, отличается от сети, выбранной в аппаратном кошельке. Выберите одну и ту же сеть на обоих устройствах.";
 "id_the_new_email_will_be_used_for" = "Новый адрес электронной почты будет использоваться для двухфакторной аутентификации после завершения сброса. Сброс занимает 12 месяцев плюс оставшееся время блокировки.";
 "id_the_password_cant_be_empty" = "Поле пароля не может быть пустым";
