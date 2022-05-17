@@ -139,6 +139,7 @@ class OverviewViewModel @AssistedInject constructor(
     fun refresh(){
         session.updateSubAccountsAndBalances(refresh = true)
         session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
+        session.updateLiquidAssets()
     }
 
     private fun filterSubAccounts(subAccounts: List<SubAccount>): List<SubAccount> {

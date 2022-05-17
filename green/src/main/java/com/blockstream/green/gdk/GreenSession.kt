@@ -518,13 +518,18 @@ class GreenSession constructor(
             }
         }
 
+        // Update Liquid Assets from GDK before getting balances to sort them properly
+        updateLiquidAssets()
+
         updateSubAccountsAndBalances(isInitialize = true, refresh = false)
 
         updateSystemMessage()
 
         setActiveAccount(accountIndex)
+    }
 
-        if (network.isLiquid) {
+    fun updateLiquidAssets(){
+        if(isLiquid) {
             assetsManager.updateAssetsIfNeeded(this)
         }
     }

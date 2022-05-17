@@ -125,38 +125,36 @@ class AssetManager constructor(
     }
 
     private fun updateMetadataFromSession(provider: AssetsProvider, forceUpdate: Boolean) {
-
-        if (status.metadataStatus != CacheStatus.Latest || forceUpdate) {
+        if (status.metadataStatus != CacheStatus.Latest || status.iconStatus != CacheStatus.Latest || forceUpdate) {
 
             coroutineScope.launch(context = Dispatchers.IO) {
 
                 try {
+
                     statusLiveData.postValue(status.apply { onProgress = true })
 
-                    // Allow forceUpdate to override QATester settings
-                    if (QATester.isAssetFetchDisabled() && !forceUpdate) {
-                        return@launch
-                    }
-
-                    try {
-                        // Try to update the registry - only metadata
-                        // Fetch assets without icons as we have better chances to complete the network call
-                        updateMetadata(
-                            provider.refreshAssets(
-                                AssetsParams(
-                                    assets = true,
-                                    icons = false,
-                                    refresh = true
-                                )
-                            )
-                        )
+                    if (status.metadataStatus != CacheStatus.Latest || forceUpdate) {
 
                         // Allow forceUpdate to override QATester settings
-                        if (QATester.isAssetIconsFetchDisabled() && !forceUpdate) {
-                            return@launch
+                        if (!QATester.isAssetFetchDisabled() || forceUpdate) {
+                            // Try to update the registry - only metadata
+                            // Fetch assets without icons as we have better chances to complete the network call
+                            updateMetadata(
+                                provider.refreshAssets(
+                                    AssetsParams(
+                                        assets = true,
+                                        icons = false,
+                                        refresh = true
+                                    )
+                                )
+                            )
                         }
+                    }
 
-                        try {
+                    if (status.iconStatus != CacheStatus.Latest || forceUpdate) {
+
+                        // Allow forceUpdate to override QATester settings
+                        if (!QATester.isAssetIconsFetchDisabled() || forceUpdate) {
                             // Try to update the registry - only icons
                             updateIcons(
                                 provider.refreshAssets(
@@ -167,15 +165,11 @@ class AssetManager constructor(
                                     )
                                 )
                             )
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
-
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
 
-
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 } finally {
                     statusLiveData.postValue(status.apply { onProgress = false })
                     assetsUpdatedEvent.postValue((assetsUpdatedEvent.value ?: 0) + 1)
