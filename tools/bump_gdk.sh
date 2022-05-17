@@ -26,7 +26,7 @@ for PLAT in "gdk-iphone" "gdk-iphone-sim"; do
    SHA256=$(shasum -a256 $TEMP | awk '{print $1;}')
    echo $SHA256
    if [[ "$PLAT" == "gdk-iphone" ]]; then
-      sed -i '' -e "s/SHA256_IPHONE=.*/SHA256_IPHONE=\"${SHA256}\"/" ./tools/fetch_gdk_binaries.sh
+      sed -i '' -e "s/SHA256=\".*/SHA256=\"${SHA256}\"/" ./tools/fetch_gdk_binaries.sh
    else
       sed -i '' -e "s/SHA256_IPHONESIM=.*/SHA256_IPHONESIM=\"${SHA256}\"/" ./tools/fetch_gdk_binaries.sh
    fi
