@@ -45,6 +45,7 @@ class OverviewTransactionCell: UITableViewCell {
     }
 
     func setup(transaction: Transaction, network: String?) {
+        prepareForReuse()
         self.backgroundColor = UIColor.customTitaniumDark()
         statusBadge.layer.cornerRadius = 3.0
         let assetTag = transaction.defaultAsset

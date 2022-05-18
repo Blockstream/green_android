@@ -31,6 +31,7 @@ class OverviewAssetCell: UITableViewCell {
     }
 
     func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64, isLiquid: Bool = false) {
+        prepareForReuse()
         let isBtc = tag == btc
         let asset = info ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
         var details = ["satoshi": satoshi] as [String: Any]
