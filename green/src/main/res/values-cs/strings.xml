@@ -59,7 +59,7 @@
   <string name="id_advanced_options_for_your_third">Rozšířené možnosti pro třetí klíč pro obnovení</string>
   <string name="id_all">Vše</string>
   <string name="id_all_assets">Všechna aktiva</string>
-  <string name="id_all_coins">Všechny mince</string>
+  <string name="id_all_coins">(Všechny mince)</string>
   <string name="id_all_networks">Všechny sítě</string>
   <string name="id_all_of_the_accounts_in_your">Před odstraněním musí být všechny účty v peněžence prázdné.</string>
   <string name="id_all_the_coins_received_or">Všechny mince přijaté nebo vytvořené jako rozměněné.</string>
@@ -112,6 +112,7 @@
   <string name="id_bitcoin_denomination">Nominální hodnota bitcoinu</string>
   <string name="id_bitcoin_electrum_server">Server Bitcoin Electrum</string>
   <string name="id_bitcoin_is_the_worlds_leading">Bitcoin je přední světová P2P kryptoměnová síť. Vyberte pro odesílání a přijímání bitcoinů.</string>
+  <string name="id_bitcoin_testnet_and_liquid">Bitcoin Testnet a Liquid Testnet</string>
   <string name="id_bitcoin_wallet">Bitcoin peněženka.</string>
   <string name="id_bitcoin_wallets">Bitcoinové peněženky</string>
   <string name="id_block">blok</string>
@@ -180,7 +181,7 @@
   <string name="id_confirm_code">Potvrďte kód</string>
   <string name="id_confirm_passphrase">Potvrďte přístupovou frázi (passphrase)</string>
   <string name="id_confirm_transaction">Potvrdit transakci</string>
-  <string name="id_confirm_transaction_details_on">Potvrďte podrobnosti transakce na vaší hardwarové peněžence</string>
+  <string name="id_confirm_transaction_details_on">Potvrďte údaje o transakci ve své hardwarové peněžence</string>
   <string name="id_confirm_update_on_your_jade">Potvrďte aktualizaci na svém Jade</string>
   <string name="id_confirm_via_2fa_that_you">Prostřednictvím 2FA potvrďte, že tuto změnu autorizujete.</string>
   <string name="id_confirmation_in_d_blocks">Potvrzení v %d blocích</string>
@@ -238,7 +239,7 @@
   <string name="id_d_asset_in_this_account">%d aktivum v tomto účtu</string>
   <string name="id_d_assets">%d aktiva</string>
   <string name="id_d_assets_in_this_account">%d aktiva v tomto účtu</string>
-  <string name="id_d_coins_selected">vybrané mince %d</string>
+  <string name="id_d_coins_selected">(%d vybrané mince)</string>
   <string name="id_d_words">%d slova</string>
   <string name="id_data_directory">Datový adresář</string>
   <string name="id_date">Datum</string>
@@ -394,6 +395,7 @@
   <string name="id_hide_assets">Skrýt aktiva</string>
   <string name="id_high">Vysoký</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Držte NFC tag v blízkosti zařízení</string>
+  <string name="id_home">Domů</string>
   <string name="id_hour">hodina</string>
   <string name="id_hours">hodiny</string>
   <string name="id_how_to_stop_this_reset">Jak zastavit tento reset</string>
@@ -505,6 +507,7 @@
   <string name="id_logout">Odhlásit se</string>
   <string name="id_logout_and_switch">Odhlášení a přepnutí</string>
   <string name="id_look_at_the_device_for_the">Podívejte se na zařízení na pozice čísel</string>
+  <string name="id_looking_for_wallets">Hledám peněženky...</string>
   <string name="id_looks_like_you_havent_used_a">Vypadá to, že jste dosud nepoužili peněženku. Zkuste vytvořit novou.</string>
   <string name="id_low">Nízký</string>
   <string name="id_main_account">Hlavní účet</string>
@@ -560,7 +563,7 @@
   <string name="id_no_amount_specified">Nebyla zadána žádná částka</string>
   <string name="id_no_asset_in_this_account">Žádná aktiva na tomto účtu</string>
   <string name="id_no_attempts_remaining">Nezbývají žádné pokusy</string>
-  <string name="id_no_coins_selected">Nebyly vybrány žádné mince</string>
+  <string name="id_no_coins_selected">(Nebyly vybrány žádné mince)</string>
   <string name="id_no_device_connected">Není připojeno žádné zařízení</string>
   <string name="id_no_more_assets">Žádná další aktiva.</string>
   <string name="id_no_peers_connected">Nejsou připojeny žádné uzly</string>
@@ -853,7 +856,7 @@
   <string name="id_the_easier_safer_and_faster">jednodušší, bezpečnější a rychlejší peněženka</string>
   <string name="id_the_email_will_also_be_used_to">E-mail bude také použit k přijímání dat pro obnovení a oznámení o transakcích</string>
   <string name="id_the_hardware_wallet_you_are">Hardwarová peněženka, kterou používáte, není zatím podporována</string>
-  <string name="id_the_liquid_network_is_a_bitcoin">Liquid Network je bitcoinový postranní řetěz. Vyberte pro odesílání a přijímání Liquid Bitcoin (L-BTC), Tether (USDt) a další Liquid aktiva.</string>
+  <string name="id_the_liquid_network_is_a_bitcoin">The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.</string>
   <string name="id_the_network_selected_on_the">Síť vybraná v aplikaci Green se liší od sítě vybrané v hardwarové peněžence. Vyberte stejnou síť na obou zařízeních.</string>
   <string name="id_the_new_email_will_be_used_for">Po dokončení resetu bude nový e-mail použit pro 2-Faktorové ověření. Reset trvá 12 měsíců plus zbývající časový blok.</string>
   <string name="id_the_password_cant_be_empty">Heslo nemůže být prázdné</string>
