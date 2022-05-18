@@ -521,8 +521,8 @@ extension UserSettingsViewController {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-        }.catch {_ in
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_username_not_available", comment: ""))
+        }.catch { _ in
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: "")
         }
     }
 
