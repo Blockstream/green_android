@@ -306,9 +306,9 @@ class SessionManager: Session {
                     return self.loadTwoFactorConfig().then { _ in Promise<Void>() }
                 }
                 return Promise<Void>()
-            }.compactMap { _ in
+            }.map { _ in
                 self.registry?.cache(session: self)
-                return self.registry?.loadAsync(session: self)
+                self.registry?.loadAsync(session: self)
             }
     }
 }

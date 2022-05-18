@@ -117,12 +117,24 @@ struct Transaction {
         }
     }
 
-    static func sort<T>(_ dict: [String: T]) -> [(key: String, value: T)] {
+    static func sort(_ dict: [String: UInt64]) -> [(key: String, value: UInt64)] {
         var sorted = dict.filter { $0.key != feeAsset }.sorted(by: {$0.0 < $1.0 })
         if dict.contains(where: { $0.key == feeAsset }) {
             sorted.insert((key: feeAsset, value: dict[feeAsset]!), at: 0)
         }
-        return Array(sorted)
+        var tAssets: [SortingAsset] = []
+        Array(sorted).forEach { asset in
+            let info = SessionsManager.current?.registry?.infos[asset.key]
+            let hasImage = SessionsManager.current!.registry?.hasImage(for: asset.key)
+            let tAss = SortingAsset(tag: asset.key, info: info, hasImage: hasImage ?? false, value: asset.value)
+            tAssets.append(tAss)
+        }
+        var oAssets = [(key: String, value: UInt64)]()
+        tAssets.sort(by: {!$0.hasImage && !$1.hasImage ? $0.info?.ticker != nil && !($1.info?.ticker != nil) : $0.hasImage && !$1.hasImage})
+        tAssets.forEach { asset in
+            oAssets.append((key:asset.tag, value: asset.value))
+        }
+        return oAssets
     }
 
     /// Asset we are trying to send or receive, other than bitcoins for fees

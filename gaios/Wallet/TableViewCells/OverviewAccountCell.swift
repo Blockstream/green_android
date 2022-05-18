@@ -53,14 +53,13 @@ class OverviewAccountCell: UITableViewCell {
             lblBalance.isHidden = !showAccounts
         }
 
-        let accountType: AccountType? = AccountType(rawValue: account.type)
+        let accountType = AccountType(rawValue: account.type)
         self.lblAccountHint.text = accountType?.name ?? ""
         self.action = action
         self.actionBtn.isHidden = action == nil
 
         var assets = [(key: String, value: UInt64)]()
         assets = Transaction.sort(account.satoshi ?? [:])
-        assets = sortAssets(assets: assets)
 
         for v in iconsStack.subviews {
             v.removeFromSuperview()

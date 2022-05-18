@@ -407,24 +407,8 @@ class OverviewViewController: UIViewController {
         assets = [(key: String, value: UInt64)]()
         if let wallet = presentingWallet {
             assets = Transaction.sort(wallet.satoshi ?? [:])
-            sortAssets()
         }
         self.reloadSections([OverviewSection.asset], animated: false)
-    }
-
-    func sortAssets() {
-        var tAssets: [SortingAsset] = []
-        assets.forEach { asset in
-            let tAss = SortingAsset(tag: asset.key, info: SessionsManager.current!.registry!.infos[asset.key], hasImage: SessionsManager.current!.registry!.hasImage(for: asset.key), value: asset.value)
-            tAssets.append(tAss)
-        }
-        var oAssets = [(key: String, value: UInt64)]()
-        tAssets.sort(by: {!$0.hasImage && !$1.hasImage ? $0.info?.ticker != nil && !($1.info?.ticker != nil) : $0.hasImage && !$1.hasImage})
-
-        tAssets.forEach { asset in
-            oAssets.append((key:asset.tag, value: asset.value))
-        }
-        assets = oAssets
     }
 
     @objc func addAccount() {
