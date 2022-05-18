@@ -6,16 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Unreleased
 
 ### Added
-- Ad-hoc distribution app for internal testing 
-- Add support for ledger singlesig wallet
+
+### Changed
+
+### Fixed
+
+## [3.8.2] - 2022-05-18
+
+### Added
+- Singlesig Bitcoin wallets support for Ledger Nano X hardware devices
+- Ad-hoc app distribution for internal testing
 
 ### Changed
 - Improved CI for internal testing
 - Improved receive screen layout
+- Updated GDK to version 0.0.54
+- Updated logic for liquid assets icons and metadata
 
 ### Fixed
-- Remove tor availability alert dialog
-- Add watchonly for hw singlesig wallet
+- Removed tor unavailability warning
+- Added watch-only setting for multisig shield wallets used with hardware devices
  
 ## [3.8.1] - 2022-04-27
 
