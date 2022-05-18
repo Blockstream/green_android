@@ -51,8 +51,11 @@ final class Jade: JadeChannel, HWProtocol {
                 let jadePackage = JadeRequest<JadeHandshakeCompleteReply>(method: res.result?.httpRequest.onReply ?? "",
                                                                         params: package)
                 return self.exchange(jadePackage)
-            }.flatMap { (res: JadeResponse<Bool>) -> Observable<Bool> in
-                return Observable.just(res.result ?? true)
+            }.compactMap { (res: JadeResponse<Bool>) -> Bool in
+                if let result = res.result, result {
+                    return result
+                }
+                throw JadeError.Abort(res.error?.message ?? "Invalid pin")
             }
     }
 
