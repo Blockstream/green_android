@@ -112,7 +112,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
             try session.getAvailableCurrencies()
         }.done { (data: [String: Any]?) in
             guard let json = data else { return }
-            guard let perExchange = json["per_exchange"] as? [String: [String]] else { throw GaError.GenericError }
+            guard let perExchange = json["per_exchange"] as? [String: [String]] else { throw GaError.GenericError() }
             self.currencyList.removeAll()
             for (exchange, array) in perExchange {
                 for currency in array {

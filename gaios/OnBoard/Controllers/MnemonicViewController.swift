@@ -175,7 +175,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                     textField.isSecureTextEntry = true
                 }
                 alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
-                    seal.reject(GaError.GenericError)
+                    seal.reject(GaError.GenericError())
                 })
                 alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
                     let textField = alert.textFields![0]

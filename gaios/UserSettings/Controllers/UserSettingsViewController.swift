@@ -507,6 +507,54 @@ extension UserSettingsViewController {
         self.present(alert, animated: true, completion: nil)
     }
 
+    func showWatchOnly() {
+        let alert = UIAlertController(title: NSLocalizedString("id_set_up_watchonly", comment: ""), message: NSLocalizedString("id_allows_you_to_quickly_check", comment: ""), preferredStyle: .alert)
+        alert.addTextField { (textField) in
+            textField.placeholder = NSLocalizedString("id_username", comment: "")
+            textField.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.usernameField
+        }
+        alert.addTextField { (textField) in
+            textField.placeholder = NSLocalizedString("id_password", comment: "")
+            textField.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.passwordField
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
+            let username = alert.textFields![0].text!
+            let password = alert.textFields![1].text!
+            self.setWatchOnly(username: username, password: password)
+        })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func setWatchOnly(username: String, password: String) {
+        if username.isEmpty {
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_enter_a_valid_username", comment: ""))
+            return
+        } else if password.isEmpty {
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_the_password_cant_be_empty", comment: ""))
+            return
+        }
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try SessionsManager.current?.setWatchOnly(username: username, password: password)
+            try self.load()
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.reloadData()
+        }.catch { err in
+            switch err {
+            case GaError.GenericError(let desc):
+                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: desc ?? "")
+            default:
+                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: err.localizedDescription)
+            }
+        }
+    }
+
     func showAutoLogout() {
         guard let settings = SessionsManager.current?.settings else { return }
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
@@ -597,7 +645,7 @@ extension UserSettingsViewController {
         }.ensure {
             self.stopAnimating()
         }.catch { error in
-            if let err = error as? GaError, err != GaError.GenericError {
+            if let err = error as? GaError {
                 self.onAuthError(message: NSLocalizedString("id_connection_failed", comment: ""))
             } else if let err = error as? AuthenticationTypeHandler.AuthError {
                 self.onBioAuthError(message: err.localizedDescription)

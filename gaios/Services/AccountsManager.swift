@@ -72,7 +72,7 @@ class AccountsManager {
                                     kSecReturnData as String: kCFBooleanTrue ?? true]
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess else {
-            throw GaError.GenericError
+            throw GaError.GenericError()
         }
     }
 
@@ -94,7 +94,7 @@ class AccountsManager {
                 let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
                 print("Operation failed: \(status) \(text))")
             }
-            throw GaError.GenericError
+            throw GaError.GenericError()
         }
     }
 
@@ -111,9 +111,9 @@ class AccountsManager {
                 let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
                 print("Operation failed: \(status) \(text))")
             }
-            throw GaError.GenericError
+            throw GaError.GenericError()
         }
-        guard let data = retrivedData as? Data else { throw GaError.GenericError }
+        guard let data = retrivedData as? Data else { throw GaError.GenericError() }
         return try JSONDecoder().decode([Account].self, from: data)
     }
 

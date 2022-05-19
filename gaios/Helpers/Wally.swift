@@ -31,7 +31,7 @@ public func sigToDer(sig: [UInt8]) throws -> [UInt8] {
     let derPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(EC_SIGNATURE_DER_MAX_LEN))
     var written: Int = 0
     if wally_ec_sig_to_der(sigPtr, sig.count, derPtr, Int(EC_SIGNATURE_DER_MAX_LEN), &written) != WALLY_OK {
-        throw GaError.GenericError
+        throw GaError.GenericError()
     }
     let der = Array(UnsafeBufferPointer(start: derPtr, count: written))
     // derPtr.deallocate()
@@ -53,13 +53,13 @@ public func bip32KeyFromParentToBase58(isMainnet: Bool = true, pubKey: [UInt8], 
 
     if bip32_key_init_alloc(UInt32(version), UInt32(0), UInt32(0), chainCode_, chainCode.count,
                              pubKey_, pubKey.count, nil, 0, nil, 0, nil, 0, &subactkey) != WALLY_OK {
-        throw GaError.GenericError
+        throw GaError.GenericError()
     }
     if bip32_key_from_parent_alloc(subactkey, branch, UInt32(BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH), &branchkey) != WALLY_OK {
-        throw GaError.GenericError
+        throw GaError.GenericError()
     }
     if bip32_key_to_base58(branchkey, UInt32(BIP32_FLAG_KEY_PUBLIC), &xpubPtr) != WALLY_OK {
-        throw GaError.GenericError
+        throw GaError.GenericError()
     }
     return String(cString: xpubPtr!)
 }
@@ -68,7 +68,7 @@ public func sha256d(_ input: [UInt8]) throws -> [UInt8] {
     let inputPtr: UnsafePointer<UInt8> = UnsafePointer(input)
     let outputPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(SHA256_LEN))
     if wally_sha256d(inputPtr, input.count, outputPtr, Int(SHA256_LEN)) != WALLY_OK {
-        throw GaError.GenericError
+        throw GaError.GenericError()
     }
     return Array(UnsafeBufferPointer(start: outputPtr, count: Int(SHA256_LEN)))
 }
@@ -80,7 +80,7 @@ func asset_final_vbf(values: [UInt64], numInputs: Int, abf: [UInt8], vbf: [UInt8
     let len = Int(BLINDING_FACTOR_LEN)
     let bufferPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: len)
     if wally_asset_final_vbf(valuesPtr, values.count, numInputs, abfPtr, abf.count, vbfPtr, vbf.count, bufferPtr, len) != WALLY_OK {
-        throw GaError.GenericError
+        throw GaError.GenericError()
     }
     return Array(UnsafeBufferPointer(start: bufferPtr, count: len))
 }

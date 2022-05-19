@@ -17,7 +17,7 @@ extension TwoFactorCall {
             }.then { json in
                 try self.resolving(json: json, connected: connected, session: (session ?? SessionsManager.current)!).map { _ in json }
             }.then(on: bgq) { json -> Promise<[String: Any]> in
-                guard let status = json["status"] as? String else { throw GaError.GenericError }
+                guard let status = json["status"] as? String else { throw GaError.GenericError() }
                 if status == "done" {
                     return Promise<[String: Any]> { seal in seal.fulfill(json) }
                 } else {
@@ -29,7 +29,7 @@ extension TwoFactorCall {
     }
 
     private func resolving(json: [String: Any], connected: @escaping() -> Bool = { true }, session: SessionManager) throws -> Promise<Void> {
-        guard let status = json["status"] as? String else { throw GaError.GenericError }
+        guard let status = json["status"] as? String else { throw GaError.GenericError() }
         let bgq = DispatchQueue.global(qos: .background)
         switch status {
         case "done":
@@ -89,7 +89,7 @@ extension TwoFactorCall {
             return Guarantee().map {
                 let status = connected()
                 if !status {
-                    throw GaError.TimeoutError
+                    throw GaError.TimeoutError()
                 }
             }.recover { error -> Promise<Void> in
                 guard attempts < 5 else { throw error }

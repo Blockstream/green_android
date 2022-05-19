@@ -174,7 +174,7 @@ class LedgerCommands: LedgerChannel {
         if path.count == 0 {
             return [0]
         } else if path.count > 10 {
-            throw GaError.GenericError
+            throw GaError.GenericError()
         }
         var buffer = [UInt8(path.count)]
         for p in path {

@@ -211,7 +211,7 @@ class SetPinViewController: UIViewController {
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         }.catch { error in
-            if let err = error as? GaError, err != GaError.GenericError {
+            if let err = error as? GaError {
                 self.showError(NSLocalizedString("id_connection_failed", comment: ""))
             } else if let err = error as? AuthenticationTypeHandler.AuthError {
                 self.showError(err.localizedDescription)

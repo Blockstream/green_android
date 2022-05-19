@@ -296,7 +296,7 @@ extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
             return wallet.getAddress()
         }.done { address in
             if address.isEmpty {
-                throw GaError.GenericError
+                throw GaError.GenericError()
             }
             if option == .address {
                 let uri = self.uriBitcoin(address: address)
