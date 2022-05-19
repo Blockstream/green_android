@@ -104,6 +104,7 @@ class WalletSettingsViewController: KeyboardViewController {
         btnSave.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.saveBtn
         btnCancel.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.cancelBtn
         switchTestnet.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.testnetSwitch
+        switchAnalytics.isOn = AMan.S.consent == .authorized
 
         AMan.S.recordView(.appSettings)
     }
@@ -118,7 +119,7 @@ class WalletSettingsViewController: KeyboardViewController {
         lblTestnetTitle.text = NSLocalizedString("id_enable_testnet", comment: "")
         lblTestnetHint.text = ""
         lblAnalyticsTitle.text = "Help Green improve"
-        lblAnalyticsHint.text = "Enable anonimous data collection"
+        lblAnalyticsHint.text = "Enable anonymous data collection"
         btnAnalytics.setTitle("More info", for: .normal)
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
@@ -262,11 +263,36 @@ class WalletSettingsViewController: KeyboardViewController {
             Constants.liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text ?? ""
         ]
         UserDefaults.standard.set(switchTestnet.isOn, forKey: AppStorage.testnetIsVisible)
+
+        switch AMan.S.consent { //current value
+        case .authorized:
+            if switchAnalytics.isOn {
+                // no change
+            } else {
+                AMan.S.consent = .denied
+            }
+        case .notDetermined:
+            if switchAnalytics.isOn {
+                AMan.S.consent = .authorized
+            } else {
+                AMan.S.consent = .denied
+            }
+        case .denied:
+            if switchAnalytics.isOn {
+                AMan.S.consent = .authorized
+            } else {
+                //no change
+            }
+        }
+
         delegate?.didSet(tor: switchTor.isOn)
         delegate?.didSet(testnet: switchTestnet.isOn)
         dismiss(animated: true, completion: nil)
     }
 
+    @IBAction func btnAnalytics(_ sender: Any) {
+        UIApplication.shared.open(ExternalUrls.analyticsReadMore, options: [:], completionHandler: nil)
+    }
 }
 
 extension WalletSettingsViewController: UITextFieldDelegate {

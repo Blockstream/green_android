@@ -334,6 +334,8 @@ class OverviewViewController: UIViewController {
         let accountsTypes: String = Array(Set(subAccounts.map { $0.type })).sorted().joined(separator: ",")
 
         AMan.S.activeWallet(account: AccountsManager.shared.current, walletData: AMan.WalletData(walletFunded: walletFunded, accountsFunded: accountsFunded, accounts: accounts, accountsTypes: accountsTypes))
+
+        showAnalyticsConsent()
     }
 
     func loadWallet() -> Promise<Void> {

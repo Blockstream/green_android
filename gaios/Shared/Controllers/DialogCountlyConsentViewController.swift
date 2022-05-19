@@ -77,15 +77,16 @@ class DialogCountlyConsentViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "Help Green improve"
-        lblHint.text = "If you agree. Green will collect anonymous data to optimize the user experience. No individual user or wallet can be identified"
-        btnDeny.setTitle("Don't collect data", for: .normal)
-        btnAllow.setTitle("Allow collection", for: .normal)
+        lblHint.text = "If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected."
+        btnDeny.setTitle("Don’t collect data", for: .normal)
+        btnAllow.setTitle("Allow data collection", for: .normal)
         lblExpand.text = self.expandText
 
         lblCollectTitle.text = "What's collected"
-        lblCollectHint.text = "Page visits, button presses, general all configuration\nOS & app version, loading times, crashes"
+
+        lblCollectHint.text = "Pseudonymous identifier, country\nPage visits, button presses, general app configuration\nOS & app version, loading times, crashes"
         lblNotCollectTitle.text = "What's NOT collected"
-        lblNotCollectHint.text = "Recovery phrases, key material, addresses\nUser contact info, IP address, locations"
+        lblNotCollectHint.text = "Recovery phrases, key material, addresses, balances\nUser contact info, IP address, detailed location"
         btnMore.setTitle("Learn more", for: .normal)
     }
 
@@ -107,9 +108,13 @@ class DialogCountlyConsentViewController: UIViewController {
             case .more:
                 print("more")
             case .deny:
-                print("deny")
+                if AMan.S.consent != .denied {
+                    AMan.S.consent = .denied
+                }
             case .allow:
-                print("allow")
+                if AMan.S.consent != .authorized {
+                    AMan.S.consent = .authorized
+                }
             }
         })
     }
@@ -119,7 +124,7 @@ class DialogCountlyConsentViewController: UIViewController {
     }
 
     @IBAction func btnMore(_ sender: Any) {
-        print("more")
+        UIApplication.shared.open(ExternalUrls.analyticsReadMore, options: [:], completionHandler: nil)
     }
 
     @IBAction func btnDeny(_ sender: Any) {

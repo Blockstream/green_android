@@ -18,6 +18,18 @@ extension UIViewController {
             self.present(alert, animated: true, completion: nil)
         }
     }
+
+    func showAnalyticsConsent() {
+        if AMan.S.consent == .notDetermined {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCountlyConsentViewController") as? DialogCountlyConsentViewController {
+                    vc.modalPresentationStyle = .overFullScreen
+                    self.present(vc, animated: true, completion: nil)
+                }
+            }
+        }
+    }
 }
 
 extension UIViewController {

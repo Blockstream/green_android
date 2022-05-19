@@ -37,6 +37,7 @@ class LandingViewController: UIViewController {
         btnWatchOnly.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.watchOnlyWalletBtn
 
         AMan.S.recordView(.onBoardIntro)
+        showAnalyticsConsent()
     }
 
     func setContent() {

@@ -98,8 +98,8 @@ class SendViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
 
-        AMan.S.recordView(.send, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
-        AMan.S.startSendTransaction()
+        // AMan.S.recordView(.send, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+         AMan.S.startSendTransaction()
     }
 
     func setContent() {

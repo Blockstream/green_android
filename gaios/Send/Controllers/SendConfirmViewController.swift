@@ -32,7 +32,7 @@ class SendConfirmViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.view
         sliderView.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.viewSlider
 
-        AMan.S.recordView(.sendConfirm, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        //AMan.S.recordView(.sendConfirm, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     func setContent() {
@@ -97,26 +97,33 @@ class SendConfirmViewController: KeyboardViewController {
             self.executeOnDone()
         }.catch { error in
 
-            AMan.S.failedTransaction(account: AccountsManager.shared.current, error: error)
+            var prettyError: String?
             self.sliderView.isUserInteractionEnabled = true
             self.sliderView.reset()
             switch error {
             case JadeError.Abort(let desc),
                  JadeError.Declined(let desc):
                 self.showError(desc)
+                prettyError = desc
             case LedgerWrapper.LedgerError.IOError,
                  LedgerWrapper.LedgerError.InvalidParameter:
                 self.showError(NSLocalizedString("id_operation_failure", comment: ""))
+                prettyError = NSLocalizedString("id_operation_failure", comment: "")
             case TwoFactorCallError.failure(let localizedDescription),
                  TwoFactorCallError.cancel(let localizedDescription):
                 self.showError(localizedDescription)
+                prettyError = localizedDescription
             case TransactionError.invalid(let localizedDescription):
                 self.showError(localizedDescription)
+                prettyError = localizedDescription
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
                 self.showError(NSLocalizedString("id_you_are_not_connected", comment: ""))
+                prettyError = NSLocalizedString("id_you_are_not_connected", comment: "")
             default:
                 self.showError(error.localizedDescription)
+                prettyError = error.localizedDescription
             }
+            AMan.S.failedTransaction(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
         }
     }
 

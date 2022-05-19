@@ -42,6 +42,7 @@ extension AMan {
     }
 
     func deleteWallet() {
+        AMan.S.userPropertiesDidChange()
         AMan.S.recordEvent(.deleteWallet)
     }
 
@@ -52,29 +53,29 @@ extension AMan {
     }
 
     func startSendTransaction() {
-        cancelEvent(.sendTransaction)
-        startEvent(.sendTransaction)
+//        cancelEvent(.sendTransaction)
+//        startEvent(.sendTransaction)
     }
 
     func sendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AMan.TransactionSegmentation, withMemo: Bool) {
 
-        if var s = subAccSeg(account, walletType: walletItem?.type) {
-
-            switch transactionSgmt.transactionType {
-            case .transaction:
-                s[AMan.strTtransactionType] = AMan.TransactionType.send.rawValue
-            case .sweep:
-                s[AMan.strTtransactionType] = AMan.TransactionType.sweep.rawValue
-            case .bumpFee:
-                s[AMan.strTtransactionType] = AMan.TransactionType.bump.rawValue
-            }
-
-            s[AMan.strAddressInput] = transactionSgmt.addressInputType.rawValue
-            s[AMan.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
-            s[AMan.strWithMemo] = withMemo ? "true" : "false"
-
-            endEvent(.sendTransaction, sgmt: s)
-        }
+//        if var s = subAccSeg(account, walletType: walletItem?.type) {
+//
+//            switch transactionSgmt.transactionType {
+//            case .transaction:
+//                s[AMan.strTtransactionType] = AMan.TransactionType.send.rawValue
+//            case .sweep:
+//                s[AMan.strTtransactionType] = AMan.TransactionType.sweep.rawValue
+//            case .bumpFee:
+//                s[AMan.strTtransactionType] = AMan.TransactionType.bump.rawValue
+//            }
+//
+//            s[AMan.strAddressInput] = transactionSgmt.addressInputType.rawValue
+//            s[AMan.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
+//            s[AMan.strWithMemo] = withMemo ? "true" : "false"
+//
+//            endEvent(.sendTransaction, sgmt: s)
+//        }
     }
 
     func startCreateWallet() {
@@ -84,6 +85,7 @@ extension AMan {
 
     func createWallet(account: Account?) {
         if let s = sessSgmt(account) {
+            AMan.S.userPropertiesDidChange()
             endEvent(.walletCreate, sgmt: s)
         }
     }
@@ -95,6 +97,7 @@ extension AMan {
 
     func restoreWallet(account: Account?) {
         if let s = sessSgmt(account) {
+            AMan.S.userPropertiesDidChange()
             endEvent(.walletRestore, sgmt: s)
         }
     }
@@ -121,17 +124,25 @@ extension AMan {
         }
     }
 
-    func failedWalletLogin(account: Account?, error: Error) {
+    func failedWalletLogin(account: Account?, error: Error, prettyError: String?) {
         if var s = sessSgmt(account) {
-            s[AMan.strError] = error.localizedDescription
-                recordEvent(.failedWalletLogin, sgmt: s)
+            if let prettyError = prettyError {
+                s[AMan.strError] = prettyError
+            } else {
+                s[AMan.strError] = error.localizedDescription
+            }
+            recordEvent(.failedWalletLogin, sgmt: s)
         }
     }
 
-    func failedTransaction(account: Account?, error: Error) {
+    func failedTransaction(account: Account?, error: Error, prettyError: String?) {
         if var s = sessSgmt(account) {
-            s[AMan.strError] = error.localizedDescription
-                recordEvent(.failedTransaction, sgmt: s)
+            if let prettyError = prettyError {
+                s[AMan.strError] = prettyError
+            } else {
+                s[AMan.strError] = error.localizedDescription
+            }
+            recordEvent(.failedTransaction, sgmt: s)
         }
     }
 

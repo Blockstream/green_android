@@ -26,12 +26,12 @@ enum DeviceError: Error {
     case outdated_app
 }
 
-protocol BLEManagerScanDelegate: class {
+protocol BLEManagerScanDelegate: AnyObject {
     func didUpdatePeripherals(_: [ScannedPeripheral])
     func onError(_: BLEManagerError)
 }
 
-protocol BLEManagerDelegate: class {
+protocol BLEManagerDelegate: AnyObject {
     func onPrepare(_: Peripheral)
     func onAuthenticate(_: Peripheral, network: String, firstInitialization: Bool)
     func onLogin(_: Peripheral)
@@ -311,33 +311,41 @@ class BLEManager {
 
     func onError(_ err: Error, network: String?) {
 
-        AMan.S.failedWalletLogin(account: AccountsManager.shared.current, error: err)
+        var prettyError: String?
         switch err {
         case BluetoothError.peripheralConnectionFailed(_, let error):
             let err = BLEManagerError.bleErr(txt: error?.localizedDescription ?? err.localizedDescription)
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         case is BluetoothError, is GaError:
             let err = BLEManagerError.bleErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         case RxError.timeout:
             let err = BLEManagerError.timeoutErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         case DeviceError.dashboard:
             let err = BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         case DeviceError.outdated_app:
             let err = BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         case DeviceError.wrong_app:
             let err = BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         case is AuthenticationTypeHandler.AuthError:
             let authErr = err as? AuthenticationTypeHandler.AuthError
             let err = BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         case is Ledger.SWError:
             let err = BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         case is JadeError:
             switch err {
             case JadeError.Abort(let desc),
@@ -345,14 +353,18 @@ class BLEManager {
                  JadeError.Declined(let desc):
                 let err = BLEManagerError.genericErr(txt: desc)
                 self.delegate?.onError(err)
+                prettyError = err.localizedDescription
             default:
                 let err = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
                 self.delegate?.onError(err)
+                prettyError = err.localizedDescription
             }
         default:
             let err = BLEManagerError.genericErr(txt: err.localizedDescription)
             self.delegate?.onError(err)
+            prettyError = err.localizedDescription
         }
+        AMan.S.failedWalletLogin(account: AccountsManager.shared.current, error: err, prettyError: prettyError)
     }
 
     func prepare(_ peripheral: Peripheral) {

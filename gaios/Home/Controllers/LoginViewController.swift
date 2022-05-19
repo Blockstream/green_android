@@ -176,7 +176,7 @@ class LoginViewController: UIViewController {
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
 
-            AMan.S.failedWalletLogin(account: AccountsManager.shared.current, error: error)
+            var prettyError: String?
             session.destroy()
             self.stopLoader()
             switch error {
@@ -186,17 +186,23 @@ class LoginViewController: UIViewController {
                 return self.onBioAuthError(error.localizedDescription)
             case LoginError.connectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+                prettyError = NSLocalizedString("id_connection_failed", comment: "")
             case GaError.NotAuthorizedError:
                 self.wrongPin(usingAuth)
+                prettyError = "NotAuthorizedError"
             case TwoFactorCallError.failure(let localizedDescription):
                 if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
+                    prettyError = NSLocalizedString("id_invalid_pin", comment: "")
                     self.wrongPin(usingAuth)
                 } else {
                     DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
+                    prettyError = NSLocalizedString("id_login_failed", comment: "")
                 }
             default:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
+                prettyError = NSLocalizedString("id_login_failed", comment: "")
             }
+            AMan.S.failedWalletLogin(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
         }
     }
 
