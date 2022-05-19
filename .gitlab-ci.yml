@@ -144,9 +144,10 @@ sign_google_play:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 14 days
     paths:
-    - green/build/outputs/apk/productionGoogle/release/
+      - green/build/outputs/*
     when: on_success
-  script: cd $CI_PROJECT_DIR/green/build/outputs/apk && /opt/process_release
+  script:
+    - cd $CI_PROJECT_DIR/green/build/outputs/apk/productionGoogle/release/
+    - /opt/process_release
   needs:
-    - unit_tests
     - build_google_play
