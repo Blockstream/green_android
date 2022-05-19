@@ -13,6 +13,7 @@ help_message() {
     -b, --branch      Checkout remote branch
     -g, --gdk         Download GDK [app (app version), master (latest master), commitHash (specific commit hash)]
     -d, --development Development flavor
+    -q, --qa          Launch QA Tester activity
     -u, --uninstall   Uninstall before install
 
 _EOF_
@@ -25,6 +26,7 @@ GDK=false
 BRANCH=false
 UNINSTALL=false
 PACKAGE="com.greenaddress.greenbits_android_wallet"
+LAUNCH_ACTIVITY="MainActivity"
 
 # --- Argument handling
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -53,6 +55,9 @@ case $key in
     -b | --branch )
       shift
       BRANCH=("$1")
+      shift ;;
+    -q | --qa )
+      LAUNCH_ACTIVITY="QATesterActivity"
       shift ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
@@ -85,7 +90,7 @@ launch(){
   # kill
   adb shell am force-stop $PACKAGE
   # launch
-  adb shell am start -n "$PACKAGE/com.blockstream.green.ui.MainActivity"
+  adb shell am start -n "$PACKAGE/com.blockstream.green.ui.$LAUNCH_ACTIVITY"
 }
 
 checkout(){

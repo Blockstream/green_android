@@ -18,6 +18,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.transition.TransitionManager
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
@@ -49,6 +50,9 @@ class MainActivity : AppActivity() {
 
     @Inject
     lateinit var walletRepository: WalletRepository
+
+    @Inject
+    lateinit var greenWallet: GreenWallet
 
     @Inject
     lateinit var applicationScope: ApplicationScope
@@ -108,6 +112,10 @@ class MainActivity : AppActivity() {
                             personalTestnetLiquidElectrumServer = electrumServer,
                         )
                     )
+                }
+
+                if (it.hasExtra(REGISTER_NETWORK_ID) && it.hasExtra(REGISTER_NETWORK_HOSTNAME)) {
+                    greenWallet.registerCustomNetwork(it.getStringExtra(REGISTER_NETWORK_ID) ?: "", it.getStringExtra(REGISTER_NETWORK_HOSTNAME) ?: "")
                 }
             }
         }
@@ -329,5 +337,8 @@ class MainActivity : AppActivity() {
         const val ENABLE_TOR = "ENABLE_TOR"
         const val PROXY_URL = "PROXY_URL"
         const val PERSONAL_ELECTRUM_SERVER = "PERSONAL_ELECTRUM_SERVER"
+
+        const val REGISTER_NETWORK_ID = "REGISTER_NETWORK_ID"
+        const val REGISTER_NETWORK_HOSTNAME = "REGISTER_NETWORK_HOSTNAME"
     }
 }

@@ -68,7 +68,8 @@ android {
             resValue "bool", "feature_analytics", "false"
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher_dev",
-                    appIconRound: "@mipmap/ic_launcher_dev_round"
+                    appIconRound: "@mipmap/ic_launcher_dev_round",
+                    enableQATester: true
             ]
         }
 
@@ -79,7 +80,8 @@ android {
             resValue "bool", "feature_analytics", "false"
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher",
-                    appIconRound: "@mipmap/ic_launcher_round"
+                    appIconRound: "@mipmap/ic_launcher_round",
+                    enableQATester: false
             ]
         }
 
@@ -91,7 +93,8 @@ android {
             resValue "bool", "feature_analytics", "false"
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher",
-                    appIconRound: "@mipmap/ic_launcher_round"
+                    appIconRound: "@mipmap/ic_launcher_round",
+                    enableQATester: false
             ]
         }
     }

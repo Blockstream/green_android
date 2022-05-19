@@ -1,7 +1,6 @@
 package com.blockstream.gdk.data
 
 import com.blockstream.gdk.GAJson
-import com.blockstream.gdk.GreenWallet
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -25,13 +24,11 @@ data class Networks(
     val testnetElectrum by lazy { getNetworkById(Network.ElectrumTestnet) }
     val testnetLiquidElectrum by lazy { getNetworkById(Network.ElectrumTestnetLiquid) }
 
-    val hardwareSupportedNetworks by lazy { listOf(bitcoinGreen, liquidGreen, testnetGreen) }
-
     val customNetwork: Network?
         get() = getNetworkByIdOrNull(CustomNetworkId)
 
     fun getNetworkById(id: String): Network {
-        return networks[id] ?: throw Exception("Network '$id' is not available in the current build of GDK")
+        return getNetworkByIdOrNull(id) ?: throw Exception("Network '$id' is not available in the current build of GDK")
     }
 
     private fun getNetworkByIdOrNull(id: String): Network? {
@@ -45,6 +42,10 @@ data class Networks(
     }
 
     fun getNetworkByType(networkTypeOrId: String, isElectrum: Boolean): Network {
+        if(networkTypeOrId == CustomNetworkId){
+            return customNetwork!!
+        }
+
         return when (networkTypeOrId) {
             Network.GreenMainnet, Network.ElectrumMainnet -> {
                 if (isElectrum) bitcoinElectrum else bitcoinGreen

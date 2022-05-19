@@ -103,7 +103,8 @@
         <activity
             android:name="com.blockstream.green.ui.QATesterActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:exported="${enableQATester}"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
