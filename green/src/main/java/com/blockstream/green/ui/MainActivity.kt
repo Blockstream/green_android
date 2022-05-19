@@ -34,7 +34,6 @@ import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import mu.KLogging
 import javax.inject.Inject
 
@@ -285,16 +284,15 @@ class MainActivity : AppActivity() {
         }
 
         if(intent?.action == OPEN_WALLET){
-            applicationScope.launch {
-                intent.getParcelableExtra<Wallet>(WALLET)?.let { wallet ->
-                    NavGraphDirections.actionGlobalLoginFragment(
-                        wallet = wallet,
-                        deviceId = intent.getStringExtra(DEVICE_ID)
-                    ).let {
-                        navigate(navController, resId = it.actionId, args = it.arguments)
-                    }
+            intent.getParcelableExtra<Wallet>(WALLET)?.let { wallet ->
+                NavGraphDirections.actionGlobalLoginFragment(
+                    wallet = wallet,
+                    deviceId = intent.getStringExtra(DEVICE_ID)
+                ).let {
+                    navigate(navController, resId = it.actionId, args = it.arguments)
                 }
             }
+            closeDrawer()
         }
     }
 
