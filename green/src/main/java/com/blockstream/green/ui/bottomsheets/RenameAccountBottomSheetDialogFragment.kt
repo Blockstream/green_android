@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.gdk.data.SubAccount
+import com.blockstream.green.R
 import com.blockstream.green.databinding.RenameAccountBottomSheetBinding
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.nameCleanup
@@ -25,7 +26,7 @@ class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<R
             return
         }
 
-        binding.name = subAccount.name
+        binding.name = subAccount.nameOrDefault(getString(R.string.id_main_account))
 
         binding.buttonClose.setOnClickListener {
             dismiss()

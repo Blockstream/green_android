@@ -25,7 +25,7 @@ data class SubAccount(
 
     override fun kSerializer() = serializer()
 
-    val name: String
+    private val name: String
         get() = gdkName.ifBlank {
             when (type) {
                 AccountType.BIP44_LEGACY,
@@ -42,7 +42,7 @@ data class SubAccount(
 
     fun nameOrDefault(default: String): String = name.ifBlank { default }
 
-    val accountNumber: Long
+    private val accountNumber: Long
         get() = when (type) {
             AccountType.BIP44_LEGACY,
             AccountType.BIP49_SEGWIT_WRAPPED,

@@ -71,7 +71,7 @@ class WatchOnlyDetailsFragment :
 
         val accountsModelAdapter = ModelAdapter { model: SubAccount ->
             ExtendedPublicKeyListItem(
-                name = StringHolder(model.name),
+                name = StringHolder(model.nameOrDefault(getString(R.string.id_main_account))),
                 extendedPublicKey = StringHolder("xpub6Bh31iozMXAFqryYyz39QTudkFC4rrhquBsokRCfLAn1YvzfprzdUTxYyPwVc4KTEUy2KPtUWdWwpvEHoz9GhZfW71REQuYwM1WfdQQHBt7")
             )
         }.observeList(viewLifecycleOwner, viewModel.getSubAccountsLiveData())
