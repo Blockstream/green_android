@@ -7,7 +7,8 @@ class AccountsManager {
 
     private var currentId = ""
 
-    var swAccounts: [Account] {
+    // List of saved accounts
+    var accounts: [Account] {
         get {
             return (try? read()) ?? []
         }
@@ -16,26 +17,26 @@ class AccountsManager {
         }
     }
 
+    // Filtered account list of software wallets
+    var swAccounts: [Account] { AccountsManager.shared.accounts.filter { !$0.isHW } }
+
+    // Filtered account list of hardware wallets
+    var hwAccounts: [Account] { AccountsManager.shared.accounts.filter { account in
+        account.isHW && !SessionsManager.shared.filter {$0.key == account.id }.isEmpty } }
+
     // Hardware wallets accounts are store in temporary memory
-    var hwAccounts = [ Account(name: "Blockstream Jade", network: "mainnet", isJade: true, isSingleSig: false),
+    var devices = [ Account(name: "Blockstream Jade", network: "mainnet", isJade: true, isSingleSig: false),
                        Account(name: "Ledger Nano X", network: "mainnet", isLedger: true, isSingleSig: false) ]
 
+    // Current Account
     var current: Account? {
         get {
-            (swAccounts + hwAccounts).filter({ $0.id == currentId }).first
+            (accounts).filter({ $0.id == currentId }).first
         }
         set {
             currentId = newValue?.id ?? ""
             if let account = newValue {
-                if account.isJade || account.isLedger {
-                    // if hardware wallets, update in memory
-                    if let index = hwAccounts.firstIndex(where: { $0.id == account.id }) {
-                        hwAccounts.replaceSubrange(index...index, with: [account])
-                    }
-                } else {
-                    // if software wallets, update keychain
-                    upsert(account)
-                }
+                upsert(account)
             }
         }
     }
@@ -53,7 +54,7 @@ class AccountsManager {
             UserDefaults.standard.set(true, forKey: "FirstInitialization")
 
             // Handle wallet migration
-            swAccounts = migratedAccounts()
+            accounts = migratedAccounts()
         }
     }
 
@@ -138,20 +139,20 @@ class AccountsManager {
     }
 
     func upsert(_ account: Account) {
-        var currentList = swAccounts
+        var currentList = accounts
         if let index = currentList.firstIndex(where: { $0.id == account.id }) {
             currentList.replaceSubrange(index...index, with: [account])
         } else {
             currentList.append(account)
         }
-        swAccounts = currentList
+        accounts = currentList
     }
 
     func remove(_ account: Account) {
-        var currentList = swAccounts
+        var currentList = accounts
         if let index = currentList.firstIndex(where: { $0 == account }) {
             currentList.remove(at: index)
         }
-        swAccounts = currentList
+        accounts = currentList
     }
 }

@@ -262,7 +262,6 @@
 		816F0AF623E47E1E00569A5D /* Wally.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF523E47E1E00569A5D /* Wally.swift */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
 		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
-		8183384B263C583200BCECE6 /* HWAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8183384A263C583200BCECE6 /* HWAccount.swift */; };
 		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
@@ -602,7 +601,6 @@
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
 		817417362236E85500A28E36 /* ScreenLockWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockWindow.swift; sourceTree = "<group>"; };
 		818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuthenticatorFactors.storyboard; sourceTree = "<group>"; };
-		8183384A263C583200BCECE6 /* HWAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWAccount.swift; sourceTree = "<group>"; };
 		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
 		8187B47D21E9026900235A35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8187B47F21E9027100235A35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1134,7 +1132,6 @@
 		34BAD9CF2636A12700FB8011 /* HWW */ = {
 			isa = PBXGroup;
 			children = (
-				81833851263C599300BCECE6 /* Extensions */,
 				34BAD9D02636A12700FB8011 /* Cells */,
 				34BAD9D32636A12700FB8011 /* Enums */,
 				34BAD9D52636A12700FB8011 /* HWW.storyboard */,
@@ -1416,14 +1413,6 @@
 				8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */,
 			);
 			path = Jade;
-			sourceTree = "<group>";
-		};
-		81833851263C599300BCECE6 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				8183384A263C583200BCECE6 /* HWAccount.swift */,
-			);
-			path = Extensions;
 			sourceTree = "<group>";
 		};
 		818EE78126A5C429008CD09E /* Models */ = {
@@ -1880,7 +1869,6 @@
 				811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */,
 				34C3020626E7659000A3F910 /* OverviewAccountCell.swift in Sources */,
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,
-				8183384B263C583200BCECE6 /* HWAccount.swift in Sources */,
 				34959D3A26F0739700EAF853 /* OverviewAccountIdCell.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
 				34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */,

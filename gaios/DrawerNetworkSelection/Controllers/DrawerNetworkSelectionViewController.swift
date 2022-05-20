@@ -15,9 +15,6 @@ class DrawerNetworkSelectionViewController: UIViewController {
     @IBOutlet weak var btnSettings: UIButton!
 
     var onSelection: ((Account) -> Void)?
-
-    private let swAccounts = AccountsManager.shared.swAccounts
-    private let hwAccounts = AccountsManager.shared.hwAccounts
     weak var delegate: DrawerNetworkSelectionDelegate?
 
     var headerH: CGFloat = 44.0
@@ -48,15 +45,17 @@ class DrawerNetworkSelectionViewController: UIViewController {
 extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return swAccounts.count
+            return AccountsManager.shared.swAccounts.count
         case 1:
-            return hwAccounts.count
+            return AccountsManager.shared.hwAccounts.count
+        case 2:
+            return AccountsManager.shared.devices.count
         default:
             return 0
         }
@@ -66,7 +65,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
 
         switch indexPath.section {
         case 0:
-            let account = swAccounts[indexPath.row]
+            let account = AccountsManager.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
                 let selected = { () -> Bool in
                     if let session = SessionsManager.get(for: account) {
@@ -79,9 +78,23 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case 1:
+            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
+                let selected = { () -> Bool in
+                    if let session = SessionsManager.get(for: account) {
+                        return session.connected && session.logged
+                    }
+                    return false
+                }
+                cell.configure(account, selected())
+                cell.selectionStyle = .none
+                return cell
+            }
+        case 2:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerHDCell") as? WalletDrawerHDCell {
-                let hw = hwAccounts[indexPath.row]
-                cell.configure(hw.name, hw.icon)
+                let hw = AccountsManager.shared.devices[indexPath.row]
+                let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
+                cell.configure(hw.name, icon ?? UIImage())
                 cell.selectionStyle = .none
                 return cell
             }
@@ -112,8 +125,10 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case 0:
-            return headerView(NSLocalizedString("id_all_wallets", comment: "").uppercased())
+            return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
         case 1:
+            return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
+        case 2:
             return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
         default:
             return nil
@@ -124,8 +139,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         switch section {
         case 0:
             return footerView(NSLocalizedString("id_add_wallet", comment: ""))
-        case 1:
-            return nil
         default:
             return nil
         }
@@ -134,10 +147,13 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
-            let account = swAccounts[indexPath.row]
+            let account = AccountsManager.shared.swAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 1:
-            let account = hwAccounts[indexPath.row]
+            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            self.delegate?.didSelectAccount(account: account)
+        case 2:
+            let account = AccountsManager.shared.devices[indexPath.row]
             self.delegate?.didSelectHW(account: account)
         default:
             break

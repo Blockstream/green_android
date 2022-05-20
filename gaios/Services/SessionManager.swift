@@ -188,8 +188,21 @@ class SessionManager: Session {
                         throw LoginError.invalidMnemonic
                     }
                 }
-            }.then(on: bgq) {
-                self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hwDevice: hwDevice)
+            }.map(on: bgq) {
+                try self.connect()
+            }.then(on: bgq) { _ in
+                try super.loginUser(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hw_device: [:]).resolve()
+            }.map(on: bgq) { res in
+                // check if wallet just exist
+                let result = res["result"] as? [String: Any]
+                let walletHashId = result?["wallet_hash_id"] as? String
+                if AccountsManager.shared.accounts.contains(where: {
+                        $0.walletHashId == walletHashId &&
+                        $0.id != self.account?.id &&
+                        $0.isSingleSig == isSingleSig
+                    }) {
+                    throw LoginError.walletsJustRestored
+                }
             }.recover { err in
                 switch err {
                 case TwoFactorCallError.failure(let localizedDescription):
@@ -200,6 +213,7 @@ class SessionManager: Session {
                     throw err
                 }
             }.then(on: bgq) {
+                // discover subaccounts
                 self.subaccounts(true).recover { _ in
                     Promise { _ in
                         throw LoginError.connectionFailed
@@ -212,17 +226,7 @@ class SessionManager: Session {
                         throw LoginError.walletNotFound
                     }
                 }
-            }.map(on: bgq) {_ in
-                // check if wallet just exist
-                if let walletHashId = self.account?.walletHashId,
-                   AccountsManager.shared.swAccounts.contains(where: {
-                        $0.walletHashId == walletHashId &&
-                        $0.id != self.account?.id &&
-                        $0.isSingleSig == isSingleSig
-                    }) {
-                        throw LoginError.walletsJustRestored
-                }
-            }.asVoid()
+           }.asVoid()
     }
 
     func restore(mnemonic: String?, password: String?, hwDevice: HWDevice? = nil) -> Promise<Void> {
@@ -239,15 +243,7 @@ class SessionManager: Session {
                     throw err
                 }
             }.then(on: bgq) { _ in
-                self.subaccounts(true)
-            }.then(on: bgq) { wallets -> Promise<Void> in
-                // create a default segwit account if singlesig
-                if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
-                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
-                        .resolve().asVoid()
-                } else {
-                    return Promise<Void>().asVoid()
-                }
+                self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hwDevice: hwDevice)
             }
     }
 
@@ -256,17 +252,10 @@ class SessionManager: Session {
         return Guarantee()
             .map(on: bgq) {
                 try self.connect()
-            }.map(on: bgq) {
-                if let hwDevice = hwDevice,
-                    let data = try? JSONEncoder().encode(hwDevice),
-                    let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
-                    return ["device": device]
-                }
-                return [:]
-            }.then(on: bgq) { device in
-                try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve()
             }.then(on: bgq) { _ in
-                self.restore(mnemonic: mnemonic, password: password, hwDevice: hwDevice)
+                self.registerUser(mnemonic: mnemonic, hwDevice: hwDevice)
+            }.then(on: bgq) { _ in
+                self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hwDevice: hwDevice)
             }.recover { err in
                 switch err {
                 case LoginError.walletNotFound,
@@ -279,8 +268,35 @@ class SessionManager: Session {
             }
     }
 
+    private func registerUser(mnemonic: String?, hwDevice: HWDevice? = nil) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .map(on: bgq) {
+                if let hwDevice = hwDevice,
+                    let data = try? JSONEncoder().encode(hwDevice),
+                    let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
+                    return ["device": device]
+                }
+                return [:]
+            }.then(on: bgq) { device in
+                try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve()
+            }.asVoid()
+    }
+
+    func reconnect() -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .map(on: bgq) {
+                try self.connect()
+            }.then(on: bgq) {
+                try super.loginUser(details: [:]).resolve().asVoid()
+            }
+    }
+
     func login(details: [String: Any], hwDevice: HWDevice? = nil) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
+        let isSingleSig = self.account?.isSingleSig ?? false
+        let isWatchonly = self.account?.isWatchonly ?? false
         return Guarantee()
             .map(on: bgq) {
                 try self.connect()
@@ -298,17 +314,42 @@ class SessionManager: Session {
                 // update wallet hash id
                 let result = res["result"] as? [String: Any]
                 let walletHashId = result?["wallet_hash_id"] as? String
-                if self.account?.walletHashId == nil {
-                    self.account?.walletHashId = walletHashId
+                let prevHashId = self.account?.walletHashId
+                self.account?.walletHashId = walletHashId
+                // for hw, check previously used account
+                if hwDevice != nil {
+                    let acc = AccountsManager.shared.accounts.filter {
+                            $0.walletHashId == walletHashId &&
+                            $0.id != self.account?.id &&
+                            $0.isHW
+                    }.first
+                    if let acc = acc {
+                        self.account = acc
+                    }
                 }
+                return prevHashId == nil
+            }.then(on: bgq) { firstInitialization in
+                // discover subaccounts at 1st login
+                self.subaccounts(firstInitialization).recover { _ in
+                    Promise { _ in
+                        throw LoginError.connectionFailed
+                    }
+                }
+            }.then(on: bgq) { wallets -> Promise<Void> in
+                // create a default segwit account if doesn't exist on singlesig
+                if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
+                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
+                        .resolve().asVoid()
+                }
+                return Promise<Void>().asVoid()
             }.then { _ -> Promise<Void> in
                 // load 2fa config on multisig
-                if let account = self.account,
-                        !account.isWatchonly && !(account.isSingleSig ?? false) {
-                    return self.loadTwoFactorConfig().then { _ in Promise<Void>() }
+                if isWatchonly && !isSingleSig {
+                    return self.loadTwoFactorConfig().asVoid()
                 }
                 return Promise<Void>()
             }.map { _ in
+                // load async assets registry
                 self.registry?.cache(session: self)
                 self.registry?.loadAsync(session: self)
             }

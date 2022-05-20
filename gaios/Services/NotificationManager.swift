@@ -71,7 +71,7 @@ class NotificationManager {
                 return
             }
             // Restore connection through hidden login
-            session.login(details: [:], hwDevice: nil).done { _ in
+            session.reconnect().done { _ in
                 self.post(event: EventType.Network, data: data)
             }.catch { err in
                 print("Error on reconnected with hw: \(err.localizedDescription)")

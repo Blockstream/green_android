@@ -556,18 +556,12 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
     }
 
     func didSelectHW(account: Account) {
-        if let account = AccountsManager.shared.current {
-            if account.isJade || account.isLedger {
-                BLEManager.shared.dispose()
-            }
-        }
-
         let storyboard = UIStoryboard(name: "Home", bundle: nil)
         let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
 
         let storyboard2 = UIStoryboard(name: "HWW", bundle: nil)
         if let vc = storyboard2.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-            vc.account = account
+            vc.jade = account.isJade
             nav?.pushViewController(vc, animated: false)
             UIApplication.shared.keyWindow?.rootViewController = nav
         }
@@ -1086,12 +1080,9 @@ extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faVi
             DispatchQueue.main.async {
                 self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
                 if let account = AccountsManager.shared.current {
-                   if account.isJade || account.isLedger {
-                       BLEManager.shared.dispose()
+                   if let session = SessionsManager.get(for: account) {
+                       session.destroy()
                    }
-                    if let session = SessionsManager.get(for: account) {
-                        session.destroy()
-                    }
                 }
                 self.stopLoader()
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)

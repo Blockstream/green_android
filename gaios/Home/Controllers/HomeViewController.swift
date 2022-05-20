@@ -6,9 +6,6 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var lblVersion: UILabel!
     @IBOutlet weak var btnSettings: UIButton!
 
-    var swAccounts =  [Account]()
-    var hwAccounts =  [Account]()
-
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
 
@@ -27,8 +24,6 @@ class HomeViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        swAccounts = AccountsManager.shared.swAccounts
-        hwAccounts = AccountsManager.shared.hwAccounts
         tableView.reloadData()
     }
 
@@ -45,7 +40,7 @@ class HomeViewController: UIViewController {
 
     func enterWallet(_ index: Int) {
         // watch only wallet
-        let account = swAccounts[index]
+        let account = AccountsManager.shared.swAccounts[index]
         if let session = SessionsManager.get(for: account),
            session.connected && session.logged {
             session.subaccount().done { wallet in
@@ -81,14 +76,9 @@ class HomeViewController: UIViewController {
     }
 
     func showHardwareWallet(_ index: Int) {
-        if let account = AccountsManager.shared.current {
-            if account.isJade || account.isLedger {
-                BLEManager.shared.dispose()
-            }
-        }
         let storyboard = UIStoryboard(name: "HWW", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-            vc.account = hwAccounts[index]
+            vc.jade = AccountsManager.shared.devices[index].isJade
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -118,16 +108,18 @@ class HomeViewController: UIViewController {
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         switch section {
         case 0:
-            return swAccounts.count == 0 ? 1 : swAccounts.count
+            return AccountsManager.shared.swAccounts.count == 0 ? 1 : AccountsManager.shared.swAccounts.count
         case 1:
-            return hwAccounts.count
+            return AccountsManager.shared.hwAccounts.count
+        case 2:
+            return AccountsManager.shared.devices.count
         default:
             return 0
         }
@@ -137,14 +129,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch indexPath.section {
         case 0:
-            if swAccounts.count == 0 {
+            if AccountsManager.shared.swAccounts.count == 0 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletEmptyCell") as? WalletEmptyCell {
                     cell.configure(NSLocalizedString("id_it_looks_like_you_have_no", comment: ""), UIImage(named: "ic_logo_green")!)
                     cell.selectionStyle = .none
                     return cell
                 }
             } else {
-                let account = swAccounts[indexPath.row]
+                let account = AccountsManager.shared.swAccounts[indexPath.row]
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
                     let selected = { () -> Bool in
                         if let session = SessionsManager.get(for: account) {
@@ -158,9 +150,23 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
         case 1:
+            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
+                let selected = { () -> Bool in
+                    if let session = SessionsManager.get(for: account) {
+                        return session.connected && session.logged
+                    }
+                    return false
+                }
+                cell.configure(account, selected())
+                cell.selectionStyle = .none
+                return cell
+            }
+        case 2:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletHDCell") as? WalletHDCell {
-                let hw = hwAccounts[indexPath.row]
-                cell.configure(hw.name, hw.icon)
+                let hw = AccountsManager.shared.devices[indexPath.row]
+                let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
+                cell.configure(hw.name, icon ?? UIImage())
                 cell.selectionStyle = .none
                 return cell
             }
@@ -191,8 +197,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case 0:
-            return headerView(NSLocalizedString("id_all_wallets", comment: "").uppercased())
+            return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
         case 1:
+            return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
+        case 2:
             return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
         default:
             return nil
@@ -203,8 +211,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case 0:
             return footerView(NSLocalizedString("id_add_wallet", comment: ""))
-        case 1:
-            return nil
         default:
             return nil
         }
@@ -213,10 +219,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
-            if swAccounts.count > 0 {
+            if AccountsManager.shared.swAccounts.count > 0 {
                 enterWallet(indexPath.row)
             }
         case 1:
+            if AccountsManager.shared.hwAccounts.count > 0 {
+                enterWallet(indexPath.row)
+            }
+        case 2:
             showHardwareWallet(indexPath.row)
         default:
             break

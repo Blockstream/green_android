@@ -103,11 +103,6 @@ struct Account: Codable, Equatable {
 
     var icon: UIImage {
         get {
-            if isJade {
-                return UIImage(named: "blockstreamIcon")!
-            } else if isLedger {
-                return UIImage(named: "ledgerIcon")!
-            }
             switch network {
             case "mainnet":
                 return UIImage(named: "ntw_btc")!

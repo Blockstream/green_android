@@ -25,7 +25,6 @@ class HWWConnectViewController: UIViewController {
     @IBOutlet weak var deviceImageAlign: NSLayoutConstraint!
     @IBOutlet weak var btnSettings: UIButton!
 
-    var account: Account!
     var peripheral: Peripheral!
 
     private var networks = [NetworkSection: [NetworkSecurityCase]]()
@@ -33,6 +32,8 @@ class HWWConnectViewController: UIViewController {
     private var headerH: CGFloat = 44.0
     private var headerH2: CGFloat = 64.0
     private var openAdditionalNetworks = false
+    private var resetBle = false
+    private var account: Account?
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -69,7 +70,7 @@ class HWWConnectViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = account.name
+        lblTitle.text = peripheral.name
         btnTryAgain.setTitle(NSLocalizedString("id_try_again", comment: ""), for: .normal)
         btnNeedHelp.setTitle(NSLocalizedString("id_need_help", comment: ""), for: .normal)
         btnLogin.setTitle(NSLocalizedString("id_login", comment: ""), for: .normal)
@@ -104,14 +105,19 @@ class HWWConnectViewController: UIViewController {
         btnNeedHelp.setStyle(.outlined)
         arrowImage.image = UIImage(named: "ic_hww_arrow")?.maskWithColor(color: UIColor.customMatrixGreen())
         faailureImage.image = UIImage(named: "cancel")?.maskWithColor(color: UIColor.white)
-        deviceImage.image = account.deviceImage()
-        deviceImageAlign.constant = account.alignConstraint()
+        if BLEManager.shared.isJade(peripheral) {
+            deviceImage.image = UIImage(named: "ic_hww_jade")
+            deviceImageAlign.constant = 0
+        } else {
+            deviceImage.image = UIImage(named: "ic_hww_ledger")
+            deviceImageAlign.constant = UIScreen.main.bounds.width * 0.27
+        }
     }
 
     func reloadData() {
         let isEnabledTestnet = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible)
         let showTestnet = isEnabledTestnet && openAdditionalNetworks
-        let jade = self.account.isJade
+        let jade = BLEManager.shared.isJade(peripheral)
         var debug = false
 #if DEBUG
         debug = true
@@ -189,12 +195,25 @@ class HWWConnectViewController: UIViewController {
 
     func connect(_ peripheral: Peripheral, network: String) {
         hwwState = .connecting
-        account?.network = network
+        let account = Account(id: nil,
+                name: peripheral.name ?? "HW",
+                network: network.replacingOccurrences(of: "electrum-", with: ""),
+                isJade: BLEManager.shared.isJade(peripheral),
+                isLedger: BLEManager.shared.isLedger(peripheral),
+                isSingleSig: network.contains("electrum"))
+        self.account = account
         AccountsManager.shared.current = account
+        // connect Ledger X
         if BLEManager.shared.isLedger(peripheral) {
-            BLEManager.shared.connect(peripheral, network: network)
+            BLEManager.shared.connect(peripheral, account: account)
             return
         }
+        // keep open connection with device, if connected
+        if peripheral.isConnected && !resetBle {
+            BLEManager.shared.connect(peripheral, account: account)
+            return
+        }
+        // start a new connection with jade
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             BLEManager.shared.dispose()
@@ -204,18 +223,17 @@ class HWWConnectViewController: UIViewController {
             after(seconds: 1)
         }.done { _ in
             self.hwwState = .followDevice
-            BLEManager.shared.connect(peripheral, network: network)
+            BLEManager.shared.connect(peripheral, account: account)
         }
     }
 
     @IBAction func btnTryAgain(_ sender: Any) {
-        if self.account.isJade {
+        if BLEManager.shared.isJade(peripheral) {
             hwwState = .connecting
-        }
-        if self.account.isLedger {
+        } else if BLEManager.shared.isLedger(peripheral) {
             hwwState = .selectNetwork
         }
-        BLEManager.shared.dispose()
+        //BLEManager.shared.dispose()
         BLEManager.shared.prepare(peripheral)
     }
 
@@ -228,9 +246,9 @@ class HWWConnectViewController: UIViewController {
             hwwState = .connecting
             BLEManager.shared.dispose()
             navigationController?.popViewController(animated: true)
-        } else {
+        } else if let account = account {
             hwwState = .connected
-            BLEManager.shared.login(peripheral)
+            BLEManager.shared.login(peripheral, account: account)
         }
     }
 
@@ -376,9 +394,10 @@ extension HWWConnectViewController: BLEManagerDelegate {
         }
     }
 
-    func onPrepare(_: Peripheral) {
+    func onPrepare(_: Peripheral, reset: Bool = false) {
         DispatchQueue.main.async {
             self.hwwState = .selectNetwork
+            self.resetBle = reset
         }
     }
 
@@ -386,9 +405,9 @@ extension HWWConnectViewController: BLEManagerDelegate {
         DispatchQueue.main.async {
             if firstInitialization {
                 self.hwwState = .initialized
-            } else {
+            } else if let account = self.account {
                 self.hwwState = .connected
-                BLEManager.shared.login(peripheral)
+                BLEManager.shared.login(peripheral, account: account)
             }
         }
     }
@@ -429,8 +448,8 @@ extension HWWConnectViewController: BLEManagerDelegate {
                     if required {
                         BLEManager.shared.dispose()
                         self?.onError(BLEManagerError.genericErr(txt: NSLocalizedString("id_new_jade_firmware_required", comment: "")))
-                    } else {
-                        BLEManager.shared.login(peripheral, checkFirmware: false)
+                    } else if let account = self?.account {
+                        BLEManager.shared.login(peripheral, account: account, checkFirmware: false)
                     }
                 }
             }

@@ -28,9 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var session: SessionManager?
         if let account = AccountsManager.shared.current {
             session = SessionsManager.get(for: account)
-            if account.isJade || account.isLedger {
-                BLEManager.shared.dispose()
-            }
         }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {

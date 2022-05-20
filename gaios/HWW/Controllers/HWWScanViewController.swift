@@ -12,12 +12,11 @@ class HWWScanViewController: UIViewController {
     @IBOutlet weak var deviceImage: UIImageView!
     @IBOutlet weak var deviceImageAlign: NSLayoutConstraint!
 
-    var account: Account!
-    private var peripherals = [ScannedPeripheral]()
+    var jade = true
+    private var peripherals = [Peripheral]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        BLEManager.shared.dispose()
         BLEManager.shared.scanDelegate = self
         setContent()
         setStyle()
@@ -29,7 +28,8 @@ class HWWScanViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = account.name
+        // Hardware wallets accounts are store in temporary memory
+        lblTitle.text = jade ? "Blockstream Jade" : "Ledger Nano X"
         lblHint.text = NSLocalizedString("id_please_follow_the_instructions", comment: "")
         lblHead.text = NSLocalizedString("id_devices", comment: "")
         tableView.dataSource = self
@@ -40,8 +40,13 @@ class HWWScanViewController: UIViewController {
     func setStyle() {
         card.layer.cornerRadius = 5.0
         arrow.image = UIImage(named: "ic_hww_arrow")?.maskWithColor(color: UIColor.customMatrixGreen())
-        deviceImage.image = account.deviceImage()
-        deviceImageAlign.constant = account.alignConstraint()
+        if jade {
+            deviceImage.image = UIImage(named: "ic_hww_jade")
+            deviceImageAlign.constant = 0
+        } else {
+            deviceImage.image = UIImage(named: "ic_hww_ledger")
+            deviceImageAlign.constant = UIScreen.main.bounds.width * 0.27
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -63,8 +68,8 @@ extension HWWScanViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let peripheral = peripherals[indexPath.row]
         if let cell = tableView.dequeueReusableCell(withIdentifier: "HWWCell") as? HWWCell {
-            let connected = peripheral.peripheral.isConnected ? "Connected" : "Not connected"
-            cell.configure(peripheral.advertisementData.localName ?? "", connected.uppercased())
+            let connected = peripheral.isConnected ? "Connected" : "Not connected"
+            cell.configure(peripheral.name ?? "", connected.uppercased())
             cell.selectionStyle = .none
             return cell
         }
@@ -77,10 +82,9 @@ extension HWWScanViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let peripheral = peripherals[indexPath.row].peripheral
+        let peripheral = peripherals[indexPath.row]
         let storyboard = UIStoryboard(name: "HWW", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "HWWConnectViewController") as? HWWConnectViewController {
-            vc.account = account
             vc.peripheral = peripheral
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -89,10 +93,10 @@ extension HWWScanViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension HWWScanViewController: BLEManagerScanDelegate {
 
-    func didUpdatePeripherals(_ peripherals: [ScannedPeripheral]) {
-        let filterName = account.isJade ? "Jade" : "Nano"
+    func didUpdatePeripherals(_ peripherals: [Peripheral]) {
+        let filterName = jade ? "Jade" : "Nano"
         self.peripherals = peripherals.filter {
-            $0.peripheral.name?.contains(filterName) ?? false
+            $0.name?.contains(filterName) ?? false
         }
         DispatchQueue.main.async {
             self.tableView.reloadData()

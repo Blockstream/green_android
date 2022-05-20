@@ -26,13 +26,13 @@ enum DeviceError: Error {
     case outdated_app
 }
 
-protocol BLEManagerScanDelegate: AnyObject {
-    func didUpdatePeripherals(_: [ScannedPeripheral])
+protocol BLEManagerScanDelegate: class {
+    func didUpdatePeripherals(_: [Peripheral])
     func onError(_: BLEManagerError)
 }
 
-protocol BLEManagerDelegate: AnyObject {
-    func onPrepare(_: Peripheral)
+protocol BLEManagerDelegate: class {
+    func onPrepare(_: Peripheral, reset: Bool)
     func onAuthenticate(_: Peripheral, network: String, firstInitialization: Bool)
     func onLogin(_: Peripheral)
     func onError(_: BLEManagerError)
@@ -56,7 +56,7 @@ class BLEManager {
     let queue = DispatchQueue(label: "manager.queue")
 
     let timeout = RxTimeInterval.seconds(10)
-    var peripherals = [ScannedPeripheral]()
+    var peripherals = [Peripheral]()
 
     var scanningDispose: Disposable?
     var enstablishDispose: Disposable?
@@ -82,7 +82,6 @@ class BLEManager {
 
         // wait bluetooth is ready
         let sheduler = SerialDispatchQueueScheduler(queue: queue, internalSerialQueueName: "manager.sheduler")
-
         scanningDispose = manager.observeState()
             .startWith(self.manager.state)
             .filter { $0 == .poweredOn }
@@ -96,14 +95,17 @@ class BLEManager {
     }
 
     func scan() -> Disposable {
+        peripherals = manager.retrieveConnectedPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID])
+            .filter { self.isJade($0) || self.isLedger($0) }
+        self.scanDelegate?.didUpdatePeripherals(self.peripherals)
         return manager.scanForPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID])
             .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
             .subscribeOn(MainScheduler.instance)
             .subscribe(onNext: { p in
-                if let row = self.peripherals.firstIndex(where: { $0.advertisementData.localName == p.advertisementData.localName }) {
-                    self.peripherals[row] = p
+                if let row = self.peripherals.firstIndex(where: { $0.name == p.advertisementData.localName }) {
+                    self.peripherals[row] = p.peripheral
                 } else {
-                    self.peripherals += [p]
+                    self.peripherals += [p.peripheral]
                 }
                 self.scanDelegate?.didUpdatePeripherals(self.peripherals)
             }, onError: { error in
@@ -136,7 +138,11 @@ class BLEManager {
 
     func connectLedger(_ p: Peripheral, account: Account) {
         let session = SessionsManager.new(for: account)
-        enstablishDispose = p.establishConnection()
+        var connection = Observable.just(p)
+        if !p.isConnected {
+            connection = p.establishConnection()
+        }
+        enstablishDispose = connection
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p in Ledger.shared.open(p) }
             .flatMap { _ in Ledger.shared.application() }
@@ -167,10 +173,16 @@ class BLEManager {
         let session = SessionsManager.new(for: account)
         let network = account.network
         var hasPin = false
-        enstablishDispose = p.establishConnection()
-            .flatMap { p in Jade.shared.open(p) }
+        var connection = Observable.just(p)
+        if !p.isConnected {
+            connection = p.establishConnection()
+        }
+        enstablishDispose = connection
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { Jade.shared.open($0) }
+            .compactMap { _ in try session.connect()}
             .timeoutIfNoEvent(RxTimeInterval.seconds(3))
+            .flatMap { Jade.shared.addEntropy() }
             .flatMap { _ -> Observable<JadeVersionInfo> in
                 Jade.shared.version()
             }.flatMap { version -> Observable<Bool> in
@@ -183,19 +195,17 @@ class BLEManager {
                 } else if version.jadeNetworks == "MAIN" && testnet {
                     throw JadeError.Abort("\(network) not supported in Jade \(version.jadeNetworks) mode")
                 }
-                // check genuine firmware
-                return Jade.shared.addEntropy()
-            }.compactMap { _ in
-                try session.connect()
-            }.flatMap { _ in
-                Jade.shared.auth(network: account.network)
+                if version.jadeState == "READY" {
+                    return Observable.just(true)
+                }
+                return Jade.shared.auth(network: account.network)
                     .retry(3)
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.delegate?.onAuthenticate(p, network: network, firstInitialization: !hasPin)
             }, onError: { err in
-                //session.destroy()
+                session.destroy()
                 self.onError(err, network: network)
             })
     }
@@ -236,14 +246,8 @@ class BLEManager {
             })
     }
 
-    func connect(_ p: Peripheral, network: String) {
+    func connect(_ p: Peripheral, account: Account) {
         addStatusListener(p)
-        guard var account = AccountsManager.shared.current else {
-            return
-        }
-        account.network = network.replacingOccurrences(of: "electrum-", with: "")
-        account.isSingleSig = network.contains("electrum")
-        AccountsManager.shared.current = account
         if isJade(p) {
             connectJade(p, account: account)
         } else {
@@ -270,11 +274,8 @@ class BLEManager {
                          supportsHostUnblinding: supportUnblinding)
     }
 
-    func login(_ p: Peripheral, checkFirmware: Bool = true) {
-        guard let account = AccountsManager.shared.current,
-              let session = SessionsManager.get(for: account) else {
-                  return
-              }
+    func login(_ p: Peripheral, account: Account, checkFirmware: Bool = true) {
+        let session = SessionsManager.get(for: account)
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p -> Observable<Peripheral> in
@@ -287,7 +288,7 @@ class BLEManager {
             .flatMap { _ in
                 return Observable<Void>.create { observer in
                     let device = self.device(isJade: account.isJade, fmwVersion: self.fmwVersion ?? "")
-                    session.create(hwDevice: device).done { res in
+                    session?.create(hwDevice: device).done { res in
                             observer.onNext(res)
                             observer.onCompleted()
                         }.catch { err in
@@ -297,13 +298,14 @@ class BLEManager {
                 }
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
+                AccountsManager.shared.current = session?.account
                 self.delegate?.onLogin(p)
             }, onError: { err in
                 switch err {
                 case BLEManagerError.firmwareErr(_): // nothing to do
                     return
                 default:
-                    session.destroy()
+                    session?.destroy()
                     self.onError(err, network: nil)
                 }
             })
@@ -355,10 +357,10 @@ class BLEManager {
 
     func prepare(_ peripheral: Peripheral) {
         if peripheral.isConnected {
-            self.delegate?.onPrepare(peripheral)
+            self.delegate?.onPrepare(peripheral, reset: false)
             return
         } else if isLedger(peripheral) {
-            self.delegate?.onPrepare(peripheral)
+            self.delegate?.onPrepare(peripheral, reset: false)
             return
         }
 
@@ -370,7 +372,7 @@ class BLEManager {
             .compactMap { _ in sleep(3) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onPrepare(peripheral)
+                self.delegate?.onPrepare(peripheral, reset: true)
             }, onError: { err in
                 self.onError(err, network: nil)
         })
