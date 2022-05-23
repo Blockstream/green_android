@@ -369,7 +369,7 @@ class SendViewModel @AssistedInject constructor(
     }
 
     // This method helps between differences between multisig/singlesig returned values
-    private fun getSendAmountCompat(index: Int, assetId: String, tx: CreateTransaction) = if (session.isElectrum && tx.isSendAll) tx.addressees[index].satoshi else tx.satoshi[assetId]
+    private fun getSendAmountCompat(index: Int, assetId: String, tx: CreateTransaction) = if (session.isElectrum) tx.addressees[index].satoshi else tx.satoshi[assetId]
 
     var pendingCheck = false
     var isCheckingTransaction = AtomicBoolean(false)
