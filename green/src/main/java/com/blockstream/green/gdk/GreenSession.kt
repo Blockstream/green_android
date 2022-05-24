@@ -187,38 +187,32 @@ class GreenSession constructor(
         var electrumUrl: String? = null
         var spvServers: List<String>? = null
 
-        var spvEnabled = false
-        var spvMulti = false
+        // SPV for liquid is disabled // https://gl.blockstream.com/blockstream/green/gdk/-/issues/580
+        val spvEnabled = applicationSettings.spv && !Network.isLiquid(network.id)
+        var spvMulti = false // Only available in Singlesig
 
-        if(network.isElectrum){
+        if (network.isElectrum) {
             var tempUrl = applicationSettings.getPersonalElectrumServer(network)
 
-            if(!tempUrl.isNullOrBlank()){
+            if (!tempUrl.isNullOrBlank()) {
                 electrumUrl = tempUrl
             }
 
-            // SPV for liquid is disabled // https://gl.blockstream.com/blockstream/green/gdk/-/issues/580
-            spvEnabled = applicationSettings.spv && Network.isLiquid(network.id) == false
             spvMulti = applicationSettings.multiServerValidation
-
             tempUrl = applicationSettings.getSpvElectrumServer(network)
 
-            if(spvMulti && !tempUrl.isNullOrBlank()){
+            if (spvMulti && !tempUrl.isNullOrBlank()) {
                 spvServers = tempUrl
                     .split(",")
                     .map { it.trim() }
             }
+        } else {
+            val url = applicationSettings.getPersonalElectrumServer(network)
 
+            if (spvEnabled && !url.isNullOrBlank()) {
+                electrumUrl = url
+            }
         }
-        // Disabled for Green
-//        else{
-//            spvEnabled = applicationSettings.spv
-//            val url = applicationSettings.getPersonalElectrumServer(network)
-//
-//            if(spvEnabled && !url.isNullOrBlank()){
-//                electrumUrl = url
-//            }
-//        }
 
         return ConnectionParams(
             networkName = network.id,
