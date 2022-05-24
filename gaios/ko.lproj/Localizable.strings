@@ -62,6 +62,7 @@
 "id_all_of_the_accounts_in_your" = "지갑을 삭제하기 전에 지갑의 모든 계정을 비워야 합니다.";
 "id_all_the_coins_received_or" = "거스름돈으로 받거나 생성된 모든 코인.";
 "id_all_wallets" = "모든 지갑";
+"id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "간편하게 잔액을 확인하거나, 입금 받거나, 종이 지갑을 스윕하세요. 보기 전용 모드에서는 송금할 수 없습니다.";
 "id_always" = "항상";
 "id_amount" = "금액";
@@ -269,6 +270,7 @@
 "id_domain" = "도메인";
 "id_done" = "완료";
 "id_dont_ask_me_again" = "다시 묻지 않기";
+"id_dont_collect_data" = "Don't collect data";
 "id_dont_show_this_again" = "다시 보지 않기 ";
 "id_dont_store_your_recovery_phrase" = "휴대전화 또는 컴퓨터, 온라인 서비스에 복구 문구를 저장하지 마세요.";
 "id_dont_take_screenshots_of_your" = "복구 문구의 스크린샷을 찍지 마세요!";
@@ -282,6 +284,7 @@
 "id_email_address" = "이메일 주소";
 "id_empty" = "비우기";
 "id_enable" = "활성화";
+"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "블루투스 활성화하기";
 "id_enable_custom_networks_debug" = "사용자 지정 네트워크 디버그 옵션 활성화하기";
 "id_enable_email_notifications_to" = "nlocktime을 변경하려면 이메일 알림을 활성화하세요";
@@ -388,9 +391,11 @@
 "id_hardware_wallet_support_for" = "하드웨어 지갑에서 곧 Confidential Transaction 서비스를 제공합니다.";
 "id_hash" = "해시";
 "id_help" = "고객 센터";
+"id_help_green_improve" = "Help Green Improve";
 "id_here" = "여기";
 "id_hex" = "HEX";
 "id_hide_assets" = "자산 숨기기";
+"id_hide_details" = "Hide details";
 "id_high" = "높음";
 "id_hold_your_nfc_tag_close_to_the" = "NFC 태그를 기기에 가까이 대세요";
 "id_home" = "홈";
@@ -407,6 +412,7 @@
 "id_i_typed_all_my_recovery_phrase" = "복구 문구를 모두 입력했는데 계속 진행하지 못하는 이유는 무엇인가요?";
 "id_i_understand_amounts_could_be" = "금액이 정확하지 않을 수 있다는 것을 이해합니다";
 "id_id" = "ID";
+"id_if_you_agree_green_will_collect" = "If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.";
 "id_if_you_are_the_rightful_owner" = "이 지갑의 합법적 소유자이고 활성 2FA 방법 중 하나를 여전히 보유하고 있다면 초기화를 취소하여 지갑을 사용하고 비울 수 있습니다.";
 "id_if_you_did_not_request_the" = "초기화를 요청하지 않았는데 기존의 이중 인증 방법에 액세스할 수 없어 초기화 과정을 취소할 수 없는 경우, 2FA 초기화에 대한 이의를 신청하세요. 이를 통해 지갑은 영구적으로 차단되지만 초기화는 취소할 수 있습니다.";
 "id_if_you_have_access_to_a" = "이 지갑의 이중 인증 방법에 액세스할 수 있다면 초기화를 취소하여 즉시 또는 %d일 후 자금을 사용하거나 받을 수 있습니다.";
@@ -603,12 +609,14 @@
 "id_optional_memo" = "선택적 메모";
 "id_optional_password" = "선택적 비밀번호";
 "id_or" = "또는";
+"id_os__app_version_loading_times" = "OS & app version, loading times, crashes";
 "id_our_support_page" = "Blockstream의 도움말 페이지";
 "id_outdated_hardware_wallet" = "오래된 하드웨어 지갑 펌웨어. 데스크톱에서 최신 버전으로 업그레이드하세요.";
 "id_outgoing" = "출금";
 "id_overview" = "개요";
 "id_p2sh" = "P2sh";
 "id_p2wsh" = "P2wsh";
+"id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_password" = "비밀번호";
 "id_password_protected" = "비밀번호로 보호";
 "id_paste" = "붙여넣기";
@@ -654,6 +662,7 @@
 "id_proxy_host" = "프록시 호스트";
 "id_proxy_port" = "프록시 포트";
 "id_proxy_settings" = "프록시 설정";
+"id_pseudonymous_identifier_country" = "Pseudonymous identifier, country";
 "id_qr_code" = "QR 코드";
 "id_qr_scanner" = "QR 스캐너";
 "id_radio_firmware" = "Radio firmware";
@@ -673,6 +682,7 @@
 "id_recovery_mnemonic" = "복구 니모닉";
 "id_recovery_phrase" = "복구 구문";
 "id_recovery_phrase_check" = "복구 구문 확인";
+"id_recovery_phrases_key_material" = "Recovery phrases, key material, addresses, balances";
 "id_recovery_tool" = "복구 도구";
 "id_recovery_transaction_emails" = "복구 거래 이메일";
 "id_recovery_transaction_request" = "복구 거래 요청을 보냈습니다";
@@ -790,6 +800,7 @@
 "id_show_all_assets" = "모든 자산 보기";
 "id_show_bitcoin_amounts_in" = "비트코인 금액 단위";
 "id_show_coins_with_expiring" = "이중 인증 보호가만료되는 코인을 표시합니다.";
+"id_show_details" = "Show details";
 "id_show_fiat" = "명목 화폐 보기";
 "id_show_my_wallet_backup" = "내 지갑 백업 보기";
 "id_show_qr_code" = "QR 코드 보기";
@@ -936,6 +947,7 @@
 "id_use_an_xpub_for_which_you_own" = "해당 개인 키의 xpub를 세 번째 복구 키로 사용하세요.";
 "id_use_android_screen_lock_to_log" = "Android 화면 잠금을 사용하여 로그인";
 "id_use_your_email_to_receive" = "이메일로 복구 거래 및 거래 알림을 수신하세요.";
+"id_user_contact_info_ip_address" = "User contact info, IP address, detailed location";
 "id_user_not_found_or_invalid" = "사용자 정보를 찾을 수 없거나 비밀번호가 유효하지 않습니다";
 "id_username" = "사용자 이름";
 "id_username_not_available" = "사용자 이름을 사용할 수 없습니다";
@@ -986,7 +998,9 @@
 "id_well_get_you_set_up_in_no_time" = "금방 처리됩니다. 펜과 종이를 준비하세요!";
 "id_well_get_you_set_up_with_an_amp" = "AMP 지갑은 금방 만들어집니다. 또는 기존 Liquid 지갑에서 AMP 계정을 만드실 수도 있습니다.";
 "id_what_type_of_account_would_you" = "어떤 유형의 계정을 추가하시겠습니까?";
+"id_whats_collected" = "What's collected";
 "id_whats_new" = "새로운 소식";
+"id_whatss_not_collected" = "Whats's NOT collected";
 "id_where_would_you_like_to" = "자금을 어디로 이동하시겠습니까?";
 "id_wireless" = "무선";
 "id_word" = "단어";

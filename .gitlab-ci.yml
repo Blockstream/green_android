@@ -71,7 +71,8 @@ ui_tests:
     - cd $CI_PROJECT_DIR
     - export LC_ALL=en_US.UTF-8
     - export LANG=en_US.UTF-8
-    - ./tools/fetch_gdk_binaries.sh --simulatortools/transifex.sh
+    - ./tools/fetch_gdk_binaries.sh --simulator
+    - ./tools/transifex.sh
     - pod install
     - fastlane ui_tests
   after_script:

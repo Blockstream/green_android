@@ -62,6 +62,7 @@
 "id_all_of_the_accounts_in_your" = "删除钱包之前，您钱包中的所有帐户都需要清空。";
 "id_all_the_coins_received_or" = "所有被当做找零接收或创建的币。";
 "id_all_wallets" = "所有钱包";
+"id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "允许用户快速查看余额、收款或从纸钱包中提现。用户在watch-only模式下无法发起转账。";
 "id_always" = "永远";
 "id_amount" = "金额";
@@ -269,6 +270,7 @@
 "id_domain" = "域名";
 "id_done" = "完成";
 "id_dont_ask_me_again" = "不再询问";
+"id_dont_collect_data" = "Don't collect data";
 "id_dont_show_this_again" = "不再显示";
 "id_dont_store_your_recovery_phrase" = "不要将您的助记词存储在您的手机、电脑或任何联网设备上。";
 "id_dont_take_screenshots_of_your" = "请勿对助记词进行截屏！";
@@ -282,6 +284,7 @@
 "id_email_address" = "电子邮箱地址";
 "id_empty" = "空";
 "id_enable" = "开启";
+"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "启用蓝牙";
 "id_enable_custom_networks_debug" = "启用自定义网络debug选项";
 "id_enable_email_notifications_to" = "启用邮件提醒以改变nlocktime";
@@ -388,9 +391,11 @@
 "id_hardware_wallet_support_for" = "硬件钱包即将支持隐私转账。";
 "id_hash" = "哈希";
 "id_help" = "帮助";
+"id_help_green_improve" = "Help Green Improve";
 "id_here" = "这里";
 "id_hex" = "HEX";
 "id_hide_assets" = "隐藏资产";
+"id_hide_details" = "Hide details";
 "id_high" = "高";
 "id_hold_your_nfc_tag_close_to_the" = "将NFC标签靠近设备";
 "id_home" = "主页";
@@ -407,6 +412,7 @@
 "id_i_typed_all_my_recovery_phrase" = "我输入了所有的助记词，为什么不能继续？";
 "id_i_understand_amounts_could_be" = "我明白数量有可能不准确";
 "id_id" = "ID";
+"id_if_you_agree_green_will_collect" = "If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.";
 "id_if_you_are_the_rightful_owner" = "如果您是该钱包的所有者，并且您仍然拥有2FA方法之一，请取消重置以能够转账并清空该钱包。";
 "id_if_you_did_not_request_the" = "如果您未请求重置，但由于无法访问任何现有的双重验证而无法取消重置过程，请对此2FA重置提出异议。这将永久屏蔽您的钱包，但您可以撤消此操作。";
 "id_if_you_have_access_to_a" = "如果您可以访问此钱包的双重验证，请取消重置以便能够立即转账和接收，或者等待%d天。";
@@ -603,12 +609,14 @@
 "id_optional_memo" = "备忘录（选填）";
 "id_optional_password" = "密码（选填）";
 "id_or" = "或者";
+"id_os__app_version_loading_times" = "OS & app version, loading times, crashes";
 "id_our_support_page" = "我们的客服网页";
 "id_outdated_hardware_wallet" = "硬件钱包固件已过期。请使用电脑来升级至最新固件。";
 "id_outgoing" = "输出";
 "id_overview" = "总览";
 "id_p2sh" = "P2sh";
 "id_p2wsh" = "P2wsh";
+"id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_password" = "密码";
 "id_password_protected" = "密码保护";
 "id_paste" = "粘贴";
@@ -654,6 +662,7 @@
 "id_proxy_host" = "代理主机";
 "id_proxy_port" = "代理端口";
 "id_proxy_settings" = "PROXY设置";
+"id_pseudonymous_identifier_country" = "Pseudonymous identifier, country";
 "id_qr_code" = "二维码";
 "id_qr_scanner" = "二维码扫描器";
 "id_radio_firmware" = "无线电固件";
@@ -673,6 +682,7 @@
 "id_recovery_mnemonic" = "助记词";
 "id_recovery_phrase" = "助记词";
 "id_recovery_phrase_check" = "助记词检查";
+"id_recovery_phrases_key_material" = "Recovery phrases, key material, addresses, balances";
 "id_recovery_tool" = "恢复工具";
 "id_recovery_transaction_emails" = "恢复转账邮件";
 "id_recovery_transaction_request" = "恢复转账请求已发送";
@@ -790,6 +800,7 @@
 "id_show_all_assets" = "显示所有资产";
 "id_show_bitcoin_amounts_in" = "比特币面值";
 "id_show_coins_with_expiring" = "显示快过期的双重验证保护的资产。";
+"id_show_details" = "Show details";
 "id_show_fiat" = "显示法币";
 "id_show_my_wallet_backup" = "显示我的钱包备份";
 "id_show_qr_code" = "显示二维码";
@@ -936,6 +947,7 @@
 "id_use_an_xpub_for_which_you_own" = "使用您拥有相应私钥的xpub作为您的第三个恢复密钥。";
 "id_use_android_screen_lock_to_log" = "使用安卓屏幕锁登录";
 "id_use_your_email_to_receive" = "使用您的电子邮件接收恢复转账和转账通知";
+"id_user_contact_info_ip_address" = "User contact info, IP address, detailed location";
 "id_user_not_found_or_invalid" = "用户不存在或密码错误";
 "id_username" = "用户名";
 "id_username_not_available" = "用户名不可用";
@@ -986,7 +998,9 @@
 "id_well_get_you_set_up_in_no_time" = "我们会尽快为您设置好。请准备好纸和笔！";
 "id_well_get_you_set_up_with_an_amp" = "我们会立即为您设置AMP钱包。请注意，您也可以在任何现有的液态网络钱包中创建AMP账户。";
 "id_what_type_of_account_would_you" = "你希望添加什么类型的账户？";
+"id_whats_collected" = "What's collected";
 "id_whats_new" = "有什么新情况？";
+"id_whatss_not_collected" = "Whats's NOT collected";
 "id_where_would_you_like_to" = "你想要把资金发送到哪？";
 "id_wireless" = "无线";
 "id_word" = "词";

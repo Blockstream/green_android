@@ -41,7 +41,7 @@ class DialogCountlyConsentViewController: UIViewController {
     weak var delegate: DialogCountlyConsentViewControllerDelegate?
 
     var expandText: String {
-        return self.detailsCard.isHidden ? "Show details" : "Hide details"
+        return self.detailsCard.isHidden ? NSLocalizedString("id_show_details", comment: "") : NSLocalizedString("id_hide_details", comment: "")
     }
 
     override func viewDidLoad() {
@@ -76,18 +76,24 @@ class DialogCountlyConsentViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Help Green improve"
-        lblHint.text = "If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected."
-        btnDeny.setTitle("Don’t collect data", for: .normal)
-        btnAllow.setTitle("Allow data collection", for: .normal)
+        lblTitle.text = NSLocalizedString("id_help_green_improve", comment: "")
+        lblHint.text = NSLocalizedString("id_if_you_agree_green_will_collect", comment: "")
+        btnDeny.setTitle(NSLocalizedString("id_dont_collect_data", comment: ""), for: .normal)
+        btnAllow.setTitle(NSLocalizedString("id_allow_data_collection", comment: ""), for: .normal)
         lblExpand.text = self.expandText
 
-        lblCollectTitle.text = "What's collected"
+        lblCollectTitle.text = NSLocalizedString("id_whats_collected", comment: "")
 
-        lblCollectHint.text = "Pseudonymous identifier, country\nPage visits, button presses, general app configuration\nOS & app version, loading times, crashes"
-        lblNotCollectTitle.text = "What's NOT collected"
-        lblNotCollectHint.text = "Recovery phrases, key material, addresses, balances\nUser contact info, IP address, detailed location"
-        btnMore.setTitle("Learn more", for: .normal)
+        let collectStr = NSLocalizedString("id_pseudonymous_identifier_country", comment: "") + "\n" + NSLocalizedString("id_page_visits_button_presses", comment: "") + "\n" + NSLocalizedString("id_os__app_version_loading_times", comment: "")
+
+        lblCollectHint.text = collectStr
+
+        lblNotCollectTitle.text = NSLocalizedString("id_whatss_not_collected", comment: "")
+
+        let notCollectStr = NSLocalizedString("id_recovery_phrases_key_material", comment: "") + "\n" + NSLocalizedString("id_user_contact_info_ip_address", comment: "")
+
+        lblNotCollectHint.text = notCollectStr
+        btnMore.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
     }
 
     override func viewDidAppear(_ animated: Bool) {

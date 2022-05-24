@@ -62,6 +62,7 @@
 "id_all_of_the_accounts_in_your" = "Toate conturile din portofel trebuie să fie goale înainte de a-l șterge";
 "id_all_the_coins_received_or" = "All the coins received or created as change.";
 "id_all_wallets" = "Toate portofelele";
+"id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "Vă permite să verificați rapid situația contului, să primiți monede sau să scanati un portofel de hârtie (paper wallet). În modul watch-only nu veți putea trimite monede.";
 "id_always" = "Întotdeauna";
 "id_amount" = "Sumă";
@@ -269,6 +270,7 @@
 "id_domain" = "Domeniu";
 "id_done" = "Realizat";
 "id_dont_ask_me_again" = "Nu mă mai întreba";
+"id_dont_collect_data" = "Don't collect data";
 "id_dont_show_this_again" = "Don't show this again";
 "id_dont_store_your_recovery_phrase" = "Nu salvați fraza de recuperare pe telefon, computer sau online.";
 "id_dont_take_screenshots_of_your" = "Nu faceți captura de ecran cu fraza de recuperare!";
@@ -282,6 +284,7 @@
 "id_email_address" = "Adresă de e-mail";
 "id_empty" = "Empty";
 "id_enable" = "Activare";
+"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Activați Bluetooth";
 "id_enable_custom_networks_debug" = "Activare opțiuni personalizate pentru debugul rețelei";
 "id_enable_email_notifications_to" = "Permiteți notificări prin e-mail pentru a schimba nlocktime";
@@ -388,9 +391,11 @@
 "id_hardware_wallet_support_for" = "Suportul pentru portofele hardware în cazul trimiterii de Tranzacții Confidențiale va fi disponibil în curând.";
 "id_hash" = "Hash";
 "id_help" = "Ajutor";
+"id_help_green_improve" = "Help Green Improve";
 "id_here" = "aici";
 "id_hex" = "HEX";
 "id_hide_assets" = "Ascundere posesiuni";
+"id_hide_details" = "Hide details";
 "id_high" = "Ridicat";
 "id_hold_your_nfc_tag_close_to_the" = "Țineți eticheta NFC aproape de dispozitiv";
 "id_home" = "Home";
@@ -407,6 +412,7 @@
 "id_i_typed_all_my_recovery_phrase" = "Am scris toate cuvintele din fraza de recuperare. De ce nu pot continua?";
 "id_i_understand_amounts_could_be" = "I understand amounts could be incorrect";
 "id_id" = "ID";
+"id_if_you_agree_green_will_collect" = "If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.";
 "id_if_you_are_the_rightful_owner" = "Dacă sunteți proprietarul de drept al acestui portofel și aveți acces la una dn metodele 2FA, anulați resetarea pentru a putea cheltui monedele.";
 "id_if_you_did_not_request_the" = "If you did not request the reset, but you cannot cancel the reset process because you can't access any existing Two-Factor Authorization methods, dispute this 2FA reset. This will permanently block your wallet, but you can undo this action.";
 "id_if_you_have_access_to_a" = "Daca aveți acces la o metodă 2FA pentru acest portofel, anulați resetarea pentru a putea cheltui monedele sau asteptați %d zile.";
@@ -603,12 +609,14 @@
 "id_optional_memo" = "Memo opțional";
 "id_optional_password" = "Parolă opțională";
 "id_or" = "SAU";
+"id_os__app_version_loading_times" = "OS & app version, loading times, crashes";
 "id_our_support_page" = "pagina noastră de suport";
 "id_outdated_hardware_wallet" = "Firmware-ul portofelului hardware este învechit. Vă rugăm să îl actualizați de pe un calculator.";
 "id_outgoing" = "În curs de trimitere";
 "id_overview" = "Prezentare generală";
 "id_p2sh" = "P2sh";
 "id_p2wsh" = "P2wsh";
+"id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_password" = "Parolă";
 "id_password_protected" = "Protejat(ă) prin parolă";
 "id_paste" = "Lipire";
@@ -654,6 +662,7 @@
 "id_proxy_host" = "Proxy host";
 "id_proxy_port" = "Proxy port";
 "id_proxy_settings" = "SETĂRI PROXY";
+"id_pseudonymous_identifier_country" = "Pseudonymous identifier, country";
 "id_qr_code" = "Cod QR";
 "id_qr_scanner" = "Scanner QR";
 "id_radio_firmware" = "Firmware cu wireless";
@@ -673,6 +682,7 @@
 "id_recovery_mnemonic" = "Mnemonic de recuperare";
 "id_recovery_phrase" = "Frază de recuperare";
 "id_recovery_phrase_check" = "Verificare frază de recuperare";
+"id_recovery_phrases_key_material" = "Recovery phrases, key material, addresses, balances";
 "id_recovery_tool" = "Instrument pentru recuperare";
 "id_recovery_transaction_emails" = "E-mailuri de recuperare pentru tranzacții";
 "id_recovery_transaction_request" = "Solicitarea pentru recuperarea tranzacției a fost trimisă";
@@ -790,6 +800,7 @@
 "id_show_all_assets" = "Afișează toate monedele";
 "id_show_bitcoin_amounts_in" = "Afișarea cantităților de bitcoin în";
 "id_show_coins_with_expiring" = "Afișarea monedelor a căror protecție 2FA (autentificare cu doi factori) este pe cale să expire.";
+"id_show_details" = "Show details";
 "id_show_fiat" = "Afișare monede fiat";
 "id_show_my_wallet_backup" = "Afișare date recuperare (backup) pentru portofel";
 "id_show_qr_code" = "Afișare cod QR";
@@ -936,6 +947,7 @@
 "id_use_an_xpub_for_which_you_own" = "Use an xpub for which you own the corresponding private key as your third recovery key.";
 "id_use_android_screen_lock_to_log" = "Folosiți ecranul de blocare Android pentru a vă loga";
 "id_use_your_email_to_receive" = "Use your email to receive recovery transactions and transactions notifications";
+"id_user_contact_info_ip_address" = "User contact info, IP address, detailed location";
 "id_user_not_found_or_invalid" = "Utilizatorul nu a fost găsit sau parola este invalidă";
 "id_username" = "Nume de utilizator";
 "id_username_not_available" = "Numele de utilizator nu este disponibil";
@@ -986,7 +998,9 @@
 "id_well_get_you_set_up_in_no_time" = "Setarea este foarte rapidă. Asigurați-vă că aveți un pix si hârtie la îndemână";
 "id_well_get_you_set_up_with_an_amp" = "Setarea unui cont AMP este foarte rapidă. Opțional, puteți crea un cont AMP in orice portofel Liquid.";
 "id_what_type_of_account_would_you" = "Ce tip de cont doriți să adăugați?";
+"id_whats_collected" = "What's collected";
 "id_whats_new" = "Ce este nou?";
+"id_whatss_not_collected" = "Whats's NOT collected";
 "id_where_would_you_like_to" = "Unde doriți să transferați monedele?";
 "id_wireless" = "Wireless";
 "id_word" = "Cuvânt";

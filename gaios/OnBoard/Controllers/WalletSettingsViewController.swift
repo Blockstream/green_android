@@ -118,9 +118,10 @@ class WalletSettingsViewController: KeyboardViewController {
         lblTorHint.text = NSLocalizedString("id_private_but_less_stable", comment: "")
         lblTestnetTitle.text = NSLocalizedString("id_enable_testnet", comment: "")
         lblTestnetHint.text = ""
-        lblAnalyticsTitle.text = "Help Green improve"
-        lblAnalyticsHint.text = "Enable anonymous data collection"
-        btnAnalytics.setTitle("More info", for: .normal)
+        lblAnalyticsTitle.text = NSLocalizedString("id_help_green_improve", comment: "")
+        lblAnalyticsHint.text = NSLocalizedString("id_enable_limited_usage_data", comment: "")
+        btnAnalytics.setTitle(NSLocalizedString("id_more_info", comment: ""), for: .normal)
+
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
         fieldProxyIp.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")

@@ -62,6 +62,7 @@
 "id_all_of_the_accounts_in_your" = "Tous les comptes de votre portefeuille doivent être vides avant de le supprimer.";
 "id_all_the_coins_received_or" = "Toutes les pièces reçues ou créées comme monnaie.";
 "id_all_wallets" = "Tous les portefeuilles";
+"id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "Vous permet de consulter rapidement votre solde, de recevoir des fonds ou de balayer un paperwallet. Vous ne pouvez pas envoyer de fonds en mode watch-only.";
 "id_always" = "Toujours";
 "id_amount" = "Montant";
@@ -269,6 +270,7 @@
 "id_domain" = "Domaine";
 "id_done" = "Effectué";
 "id_dont_ask_me_again" = "Ne plus me demander";
+"id_dont_collect_data" = "Don't collect data";
 "id_dont_show_this_again" = "Ne montrez plus jamais ça.";
 "id_dont_store_your_recovery_phrase" = "Ne stockez pas votre phrase de récupération sur votre téléphone, votre ordinateur ou tout autre service en ligne.";
 "id_dont_take_screenshots_of_your" = "Ne faites pas de captures d'écran de votre phrase de récupération !";
@@ -282,6 +284,7 @@
 "id_email_address" = "adresse email";
 "id_empty" = "vide";
 "id_enable" = "Activez";
+"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Activez Bluetooth";
 "id_enable_custom_networks_debug" = "Activer les options de débogage des réseaux personnalisés";
 "id_enable_email_notifications_to" = "Activer les notifications par e-mail pour modifier le nlocktime";
@@ -388,9 +391,11 @@
 "id_hardware_wallet_support_for" = "Gestion du portefeuille Hardware pour les Transactions Confidentielles à venir.";
 "id_hash" = "Hash";
 "id_help" = "Aide";
+"id_help_green_improve" = "Help Green Improve";
 "id_here" = "ici";
 "id_hex" = "HEX";
 "id_hide_assets" = "Cachez les actifs";
+"id_hide_details" = "Hide details";
 "id_high" = "Haut";
 "id_hold_your_nfc_tag_close_to_the" = "Approchez l'étiquette NFC de l'appareil";
 "id_home" = "Accueil";
@@ -407,6 +412,7 @@
 "id_i_typed_all_my_recovery_phrase" = "J'ai tapé toute ma phrase de récupération, pourquoi je ne peux pas continuer ?";
 "id_i_understand_amounts_could_be" = "Je comprends que les montants peuvent être incorrects";
 "id_id" = "ID";
+"id_if_you_agree_green_will_collect" = "If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.";
 "id_if_you_are_the_rightful_owner" = "Si vous êtes le propriétaire légitime de ce portefeuille et que vous possédez toujours l'une de ses méthodes 2FA actives, annulez la réinitialisation pour pouvoir dépenser et vider ce portefeuille.";
 "id_if_you_did_not_request_the" = "Si vous n'avez pas demandé la réinitialisation, mais que vous ne pouvez pas annuler le processus de réinitialisation parce que vous ne pouvez accéder à aucune méthode d'autorisation à deux facteurs existante, contestez cette réinitialisation 2FA. Cela bloquera définitivement votre portefeuille, mais vous pouvez annuler cette action.";
 "id_if_you_have_access_to_a" = "Si vous avez accès à une méthode à deux facteurs pour ce portefeuille, annulez la réinitialisation pour pouvoir dépenser et recevoir immédiatement, ou attendez%d jours.";
@@ -603,12 +609,14 @@
 "id_optional_memo" = "Mémo optionnel";
 "id_optional_password" = "Mot de passe optionnel";
 "id_or" = "OU";
+"id_os__app_version_loading_times" = "OS & app version, loading times, crashes";
 "id_our_support_page" = "notre page de support";
 "id_outdated_hardware_wallet" = "Le firmware du hardware wallet n'est pas à jour. Mettez-le à jour depuis votre ordinateur.";
 "id_outgoing" = "Sortant";
 "id_overview" = "Vue d'ensemble";
 "id_p2sh" = "P2sh";
 "id_p2wsh" = "P2wsh";
+"id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_password" = "Mot de passe";
 "id_password_protected" = "Protégé par mot de passe";
 "id_paste" = "Collez";
@@ -654,6 +662,7 @@
 "id_proxy_host" = "Hôte proxy";
 "id_proxy_port" = "Port proxy";
 "id_proxy_settings" = "CONFIGURATION DU PROXY";
+"id_pseudonymous_identifier_country" = "Pseudonymous identifier, country";
 "id_qr_code" = "QR Code";
 "id_qr_scanner" = "Scanner de QR code";
 "id_radio_firmware" = "Radio firmware";
@@ -673,6 +682,7 @@
 "id_recovery_mnemonic" = "Récupération mnemonic";
 "id_recovery_phrase" = "Phrase de récupération";
 "id_recovery_phrase_check" = "Vérification de la phrase de récupération";
+"id_recovery_phrases_key_material" = "Recovery phrases, key material, addresses, balances";
 "id_recovery_tool" = "Outil de récupération";
 "id_recovery_transaction_emails" = "Emails de transaction de récupération";
 "id_recovery_transaction_request" = "Demande de transaction de récupération envoyée";
@@ -790,6 +800,7 @@
 "id_show_all_assets" = "Affichez Tous les actifs";
 "id_show_bitcoin_amounts_in" = "Afficher les montants en bitcoins ";
 "id_show_coins_with_expiring" = "Affichez les pièces dont la protection d'authentification à deux facteurs arrive à expiration.";
+"id_show_details" = "Show details";
 "id_show_fiat" = "Affichez FIAT";
 "id_show_my_wallet_backup" = "Affichez la sauvegarde de mon portefeuille";
 "id_show_qr_code" = "Affichez le code QR";
@@ -936,6 +947,7 @@
 "id_use_an_xpub_for_which_you_own" = "Utilisez un xpub pour lequel vous possédez la clé privée correspondante comme troisième clé de récupération.";
 "id_use_android_screen_lock_to_log" = "Utiliser le verrouillage de l'écran d'Android pour se connecter";
 "id_use_your_email_to_receive" = "Utilisez votre adresse électronique pour recevoir les notifications des opérations de récupération et des transactions.";
+"id_user_contact_info_ip_address" = "User contact info, IP address, detailed location";
 "id_user_not_found_or_invalid" = "Utilisateur non trouvé ou mot de passe invalide";
 "id_username" = "Nom d'utilisateur";
 "id_username_not_available" = "Nom d'utilisateur indisponible";
@@ -986,7 +998,9 @@
 "id_well_get_you_set_up_in_no_time" = "Nous vous aiderons à vous installer en un rien de temps. Assurez-vous d'avoir un stylo et du papier à portée de main !";
 "id_well_get_you_set_up_with_an_amp" = "Nous vous installerons un portefeuille AMP en un rien de temps. Notez que vous pouvez également créer des comptes AMP dans n'importe quel porte-monnaie Liquid existant.";
 "id_what_type_of_account_would_you" = "Quel type de compte souhaitez-vous ajouter ?";
+"id_whats_collected" = "What's collected";
 "id_whats_new" = "What's new?";
+"id_whatss_not_collected" = "Whats's NOT collected";
 "id_where_would_you_like_to" = "Où souhaitez-vous transférer les fonds?\n ";
 "id_wireless" = "Sans fil";
 "id_word" = "Mot";
