@@ -114,7 +114,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .forEach { $0.perform(setHardwareLayout, with: nil) }
         #endif
 
-        AMan.S.countlyStart()
+        AnalyticsManager.shared.countlyStart()
 
         return true
     }

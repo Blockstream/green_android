@@ -42,7 +42,7 @@ class DialogAssetDetailViewController: UIViewController {
             self?.tableViewHeight.constant = table.contentSize.height
         }
 
-        AMan.S.recordView(.assetDetails)
+        AnalyticsManager.shared.recordView(.assetDetails)
     }
 
     func setContent() {

@@ -16,7 +16,7 @@ class SendViewController: KeyboardViewController {
     var wallet: WalletItem?
     var recipients: [Recipient] = []
     var inputType: InputType = .transaction
-    var addressInputType: AMan.AddressInputType = .paste
+    var addressInputType: AnalyticsManager.AddressInputType = .paste
 
     var transaction: Transaction?
     private var validateTask: ValidateTask?
@@ -98,8 +98,8 @@ class SendViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
 
-        // AMan.S.recordView(.send, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
-         AMan.S.startSendTransaction()
+        // AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+         AnalyticsManager.shared.startSendTransaction()
     }
 
     func setContent() {

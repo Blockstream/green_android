@@ -25,7 +25,7 @@ class RecoveryInstructionViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryInstructionsScreen.view
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryInstructionsScreen.continueBtn
 
-        AMan.S.recordView(.recoveryIntro, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+        AnalyticsManager.shared.recordView(.recoveryIntro, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
     }
 
     func setContent() {

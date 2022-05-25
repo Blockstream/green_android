@@ -33,10 +33,10 @@ class ChooseSecurityViewController: UIViewController {
 
         switch LandingViewController.flowType {
         case .add:
-            AMan.S.recordView(.onBoardChooseSecurity, sgmt: AMan.S.chooseSecuritySgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+            AnalyticsManager.shared.recordView(.onBoardChooseSecurity, sgmt: AnalyticsManager.shared.chooseSecuritySgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
         case .restore:
             // not used now
-            AMan.S.recordView(.onBoardChooseSecurity, sgmt: AMan.S.chooseSecuritySgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+            AnalyticsManager.shared.recordView(.onBoardChooseSecurity, sgmt: AnalyticsManager.shared.chooseSecuritySgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
         }
     }
 

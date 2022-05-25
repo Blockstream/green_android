@@ -37,7 +37,7 @@ class UserSettingsViewController: UIViewController {
         self.navigationItem.rightBarButtonItem  = btn
         view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
 
-        AMan.S.recordView(.walletSettings, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     @objc func close() {

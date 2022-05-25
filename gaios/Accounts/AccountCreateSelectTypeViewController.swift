@@ -42,7 +42,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
         cardAmp.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.cardAmp
         card2of3.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.card2of3
 
-        AMan.S.recordView(.addAccountChooseType, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {

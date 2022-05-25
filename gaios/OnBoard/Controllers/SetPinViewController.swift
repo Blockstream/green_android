@@ -42,13 +42,13 @@ class SetPinViewController: UIViewController {
         if actionPin == .set {
             switch self.pinFlow {
             case .settings:
-                AMan.S.recordView(.walletSettingsChangePIN, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+                AnalyticsManager.shared.recordView(.walletSettingsChangePIN, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
             case .onboard:
                 switch LandingViewController.flowType {
                 case .add:
-                    AMan.S.recordView(.onBoardPin, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+                    AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
                 case .restore:
-                    AMan.S.recordView(.onBoardPin, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+                    AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
                 }
             }
         }

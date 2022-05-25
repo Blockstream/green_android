@@ -34,9 +34,9 @@ class WalletNameViewController: UIViewController {
 
         switch LandingViewController.flowType {
         case .add:
-            AMan.S.recordView(.onBoardWalletName, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+            AnalyticsManager.shared.recordView(.onBoardWalletName, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
         case .restore:
-            AMan.S.recordView(.onBoardWalletName, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+            AnalyticsManager.shared.recordView(.onBoardWalletName, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
         }
 
     }
@@ -107,9 +107,9 @@ class WalletNameViewController: UIViewController {
         }.done { _ in
             AccountsManager.shared.current = session.account
             if restored {
-                AMan.S.restoreWallet(account: AccountsManager.shared.current)
+                AnalyticsManager.shared.restoreWallet(account: AccountsManager.shared.current)
             } else {
-                AMan.S.createWallet(account: AccountsManager.shared.current)
+                AnalyticsManager.shared.createWallet(account: AccountsManager.shared.current)
             }
             self.next()
         }.catch { error in

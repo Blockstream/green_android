@@ -7,16 +7,9 @@ enum AnalyticsConsent: Int {
     case authorized
 }
 
-class AMan { // AnalyticsManager
+class AnalyticsManager {
 
-    private static var instance: AMan?
-    static var S: AMan {
-        guard let instance = instance else {
-            self.instance = AMan()
-            return self.instance!
-        }
-        return instance
-    }
+    static let shared = AnalyticsManager()
 
     var isProduction: Bool {
 #if DEBUG
@@ -37,7 +30,19 @@ class AMan { // AnalyticsManager
                 //only once
                 countlyStart()
             } else {
-                giveConsent()
+                giveConsent(previous: prev)
+            }
+        }
+    }
+
+    var analyticsUUID: String {
+        get {
+            if let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID) {
+                return uuid
+            } else {
+                let uuid = UUID().uuidString
+                UserDefaults.standard.setValue(uuid, forKey: AppStorage.analyticsUUID)
+                return uuid
             }
         }
     }
@@ -46,8 +51,13 @@ class AMan { // AnalyticsManager
                            CLYConsent.events,
                            CLYConsent.crashReporting,
                            CLYConsent.viewTracking,
-                           CLYConsent.userDetails]
+                           CLYConsent.userDetails,
+                           CLYConsent.location]
     let deniedGroup = [CLYConsent.crashReporting]
+
+    func invalidateAnalyticsUUID() {
+        UserDefaults.standard.removeObject(forKey: AppStorage.analyticsUUID)
+    }
 
     func countlyStart() {
         guard consent != .notDetermined else {
@@ -58,25 +68,26 @@ class AMan { // AnalyticsManager
         let config: CountlyConfig = CountlyConfig()
 
         if isProduction {
-            config.appKey = AMan.appKeyDev // USE PROD KEY WHEN READY!
-            config.host = AMan.host
+            config.appKey = AnalyticsManager.appKeyDev // USE PROD KEY WHEN READY!
+            config.host = AnalyticsManager.host
         } else {
-            config.appKey = AMan.appKeyDev
-            config.host = AMan.host
+            config.appKey = AnalyticsManager.appKeyDev
+            config.host = AnalyticsManager.host
         }
 
+        config.deviceID = analyticsUUID
+        print("analyticsUUID \(analyticsUUID)")
         config.features = [.crashReporting]
         config.enablePerformanceMonitoring = true
         config.enableDebug = true
         config.requiresConsent = true
 
         Countly.sharedInstance().start(with: config)
-        Countly.sharedInstance().disableLocationInfo()
 
-        giveConsent()
+        giveConsent(previous: consent)
     }
 
-    private func giveConsent() {
+    private func giveConsent(previous: AnalyticsConsent) {
 
         print("giving consent: \(consent)")
 
@@ -84,8 +95,14 @@ class AMan { // AnalyticsManager
         case .notDetermined:
             break
         case .denied:
+            if previous == .authorized {
+                // change the deviceID
+                invalidateAnalyticsUUID()
+                Countly.sharedInstance().setNewDeviceID(analyticsUUID, onServer: false)
+            }
             Countly.sharedInstance().cancelConsentForAllFeatures()
             Countly.sharedInstance().giveConsent(forFeatures: deniedGroup)
+            Countly.sharedInstance().disableLocationInfo()
             updateUserProperties()
         case .authorized:
             Countly.sharedInstance().cancelConsentForAllFeatures()
@@ -100,29 +117,17 @@ class AMan { // AnalyticsManager
         let bitcoin_wallets = accounts.filter { $0.network == "mainnet"}
         let liquid_wallets = accounts.filter { $0.network == "liquid"}
 
-        let bitcoin_multisig_wallets = accounts.filter { $0.network == "mainnet" && $0.isSingleSig == false}
-        let bitcoin_singlesig_wallets = accounts.filter { $0.network == "mainnet" && $0.isSingleSig == true}
-        let liquid_multisig_wallets = accounts.filter { $0.network == "liquid" && $0.isSingleSig == false}
-        let liquid_singlesig_wallets = accounts.filter { $0.network == "liquid" && $0.isSingleSig == true}
-
         var props: [String: String] = [:]
-        props[AMan.strUserPropertyTotalWallets] = "\((bitcoin_wallets + liquid_wallets).count)"
-
-        props[AMan.strUserPropertyBitcoinWallets] = "\(bitcoin_wallets.count)"
-        props[AMan.strUserPropertyBitcoinSinglesigWallets] = "\(bitcoin_singlesig_wallets.count)"
-        props[AMan.strUserPropertyBitcoinMultisigWallets] = "\(bitcoin_multisig_wallets.count)"
-
-        props[AMan.strUserPropertyLiquidWallets] = "\(liquid_wallets.count)"
-        props[AMan.strUserPropertyLiquidSinglesigWallets] = "\(liquid_singlesig_wallets.count)"
-        props[AMan.strUserPropertyLiquidMultisigWallets] = "\(liquid_multisig_wallets.count)"
+        props[AnalyticsManager.strUserPropertyTotalWallets] = "\((bitcoin_wallets + liquid_wallets).count)"
 
         Countly.user().custom = props as CountlyUserDetailsNullableDictionary
         Countly.user().save()
     }
 
-//    func appLoadingFinished() {
-//        Countly.sharedInstance().appLoadingFinished()
-//    }
+    func appLoadingFinished() {
+        guard consent != .notDetermined else { return }
+        Countly.sharedInstance().appLoadingFinished()
+    }
 
     func userPropertiesDidChange() {
         guard consent != .notDetermined else { return }

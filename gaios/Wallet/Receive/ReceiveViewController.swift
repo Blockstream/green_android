@@ -45,7 +45,7 @@ class ReceiveViewController: UIViewController {
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
         btnAddress.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.addressBtn
 
-        AMan.S.recordView(.receive, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -138,8 +138,8 @@ class ReceiveViewController: UIViewController {
             return wallet.getAddress()
         }.done { address in
 
-            let data = AMan.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AMan.ReceiveAddressType.uri : AMan.ReceiveAddressType.address, media: AMan.ReceiveAddressMedia.text, method: AMan.ReceiveAddressMethod.copy)
-            AMan.S.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
+            let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.text, method: AnalyticsManager.ReceiveAddressMethod.copy)
+            AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
 
             UIPasteboard.general.string = self.uriBitcoin(address: address)
             DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 1.0)
@@ -308,11 +308,11 @@ extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
             // analytics
             switch option {
             case .address:
-                let data = AMan.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AMan.ReceiveAddressType.uri : AMan.ReceiveAddressType.address, media: AMan.ReceiveAddressMedia.text, method: AMan.ReceiveAddressMethod.share)
-                AMan.S.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
+                let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.text, method: AnalyticsManager.ReceiveAddressMethod.share)
+                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
             case .qr:
-                let data = AMan.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AMan.ReceiveAddressType.uri : AMan.ReceiveAddressType.address, media: AMan.ReceiveAddressMedia.image, method: AMan.ReceiveAddressMethod.share)
-                AMan.S.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
+                let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.image, method: AnalyticsManager.ReceiveAddressMethod.share)
+                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
             case .cancel:
                 break
             }

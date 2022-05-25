@@ -52,7 +52,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
         switch recoveryType {
         case .qr:
-            AMan.S.recordView(.camera)
+            AnalyticsManager.shared.recordView(.camera)
             startScan()
         case .phrase:
             updateNavigationItem()
@@ -235,7 +235,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }.catch { error in
 
             self.page += 1
-            AMan.S.recoveryPhraseCheckFailed(onBoardParams: OnBoardManager.shared.params, page: self.page)
+            AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardManager.shared.params, page: self.page)
             DropAlert().error(message: "Invalid Recovery Phrase")
         }
     }

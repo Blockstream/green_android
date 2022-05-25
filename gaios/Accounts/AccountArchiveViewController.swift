@@ -55,7 +55,7 @@ class AccountArchiveViewController: UIViewController {
 
         reloadData()
 
-        AMan.S.recordView(.verifyAddress, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     @objc func back(sender: UIBarButtonItem) {

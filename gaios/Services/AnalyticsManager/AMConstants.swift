@@ -1,4 +1,4 @@
-extension AMan {
+extension AnalyticsManager {
 
     static let host = "https://countly.gke.blockstream.com"
     static let appKeyDev = "cb8e449057253add71d2f9b65e5f66f73c073e63"

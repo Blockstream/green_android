@@ -149,7 +149,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             self.stopLoader()
         }.done { _ in
             AccountsManager.shared.current = self.account
-            AMan.S.loginWallet(loginType: .watchOnly, account: AccountsManager.shared.current)
+            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, account: AccountsManager.shared.current)
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
@@ -163,7 +163,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
                 prettyError = NSLocalizedString("id_login_failed", comment: "")
             }
-            AMan.S.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
+            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
         }
     }
 
@@ -182,14 +182,14 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
         if let account = self.account {
             AccountsManager.shared.current = account
             navigationItem.title = account.name
-            AMan.S.renameWallet()
+            AnalyticsManager.shared.renameWallet()
         }
     }
     func didDelete() {
         if let account = self.account {
             AccountsManager.shared.remove(account)
             navigationController?.popViewController(animated: true)
-            AMan.S.deleteWallet()
+            AnalyticsManager.shared.deleteWallet()
         }
     }
     func didCancel() {

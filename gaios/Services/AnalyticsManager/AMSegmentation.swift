@@ -1,12 +1,12 @@
-extension AMan {
+extension AnalyticsManager {
 
     typealias Sgmt = [String: String]
 
     func ntwSgmt(_ onBoardParams: OnBoardParams?) -> Sgmt? {
         if let network = onBoardParams?.network {
             var s = Sgmt()
-            s[AMan.strNetwork] = network
-            s[AMan.strSecurity] = onBoardParams?.singleSig == true ? AMan.strSinglesig : AMan.strMultisig
+            s[AnalyticsManager.strNetwork] = network
+            s[AnalyticsManager.strSecurity] = onBoardParams?.singleSig == true ? AnalyticsManager.strSinglesig : AnalyticsManager.strMultisig
             return s
         }
         return nil
@@ -15,16 +15,16 @@ extension AMan {
     func ntwSgmt(_ account: Account?) -> Sgmt? {
         if let network = account?.network {
             var s = Sgmt()
-            s[AMan.strNetwork] = network
-            s[AMan.strSecurity] = account?.isSingleSig == true ? AMan.strSinglesig : AMan.strMultisig
+            s[AnalyticsManager.strNetwork] = network
+            s[AnalyticsManager.strSecurity] = account?.isSingleSig == true ? AnalyticsManager.strSinglesig : AnalyticsManager.strMultisig
             return s
         }
         return nil
     }
 
-    func onBoardSgmt(onBoardParams: OnBoardParams?, flow: AMan.OnBoardFlow) -> Sgmt? {
+    func onBoardSgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
         if var s = ntwSgmt(onBoardParams) {
-            s[AMan.strFlow] = flow.rawValue
+            s[AnalyticsManager.strFlow] = flow.rawValue
             return s
         }
         return nil
@@ -34,16 +34,16 @@ extension AMan {
         if var s = ntwSgmt(account) {
 
             if account?.isJade ?? false {
-                s[AMan.strBrand] = "Blockstream"
-                s[AMan.strFirmware] = BLEManager.shared.fmwVersion ?? ""
-                s[AMan.strModel] = BLEManager.shared.boardType ?? ""
-                s[AMan.strConnection] = "BLE"
+                s[AnalyticsManager.strBrand] = "Blockstream"
+                s[AnalyticsManager.strFirmware] = BLEManager.shared.fmwVersion ?? ""
+                s[AnalyticsManager.strModel] = BLEManager.shared.boardType ?? ""
+                s[AnalyticsManager.strConnection] = "BLE"
             }
             if account?.isLedger ?? false {
-                s[AMan.strBrand] = "Ledger"
-                s[AMan.strFirmware] = BLEManager.shared.fmwVersion ?? ""
-                s[AMan.strModel] = "Ledger Nano X"
-                s[AMan.strConnection] = "BLE"
+                s[AnalyticsManager.strBrand] = "Ledger"
+                s[AnalyticsManager.strFirmware] = BLEManager.shared.fmwVersion ?? ""
+                s[AnalyticsManager.strModel] = "Ledger Nano X"
+                s[AnalyticsManager.strConnection] = "BLE"
             }
 
             return s
@@ -53,7 +53,7 @@ extension AMan {
 
     func subAccSeg(_ account: Account?, walletType: String?) -> Sgmt? {
         if var s = sessSgmt(account), let walletType = walletType {
-            s[AMan.strAccountType] = walletType
+            s[AnalyticsManager.strAccountType] = walletType
             return s
         }
         return nil
@@ -62,7 +62,7 @@ extension AMan {
     func twoFacSgmt(_ account: Account?, walletType: String?, twoFactorType: TwoFactorType?) -> Sgmt? {
         if var s = subAccSeg(account, walletType: walletType) {
             if let twoFactorType = twoFactorType {
-                s[AMan.str2fa] = twoFactorType.rawValue
+                s[AnalyticsManager.str2fa] = twoFactorType.rawValue
             }
             return s
         }
@@ -70,29 +70,29 @@ extension AMan {
     }
 }
 
-extension AMan {
+extension AnalyticsManager {
     // these need a custom dictionary
-    func chooseNtwSgmt(flow: AMan.OnBoardFlow) -> Sgmt? {
+    func chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
         var s = Sgmt()
-        s[AMan.strFlow] = flow.rawValue
+        s[AnalyticsManager.strFlow] = flow.rawValue
         return s
     }
 
-    func chooseSecuritySgmt(onBoardParams: OnBoardParams?, flow: AMan.OnBoardFlow) -> Sgmt? {
+    func chooseSecuritySgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
         if let network = onBoardParams?.network {
             var s = Sgmt()
-            s[AMan.strNetwork] = network
-            s[AMan.strFlow] = flow.rawValue
+            s[AnalyticsManager.strNetwork] = network
+            s[AnalyticsManager.strFlow] = flow.rawValue
             return s
         }
         return nil
     }
 
-    func chooseRecoverySgmt(onBoardParams: OnBoardParams?, flow: AMan.OnBoardFlow) -> Sgmt? {
+    func chooseRecoverySgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
         if let network = onBoardParams?.network {
             var s = Sgmt()
-            s[AMan.strNetwork] = network
-            s[AMan.strFlow] = flow.rawValue
+            s[AnalyticsManager.strNetwork] = network
+            s[AnalyticsManager.strFlow] = flow.rawValue
             return s
         }
         return nil

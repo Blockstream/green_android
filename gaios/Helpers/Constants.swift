@@ -26,6 +26,7 @@ enum AppStorage {
     static let defaultTransactionPriority = "default_transaction_priority"
     static let testnetIsVisible = "testnet_is_visible"
     static let userAnalyticsPreference = "user_analytics_preference"
+    static let analyticsUUID = "analytics_uuid"
 }
 
 enum ExternalUrls {

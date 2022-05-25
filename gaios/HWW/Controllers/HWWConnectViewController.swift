@@ -392,7 +392,7 @@ extension HWWConnectViewController: BLEManagerDelegate {
     }
 
     func onLogin(_: Peripheral) {
-        AMan.S.loginWallet(loginType: .hardware, account: AccountsManager.shared.current)
+        AnalyticsManager.shared.loginWallet(loginType: .hardware, account: AccountsManager.shared.current)
         DispatchQueue.main.async {
             getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }

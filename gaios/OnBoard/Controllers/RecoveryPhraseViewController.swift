@@ -26,9 +26,9 @@ class RecoveryPhraseViewController: UIViewController {
         switch LandingViewController.flowType {
         case .add:
             // not used now
-            AMan.S.recordView(.onBoardChooseRecovery, sgmt: AMan.S.chooseRecoverySgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+            AnalyticsManager.shared.recordView(.onBoardChooseRecovery, sgmt: AnalyticsManager.shared.chooseRecoverySgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
         case .restore:
-            AMan.S.recordView(.onBoardChooseRecovery, sgmt: AMan.S.chooseRecoverySgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+            AnalyticsManager.shared.recordView(.onBoardChooseRecovery, sgmt: AnalyticsManager.shared.chooseRecoverySgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
         }
     }
 

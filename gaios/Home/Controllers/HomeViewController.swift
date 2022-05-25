@@ -21,7 +21,8 @@ class HomeViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.view
         btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.appSettingsBtn
 
-        AMan.S.recordView(.home)
+        AnalyticsManager.shared.recordView(.home)
+        AnalyticsManager.shared.appLoadingFinished()
     }
 
     override func viewWillAppear(_ animated: Bool) {

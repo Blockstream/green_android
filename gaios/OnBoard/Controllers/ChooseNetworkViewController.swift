@@ -38,9 +38,9 @@ class ChooseNetworkViewController: UIViewController {
 
         switch LandingViewController.flowType {
         case .add:
-            AMan.S.recordView(.onBoardChooseNetwork, sgmt: AMan.S.chooseNtwSgmt(flow: AMan.OnBoardFlow.strCreate))
+            AnalyticsManager.shared.recordView(.onBoardChooseNetwork, sgmt: AnalyticsManager.shared.chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow.strCreate))
         case .restore:
-            AMan.S.recordView(.onBoardChooseNetwork, sgmt: AMan.S.chooseNtwSgmt(flow: AMan.OnBoardFlow.strRestore))
+            AnalyticsManager.shared.recordView(.onBoardChooseNetwork, sgmt: AnalyticsManager.shared.chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow.strRestore))
         }
     }
 

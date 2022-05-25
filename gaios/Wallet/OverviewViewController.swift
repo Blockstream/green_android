@@ -117,7 +117,7 @@ class OverviewViewController: UIViewController {
 
         startAnimating()
 
-        AMan.S.recordView(.overview, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.overview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     func reloadSections(_ sections: [OverviewSection], animated: Bool) {
@@ -333,9 +333,17 @@ class OverviewViewController: UIViewController {
         let accounts: Int = subAccounts.count
         let accountsTypes: String = Array(Set(subAccounts.map { $0.type })).sorted().joined(separator: ",")
 
-        AMan.S.activeWallet(account: AccountsManager.shared.current, walletData: AMan.WalletData(walletFunded: walletFunded, accountsFunded: accountsFunded, accounts: accounts, accountsTypes: accountsTypes))
+        AnalyticsManager.shared.activeWallet(account: AccountsManager.shared.current, walletData: AnalyticsManager.WalletData(walletFunded: walletFunded, accountsFunded: accountsFunded, accounts: accounts, accountsTypes: accountsTypes))
 
-        showAnalyticsConsent()
+        if AnalyticsManager.shared.consent == .notDetermined {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCountlyConsentViewController") as? DialogCountlyConsentViewController {
+                    vc.modalPresentationStyle = .overFullScreen
+                    self.present(vc, animated: true, completion: nil)
+                }
+            }
+        }
     }
 
     func loadWallet() -> Promise<Void> {
@@ -1053,7 +1061,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            AMan.S.renameAccount(account: AccountsManager.shared.current)
+            AnalyticsManager.shared.renameAccount(account: AccountsManager.shared.current)
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)

@@ -57,7 +57,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func canceltwoFactorReset() {
-        AMan.S.recordView(.walletSettings2FACancel, sgmt: AMan.S.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        AnalyticsManager.shared.recordView(.walletSettings2FACancel, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
@@ -84,7 +84,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func disputeReset(email: String) {
-        AMan.S.recordView(.walletSettings2FADispute, sgmt: AMan.S.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
@@ -108,7 +108,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func undoReset(email: String) {
-        AMan.S.recordView(.walletSettings2FAUndoDispute, sgmt: AMan.S.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }

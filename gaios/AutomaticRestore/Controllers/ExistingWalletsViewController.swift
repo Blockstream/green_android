@@ -36,7 +36,7 @@ class ExistingWalletsViewController: UIViewController {
 
         checkWallets()
 
-        AMan.S.recordView(.onBoardScan, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+        AnalyticsManager.shared.recordView(.onBoardScan, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
     }
 
     func setContent() {

@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol DialogCountlyConsentViewControllerDelegate: AnyObject {
-    func didClose()
+    func didChangeConsent()
 }
 
 enum DialogCountlyConsentAction {
@@ -40,6 +40,8 @@ class DialogCountlyConsentViewController: UIViewController {
 
     weak var delegate: DialogCountlyConsentViewControllerDelegate?
 
+    var disableControls = false
+
     var expandText: String {
         return self.detailsCard.isHidden ? NSLocalizedString("id_show_details", comment: "") : NSLocalizedString("id_hide_details", comment: "")
     }
@@ -52,6 +54,12 @@ class DialogCountlyConsentViewController: UIViewController {
         detailsCard.isHidden = true
         setContent()
         setStyle()
+
+        if disableControls == true {
+            btnDeny.isHidden = true
+            btnAllow.isHidden = true
+            btnDismiss.isHidden = false
+        }
 
         detailsExpand.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressExpandDetails)))
     }
@@ -114,12 +122,14 @@ class DialogCountlyConsentViewController: UIViewController {
             case .more:
                 print("more")
             case .deny:
-                if AMan.S.consent != .denied {
-                    AMan.S.consent = .denied
+                if AnalyticsManager.shared.consent != .denied {
+                    AnalyticsManager.shared.consent = .denied
+                    self.delegate?.didChangeConsent()
                 }
             case .allow:
-                if AMan.S.consent != .authorized {
-                    AMan.S.consent = .authorized
+                if AnalyticsManager.shared.consent != .authorized {
+                    AnalyticsManager.shared.consent = .authorized
+                    self.delegate?.didChangeConsent()
                 }
             }
         })

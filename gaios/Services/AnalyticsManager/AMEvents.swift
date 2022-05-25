@@ -16,39 +16,39 @@ enum AnalyticsEventName: String {
     case failedTransaction = "failed_transaction"
 }
 
-extension AMan {
+extension AnalyticsManager {
 
     func activeWallet(account: Account?, walletData: WalletData) {
         if var s = sessSgmt(account) {
-            s[AMan.strWalletFunded] = walletData.walletFunded ? "true" : "false"
-            s[AMan.strAccountsFunded] = "\(walletData.accountsFunded)"
-            s[AMan.strAccounts] = "\(walletData.accounts)"
-            s[AMan.strAccountsTypes] = walletData.accountsTypes
-            AMan.S.recordEvent(.walletLogin, sgmt: s)
+            s[AnalyticsManager.strWalletFunded] = walletData.walletFunded ? "true" : "false"
+            s[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"
+            s[AnalyticsManager.strAccounts] = "\(walletData.accounts)"
+            s[AnalyticsManager.strAccountsTypes] = walletData.accountsTypes
+            AnalyticsManager.shared.recordEvent(.walletLogin, sgmt: s)
 
             recordEvent(.walletActive, sgmt: s)
         }
     }
 
-    func loginWallet(loginType: AMan.LoginType, account: Account?) {
+    func loginWallet(loginType: AnalyticsManager.LoginType, account: Account?) {
         if var s = sessSgmt(account) {
-            s[AMan.strMethod] = loginType.rawValue
-            AMan.S.recordEvent(.walletLogin, sgmt: s)
+            s[AnalyticsManager.strMethod] = loginType.rawValue
+            AnalyticsManager.shared.recordEvent(.walletLogin, sgmt: s)
         }
     }
 
     func renameWallet() {
-        AMan.S.recordEvent(.renameWallet)
+        AnalyticsManager.shared.recordEvent(.renameWallet)
     }
 
     func deleteWallet() {
-        AMan.S.userPropertiesDidChange()
-        AMan.S.recordEvent(.deleteWallet)
+        AnalyticsManager.shared.userPropertiesDidChange()
+        AnalyticsManager.shared.recordEvent(.deleteWallet)
     }
 
     func renameAccount(account: Account?) {
         if let s = sessSgmt(account) {
-            AMan.S.recordEvent(.renameAccount, sgmt: s)
+            AnalyticsManager.shared.recordEvent(.renameAccount, sgmt: s)
         }
     }
 
@@ -57,22 +57,22 @@ extension AMan {
 //        startEvent(.sendTransaction)
     }
 
-    func sendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AMan.TransactionSegmentation, withMemo: Bool) {
+    func sendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
 
 //        if var s = subAccSeg(account, walletType: walletItem?.type) {
 //
 //            switch transactionSgmt.transactionType {
 //            case .transaction:
-//                s[AMan.strTtransactionType] = AMan.TransactionType.send.rawValue
+//                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.send.rawValue
 //            case .sweep:
-//                s[AMan.strTtransactionType] = AMan.TransactionType.sweep.rawValue
+//                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
 //            case .bumpFee:
-//                s[AMan.strTtransactionType] = AMan.TransactionType.bump.rawValue
+//                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.bump.rawValue
 //            }
 //
-//            s[AMan.strAddressInput] = transactionSgmt.addressInputType.rawValue
-//            s[AMan.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
-//            s[AMan.strWithMemo] = withMemo ? "true" : "false"
+//            s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType.rawValue
+//            s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
+//            s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
 //
 //            endEvent(.sendTransaction, sgmt: s)
 //        }
@@ -85,7 +85,7 @@ extension AMan {
 
     func createWallet(account: Account?) {
         if let s = sessSgmt(account) {
-            AMan.S.userPropertiesDidChange()
+            AnalyticsManager.shared.userPropertiesDidChange()
             endEvent(.walletCreate, sgmt: s)
         }
     }
@@ -97,7 +97,7 @@ extension AMan {
 
     func restoreWallet(account: Account?) {
         if let s = sessSgmt(account) {
-            AMan.S.userPropertiesDidChange()
+            AnalyticsManager.shared.userPropertiesDidChange()
             endEvent(.walletRestore, sgmt: s)
         }
     }
@@ -110,16 +110,16 @@ extension AMan {
 
     func receiveAddress(account: Account?, walletType: String?, data: ReceiveAddressData) {
         if var s = subAccSeg(account, walletType: walletType) {
-            s[AMan.strType] = data.type.rawValue
-            s[AMan.strMedia] = data.media.rawValue
-            s[AMan.strMethod] = data.method.rawValue
+            s[AnalyticsManager.strType] = data.type.rawValue
+            s[AnalyticsManager.strMedia] = data.media.rawValue
+            s[AnalyticsManager.strMethod] = data.method.rawValue
             recordEvent(.receiveAddress, sgmt: s)
         }
     }
 
     func shareTransaction(account: Account?, isShare: Bool) {
         if var s = sessSgmt(account) {
-            s[AMan.strMethod] = isShare ? AMan.strShare : AMan.strCopy
+            s[AnalyticsManager.strMethod] = isShare ? AnalyticsManager.strShare : AnalyticsManager.strCopy
             recordEvent(.shareTransaction, sgmt: s)
         }
     }
@@ -127,9 +127,9 @@ extension AMan {
     func failedWalletLogin(account: Account?, error: Error, prettyError: String?) {
         if var s = sessSgmt(account) {
             if let prettyError = prettyError {
-                s[AMan.strError] = prettyError
+                s[AnalyticsManager.strError] = prettyError
             } else {
-                s[AMan.strError] = error.localizedDescription
+                s[AnalyticsManager.strError] = error.localizedDescription
             }
             recordEvent(.failedWalletLogin, sgmt: s)
         }
@@ -138,9 +138,9 @@ extension AMan {
     func failedTransaction(account: Account?, error: Error, prettyError: String?) {
         if var s = sessSgmt(account) {
             if let prettyError = prettyError {
-                s[AMan.strError] = prettyError
+                s[AnalyticsManager.strError] = prettyError
             } else {
-                s[AMan.strError] = error.localizedDescription
+                s[AnalyticsManager.strError] = error.localizedDescription
             }
             recordEvent(.failedTransaction, sgmt: s)
         }
@@ -148,13 +148,13 @@ extension AMan {
 
     func recoveryPhraseCheckFailed(onBoardParams: OnBoardParams?, page: Int) {
         if var s = ntwSgmt(onBoardParams) {
-            s[AMan.strPage] = "\(page)"
+            s[AnalyticsManager.strPage] = "\(page)"
             recordEvent(.failedRecoveryPhraseCheck, sgmt: s)
         }
     }
 }
 
-extension AMan {
+extension AnalyticsManager {
 
     enum TransactionType: String {
         case send

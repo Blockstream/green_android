@@ -53,7 +53,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.amountField
         btnConfirm.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.confirmBtn
 
-        AMan.S.recordView(.requestAmount, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     func setContent() {

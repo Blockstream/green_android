@@ -62,7 +62,7 @@ class LoginViewController: UIViewController {
         attempts.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.attemptsLbl
         connectionSettingsButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.settingsBtn
 
-        AMan.S.recordView(.login, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {
@@ -165,7 +165,7 @@ class LoginViewController: UIViewController {
             AccountsManager.shared.current = session.account
         }.done { wallet in
 
-            AMan.S.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: AccountsManager.shared.current)
+            AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: AccountsManager.shared.current)
 
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
@@ -202,7 +202,7 @@ class LoginViewController: UIViewController {
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
                 prettyError = NSLocalizedString("id_login_failed", comment: "")
             }
-            AMan.S.failedWalletLogin(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
+            AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
         }
     }
 
@@ -329,14 +329,14 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
         if let account = self.account {
             AccountsManager.shared.current = account
             navigationItem.title = account.name
-            AMan.S.renameWallet()
+            AnalyticsManager.shared.renameWallet()
         }
     }
     func didDelete() {
         if let account = self.account {
             AccountsManager.shared.remove(account)
             navigationController?.popViewController(animated: true)
-            AMan.S.deleteWallet()
+            AnalyticsManager.shared.deleteWallet()
         }
     }
     func didCancel() {

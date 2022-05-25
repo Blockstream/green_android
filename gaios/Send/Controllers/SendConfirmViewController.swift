@@ -19,7 +19,7 @@ class SendConfirmViewController: KeyboardViewController {
     private var connected = true
     private var updateToken: NSObjectProtocol?
     var inputType: InputType = .transaction // for analytics
-    var addressInputType: AMan.AddressInputType = .paste // for analytics
+    var addressInputType: AnalyticsManager.AddressInputType = .paste // for analytics
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +32,7 @@ class SendConfirmViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.view
         sliderView.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.viewSlider
 
-        //AMan.S.recordView(.sendConfirm, sgmt: AMan.S.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        //AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     func setContent() {
@@ -123,7 +123,7 @@ class SendConfirmViewController: KeyboardViewController {
                 self.showError(error.localizedDescription)
                 prettyError = error.localizedDescription
             }
-            AMan.S.failedTransaction(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
+            AnalyticsManager.shared.failedTransaction(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
         }
     }
 
@@ -131,10 +131,10 @@ class SendConfirmViewController: KeyboardViewController {
         let isSendAll = transaction?.sendAll ?? false
         let withMemo = !(transaction?.memo.isEmpty ?? true)
 
-        let transSgmt = AMan.TransactionSegmentation(transactionType: inputType,
+        let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
                                                      addressInputType: addressInputType,
                                                      sendAll: isSendAll)
-        AMan.S.sendTransaction(account: AccountsManager.shared.current,
+        AnalyticsManager.shared.sendTransaction(account: AccountsManager.shared.current,
                                walletItem: wallet,
                                transactionSgmt: transSgmt, withMemo: withMemo)
 

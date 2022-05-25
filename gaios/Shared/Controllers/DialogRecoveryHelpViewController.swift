@@ -36,7 +36,7 @@ class DialogRecoveryHelpViewController: KeyboardViewController {
         setContent()
         setStyle()
 
-        AMan.S.recordView(.help)
+        AnalyticsManager.shared.recordView(.help)
     }
 
     func setStyle() {

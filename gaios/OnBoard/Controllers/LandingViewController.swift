@@ -5,6 +5,12 @@ enum OnBoardingFlowType {
     case restore
 }
 
+enum ActionOnButton {
+    case new
+    case restore
+    case watchOnly
+}
+
 class LandingViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -23,6 +29,8 @@ class LandingViewController: UIViewController {
 
     static var flowType: OnBoardingFlowType = .add
 
+    var actionOnButton: ActionOnButton?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -36,8 +44,7 @@ class LandingViewController: UIViewController {
         btnRestoreWallet.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.restoreWalletBtn
         btnWatchOnly.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.watchOnlyWalletBtn
 
-        AMan.S.recordView(.onBoardIntro)
-        showAnalyticsConsent()
+        AnalyticsManager.shared.recordView(.onBoardIntro)
     }
 
     func setContent() {
@@ -84,6 +91,40 @@ class LandingViewController: UIViewController {
         }
     }
 
+    func onNext(_ action: ActionOnButton) {
+
+        if AnalyticsManager.shared.consent == .notDetermined {
+            actionOnButton = action
+
+            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCountlyConsentViewController") as? DialogCountlyConsentViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                vc.delegate = self
+                self.present(vc, animated: true, completion: nil)
+            }
+            return
+        }
+
+        switch action {
+        case .new:
+            AnalyticsManager.shared.startCreateWallet()
+            LandingViewController.flowType = .add
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        case .restore:
+            AnalyticsManager.shared.startRestoreWallet()
+            LandingViewController.flowType = .restore
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        case .watchOnly:
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     @IBAction func btnCheckTerms(_ sender: Any) {
         updateUI()
     }
@@ -95,27 +136,27 @@ class LandingViewController: UIViewController {
     }
 
     @IBAction func btnNewWallet(_ sender: Any) {
-
-        AMan.S.startCreateWallet()
-        LandingViewController.flowType = .add
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        onNext(.new)
     }
 
     @IBAction func btnRestoreWallet(_ sender: Any) {
-
-        AMan.S.startRestoreWallet()
-        LandingViewController.flowType = .restore
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        onNext(.restore)
     }
 
     @IBAction func btnWatchOnly(_ sender: Any) {
+        onNext(.watchOnly)
+    }
+}
 
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
-        navigationController?.pushViewController(vc, animated: true)
+extension LandingViewController: DialogCountlyConsentViewControllerDelegate {
+    func didChangeConsent() {
+        switch AnalyticsManager.shared.consent {
+        case .notDetermined:
+            break
+        case .denied, .authorized:
+            if let actionOnButton = actionOnButton {
+                onNext(actionOnButton)
+            }
+        }
     }
 }

@@ -104,9 +104,9 @@ class WalletSettingsViewController: KeyboardViewController {
         btnSave.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.saveBtn
         btnCancel.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.cancelBtn
         switchTestnet.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.testnetSwitch
-        switchAnalytics.isOn = AMan.S.consent == .authorized
+        switchAnalytics.isOn = AnalyticsManager.shared.consent == .authorized
 
-        AMan.S.recordView(.appSettings)
+        AnalyticsManager.shared.recordView(.appSettings)
     }
 
     func setContent() {
@@ -265,22 +265,22 @@ class WalletSettingsViewController: KeyboardViewController {
         ]
         UserDefaults.standard.set(switchTestnet.isOn, forKey: AppStorage.testnetIsVisible)
 
-        switch AMan.S.consent { //current value
+        switch AnalyticsManager.shared.consent { //current value
         case .authorized:
             if switchAnalytics.isOn {
                 // no change
             } else {
-                AMan.S.consent = .denied
+                AnalyticsManager.shared.consent = .denied
             }
         case .notDetermined:
             if switchAnalytics.isOn {
-                AMan.S.consent = .authorized
+                AnalyticsManager.shared.consent = .authorized
             } else {
-                AMan.S.consent = .denied
+//                AnalyticsManager.shared.consent = .denied
             }
         case .denied:
             if switchAnalytics.isOn {
-                AMan.S.consent = .authorized
+                AnalyticsManager.shared.consent = .authorized
             } else {
                 //no change
             }
@@ -292,7 +292,13 @@ class WalletSettingsViewController: KeyboardViewController {
     }
 
     @IBAction func btnAnalytics(_ sender: Any) {
-        UIApplication.shared.open(ExternalUrls.analyticsReadMore, options: [:], completionHandler: nil)
+
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCountlyConsentViewController") as? DialogCountlyConsentViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.disableControls = true
+            self.present(vc, animated: true, completion: nil)
+        }
     }
 }
 

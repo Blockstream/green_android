@@ -27,11 +27,11 @@ class WalletSuccessViewController: UIViewController {
         switch LandingViewController.flowType {
         case .add:
             lblRecoveryDone.isHidden = true
-            AMan.S.recordView(.onBoardSuccess, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strCreate))
+            AnalyticsManager.shared.recordView(.onBoardSuccess, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
         case .restore:
             btnWallet.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
             btnBackup.isHidden = true
-            AMan.S.recordView(.onBoardSuccess, sgmt: AMan.S.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AMan.OnBoardFlow.strRestore))
+            AnalyticsManager.shared.recordView(.onBoardSuccess, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
         }
     }
 

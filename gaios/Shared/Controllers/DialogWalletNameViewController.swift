@@ -59,9 +59,9 @@ class DialogWalletNameViewController: KeyboardViewController {
         btnSave.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletRenameScreen.saveBtn
 
         if isAccountRename {
-            AMan.S.recordView(.renameAccount, sgmt: AMan.S.sessSgmt(AccountsManager.shared.current))
+            AnalyticsManager.shared.recordView(.renameAccount, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
         } else {
-            AMan.S.recordView(.renameWallet)
+            AnalyticsManager.shared.recordView(.renameWallet)
         }
     }
 
