@@ -30,8 +30,7 @@ extension AnalyticsManager {
     static let strAccountsTypes = "accounts_types"
     static let strAccountsFunded = "accounts_funded"
 
-    static let strUserPropertyAppSettings = "app_settings"
-    static let strUserPropertyAppSettingsStr = "app_settings_string"
+    static let strAppSettings = "app_settings"
 
     static let strUserPropertyTotalWallets = "total_wallets"
 
@@ -76,4 +75,7 @@ extension AnalyticsManager {
         case watchOnly = "watch_only"
         case hardware = "hardware"
     }
+
+    static let maxOffsetProduction = 12 * 60 * 60 * 1000 // 12 hours
+    static let maxOffsetDevelopment = 30 * 60 * 1000 // 30 mins
 }

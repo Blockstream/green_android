@@ -24,6 +24,8 @@ class HWWScanViewController: UIViewController {
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.HWWScanScreen.view
         lblTitle.accessibilityIdentifier = AccessibilityIdentifiers.HWWScanScreen.titleLbl
+
+        AnalyticsManager.shared.recordView(.deviceList)
     }
 
     func setContent() {

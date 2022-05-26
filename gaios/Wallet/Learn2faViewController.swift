@@ -57,7 +57,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func canceltwoFactorReset() {
-        AnalyticsManager.shared.recordView(.walletSettings2FACancel, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }

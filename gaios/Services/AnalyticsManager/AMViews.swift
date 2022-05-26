@@ -15,7 +15,7 @@ enum AnalyticsViewName: String {
     case walletSettingsChangePIN = "WalletSettingsChangePIN"
     case walletSettings2FASetup = "WalletSettings2FASetup"
     case walletSettings2FAReset = "WalletSettings2FAReset"
-    case walletSettings2FACancel = "WalletSettings2FACancel"
+    case walletSettings2FACancelDispute = "WalletSettings2FACancelDispute"
     case walletSettings2FADispute = "WalletSettings2FADispute"
     case walletSettings2FAUndoDispute = "WalletSettings2FAUndoDispute"
     case addAccountChooseType = "AddAccountChooseType"

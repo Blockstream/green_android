@@ -32,7 +32,7 @@ class SendConfirmViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.view
         sliderView.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.viewSlider
 
-        //AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     func setContent() {
@@ -108,7 +108,7 @@ class SendConfirmViewController: KeyboardViewController {
             case LedgerWrapper.LedgerError.IOError,
                  LedgerWrapper.LedgerError.InvalidParameter:
                 self.showError(NSLocalizedString("id_operation_failure", comment: ""))
-                prettyError = NSLocalizedString("id_operation_failure", comment: "")
+                prettyError = "id_operation_failure"
             case TwoFactorCallError.failure(let localizedDescription),
                  TwoFactorCallError.cancel(let localizedDescription):
                 self.showError(localizedDescription)
@@ -118,7 +118,7 @@ class SendConfirmViewController: KeyboardViewController {
                 prettyError = localizedDescription
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
                 self.showError(NSLocalizedString("id_you_are_not_connected", comment: ""))
-                prettyError = NSLocalizedString("id_you_are_not_connected", comment: "")
+                prettyError = "id_you_are_not_connected"
             default:
                 self.showError(error.localizedDescription)
                 prettyError = error.localizedDescription

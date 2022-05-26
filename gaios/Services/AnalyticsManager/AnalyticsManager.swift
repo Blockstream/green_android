@@ -19,6 +19,14 @@ class AnalyticsManager {
 #endif
     }
 
+    var maxCountlyOffset: Int {
+#if DEBUG
+        return AnalyticsManager.maxOffsetDevelopment
+#else
+        return AnalyticsManager.maxOffsetProduction
+#endif
+    }
+
     var consent: AnalyticsConsent {
         get {
             return AnalyticsConsent(rawValue: UserDefaults.standard.integer(forKey: AppStorage.userAnalyticsPreference)) ?? .notDetermined
@@ -38,9 +46,11 @@ class AnalyticsManager {
     var analyticsUUID: String {
         get {
             if let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID) {
+                print("analyticsUUID \(uuid)")
                 return uuid
             } else {
                 let uuid = UUID().uuidString
+                print("analyticsUUID \(uuid)")
                 UserDefaults.standard.setValue(uuid, forKey: AppStorage.analyticsUUID)
                 return uuid
             }
@@ -59,6 +69,31 @@ class AnalyticsManager {
         UserDefaults.standard.removeObject(forKey: AppStorage.analyticsUUID)
     }
 
+    func invalidateCountlyOffset() {
+        UserDefaults.standard.removeObject(forKey: AppStorage.countlyOffset)
+    }
+
+    var countlyOffset: UInt {
+        get {
+            if let offset = UserDefaults.standard.object(forKey: AppStorage.countlyOffset) as? UInt {
+                print("analyticsOFFSET \(offset)")
+                return offset
+            } else {
+                let offset = secureRandom(max: maxCountlyOffset)
+                print("analyticsOFFSET \(offset)")
+                UserDefaults.standard.setValue(offset, forKey: AppStorage.countlyOffset)
+                return offset
+            }
+        }
+    }
+
+    func secureRandom(max: Int) -> UInt {
+        // SystemRandomNumberGenerator is automatically seeded, is safe to use in multiple threads
+        // and uses a cryptographically secure algorithm whenever possible.
+        var gen = SystemRandomNumberGenerator()
+        return UInt(Int.random(in: 1...max, using: &gen))
+    }
+
     func countlyStart() {
         guard consent != .notDetermined else {
             print("SKIP countly init, wait user to allow/deny")
@@ -75,8 +110,8 @@ class AnalyticsManager {
             config.host = AnalyticsManager.host
         }
 
+        config.offset = countlyOffset
         config.deviceID = analyticsUUID
-        print("analyticsUUID \(analyticsUUID)")
         config.features = [.crashReporting]
         config.enablePerformanceMonitoring = true
         config.enableDebug = true
@@ -96,16 +131,17 @@ class AnalyticsManager {
             break
         case .denied:
             if previous == .authorized {
+                Countly.sharedInstance().cancelConsentForAllFeatures()
                 // change the deviceID
                 invalidateAnalyticsUUID()
+                invalidateCountlyOffset()
                 Countly.sharedInstance().setNewDeviceID(analyticsUUID, onServer: false)
+                Countly.sharedInstance().setNewOffset(countlyOffset)
             }
-            Countly.sharedInstance().cancelConsentForAllFeatures()
             Countly.sharedInstance().giveConsent(forFeatures: deniedGroup)
             Countly.sharedInstance().disableLocationInfo()
             updateUserProperties()
         case .authorized:
-            Countly.sharedInstance().cancelConsentForAllFeatures()
             Countly.sharedInstance().giveConsent(forFeatures: authorizedGroup)
             updateUserProperties()
         }

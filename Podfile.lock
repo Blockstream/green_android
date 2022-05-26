@@ -1,7 +1,7 @@
 PODS:
-  - Countly (20.11.1):
-    - Countly/Core (= 20.11.1)
-  - Countly/Core (20.11.1)
+  - Countly (21.11.2):
+    - Countly/Core (= 21.11.2)
+  - Countly/Core (21.11.2)
   - PromiseKit (6.10.0):
     - PromiseKit/CorePromise (= 6.10.0)
     - PromiseKit/Foundation (= 6.10.0)
@@ -18,7 +18,7 @@ PODS:
   - SwiftLint (0.35.0)
 
 DEPENDENCIES:
-  - Countly (= 20.11.1)
+  - Countly (from `https://github.com/angelix/countly-sdk-ios`, branch `blockstream-green`)
   - PromiseKit (= 6.10.0)
   - RxBluetoothKit (from `https://github.com/chamira-at/RxBluetoothKit.git`, branch `ios-15-support`)
   - RxSwift (~> 5.1)
@@ -27,30 +27,35 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Countly
     - PromiseKit
     - RxSwift
     - SwiftCBOR
     - SwiftLint
 
 EXTERNAL SOURCES:
+  Countly:
+    :branch: blockstream-green
+    :git: https://github.com/angelix/countly-sdk-ios
   RxBluetoothKit:
     :branch: ios-15-support
     :git: https://github.com/chamira-at/RxBluetoothKit.git
 
 CHECKOUT OPTIONS:
+  Countly:
+    :commit: d159931c739b44350a009f70281928aea3f5d0e3
+    :git: https://github.com/angelix/countly-sdk-ios
   RxBluetoothKit:
     :commit: 086f4598f2a203f8b415d79c396178e3927f075e
     :git: https://github.com/chamira-at/RxBluetoothKit.git
 
 SPEC CHECKSUMS:
-  Countly: df8dcfbbb6979e6ef31f7407d61d24fcbbbdaddf
+  Countly: 8c0f45a4ac228a27f3a59de6b9a49fdfd5ef9da6
   PromiseKit: 1fdaeb6c0a94a5114fcb814ff3d772b86886ad4e
   RxBluetoothKit: dad22912b15b74a40df8f60057f218d4e851746d
   RxSwift: 915abbdfb62214aa89ccd0b194d44fb478019b27
   SwiftCBOR: ac340b74d3b2cf1f8884bb748bd09875848e3873
   SwiftLint: 5553187048b900c91aa03552807681bb6b027846
 
-PODFILE CHECKSUM: 4e14019ed87a2c371c927acb6493f948541ffe3d
+PODFILE CHECKSUM: 4f13ef5fff7dbe2a3a331214e23bd4ec57a1b572
 
 COCOAPODS: 1.11.2

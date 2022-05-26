@@ -27,6 +27,7 @@ enum AppStorage {
     static let testnetIsVisible = "testnet_is_visible"
     static let userAnalyticsPreference = "user_analytics_preference"
     static let analyticsUUID = "analytics_uuid"
+    static let countlyOffset = "countly_offset"
 }
 
 enum ExternalUrls {

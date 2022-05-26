@@ -4,10 +4,10 @@ enum AnalyticsEventName: String {
     case walletLogin = "wallet_login"
     case walletCreate = "wallet_create"
     case walletRestore = "wallet_restore"
-    case renameWallet = "rename_wallet"
-    case deleteWallet = "delete_wallet"
-    case renameAccount = "rename_account"
-    case createAccount = "create_account"
+    case renameWallet = "wallet_rename"
+    case deleteWallet = "wallet_delete"
+    case renameAccount = "account_rename"
+    case createAccount = "account_create"
     case sendTransaction = "send_transaction"
     case receiveAddress = "receive_address"
     case shareTransaction = "share_transaction"
@@ -24,7 +24,6 @@ extension AnalyticsManager {
             s[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"
             s[AnalyticsManager.strAccounts] = "\(walletData.accounts)"
             s[AnalyticsManager.strAccountsTypes] = walletData.accountsTypes
-            AnalyticsManager.shared.recordEvent(.walletLogin, sgmt: s)
 
             recordEvent(.walletActive, sgmt: s)
         }
@@ -33,49 +32,49 @@ extension AnalyticsManager {
     func loginWallet(loginType: AnalyticsManager.LoginType, account: Account?) {
         if var s = sessSgmt(account) {
             s[AnalyticsManager.strMethod] = loginType.rawValue
-            AnalyticsManager.shared.recordEvent(.walletLogin, sgmt: s)
+            recordEvent(.walletLogin, sgmt: s)
         }
     }
 
     func renameWallet() {
-        AnalyticsManager.shared.recordEvent(.renameWallet)
+        recordEvent(.renameWallet)
     }
 
     func deleteWallet() {
         AnalyticsManager.shared.userPropertiesDidChange()
-        AnalyticsManager.shared.recordEvent(.deleteWallet)
+        recordEvent(.deleteWallet)
     }
 
-    func renameAccount(account: Account?) {
-        if let s = sessSgmt(account) {
-            AnalyticsManager.shared.recordEvent(.renameAccount, sgmt: s)
+    func renameAccount(account: Account?, walletType: String?) {
+        if let s = subAccSeg(account, walletType: walletType) {
+            recordEvent(.renameAccount, sgmt: s)
         }
     }
 
     func startSendTransaction() {
-//        cancelEvent(.sendTransaction)
-//        startEvent(.sendTransaction)
+        cancelEvent(.sendTransaction)
+        startEvent(.sendTransaction)
     }
 
     func sendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
 
-//        if var s = subAccSeg(account, walletType: walletItem?.type) {
-//
-//            switch transactionSgmt.transactionType {
-//            case .transaction:
-//                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.send.rawValue
-//            case .sweep:
-//                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
-//            case .bumpFee:
-//                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.bump.rawValue
-//            }
-//
-//            s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType.rawValue
-//            s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
-//            s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
-//
-//            endEvent(.sendTransaction, sgmt: s)
-//        }
+        if var s = subAccSeg(account, walletType: walletItem?.type) {
+
+            switch transactionSgmt.transactionType {
+            case .transaction:
+                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.send.rawValue
+            case .sweep:
+                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
+            case .bumpFee:
+                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.bump.rawValue
+            }
+
+            s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType.rawValue
+            // s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
+            s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
+
+            endEvent(.sendTransaction, sgmt: s)
+        }
     }
 
     func startCreateWallet() {

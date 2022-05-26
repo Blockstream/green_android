@@ -158,10 +158,10 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             switch error {
             case LoginError.connectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-                prettyError = NSLocalizedString("id_connection_failed", comment: "")
+                prettyError = "id_connection_failed"
             default:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
-                prettyError = NSLocalizedString("id_login_failed", comment: "")
+                prettyError = "id_login_failed"
             }
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
         }

@@ -1061,7 +1061,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            AnalyticsManager.shared.renameAccount(account: AccountsManager.shared.current)
+            AnalyticsManager.shared.renameAccount(account: AccountsManager.shared.current, walletType: self.presentingWallet?.type)
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)

@@ -57,6 +57,8 @@ class HWWConnectViewController: UIViewController {
 
         BLEManager.shared.delegate = self
         BLEManager.shared.prepare(peripheral)
+
+        AnalyticsManager.shared.recordView(.deviceInfo)
     }
 
     override func viewWillAppear(_ animated: Bool) {

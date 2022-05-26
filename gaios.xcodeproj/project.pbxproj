@@ -1809,6 +1809,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Countly/Countly.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBluetoothKit/RxBluetoothKit.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
@@ -1816,6 +1817,7 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Countly.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBluetoothKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",

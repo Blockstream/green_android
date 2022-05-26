@@ -342,7 +342,7 @@ class BLEManager {
             default:
                 bleErr = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
 
-                AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: err, prettyError: NSLocalizedString("id_login_failed", comment: ""))
+                AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: err, prettyError: "id_login_failed")
             }
         default:
             bleErr = BLEManagerError.genericErr(txt: err.localizedDescription)
