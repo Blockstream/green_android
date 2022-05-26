@@ -62,6 +62,10 @@ class DialogCountlyConsentViewController: UIViewController {
         }
 
         detailsExpand.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressExpandDetails)))
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogAnalyticsConsentScreen.view
+        btnDeny.accessibilityIdentifier = AccessibilityIdentifiers.DialogAnalyticsConsentScreen.denyBtn
+        btnAllow.accessibilityIdentifier = AccessibilityIdentifiers.DialogAnalyticsConsentScreen.allowBtn
     }
 
     @objc func didPressExpandDetails() {

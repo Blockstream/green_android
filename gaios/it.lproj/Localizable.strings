@@ -284,12 +284,12 @@
 "id_email_address" = "indirizzo e-mail";
 "id_empty" = "Vuota";
 "id_enable" = "Abilita";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Abilita Bluetooth";
 "id_enable_custom_networks_debug" = "Abilita opzioni di debug dei custom network";
 "id_enable_email_notifications_to" = "Abilita notifiche via mail per modificare nlocktime";
 "id_enable_experimental_features" = "Abilita experimental features";
 "id_enable_face_id" = "Abilita Face ID";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Abilita servizi di localizzazione";
 "id_enable_or_change_your_pin_to" = "Abilita o modifica il tuo PIN per accedere velocemente al tuo wallet";
 "id_enable_spv" = "Abilita SPV";

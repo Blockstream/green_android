@@ -284,12 +284,12 @@
 "id_email_address" = "Eメールアドレス";
 "id_empty" = "何もありません";
 "id_enable" = "有効";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Bluetoothを有効化する";
 "id_enable_custom_networks_debug" = "カスタムネットワークのデバッグオプションをオンにする";
 "id_enable_email_notifications_to" = "nlocktimeの設定変更時にメールで確認する";
 "id_enable_experimental_features" = "試験的機能を有効化する";
 "id_enable_face_id" = "顔ID機能をONにする";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "位置情報を有効化する";
 "id_enable_or_change_your_pin_to" = "PINを有効化するか変更してウォレットをすぐ開けるようにします";
 "id_enable_spv" = "SPV機能をONにする";

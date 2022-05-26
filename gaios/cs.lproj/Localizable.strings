@@ -284,12 +284,12 @@
 "id_email_address" = "e-mailová adresa";
 "id_empty" = "Prázdné";
 "id_enable" = "Povolit";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Povolení Bluetooth";
 "id_enable_custom_networks_debug" = "Povolit možnosti ladění vlastních sítí";
 "id_enable_email_notifications_to" = "Povolit e-mailová oznámení pro změnu nlocktime";
 "id_enable_experimental_features" = "Povolit experimentální funkce";
 "id_enable_face_id" = "Povolit Face ID";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Povolení služeb určování polohy";
 "id_enable_or_change_your_pin_to" = "Aktivujte nebo změňte svůj PIN pro rychlý přístup k vaší peněžence";
 "id_enable_spv" = "Povolit SPV";

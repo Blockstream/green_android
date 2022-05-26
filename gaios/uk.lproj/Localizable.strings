@@ -284,12 +284,12 @@
 "id_email_address" = "email адреса";
 "id_empty" = "Порожній";
 "id_enable" = "Активувати";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Активуйте Bluetooth";
 "id_enable_custom_networks_debug" = "Активувати параметри налаштування  спеціалізованих мереж";
 "id_enable_email_notifications_to" = "Включити повідомлення по електронній пошті, щоб змінити nlocktime";
 "id_enable_experimental_features" = "Активувати експериментальні функції";
 "id_enable_face_id" = "Активувати Face ID";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Активуйте сервіси локації";
 "id_enable_or_change_your_pin_to" = "Активувати або змінити PIN-код для швидкого доступу до гаманця";
 "id_enable_spv" = "Активувати SPV";

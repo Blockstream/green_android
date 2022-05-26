@@ -284,12 +284,12 @@
 "id_email_address" = "이메일 주소";
 "id_empty" = "비우기";
 "id_enable" = "활성화";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "블루투스 활성화하기";
 "id_enable_custom_networks_debug" = "사용자 지정 네트워크 디버그 옵션 활성화하기";
 "id_enable_email_notifications_to" = "nlocktime을 변경하려면 이메일 알림을 활성화하세요";
 "id_enable_experimental_features" = "실험 기능 활성화하기";
 "id_enable_face_id" = "Face ID 활성화";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "위치 서비스 활성화하기";
 "id_enable_or_change_your_pin_to" = "지갑에 빠르게 액세스하려면 PIN을 활성화하거나 변경하세요";
 "id_enable_spv" = "SPV 활성화하기";

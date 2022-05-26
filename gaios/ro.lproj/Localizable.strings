@@ -284,12 +284,12 @@
 "id_email_address" = "Adresă de e-mail";
 "id_empty" = "Empty";
 "id_enable" = "Activare";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Activați Bluetooth";
 "id_enable_custom_networks_debug" = "Activare opțiuni personalizate pentru debugul rețelei";
 "id_enable_email_notifications_to" = "Permiteți notificări prin e-mail pentru a schimba nlocktime";
 "id_enable_experimental_features" = "Enable experimental features";
 "id_enable_face_id" = "Permiteți Face ID";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Enable location services";
 "id_enable_or_change_your_pin_to" = "Activați sau schimbați PIN-ul pentru a avea acces rapid la portofel";
 "id_enable_spv" = "Activare SPV";

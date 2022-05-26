@@ -284,12 +284,12 @@
 "id_email_address" = "电子邮箱地址";
 "id_empty" = "空";
 "id_enable" = "开启";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "启用蓝牙";
 "id_enable_custom_networks_debug" = "启用自定义网络debug选项";
 "id_enable_email_notifications_to" = "启用邮件提醒以改变nlocktime";
 "id_enable_experimental_features" = "启用实验性功能";
 "id_enable_face_id" = "启用Face ID";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "启用位置服务";
 "id_enable_or_change_your_pin_to" = "开启或修改PIN来快速接入钱包";
 "id_enable_spv" = "启用SPV";

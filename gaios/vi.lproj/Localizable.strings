@@ -284,12 +284,12 @@
 "id_email_address" = "địa chỉ thư điện tử";
 "id_empty" = "Empty";
 "id_enable" = "Cho phép";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Enable Bluetooth";
 "id_enable_custom_networks_debug" = "Cho phép cài đặt gỡ lỗi của mạng tùy chỉnh";
 "id_enable_email_notifications_to" = "Enable email notifications to change nlocktime";
 "id_enable_experimental_features" = "Enable experimental features";
 "id_enable_face_id" = "Cho phép nhận dạng khuôn mặt Face ID";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Enable location services";
 "id_enable_or_change_your_pin_to" = "Enable or change your PIN to quickly access your wallet";
 "id_enable_spv" = "Cho phép Xác thực thanh toán đơn giản SPV";

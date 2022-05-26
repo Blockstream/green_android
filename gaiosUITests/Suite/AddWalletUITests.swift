@@ -7,6 +7,22 @@ class AddWalletUITests: XCTestBase {
         let app = XCUIApplication()
         app.uninstall(name: "Green")
     }
+
+    func testAASetAnalyticsConsent() {
+        Home()
+            .tapAddWalletView()
+
+        Landing()
+            .tapAcceptTerms()
+            .pause(1)
+            .tapNewWallet()
+        
+        DialogAnalyticsConsent()
+            .tapDeny()
+            .pause(1)
+
+        ChooseNetwork()
+    }
     
     func testAddWallet() {
         

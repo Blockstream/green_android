@@ -284,12 +284,12 @@
 "id_email_address" = "Email-Adresse";
 "id_empty" = "Leer";
 "id_enable" = "Aktivieren";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Bluetooth aktivieren";
 "id_enable_custom_networks_debug" = "Benutzerdefinierte Netzwerk-Debugger-Optionen aktivieren";
 "id_enable_email_notifications_to" = "E-Mail-Benachrichtigungen aktivieren um die nlocktime zu ändern";
 "id_enable_experimental_features" = "Experimentelle Funktionen aktivieren";
 "id_enable_face_id" = "Face ID aktivieren";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Lokationsdienste aktivieren";
 "id_enable_or_change_your_pin_to" = "Aktiviere oder ändere deine PIN, um schnell auf deine Wallet zuzugreifen";
 "id_enable_spv" = "SPV aktivieren";

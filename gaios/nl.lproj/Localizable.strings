@@ -284,12 +284,12 @@
 "id_email_address" = "e-mailadres";
 "id_empty" = "Leeg";
 "id_enable" = "Inschakelen";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Bluetooth inschakelen";
 "id_enable_custom_networks_debug" = "Aangepaste opties voor netwerk-debugging inschakelen";
 "id_enable_email_notifications_to" = "Schakel e-mailnotificaties in om nlocktime te wijzigen";
 "id_enable_experimental_features" = "Experimentele functies inschakelen";
 "id_enable_face_id" = "Face ID inschakelen";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Locatiediensten inschakelen";
 "id_enable_or_change_your_pin_to" = "Schakel je PIN in of wijzig deze om snel toegang te krijgen tot je wallet";
 "id_enable_spv" = "SPV inschakelen";

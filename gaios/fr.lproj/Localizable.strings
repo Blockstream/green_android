@@ -284,12 +284,12 @@
 "id_email_address" = "adresse email";
 "id_empty" = "vide";
 "id_enable" = "Activez";
-"id_enable_anonymous_data_collection" = "Enable anonymous data collection";
 "id_enable_bluetooth" = "Activez Bluetooth";
 "id_enable_custom_networks_debug" = "Activer les options de débogage des réseaux personnalisés";
 "id_enable_email_notifications_to" = "Activer les notifications par e-mail pour modifier le nlocktime";
 "id_enable_experimental_features" = "Activer les fonctions expérimentales";
 "id_enable_face_id" = "Activez Face ID";
+"id_enable_limited_usage_data" = "Enable limited usage data collection";
 "id_enable_location_services" = "Activez les services de localisation";
 "id_enable_or_change_your_pin_to" = "Activez ou modifiez votre code PIN pour accéder rapidement à votre portefeuille";
 "id_enable_spv" = "Activez le SPV";

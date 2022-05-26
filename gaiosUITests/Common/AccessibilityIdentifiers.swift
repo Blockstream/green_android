@@ -248,6 +248,12 @@ struct AccessibilityIdentifiers {
         static let saveBtn = "save_btn"
     }
 
+    struct DialogAnalyticsConsentScreen {
+        static let view = "view_dialog_analytics_consent"
+        static let denyBtn = "deny_btn"
+        static let allowBtn = "allow_btn"
+    }
+    
     struct AssetsListScreen {
         static let view = "view_assets_list"
         static let table = "table_essets_list"

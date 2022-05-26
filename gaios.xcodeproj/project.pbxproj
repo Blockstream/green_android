@@ -94,6 +94,7 @@
 		3453C73626A5A1A100451FB3 /* DrawerMenuUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */; };
 		3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73726A5A41A00451FB3 /* Drawer.swift */; };
 		3453C74226A6BD7E00451FB3 /* HWWScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C74126A6BD7E00451FB3 /* HWWScan.swift */; };
+		34574C61283FB8670068212F /* DialogAnalyticsConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */; };
 		34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34580EB026FCB78D00D3BEFC /* UITableView.swift */; };
 		345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345C70852836233800EF3971 /* AnalyticsManager.swift */; };
 		345C70882836254600EF3971 /* AssetsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345C70872836254600EF3971 /* AssetsManager.swift */; };
@@ -419,6 +420,7 @@
 		3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerMenuUITests.swift; sourceTree = "<group>"; };
 		3453C73726A5A41A00451FB3 /* Drawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawer.swift; sourceTree = "<group>"; };
 		3453C74126A6BD7E00451FB3 /* HWWScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWWScan.swift; sourceTree = "<group>"; };
+		34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAnalyticsConsent.swift; sourceTree = "<group>"; };
 		34580EB026FCB78D00D3BEFC /* UITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
 		345C70852836233800EF3971 /* AnalyticsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		345C70872836254600EF3971 /* AssetsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsManager.swift; sourceTree = "<group>"; };
@@ -827,6 +829,7 @@
 				34FF27A227C7E45C008FD72C /* DialogReceiveRequestAmount.swift */,
 				34FF27AD27CCE926008FD72C /* DialogCustomFee.swift */,
 				3486AD7127CFC5060013D8FF /* AssetsList.swift */,
+				34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -2075,6 +2078,7 @@
 				3452E6002696E2F4003F3FAA /* ChangePinUITests.swift in Sources */,
 				3412136A26A0814300CC8112 /* AccountCreateSetName.swift in Sources */,
 				349DB76126A84D20004FF265 /* WalletSettings.swift in Sources */,
+				34574C61283FB8670068212F /* DialogAnalyticsConsent.swift in Sources */,
 				3434766E268233C000D7AD43 /* Landing.swift in Sources */,
 				342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */,
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
