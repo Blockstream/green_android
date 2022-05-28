@@ -121,9 +121,9 @@ class OverviewViewModel @AssistedInject constructor(
         session
             .getTwoFactorResetObservable()
             .subscribe {
-                if (it.isActive){
+                if (it.isActive == true){
                     val list = mutableListOf<AlertType>()
-                    if(it.isDisputed){
+                    if(it.isDisputed == true){
                         list += AlertType.Dispute2FA(it)
                     }else{
                         list += AlertType.Reset2FA(it)

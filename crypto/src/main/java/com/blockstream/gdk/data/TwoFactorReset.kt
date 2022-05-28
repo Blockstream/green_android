@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Parcelize
 @Serializable
-data class TwoFactorReset(
-    @SerialName("is_active") val isActive: Boolean,
+data class TwoFactorReset constructor(
+    @SerialName("is_active") val isActive: Boolean? = null,
     @SerialName("days_remaining") val daysRemaining: Int = 0,
-    @SerialName("is_disputed") val isDisputed: Boolean
+    @SerialName("is_disputed") val isDisputed: Boolean? = null
 ) : Parcelable

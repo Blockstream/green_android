@@ -49,7 +49,7 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.title = if(twoFactorReset.isDisputed) getString(R.string.id_2fa_dispute_in_progress) else getString(R.string.id_2fa_reset_in_progress)
+        binding.title = if(twoFactorReset.isDisputed == true) getString(R.string.id_2fa_dispute_in_progress) else getString(R.string.id_2fa_reset_in_progress)
 
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
@@ -69,7 +69,7 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
 
         val list = mutableListOf<HelpListItem>()
 
-        if(twoFactorReset.isDisputed){
+        if(twoFactorReset.isDisputed == true){
             list += HelpListItem(
                 StringHolder(R.string.id_your_wallet_is_locked_under_2fa),
                 StringHolder(R.string.id_the_1_year_2fa_reset_process),
@@ -121,7 +121,7 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
             val twoFactorSetupAction = if(item == cancelItem){
                 TwoFactorSetupAction.CANCEL
             }else{
-                if(twoFactorReset.isDisputed) {
+                if(twoFactorReset.isDisputed == true) {
                     TwoFactorSetupAction.UNDO_DISPUTE
                 }else{
                     TwoFactorSetupAction.DISPUTE
