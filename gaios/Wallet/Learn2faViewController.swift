@@ -26,6 +26,8 @@ class Learn2faViewController: UIViewController {
         super.viewDidLoad()
 
         setContent()
+
+        AnalyticsManager.shared.recordView(.twoFactorReset, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {

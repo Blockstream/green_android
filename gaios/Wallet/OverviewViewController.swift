@@ -328,8 +328,16 @@ class OverviewViewController: UIViewController {
 
         if analyticsDone == true { return }
         analyticsDone = true
-        let walletFunded: Bool = subAccounts.map { Balance.convert(details: ["satoshi": $0.btc])?.satoshi ?? 0 }.reduce(0, +) > 0
-        let accountsFunded: Int = ((subAccounts.map { Balance.convert(details: ["satoshi": $0.btc])?.satoshi ?? 0 }).filter { $0 > 0}).count
+
+        var accountsFunded: Int = 0
+        subAccounts.forEach { item in
+            let assets = item.satoshi ?? [:]
+            for (_, value) in assets where value > 0 {
+                    accountsFunded += 1
+                    break
+            }
+        }
+        let walletFunded: Bool = accountsFunded > 0
         let accounts: Int = subAccounts.count
         let accountsTypes: String = Array(Set(subAccounts.map { $0.type })).sorted().joined(separator: ",")
 

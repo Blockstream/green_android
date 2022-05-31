@@ -2678,6 +2678,20 @@
                                                                     <action selector="btnAllow:" destination="LTa-jY-Boa" eventType="touchUpInside" id="H3P-cy-aWs"/>
                                                                 </connections>
                                                             </button>
+                                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dai-Q7-Grl">
+                                                                <rect key="frame" x="0.0" y="90" width="342" height="40"/>
+                                                                <color key="backgroundColor" name="customMatrixGreen"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="40" id="bm6-J5-9y2"/>
+                                                                </constraints>
+                                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                                                <state key="normal" title="Allow">
+                                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                </state>
+                                                                <connections>
+                                                                    <action selector="btnDebugID:" destination="LTa-jY-Boa" eventType="touchUpInside" id="fXK-h9-1lC"/>
+                                                                </connections>
+                                                            </button>
                                                         </subviews>
                                                     </stackView>
                                                 </subviews>
@@ -2738,6 +2752,7 @@
                     <connections>
                         <outlet property="bgLayer" destination="E7W-uQ-pJ8" id="ifq-V3-gQa"/>
                         <outlet property="btnAllow" destination="vbX-Hl-5Cm" id="iha-mg-70S"/>
+                        <outlet property="btnDebugID" destination="Dai-Q7-Grl" id="ggP-fb-cy7"/>
                         <outlet property="btnDeny" destination="BKW-72-vEb" id="suR-2s-Bwt"/>
                         <outlet property="btnDismiss" destination="eF5-YF-Ryt" id="dK8-tr-RlM"/>
                         <outlet property="btnMore" destination="upW-VR-NsG" id="mLP-ld-Zfr"/>

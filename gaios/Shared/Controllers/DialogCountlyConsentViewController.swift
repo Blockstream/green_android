@@ -32,6 +32,7 @@ class DialogCountlyConsentViewController: UIViewController {
 
     @IBOutlet weak var btnDeny: UIButton!
     @IBOutlet weak var btnAllow: UIButton!
+    @IBOutlet weak var btnDebugID: UIButton!
 
     @IBOutlet weak var btnDismiss: UIButton!
     @IBOutlet weak var bgLayer: UIView!
@@ -60,6 +61,11 @@ class DialogCountlyConsentViewController: UIViewController {
             btnAllow.isHidden = true
             btnDismiss.isHidden = false
         }
+        btnDebugID.isHidden = true
+
+#if DEBUG
+        btnDebugID.isHidden = false
+#endif
 
         detailsExpand.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressExpandDetails)))
 
@@ -106,6 +112,7 @@ class DialogCountlyConsentViewController: UIViewController {
 
         lblNotCollectHint.text = notCollectStr
         btnMore.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
+        btnDebugID.setTitle("Copy Device ID", for: .normal)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -155,4 +162,13 @@ class DialogCountlyConsentViewController: UIViewController {
         dismiss(.allow)
     }
 
+    @IBAction func btnDebugID(_ sender: Any) {
+        var msg = "ID not available"
+        if let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID) {
+            UIPasteboard.general.string = uuid
+            msg = NSLocalizedString("UUID copied to clipboard", comment: "")
+        }
+        DropAlert().info(message: msg, delay: 1.0)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
 }

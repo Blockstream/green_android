@@ -143,6 +143,7 @@ class AnalyticsManager {
             updateUserProperties()
         case .authorized:
             Countly.sharedInstance().giveConsent(forFeatures: authorizedGroup)
+            Countly.sharedInstance().setNewOffset(countlyOffset)
             updateUserProperties()
         }
     }
