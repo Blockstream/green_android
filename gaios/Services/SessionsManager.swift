@@ -30,4 +30,31 @@ class SessionsManager {
     static func remove(for account: Account) {
         shared.removeValue(forKey: account.id)
     }
+
+    static func pause() {
+        shared.forEach { (_, session) in
+            if session.connected {
+                try? session.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
+            }
+        }
+        if useTor() {
+            TorSessionManager.shared.pause()
+        }
+    }
+
+    static func resume() {
+        shared.forEach { (_, session) in
+            if session.connected {
+                try? session.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
+            }
+        }
+        if useTor() {
+            TorSessionManager.shared.resume()
+        }
+    }
+
+    static func useTor() -> Bool {
+        let networkSettings = getUserNetworkSettings()
+        return networkSettings["tor"] as? Bool ?? false
+    }
 }

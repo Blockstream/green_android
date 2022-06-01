@@ -96,10 +96,10 @@ class AnalyticsManager {
 
         if isProduction {
             config.appKey = AnalyticsManager.appKeyProd
-            config.host = AnalyticsManager.host
+            config.host = getHost()
         } else {
             config.appKey = AnalyticsManager.appKeyDev
-            config.host = AnalyticsManager.host
+            config.host = getHost()
         }
 
         config.offset = countlyOffset
@@ -108,11 +108,10 @@ class AnalyticsManager {
         config.enablePerformanceMonitoring = true
         config.enableDebug = true
         config.requiresConsent = true
-
         if isProduction == false {
             config.eventSendThreshold = 1
         }
-
+        config.urlSessionConfiguration = getSessionConfiguration()
         Countly.sharedInstance().start(with: config)
 
         giveConsent(previous: consent)
@@ -141,6 +140,57 @@ class AnalyticsManager {
             Countly.sharedInstance().giveConsent(forFeatures: authorizedGroup)
             updateUserProperties()
         }
+    }
+
+    public func setupSession() {
+        let host = getHost()
+        let conf = getSessionConfiguration()
+        Countly.sharedInstance().setNewHost(host)
+        Countly.sharedInstance().setNewURLSessionConfiguration(conf)
+        /*URLSession(configuration: conf).dataTask(with: URL(string: host+"/i")!) {
+                data, response, error in
+                print (data)
+                print (response)
+                print (error)
+        }.resume()*/
+    }
+
+    private func getHost() -> String {
+        let networkSettings = getUserNetworkSettings()
+        if let tor = networkSettings["tor"] as? Bool, tor {
+            return AnalyticsManager.onionHost
+        }
+        return AnalyticsManager.host
+    }
+
+    private func getSessionConfiguration() -> URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.ephemeral
+        let networkSettings = getUserNetworkSettings()
+        let useProxy = networkSettings["proxy"] as? Bool ?? false
+        let useTor = networkSettings["tor"] as? Bool ?? false
+        // set explicit proxy
+        if useProxy {
+            let socks5Hostname = networkSettings["socks5_hostname"] as? String
+            let socks5Port = networkSettings["socks5_port"] as? String
+            configuration.connectionProxyDictionary = [
+                kCFStreamPropertySOCKSProxyHost: socks5Hostname ?? "",
+                kCFStreamPropertySOCKSProxyPort: socks5Port ?? ""
+            ]
+        }
+        // set implicit tor proxy
+        if useTor {
+            let proxySettings = TorSessionManager.shared.proxySettings
+            let proxy = proxySettings?["proxy"] as? String ?? ""
+            let parser = proxy.split(separator: ":").map { $0.replacingOccurrences(of: "/", with: "") }
+            if parser.first == "socks5" && parser.count == 3 {
+                configuration.connectionProxyDictionary = [
+                    kCFStreamPropertySOCKSProxyHost: parser[1],
+                    kCFStreamPropertySOCKSProxyPort: Int(parser[2]) ?? 0,
+                    kCFProxyTypeKey: kCFProxyTypeSOCKS
+                ]
+            }
+        }
+        return configuration
     }
 
     private func updateUserProperties() {
