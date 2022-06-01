@@ -3,12 +3,14 @@ package com.greenaddress.greenbits.wallets;
 import androidx.annotation.Nullable;
 
 import com.blockstream.gdk.ExtensionsKt;
+import com.blockstream.gdk.data.AccountType;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
 import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
+import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
 import com.btchip.BitcoinTransaction;
@@ -103,7 +105,7 @@ public class BTChipHWWallet extends HWWallet {
             for (final List<Integer> path : paths) {
                 final String key = Joiner.on("/").join(path);
                 if (!mUserXPubs.containsKey(key)) {
-                    final BTChipDongle.BTChipPublicKey pubKey = mDongle.getWalletPublicKey(path);
+                    final BTChipDongle.BTChipPublicKey pubKey = mDongle.getWalletPublicKey(path, false, false);
                     final byte[] compressed = KeyUtils.compressPublicKey(pubKey.getPublicKey());
                     final Object hdkey = Wally.bip32_key_init(network.getVerPublic(), 1 /*FIXME: wally bug*/, 0,
                                                               pubKey.getChainCode(), compressed,null, null, null);
@@ -147,19 +149,42 @@ public class BTChipHWWallet extends HWWallet {
         }
     }
 
+    private static List<Integer> getIntegerPath(final List<Long> unsigned) {
+        //return unsigned.stream().map(Long::intValue).collect(Collectors.toList());
+        final List<Integer> signed = new ArrayList<>(unsigned.size());
+        for (final Long n : unsigned) {
+            signed.add(n.intValue());
+        }
+        return signed;
+    }
+
     @Override
     public String getGreenAddress(final Network network, HWWalletBridge parent, final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws BTChipException {
-        // Only supported for liquid mutisig shield
-        if (network.isSinglesig() && network.isLiquid()) {
-            throw new RuntimeException("Liquid singlesig is not supported yet");
+        try {
+            // Only supported for liquid multisig shield and singlesig btc
+            final String address;
+            if (network.isSinglesig() && !network.isLiquid()) {
+                final BTChipDongle.BTChipPublicKey pubKey = mDongle.getWalletPublicKey(getIntegerPath(path), true, subaccount.getType() == AccountType.BIP84_SEGWIT);
+                address = pubKey.getAddress();
+            } else if (!network.isSinglesig() && network.isLiquid()) {
+                // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
+                // In any case the last two entries are 'branch' and 'pointer'
+                final int pathlen = path.size();
+                final long branch = path.get(pathlen - 2);
+                final long pointer = path.get(pathlen - 1);
+                address = mDongle.getGreenAddress(csvBlocks > 0, subaccount.getPointer(), branch, pointer, csvBlocks);
+            } else {
+                // Unsupported
+                address = null;
+            }
+            return address;
+        } catch (final BTChipException e) {
+            if (e.getSW() == BTChipConstants.SW_USER_REJECT) {
+                // User cancelled on the device - treat as mismatch (rather than error)
+                return "";
+            }
+            throw e;
         }
-
-        // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
-        // In any case the last two entries are 'branch' and 'pointer'
-        final int pathlen = path.size();
-        final long branch = path.get(pathlen - 2);
-        final long pointer = path.get(pathlen - 1);
-        return mDongle.getGreenAddress(csvBlocks> 0, subaccount.getPointer(), branch, pointer, csvBlocks);
     }
 
     @Nullable

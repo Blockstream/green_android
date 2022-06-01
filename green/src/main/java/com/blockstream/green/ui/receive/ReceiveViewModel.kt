@@ -42,7 +42,10 @@ class ReceiveViewModel @AssistedInject constructor(
 
     val canValidateAddressInDevice : Boolean by lazy {
         session.hwWallet?.device?.let { device ->
-            device.isJade || (device.isLedger && session.isLiquid && !session.isSinglesig) || (device.isTrezor && !session.isLiquid && session.isSinglesig)
+            device.isJade ||
+                    (device.isLedger && session.isLiquid && !session.isSinglesig) ||
+                    (device.isLedger && !session.isLiquid && session.isSinglesig) ||
+                    (device.isTrezor && !session.isLiquid && session.isSinglesig)
         } ?: false
     }
 
@@ -77,7 +80,7 @@ class ReceiveViewModel @AssistedInject constructor(
             session.hwWallet?.let { hwWallet ->
                 session.observable(timeout = 30) {
                     val subAccount = session.getActiveSubAccount()
-                    hwWallet.getGreenAddress(session.network, subAccount, address.userPath, address.subType ?: 0)
+                    hwWallet.getGreenAddress(session.network, null, subAccount, address.userPath, address.subType ?: 0)
                 }.subscribeBy(
                     onError = {
                         onError.value = ConsumableEvent(it)

@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Improve Ledger support
 
 ### Added
-- Trezor singlesig address display
+- Trezor & Ledger singlesig address display
 
 ## [3.8.5] - 2022-07-15
 ### Added

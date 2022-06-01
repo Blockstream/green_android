@@ -73,6 +73,7 @@ public interface BTChipConstants {
 
     // SW reply codes
     int SW_OK = 0x9000;
+    int SW_USER_REJECT = 0x6985;
     int SW_INS_NOT_SUPPORTED = 0x6D00;
     int SW_WRONG_P1_P2 = 0x6B00;
     int SW_INCORRECT_P1_P2 = 0x6A86;

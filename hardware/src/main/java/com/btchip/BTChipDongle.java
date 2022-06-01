@@ -489,9 +489,9 @@ public class BTChipDongle implements BTChipConstants {
 		return (lastSW - 0x63c0);
 	}
 
-	public BTChipPublicKey getWalletPublicKey(final List<Integer> path) throws BTChipException {
+	public BTChipPublicKey getWalletPublicKey(final List<Integer> path, final boolean display, final boolean segwitNative) throws BTChipException {
 		byte data[] = pathToByteArray(path);
-		byte response[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_WALLET_PUBLIC_KEY, (byte)0x00, (byte)0x00, data, OK);
+		byte response[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_WALLET_PUBLIC_KEY, display ? (byte)0x01 : (byte)0x0, segwitNative ? (byte)0x02: (byte)0x01, data, OK);
 		int offset = 0;
 		byte publicKey[] = new byte[response[offset]];
 		offset++;
