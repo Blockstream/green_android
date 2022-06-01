@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 
 import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.ExtensionsKt;
+import com.blockstream.gdk.data.AccountType;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
@@ -417,8 +418,54 @@ public class TrezorHWWallet extends HWWallet {
         return R.drawable.trezor_device;
     }
 
+    private static List<Integer> getIntegerPath(final List<Long> unsigned) {
+        //return unsigned.stream().map(Long::intValue).collect(Collectors.toList());
+        final List<Integer> signed = new ArrayList<>(unsigned.size());
+        for (final Long n : unsigned) {
+            signed.add(n.intValue());
+        }
+        return signed;
+    }
+
+    private static TrezorType.InputScriptType mapAccountType(final AccountType accountType) {
+        switch (accountType) {
+            case STANDARD:
+            case AMP_ACCOUNT:
+            case TWO_OF_THREE:
+                return TrezorType.InputScriptType.SPENDMULTISIG;
+            case BIP44_LEGACY:
+                return TrezorType.InputScriptType.SPENDADDRESS;
+            case BIP84_SEGWIT:
+                return TrezorType.InputScriptType.SPENDWITNESS;
+            case BIP49_SEGWIT_WRAPPED:
+                return TrezorType.InputScriptType.SPENDP2SHWITNESS;
+            default:
+                return null;
+        }
+    }
+
     @Override
-    public String getGreenAddress(final Network network, final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
-        return null;
+    public String getGreenAddress(final Network network, HWWalletBridge parent, final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
+
+        if (network.isMultisig()) {
+            throw new RuntimeException("Hardware Wallet does not support displaying Green Multisig Shield addresses");
+        }
+
+        if (network.isLiquid()) {
+            throw new RuntimeException("Hardware Wallet does not support displaying Liquid addresses");
+        }
+
+        Message m = mTrezor.io(TrezorMessage.GetAddress.newBuilder()
+                        .setShowDisplay(true)
+                        .setCoinName(network.isTestnet() ? "Testnet" : "Bitcoin")
+                        .setScriptType(mapAccountType(subaccount.getType()))
+                        .addAllAddressN(getIntegerPath(path)));
+
+        m = handleCommon(parent, m);
+        if (m.getClass().getSimpleName().equals("Address")) {
+            final TrezorMessage.Address addr = (TrezorMessage.Address)m;
+            return addr.getAddress();
+        }
+        throw new IllegalStateException("Unknown response: " + m.getClass().getSimpleName());
     }
 }

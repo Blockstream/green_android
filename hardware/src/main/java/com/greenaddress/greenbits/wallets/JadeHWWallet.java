@@ -537,7 +537,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final Network network, final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
+    public String getGreenAddress(final Network network, HWWalletBridge parent, final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
         try {
             final String canonicalNetworkId = network.getCanonicalNetworkId();
             if (network.isMultisig()) {

@@ -42,7 +42,7 @@ class ReceiveViewModel @AssistedInject constructor(
 
     val canValidateAddressInDevice : Boolean by lazy {
         session.hwWallet?.device?.let { device ->
-            device.isJade || (device.isLedger && session.isLiquid && !session.isSinglesig)
+            device.isJade || (device.isLedger && session.isLiquid && !session.isSinglesig) || (device.isTrezor && !session.isLiquid && session.isSinglesig)
         } ?: false
     }
 

@@ -118,7 +118,7 @@ public abstract class HWWallet {
 
     public abstract int getIconResourceId();
 
-    public abstract String getGreenAddress(final Network network, final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws Exception;
+    public abstract String getGreenAddress(final Network network, HWWalletBridge parent, final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws Exception;
 
     public Device getDevice() {
         return mDevice;
