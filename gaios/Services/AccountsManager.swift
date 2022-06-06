@@ -17,8 +17,8 @@ class AccountsManager {
     }
 
     // Hardware wallets accounts are store in temporary memory
-    var hwAccounts = [ Account(name: "Blockstream Jade", network: "mainnet", isJade: true),
-                       Account(name: "Ledger Nano X", network: "mainnet", isLedger: true) ]
+    var hwAccounts = [ Account(name: "Blockstream Jade", network: "mainnet", isJade: true, isSingleSig: false),
+                       Account(name: "Ledger Nano X", network: "mainnet", isLedger: true, isSingleSig: false) ]
 
     var current: Account? {
         get {
@@ -116,7 +116,7 @@ class AccountsManager {
             let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
             let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
             if pinData || bioData {
-                var account = Account(name: nameLabel(network), network: network, keychain: network)
+                var account = Account(name: nameLabel(network), network: network, keychain: network, isSingleSig: false)
                 account.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")
                 accounts.append(account)
             }

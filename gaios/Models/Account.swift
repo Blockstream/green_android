@@ -28,7 +28,7 @@ struct Account: Codable, Equatable {
     var walletHashId: String?
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
 
-    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool = false) {
+    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -41,7 +41,7 @@ struct Account: Codable, Equatable {
         self.isSingleSig = isSingleSig
     }
 
-    init(name: String, network: String, username: String, password: String? = nil, isSingleSig: Bool = false) {
+    init(name: String, network: String, username: String, password: String? = nil, isSingleSig: Bool) {
         // Watchonly account
         id = UUID().uuidString
         self.name = name
@@ -54,7 +54,7 @@ struct Account: Codable, Equatable {
         self.isSingleSig = isSingleSig
     }
 
-    init(name: String, network: String, keychain: String, isSingleSig: Bool = false) {
+    init(name: String, network: String, keychain: String, isSingleSig: Bool) {
         // Migrated account
         id = UUID().uuidString
         self.name = name

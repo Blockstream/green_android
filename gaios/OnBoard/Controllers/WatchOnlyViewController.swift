@@ -131,7 +131,7 @@ class WatchOnlyViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
         let name = "\(AccountsManager.shared.nameLabel(network)) watch-only"
-        var account = Account(name: name, network: network, username: username)
+        var account = Account(name: name, network: network, username: username, isSingleSig: false)
         if self.rememberSwitch.isOn {
             account.password = password
         }
