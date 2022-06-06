@@ -117,6 +117,10 @@ class AnalyticsManager {
         config.enableDebug = true
         config.requiresConsent = true
 
+        if isProduction == false {
+            config.eventSendThreshold = 1
+        }
+
         Countly.sharedInstance().start(with: config)
 
         giveConsent(previous: consent)
@@ -143,7 +147,6 @@ class AnalyticsManager {
             updateUserProperties()
         case .authorized:
             Countly.sharedInstance().giveConsent(forFeatures: authorizedGroup)
-            Countly.sharedInstance().setNewOffset(countlyOffset)
             updateUserProperties()
         }
     }

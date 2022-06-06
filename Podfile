@@ -13,7 +13,8 @@ target 'gaios' do
   pod 'RxBluetoothKit', :git => 'https://github.com/chamira-at/RxBluetoothKit.git', :branch => 'ios-15-support'
   pod 'SwiftCBOR', '0.4.5'
 #  pod 'Countly', '20.11.1'
-  pod 'Countly', :git => 'https://github.com/angelix/countly-sdk-ios', :branch => 'blockstream-green'
+#  pod 'Countly', :git => 'https://github.com/angelix/countly-sdk-ios', :branch => 'blockstream-green'
+  pod 'Countly', :git => 'https://github.com/angelix/countly-sdk-ios', :commit => 'c9bfea878'
 
 end
 

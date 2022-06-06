@@ -64,7 +64,9 @@ class DialogCountlyConsentViewController: UIViewController {
         btnDebugID.isHidden = true
 
 #if DEBUG
-        btnDebugID.isHidden = false
+        if disableControls == true {
+            btnDebugID.isHidden = false
+        }
 #endif
 
         detailsExpand.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressExpandDetails)))
