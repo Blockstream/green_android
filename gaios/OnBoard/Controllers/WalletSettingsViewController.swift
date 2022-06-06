@@ -237,7 +237,6 @@ class WalletSettingsViewController: KeyboardViewController {
                       message: NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: ""))
             return
         }
-
         networkSettings = [
             "proxy": switchProxy.isOn,
             "tor": switchTor.isOn,

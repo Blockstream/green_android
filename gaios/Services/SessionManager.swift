@@ -76,10 +76,9 @@ class SessionManager: Session {
         var netParams: [String: Any] = ["name": network, "use_tor": useTor, "proxy": proxyURI, "user_agent": userAgent]
 
         // SPV available only for btc singlesig
-        if let spvEnabled = networkSettings[Constants.spvEnabled] as? Bool,
-           network == Constants.electrumPrefix + "mainnet" || network == Constants.electrumPrefix + "testnet" {
-            netParams["spv_enabled"] = spvEnabled
-        }
+        let spvEnabled = networkSettings[Constants.spvEnabled] as? Bool
+        netParams["spv_enabled"] = (spvEnabled ?? false) && !getGdkNetwork(network).liquid
+
         // Personal nodes
         if let personalNodeEnabled = networkSettings[Constants.personalNodeEnabled] as? Bool, personalNodeEnabled {
             if let btcElectrumSrv = networkSettings[Constants.btcElectrumSrv] as? String,
@@ -91,6 +90,9 @@ class SessionManager: Session {
             } else if let liquidElectrumSrv = networkSettings[Constants.liquidElectrumSrv] as? String,
                 network == Constants.electrumPrefix + "liquid" && !liquidElectrumSrv.isEmpty {
                 netParams["electrum_url"] = liquidElectrumSrv
+            } else if let liquidTestnetElectrumSrv = networkSettings[Constants.liquidTestnetElectrumSrv] as? String,
+                network == Constants.electrumPrefix + "testnet-liquid" && !liquidTestnetElectrumSrv.isEmpty {
+                netParams["electrum_url"] = liquidTestnetElectrumSrv
             }
         }
         // Connect
