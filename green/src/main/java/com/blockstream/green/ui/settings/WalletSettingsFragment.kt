@@ -491,12 +491,12 @@ class WalletSettingsFragment :
 
         dialogBinding.usernameTextInputEditText.doOnTextChanged { text, _, _, _ ->
             dialogBinding.usernameTextInputLayout.error =
-                if (text.isNullOrBlank() || text.trimmedLength() >= 8) null else getString(R.string.id_minimum_8_characters)
+                if (text.isNullOrBlank() || text.trimmedLength() >= 8) null else getString(R.string.id_at_least_8_characters_required)
         }
 
         dialogBinding.passwordTextInputEditText.doOnTextChanged { text, _, _, _ ->
             dialogBinding.passwordTextInputLayout.error =
-                if (text.isNullOrBlank() || text.trimmedLength() >= 8) null else getString(R.string.id_minimum_8_characters)
+                if (text.isNullOrBlank() || text.trimmedLength() >= 8) null else getString(R.string.id_at_least_8_characters_required)
         }
 
         MaterialAlertDialogBuilder(

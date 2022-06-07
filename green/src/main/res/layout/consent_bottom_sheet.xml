@@ -158,7 +158,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="@string/id_whatss_not_collected"
+                        android:text="@string/id_whats_not_collected"
                         android:textAppearance="?attr/textAppearanceBody1"
                         android:textColor="@color/material_on_background_emphasis_high_type" />
 

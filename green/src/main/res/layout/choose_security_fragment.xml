@@ -34,7 +34,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@{vm.isManualRestore ? @string/id_choose_the_security_policy_you_want_to_restore : @string/id_once_selected_this_spending}"
+            android:text="@{vm.isManualRestore ? @string/id_choose_the_security_policy_you : @string/id_once_selected_this_spending}"
             android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="@+id/textView3"
             app:layout_constraintStart_toStartOf="@+id/textView3"

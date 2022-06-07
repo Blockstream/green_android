@@ -116,7 +116,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                         R.style.ThemeOverlay_Green_MaterialAlertDialog
                     )
                         .setTitle(R.string.id_warning)
-                        .setMessage(R.string.id_the_new_firmware_requires_you_to_unpair)
+                        .setMessage(R.string.id_the_new_firmware_requires_you)
                         .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int ->
                             startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                         }

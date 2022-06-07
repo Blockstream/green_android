@@ -50,7 +50,7 @@ class WatchOnlyDetailsFragment :
         val list = mutableListOf<GenericItem>()
 
         list += TextListItem(
-            text = StringHolder(R.string.id_exports_an_accounts_extended_public_key),
+            text = StringHolder(R.string.id_exports_an_accounts_extended),
             textTypeface = Typeface.BOLD,
             paddingTop = R.dimen.dp16,
             paddingBottom = R.dimen.dp16,
@@ -59,7 +59,7 @@ class WatchOnlyDetailsFragment :
         )
 
         list += TextListItem(
-            text = StringHolder(R.string.id_tip_you_can_use_the_xpub_ypub_zpub),
+            text = StringHolder(R.string.id_tip_you_can_use_the),
             textColor = R.color.color_on_surface_emphasis_low,
             paddingTop = R.dimen.dp0,
             paddingBottom = R.dimen.dp16,

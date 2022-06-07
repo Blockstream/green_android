@@ -43,7 +43,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginTop="8dp"
-            android:text="@{isSinglesig ? @string/id_scan_or_paste_your_extended_public_key : @string/id_log_in_via_watchonly_to_receive}"
+            android:text="@{isSinglesig ? @string/id_scan_or_paste_your_extended : @string/id_log_in_via_watchonly_to_receive}"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout5"
             app:layout_constraintEnd_toEndOf="parent"

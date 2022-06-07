@@ -3,12 +3,14 @@
   <string name="id_1030_minutes">~ 10-30 Minuten</string>
   <string name="id_12_confirmations">1/2 Bestätigungen</string>
   <string name="id_12_months_51840_blocks">12 Monate (51840 Blöcke)</string>
+  <string name="id_12_words">12 words</string>
   <string name="id_15_months_65535_blocks">15 Monate (65535 Blöcke)</string>
   <string name="id_1_double_check_all_of_your">1. Kontrolliere deine Wiederherstellungs-Phrase zweimal Wort für Wort, sind alle richtig?\n2. Die Reihenfolge der Wörter ist wichtig! Stelle sicher, dass du die Wörter in der richtigen Reihenfolge eingegeben hast.\n\nWenn keiner dieser Tips dir helfen konnte oder wenn du deine 12, 24 oder 27 Wörter der Wiederherstellungsphrase nicht zur Hand hast, schau doch mal in unserem Hilfe-Center nach.</string>
   <string name="id_1d_2s_ago">vor %1$d %2$s</string>
   <string name="id_1d_minutes">%1$d Minuten</string>
   <string name="id_1s_blocks_left_2d">%1$s Blöcke verbleibend %2$d</string>
   <string name="id_1s_twofactor_setup">%1$s Zwei-Faktor-Einrichtung</string>
+  <string name="id_24_words">24 words</string>
   <string name="id_2_hours">~ 2 Stunden</string>
   <string name="id_2fa_dispute_in_progress">2FA-Anfechtung in Arbeit</string>
   <string name="id_2fa_expired">2FA abgelaufen</string>
@@ -29,6 +31,7 @@
   <string name="id_accept">AKZEPTIEREN</string>
   <string name="id_access">Zugriff</string>
   <string name="id_account">Konto</string>
+  <string name="id_account_extended_public_keys">Account Extended Public Keys</string>
   <string name="id_account_id">Konto-ID</string>
   <string name="id_account_name">Konto-Name</string>
   <string name="id_account_type">Konto-Typ</string>
@@ -45,6 +48,7 @@
   <string name="id_add_custom_network_by_qr_code">Benutzerdefiniertes Netzwerk via QR Code hinzufügen</string>
   <string name="id_add_custom_network_by_url">Eigenes Netzwerk per URL hinzufügen</string>
   <string name="id_add_new_account">Neues Konto hinzufügen</string>
+  <string name="id_add_recipient">Add Recipient</string>
   <string name="id_add_wallet">Wallet hinzufügen</string>
   <string name="id_additional_networks">Zusätzliche Netzwerke</string>
   <string name="id_additional_security">Zusätzliche Sicherheit</string>
@@ -64,6 +68,8 @@
   <string name="id_all_of_the_accounts_in_your">Alle Konten in deinem Wallet müssen leer sein, bevor du sie löschst.</string>
   <string name="id_all_the_coins_received_or">Alle Coins, die empfangen oder als Wechselgeld erhalten wurden.</string>
   <string name="id_all_wallets">Alle Wallets</string>
+  <string name="id_allow_collection">Allow collection</string>
+  <string name="id_allow_data_collection">Allow data collection</string>
   <string name="id_allows_you_to_quickly_check">Erlaubt den Saldo schnell zu überprüfen, Gelder zu erhalten oder eine Paper Wallet einzuscannen. Sie können keine Beträge im Watch-Only Mode senden. </string>
   <string name="id_always">Immer</string>
   <string name="id_amount">Betrag</string>
@@ -73,10 +79,13 @@
   <string name="id_amp_id">AMP-ID</string>
   <string name="id_amp_wallet">AMP-Wallet</string>
   <string name="id_another_2fa_method_is_already">Eine andere 2FA-Methode ist bereits aktiviert. Bitte bestätige via 2FA, dass du diese Änderung authorisierst.</string>
+  <string name="id_any_wallet_found_will_be">Any wallet found will be displayed here.</string>
   <string name="id_app_settings">App-Einstellungen</string>
   <string name="id_archive">Archiv</string>
+  <string name="id_archive_account">Archive account</string>
   <string name="id_archived">Archiviert</string>
   <string name="id_archived_accounts">Archivierte Konten</string>
+  <string name="id_are_you_sure_you_want_to_remove">Are you sure you want to remove the recipient?</string>
   <string name="id_are_you_sure_you_want_to_view">Sind Sie sicher, dass Sie die Transaktion mittels %s ansehen wollen?</string>
   <string name="id_as_easy_as_snapping_a_photo">So einfach wie ein Foto mit deinem Handy zu schießen. Wenn du bereits ein Wallet besitzt, scanne deine Wiederherstellungs-Phrase aus den Einstellungen.</string>
   <string name="id_asset">Asset</string>
@@ -86,6 +95,7 @@
   <string name="id_asset_name">Vermögenstitel</string>
   <string name="id_assets">Assets</string>
   <string name="id_assets_cannot_be_used_on_bitcoin">Assets können nicht in Bitcoin verwendet werden</string>
+  <string name="id_at_least_8_characters_required">At least 8 characters required</string>
   <string name="id_attempts_remaining_d">Verbleibende Versuche: %d</string>
   <string name="id_authenticate_to_view_the">Authentifizieren, um die Wiederherstellungs-Phrase zu sehen</string>
   <string name="id_authentication_error_s">Authentifikations-Fehler: %s</string>
@@ -97,6 +107,7 @@
   <string name="id_auto_logout_timeout_expired">automatische Abmeldung, Zeitüberschreitung</string>
   <string name="id_autolock_after">Automatisch ausloggen nach</string>
   <string name="id_available">verfügbar</string>
+  <string name="id_available_funds_s">Available funds %s</string>
   <string name="id_back">Zurück</string>
   <string name="id_back_up_recovery_phrase">Backup-Wiederherstellungs-Phrase</string>
   <string name="id_backup_the_recovery_mnemonic">Sichere den Merksatz und deinen Wiederhesrtellungs-xpub um deine Gelder von deinem 2von3-Account wiederherstellen zu können. </string>
@@ -117,6 +128,7 @@
   <string name="id_bitcoin_wallets">Bitcoin-Wallets</string>
   <string name="id_block">Block</string>
   <string name="id_block_d">Block %d</string>
+  <string name="id_block_height">Block Height</string>
   <string name="id_block_height_1d">Blockhöhe: %1$d</string>
   <string name="id_blocks">Blöcke</string>
   <string name="id_blocks_confirmed">bestätigte Blöcke </string>
@@ -142,6 +154,7 @@
   <string name="id_change_address">Adresse ändern</string>
   <string name="id_change_pin">PIN ändern</string>
   <string name="id_changing_reference_exchange">Die Änderung des Referenz-Wechselkurses wird deinen 2FA-Schwellenwert auf 0 zurücksetzen. Denke daran, den 2FA-Schwellenwert nach deiner Transaktion wieder anzupassen.</string>
+  <string name="id_check_device">Check Device</string>
   <string name="id_check_for_updates">Auf Updates überprüfen</string>
   <string name="id_check_for_updates_on_startup">Beim Start auf Updates überprüfen</string>
   <string name="id_check_your_backup">Überprüfe dein Backup</string>
@@ -152,6 +165,8 @@
   <string name="id_choose_recovery_phrase_length">Wähle die Länge deiner Wiederherstellungs-Phrase</string>
   <string name="id_choose_security_policy">Wähle deine Sicherheitsstrategie</string>
   <string name="id_choose_the_electrum_servers_you">Wähle die Electrum-Server aus, denen du vertraust</string>
+  <string name="id_choose_the_security_policy_that">Choose the security policy that matches your wallet.</string>
+  <string name="id_choose_the_security_policy_you">Choose the security policy you want to restore this wallet on.</string>
   <string name="id_choose_this_version_to_connect">Wähle diese Version, um dein Blockstream Jade über USB oder kabellos zu verbinden</string>
   <string name="id_choose_this_version_to_disable">Wähle diese Version, um alle Funkverbindungen auf deinem Blockstream Jade zu deaktivieren. Dein Blockstream Jade ist danach inkompativel mit iOS-Geräten.</string>
   <string name="id_choose_twofactor_authentication">Zwei-Faktor Authentifizierungsmethode auswählen</string>
@@ -161,6 +176,7 @@
   <string name="id_click_to_copy">zum kopieren anklicken</string>
   <string name="id_click_to_receive_an_email_with">Klicke hier um eine E-Mail mit deinen verschlüsselten Wiederherstellungsdaten zu erhalten. </string>
   <string name="id_code">Code</string>
+  <string name="id_coin">Coin</string>
   <string name="id_coins">Coins</string>
   <string name="id_coins_for_which_2fa_protection">Coins, für die der 2FA-Schutz abgelaufen ist.</string>
   <string name="id_coins_locked">Coins gesperrt</string>
@@ -179,12 +195,14 @@
   <string name="id_confirm_action">Aktion bestätigen</string>
   <string name="id_confirm_by_typing_the_wallet">Besätige in dem du den Wallet-Namen eingibst</string>
   <string name="id_confirm_code">Code bestätigen</string>
+  <string name="id_confirm_on_your_device">Confirm on your device</string>
   <string name="id_confirm_passphrase">Passphrase bestätigen</string>
   <string name="id_confirm_transaction">Transaktion bestätigen</string>
   <string name="id_confirm_transaction_details_on">Bestätige die Transaktionsdetails auf deiner Hardware-Wallet</string>
   <string name="id_confirm_update_on_your_jade">Bestätige das Update auf deinem Jade</string>
   <string name="id_confirm_via_2fa_that_you">Bitte per 2FA bestätigen, dass du diese Änderunge authorisierst.</string>
   <string name="id_confirmation_in_d_blocks">Bestätigung in %d Blöcken</string>
+  <string name="id_confirmation_time">Confirmation Time</string>
   <string name="id_confirmations">Bestätigungen</string>
   <string name="id_congratulations">Gratulation!</string>
   <string name="id_connect_hardware_wallet">Hardware-Wallet verbinden</string>
@@ -194,6 +212,7 @@
   <string name="id_connect_your_jade_to_use_it">Verbinde dein Jade, um es mit Green zu verwenden</string>
   <string name="id_connect_your_ledger_to_use_it">Verbinde deinen Ledger um ihn mit Green zu verwenden</string>
   <string name="id_connected_to_jade">Verbunden mit Jade</string>
+  <string name="id_connected_wallets">Connected wallets</string>
   <string name="id_connecting">Verbindet sich...</string>
   <string name="id_connecting_through_tor">Verbindet sich über Tor</string>
   <string name="id_connecting_to_a_trusted_node">Verbinden mit einer vertrauten Node über Tor erfordert die Aktivierung der Proxy Einstellungen in der App vor dem Einloggen und einen Socks5 Proxy (Orbot App für Android)</string>
@@ -211,6 +230,7 @@
   <string name="id_copy">Kopieren</string>
   <string name="id_copy_address">Adresse kopieren</string>
   <string name="id_copy_details">Details kopieren</string>
+  <string name="id_copy_device_id">Copy Device ID</string>
   <string name="id_copy_raw_transaction">Transaktions-Rohdaten kopieren</string>
   <string name="id_copy_to_clipboard">In die Zwischenablage kopieren</string>
   <string name="id_copy_transaction_id">Transaktions-ID kopieren</string>
@@ -271,6 +291,7 @@
   <string name="id_domain">Domain</string>
   <string name="id_done">Fertig</string>
   <string name="id_dont_ask_me_again">Nicht mehr nachfragen</string>
+  <string name="id_dont_collect_data">Don\'t collect data</string>
   <string name="id_dont_show_this_again">Zeig mir das nicht wieder an</string>
   <string name="id_dont_store_your_recovery_phrase">Speichere deine Wiederherstellungs-Phrase niemals auf deinem Handy, deinem Computer oder irgendeinem anderen Online-Dienst.</string>
   <string name="id_dont_take_screenshots_of_your">Mach niemals Screenshots von deiner Wiederherstellungs-Phrase!</string>
@@ -280,6 +301,7 @@
   <string name="id_download_finished">Download fertig</string>
   <string name="id_dust">Dust</string>
   <string name="id_edit">Bearbeiten</string>
+  <string name="id_edit_fee">Edit Fee</string>
   <string name="id_email">Email</string>
   <string name="id_email_address">Email-Adresse</string>
   <string name="id_empty">Leer</string>
@@ -289,6 +311,7 @@
   <string name="id_enable_email_notifications_to">E-Mail-Benachrichtigungen aktivieren um die nlocktime zu ändern</string>
   <string name="id_enable_experimental_features">Experimentelle Funktionen aktivieren</string>
   <string name="id_enable_face_id">Face ID aktivieren</string>
+  <string name="id_enable_limited_usage_data">Enable limited usage data collection</string>
   <string name="id_enable_location_services">Lokationsdienste aktivieren</string>
   <string name="id_enable_or_change_your_pin_to">Aktiviere oder ändere deine PIN, um schnell auf deine Wallet zuzugreifen</string>
   <string name="id_enable_spv">SPV aktivieren</string>
@@ -300,6 +323,7 @@
   <string name="id_enabled">Aktiviert</string>
   <string name="id_enabled_1s">Aktiviert: %1$s</string>
   <string name="id_encryption_passphrase">Verschlüsselungskennwort</string>
+  <string name="id_enhanced_privacy">Enhanced Privacy</string>
   <string name="id_enter">OK</string>
   <string name="id_enter_a_pgp_public_key_to_have">Öffentlichen PGP-Schlüssel eingeben um Emails für bessere Privatsphäre zu verschlüsseln.</string>
   <string name="id_enter_a_private_key_to_sweep">Privatschlüssel eingeben um in die Wallet zu transferieren (sweepen)</string>
@@ -336,9 +360,12 @@
   <string name="id_estimated_blocks_until">Geschätzte Blöcke bis zur Bestätigung: %d</string>
   <string name="id_example_89014283334011612858333">Beispiel: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_existing_recovery_phrase">Bestehende Wiederherstellungs-Phrase</string>
+  <string name="id_existing_wallets">Existing Wallets</string>
   <string name="id_expand_sidebar">Seitennavigation einblenden</string>
   <string name="id_explore_your_wallet">Erkunde deine Wallet</string>
   <string name="id_export_transactions_to_csv_file">Transaktionen als CSV-File exportieren</string>
+  <string name="id_exports_an_accounts_extended">Exports an account\'s extended public key (xPub/yPub/zPub) to view as a watch-only</string>
+  <string name="id_extended_public_key">Extended Public Key</string>
   <string name="id_face_id">Face ID</string>
   <string name="id_failed_to_load_asset_icons">Fehler beim Laden der Asset-Icons</string>
   <string name="id_failed_to_load_asset_registry">Fehler beim Laden der Asset-Registry</string>
@@ -388,12 +415,16 @@
   <string name="id_green_uses_multisig_with_one">Green verwendet Multisig mit einer von deinem Gerät und einer von den Servern von Blockstream erzeugten Signatur. Die Einrichtung der Zwei-Faktor-Authentifizierung ermöglicht eine zusätzliche Sicherheitsebene für die serverseitige Signatur.</string>
   <string name="id_hardware_wallet">Hardware-Wallet</string>
   <string name="id_hardware_wallet_support_for">Hardware Wallet Unterstützung für Confidential Transactions kommt bald.</string>
+  <string name="id_hardware_wallets">Hardware wallets</string>
   <string name="id_hash">Hash</string>
   <string name="id_help">Hilfe</string>
+  <string name="id_help_green_improve">Help Green Improve</string>
   <string name="id_here">hier</string>
   <string name="id_hex">HEX</string>
   <string name="id_hide_assets">Assets verbergen</string>
+  <string name="id_hide_details">Hide details</string>
   <string name="id_high">Hoch</string>
+  <string name="id_hold_button_to_send">Hold button to Send</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Halten Sie Ihren NFC-Tag nahe am Gerät</string>
   <string name="id_home">Startseite</string>
   <string name="id_hour">Stunde</string>
@@ -409,6 +440,7 @@
   <string name="id_i_typed_all_my_recovery_phrase">Ich habe meine Wiederherstellungs-Phrase eingegeben, warum geht es nicht weiter?</string>
   <string name="id_i_understand_amounts_could_be">Ich verstehe, dass die Beträge fehlerhaft sein können</string>
   <string name="id_id">ID</string>
+  <string name="id_if_you_agree_green_will_collect">If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.</string>
   <string name="id_if_you_are_the_rightful_owner">Wenn du der rechtmäßige Besitzer dieses Wallets bist und du noch im Besitz einer aktiven 2FA-Methode bist, kannst du den Reset abbrechen und kannst dieses Wallet ausgeben und entleeren.</string>
   <string name="id_if_you_did_not_request_the">Falls du das Reset nicht angefragt hast und den Reset nicht abbrechen kannst, weil du keinen Zugriff auf eine existierende 2FA-Authentifizierungs-Methode hast, kannst du diesen Reset der 2FA anfechten. Dies wird deine Wallet dauerhaft sperren, aber du kannst diese Aktion ungeschehen machen.</string>
   <string name="id_if_you_have_access_to_a">Wenn du Zugriff auf eine Zwei-Faktor-Methode für dieses Wallet hast, kannst du das Reset abbrechen, um sofort wieder senden und empfangen zu können, oder %d Tage warten.</string>
@@ -487,6 +519,8 @@
   <string name="id_loading_wallet">Wallet wird geladen</string>
   <string name="id_location_services_are_disabled">Lokationsdienste sind deaktiviert, möchtest du sie aktivieren?</string>
   <string name="id_lock">Sperren</string>
+  <string name="id_lock_after_1_minute">Lock after 1 minute</string>
+  <string name="id_lock_immediately">Lock immediately</string>
   <string name="id_locked">Gesperrt</string>
   <string name="id_locked_coins_will_not_be_spent">Gesperrte Coins werden nicht ausgegeben oder in deinem Kontostand angezeigt.</string>
   <string name="id_locking_coins">Sperren von Coins</string>
@@ -518,6 +552,7 @@
   <string name="id_managed_assets_account">Konto für Managed Assets</string>
   <string name="id_managed_assets_accounts_are">Konten für verwalteten Vermögenswerte sind nur für Liquid Wallets verfügbar. Möglicherweise musst du deine Konto-ID dem Herausgeber angeben, um Managed Assets zu erhalten.</string>
   <string name="id_manual_coin_selection">Manuelle Coin-Auswahl</string>
+  <string name="id_manual_restore">Manual Restore</string>
   <string name="id_medium">Mittel</string>
   <string name="id_memo">Memo</string>
   <string name="id_message">Nachricht</string>
@@ -561,11 +596,14 @@
   <string name="id_nfc_logo">NFC Logo</string>
   <string name="id_nfc_tags_written">NFC Tags beschrieben:</string>
   <string name="id_no_amount_specified">Kein Betrag angegeben</string>
+  <string name="id_no_archived_accounts">No archived accounts</string>
   <string name="id_no_asset_in_this_account">Keine Assets in diesem Konto</string>
   <string name="id_no_attempts_remaining">Keine Versuche übrig</string>
   <string name="id_no_coins_selected">(Keine Coins ausgewählt)</string>
   <string name="id_no_device_connected">Kein Gerät verbunden</string>
+  <string name="id_no_existing_wallet_could_be">No existing wallet could be found.\nTry manually restoring your wallet.</string>
   <string name="id_no_more_assets">Keine Assets mehr.</string>
+  <string name="id_no_multisig_shield_wallet">No multisig shield wallet exists for this recovery phrase.</string>
   <string name="id_no_peers_connected">Keine Peers verbunden</string>
   <string name="id_no_pin_provided_exiting">Kein PIN eingegeben, Abbruch.</string>
   <string name="id_no_recipients">Kein Empfänger</string>
@@ -605,12 +643,15 @@
   <string name="id_optional_memo">Optionale Notiz</string>
   <string name="id_optional_password">Optionales Passwort</string>
   <string name="id_or">ODER</string>
+  <string name="id_os__app_version_loading_times">OS &amp; app version, loading times</string>
   <string name="id_our_support_page">unsere Support-Seite</string>
   <string name="id_outdated_hardware_wallet">Ausgelaufene Hardware Wallet Firmware. Bitte rüsten Sie auf die neueste Firmware von Ihrem Desktop.</string>
   <string name="id_outgoing">Ausgehend</string>
   <string name="id_overview">Überblick</string>
   <string name="id_p2sh">P2sh</string>
   <string name="id_p2wsh">P2wsh</string>
+  <string name="id_page_visits_button_presses">Page visits, button presses, general app configuration</string>
+  <string name="id_passphrase">Passphrase</string>
   <string name="id_password">Passwort</string>
   <string name="id_password_protected">Passwort geschützt</string>
   <string name="id_paste">Einfügen</string>
@@ -656,6 +697,7 @@
   <string name="id_proxy_host">Proxy Host</string>
   <string name="id_proxy_port">Proxy Port</string>
   <string name="id_proxy_settings">PROXY EINSTELLUNGEN</string>
+  <string name="id_pseudonymous_identifier_country">Pseudonymous identifier, country</string>
   <string name="id_qr_code">QR-Code</string>
   <string name="id_qr_scanner">QR Scanner</string>
   <string name="id_radio_firmware">Funk-Firmware</string>
@@ -672,9 +714,12 @@
   <string name="id_recipient_address">Empfänger-Adresse</string>
   <string name="id_recovery">Wiederherstellung</string>
   <string name="id_recovery_and_notifications">Wiederherstellung und Mitteilungen</string>
+  <string name="id_recovery_key_type">Recovery Key Type</string>
   <string name="id_recovery_mnemonic">Wiederherstellungs-Merksatz</string>
   <string name="id_recovery_phrase">Wiederherstellungs-Phrase</string>
   <string name="id_recovery_phrase_check">Check der Wiederherstellungs-Phrase</string>
+  <string name="id_recovery_phrase_length">Recovery phrase length</string>
+  <string name="id_recovery_phrases_key_material">Recovery phrases, key material, addresses, balances</string>
   <string name="id_recovery_tool">Wiederherstellungs-Tool</string>
   <string name="id_recovery_transaction_emails">Transaktionswiederherstellungs-Emails</string>
   <string name="id_recovery_transaction_request">Anfrage für Wiederherstellungstransaktion gesendet</string>
@@ -722,6 +767,7 @@
   <string name="id_save_a_summary_of_your_accounts">Speichere eine Zusammenfassung deiner Accounts um die Wiederherstellung zu beschleunigen, solltest du unser Recovery-Tool einmal brauchen.</string>
   <string name="id_save_your_mnemonic">Speichere deinen Merksatz</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Scanne Sie den QR Code um SPV zu verbinden</string>
+  <string name="id_scan_or_paste_your_extended">Scan or paste your extended public key (xPub/yPub/zPub) to log in to your watch-only-wallet.</string>
   <string name="id_scan_qr_code">QR-Code scannen</string>
   <string name="id_scan_the_qr_code_with_an">Scanne den QR-Code mit einer Authenticator-App</string>
   <string name="id_scan_to_send_here">Hier scannen und senden</string>
@@ -743,8 +789,10 @@
   <string name="id_select_network">Netzwerk auswählen</string>
   <string name="id_select_the_s_app_on_your_ledger">Wähle die %s App auf deinem Ledger und versuche es erneut.</string>
   <string name="id_select_wallet">Wallet auswählen</string>
+  <string name="id_select_watchonly_type">Select Watch-only type</string>
   <string name="id_select_word_number_d">Wort Nummer %d auswählen</string>
   <string name="id_select_your_jade_to_login">Wähle dein Jade aus, um dich einzuloggen</string>
+  <string name="id_select_your_recovery_key">Select your recovery key</string>
   <string name="id_send">Senden</string>
   <string name="id_send_all">Alle versenden</string>
   <string name="id_send_all_funds">Alle Gelder verschicken</string>
@@ -792,6 +840,7 @@
   <string name="id_show_all_assets">Alle Assets anzeigen</string>
   <string name="id_show_bitcoin_amounts_in">Bitcoin-Beträge anzeigen in</string>
   <string name="id_show_coins_with_expiring">Coins mit auslaufendem Zwei-Faktor-Authentifizierungsschutz anzeigen.</string>
+  <string name="id_show_details">Show details</string>
   <string name="id_show_fiat">Fiat anzeigen</string>
   <string name="id_show_my_wallet_backup">Mein Wallet-Backup anzeigen</string>
   <string name="id_show_qr_code">QR-Code anzeigen</string>
@@ -859,12 +908,14 @@
   <string name="id_the_liquid_network_is_a_bitcoin">The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.</string>
   <string name="id_the_network_selected_on_the">Das in der Green App ausgewählte Netzwerk ist nicht das im Hardware Wallet ausgewählte Netzwerk. Bitte wähle für beide Geräte dasselbe Netzwerk.</string>
   <string name="id_the_new_email_will_be_used_for">Die neue E-Mail-Adresse wird für die Zwei-Faktor-Authentifizierung verwendet, sobald das Zurücksetzen abgeschlossen ist. Das Zurücksetzen dauert 12 Monate zuzüglich einer eventuellen restlichen Zeitsperre.</string>
+  <string name="id_the_new_firmware_requires_you">The new firmware requires you to unpair your Jade from the Bluetooth settings.</string>
   <string name="id_the_password_cant_be_empty">Das Passwort kann nicht leer sein</string>
   <string name="id_the_recovery_key_below_will_not">Der Wiederherstellungsschlüssel wird nicht nochmals angezeigt. Bitte machen Sie jetzt eine Datensicherung vom Wiederherstellungsschlüssel damit Ihre Mittel nicht veloren gehen.</string>
   <string name="id_the_recovery_phrase_can_be_used">Die Wiederherstellungs-Phrase kann dazu verwendet werden, um jederzeit einen Anspruch auf deine Gelder zu erheben. Bewahre sie sicher auf, halte sie geheim.</string>
   <string name="id_the_recovery_phrase_doesnt">Die Wiederherstellungs-Phrase passt nicht zur bisher existierenden Wallet. Bitte versuche es nochmal mit einer anderen Wiederherstellungs-Phrase.</string>
   <string name="id_the_source_code_is_available_at">Der Quellcode ist verfügbar auf %s</string>
   <string name="id_the_transaction_contains">Die Transaktion enthält nicht-vertrauliche Geldmittel.</string>
+  <string name="id_the_username_cant_be_empty">The username can\'t be empty</string>
   <string name="id_the_waiting_period_is_necessary">Die Wartezeit ist notwendig, um die Sicherheit deines Wallets zu garantieren und um Diebe daran zu hindern, deine Zwei-Faktor-Authentifizierung zu umgehen.</string>
   <string name="id_there_are_no_results_for_the">Es gibt keine Ergebnisse für deinen Filter</string>
   <string name="id_there_is_already_a_pin_set_for">Es besteht bereits eine PIN für ein %s Wallet. Beim Fortfahren kann keine neue PIN erstellt werden und das Login benötigt den 24-Wort-Merksatz. Der PIN kann unter den Einstellungen oder mit 3 ungültigen Versuchen deaktiviert werden.</string>
@@ -878,6 +929,7 @@
   <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Zeit: %s</string>
   <string name="id_tip_we_recommend_you_enable">Hinweis: Wir empfehlen, mehr als eine 2FA-Methode zu aktivieren. Wenn du nur eine 2FA-Methode aufsetzt und verlierst, dann wirst du mindestens ein Jahr warten müssen bis die 2FA abläuft.</string>
+  <string name="id_tip_you_can_use_the">Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.</string>
   <string name="id_to">AN</string>
   <string name="id_to_keep_you_in_control_of_your">Damit du die Kontrolle über deine Gelder behältst, erlischt der Schutz der Zwei-Faktor-Authentifizierung nach etwa %d Tagen nach deiner letzten Zahlung. Du wirst dann aufgefordert, eine Zwei-Faktor-Reaktivierungstransaktion durchzuführen, wenn du nicht oft genug Gelder bewegst.</string>
   <string name="id_too_many_pin_attempts">Zu viele PIN-Versuche</string>
@@ -915,6 +967,7 @@
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Green Service kann nicht erreicht werden. Bitte überprüfen Sie Ihre Netzwerk-Verbindung und warten Sie auf eine neue Verbindung.</string>
   <string name="id_unarchive">nicht archivieren</string>
+  <string name="id_unarchive_account">Unarchive account</string>
   <string name="id_unblinding_data">Offenlegung der Daten</string>
   <string name="id_unconfirmed">Unbestätigt</string>
   <string name="id_undo_2fa_dispute">2FA-Anfechtung rückgängig machen</string>
@@ -923,6 +976,7 @@
   <string name="id_unknown_custom">Unbekannt (Custom)</string>
   <string name="id_unknown_firmware">Unbekannte Firmware</string>
   <string name="id_unlock">Entsperren</string>
+  <string name="id_unlock_green">Unlock Green</string>
   <string name="id_unlock_jade_to_continue">Jade entsperren, um fortzufahren</string>
   <string name="id_unlocked_coins_can_be_spent_and">Entsperrte Coins können ausgegeben werden und sind in deinem Kontostand enthalten.</string>
   <string name="id_unlocking_coins">Coins werden entsperrt</string>
@@ -937,7 +991,9 @@
   <string name="id_use_an_existing_recovery_phrase">Nutze eine bestehende Wiederherstellungs-Phrase als deinen dritten Schlüssel.</string>
   <string name="id_use_an_xpub_for_which_you_own">Verwende einen xpub, für den du die korrespondierenden private keys hälst, als deinen dritten Wiederherstellungs-Schlüssel</string>
   <string name="id_use_android_screen_lock_to_log">Android-Bildschirmsperre zur Anmeldung verwenden</string>
+  <string name="id_use_secure_display_and_screen">Use Secure Display and Screen Lock</string>
   <string name="id_use_your_email_to_receive">Verwende deine Email-Adresse, um Wiederherstellungs-Transaktionen und Benachrichtigungen über Transaktionen zu erhalten</string>
+  <string name="id_user_contact_info_ip_address">User contact info, IP address, detailed location</string>
   <string name="id_user_not_found_or_invalid">Benutzer nicht gefunden oder ungültiges Passwort</string>
   <string name="id_username">Benutzername</string>
   <string name="id_username_not_available">Benutzername nicht verfügbar</string>
@@ -951,6 +1007,8 @@
   <string name="id_version">Version</string>
   <string name="id_version_1s">Version: %1$s</string>
   <string name="id_version_1s_2s">Version %1$s %2$s</string>
+  <string name="id_view_account">View account</string>
+  <string name="id_view_archived_accounts">View Archived Accounts</string>
   <string name="id_view_archived_accounts_d">Schau dir archivierte Konten an (%d)</string>
   <string name="id_view_in_explorer">Im Explorer betrachten</string>
   <string name="id_view_more">Mehr sehen</string>
@@ -975,12 +1033,14 @@
   <string name="id_warning_watchonly_credentials">Achtung: Watch-Only Anmeldedaten werden auf deinem Gerät gespeichert.</string>
   <string name="id_warning_you_need_a_positive">Achtung! Sie brauchen ein positives L-BTC Guthaben um Transaktionen zu tätigen</string>
   <string name="id_watchonly">Watch-Only</string>
+  <string name="id_watchonly_details">Watch-only details</string>
   <string name="id_watchonly_disabled">Watch-Only deaktiviert</string>
   <string name="id_watchonly_login">Watch-Only Login</string>
   <string name="id_watchonly_mode_can_be_activated">Watch-Only Mode kann unter der Einstellungen aktiviert werden nachdem Sie sich mit Ihrem PIN, Merksatz oder Hardware Wallet eingeloggt haben.</string>
   <string name="id_watchonly_mode_cannot_be">Der Watch-Only Modus kann bei Liquid nicht aktiviert werden, da deine Gelder streng vertraulich sind.</string>
   <string name="id_watchonly_wallet">Watch-Only Wallet</string>
   <string name="id_we_use_the_camera_to_scan_qr">Wir verwenden die Kamera um QR-Codes zu scannen</string>
+  <string name="id_we_will_do_our_best_to_find_a">We will do our best to find a wallet corresponding to this recovery phrase</string>
   <string name="id_welcome">Willkommen</string>
   <string name="id_welcome_to">Willkommen bei</string>
   <string name="id_well_done_you_can_continue">Gut gemacht, hier geht\'s weiter</string>
@@ -988,7 +1048,9 @@
   <string name="id_well_get_you_set_up_in_no_time">Wir richten dich im Handumdrehen ein. Du brauchst nur ein Stift und Papier bereithalten!</string>
   <string name="id_well_get_you_set_up_with_an_amp">Wir richten dir ein AMP Wallet im Handumdrehen ein. Du kannst alternativ auch in jedem bestehenden Liquid-Wallet ein AMP-Konto einrichten.</string>
   <string name="id_what_type_of_account_would_you">Welche Art von Konto möchtest du hinzufügen?</string>
+  <string name="id_whats_collected">What\'s collected</string>
   <string name="id_whats_new">Was gibt\'s neues?</string>
+  <string name="id_whats_not_collected">What\'s NOT collected</string>
   <string name="id_where_would_you_like_to">Wohin möchtest du die Gelder transferieren?</string>
   <string name="id_wireless">Kabellos</string>
   <string name="id_word">Wort</string>
@@ -996,6 +1058,7 @@
   <string name="id_write_down_the_words">Schreibe die Wörter auf</string>
   <string name="id_write_down_your_recovery_phrase">Schreibe deine Wiederherstellungs-Phrase auf ein Stück Papier und bewahre es sicher auf.</string>
   <string name="id_wrong_choice_check_your">Falsche Auswahl. Prüfen Sie Ihren Merksatz und versuchen Sie es nochmals.</string>
+  <string name="id_xpub">xPub</string>
   <string name="id_year">Jahr</string>
   <string name="id_years">Jahre</string>
   <string name="id_you_are_not_connected">Sie sind nicht verbunden</string>

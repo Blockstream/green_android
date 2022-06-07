@@ -62,7 +62,7 @@ class WalletNameFragment : AbstractOnboardingFragment<WalletNameFragmentBinding>
         viewModel.onError.observe(viewLifecycleOwner){
             it?.getContentIfNotHandledOrReturnNull()?.let{ error ->
                 if(error.message == "id_login_failed"){
-                    dialog(title = getString(R.string.id_wallet_not_found), message = getString(R.string.id_no_multisig_shield_wallet_exists)) {
+                    dialog(title = getString(R.string.id_wallet_not_found), message = getString(R.string.id_no_multisig_shield_wallet)) {
                         popBackStack()
                     }
                 }else{

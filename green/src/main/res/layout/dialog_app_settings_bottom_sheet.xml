@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableEnhancedPrivacy}"
                 app:icon="@drawable/ic_invisible_60"
-                app:captionText="@string/id_use_secure_display_and_screen_lock"
+                app:captionText="@string/id_use_secure_display_and_screen"
                 app:titleText="@string/id_enhanced_privacy" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -176,7 +176,7 @@
                 isVisible="@{vm.analyticsFeatureEnabled}"
                 app:icon="@drawable/ic_analytics"
                 app:titleText="@string/id_help_green_improve"
-                app:captionText="@string/id_enable_limited_usage_data_collection"/>
+                app:captionText="@string/id_enable_limited_usage_data"/>
 
             <Button
                 android:id="@+id/buttonAnalyticsMoreInfo"

@@ -128,7 +128,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         sessionManager.pendingBip21Uri.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
                 viewModel.setBip21Uri(bip21Uri)
-                snackbar(R.string.id_address_was_filled_by_a_payment_uri)
+                snackbar(R.string.id_address_was_filled_by_a_payment)
             }
         }
 
@@ -276,7 +276,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         recipientBinding.buttonRemove.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.id_remove)
-                .setMessage(R.string.id_are_you_sure_you_want_to_remove_the_recipient)
+                .setMessage(R.string.id_are_you_sure_you_want_to_remove)
                 .setPositiveButton(R.string.id_remove) { _, _ ->
                     viewModel.removeRecipient(recipientBinding.index ?: 0)
                 }
@@ -325,7 +325,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
                     recipientBinding.assetName = look?.name
                     recipientBinding.assetBalance = if (look != null) getString(
-                        R.string.id_available_funds,
+                        R.string.id_available_funds_s,
                         look.balance(isFiat = it.isFiat.value, withUnit = true)
                     ) else ""
                     recipientBinding.assetSatoshi = balance ?: 0

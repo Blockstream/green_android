@@ -3,12 +3,14 @@
   <string name="id_1030_minutes">10-30 分ほど</string>
   <string name="id_12_confirmations">1/2 ブロックで承認中</string>
   <string name="id_12_months_51840_blocks">12ヶ月 (51840ブロック)</string>
+  <string name="id_12_words">12 words</string>
   <string name="id_15_months_65535_blocks">15ヶ月 (65535ブロック)</string>
   <string name="id_1_double_check_all_of_your">1. リカバリーフレーズの単語１つ１つを正確に書き写せたか、今一度ご確認ください。\n2. 語順も重要です。単語の順番を正しく記録したことも確認してください。\n\nいずれも間違っていない場合、またはリカバリーフレーズが12, 24, 27単語のいずれでもない場合、ヘルプセンターをご覧ください。</string>
   <string name="id_1d_2s_ago">%1$d%2$s前</string>
   <string name="id_1d_minutes">%1$d 分</string>
   <string name="id_1s_blocks_left_2d">残り%1$sブロック %2$d</string>
   <string name="id_1s_twofactor_setup">%1$s2段階認証を設定する</string>
+  <string name="id_24_words">24 words</string>
   <string name="id_2_hours">2時間前後</string>
   <string name="id_2fa_dispute_in_progress">2段階認証のリセットに関する係争中</string>
   <string name="id_2fa_expired">2段階認証が期限切れ</string>
@@ -29,6 +31,7 @@
   <string name="id_accept">承諾</string>
   <string name="id_access">Access</string>
   <string name="id_account">アカウント</string>
+  <string name="id_account_extended_public_keys">Account Extended Public Keys</string>
   <string name="id_account_id">アカウントID</string>
   <string name="id_account_name">アカウント名</string>
   <string name="id_account_type">アカウント種別</string>
@@ -45,6 +48,7 @@
   <string name="id_add_custom_network_by_qr_code">QRコードでカスタムネットワークを追加する</string>
   <string name="id_add_custom_network_by_url">URLでカスタムネットワークを登録する</string>
   <string name="id_add_new_account">新規アカウントの追加</string>
+  <string name="id_add_recipient">Add Recipient</string>
   <string name="id_add_wallet">ウォレットを登録する</string>
   <string name="id_additional_networks">他のネットワーク</string>
   <string name="id_additional_security">セキュリティ対策の追加</string>
@@ -64,6 +68,8 @@
   <string name="id_all_of_the_accounts_in_your">ウォレットを消去する前に全アカウントの残高がゼロである必要があります。</string>
   <string name="id_all_the_coins_received_or">送金で、あるいはお釣りとして受け取ったすべてのコイン。</string>
   <string name="id_all_wallets">すべてのウォレット</string>
+  <string name="id_allow_collection">Allow collection</string>
+  <string name="id_allow_data_collection">Allow data collection</string>
   <string name="id_allows_you_to_quickly_check">残高の確認、資金の受け取り、また、ペーパーウォレットの読み取りができます。読み取りモードでは資金の送金はできません。</string>
   <string name="id_always">いつも</string>
   <string name="id_amount">額</string>
@@ -73,10 +79,13 @@
   <string name="id_amp_id">AMP ID</string>
   <string name="id_amp_wallet">AMPウォレット</string>
   <string name="id_another_2fa_method_is_already">別の2段階認証手段が設定されています。この変更を2段階認証で確認してください。</string>
+  <string name="id_any_wallet_found_will_be">Any wallet found will be displayed here.</string>
   <string name="id_app_settings">アプリ設定</string>
   <string name="id_archive">アーカイブ</string>
+  <string name="id_archive_account">Archive account</string>
   <string name="id_archived">アーカイブ済み</string>
   <string name="id_archived_accounts">アーカイブ済みのアカウント</string>
+  <string name="id_are_you_sure_you_want_to_remove">Are you sure you want to remove the recipient?</string>
   <string name="id_are_you_sure_you_want_to_view">%sを利用してトランザクションを確認しますか？</string>
   <string name="id_as_easy_as_snapping_a_photo">写真を取るくらいシンプルに。すでにウォレットをお持ちの場合、設定画面よりリカバリーフレーズをスキャンしてください。</string>
   <string name="id_asset">アセット</string>
@@ -86,6 +95,7 @@
   <string name="id_asset_name">アセット名</string>
   <string name="id_assets">アセット一覧</string>
   <string name="id_assets_cannot_be_used_on_bitcoin">アセットはBitcoinネットワークでは利用できません</string>
+  <string name="id_at_least_8_characters_required">At least 8 characters required</string>
   <string name="id_attempts_remaining_d">残り: %d 回</string>
   <string name="id_authenticate_to_view_the">リカバリーフレーズを確認するには認証してください</string>
   <string name="id_authentication_error_s">認証エラー: %s</string>
@@ -97,6 +107,7 @@
   <string name="id_auto_logout_timeout_expired">時間経過により自動ログアウトされました</string>
   <string name="id_autolock_after">オートロック制限まで</string>
   <string name="id_available">利用可能</string>
+  <string name="id_available_funds_s">Available funds %s</string>
   <string name="id_back">戻る</string>
   <string name="id_back_up_recovery_phrase">リカバリーフレーズのバックアップ</string>
   <string name="id_backup_the_recovery_mnemonic">2of3アカウントの復旧時に必要になるリカバリー用ニモニックとxpubをバックアップしてください。</string>
@@ -117,6 +128,7 @@
   <string name="id_bitcoin_wallets">Bitcoinウォレット</string>
   <string name="id_block">ブロック</string>
   <string name="id_block_d">ブロック %d</string>
+  <string name="id_block_height">Block Height</string>
   <string name="id_block_height_1d">ブロック高: %1$d</string>
   <string name="id_blocks">ブロック</string>
   <string name="id_blocks_confirmed">検証済みブロック</string>
@@ -142,6 +154,7 @@
   <string name="id_change_address">お釣りアドレス</string>
   <string name="id_change_pin">PINコードを変更する</string>
   <string name="id_changing_reference_exchange">交換レートの提供元を変更すると2段階認証の閾値が0にリセットされます。送金後に2段階認証の閾値を調整することをお忘れなく。</string>
+  <string name="id_check_device">Check Device</string>
   <string name="id_check_for_updates">アップデートを確認</string>
   <string name="id_check_for_updates_on_startup">起動時にアップデートを確認</string>
   <string name="id_check_your_backup">バックアップを確認する</string>
@@ -152,6 +165,8 @@
   <string name="id_choose_recovery_phrase_length">リカバリーフレーズの長さを選択する</string>
   <string name="id_choose_security_policy">セキュリティポリシーを設定する</string>
   <string name="id_choose_the_electrum_servers_you">信頼するElectrumサーバーを選択する</string>
+  <string name="id_choose_the_security_policy_that">Choose the security policy that matches your wallet.</string>
+  <string name="id_choose_the_security_policy_you">Choose the security policy you want to restore this wallet on.</string>
   <string name="id_choose_this_version_to_connect">Blockstream JadeにUSBケーブルと無線の両方のモードで接続するにはこのバージョンを選択します</string>
   <string name="id_choose_this_version_to_disable">Blockstream Jadeの無線機能をすべて無効化するにはこのバージョンを選択します。JadeはiOSデバイスに接続できなくなります。</string>
   <string name="id_choose_twofactor_authentication">2段階認証方法の選択</string>
@@ -161,6 +176,7 @@
   <string name="id_click_to_copy">クリックしてコピー</string>
   <string name="id_click_to_receive_an_email_with">クリックして暗号化されたリカバリーデータをメールで受け取る。</string>
   <string name="id_code">コード</string>
+  <string name="id_coin">Coin</string>
   <string name="id_coins">コイン</string>
   <string name="id_coins_for_which_2fa_protection">2段階認証の保護期限が切れたコイン。</string>
   <string name="id_coins_locked">ロックされたコイン</string>
@@ -179,12 +195,14 @@
   <string name="id_confirm_action">許可する</string>
   <string name="id_confirm_by_typing_the_wallet">ウォレット名を入力して許可する</string>
   <string name="id_confirm_code">コードを確認</string>
+  <string name="id_confirm_on_your_device">Confirm on your device</string>
   <string name="id_confirm_passphrase">パスフレーズを確認</string>
   <string name="id_confirm_transaction">トランザクションを確認する</string>
   <string name="id_confirm_transaction_details_on">ハードウェアウォレットでトランザクションを確認する</string>
   <string name="id_confirm_update_on_your_jade">Jadeでアップデートを確認する</string>
   <string name="id_confirm_via_2fa_that_you">2段階認証でこの変更を承認する。</string>
   <string name="id_confirmation_in_d_blocks">%d ブロックで承認</string>
+  <string name="id_confirmation_time">Confirmation Time</string>
   <string name="id_confirmations">承認</string>
   <string name="id_congratulations">おめでとうございます。</string>
   <string name="id_connect_hardware_wallet">ハードウェアウォレットを接続する</string>
@@ -194,6 +212,7 @@
   <string name="id_connect_your_jade_to_use_it">JadeをGreenと接続して利用する</string>
   <string name="id_connect_your_ledger_to_use_it">LedgerをGreenと接続して利用する</string>
   <string name="id_connected_to_jade">Jadeに接続済み</string>
+  <string name="id_connected_wallets">Connected wallets</string>
   <string name="id_connecting">接続中…</string>
   <string name="id_connecting_through_tor">Tor経由で接続中</string>
   <string name="id_connecting_to_a_trusted_node">Tor経由で信頼するノードに接続するには、ログイン前にこのアプリからプロキシの設定と、Socks5プロキシが必要になります(AndroidならOrbotアプリ)</string>
@@ -211,6 +230,7 @@
   <string name="id_copy">コピー</string>
   <string name="id_copy_address">アドレスをコピーする</string>
   <string name="id_copy_details">詳細をコピーする</string>
+  <string name="id_copy_device_id">Copy Device ID</string>
   <string name="id_copy_raw_transaction">生のトランザクションをコピーする</string>
   <string name="id_copy_to_clipboard">クリップボードにコピーする</string>
   <string name="id_copy_transaction_id">トランザクションIDをコピーする</string>
@@ -271,6 +291,7 @@
   <string name="id_domain">ドメイン</string>
   <string name="id_done">完了</string>
   <string name="id_dont_ask_me_again">これ以上聞かない</string>
+  <string name="id_dont_collect_data">Don\'t collect data</string>
   <string name="id_dont_show_this_again">次から表示しない</string>
   <string name="id_dont_store_your_recovery_phrase">リカバリーフレーズはスマートフォン、パソコン、オンラインサービスなどに保存しないでください。</string>
   <string name="id_dont_take_screenshots_of_your">リカバリーフレーズのスクリーンショットを撮らないでください！</string>
@@ -280,6 +301,7 @@
   <string name="id_download_finished">ダウンロード完了</string>
   <string name="id_dust">ダスト</string>
   <string name="id_edit">編集する</string>
+  <string name="id_edit_fee">Edit Fee</string>
   <string name="id_email">Eメール</string>
   <string name="id_email_address">Eメールアドレス</string>
   <string name="id_empty">何もありません</string>
@@ -289,6 +311,7 @@
   <string name="id_enable_email_notifications_to">nlocktimeの設定変更時にメールで確認する</string>
   <string name="id_enable_experimental_features">試験的機能を有効化する</string>
   <string name="id_enable_face_id">顔ID機能をONにする</string>
+  <string name="id_enable_limited_usage_data">Enable limited usage data collection</string>
   <string name="id_enable_location_services">位置情報を有効化する</string>
   <string name="id_enable_or_change_your_pin_to">PINを有効化するか変更してウォレットをすぐ開けるようにします</string>
   <string name="id_enable_spv">SPV機能をONにする</string>
@@ -300,6 +323,7 @@
   <string name="id_enabled">有効</string>
   <string name="id_enabled_1s">有効: %1$s</string>
   <string name="id_encryption_passphrase">暗号化パスフレーズ</string>
+  <string name="id_enhanced_privacy">Enhanced Privacy</string>
   <string name="id_enter">入力</string>
   <string name="id_enter_a_pgp_public_key_to_have">プライバシー保護の為にPGPパブリックキーを入力しEメールを暗号化する</string>
   <string name="id_enter_a_private_key_to_sweep">秘密鍵をウォレットに入力する</string>
@@ -336,9 +360,12 @@
   <string name="id_estimated_blocks_until">検証にかかる予想ブロック数: %d</string>
   <string name="id_example_89014283334011612858333">例: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_existing_recovery_phrase">既存のリカバリーフレーズ</string>
+  <string name="id_existing_wallets">Existing Wallets</string>
   <string name="id_expand_sidebar">サイドバーを開く</string>
   <string name="id_explore_your_wallet">ウォレットを探検する</string>
   <string name="id_export_transactions_to_csv_file">トランザクション一覧をCSVファイルに出力</string>
+  <string name="id_exports_an_accounts_extended">Exports an account\'s extended public key (xPub/yPub/zPub) to view as a watch-only</string>
+  <string name="id_extended_public_key">Extended Public Key</string>
   <string name="id_face_id">顔ID</string>
   <string name="id_failed_to_load_asset_icons">アセットのアイコンの読み込みに失敗しました</string>
   <string name="id_failed_to_load_asset_registry">アセット登録簿の読み込みに失敗しました</string>
@@ -388,12 +415,16 @@
   <string name="id_green_uses_multisig_with_one">GreenはBlockstreamのサーバーと貴方のデバイスで生成された署名の二つを活用しマルチシグを利用します。2段階認証を設定することでサーバー側の署名のセキュリティを一段と強化できます。</string>
   <string name="id_hardware_wallet">ハードウェアウォレット</string>
   <string name="id_hardware_wallet_support_for">秘匿トランザクションのハードウェアウォレット対応が近く予定されています。</string>
+  <string name="id_hardware_wallets">Hardware wallets</string>
   <string name="id_hash">ハッシュ</string>
   <string name="id_help">ヘルプ</string>
+  <string name="id_help_green_improve">Help Green Improve</string>
   <string name="id_here">ここ</string>
   <string name="id_hex">16進数</string>
   <string name="id_hide_assets">アセットを隠す</string>
+  <string name="id_hide_details">Hide details</string>
   <string name="id_high">高い</string>
+  <string name="id_hold_button_to_send">Hold button to Send</string>
   <string name="id_hold_your_nfc_tag_close_to_the">デバイスにNFCタグを近づけて下さい</string>
   <string name="id_home">ホーム</string>
   <string name="id_hour">時間</string>
@@ -409,6 +440,7 @@
   <string name="id_i_typed_all_my_recovery_phrase">リカバリーフレーズを最後まで入力したのに続行できない</string>
   <string name="id_i_understand_amounts_could_be">金額が不正確な可能性があることを理解した</string>
   <string name="id_id">ID</string>
+  <string name="id_if_you_agree_green_will_collect">If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.</string>
   <string name="id_if_you_are_the_rightful_owner">あなたがこのウォレットの所有者で2段階認証手段が１つでも残されている場合、リセットをキャンセルしてウォレット内の資金を退避させてください。</string>
   <string name="id_if_you_did_not_request_the">リセットを申請したのが貴方ではなく、2段階認証手段も失ってしまったためにキャンセルできない場合、2段階認証のリセットを係争申請してください。ウォレットの利用ができなくなりますが、この申請は取り消すこともできます。</string>
   <string name="id_if_you_have_access_to_a">このウォレットに紐づいた2段階認証手段が残されている場合、リセットをキャンセルして送受信機能を取り戻すか、%d日待つことができます。</string>
@@ -487,6 +519,8 @@
   <string name="id_loading_wallet">ウォレットを読み込み中…</string>
   <string name="id_location_services_are_disabled">位置情報サービスが無効です、有効化しますか？</string>
   <string name="id_lock">ロックする</string>
+  <string name="id_lock_after_1_minute">Lock after 1 minute</string>
+  <string name="id_lock_immediately">Lock immediately</string>
   <string name="id_locked">ロック中</string>
   <string name="id_locked_coins_will_not_be_spent">ロックされたコインは送金されず、残高にも含まれません。</string>
   <string name="id_locking_coins">コインのロック</string>
@@ -518,6 +552,7 @@
   <string name="id_managed_assets_account">マネージド・アセット・アカウント</string>
   <string name="id_managed_assets_accounts_are">マネージド・アセット・アカウントはLiquidウォレットにのみ存在します。マネージド・アセットの受け取りには発行者にアカウントIDを伝えなければならない場合があります。</string>
   <string name="id_manual_coin_selection">手動のコインセレクション</string>
+  <string name="id_manual_restore">Manual Restore</string>
   <string name="id_medium">中</string>
   <string name="id_memo">メモ</string>
   <string name="id_message">メッセージ</string>
@@ -561,11 +596,14 @@
   <string name="id_nfc_logo">NFCロゴ</string>
   <string name="id_nfc_tags_written">書き込み済のNFCタグ:</string>
   <string name="id_no_amount_specified">数量が決められていません</string>
+  <string name="id_no_archived_accounts">No archived accounts</string>
   <string name="id_no_asset_in_this_account">このアカウントにアセットはありません</string>
   <string name="id_no_attempts_remaining">残り回数が有りません</string>
   <string name="id_no_coins_selected">(コインが未選択)</string>
   <string name="id_no_device_connected">デバイスが未接続</string>
+  <string name="id_no_existing_wallet_could_be">No existing wallet could be found.\nTry manually restoring your wallet.</string>
   <string name="id_no_more_assets">アセットはこれだけです。</string>
+  <string name="id_no_multisig_shield_wallet">No multisig shield wallet exists for this recovery phrase.</string>
   <string name="id_no_peers_connected">ピアが接続されていません</string>
   <string name="id_no_pin_provided_exiting">PINが有りません、終了します。</string>
   <string name="id_no_recipients">受け取り先がいません。</string>
@@ -605,12 +643,15 @@
   <string name="id_optional_memo">任意のメモ</string>
   <string name="id_optional_password">任意のパスワード</string>
   <string name="id_or">または</string>
+  <string name="id_os__app_version_loading_times">OS &amp; app version, loading times</string>
   <string name="id_our_support_page">弊社サポートのページ</string>
   <string name="id_outdated_hardware_wallet">ハードウェア・ウォレットのファームウェアが旧式です。デスクトップで最新のファームウェアにアップデートして下さい。</string>
   <string name="id_outgoing">このウォレットから送金中</string>
   <string name="id_overview">概要</string>
   <string name="id_p2sh">P2SH</string>
   <string name="id_p2wsh">P2WSH</string>
+  <string name="id_page_visits_button_presses">Page visits, button presses, general app configuration</string>
+  <string name="id_passphrase">Passphrase</string>
   <string name="id_password">パスワード</string>
   <string name="id_password_protected">パスワード保護</string>
   <string name="id_paste">貼り付け</string>
@@ -656,6 +697,7 @@
   <string name="id_proxy_host">プロキシのホスト</string>
   <string name="id_proxy_port">プロキシのポート</string>
   <string name="id_proxy_settings">プロキシ設定</string>
+  <string name="id_pseudonymous_identifier_country">Pseudonymous identifier, country</string>
   <string name="id_qr_code">QRコード</string>
   <string name="id_qr_scanner">QRスキャナー</string>
   <string name="id_radio_firmware">無線有効版ファームウェア</string>
@@ -672,9 +714,12 @@
   <string name="id_recipient_address">送金先のアドレス</string>
   <string name="id_recovery">リカバリー</string>
   <string name="id_recovery_and_notifications">リカバリーと通知</string>
+  <string name="id_recovery_key_type">Recovery Key Type</string>
   <string name="id_recovery_mnemonic">リカバリーニモニック</string>
   <string name="id_recovery_phrase">リカバリーフレーズ</string>
   <string name="id_recovery_phrase_check">リカバリーフレーズの確認</string>
+  <string name="id_recovery_phrase_length">Recovery phrase length</string>
+  <string name="id_recovery_phrases_key_material">Recovery phrases, key material, addresses, balances</string>
   <string name="id_recovery_tool">リカバリーツール</string>
   <string name="id_recovery_transaction_emails">復元トランザクションEメール</string>
   <string name="id_recovery_transaction_request">復元トランザクションが要請されました</string>
@@ -722,6 +767,7 @@
   <string name="id_save_a_summary_of_your_accounts">リカバリーツールの使用をスムーズに進められるよう、アカウントの概要を保存する。</string>
   <string name="id_save_your_mnemonic">ニモニックを保存する</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">QRコードをスキャンしてSPVペアリングを開始する</string>
+  <string name="id_scan_or_paste_your_extended">Scan or paste your extended public key (xPub/yPub/zPub) to log in to your watch-only-wallet.</string>
   <string name="id_scan_qr_code">QRコードをスキャンする</string>
   <string name="id_scan_the_qr_code_with_an">AuthenticatorアプリでQRコードをスキャンする</string>
   <string name="id_scan_to_send_here">スキャンしてここに送る</string>
@@ -743,8 +789,10 @@
   <string name="id_select_network">ネットワークを選択</string>
   <string name="id_select_the_s_app_on_your_ledger">Ledgerの%sアプリを選択して再試行してください。</string>
   <string name="id_select_wallet">ウォレットを選択</string>
+  <string name="id_select_watchonly_type">Select Watch-only type</string>
   <string name="id_select_word_number_d">文字数の選択%d</string>
   <string name="id_select_your_jade_to_login">ログインするにはJadeを選択してください</string>
+  <string name="id_select_your_recovery_key">Select your recovery key</string>
   <string name="id_send">送金</string>
   <string name="id_send_all">全額を送金する</string>
   <string name="id_send_all_funds">全ての資金を送金する</string>
@@ -792,6 +840,7 @@
   <string name="id_show_all_assets">すべてのアセットを表示する</string>
   <string name="id_show_bitcoin_amounts_in">ビットコインの表示単位</string>
   <string name="id_show_coins_with_expiring">2段階認証による保護期間が終了間近のコインを表示</string>
+  <string name="id_show_details">Show details</string>
   <string name="id_show_fiat">法定通貨で金額を表示</string>
   <string name="id_show_my_wallet_backup">ウォレットのバックアップ情報を確認する</string>
   <string name="id_show_qr_code">QRコードを表示する</string>
@@ -859,12 +908,14 @@
   <string name="id_the_liquid_network_is_a_bitcoin">The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.</string>
   <string name="id_the_network_selected_on_the">Greenアプリ内で選択されているネットワークとハードウェアウォレットで選択されているネットワークが一致しません。同じネットワークを選択してください。</string>
   <string name="id_the_new_email_will_be_used_for">リセット完了後、新しいメールアドレスが2段階認証に使用されます。リセットには12ヶ月とタイムロックの残存期間の合計がかかります。</string>
+  <string name="id_the_new_firmware_requires_you">The new firmware requires you to unpair your Jade from the Bluetooth settings.</string>
   <string name="id_the_password_cant_be_empty">パスワードが空欄です</string>
   <string name="id_the_recovery_key_below_will_not">下の復元キーは二度とご覧になられません。資金へのアクセスを失わない為にバックアップをお願いします。</string>
   <string name="id_the_recovery_phrase_can_be_used">リカバリーフレーズを使っていつでも資金を回収することができます。安全に、誰にも見られないように保管してください。</string>
   <string name="id_the_recovery_phrase_doesnt">リカバリーフレーズがウォレットと一致しません。違うリカバリーフレーズをお試しください。</string>
   <string name="id_the_source_code_is_available_at">ソースコードを下記にて公開しています %s</string>
   <string name="id_the_transaction_contains">このトランザクションには秘匿化されていない資金が含まれます。</string>
+  <string name="id_the_username_cant_be_empty">The username can\'t be empty</string>
   <string name="id_the_waiting_period_is_necessary">この待ち時間はウォレットが盗難に遭った場合に2段階認証をすぐに解除されないために存在するセキュリティ機能です。</string>
   <string name="id_there_are_no_results_for_the">フィルター条件に該当する結果はありません</string>
   <string name="id_there_is_already_a_pin_set_for">%sのウォレットには既にPINが設定されているものがあります。続行する場合、PINの設定はできずログイン時には毎回24個単語のニモニックが必要です。PINの無効化は設定から、もしくはログインを3回失敗することでできます。</string>
@@ -878,6 +929,7 @@
   <string name="id_ticker">ティッカーシンボル</string>
   <string name="id_time_s">時間: %s</string>
   <string name="id_tip_we_recommend_you_enable">おすすめ: 複数の2段階認証手段を有効化しましょう。唯一の2段階認証手段を失った場合、保護が失効するまで1年以上待つ必要があります。</string>
+  <string name="id_tip_you_can_use_the">Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.</string>
   <string name="id_to">送り先</string>
   <string name="id_to_keep_you_in_control_of_your">資金を動かせない状況を回避するため、2段階認証による保護は前回の送金からおよそ%d日後に解除されます。頻繁に取引されない方は、2段階認証を再度有効化するためのトランザクションを推奨する通知を受け取る可能性があります。</string>
   <string name="id_too_many_pin_attempts">PINの試行回数が残っていません</string>
@@ -915,6 +967,7 @@
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Greenサービスに接続できません。ネットワーク状態を確認してからもう一度お試しください。</string>
   <string name="id_unarchive">アーカイブから戻す</string>
+  <string name="id_unarchive_account">Unarchive account</string>
   <string name="id_unblinding_data">ブラインディング解除用データ</string>
   <string name="id_unconfirmed">未承認</string>
   <string name="id_undo_2fa_dispute">2段階認証の係争申請を取り消す</string>
@@ -923,6 +976,7 @@
   <string name="id_unknown_custom">無効(カスタム)</string>
   <string name="id_unknown_firmware">不明なファームウェア</string>
   <string name="id_unlock">アンロック</string>
+  <string name="id_unlock_green">Unlock Green</string>
   <string name="id_unlock_jade_to_continue">Jadeのロックを解除して続行してください</string>
   <string name="id_unlocked_coins_can_be_spent_and">ロックされていないコインは送金することができ、残高の計算に含まれます。</string>
   <string name="id_unlocking_coins">コインのロック解除</string>
@@ -937,7 +991,9 @@
   <string name="id_use_an_existing_recovery_phrase">既存のリカバリーフレーズを第3のリカバリーキーとして使用します。</string>
   <string name="id_use_an_xpub_for_which_you_own">自身で秘密鍵を所有するウォレットのxpubを第3のリカバリーキーとして使用します。</string>
   <string name="id_use_android_screen_lock_to_log">Android画面ロックでログインする</string>
+  <string name="id_use_secure_display_and_screen">Use Secure Display and Screen Lock</string>
   <string name="id_use_your_email_to_receive">メールアドレスでリカバリー用のトランザクションとトランザクション通知を受け取ります</string>
+  <string name="id_user_contact_info_ip_address">User contact info, IP address, detailed location</string>
   <string name="id_user_not_found_or_invalid">ユーザーネーム、又はパスワードが間違っています。</string>
   <string name="id_username">ユーザーネーム</string>
   <string name="id_username_not_available">無効のユーザーネーム</string>
@@ -951,6 +1007,8 @@
   <string name="id_version">バージョン</string>
   <string name="id_version_1s">バージョン: %1$s</string>
   <string name="id_version_1s_2s">バージョン %1$s %2$s</string>
+  <string name="id_view_account">View account</string>
+  <string name="id_view_archived_accounts">View Archived Accounts</string>
   <string name="id_view_archived_accounts_d">アーカイブされたアカウントを表示する (%d)</string>
   <string name="id_view_in_explorer">エクスプローラで見る</string>
   <string name="id_view_more">もっと見る</string>
@@ -975,12 +1033,14 @@
   <string name="id_warning_watchonly_credentials">注意: 読み取りモードの情報はデバイスに保存されます</string>
   <string name="id_warning_you_need_a_positive">注意: トランザクションの送信にはL-BTC残高が必要です。</string>
   <string name="id_watchonly">読み取りモード</string>
+  <string name="id_watchonly_details">Watch-only details</string>
   <string name="id_watchonly_disabled">読み取りモードが無効</string>
   <string name="id_watchonly_login">読み取りモードでログイン</string>
   <string name="id_watchonly_mode_can_be_activated">読み取りモードはPIN、ニモニック、又はハードウェアウォレットでログイン後に設定から有効にできます。</string>
   <string name="id_watchonly_mode_cannot_be">Liquidでは資産がすべて秘匿されているため、読み取りモードが使用できません。</string>
   <string name="id_watchonly_wallet">読み取り専用のウォレット</string>
   <string name="id_we_use_the_camera_to_scan_qr">カメラでQRコードをスキャンします。</string>
+  <string name="id_we_will_do_our_best_to_find_a">We will do our best to find a wallet corresponding to this recovery phrase</string>
   <string name="id_welcome">ようこそ</string>
   <string name="id_welcome_to">ようこそ</string>
   <string name="id_well_done_you_can_continue">上出来です、続きに進みましょう</string>
@@ -988,7 +1048,9 @@
   <string name="id_well_get_you_set_up_in_no_time">セットアップはすぐ終わります。ペンと紙を用意したら早速取り掛かりましょう！</string>
   <string name="id_well_get_you_set_up_with_an_amp">AMPウォレットの作成に時間はかかりません。また、既存のLiquidウォレット内にAMPアカウントを作成することもできます。</string>
   <string name="id_what_type_of_account_would_you">作成するアカウントの種類を選択してください。</string>
+  <string name="id_whats_collected">What\'s collected</string>
   <string name="id_whats_new">最新情報</string>
+  <string name="id_whats_not_collected">What\'s NOT collected</string>
   <string name="id_where_would_you_like_to">資金の送り先を指定してください。</string>
   <string name="id_wireless">無線</string>
   <string name="id_word">単語</string>
@@ -996,6 +1058,7 @@
   <string name="id_write_down_the_words">単語を書き下ろして下さい。</string>
   <string name="id_write_down_your_recovery_phrase">リカバリーフレーズを紙に記入して安全な所に保管してください。</string>
   <string name="id_wrong_choice_check_your">不正解です。ニモニックを確認してからもう一度お試しください。</string>
+  <string name="id_xpub">xPub</string>
   <string name="id_year">年</string>
   <string name="id_years">年</string>
   <string name="id_you_are_not_connected">接続できません。</string>
