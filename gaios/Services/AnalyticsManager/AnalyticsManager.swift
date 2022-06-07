@@ -34,12 +34,8 @@ class AnalyticsManager {
         set {
             let prev = AnalyticsConsent(rawValue: UserDefaults.standard.integer(forKey: AppStorage.userAnalyticsPreference)) ?? .notDetermined
             UserDefaults.standard.set(newValue.rawValue, forKey: AppStorage.userAnalyticsPreference)
-            if prev == .notDetermined {
-                //only once
-                countlyStart()
-            } else {
-                giveConsent(previous: prev)
-            }
+
+            giveConsent(previous: prev)
         }
     }
 
@@ -95,10 +91,6 @@ class AnalyticsManager {
     }
 
     func countlyStart() {
-        guard consent != .notDetermined else {
-            print("SKIP countly init, wait user to allow/deny")
-            return
-        }
 
         let config: CountlyConfig = CountlyConfig()
 

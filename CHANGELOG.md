@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Unreleased
 
 ### Added
+- Help Green improve! If you agree, Green will collect limited usage data to optimize your experience
 - Enable SPV on multisig
 
 ### Changed
