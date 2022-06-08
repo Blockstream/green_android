@@ -1,12 +1,14 @@
 "id_1030_minutes" = "약 10-30분";
 "id_12_confirmations" = "1/2 확인";
 "id_12_months_51840_blocks" = "12개월(블록 51840개)";
+"id_12_words" = "12 words";
 "id_15_months_65535_blocks" = "15개월(블록 65535개)";
 "id_1_double_check_all_of_your" = "1. 모든 복구 구문을 한글자 한글자 다시 확인하세요. 모두 올바른 단어가 입력되었나요?\n2. 단어의 순서가 중요합니다! 단어의 순서가 바르게 입력되었는지 확인하세요.\n\n위의 팁이 모두 도움이 되지 않거나, 12 또는 24, 27개 단어로 이루어진 복구 문구가 없으시면 고객 센터에 문의하세요.";
 "id_1d_2s_ago" = "%1$d%2$@전";
 "id_1d_minutes" = "%1$d분";
 "id_1s_blocks_left_2d" = "%1$@블록 남음%2$d";
 "id_1s_twofactor_setup" = "%1$@ 이중 인증 설정";
+"id_24_words" = "24 words";
 "id_2_hours" = "~2시간";
 "id_2fa_dispute_in_progress" = "2FA 이의 신청 진행 중";
 "id_2fa_expired" = "2FA 유효 기간 만료";
@@ -27,6 +29,7 @@
 "id_accept" = "수락하기";
 "id_access" = "접속하기";
 "id_account" = "계정";
+"id_account_extended_public_keys" = "Account Extended Public Keys";
 "id_account_id" = "계정 ID";
 "id_account_name" = "계정 이름";
 "id_account_type" = "계정 유형";
@@ -43,6 +46,7 @@
 "id_add_custom_network_by_qr_code" = "QR 코드로 사용자 지정 네트워크 추가하기";
 "id_add_custom_network_by_url" = "URL로 사용자 지정 네트워크 연결하기";
 "id_add_new_account" = "새로운 계정 추가하기";
+"id_add_recipient" = "Add Recipient";
 "id_add_wallet" = "지갑 추가하기";
 "id_additional_networks" = "추가 네트워크";
 "id_additional_security" = "추가 보안기능";
@@ -62,6 +66,7 @@
 "id_all_of_the_accounts_in_your" = "지갑을 삭제하기 전에 지갑의 모든 계정을 비워야 합니다.";
 "id_all_the_coins_received_or" = "거스름돈으로 받거나 생성된 모든 코인.";
 "id_all_wallets" = "모든 지갑";
+"id_allow_collection" = "Allow collection";
 "id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "간편하게 잔액을 확인하거나, 입금 받거나, 종이 지갑을 스윕하세요. 보기 전용 모드에서는 송금할 수 없습니다.";
 "id_always" = "항상";
@@ -72,10 +77,13 @@
 "id_amp_id" = "AMP ID";
 "id_amp_wallet" = "AMP 지갑";
 "id_another_2fa_method_is_already" = "다른 2FA 방법이 이미 활성화되어 있습니다. 2FA를 통해 이 변경의 승인을 확인하세요.";
+"id_any_wallet_found_will_be" = "Any wallet found will be displayed here.";
 "id_app_settings" = "앱 설정";
 "id_archive" = "보관하기";
+"id_archive_account" = "Archive account";
 "id_archived" = "보관 완료";
 "id_archived_accounts" = "보관된 계정";
+"id_are_you_sure_you_want_to_remove" = "Are you sure you want to remove the recipient?";
 "id_are_you_sure_you_want_to_view" = "%@를 사용하여 거래를 확인하시겠습니까?";
 "id_as_easy_as_snapping_a_photo" = "휴대폰으로 사진 찍는 것만큼 쉽습니다. 기존 지갑이 있으시면 설정에서 복구 문구를 스캔하세요.";
 "id_asset" = "자산";
@@ -85,6 +93,7 @@
 "id_asset_name" = "자산 이름";
 "id_assets" = "자산";
 "id_assets_cannot_be_used_on_bitcoin" = "자산은 비트코인에서 사용할 수 없습니다";
+"id_at_least_8_characters_required" = "At least 8 characters required";
 "id_attempts_remaining_d" = "남은 시도 : %d";
 "id_authenticate_to_view_the" = "복구 문구를 보려면 인증이 필요합니다";
 "id_authentication_error_s" = "인증 오류 : %@";
@@ -96,6 +105,7 @@
 "id_auto_logout_timeout_expired" = "자동 로그아웃 타임아웃 만료";
 "id_autolock_after" = "자동 잠금 시간";
 "id_available" = "사용 가능";
+"id_available_funds_s" = "Available funds %@";
 "id_back" = "뒤로";
 "id_back_up_recovery_phrase" = "복구 문구 백업하기";
 "id_backup_the_recovery_mnemonic" = "복구 니모닉 및 복구 xpub를 백업하여 2of3 계정에서 자금을 복구하세요.";
@@ -116,6 +126,7 @@
 "id_bitcoin_wallets" = "비트코인 지갑";
 "id_block" = "블록";
 "id_block_d" = "블록 %d";
+"id_block_height" = "Block Height";
 "id_block_height_1d" = "블록 높이 : %1$d";
 "id_blocks" = "블록";
 "id_blocks_confirmed" = "확인된 블록";
@@ -141,6 +152,7 @@
 "id_change_address" = "주소 변경하기";
 "id_change_pin" = "PIN 변경하기";
 "id_changing_reference_exchange" = "기준 환율을 변경하면 2FA 기준값이 0으로 초기화됩니다. 결제 후 2FA 기준값을 반드시 조정하세요.";
+"id_check_device" = "Check Device";
 "id_check_for_updates" = "업데이트 확인하기";
 "id_check_for_updates_on_startup" = "시작할 때 업데이트 확인하기";
 "id_check_your_backup" = "백업 확인하기";
@@ -151,6 +163,8 @@
 "id_choose_recovery_phrase_length" = "복구 문구 길이를 선택하세요";
 "id_choose_security_policy" = "보안 정책을 선택하세요";
 "id_choose_the_electrum_servers_you" = "신뢰하는 Electrum 서버를 선택하세요";
+"id_choose_the_security_policy_that" = "Choose the security policy that matches your wallet.";
+"id_choose_the_security_policy_you" = "Choose the security policy you want to restore this wallet on.";
 "id_choose_this_version_to_connect" = "USB 케이블과 무선으로 Blockstream Jade에 연결하려면 이 버전을 선택하세요";
 "id_choose_this_version_to_disable" = "Blockstream Jade에서 모든 무선 연결을 비활성화하려면 이 버전을 선택하세요. 이 버전을 선택하면 Blockstream Jade와 iOS 기기가 호환되지 않습니다.";
 "id_choose_twofactor_authentication" = "이중 인증 방법을 선택하세요";
@@ -160,6 +174,7 @@
 "id_click_to_copy" = "복사하려면 클릭하세요";
 "id_click_to_receive_an_email_with" = "암호화된 복구 데이터가 포함된 이메일을 받으려면 클릭하세요.";
 "id_code" = "코드";
+"id_coin" = "Coin";
 "id_coins" = "코인";
 "id_coins_for_which_2fa_protection" = "2FA 보호가 만료된 코인.";
 "id_coins_locked" = "잠긴 코인";
@@ -178,12 +193,14 @@
 "id_confirm_action" = "작업 확인하기";
 "id_confirm_by_typing_the_wallet" = "지갑 이름을 입력하여 확인하기";
 "id_confirm_code" = "코드 확인하기";
+"id_confirm_on_your_device" = "Confirm on your device";
 "id_confirm_passphrase" = "암호 구문 확인하기";
 "id_confirm_transaction" = "거래 확인하기";
 "id_confirm_transaction_details_on" = "하드웨어 지갑에서 거래 세부 정보 확인하기";
 "id_confirm_update_on_your_jade" = "Jade 업데이트 확인하기";
 "id_confirm_via_2fa_that_you" = "2FA를 통해 이 변경의 승인을 확인하세요.";
 "id_confirmation_in_d_blocks" = "%d 블록 확인";
+"id_confirmation_time" = "Confirmation Time";
 "id_confirmations" = "확인";
 "id_congratulations" = "축하합니다!";
 "id_connect_hardware_wallet" = "하드웨어 지갑 연결하기";
@@ -193,6 +210,7 @@
 "id_connect_your_jade_to_use_it" = "Jade를 연결하여 Green과 연동하여 사용하세요.";
 "id_connect_your_ledger_to_use_it" = "Ledger를 연결하여 Green에서 사용하세요.";
 "id_connected_to_jade" = "Jade와 연결 완료";
+"id_connected_wallets" = "Connected wallets";
 "id_connecting" = "연결 중...";
 "id_connecting_through_tor" = "Tor를 통해 연결 중";
 "id_connecting_to_a_trusted_node" = "Tor를 통해 신뢰하는 노드에 연결하려면 로그인 전 앱 설정에서 프록시를 활성화하고 Socks5 프록시(Android용 Orbot 앱)을 설치해야 합니다.";
@@ -210,6 +228,7 @@
 "id_copy" = "복사하기";
 "id_copy_address" = "주소 복사";
 "id_copy_details" = "세부 정보 복사";
+"id_copy_device_id" = "Copy Device ID";
 "id_copy_raw_transaction" = "원시 거래 복사";
 "id_copy_to_clipboard" = "클립보드에 복사하기";
 "id_copy_transaction_id" = "거래 ID 복사";
@@ -280,6 +299,7 @@
 "id_download_finished" = "다운로드 완료";
 "id_dust" = "Dust";
 "id_edit" = "수정하기";
+"id_edit_fee" = "Edit Fee";
 "id_email" = "이메일";
 "id_email_address" = "이메일 주소";
 "id_empty" = "비우기";
@@ -301,6 +321,7 @@
 "id_enabled" = "활성화되었습니다";
 "id_enabled_1s" = "활성화되었습니다 :%1$@";
 "id_encryption_passphrase" = "암호화 비밀 문구";
+"id_enhanced_privacy" = "Enhanced Privacy";
 "id_enter" = "입력하기";
 "id_enter_a_pgp_public_key_to_have" = "보안 강화를 위해 PGP 공개키를 입력하여 이메일을 암호화하세요.";
 "id_enter_a_private_key_to_sweep" = "지갑에 스윕하려면 비밀키를 입력하세요.";
@@ -337,9 +358,12 @@
 "id_estimated_blocks_until" = "확인될 때까지 예상되는 블록 수 :%d";
 "id_example_89014283334011612858333" = "예 : 8.90.14.2:8333,40.116.12.85:8333";
 "id_existing_recovery_phrase" = "기존 복구 구문";
+"id_existing_wallets" = "Existing Wallets";
 "id_expand_sidebar" = "사이드바 펼치기";
 "id_explore_your_wallet" = "나의 지갑 살펴보기";
 "id_export_transactions_to_csv_file" = "거래를 CSV 파일로 내보내기";
+"id_exports_an_accounts_extended" = "Exports an account's extended public key (xPub/yPub/zPub) to view as a watch-only";
+"id_extended_public_key" = "Extended Public Key";
 "id_face_id" = "Face ID";
 "id_failed_to_load_asset_icons" = "자산 아이콘 로딩 실패";
 "id_failed_to_load_asset_registry" = "자산 레지스트리 로딩 실패";
@@ -389,6 +413,7 @@
 "id_green_uses_multisig_with_one" = "Green은 사용자의 기기와 Blockstream 서버에서 생성되는 서명으로 멀티시그 기술을 사용합니다. 이중 인증을 설정하면 서버에서 생성된 서명의 보안을 한층 강화합니다.";
 "id_hardware_wallet" = "하드웨어 지갑";
 "id_hardware_wallet_support_for" = "하드웨어 지갑에서 곧 Confidential Transaction 서비스를 제공합니다.";
+"id_hardware_wallets" = "Hardware wallets";
 "id_hash" = "해시";
 "id_help" = "고객 센터";
 "id_help_green_improve" = "Help Green Improve";
@@ -397,6 +422,7 @@
 "id_hide_assets" = "자산 숨기기";
 "id_hide_details" = "Hide details";
 "id_high" = "높음";
+"id_hold_button_to_send" = "Hold button to Send";
 "id_hold_your_nfc_tag_close_to_the" = "NFC 태그를 기기에 가까이 대세요";
 "id_home" = "홈";
 "id_hour" = "시간";
@@ -491,6 +517,8 @@
 "id_loading_wallet" = "지갑 로딩 중...";
 "id_location_services_are_disabled" = "위치 서비스가 비활성화되어 있습니다. 활성화 하시겠습니까?";
 "id_lock" = "잠금";
+"id_lock_after_1_minute" = "Lock after 1 minute";
+"id_lock_immediately" = "Lock immediately";
 "id_locked" = "잠금 완료";
 "id_locked_coins_will_not_be_spent" = "잠긴 코인은 사용되거나 잔액에 포함되지 않습니다.";
 "id_locking_coins" = "코인 잠그기";
@@ -522,6 +550,7 @@
 "id_managed_assets_account" = "Managed Assets 계정";
 "id_managed_assets_accounts_are" = "관리 자산 계정은 Liquid 지갑에서만 사용할 수 있습니다. Managed Asset을 받으려면 발행자에게 계정 ID를 제공해야 할 수 있습니다.";
 "id_manual_coin_selection" = "수동 코인 선택";
+"id_manual_restore" = "Manual Restore";
 "id_medium" = "중간";
 "id_memo" = "메모";
 "id_message" = "메시지";
@@ -565,11 +594,14 @@
 "id_nfc_logo" = "NFC 로고";
 "id_nfc_tags_written" = "쓰여진 NFC 태그 :";
 "id_no_amount_specified" = "지정된 금액이 없습니다";
+"id_no_archived_accounts" = "No archived accounts";
 "id_no_asset_in_this_account" = "이 계정에 자산이 없습니다";
 "id_no_attempts_remaining" = "더 이상 시도할 수 없습니다";
 "id_no_coins_selected" = "(선택된 코인이 없습니다)";
 "id_no_device_connected" = "연결된 기기가 없습니다";
+"id_no_existing_wallet_could_be" = "No existing wallet could be found.\nTry manually restoring your wallet.";
 "id_no_more_assets" = "더 이상 자산이 없습니다.";
+"id_no_multisig_shield_wallet" = "No multisig shield wallet exists for this recovery phrase.";
 "id_no_peers_connected" = "연결된 동료 집단이 없습니다";
 "id_no_pin_provided_exiting" = "PIN 미입력. 앱을 종료하는 중...";
 "id_no_recipients" = "수취인 없음";
@@ -609,7 +641,7 @@
 "id_optional_memo" = "선택적 메모";
 "id_optional_password" = "선택적 비밀번호";
 "id_or" = "또는";
-"id_os__app_version_loading_times" = "OS & app version, loading times, crashes";
+"id_os__app_version_loading_times" = "OS & app version, loading times";
 "id_our_support_page" = "Blockstream의 도움말 페이지";
 "id_outdated_hardware_wallet" = "오래된 하드웨어 지갑 펌웨어. 데스크톱에서 최신 버전으로 업그레이드하세요.";
 "id_outgoing" = "출금";
@@ -617,6 +649,7 @@
 "id_p2sh" = "P2sh";
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
+"id_passphrase" = "Passphrase";
 "id_password" = "비밀번호";
 "id_password_protected" = "비밀번호로 보호";
 "id_paste" = "붙여넣기";
@@ -679,9 +712,11 @@
 "id_recipient_address" = "수신자 주소";
 "id_recovery" = "복구";
 "id_recovery_and_notifications" = "복구 및 알림";
+"id_recovery_key_type" = "Recovery Key Type";
 "id_recovery_mnemonic" = "복구 니모닉";
 "id_recovery_phrase" = "복구 구문";
 "id_recovery_phrase_check" = "복구 구문 확인";
+"id_recovery_phrase_length" = "Recovery phrase length";
 "id_recovery_phrases_key_material" = "Recovery phrases, key material, addresses, balances";
 "id_recovery_tool" = "복구 도구";
 "id_recovery_transaction_emails" = "복구 거래 이메일";
@@ -730,6 +765,7 @@
 "id_save_a_summary_of_your_accounts" = "복구 도구 사용 시 복구 속도를 높이려면 계정 요약을 저장하세요.";
 "id_save_your_mnemonic" = "니모닉을 저장하세요";
 "id_scan_a_qr_code_for_spv_pairing" = "QR 코드를 스캔하여 SPV를 연결하세요";
+"id_scan_or_paste_your_extended" = "Scan or paste your extended public key (xPub/yPub/zPub) to log in to your watch-only-wallet.";
 "id_scan_qr_code" = "QR 코드 스캔";
 "id_scan_the_qr_code_with_an" = "Authenticator 앱으로 QR 코드 스캔하기";
 "id_scan_to_send_here" = "여기로 보내려면 스캔하세요";
@@ -751,8 +787,10 @@
 "id_select_network" = "네트워크를 선택하세요";
 "id_select_the_s_app_on_your_ledger" = "Ledger에서 %@ 앱을 선택하고 다시 시도하세요.";
 "id_select_wallet" = "지갑을 선택하세요";
+"id_select_watchonly_type" = "Select Watch-only type";
 "id_select_word_number_d" = "%d번째 단어를 선택하세요";
 "id_select_your_jade_to_login" = "로그인할 Jade를 선택하세요";
+"id_select_your_recovery_key" = "Select your recovery key";
 "id_send" = "보내기";
 "id_send_all" = "전부 보내기";
 "id_send_all_funds" = "모든 자산 보내기";
@@ -868,12 +906,14 @@
 "id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.";
 "id_the_network_selected_on_the" = "Green 앱에서 선택한 네트워크가 하드웨어 지갑에서 선택한 네트워크와 일치하지 않습니다. 두 기기에서 동일한 네트워크를 선택해 주세요.";
 "id_the_new_email_will_be_used_for" = "초기화가 완료되면 새 이메일이 이중 인증에 사용됩니다. 초기화는 12개월에 남은 타임락 기간이 추가된 만큼 소요됩니다.";
+"id_the_new_firmware_requires_you" = "The new firmware requires you to unpair your Jade from the Bluetooth settings.";
 "id_the_password_cant_be_empty" = "비밀번호를 반드시 입력해야 합니다";
 "id_the_recovery_key_below_will_not" = "아래 복원 키는 다시 볼 수 없습니다. 나의 자산에 언제나 액세스할 수 있도록 복원 키를 안전하게 보관하세요.";
 "id_the_recovery_phrase_can_be_used" = "복구 문구는 나의 자금 거래를 위해 언제든지 사용할 수 있습니다. 복구 문구를 안전하게 비공개로 보관하세요.";
 "id_the_recovery_phrase_doesnt" = "복구 문구가 기존 지갑과 일치하지 않습니다. 다른 복구 문구로 다시 시도해보세요.";
 "id_the_source_code_is_available_at" = "소스 코드는 %@에서 보실 수 있습니다";
 "id_the_transaction_contains" = "거래에 공개 자금이 포함되어 있습니다.";
+"id_the_username_cant_be_empty" = "The username can't be empty";
 "id_the_waiting_period_is_necessary" = "대기 기간은 지갑의 보안을 철저히하고 이중 보안의 무실화를 방지하기 위해 필요합니다.";
 "id_there_are_no_results_for_the" = "적용된 필터에 대한 검색 결과가 없습니다";
 "id_there_is_already_a_pin_set_for" = "%@ 지갑의 PIN이 이미 설정되어 있습니다. 계속 진행하시면 PIN은 설정할 수 없고, 로그인 시 24개 단어의 니모닉이 요구됩니다. 설정에서 변경하거나 3번 로그인 시도를 실패하여 PIN을 비활성화할 수 있습니다.";
@@ -887,6 +927,7 @@
 "id_ticker" = "티커";
 "id_time_s" = "시간 : %@";
 "id_tip_we_recommend_you_enable" = "팁 : 두 가지 이상의 2FA 방법을 활성화하는 것이 좋습니다. 2FA 방식을 하나만 설정하고 잃어버리면 해당 2FA가 만료될 때까지 최소 1년은 기다려야 합니다.";
+"id_tip_you_can_use_the" = "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.";
 "id_to" = "받는 사람";
 "id_to_keep_you_in_control_of_your" = "사용자가 자금을 스스로 관리할 수 있도록, 이중 인증 보호는 마지막 결제 후 약 %d일 뒤에 만료됩니다. 자금을 충분히 자주 옮기지 않으면 이중 인증 재활성화 거래를 하라는 메시지가 표시됩니다.";
 "id_too_many_pin_attempts" = "잘못된 PIN이 너무 많이 입력되었습니다";
@@ -924,6 +965,7 @@
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Green 서비스에 연결할 수 없습니다. 네트워크 연결을 확인하시고 재연결될 때까지 기다려주세요.";
 "id_unarchive" = "보관 취소하기";
+"id_unarchive_account" = "Unarchive account";
 "id_unblinding_data" = "맹검해제 데이터";
 "id_unconfirmed" = "확인되지 않음";
 "id_undo_2fa_dispute" = "2FA 이의 신청 취소하기";
@@ -932,6 +974,7 @@
 "id_unknown_custom" = "알 수 없음(사용자 지정)";
 "id_unknown_firmware" = "알 수 없는 펌웨어";
 "id_unlock" = "잠금 해제";
+"id_unlock_green" = "Unlock Green";
 "id_unlock_jade_to_continue" = "계속하려면 Jade 잠금 해제";
 "id_unlocked_coins_can_be_spent_and" = "잠금 해제된 코인은 사용 가능하고 잔액에 포함됩니다.";
 "id_unlocking_coins" = "코인 잠금 해제하기";
@@ -946,6 +989,7 @@
 "id_use_an_existing_recovery_phrase" = "기존 복구 문구를 세 번째 복구 키로 사용하세요.";
 "id_use_an_xpub_for_which_you_own" = "해당 개인 키의 xpub를 세 번째 복구 키로 사용하세요.";
 "id_use_android_screen_lock_to_log" = "Android 화면 잠금을 사용하여 로그인";
+"id_use_secure_display_and_screen" = "Use Secure Display and Screen Lock";
 "id_use_your_email_to_receive" = "이메일로 복구 거래 및 거래 알림을 수신하세요.";
 "id_user_contact_info_ip_address" = "User contact info, IP address, detailed location";
 "id_user_not_found_or_invalid" = "사용자 정보를 찾을 수 없거나 비밀번호가 유효하지 않습니다";
@@ -961,6 +1005,8 @@
 "id_version" = "버전";
 "id_version_1s" = "버전 : %1$@";
 "id_version_1s_2s" = "버전 %1$@%2$@";
+"id_view_account" = "View account";
+"id_view_archived_accounts" = "View Archived Accounts";
 "id_view_archived_accounts_d" = "보관된 계정 보기 (%d)";
 "id_view_in_explorer" = "Explorer에서 보기";
 "id_view_more" = "더 보기";
@@ -985,12 +1031,14 @@
 "id_warning_watchonly_credentials" = "경고 : 보기 전용 자격 증명이 사용자 기기에 저장됩니다.";
 "id_warning_you_need_a_positive" = "경고! L-BTC 잔액이 남아있어야 거래를 보낼 수 있습니다.";
 "id_watchonly" = "보기 전용";
+"id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "보기 전용 모드가 비활성화되었습니다";
 "id_watchonly_login" = "보기 전용 로그인";
 "id_watchonly_mode_can_be_activated" = "보기 전용 모드는 PIN 또는 니모닉, 하드웨어 지갑을 통해 로그인한 후 설정에서 활성화할 수 있습니다.";
 "id_watchonly_mode_cannot_be" = "사용자 자금이 완전히 기밀로 유지되기 때문에 보기 전용 모드가 Liquid에서는 활성화되지 않습니다.";
 "id_watchonly_wallet" = "보기 전용 지갑";
 "id_we_use_the_camera_to_scan_qr" = "Green은 카메라를 사용하여 QR 코드를 스캔합니다.";
+"id_we_will_do_our_best_to_find_a" = "We will do our best to find a wallet corresponding to this recovery phrase";
 "id_welcome" = "환영합니다";
 "id_welcome_to" = "환영합니다";
 "id_well_done_you_can_continue" = "좋습니다. 계속하시면 됩니다.";
@@ -1000,7 +1048,7 @@
 "id_what_type_of_account_would_you" = "어떤 유형의 계정을 추가하시겠습니까?";
 "id_whats_collected" = "What's collected";
 "id_whats_new" = "새로운 소식";
-"id_whatss_not_collected" = "Whats's NOT collected";
+"id_whats_not_collected" = "What's NOT collected";
 "id_where_would_you_like_to" = "자금을 어디로 이동하시겠습니까?";
 "id_wireless" = "무선";
 "id_word" = "단어";
@@ -1008,6 +1056,7 @@
 "id_write_down_the_words" = "단어를 기록해두세요";
 "id_write_down_your_recovery_phrase" = "복구 문구를 종이에 적어 안전한 곳에 보관하세요.";
 "id_wrong_choice_check_your" = "잘못 입력되었습니다. 니모닉을 확인하시고 다시 시도하세요.";
+"id_xpub" = "xPub";
 "id_year" = "년";
 "id_years" = "년";
 "id_you_are_not_connected" = "연결되지 않았습니다";

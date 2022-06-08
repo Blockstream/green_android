@@ -1,12 +1,14 @@
 "id_1030_minutes" = "10 ₫ến-30 phút";
 "id_12_confirmations" = "1/2 xác nhận";
 "id_12_months_51840_blocks" = "12 months (51840 blocks)";
+"id_12_words" = "12 words";
 "id_15_months_65535_blocks" = "15 months (65535 blocks)";
 "id_1_double_check_all_of_your" = "1. Double check all of your recovery phrase word by word, are all words correct?\n2. The order of words is important! Make sure you've typed the words in the correct order.\n\nIf neither of these tips have helped you, or if you don't have a 12, 24 or 27 words recovery phrase please check our help center.";
 "id_1d_2s_ago" = "%1$d%2$@ trước đây";
 "id_1d_minutes" = "%1$dphút";
 "id_1s_blocks_left_2d" = "%1$@ khối còn lại %2$d";
 "id_1s_twofactor_setup" = "%1$@ Two-Factor setup";
+"id_24_words" = "24 words";
 "id_2_hours" = "2 giờ";
 "id_2fa_dispute_in_progress" = "2FA Dispute in Progress";
 "id_2fa_expired" = "2FA Expired";
@@ -27,6 +29,7 @@
 "id_accept" = "CHẤP NHẬN";
 "id_access" = "Access";
 "id_account" = "TÀI KHOẢN";
+"id_account_extended_public_keys" = "Account Extended Public Keys";
 "id_account_id" = "Account ID";
 "id_account_name" = "Account Name";
 "id_account_type" = "Account Type";
@@ -43,6 +46,7 @@
 "id_add_custom_network_by_qr_code" = "Thêm mạng lưới tùy biến bằng mã QR";
 "id_add_custom_network_by_url" = "Thêm mạng tùy biến bằng URL";
 "id_add_new_account" = "Thêm tài khoản mới";
+"id_add_recipient" = "Add Recipient";
 "id_add_wallet" = "Thêm ví ";
 "id_additional_networks" = "Additional Networks";
 "id_additional_security" = "Các cài đặt an toàn mở rộng";
@@ -62,6 +66,7 @@
 "id_all_of_the_accounts_in_your" = "All of the accounts in your wallet need to be empty before deleting it.";
 "id_all_the_coins_received_or" = "All the coins received or created as change.";
 "id_all_wallets" = "All wallets";
+"id_allow_collection" = "Allow collection";
 "id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "Cho phép bạn kiểm tra nhanh số dư, nhận quỹ và quẹt để nạp tiền từ ví giấy. Bạn không thể gửi tiền đi trong chế độ chỉ xem.";
 "id_always" = "Thường trực";
@@ -72,10 +77,13 @@
 "id_amp_id" = "AMP ID";
 "id_amp_wallet" = "AMP Wallet";
 "id_another_2fa_method_is_already" = "Another 2FA method is already active. Confirm via 2FA that you authorize this change.";
+"id_any_wallet_found_will_be" = "Any wallet found will be displayed here.";
 "id_app_settings" = "App Settings";
 "id_archive" = "Archive";
+"id_archive_account" = "Archive account";
 "id_archived" = "Archived";
 "id_archived_accounts" = "Archived Accounts";
+"id_are_you_sure_you_want_to_remove" = "Are you sure you want to remove the recipient?";
 "id_are_you_sure_you_want_to_view" = "Bạn có chắc là muốn xem giao dịch sử dụng địa chỉ %@ ?";
 "id_as_easy_as_snapping_a_photo" = "As easy as snapping a photo with your phone. If you have an existing wallet, scan your recovery phrase from settings.";
 "id_asset" = "Tài sản";
@@ -85,6 +93,7 @@
 "id_asset_name" = "Tên tài sản";
 "id_assets" = "Assets";
 "id_assets_cannot_be_used_on_bitcoin" = "Assets cannot be used on Bitcoin";
+"id_at_least_8_characters_required" = "At least 8 characters required";
 "id_attempts_remaining_d" = "Nỗ lực còn lại: %d";
 "id_authenticate_to_view_the" = "Authenticate to view the recovery phrase";
 "id_authentication_error_s" = "Authentication error: %@";
@@ -96,6 +105,7 @@
 "id_auto_logout_timeout_expired" = "Auto logout timeout expired";
 "id_autolock_after" = "Tự khoá sau thời gian";
 "id_available" = "Available";
+"id_available_funds_s" = "Available funds %@";
 "id_back" = "Back";
 "id_back_up_recovery_phrase" = "Back Up Recovery Phrase";
 "id_backup_the_recovery_mnemonic" = "Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.";
@@ -116,6 +126,7 @@
 "id_bitcoin_wallets" = "Bitcoin wallets";
 "id_block" = "khối";
 "id_block_d" = "Khối  %d";
+"id_block_height" = "Block Height";
 "id_block_height_1d" = "Độ lớn khối: %1$d";
 "id_blocks" = "khối";
 "id_blocks_confirmed" = "khối đã xác nhận";
@@ -141,6 +152,7 @@
 "id_change_address" = "Change address";
 "id_change_pin" = "Change PIN";
 "id_changing_reference_exchange" = "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to adjust the 2FA threshold after spending.";
+"id_check_device" = "Check Device";
 "id_check_for_updates" = "Check for updates";
 "id_check_for_updates_on_startup" = "Check for updates on startup";
 "id_check_your_backup" = "Check your backup";
@@ -151,6 +163,8 @@
 "id_choose_recovery_phrase_length" = "Choose recovery phrase length";
 "id_choose_security_policy" = "Choose Security Policy";
 "id_choose_the_electrum_servers_you" = "Choose the Electrum servers you trust";
+"id_choose_the_security_policy_that" = "Choose the security policy that matches your wallet.";
+"id_choose_the_security_policy_you" = "Choose the security policy you want to restore this wallet on.";
 "id_choose_this_version_to_connect" = "Choose this version to connect to your Blockstream Jade with both a usb cable and wireless";
 "id_choose_this_version_to_disable" = "Choose this version to disable all radio connections on your Blockstream Jade. This will make your Blockstream Jade incompatible with iOS devices";
 "id_choose_twofactor_authentication" = "Chọn phương pháp được ủy quyền để bảo mật 2 lớp";
@@ -160,6 +174,7 @@
 "id_click_to_copy" = "Click to copy";
 "id_click_to_receive_an_email_with" = "Click to receive an email with your encrypted recovery data.";
 "id_code" = "Code";
+"id_coin" = "Coin";
 "id_coins" = "Coins";
 "id_coins_for_which_2fa_protection" = "Coins for which 2FA protection is expired.";
 "id_coins_locked" = "Coins locked";
@@ -178,12 +193,14 @@
 "id_confirm_action" = "Confirm action";
 "id_confirm_by_typing_the_wallet" = "Confirm by typing the wallet name";
 "id_confirm_code" = "Mã xác nhận";
+"id_confirm_on_your_device" = "Confirm on your device";
 "id_confirm_passphrase" = "Xác nhận mật khẩu";
 "id_confirm_transaction" = "Confirm transaction";
 "id_confirm_transaction_details_on" = "Confirm transaction details on your hardware wallet";
 "id_confirm_update_on_your_jade" = "Confirm update on your Jade";
 "id_confirm_via_2fa_that_you" = "Confirm via 2FA that you authorize this change.";
 "id_confirmation_in_d_blocks" = "Xác nhận trong %d khối tiếp theo";
+"id_confirmation_time" = "Confirmation Time";
 "id_confirmations" = "Confirmations";
 "id_congratulations" = "Chúc mừng bạn!";
 "id_connect_hardware_wallet" = "Connect hardware wallet";
@@ -193,6 +210,7 @@
 "id_connect_your_jade_to_use_it" = "Connect your Jade to use it with Green";
 "id_connect_your_ledger_to_use_it" = "Connect your Ledger to use it in Green";
 "id_connected_to_jade" = "Connected to Jade";
+"id_connected_wallets" = "Connected wallets";
 "id_connecting" = "Connecting…";
 "id_connecting_through_tor" = "Connecting through Tor";
 "id_connecting_to_a_trusted_node" = "Kết nối với nút đáng tin cậy thông qua Tor yêu cầu bật cài đặt proxy trong ứng dụng trước khi đăng nhập và proxy  SockS5 (ứng dụng Orbot cho Android)";
@@ -210,6 +228,7 @@
 "id_copy" = "Copy";
 "id_copy_address" = "Copy address";
 "id_copy_details" = "Copy details";
+"id_copy_device_id" = "Copy Device ID";
 "id_copy_raw_transaction" = "Copy raw transaction";
 "id_copy_to_clipboard" = "Sao chép vào clipboard";
 "id_copy_transaction_id" = "Copy transaction ID";
@@ -280,6 +299,7 @@
 "id_download_finished" = "Tải xuống hoàn thành";
 "id_dust" = "Dust";
 "id_edit" = "Edit";
+"id_edit_fee" = "Edit Fee";
 "id_email" = "Thư điện tử";
 "id_email_address" = "địa chỉ thư điện tử";
 "id_empty" = "Empty";
@@ -301,6 +321,7 @@
 "id_enabled" = "Cho phép";
 "id_enabled_1s" = "Cho phép: %1$@";
 "id_encryption_passphrase" = "Mật khẩu để mã hóa";
+"id_enhanced_privacy" = "Enhanced Privacy";
 "id_enter" = "Đi vào";
 "id_enter_a_pgp_public_key_to_have" = "Nhập khóa công khai PGP để gửi email mã hóa để tính riêng tư tốt hơn.";
 "id_enter_a_private_key_to_sweep" = "Nhập khóa riêng tư để quẹt tiền vào ví này";
@@ -337,9 +358,12 @@
 "id_estimated_blocks_until" = "Số khối dự kiến cho đến khi có xác nhận: %d";
 "id_example_89014283334011612858333" = " Ví dụ: 8.90.14.2:8333,40.116.12.85:8333";
 "id_existing_recovery_phrase" = "Existing recovery phrase";
+"id_existing_wallets" = "Existing Wallets";
 "id_expand_sidebar" = "Expand sidebar";
 "id_explore_your_wallet" = "Explore Your Wallet";
 "id_export_transactions_to_csv_file" = "Export transactions to CSV file";
+"id_exports_an_accounts_extended" = "Exports an account's extended public key (xPub/yPub/zPub) to view as a watch-only";
+"id_extended_public_key" = "Extended Public Key";
 "id_face_id" = "Mã nhận dạng khuôn mặt Face ID";
 "id_failed_to_load_asset_icons" = "Failed to load asset icons";
 "id_failed_to_load_asset_registry" = "Failed to Load Asset Registry";
@@ -389,6 +413,7 @@
 "id_green_uses_multisig_with_one" = "Green sử dụng ví nhiều khóa với một khóa tạo bởi thiết bị của bạn, và một khóa bới máy chủ của Blockstream. Đặt cài  đặt bảo mật 2 lớp để cho phép thêm lớp bảo mật của phía máy chủ.";
 "id_hardware_wallet" = "Hardware wallet";
 "id_hardware_wallet_support_for" = "Việc hỗ trợ ví cứng để giao dịch bí mật sẽ có trong tương lai gần";
+"id_hardware_wallets" = "Hardware wallets";
 "id_hash" = "Băm Hash";
 "id_help" = "Help";
 "id_help_green_improve" = "Help Green Improve";
@@ -397,6 +422,7 @@
 "id_hide_assets" = "Hide assets";
 "id_hide_details" = "Hide details";
 "id_high" = "Cao";
+"id_hold_button_to_send" = "Hold button to Send";
 "id_hold_your_nfc_tag_close_to_the" = "Giữ thẻ NFC gần thiết bị";
 "id_home" = "Home";
 "id_hour" = "giờ";
@@ -491,6 +517,8 @@
 "id_loading_wallet" = "Loading wallet…";
 "id_location_services_are_disabled" = "Location services are disabled, do you want to enable them?";
 "id_lock" = "Lock";
+"id_lock_after_1_minute" = "Lock after 1 minute";
+"id_lock_immediately" = "Lock immediately";
 "id_locked" = "Locked";
 "id_locked_coins_will_not_be_spent" = "Locked coins will not be spent nor included in your balance.";
 "id_locking_coins" = "Locking coins";
@@ -522,6 +550,7 @@
 "id_managed_assets_account" = "Managed Assets Account";
 "id_managed_assets_accounts_are" = "Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.";
 "id_manual_coin_selection" = "Manual coin selection";
+"id_manual_restore" = "Manual Restore";
 "id_medium" = "Trung bình";
 "id_memo" = "Memo";
 "id_message" = "Message";
@@ -565,11 +594,14 @@
 "id_nfc_logo" = "Logo của NFC";
 "id_nfc_tags_written" = "Các thẻ NFC đã được ghi:";
 "id_no_amount_specified" = "Không có số tiền được cung cấp";
+"id_no_archived_accounts" = "No archived accounts";
 "id_no_asset_in_this_account" = "No asset in this account";
 "id_no_attempts_remaining" = "Không có lần thử còn lại";
 "id_no_coins_selected" = "(No coins selected)";
 "id_no_device_connected" = "No device connected";
+"id_no_existing_wallet_could_be" = "No existing wallet could be found.\nTry manually restoring your wallet.";
 "id_no_more_assets" = "No more assets.";
+"id_no_multisig_shield_wallet" = "No multisig shield wallet exists for this recovery phrase.";
 "id_no_peers_connected" = "Không có kết nối với các nốt mạng khác";
 "id_no_pin_provided_exiting" = "Không mã PIN được cung cấp, đang thoát ra";
 "id_no_recipients" = "Không có người nhận";
@@ -609,7 +641,7 @@
 "id_optional_memo" = "Tùy chọn memo";
 "id_optional_password" = "Tùy chọn mật khẩu";
 "id_or" = "HOẶC";
-"id_os__app_version_loading_times" = "OS & app version, loading times, crashes";
+"id_os__app_version_loading_times" = "OS & app version, loading times";
 "id_our_support_page" = "our support page";
 "id_outdated_hardware_wallet" = "Firmware của ví cứng đã quá hạn. Làm ơn nâng cấp phiên bản mới nhất từ máy tính.";
 "id_outgoing" = "Đi ra ";
@@ -617,6 +649,7 @@
 "id_p2sh" = "P2sh";
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
+"id_passphrase" = "Passphrase";
 "id_password" = "Mật khẩu";
 "id_password_protected" = "Mật khẩu đã được bảo vệ";
 "id_paste" = "Dán";
@@ -679,9 +712,11 @@
 "id_recipient_address" = "Recipient address";
 "id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Khôi phục và thông báo";
+"id_recovery_key_type" = "Recovery Key Type";
 "id_recovery_mnemonic" = "Recovery mnemonic";
 "id_recovery_phrase" = "Recovery Phrase";
 "id_recovery_phrase_check" = "Recovery Phrase Check";
+"id_recovery_phrase_length" = "Recovery phrase length";
 "id_recovery_phrases_key_material" = "Recovery phrases, key material, addresses, balances";
 "id_recovery_tool" = "Recovery Tool";
 "id_recovery_transaction_emails" = "Các email phục hồi giao dịch";
@@ -730,6 +765,7 @@
 "id_save_a_summary_of_your_accounts" = "Save a summary of your accounts to speed up recovery in case you need to use our recovery tool.";
 "id_save_your_mnemonic" = "Lưu các chữ gợi nhớ mnemonic";
 "id_scan_a_qr_code_for_spv_pairing" = "Quét mã QR để ghép đôi SPV";
+"id_scan_or_paste_your_extended" = "Scan or paste your extended public key (xPub/yPub/zPub) to log in to your watch-only-wallet.";
 "id_scan_qr_code" = "Scan QR code";
 "id_scan_the_qr_code_with_an" = "Scan the QR Code with an Authenticator app";
 "id_scan_to_send_here" = "Scan to send here";
@@ -751,8 +787,10 @@
 "id_select_network" = "Chọn mạng";
 "id_select_the_s_app_on_your_ledger" = "Select the %@ app on your Ledger and retry.";
 "id_select_wallet" = "Select Wallet";
+"id_select_watchonly_type" = "Select Watch-only type";
 "id_select_word_number_d" = "Chọn chữ cái số %d";
 "id_select_your_jade_to_login" = "Select your Jade to login";
+"id_select_your_recovery_key" = "Select your recovery key";
 "id_send" = "Gửi";
 "id_send_all" = "Send all";
 "id_send_all_funds" = "Gửi tất cả tiền";
@@ -868,12 +906,14 @@
 "id_the_liquid_network_is_a_bitcoin" = "The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.";
 "id_the_network_selected_on_the" = "Mạng được chọn trên ứng dụng Green khác với mạng được chọn trên ví  cứng. Chọn cùng một mạng trên cả hai thiết bị.";
 "id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
+"id_the_new_firmware_requires_you" = "The new firmware requires you to unpair your Jade from the Bluetooth settings.";
 "id_the_password_cant_be_empty" = "Mật khẩu không thể trống";
 "id_the_recovery_key_below_will_not" = "Khóa khôi phục bên dưới không hiện lại lần thứ 2. Làm ơn lưu trữ sao lưu cẩn thận nó từ bây giờ để chắc chắn bạn luôn mở được tiền của bạn.";
 "id_the_recovery_phrase_can_be_used" = "The recovery phrase can be used to claim your funds at any point. Keep it safe, keep it private.";
 "id_the_recovery_phrase_doesnt" = "The recovery phrase doesn't match the previously existing wallet. Please retry with a different recovery phrase.";
 "id_the_source_code_is_available_at" = "The source code is available at %@";
 "id_the_transaction_contains" = "Giao dịch chứa tiền quỹ không bí mật.";
+"id_the_username_cant_be_empty" = "The username can't be empty";
 "id_the_waiting_period_is_necessary" = "The waiting period is necessary to ensure the security of your wallet, to prevent thieves from getting around your Two-Factor protection.";
 "id_there_are_no_results_for_the" = "There are no results for the applied filter";
 "id_there_is_already_a_pin_set_for" = "Đã có mã PIN cho ví %@. Không thể thiết lập mã PIN và khi đăng nhập sẽ hỏi 24 chữ gợi nhớ mnemonic. Bạn có thể hủy số PIN từ cài đặt hoặc với việc cố làm 3 lần ";
@@ -887,6 +927,7 @@
 "id_ticker" = "Người làm dấu";
 "id_time_s" = "Thời gian:  %@";
 "id_tip_we_recommend_you_enable" = "Tip: We recommend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you'll have to wait at least one year until the 2FA expires.";
+"id_tip_you_can_use_the" = "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.";
 "id_to" = "TỚI";
 "id_to_keep_you_in_control_of_your" = "To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don't move funds often enough.";
 "id_too_many_pin_attempts" = "Too many PIN attempts";
@@ -924,6 +965,7 @@
 "id_txid" = "Số ID giao dịch TXID";
 "id_unable_to_contact_the_green" = "Không thể nối tới dịch vụ của Green. Làm ơn kiểm tra lại kết nối mạng và chờ để kết nối lại.";
 "id_unarchive" = "Unarchive";
+"id_unarchive_account" = "Unarchive account";
 "id_unblinding_data" = "Unblinding data";
 "id_unconfirmed" = "Chưa xác nhận giao dịch";
 "id_undo_2fa_dispute" = "Undo 2FA dispute";
@@ -932,6 +974,7 @@
 "id_unknown_custom" = "Không biết( tùy biến)";
 "id_unknown_firmware" = "Unknown firmware";
 "id_unlock" = "Unlock";
+"id_unlock_green" = "Unlock Green";
 "id_unlock_jade_to_continue" = "Unlock Jade to continue";
 "id_unlocked_coins_can_be_spent_and" = "Unlocked coins can be spent and are included in your balance.";
 "id_unlocking_coins" = "Unlocking coins";
@@ -946,6 +989,7 @@
 "id_use_an_existing_recovery_phrase" = "Use an existing recovery phrase as your third recovery key.";
 "id_use_an_xpub_for_which_you_own" = "Use an xpub for which you own the corresponding private key as your third recovery key.";
 "id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
+"id_use_secure_display_and_screen" = "Use Secure Display and Screen Lock";
 "id_use_your_email_to_receive" = "Use your email to receive recovery transactions and transactions notifications";
 "id_user_contact_info_ip_address" = "User contact info, IP address, detailed location";
 "id_user_not_found_or_invalid" = "Người dùng không tìm thấy hoặc sai mật khẩu";
@@ -961,6 +1005,8 @@
 "id_version" = "Phiên bản";
 "id_version_1s" = "Phiên bản: %1$@";
 "id_version_1s_2s" = "Phiên bản %1$@ %2$@";
+"id_view_account" = "View account";
+"id_view_archived_accounts" = "View Archived Accounts";
 "id_view_archived_accounts_d" = "View archived accounts (%d)";
 "id_view_in_explorer" = "Xem ở trang xem xét các giao dịch của mạng lưới ";
 "id_view_more" = "View More";
@@ -985,12 +1031,14 @@
 "id_warning_watchonly_credentials" = "Cảnh báo: Thông tin chỉ xem sẽ được lưu trên thiết bị của bạn";
 "id_warning_you_need_a_positive" = "Cảnh báo!Bạn cần số dư L-BTC dương để có thể gửi giao dịch.";
 "id_watchonly" = "Ví chỉ xem";
+"id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "Ví chỉ xem đã tắt";
 "id_watchonly_login" = "Đang nhập vào ví chỉ xem";
 "id_watchonly_mode_can_be_activated" = "Chế độ chỉ xem có thể được kích hoạt trong mục cài đặt sau khi đăng nhập với mã số PIN, các chữ gợi nhớ mnemonic hoặc ví cứng ";
 "id_watchonly_mode_cannot_be" = "Chế độ chỉ xem không thể được kích hoạt trên Liquid vì tiền của bạn được bảo mật hoàn toàn.";
 "id_watchonly_wallet" = "Watch-Only Wallet";
 "id_we_use_the_camera_to_scan_qr" = "Chúng tôi dùng camera để quét mã QR";
+"id_we_will_do_our_best_to_find_a" = "We will do our best to find a wallet corresponding to this recovery phrase";
 "id_welcome" = "Chào mừng";
 "id_welcome_to" = "Chào mừng bạn đến với";
 "id_well_done_you_can_continue" = "Well done, you can continue";
@@ -1000,7 +1048,7 @@
 "id_what_type_of_account_would_you" = "What type of account would you like to add?";
 "id_whats_collected" = "What's collected";
 "id_whats_new" = "What's new?";
-"id_whatss_not_collected" = "Whats's NOT collected";
+"id_whats_not_collected" = "What's NOT collected";
 "id_where_would_you_like_to" = "Bạn muốn chuyển tiền ở đâu?";
 "id_wireless" = "Wireless";
 "id_word" = "Word";
@@ -1008,6 +1056,7 @@
 "id_write_down_the_words" = "Viết chính xác các chữ ";
 "id_write_down_your_recovery_phrase" = "Write down your recovery phrase on paper and store it somewhere safe.";
 "id_wrong_choice_check_your" = "Chọn sai. Kiểm tra các chữ số gợi nhớ và thử lại.";
+"id_xpub" = "xPub";
 "id_year" = "năm";
 "id_years" = "năm";
 "id_you_are_not_connected" = "Bạn không kết nối";

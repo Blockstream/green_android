@@ -108,13 +108,13 @@ class DialogCountlyConsentViewController: UIViewController {
 
         lblCollectHint.text = collectStr
 
-        lblNotCollectTitle.text = NSLocalizedString("id_whatss_not_collected", comment: "")
+        lblNotCollectTitle.text = NSLocalizedString("id_whats_not_collected", comment: "")
 
         let notCollectStr = NSLocalizedString("id_recovery_phrases_key_material", comment: "") + "\n" + NSLocalizedString("id_user_contact_info_ip_address", comment: "")
 
         lblNotCollectHint.text = notCollectStr
         btnMore.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
-        btnDebugID.setTitle("Copy Device ID", for: .normal)
+        btnDebugID.setTitle(NSLocalizedString("id_copy_device_id", comment: ""), for: .normal)
     }
 
     override func viewDidAppear(_ animated: Bool) {

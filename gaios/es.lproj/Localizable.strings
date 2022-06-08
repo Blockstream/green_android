@@ -1,12 +1,14 @@
 "id_1030_minutes" = "~ 10-30 minutos";
 "id_12_confirmations" = "1/2 confirmaciones";
 "id_12_months_51840_blocks" = "12 meses (51 840 bloques)";
+"id_12_words" = "12 words";
 "id_15_months_65535_blocks" = "15 meses (65 535 bloques)";
 "id_1_double_check_all_of_your" = "1. Revise la frase de recuperación entera, palabra por palabra. ¿Coinciden todas las palabras?\n2. ¡El orden de las palabras importa! Asegúrese de haberlas escrito en el orden correcto.\n\nSi ninguno de estos consejos lo ayudó, o si no cuenta con una frase de recuperación de 12, 24 o 27 palabras, consulte nuestro centro de ayuda.";
 "id_1d_2s_ago" = "Hace %1$d%2$@";
 "id_1d_minutes" = "%1$d minutos";
 "id_1s_blocks_left_2d" = "Restan %1$@ bloques %2$d";
 "id_1s_twofactor_setup" = "%1$@ Configuración de la autenticación de dos factores";
+"id_24_words" = "24 words";
 "id_2_hours" = "~ 2 Horas";
 "id_2fa_dispute_in_progress" = "Disputa 2FA en curso";
 "id_2fa_expired" = "2FA vencido";
@@ -27,6 +29,7 @@
 "id_accept" = "ACEPTAR";
 "id_access" = "Acceso";
 "id_account" = "CUENTA";
+"id_account_extended_public_keys" = "Account Extended Public Keys";
 "id_account_id" = "ID de Cuenta";
 "id_account_name" = "Nombre de Cuenta";
 "id_account_type" = "Tipo de Cuenta";
@@ -43,6 +46,7 @@
 "id_add_custom_network_by_qr_code" = "Agregar red personalizada por código QR";
 "id_add_custom_network_by_url" = "Agregar red personalizada mediante URL";
 "id_add_new_account" = "Agregar una cuenta nueva";
+"id_add_recipient" = "Add Recipient";
 "id_add_wallet" = "Agregar cartera";
 "id_additional_networks" = "Redes adicionales";
 "id_additional_security" = "Seguridad adicional";
@@ -62,6 +66,7 @@
 "id_all_of_the_accounts_in_your" = "Es necesario vaciar todas las cuentas de su cartera antes de eliminarla.";
 "id_all_the_coins_received_or" = "Todas las monedas recibidas o generadas como cambio.";
 "id_all_wallets" = "Todas las carteras";
+"id_allow_collection" = "Allow collection";
 "id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "Te permite revisar rápidamente el saldo, recibir fondos o barrer fondos de carteras de papel. Con el modo de solo lectura, no podrás enviar fondos.";
 "id_always" = "Siempre";
@@ -72,10 +77,13 @@
 "id_amp_id" = "ID de AMP";
 "id_amp_wallet" = "Cartera AMP";
 "id_another_2fa_method_is_already" = "Ya hay un método 2FA activado. Confirme que autoriza este cambio mediante 2FA.";
+"id_any_wallet_found_will_be" = "Any wallet found will be displayed here.";
 "id_app_settings" = "Ajustes de la app";
 "id_archive" = "Archivar";
+"id_archive_account" = "Archive account";
 "id_archived" = "Archivada";
 "id_archived_accounts" = "Cuentas archivadas";
+"id_are_you_sure_you_want_to_remove" = "Are you sure you want to remove the recipient?";
 "id_are_you_sure_you_want_to_view" = "¿Está seguro de que quiere visualizar la transacción con %@?";
 "id_as_easy_as_snapping_a_photo" = "Tan fácil como sacar una foto con su teléfono. Si ya posee una cartera, escanee la frase de recuperación desde \"Ajustes\".";
 "id_asset" = "Activo";
@@ -85,6 +93,7 @@
 "id_asset_name" = "Nombre del activo";
 "id_assets" = "Activos";
 "id_assets_cannot_be_used_on_bitcoin" = "Estos activos no se pueden utilizar en Bitcoin";
+"id_at_least_8_characters_required" = "At least 8 characters required";
 "id_attempts_remaining_d" = "Intentos restantes: %d";
 "id_authenticate_to_view_the" = "Autentíquese para visualizar la frase de recuperación";
 "id_authentication_error_s" = "Error de autenticación: %@";
@@ -96,6 +105,7 @@
 "id_auto_logout_timeout_expired" = "Finalizó el plazo de espera para el cierre de sesión automático.";
 "id_autolock_after" = "Bloquear automáticamente después de";
 "id_available" = "Disponible";
+"id_available_funds_s" = "Available funds %@";
 "id_back" = "Volver";
 "id_back_up_recovery_phrase" = "Copie la frase de recuperación";
 "id_backup_the_recovery_mnemonic" = "Haz una copia de seguridad de tu frase semilla y xpub de recuperación para poder recuperar los fondos de tu cuenta 2-de-3";
@@ -116,6 +126,7 @@
 "id_bitcoin_wallets" = "Carteras Bitcoin";
 "id_block" = "bloque";
 "id_block_d" = "Bloque %d";
+"id_block_height" = "Block Height";
 "id_block_height_1d" = "Altura del bloque: %1$d";
 "id_blocks" = "bloques";
 "id_blocks_confirmed" = "bloques confirmados";
@@ -141,6 +152,7 @@
 "id_change_address" = "Dirección de cambio";
 "id_change_pin" = "Cambiar el PIN";
 "id_changing_reference_exchange" = "Si modifica el tipo de cambio de referencia, el umbral 2FA se reestablecerá a cero. Recuerde ajustar el umbral 2FA después de cada gasto.";
+"id_check_device" = "Check Device";
 "id_check_for_updates" = "Buscar actualizaciones";
 "id_check_for_updates_on_startup" = "Buscar actualizaciones al inicializar la aplicación";
 "id_check_your_backup" = "Verifique su respaldo";
@@ -151,6 +163,8 @@
 "id_choose_recovery_phrase_length" = "Elegir la longitud de la frase de recuperación";
 "id_choose_security_policy" = "Elija una política de seguridad";
 "id_choose_the_electrum_servers_you" = "Elija los servidores Electrum en los que confíe";
+"id_choose_the_security_policy_that" = "Choose the security policy that matches your wallet.";
+"id_choose_the_security_policy_you" = "Choose the security policy you want to restore this wallet on.";
 "id_choose_this_version_to_connect" = "Elija esta versión si desea conectarse a su Blockstream Jade, ya sea mediante un cable USB o de manera inalámbrica";
 "id_choose_this_version_to_disable" = "Seleccione esta versión para inhabilitar todas las conexiones por radio en su Blockstream Jade. Con esta versión, su Blockstream Jade dejará de ser compatible con dispositivos iOS.";
 "id_choose_twofactor_authentication" = "Seleccionar método de autenticación de dos factores";
@@ -160,6 +174,7 @@
 "id_click_to_copy" = "Haga clic para copiar";
 "id_click_to_receive_an_email_with" = "Haga clic aquí para recibir un correo electrónico con sus datos de recuperación encriptados.";
 "id_code" = "Código";
+"id_coin" = "Coin";
 "id_coins" = "Monedas";
 "id_coins_for_which_2fa_protection" = "Monedas cuya protección 2FA caducó.";
 "id_coins_locked" = "Monedas bloqueadas";
@@ -178,12 +193,14 @@
 "id_confirm_action" = "Confirmar acción";
 "id_confirm_by_typing_the_wallet" = "Para confirmar, ingrese el nombre de la cartera.";
 "id_confirm_code" = "Confirmar el código";
+"id_confirm_on_your_device" = "Confirm on your device";
 "id_confirm_passphrase" = "Confirmar la frase de seguridad";
 "id_confirm_transaction" = "Confirmar transacción";
 "id_confirm_transaction_details_on" = "Confirme los detalles de la transacción en su hardware wallet";
 "id_confirm_update_on_your_jade" = "Confirme la actualización en su Jade";
 "id_confirm_via_2fa_that_you" = "Confirme que actualiza este cambio mediante 2FA.";
 "id_confirmation_in_d_blocks" = "Confirmación en %d bloques";
+"id_confirmation_time" = "Confirmation Time";
 "id_confirmations" = "Confirmaciones";
 "id_congratulations" = "¡Felicidades!";
 "id_connect_hardware_wallet" = "Conectar hardware cartera";
@@ -193,6 +210,7 @@
 "id_connect_your_jade_to_use_it" = "Conecte su Jade para utilizarla con Green";
 "id_connect_your_ledger_to_use_it" = "Conecte su Ledger para usarla en Green";
 "id_connected_to_jade" = "Conectado a Jade";
+"id_connected_wallets" = "Connected wallets";
 "id_connecting" = "Conectando...";
 "id_connecting_through_tor" = "Conectando por Tor";
 "id_connecting_to_a_trusted_node" = "La conexión a un nódulo confiable a través de Tor requiere activar la configuración del proxy en la app antes de iniciar sesión y un proxy de Socks5 (app Orbot para Android)";
@@ -210,6 +228,7 @@
 "id_copy" = "Copiar";
 "id_copy_address" = "Copiar dirección";
 "id_copy_details" = "Copiar datos";
+"id_copy_device_id" = "Copy Device ID";
 "id_copy_raw_transaction" = "Copiar transacción sin procesar";
 "id_copy_to_clipboard" = "Copiar al portapapeles";
 "id_copy_transaction_id" = "Copiar identificación de la transacción";
@@ -280,6 +299,7 @@
 "id_download_finished" = "Descarga finalizada";
 "id_dust" = "Polvo";
 "id_edit" = "Modificar";
+"id_edit_fee" = "Edit Fee";
 "id_email" = "Correo electrónico";
 "id_email_address" = "dirección de correo electrónico";
 "id_empty" = "Vaciar";
@@ -301,6 +321,7 @@
 "id_enabled" = "Habilitado";
 "id_enabled_1s" = "Habilitado: %1$@";
 "id_encryption_passphrase" = "Frase de seguridad para el cifrado";
+"id_enhanced_privacy" = "Enhanced Privacy";
 "id_enter" = "Ingresar";
 "id_enter_a_pgp_public_key_to_have" = "Ingresar una clave pública PGP para cifrar los correos electrónicos y aumentar la privacidad.";
 "id_enter_a_private_key_to_sweep" = "Ingrese una clave privada para barrer fondos a la cartera";
@@ -337,9 +358,12 @@
 "id_estimated_blocks_until" = "Estimación de los bloques hasta la confirmación: %d";
 "id_example_89014283334011612858333" = "Ejemplo: 8.90.14.2:8333,40.116.12.85:8333";
 "id_existing_recovery_phrase" = "Frase de recuperación actual";
+"id_existing_wallets" = "Existing Wallets";
 "id_expand_sidebar" = "Desplegar barra lateral";
 "id_explore_your_wallet" = "Explore su cartera";
 "id_export_transactions_to_csv_file" = "Exportar transacciones en formato CSV";
+"id_exports_an_accounts_extended" = "Exports an account's extended public key (xPub/yPub/zPub) to view as a watch-only";
+"id_extended_public_key" = "Extended Public Key";
 "id_face_id" = "Face ID";
 "id_failed_to_load_asset_icons" = "Error al cargar los iconos de los activos";
 "id_failed_to_load_asset_registry" = "Error al cargar el registro de activos";
@@ -389,6 +413,7 @@
 "id_green_uses_multisig_with_one" = "Green utiliza las multifirmas con una firma generada por su dispositivo y otra generada por los servidores de Blockstream. Establecer la autenticación de dos factores suma un nivel de seguridad extra para la firma originada en el servidor.";
 "id_hardware_wallet" = "Hardware wallet";
 "id_hardware_wallet_support_for" = "Próximamente, ofreceremos una cartera hardware compatible con las transacciones confidenciales.";
+"id_hardware_wallets" = "Hardware wallets";
 "id_hash" = "Hash";
 "id_help" = "Ayuda";
 "id_help_green_improve" = "Help Green Improve";
@@ -397,6 +422,7 @@
 "id_hide_assets" = "Ocultar activos";
 "id_hide_details" = "Hide details";
 "id_high" = "Altura";
+"id_hold_button_to_send" = "Hold button to Send";
 "id_hold_your_nfc_tag_close_to_the" = "Acerque su etiqueta NFC al dispositivo";
 "id_home" = "Inicio";
 "id_hour" = "hora";
@@ -491,6 +517,8 @@
 "id_loading_wallet" = "Cargando la cartera...";
 "id_location_services_are_disabled" = "Los servicios de ubicación están inhabilitados. ¿Desea habilitarlos?";
 "id_lock" = "Bloquear";
+"id_lock_after_1_minute" = "Lock after 1 minute";
+"id_lock_immediately" = "Lock immediately";
 "id_locked" = "Bloqueado";
 "id_locked_coins_will_not_be_spent" = "Las monedas bloqueadas no se pueden gastar, y están excluidas del saldo de la cuenta.";
 "id_locking_coins" = "Bloquear monedas";
@@ -522,6 +550,7 @@
 "id_managed_assets_account" = "Cuenta de activos gestionados";
 "id_managed_assets_accounts_are" = "Las cuentas de activos gestionados (Managed Assets) únicamente están disponibles en las carteras Liquid. Es posible que los emisores de activos gestionados le soliciten su identificador de cuenta antes de transferir los activos.";
 "id_manual_coin_selection" = "Selección de monedas manual";
+"id_manual_restore" = "Manual Restore";
 "id_medium" = "Medio";
 "id_memo" = "Nota";
 "id_message" = "Mensaje";
@@ -565,11 +594,14 @@
 "id_nfc_logo" = "Logo de NFC";
 "id_nfc_tags_written" = "Etiquetas NFC grabadas:";
 "id_no_amount_specified" = "Cantidad no especificada";
+"id_no_archived_accounts" = "No archived accounts";
 "id_no_asset_in_this_account" = "No hay activos en esta cuenta";
 "id_no_attempts_remaining" = "No hay intentos restantes";
 "id_no_coins_selected" = "(No se seleccionaron monedas)";
 "id_no_device_connected" = "No hay dispositivos conectados";
+"id_no_existing_wallet_could_be" = "No existing wallet could be found.\nTry manually restoring your wallet.";
 "id_no_more_assets" = "No hay más activos.";
+"id_no_multisig_shield_wallet" = "No multisig shield wallet exists for this recovery phrase.";
 "id_no_peers_connected" = "No hay pares conectados";
 "id_no_pin_provided_exiting" = "No se proporcionó ningún PIN. Saliendo.";
 "id_no_recipients" = "Sin receptores";
@@ -609,7 +641,7 @@
 "id_optional_memo" = "Nota opcional";
 "id_optional_password" = "Contraseña opcional";
 "id_or" = "O";
-"id_os__app_version_loading_times" = "OS & app version, loading times, crashes";
+"id_os__app_version_loading_times" = "OS & app version, loading times";
 "id_our_support_page" = "nuestra página de soporte técnico";
 "id_outdated_hardware_wallet" = "El firmware del hardware cartera es obsoleto. Actualice a la última versión del firmware desde su dispositivo de escritorio.";
 "id_outgoing" = "Saliente";
@@ -617,6 +649,7 @@
 "id_p2sh" = "P2sh";
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
+"id_passphrase" = "Passphrase";
 "id_password" = "Contraseña";
 "id_password_protected" = "Protegido con contraseña";
 "id_paste" = "Pegar";
@@ -679,9 +712,11 @@
 "id_recipient_address" = "Dirección del destinatario";
 "id_recovery" = "Recuperación";
 "id_recovery_and_notifications" = "Recuperación y notificaciones";
+"id_recovery_key_type" = "Recovery Key Type";
 "id_recovery_mnemonic" = "Frase semilla";
 "id_recovery_phrase" = "Frase de recuperación";
 "id_recovery_phrase_check" = "Verificación de la frase de recuperación";
+"id_recovery_phrase_length" = "Recovery phrase length";
 "id_recovery_phrases_key_material" = "Recovery phrases, key material, addresses, balances";
 "id_recovery_tool" = "Herramienta de recuperación";
 "id_recovery_transaction_emails" = "Correos electrónicos de transacciones de recuperación";
@@ -730,6 +765,7 @@
 "id_save_a_summary_of_your_accounts" = "Guarde un resumen de sus cuentas a fin de acelerar la recuperación en caso de que necesite utilizar nuestra herramienta de recuperación.";
 "id_save_your_mnemonic" = "Guarde su frase semilla";
 "id_scan_a_qr_code_for_spv_pairing" = "Escanear un código QR para la vinculación de SPV";
+"id_scan_or_paste_your_extended" = "Scan or paste your extended public key (xPub/yPub/zPub) to log in to your watch-only-wallet.";
 "id_scan_qr_code" = "Escanear el código QR";
 "id_scan_the_qr_code_with_an" = "Escanee el código QR con una app autenticadora";
 "id_scan_to_send_here" = "Escanear para enviar aquí";
@@ -751,8 +787,10 @@
 "id_select_network" = "Seleccionar red";
 "id_select_the_s_app_on_your_ledger" = "Seleccione la app %@ en su Ledger y vuelva a intentarlo.";
 "id_select_wallet" = "Seleccione una cartera";
+"id_select_watchonly_type" = "Select Watch-only type";
 "id_select_word_number_d" = "Seleccionar número de palabras %d";
 "id_select_your_jade_to_login" = "Seleccione su Jade para iniciar sesión";
+"id_select_your_recovery_key" = "Select your recovery key";
 "id_send" = "Enviar";
 "id_send_all" = "Enviar todo";
 "id_send_all_funds" = "Enviar todos los fondos";
@@ -868,12 +906,14 @@
 "id_the_liquid_network_is_a_bitcoin" = "La red Liquid es una solución Bitcoin de segunda capa que permite transacciones rápidas, confidenciales y la emisión de activos digitales como stablecoins, security tokens y otros instrumentos financieros encima de la timechain de Bitcoin. ";
 "id_the_network_selected_on_the" = "La red seleccionada en la app de Green es diferente de la red seleccionada en el hardware cartera. Seleccione la misma red en ambos dispositivos.";
 "id_the_new_email_will_be_used_for" = "El nuevo correo electrónico se utilizará para la autenticación de dos factores cuando finalice el restablecimiento, que lleva doce meses (sumado al bloqueo temporal restante, si corresponde).";
+"id_the_new_firmware_requires_you" = "The new firmware requires you to unpair your Jade from the Bluetooth settings.";
 "id_the_password_cant_be_empty" = "La contraseña no puede quedar vacía";
 "id_the_recovery_key_below_will_not" = "La clave de recuperación que aparece a continuación no se volverá a mostrar. Haga una copia de seguridad de la clave ya mismo para asegurarse de tener acceso a sus fondos en todo momento.";
 "id_the_recovery_phrase_can_be_used" = "La frase de recuperación se puede utilizar para acceder a sus fondos en cualquier momento. Cuídela y evite divulgarla.";
 "id_the_recovery_phrase_doesnt" = "La frase de recuperación no coincide con la cartera preexistente. Inténtelo de nuevo con otra frase de recuperación.";
 "id_the_source_code_is_available_at" = "El código fuente está disponible en %@";
 "id_the_transaction_contains" = "La transacción contiene fondos no confidenciales.";
+"id_the_username_cant_be_empty" = "The username can't be empty";
 "id_the_waiting_period_is_necessary" = "El período de espera es necesario para garantizar la seguridad de su cartera, dado que evita que los ladrones eludan su protección 2FA.";
 "id_there_are_no_results_for_the" = "El filtró aplicado no arrojó resultados";
 "id_there_is_already_a_pin_set_for" = "Ya se ha establecido un PIN para la cartera %@. Si continúa, no podrá establecer un PIN y deberá ingresar con la frase semilla de 24 palabras. El PIN puede desactivarse desde el panel de configuración o si se ingresa el PIN equivocado tres veces.";
@@ -887,6 +927,7 @@
 "id_ticker" = "Código bursátil (ticker)";
 "id_time_s" = "Tiempo: %@";
 "id_tip_we_recommend_you_enable" = "Sugerencia: Le recomendamos que habilite más de un método 2FA. Si solo configura un método 2FA y luego lo pierde, tendrá que esperar por lo menos un año hasta que la protección 2FA caduque.";
+"id_tip_you_can_use_the" = "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.";
 "id_to" = "A";
 "id_to_keep_you_in_control_of_your" = "Para garantizar que los usuarios retengan el control de sus fondos, la protección por autenticación de dos factores caduca al cabo de aproximadamente %d días desde el último pago. Si no realiza movimientos de fondos con frecuencia, se le pedirá que efectúe una transacción para reactivar la 2FA.";
 "id_too_many_pin_attempts" = "Demasiados intentos de acceso con PIN";
@@ -924,6 +965,7 @@
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "No se puede conectar con el servicio de Green. Verifique su conexión de red y espere a ser reconectado.";
 "id_unarchive" = "Desarchivar";
+"id_unarchive_account" = "Unarchive account";
 "id_unblinding_data" = "Datos de desenmascaramiento";
 "id_unconfirmed" = "No confirmado";
 "id_undo_2fa_dispute" = "Retractar un reclamo 2FA";
@@ -932,6 +974,7 @@
 "id_unknown_custom" = "Desconocido (personalizado)";
 "id_unknown_firmware" = "Firmware desconocido";
 "id_unlock" = "Desbloquear";
+"id_unlock_green" = "Unlock Green";
 "id_unlock_jade_to_continue" = "Desbloquee Jade para continuar";
 "id_unlocked_coins_can_be_spent_and" = "Las monedas desbloqueadas sí se pueden gastar y están incluidas en el saldo de la cuenta.";
 "id_unlocking_coins" = "Desbloquear monedas";
@@ -946,6 +989,7 @@
 "id_use_an_existing_recovery_phrase" = "Utilice una frase semilla preexistente como tercera llave de recuperación.";
 "id_use_an_xpub_for_which_you_own" = "Utilice un xpub cuya correspondiente llave privada le pertenece como tercera clave de recuperación.";
 "id_use_android_screen_lock_to_log" = "Utilice el bloqueo de pantalla de Android para iniciar sesión";
+"id_use_secure_display_and_screen" = "Use Secure Display and Screen Lock";
 "id_use_your_email_to_receive" = "Reciba transacciones de recuperación y notificaciones sobre transacciones por correo electrónico";
 "id_user_contact_info_ip_address" = "User contact info, IP address, detailed location";
 "id_user_not_found_or_invalid" = "Usuario no encontrado o contraseña inválida";
@@ -961,6 +1005,8 @@
 "id_version" = "Versión";
 "id_version_1s" = "Versión: %1$@";
 "id_version_1s_2s" = "Versión %1$@ %2$@";
+"id_view_account" = "View account";
+"id_view_archived_accounts" = "View Archived Accounts";
 "id_view_archived_accounts_d" = "Ver cuentas archivadas (%d)";
 "id_view_in_explorer" = "Ver en el explorador";
 "id_view_more" = "Ver más";
@@ -985,12 +1031,14 @@
 "id_warning_watchonly_credentials" = "Advertencia: los datos de inicio de sesión del modo de solo lectura quedarán guardados en su dispositivo.";
 "id_warning_you_need_a_positive" = "¡Atención! Necesita un saldo positivo de L-BTC para poder enviar transacciones.";
 "id_watchonly" = "Solo lectura";
+"id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "Modo de solo lectura deshabilitado";
 "id_watchonly_login" = "Iniciar sesión en modo de solo lectura";
 "id_watchonly_mode_can_be_activated" = "El modo de solo lectura puede activarse desde la configuración después de iniciar sesión con el PIN, la frase semilla o la hardware wallet.";
 "id_watchonly_mode_cannot_be" = "No es posible activar el modo de solo lectura en Liquid dado que sus fondos son totalmente confidenciales.";
 "id_watchonly_wallet" = "Cartera de solo lectura";
 "id_we_use_the_camera_to_scan_qr" = "Utilizamos la cámara para escanear los códigos QR";
+"id_we_will_do_our_best_to_find_a" = "We will do our best to find a wallet corresponding to this recovery phrase";
 "id_welcome" = "Bienvenido";
 "id_welcome_to" = "Le damos la bienvenida a";
 "id_well_done_you_can_continue" = "¡Muy bien! Puede continuar";
@@ -1000,7 +1048,7 @@
 "id_what_type_of_account_would_you" = "¿Qué tipo de cuenta le gustaría añadir?";
 "id_whats_collected" = "What's collected";
 "id_whats_new" = "¿Qué hay de nuevo?";
-"id_whatss_not_collected" = "Whats's NOT collected";
+"id_whats_not_collected" = "What's NOT collected";
 "id_where_would_you_like_to" = "¿A dónde le gustaría transferir fondos?";
 "id_wireless" = "Inalámbrico";
 "id_word" = "Palabra";
@@ -1008,6 +1056,7 @@
 "id_write_down_the_words" = "Anote las palabras";
 "id_write_down_your_recovery_phrase" = "Anote su frase de recuperación en un papel y guárdelo en un lugar seguro.";
 "id_wrong_choice_check_your" = "Opción incorrecta. Verifique su frase semilla y vuelva a intentarlo.";
+"id_xpub" = "xPub";
 "id_year" = "año";
 "id_years" = "años";
 "id_you_are_not_connected" = "No está conectado";
