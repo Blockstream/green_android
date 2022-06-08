@@ -95,7 +95,7 @@ class AnalyticsManager {
         let config: CountlyConfig = CountlyConfig()
 
         if isProduction {
-            config.appKey = AnalyticsManager.appKeyDev // USE PROD KEY WHEN READY!
+            config.appKey = AnalyticsManager.appKeyProd
             config.host = AnalyticsManager.host
         } else {
             config.appKey = AnalyticsManager.appKeyDev

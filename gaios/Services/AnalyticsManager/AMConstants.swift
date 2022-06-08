@@ -1,6 +1,6 @@
 extension AnalyticsManager {
 
-    static let host = "https://countly.gke.blockstream.com"
+    static let host = "https://countly.blockstream.com"
     static let appKeyDev = "cb8e449057253add71d2f9b65e5f66f73c073e63"
     static let appKeyProd = "351d316234a4a83169fecd7e760ef64bfd638d21"
 
