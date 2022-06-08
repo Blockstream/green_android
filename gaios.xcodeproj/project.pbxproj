@@ -2311,6 +2311,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2335,6 +2336,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
 				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited)";
@@ -2375,6 +2377,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
 				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited)";
