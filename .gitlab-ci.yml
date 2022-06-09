@@ -72,7 +72,6 @@ ui_tests:
     - export LC_ALL=en_US.UTF-8
     - export LANG=en_US.UTF-8
     - ./tools/fetch_gdk_binaries.sh --simulator
-    - ./tools/transifex.sh
     - pod install
     - fastlane ui_tests
   after_script:
