@@ -96,12 +96,15 @@ class ReceiveViewController: UIViewController {
     }
 
     func validate() {
-        guard let addr = self.address else { return }
+        guard let addr = self.address,
+              let network = AccountsManager.shared.current?.network else {
+            return
+        }
         let hw: HWProtocol = account?.isLedger ?? false ? Ledger.shared : Jade.shared
         firstly {
             return Guarantee()
         }.then {
-            Address.validate(with: self.wallet!, hw: hw, addr: addr, network: AccountsManager.shared.current!.network)
+            Address.validate(with: self.wallet!, hw: hw, addr: addr, network: network)
         }.ensure {
             self.presentedViewController?.dismiss(animated: true, completion: nil)
         }.done { addr in
