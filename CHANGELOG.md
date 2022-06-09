@@ -3,9 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.8.3] - 2022-06-09
 ### Added
+- SPV for Bitcoin multisig shield wallets
 - Help Green improve! If you agree, Green will collect limited usage data to optimize your experience
+
+### Fixed
+- Fix 2FA reset error message even on successful reset
+- Fix Singlesig BIP21 amount error
+- Fix Ledger address validation on Liquid Singlesig
+- Fix default wallet name was empty on rename dialog
+- Close drawer when clicking a wallet notification
 
 ## [3.8.2] - 2022-05-18
 ### Added
