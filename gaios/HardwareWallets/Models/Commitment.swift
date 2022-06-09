@@ -17,6 +17,6 @@ struct Commitment: Codable {
     let vbf: Data
     let assetGenerator: Data
     let valueCommitment: Data
-    let hmac: Data
+    let hmac: Data?
     var blindingKey: Data?
 }
