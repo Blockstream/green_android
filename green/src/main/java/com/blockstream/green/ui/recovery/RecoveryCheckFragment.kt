@@ -36,7 +36,7 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
             args.mnemonic.split(" "),
             args.page,
             args.onboardingOptions?.network?.id ?: args.wallet?.network,
-            requireContext().isDevelopmentFlavor()
+            isDevelopmentFlavor
         )
     }
 
@@ -44,7 +44,7 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
-        binding.isDevelopmentFlavor = requireContext().isDevelopmentFlavor()
+        binding.isDevelopmentFlavor = isDevelopmentFlavor
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
 

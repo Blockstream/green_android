@@ -17,6 +17,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.database.WalletRepository
@@ -25,6 +26,7 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getNetworkColor
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.MainActivity
+import com.blockstream.green.utils.logException
 import kotlinx.coroutines.launch
 import mu.KLogging
 
@@ -35,6 +37,7 @@ class NotificationManager constructor(
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
     private val walletRepository: WalletRepository,
+    private val countly: Countly
 ) : DefaultLifecycleObserver {
 
     private var isOnForeground: Boolean = false
@@ -43,7 +46,7 @@ class NotificationManager constructor(
         override fun onReceive(context: Context, intent: Intent) {
             intent.extras?.getLong(WALLET_ID, -1)?.let { walletId ->
                 if (intent.action == ACTION_LOGOUT) {
-                    applicationScope.launch {
+                    applicationScope.launch(context = logException(countly)) {
                         sessionManager.getWalletSessionOrNull(walletId)?.disconnectAsync()
                     }
                 }
@@ -77,7 +80,7 @@ class NotificationManager constructor(
     private fun updateNotifications(isForeground: Boolean) {
         sessionManager.getSessions().forEach {
 
-            applicationScope.launch {
+            applicationScope.launch(context = logException(countly)) {
 
                 (it.hardwareWallet ?: walletRepository.getWalletSuspend(
                     sessionManager.getWalletIdFromSession(

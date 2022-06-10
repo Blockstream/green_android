@@ -36,7 +36,7 @@ class AppSettingsDialogFragment : AbstractBottomSheetDialogFragment<DialogAppSet
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
-        binding.isDevelopment = isDevelopmentFlavor()
+        binding.isDevelopment = isDevelopmentFlavor
 
         val screenLockSettings = ScreenLockSetting.getStringList(requireContext())
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, screenLockSettings)

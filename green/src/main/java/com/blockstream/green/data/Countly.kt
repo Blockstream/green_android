@@ -44,14 +44,14 @@ class Countly constructor(
     private val countly = Countly.sharedInstance().also { countly ->
         val config = CountlyConfig(
             context as Application,
-            if (context.isProductionFlavor()) PRODUCTION_APP_KEY else DEVELOPMENT_APP_KEY,
+            if (isProductionFlavor) PRODUCTION_APP_KEY else DEVELOPMENT_APP_KEY,
             SERVER_URL,
             SERVER_URL_ONION
         ).also {
-            if (context.isDevelopmentOrDebug()) {
+            if (isDevelopmentOrDebug) {
                 it.setEventQueueSizeToSend(1)
             }
-            it.setLoggingEnabled(context.isDevelopmentOrDebug())
+            it.setLoggingEnabled(isDevelopmentOrDebug)
             // Disable automatic view tracking
             it.setViewTracking(false)
             // Enable crash reporting
@@ -142,7 +142,7 @@ class Countly constructor(
     }
 
     fun updateOffset(){
-        Countly.sharedInstance().setOffset(settingsManager.getCountlyOffset(if (context.isDevelopmentFlavor()) MAX_OFFSET_DEVELOPMENT else MAX_OFFSET_PRODUCTION))
+        Countly.sharedInstance().setOffset(settingsManager.getCountlyOffset(if (isDevelopmentFlavor) MAX_OFFSET_DEVELOPMENT else MAX_OFFSET_PRODUCTION))
     }
 
     private fun updateProxy(){

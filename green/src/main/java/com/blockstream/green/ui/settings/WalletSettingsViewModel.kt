@@ -21,6 +21,7 @@ import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.logException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
@@ -359,7 +360,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     }
 
     fun removeBiometrics(){
-        applicationScope.launch {
+        applicationScope.launch(context = logException(countly)) {
             walletRepository.deleteLoginCredentialsSuspend(wallet.id, CredentialType.BIOMETRICS)
         }
     }

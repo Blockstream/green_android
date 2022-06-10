@@ -12,7 +12,7 @@ class SettingsManager constructor(context: Context, private val sharedPreference
     private var appSettingsSharedPreferences: SharedPreferences =
         context.getSharedPreferences(APPLICATION_SETTINGS_NAME, Context.MODE_PRIVATE)
 
-    private var appSettings = MutableLiveData(ApplicationSettings.fromSharedPreferences(context.isDevelopmentFlavor(), appSettingsSharedPreferences))
+    private var appSettings = MutableLiveData(ApplicationSettings.fromSharedPreferences(isDevelopmentFlavor, appSettingsSharedPreferences))
 
     fun getApplicationSettingsLiveData() = appSettings
 

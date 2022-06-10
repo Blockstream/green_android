@@ -33,7 +33,7 @@ class ConsentBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Consen
 
         binding.detailsAreVisible = false
         binding.hideButtons = arguments?.getBoolean(HIDE_BUTTONS, false)
-        binding.isDevelopment = isDevelopmentFlavor()
+        binding.isDevelopment = isDevelopmentFlavor
 
         // Make it swipe-dismissible
         isCancelable = settingsManager.isAskedAboutAnalyticsConsent()

@@ -53,7 +53,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
     var requestPinEmitter: SingleEmitter<String>? = null
 
-    private val hardwareConnect = HardwareConnect(qaTester, applicationContext.isDevelopmentFlavor())
+    private val hardwareConnect = HardwareConnect(qaTester, isDevelopmentFlavor)
 
     @Inject
     lateinit var greenWallet: GreenWallet

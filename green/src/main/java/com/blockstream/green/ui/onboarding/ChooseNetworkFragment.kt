@@ -117,7 +117,7 @@ class ChooseNetworkFragment :
     private fun navigate(options: OnboardingOptions) {
         if(options.isRestoreFlow){
             if(options.isWatchOnly){
-                if(isDevelopmentFlavor() || options.network?.isLiquid != true){
+                if(isDevelopmentFlavor || options.network?.isLiquid != true){
                     navigate(
                         ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToLoginWatchOnlyFragment(
                             options

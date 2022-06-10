@@ -28,7 +28,6 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.ui.devices.DeviceInfoBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragment
 import com.blockstream.green.utils.*
@@ -74,7 +73,7 @@ class MainActivity : AppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(isDevelopmentFlavor()) {
+        if(isDevelopmentFlavor) {
             // On development flavor, you can change settings using intent data, useful for UI tests
             intent?.let {
                 if (it.hasExtra(ENABLE_TESTNET)) {

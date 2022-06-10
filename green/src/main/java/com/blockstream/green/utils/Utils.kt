@@ -98,7 +98,7 @@ fun getVersionName(context: Context): String {
 }
 
 fun notImpementedYet(context: Context) {
-    if (context.isDevelopmentFlavor()) {
+    if (isDevelopmentFlavor) {
         Toast.makeText(context, "Feature not Implemented", Toast.LENGTH_SHORT).show()
     }
 }
@@ -143,21 +143,17 @@ fun Fragment.toPixels(size: Int) =
 
 fun String?.nameCleanup(): String? = if (isNullOrBlank()) null else trim().replace("\n", "")
 
-fun Context.isDebug() = BuildConfig.DEBUG
-fun Context.isDevelopmentOrDebug() = isDevelopmentFlavor() || isDebug()
-fun Context.isDevelopmentAndDebug() = isDevelopmentFlavor() && isDebug()
-fun Context.isDevelopmentFlavor() = packageName.contains(".dev")
-fun Context.isProductionFlavor() = !this.isDevelopmentFlavor()
-
-fun Fragment.isDevelopmentFlavor() = requireContext().isDevelopmentFlavor()
-fun Fragment.isProductionFlavor() = !this.isDevelopmentFlavor()
+val isDebug by lazy { BuildConfig.DEBUG }
+val isDevelopmentFlavor by lazy { BuildConfig.FLAVOR == "development" || BuildConfig.APPLICATION_ID.contains(".dev") }
+val isDevelopmentOrDebug by lazy { isDevelopmentFlavor || isDebug }
+val isProductionFlavor by lazy { !isDevelopmentFlavor }
 
 fun Fragment.notifyDevelopmentFeature(message: String) {
     requireContext().notifyDevelopmentFeature(message)
 }
 
 fun Context.notifyDevelopmentFeature(message: String) {
-    if (isDevelopmentFlavor()) {
+    if (isDevelopmentFlavor) {
         Toast.makeText(this, "Development Flavor: $message", Toast.LENGTH_SHORT).show()
     }
 }

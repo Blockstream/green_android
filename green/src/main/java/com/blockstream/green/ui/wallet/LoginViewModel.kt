@@ -14,6 +14,7 @@ import com.blockstream.green.gdk.*
 import com.blockstream.green.lifecycle.PendingLiveData
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.logException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -263,7 +264,7 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     fun deleteLoginCredentials(loginCredentials: LoginCredentials){
-        applicationScope.launch {
+        applicationScope.launch(context = logException(countly)) {
             walletRepository.deleteLoginCredentialsSuspend(loginCredentials)
         }
     }

@@ -34,7 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
 
             builder.addMigrations(MIGRATION_1_2).build()
 
-            if (context.isDevelopmentFlavor()) {
+            if (isDevelopmentFlavor) {
                 builder.fallbackToDestructiveMigration()
             }
 

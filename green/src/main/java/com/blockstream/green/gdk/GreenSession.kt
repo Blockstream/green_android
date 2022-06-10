@@ -12,6 +12,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.utils.logException
 import com.blockstream.libgreenaddress.GASession
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -156,7 +157,7 @@ class GreenSession constructor(
         activeAccount = account
         activeAccountData = null
 
-        applicationScope.launch(context = Dispatchers.IO) {
+        applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
             try{
                 getActiveSubAccount()
             }catch (e: Exception){
@@ -244,7 +245,7 @@ class GreenSession constructor(
     fun getProxySettings() = greenWallet.getProxySettings(gaSession)
 
     fun reconnectHint(hint: ReconnectHintParams) =
-        applicationScope.launch(context = Dispatchers.IO) {
+        applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
             try{
                 greenWallet.reconnectHint(gaSession, hint)
             }catch (e: Exception){
@@ -287,7 +288,7 @@ class GreenSession constructor(
         if(isConnected) {
             isConnected = false
             try {
-                applicationScope.launch(Dispatchers.IO) {
+                applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
                     disconnect()
 
                     if(hasDevice){
@@ -940,7 +941,7 @@ class GreenSession constructor(
 
                     if(isConnected){
                         if(event.isConnected && authenticationRequired){
-                            applicationScope.launch(context = Dispatchers.IO){
+                            applicationScope.launch(context = Dispatchers.IO + logException(countly)){
                                 try{
                                     reLogin()
                                 }catch (e: Exception){

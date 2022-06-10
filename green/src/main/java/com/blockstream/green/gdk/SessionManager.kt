@@ -15,6 +15,7 @@ import com.blockstream.green.devices.Device
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
+import com.blockstream.green.utils.logException
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -218,7 +219,7 @@ class SessionManager constructor(
         if (settingsManager.getApplicationSettings().tor) {
             if (!torNetworkSession.isConnected) {
                 // Re-initiate connection
-                applicationScope.launch(context = Dispatchers.IO) {
+                applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
                     torNetworkSession.connect(greenWallet.networks.bitcoinElectrum)
                     _torProxy.emit(torNetworkSession.getProxySettings().proxy)
                 }

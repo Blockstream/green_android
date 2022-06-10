@@ -72,7 +72,7 @@ abstract class AppActivity : AppCompatActivity() {
         isWindowSecure = isSecure
 
         // In development flavor allow screen capturing
-        if (isDevelopmentFlavor()) {
+        if (isDevelopmentFlavor) {
             notifyDevelopmentFeature("FLAG_SECURE = $isSecure")
             return
         }

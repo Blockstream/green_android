@@ -50,7 +50,7 @@ interface DeviceInfoCommon{
                 )
 
                 // Only Singlesig Bitcoin is enabled in production
-                if(context.isDevelopmentFlavor()) {
+                if(isDevelopmentFlavor) {
                     fastItemAdapter.add(
                         NetworkSmallListItem(
                             Network.ElectrumLiquid,
@@ -81,7 +81,7 @@ interface DeviceInfoCommon{
                 if(device?.supportsLiquid == true){
 
                     // Only Singlesig Bitcoin is enabled in production
-                    if(context.isDevelopmentFlavor()) {
+                    if(isDevelopmentFlavor) {
                         expandable.subItems.add(
                             NetworkSmallListItem(
                                 Network.ElectrumTestnetLiquid,

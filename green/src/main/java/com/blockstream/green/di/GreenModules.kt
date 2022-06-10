@@ -64,7 +64,7 @@ class GreenModules {
     ): GreenWallet {
         var logger : Logger? = null
 
-        if(context.isDevelopmentOrDebug()){
+        if(isDevelopmentOrDebug){
             logger = object : Logger{
                 override fun log(message: String) {
                     beagle.log(message)
@@ -76,7 +76,7 @@ class GreenModules {
             wally = wally,
             sharedPreferences = sharedPreferences,
             dataDir = context.filesDir,
-            developmentFlavor = context.isDevelopmentFlavor(),
+            developmentFlavor = isDevelopmentFlavor,
             extraLogger = logger
         )
     }
@@ -150,7 +150,8 @@ class GreenModules {
         androidNotificationManager: android.app.NotificationManager,
         sessionManager: SessionManager,
         settingsManager: SettingsManager,
-        walletRepository: WalletRepository
+        walletRepository: WalletRepository,
+        countly: Countly,
     ): NotificationManager {
         return NotificationManager(
             context,
@@ -158,7 +159,8 @@ class GreenModules {
             androidNotificationManager,
             sessionManager,
             settingsManager,
-            walletRepository
+            walletRepository,
+            countly
         )
     }
 
@@ -166,14 +168,14 @@ class GreenModules {
     @Provides
     fun provideBeagle(@ApplicationContext context: Context): Beagle {
 
-        if (context.isDevelopmentOrDebug()) {
+        if (isDevelopmentOrDebug) {
             Beagle.initialize(
                 context as GreenApplication,
                 behavior = Behavior(
                     bugReportingBehavior = Behavior.BugReportingBehavior(
                         // Enabling this feature will disable the crash collection of Firebase Crashlytics,
                         // as using the two simultaneously has proved to be unreliable.
-                        crashLoggers = if (context.isDebug()) listOf(BeagleCrashLogger) else listOf()
+                        crashLoggers = if (isDebug) listOf(BeagleCrashLogger) else listOf()
                     )
                 )
             )

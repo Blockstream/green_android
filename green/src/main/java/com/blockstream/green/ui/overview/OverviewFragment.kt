@@ -229,7 +229,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         })
 
         if(ConsentBottomSheetDialogFragment.shouldShowConsentDialog(countly, settingsManager)){
-            applicationScope.launch {
+            applicationScope.launch(context = logException(countly)) {
                 delay(1500)
                 ConsentBottomSheetDialogFragment.show(childFragmentManager)
             }
@@ -386,7 +386,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         // Block headers
         val blockHeaderAdapter = FastItemAdapter<GenericItem>()
-        if(isDevelopmentFlavor()) {
+        if(isDevelopmentFlavor) {
             viewModel.getBlock().observe(viewLifecycleOwner) {
                 blockHeaderAdapter.set(
                     listOf(

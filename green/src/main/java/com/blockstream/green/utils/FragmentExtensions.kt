@@ -2,7 +2,6 @@ package com.blockstream.green.utils
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -14,15 +13,12 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
-import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.AppFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -99,7 +95,7 @@ fun Context.errorFromResourcesAndGDK(error: String): String {
 }
 
 fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
-    if (isDevelopmentFlavor()) {
+    if (isDevelopmentFlavor) {
         throwable.printStackTrace()
     }
 

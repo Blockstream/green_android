@@ -388,7 +388,7 @@ class WalletSettingsFragment :
                 } else {
                     list += TitleListItem(StringHolder(R.string.id_general))
 
-                    if (!session.isElectrum && (isDevelopmentFlavor() || !session.isLiquid)) {
+                    if (!session.isElectrum && (isDevelopmentFlavor || !session.isLiquid)) {
                         list += watchOnlyMultisigPreference
                     }
 

@@ -182,7 +182,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater).also {
-            menu.findItem(R.id.updateFirmware).isVisible = isDevelopmentFlavor() && device?.isJade == true
+            menu.findItem(R.id.updateFirmware).isVisible = isDevelopmentFlavor && device?.isJade == true
         }
     }
 

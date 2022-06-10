@@ -50,7 +50,7 @@ class QATester(val context: Context) : HardwareQATester, AssetQATester {
     fun getSessionNotificationInjectorObservable() : Observable<Notification> {
 
         // Disable it completely
-        if(!context.isDevelopmentFlavor()){
+        if(isProductionFlavor){
             return Observable.empty()
         }
 

@@ -70,7 +70,7 @@ class GreenApplication : Application(){
             migrator.migrate()
         }
 
-        if (isDevelopmentFlavor() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+        if (isDevelopmentFlavor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             initShortcuts()
         }
     }

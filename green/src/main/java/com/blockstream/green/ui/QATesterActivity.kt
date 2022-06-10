@@ -52,7 +52,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
         super.onCreate(savedInstanceState)
 
         // Prevent opening from adb
-        if(!isDevelopmentFlavor()){
+        if(!isDevelopmentFlavor){
             finish()
         }
 
