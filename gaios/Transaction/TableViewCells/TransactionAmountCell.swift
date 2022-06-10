@@ -49,10 +49,9 @@ class TransactionAmountCell: UITableViewCell {
         lblTitle.text = NSLocalizedString("id_recipient", comment: "")
         if isIncoming {
             lblTitle.text = NSLocalizedString("id_received", comment: "")
-            // lblRecipient.isHidden = true
         }
         lblRecipient.text = transaction.address()
-        lblRecipient.isHidden = false
+        lblRecipient.isHidden = isIncoming
         lblAmount.textColor = color
         lblFiat.textColor = color
         copyRecipientIcon.isHidden = (transaction.address() ?? "").isEmpty
