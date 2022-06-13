@@ -41,6 +41,8 @@ build_signed_adhoc_release:
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_signed_adhoc_release
     - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dist --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
+    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
+    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html" | qrencode -t UTF8
 
 build_signed_prod_release:
   stage: deploy
