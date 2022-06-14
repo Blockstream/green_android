@@ -48,7 +48,7 @@ class FeeEditCell: UITableViewCell {
             }
         }
         lblFeeTitle.text = NSLocalizedString("id_fee", comment: "")
-        lblTimeTitle.text = "Confirmation Time"
+        lblTimeTitle.text = NSLocalizedString("id_confirmation_time", comment: "")
         lblTimeHint.text = ""
         lblTipCustom.text = NSLocalizedString("id_custom", comment: "")
         lblTipLow.text = NSLocalizedString("id_low", comment: "")

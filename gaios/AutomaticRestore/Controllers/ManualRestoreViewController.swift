@@ -27,8 +27,8 @@ class ManualRestoreViewController: UIViewController {
 
     func setContent() {
         title = ""
-        lblTitle.text = "Manual Restore"
-        lblHint.text = "Choose the security policy you want to restore this  wallet on."
+        lblTitle.text = NSLocalizedString("id_manual_restore", comment: "")
+        lblHint.text = NSLocalizedString("id_choose_the_security_policy_you", comment: "")
         lblSingleSigTitle.text = NSLocalizedString("id_singlesig", comment: "")
         lblSingleSigHint.text = NSLocalizedString("id_restore_a_singlesig_wallet", comment: "")
         lblMultiSigTitle.text = NSLocalizedString("id_multisig_shield", comment: "")

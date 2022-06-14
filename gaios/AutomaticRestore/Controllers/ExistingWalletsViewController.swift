@@ -40,9 +40,9 @@ class ExistingWalletsViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Existing Wallets"
-        lblHint.text = "Any wallet found will be displayed here."
-        btnManualRestore.setTitle("Manual Restore", for: .normal)
+        lblTitle.text = NSLocalizedString("id_existing_wallets", comment: "")
+        lblHint.text = NSLocalizedString("id_any_wallet_found_will_be", comment: "")
+        btnManualRestore.setTitle(NSLocalizedString("id_manual_restore", comment: ""), for: .normal)
         lblLoading.text = NSLocalizedString("id_looking_for_wallets", comment: "")
     }
 

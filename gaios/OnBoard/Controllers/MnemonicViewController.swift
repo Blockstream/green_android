@@ -236,7 +236,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
             self.page += 1
             AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardManager.shared.params, page: self.page)
-            DropAlert().error(message: "Invalid Recovery Phrase")
+            DropAlert().error(message: NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
         }
     }
 

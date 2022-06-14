@@ -26,8 +26,8 @@ class Reactivate2faViewController: UIViewController {
     func setContent() {
         title = ""
         lblTitle.text = NSLocalizedString("id_2fa_expired", comment: "")
-        lblWhyTitle.text = "Why does 2FA expires?"
-        lblWhyHint.text = "To keep you in control! If you ever loose your 2FA, or Blockstream service becomes permanently unavailable, you have a guarantee that your recovery phrase alone is enough to recover your founds!"
+        lblWhyTitle.text = "Why does 2FA expire?"
+        lblWhyHint.text = "To keep you in control! If you ever lose your 2FA, or Blockstream service becomes permanently unavailable, you have a guarantee that your recovery phrase alone is enough to recover your funds!"
         lblRiskTitle.text = "Are my funds at risk?"
         lblRiskHint.text = "Your funds are safe , but they are no longer protectedby 2FA."
         lblReactTitle.text = "How is 2FA re-activated"

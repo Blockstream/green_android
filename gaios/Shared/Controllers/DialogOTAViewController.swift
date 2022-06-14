@@ -38,14 +38,14 @@ class DialogOTAViewController: UIViewController {
 
         btnUpdate.setTitle(NSLocalizedString("id_update", comment: ""), for: .normal)
         btnUpdate.isHidden = needCableUpdate
-        btnReadMore.setTitle("Read more", for: .normal)
+        btnReadMore.setTitle("id_read_more", for: .normal)
         btnReadMore.isHidden = !needCableUpdate
         btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
 
         lblTitle.text = isRequired ? NSLocalizedString("id_new_jade_firmware_required", comment: "") : NSLocalizedString("id_new_jade_firmware_available", comment: "")
 
         if needCableUpdate {
-            lblHint.text = "Please use a USB cable to update your Jade's firmware."
+            lblHint.text = NSLocalizedString("id_connect_jade_with_a_usb_cable", comment: "")
         } else {
             lblHint.text = String(format: NSLocalizedString("id_version_1s", comment: ""), firrmwareVersion)
         }

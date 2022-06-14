@@ -31,8 +31,8 @@ class DialogRecipientDeleteViewController: KeyboardViewController {
         super.viewDidLoad()
 
         lblTitle.text = "Remove recipient"
-        lblHint.text = "Are you sure you want to remove the recipient?"
-        btnDelete.setTitle("Remove", for: .normal)
+        lblHint.text = NSLocalizedString("id_are_you_sure_you_want_to_remove",comment: "")
+        btnDelete.setTitle(NSLocalizedString("id_remove", comment: ""), for: .normal)
         btnDelete.cornerRadius = 4.0
         btnDelete.backgroundColor = UIColor.customDestructiveRed()
         btnDelete.setTitleColor(.white, for: .normal)

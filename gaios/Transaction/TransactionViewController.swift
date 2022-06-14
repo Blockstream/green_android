@@ -424,7 +424,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case TransactionSection.detail.rawValue:
-            return headerView("Transaction details")
+            return headerView(NSLocalizedString("id_transaction_details", comment: ""))
         default:
             return headerView("")
         }

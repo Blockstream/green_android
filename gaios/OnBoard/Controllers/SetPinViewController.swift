@@ -182,7 +182,7 @@ class SetPinViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         guard var account = AccountsManager.shared.current,
               let session = SessionsManager.get(for: account) else {
-            fatalError("no account or session found")
+            fatalError("Error: No account or session found")
         }
         firstly {
             switch pinFlow {

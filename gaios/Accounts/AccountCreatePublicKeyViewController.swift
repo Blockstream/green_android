@@ -28,7 +28,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
     func setContent() {
         lblTitle.text = NSLocalizedString("id_enter_your_xpub", comment: "")
         lblHint.text = NSLocalizedString("id_use_an_xpub_for_which_you_own", comment: "")
-        lblKeyHint.text = "xPub"
+        lblKeyHint.text = NSLocalizedString("id_xpub", comment: "")
         lblErrorKey.text = NSLocalizedString("id_invalid_xpub", comment: "")
     }
 

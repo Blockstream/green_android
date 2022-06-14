@@ -57,7 +57,7 @@ class SystemMessageViewController: UIViewController {
         }.done { _ in
             self.navigationController?.popViewController(animated: true)
         }.catch { _ in
-            print("Error on remove system message")
+            print("Error removing system message")
         }
     }
 }

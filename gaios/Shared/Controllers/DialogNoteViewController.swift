@@ -32,7 +32,7 @@ class DialogNoteViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = "My notes"
+        lblTitle.text = NSLocalizedString("id_my_notes", comment: "")
 
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         btnSave.cornerRadius = 4.0

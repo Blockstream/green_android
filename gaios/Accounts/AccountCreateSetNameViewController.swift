@@ -45,7 +45,7 @@ class AccountCreateSetNameViewController: UIViewController {
         lblHint.text = NSLocalizedString("id_account_name", comment: "")
         lblAccountTypeTitle.text = NSLocalizedString("id_account_type", comment: "").uppercased()
         lblAccountTypeHint.text = accountType.name
-        lblRecoveryKeyTypeTitle.text = "Recovery key type".uppercased()
+        lblRecoveryKeyTypeTitle.text = NSLocalizedString("id_recovery_key_type", comment: "").uppercased()
         btnNext.setTitle(NSLocalizedString("id_add_new_account", comment: ""), for: .normal)
         containerViewRecoveryKeyType.isHidden = true
         if accountType == .twoOfThree, let recoveryKeyType = recoveryKeyType {
@@ -53,13 +53,13 @@ class AccountCreateSetNameViewController: UIViewController {
             lblRecoveryKeyTypeInfo.isHidden = true
             switch recoveryKeyType {
             case .hw:
-                lblRecoveryKeyTypeHint.text = "Hardware Wallet"
+                lblRecoveryKeyTypeHint.text = NSLocalizedString("id_hardware_wallet", comment: "")
             case .newPhrase:
                 lblRecoveryKeyTypeHint.text = NSLocalizedString("id_recovery_phrase", comment: "")
             case .existingPhrase:
                 lblRecoveryKeyTypeHint.text = NSLocalizedString("id_recovery_phrase", comment: "")
             case .publicKey:
-                lblRecoveryKeyTypeHint.text = "xPub"
+                lblRecoveryKeyTypeHint.text = NSLocalizedString("id_xpub", comment: "")
                 lblRecoveryKeyTypeInfo.isHidden = false
                 lblRecoveryKeyTypeInfo.text = recoveryXpub ?? ""
             }

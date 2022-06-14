@@ -777,7 +777,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch section {
         case OverviewSection.transaction.rawValue:
-            return headerView("Transactions")
+            return headerView(NSLocalizedString("id_transactions", comment: ""))
         case OverviewSection.asset.rawValue:
             if isLiquid {
                 return headerView(NSLocalizedString("id_assets", comment: ""))
@@ -922,7 +922,7 @@ extension OverviewViewController {
             addBtn.addTarget(self, action: #selector(addAccount), for: .touchUpInside)
 
             let archiveBtn = UIButton(frame: .zero)
-            let btnTitle = archivedAccount > 0 ? String(format: NSLocalizedString("id_view_archived_accounts_d", comment: ""), archivedAccount) : "No Archived Accounts"
+            let btnTitle = archivedAccount > 0 ? String(format: NSLocalizedString("id_view_archived_accounts_d", comment: ""), archivedAccount) : NSLocalizedString("id_no_archived_accounts", comment: "")
             archiveBtn.setTitle(btnTitle, for: .normal)
             archiveBtn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
             archiveBtn.setStyle(.outlinedGray)

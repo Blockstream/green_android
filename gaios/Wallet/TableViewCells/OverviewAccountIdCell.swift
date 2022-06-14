@@ -21,7 +21,7 @@ class OverviewAccountIdCell: UITableViewCell {
 
     func configure(onAction: VoidToVoid?) {
         lblTitle.text = NSLocalizedString("id_amp_id", comment: "")
-        btnAction.setTitle("  " + "GET ID" + "  ", for: .normal)
+        btnAction.setTitle("  " + NSLocalizedString("id_get_id", comment: "") + "  ", for: .normal)
         btnAction.setStyle(.primaryGray)
         self.onAction = onAction
     }

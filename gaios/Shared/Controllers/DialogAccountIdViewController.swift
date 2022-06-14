@@ -21,7 +21,7 @@ class DialogAccountIdViewController: UIViewController {
         super.viewDidLoad()
 
         lblTitle.text = NSLocalizedString("id_amp_id", comment: "")
-        lblHint.text = "Provide this ID to the asset issuer if requested"
+        lblHint.text = NSLocalizedString("id_provide_this_id_to_the_asset", comment: "")
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.alpha = 0.0

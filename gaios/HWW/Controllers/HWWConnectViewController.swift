@@ -441,7 +441,7 @@ extension HWWConnectViewController: BLEManagerDelegate {
     func onUpdateFirmware(_ peripheral: Peripheral, version: String, prevVersion: String) {
         self.hwwState = .upgradedFirmware
         if prevVersion <= "0.1.30" && version >= "0.1.31" {
-            let msg = "The new firmware requires you to unpair your Jade from the iOS Bluetooth settings."
+            let msg = NSLocalizedString("id_the_new_firmware_requires_you", comment: "")
              let alert = UIAlertController(title: NSLocalizedString("id_firmware_update_completed", comment: ""), message: msg, preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_more_info", comment: ""), style: .cancel) { _ in
                 BLEManager.shared.dispose()

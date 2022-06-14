@@ -37,7 +37,7 @@ class DialogWalletNameViewController: KeyboardViewController {
         lblHint.text = NSLocalizedString("id_choose_a_name_for_your_wallet", comment: "")
 
         if isAccountRename {
-            lblTitle.text = "Account Name"
+            lblTitle.text = NSLocalizedString("id_account_name", comment: "")
             lblHint.text = ""
         }
 

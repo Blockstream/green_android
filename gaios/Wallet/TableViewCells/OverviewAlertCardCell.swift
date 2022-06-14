@@ -56,7 +56,7 @@ class OverviewAlertCardCell: UITableViewCell {
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.isHidden = true
         case .reactivate:
-            lblTitle.text = "2FA Expired"
+            lblTitle.text = NSLocalizedString("id_2fa_expired", comment: "")
             lblHint.text = "2FA protection on some of your funds has expired"
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.setTitle("Reactivate 2FA", for: .normal)
