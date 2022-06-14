@@ -113,6 +113,7 @@ class TransactionViewController: UIViewController {
     }
 
     func editNote() {
+        if account?.isWatchonly ?? false { return }
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNoteViewController") as? DialogNoteViewController {
             vc.modalPresentationStyle = .overFullScreen

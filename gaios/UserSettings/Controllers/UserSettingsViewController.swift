@@ -390,7 +390,15 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .Logout:
             logout()
         case .WatchOnly:
-            showWatchOnly()
+
+            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWatchOnlySetUpViewController") as? DialogWatchOnlySetUpViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                vc.delegate = self
+                vc.wallet = wallet
+                vc.username = username
+                present(vc, animated: false, completion: nil)
+            }
         case .BitcoinDenomination:
             showBitcoinDenomination()
         case .ReferenceExchangeRate:
@@ -498,50 +506,6 @@ extension UserSettingsViewController {
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
-    }
-
-    func showWatchOnly() {
-        let alert = UIAlertController(title: NSLocalizedString("id_set_up_watchonly", comment: ""), message: NSLocalizedString("id_allows_you_to_quickly_check", comment: ""), preferredStyle: .alert)
-        alert.addTextField { (textField) in
-            textField.placeholder = NSLocalizedString("id_username", comment: "")
-            textField.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.usernameField
-        }
-        alert.addTextField { (textField) in
-            textField.placeholder = NSLocalizedString("id_password", comment: "")
-            textField.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.passwordField
-        }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
-            let username = alert.textFields![0].text!
-            let password = alert.textFields![1].text!
-            self.setWatchOnly(username: username, password: password)
-        })
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func setWatchOnly(username: String, password: String) {
-        if username.isEmpty {
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_enter_a_valid_username", comment: ""))
-            return
-        } else if password.isEmpty {
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_the_password_cant_be_empty", comment: ""))
-            return
-        }
-        let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap(on: bgq) {
-            try session.setWatchOnly(username: username, password: password)
-            try self.load()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.reloadData()
-        }.catch { _ in
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: "")
-        }
     }
 
     func showAutoLogout() {
@@ -699,5 +663,19 @@ extension UserSettingsViewController {
 extension UserSettingsViewController: TwoFactorAuthenticationViewControllerDelegate {
     func userLogout() {
         self.logout()
+    }
+}
+
+extension UserSettingsViewController: DialogWatchOnlySetUpViewControllerDelegate {
+    func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction) {
+        switch action {
+        case .save, .delete:
+            Guarantee()
+                .compactMap(on: .global(qos: .background)) { try self.load() }
+                .done { self.reloadData() }
+                .catch { err in print(err) }
+        default:
+            break
+        }
     }
 }

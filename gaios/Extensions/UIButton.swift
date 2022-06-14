@@ -7,6 +7,7 @@ enum ButtonStyle {
     case outlined
     case outlinedGray
     case inline
+    case destructiveOutlined
 }
 
 @IBDesignable
@@ -170,6 +171,12 @@ extension UIButton {
         case .inline:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+        case .destructiveOutlined:
+            backgroundColor = UIColor.clear
+            cornerRadius = 5.0
+            setTitleColor(UIColor.customDestructiveRed(), for: .normal)
+            borderWidth = 1.0
+            borderColor = UIColor.customDestructiveRed()
         }
     }
 }
