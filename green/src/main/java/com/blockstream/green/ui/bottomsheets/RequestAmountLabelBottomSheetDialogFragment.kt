@@ -82,8 +82,8 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
         }
 
         binding.buttonClear.setOnClickListener {
+            requestViewModel.requestAmount.value = ""
             viewModel.clearRequestAmountAndLabel()
-            dismiss()
         }
 
         binding.buttonClose.setOnClickListener {
