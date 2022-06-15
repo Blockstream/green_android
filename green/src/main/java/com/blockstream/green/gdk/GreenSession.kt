@@ -432,10 +432,10 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = DeviceParams(gdkDevice))
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
-            val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
 
             if(network.isElectrum){
                 // On Singlesig, check if there is a SegWit account already restored or create one
+                val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
 
                 if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
                     // Create SegWit Account
@@ -516,14 +516,14 @@ class GreenSession constructor(
     private fun initializeSessionData(initAccountIndex: Long) {
         var accountIndex = initAccountIndex
 
-        // Check if active subaccount index was archived from a different client
-        if(network.isMultisig){
-            getSubAccounts(params = SubAccountsParams()).let { subAccounts ->
-                if(subAccounts.subaccounts.find { it.pointer == initAccountIndex }?.hidden == true){
-                    accountIndex = subAccounts.subaccounts.find { !it.hidden }?.pointer ?: 0
-                }
+        // Check if active subaccount index was archived from 1) a different client (multisig) or 2) from cached Singlesig hww session
+        // Expect refresh = true to be already called
+        getSubAccounts(params = SubAccountsParams()).let { subAccounts ->
+            if(subAccounts.subaccounts.find { it.pointer == initAccountIndex }?.hidden == true){
+                accountIndex = subAccounts.subaccounts.find { !it.hidden }?.pointer ?: 0
             }
         }
+
 
         // Update Liquid Assets from GDK before getting balances to sort them properly
         updateLiquidAssets()
