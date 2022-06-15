@@ -3,14 +3,17 @@ package com.blockstream.green.ui.onboarding
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.data.Countly
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.utils.logException
 import com.blockstream.green.utils.nameCleanup
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.launch
 
 class WalletNameViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
@@ -20,6 +23,11 @@ class WalletNameViewModel @AssistedInject constructor(
     @Assisted restoreWallet: Wallet?
 ) : OnboardingViewModel(sessionManager, walletRepository, countly, restoreWallet) {
     val walletName = MutableLiveData(restoreWallet?.name ?: "")
+    val walletNameHint = MutableLiveData("").also {
+        viewModelScope.launch(context = logException(countly)){
+            it.value = generateWalletNameSuspend(onboardingOptions.network!!, null)
+        }
+    }
 
     fun getName() = walletName.value.nameCleanup()
 

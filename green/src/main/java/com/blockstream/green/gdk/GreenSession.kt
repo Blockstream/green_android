@@ -432,10 +432,10 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = DeviceParams(gdkDevice))
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
+            val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
 
             if(network.isElectrum){
                 // On Singlesig, check if there is a SegWit account already restored or create one
-                val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
 
                 if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
                     // Create SegWit Account

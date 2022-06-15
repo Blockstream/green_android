@@ -56,7 +56,7 @@ data class Wallet(
     companion object : KLogging() {
         private var hardwareWalletIdCounter = -1L
 
-        fun createEmulatedHardwareWallet(network: Network, activeAccount: Long = 0): Wallet {
+        fun createEmulatedHardwareWallet(network: Network): Wallet {
             return Wallet(
                 id = hardwareWalletIdCounter--,
                 walletHashId = network.id,
@@ -64,7 +64,7 @@ data class Wallet(
                 network = network.network,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = true,
-                activeAccount = activeAccount
+                activeAccount = 0
             )
         }
     }

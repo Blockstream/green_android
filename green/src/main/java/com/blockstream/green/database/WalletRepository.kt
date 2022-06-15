@@ -50,5 +50,6 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
     fun getWalletsSync() = walletDao.getWalletsSync()
     fun getSoftwareWallets(): LiveData<List<Wallet>> = walletDao.getSoftwareWallets()
     fun getHardwareWallets(): LiveData<List<Wallet>> = walletDao.getHardwareWallets()
+    suspend fun getWalletsForNetworkSuspend(network: Network): List<Wallet> = walletDao.getWalletsForNetworkSuspend(network.network)
     fun getWalletsForNetworkSync(network: Network): List<Wallet> = walletDao.getWalletsForNetworkSync(network.network)
 }

@@ -71,6 +71,10 @@ interface WalletDao {
 
     // Note: This query is not indexed
     @Query("SELECT * FROM wallets WHERE network = :network")
+    suspend fun getWalletsForNetworkSuspend(network: String): List<Wallet>
+
+    // Note: This query is not indexed
+    @Query("SELECT * FROM wallets WHERE network = :network")
     fun getWalletsForNetworkSync(network: String): List<Wallet>
 
     @Query("SELECT EXISTS(SELECT id FROM wallets LIMIT 1)")

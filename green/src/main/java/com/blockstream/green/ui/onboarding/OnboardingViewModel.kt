@@ -40,7 +40,7 @@ open class OnboardingViewModel constructor(
 
             val wallet = Wallet(
                 walletHashId = loginData.walletHashId,
-                name = generateWalletName(network, options.walletName),
+                name = generateWalletNameSync(network, options.walletName),
                 network = network.id,
                 isRecoveryPhraseConfirmed = true, // options.isRestoreFlow || !mnemonic.isNullOrBlank(),
                 isHardware = false
@@ -74,9 +74,24 @@ open class OnboardingViewModel constructor(
         })
     }
 
-    private fun generateWalletName(network:Network, userInputName: String?) : String{
+    private fun generateWalletNameSync(network: Network, userInputName: String?): String {
+        return generateWalletName(
+            walletRepository.getWalletsForNetworkSync(network),
+            network,
+            userInputName
+        )
+    }
+
+    suspend fun generateWalletNameSuspend(network: Network, userInputName: String?): String {
+        return generateWalletName(
+            walletRepository.getWalletsForNetworkSuspend(network),
+            network,
+            userInputName
+        )
+    }
+
+    private fun generateWalletName(wallets: List<Wallet>, network:Network, userInputName: String?) : String{
         return userInputName?.replace(SkipPinData, "")?.trim() ?: run {
-            val wallets = walletRepository.getWalletsForNetworkSync(network)
 
             return@run if(wallets.isNotEmpty()){
                 "${network.productName} #${wallets.size + 1}"
@@ -132,7 +147,7 @@ open class OnboardingViewModel constructor(
                 wallet  = restoreWallet
                     ?: Wallet(
                         walletHashId = it.walletHashId ?: "",
-                        name = generateWalletName(network, options.walletName),
+                        name = generateWalletNameSync(network, options.walletName),
                         network = network.id,
                         isRecoveryPhraseConfirmed = options.isRestoreFlow,
                         isHardware = false
