@@ -26,7 +26,6 @@ import com.blockstream.green.databinding.SettingsWatchOnlyDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.filters.NumberValueFilter
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.bottomsheets.AccountIdBottomSheetDialogFragment
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
@@ -56,7 +55,7 @@ class WalletSettingsFragment :
     private val itemAdapter = ItemAdapter<GenericItem>()
 
     private lateinit var logoutPreference: PreferenceListItem
-    private lateinit var zeroAccountIdPreference: PreferenceListItem
+    private lateinit var supportIdPreference: PreferenceListItem
     private lateinit var watchOnlyMultisigPreference: PreferenceListItem
     private lateinit var watchOnlySinglesigPreference: PreferenceListItem
     private lateinit var unitPreference: PreferenceListItem
@@ -111,7 +110,7 @@ class WalletSettingsFragment :
 
         binding.vm = viewModel
 
-        zeroAccountIdPreference = PreferenceListItem(StringHolder("GAID"))
+        supportIdPreference = PreferenceListItem(StringHolder(R.string.id_copy_support_id), iconRes = R.drawable.ic_baseline_content_copy_24)
         watchOnlyMultisigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
         watchOnlySinglesigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_details))
         logoutPreference = PreferenceListItem(StringHolder(wallet.name), StringHolder(R.string.id_logout), withSubtitleRed = true)
@@ -173,9 +172,10 @@ class WalletSettingsFragment :
                     logoutPreference -> {
                         viewModel.logout(AbstractWalletViewModel.LogoutReason.USER_ACTION)
                     }
-                    zeroAccountIdPreference -> {
+                    supportIdPreference -> {
                         viewModel.zeroSubaccount?.let{
-                            AccountIdBottomSheetDialogFragment.show(it, true, childFragmentManager)
+                            copyToClipboard("AccountID", it.receivingId, requireContext())
+                            snackbar(R.string.id_copied_to_clipboard)
                         }
                     }
                     watchOnlyMultisigPreference -> {
@@ -376,10 +376,7 @@ class WalletSettingsFragment :
 
             list += logoutPreference
 
-            if(session.isWatchOnly) {
-                list += TitleListItem(StringHolder(R.string.id_support))
-                list += zeroAccountIdPreference
-            } else {
+            if(!session.isWatchOnly) {
                 val is2faReset = session.getTwoFactorReset()?.isActive == true
 
                 if (is2faReset) {
@@ -434,6 +431,11 @@ class WalletSettingsFragment :
                         list += TitleListItem(StringHolder(R.string.id_advanced))
                         list += pgpPreference
                     }
+                }
+
+                if(session.isMultisig) {
+                    list += TitleListItem(StringHolder(R.string.id_support))
+                    list += supportIdPreference
                 }
             }
 

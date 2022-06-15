@@ -23,7 +23,6 @@ class AccountIdBottomSheetDialogFragment : WalletBottomSheetDialogFragment<Accou
         super.onViewCreated(view, savedInstanceState)
 
         val subAccount: SubAccount = arguments?.getParcelable(ACCOUNT) ?: return
-        binding.isGaid = arguments?.getBoolean(IS_GAID) ?: false
 
         binding.accountId = subAccount.receivingId
 
@@ -39,13 +38,11 @@ class AccountIdBottomSheetDialogFragment : WalletBottomSheetDialogFragment<Accou
 
     companion object : KLogging() {
         private const val ACCOUNT = "ACCOUNT"
-        private const val IS_GAID = "IS_GAID"
 
-        fun show(subAccount: SubAccount, isGaid : Boolean = false, fragmentManager: FragmentManager) {
+        fun show(subAccount: SubAccount, fragmentManager: FragmentManager) {
             show(AccountIdBottomSheetDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
                     bundle.putParcelable(ACCOUNT, subAccount)
-                    bundle.putBoolean(IS_GAID, isGaid)
                 }
             }, fragmentManager)
         }

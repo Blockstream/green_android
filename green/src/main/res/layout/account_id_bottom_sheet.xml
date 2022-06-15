@@ -7,10 +7,6 @@
         <variable
             name="accountId"
             type="String" />
-
-        <variable
-            name="isGaid"
-            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,7 +21,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
-            android:text="@{isGaid ? `GAID` : @string/id_amp_id}"
+            android:text="@string/id_amp_id"
             android:textAppearance="?attr/textAppearanceHeadline6"
             tools:text="@string/id_amp_id"
             app:layout_constraintEnd_toStartOf="@+id/buttonClose"
@@ -50,7 +46,6 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
-            isVisible="@{!isGaid}"
             android:text="@string/id_provide_your_amp_id_to_the"
             android:textAppearance="?attr/textAppearanceSubtitle2"
             app:layout_constraintEnd_toEndOf="parent"

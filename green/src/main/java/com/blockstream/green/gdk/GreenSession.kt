@@ -103,6 +103,9 @@ class GreenSession constructor(
     val isElectrum
         get() = network.isElectrum
 
+    val isMultisig
+        get() = network.isMultisig
+
     val isSinglesig
         get() = isElectrum
 

@@ -313,7 +313,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     managedAssetsAccountIdAdapter.set(
                         listOf(
                             AccountIdListItem { _ ->
-                                AccountIdBottomSheetDialogFragment.show(subAccount, false, childFragmentManager)
+                                AccountIdBottomSheetDialogFragment.show(subAccount, childFragmentManager)
                             }
                         )
                     )
