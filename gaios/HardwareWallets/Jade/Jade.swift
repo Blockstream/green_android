@@ -5,10 +5,15 @@ import CoreBluetooth
 import ga.wally
 import SwiftCBOR
 
+protocol JadeGdkRequest: AnyObject {
+    func httpRequest(params: [String: Any]) -> [String: Any]?
+}
+
 final class Jade: JadeChannel, HWProtocol {
 
     public static let shared = Jade()
     let SIGHASH_ALL: UInt8 = 1
+    weak var gdkRequestDelegate: JadeGdkRequest?
 
     func version() -> Observable<JadeVersionInfo> {
         return exchange(JadeRequest<JadeEmpty>(method: "get_version_info"))
@@ -25,10 +30,11 @@ final class Jade: JadeChannel, HWProtocol {
                 res.result!
             }
     }
+
     func httpRequest<T: Codable, K: Codable>(_ httpRequest: JadeHttpRequest<T>) -> K {
         let encoded = try? JSONEncoder().encode(httpRequest.params)
         let serialized = try? JSONSerialization.jsonObject(with: encoded!, options: .allowFragments) as? [String: Any]
-        let httpResponse = try? SessionsManager.current?.httpRequest(params: serialized ?? [:])
+        let httpResponse = gdkRequestDelegate?.httpRequest(params: serialized ?? [:])
         let httpResponseBody = httpResponse?["body"] as? [String: Any]
         let deserialized = try? JSONSerialization.data(withJSONObject: httpResponseBody ?? [:], options: .fragmentsAllowed)
         return try! JSONDecoder().decode(K.self, from: deserialized!)
@@ -430,7 +436,7 @@ extension Jade {
             "accept": base64 ? "base64": "text",
             "urls": ["\(Jade.FW_SERVER_HTTPS)\(fwpath)",
                      "\(Jade.FW_SERVER_ONION)\(fwpath)"] ]
-        return try? SessionsManager.current?.httpRequest(params: params)
+        return gdkRequestDelegate?.httpRequest(params: params)
     }
 
     func checkFirmware(_ verInfo: JadeVersionInfo) throws -> [String: String]? {

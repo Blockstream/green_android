@@ -69,6 +69,7 @@ class BLEManager {
 
     init() {
         manager = CentralManager(queue: queue, options: nil)
+        Jade.shared.gdkRequestDelegate = self
     }
 
     func start() {
@@ -401,6 +402,12 @@ class BLEManager {
                 }
             }, onError: { _ in
             })
+    }
+}
+
+extension BLEManager: JadeGdkRequest {
+    func httpRequest(params: [String: Any]) -> [String: Any]? {
+        return try? self.session?.httpRequest(params: params)
     }
 }
 
