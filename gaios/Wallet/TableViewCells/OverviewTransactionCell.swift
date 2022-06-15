@@ -5,7 +5,7 @@ class OverviewTransactionCell: UITableViewCell {
 
     @IBOutlet weak var statusBadge: UIView!
     @IBOutlet weak var lblStatus: UILabel!
-    @IBOutlet weak var lblAddress: UILabel!
+    @IBOutlet weak var lblNote: UILabel!
     @IBOutlet weak var lblAmount: UILabel!
     @IBOutlet weak var lblDate: UILabel!
     @IBOutlet weak var lblDenom: UILabel!
@@ -36,7 +36,7 @@ class OverviewTransactionCell: UITableViewCell {
 
     override func prepareForReuse() {
         lblStatus.text = ""
-        lblAddress.text = ""
+        lblNote.text = ""
         lblAmount.text = ""
         lblDate.text = ""
         lblDenom.text = ""
@@ -80,21 +80,19 @@ class OverviewTransactionCell: UITableViewCell {
 
         let isAsset = !(assetTag == "btc")
         if !transaction.memo.isEmpty {
-            lblAddress.text = transaction.memo
+            lblNote.text = transaction.memo
         } else if isAsset && SessionsManager.current?.registry?.infos[assetTag]?.entity?.domain != nil {
-            lblAddress.text = multipleAssets && isIncoming ?
+            lblNote.text = multipleAssets && isIncoming ?
                 NSLocalizedString("id_multiple_assets", comment: "") :
             SessionsManager.current?.registry?.infos[assetTag]?.entity?.domain ?? ""
         } else if isRedeposit {
-            lblAddress.text = String(format: "%@ %@", NSLocalizedString("id_redeposited", comment: ""),
+            lblNote.text = String(format: "%@ %@", NSLocalizedString("id_redeposited", comment: ""),
                                   isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         } else if isIncoming {
-            lblAddress.text = String(format: "%@ %@", NSLocalizedString("id_received", comment: ""),
+            lblNote.text = String(format: "%@ %@", NSLocalizedString("id_received", comment: ""),
                                   isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         } else {
-            lblAddress.text = String(format: "%@ %@",
-                                  isLiquid ? NSLocalizedString("id_sent", comment: "") : transaction.address() ?? "",
-                                  isLiquid && isAsset ? NSLocalizedString("id_asset", comment: "") : "")
+            lblNote.text = String(format: "%@ %@", NSLocalizedString("id_sent", comment: ""), isLiquid && isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         }
 
         setIcon(transaction: transaction, network: network)

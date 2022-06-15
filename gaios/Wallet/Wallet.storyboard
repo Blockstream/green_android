@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -138,6 +136,7 @@
             <objects>
                 <navigationController storyboardIdentifier="TabViewController" navigationBarHidden="YES" id="cNI-tS-uJU" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5BR-Ca-4jb">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -153,7 +152,7 @@
             <objects>
                 <viewController id="CjA-G8-x6K" customClass="ContainerViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lIa-en-Hri">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Eyp-hM-WIP">
@@ -1024,10 +1023,10 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="icon" destination="jqR-uJ-fXB" id="Tgm-8H-qRc"/>
-                                            <outlet property="lblAddress" destination="QBK-xX-Zzt" id="Vfm-Xl-UPd"/>
                                             <outlet property="lblAmount" destination="qIE-Xc-qdg" id="iGR-sT-tYN"/>
                                             <outlet property="lblDate" destination="4OO-S3-Dcs" id="jjJ-6l-gub"/>
                                             <outlet property="lblDenom" destination="WNo-K8-4d5" id="bsJ-h4-c7j"/>
+                                            <outlet property="lblNote" destination="QBK-xX-Zzt" id="Vfm-Xl-UPd"/>
                                             <outlet property="lblStatus" destination="YeM-SF-7nX" id="9dW-q6-41o"/>
                                             <outlet property="spvVerifyIcon" destination="Q5M-oE-5e1" id="eO7-Eo-c1q"/>
                                             <outlet property="statusBadge" destination="u4v-V2-N8e" id="gsR-6D-FXn"/>
@@ -1376,11 +1375,6 @@
             <point key="canvasLocation" x="5361.594202898551" y="-45.200892857142854"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="rUk-bl-HIM">
-            <size key="intrinsicContentSize" width="30" height="30"/>
-        </designable>
-    </designables>
     <resources>
         <image name="copy" width="25" height="25"/>
         <image name="default_asset_icon" width="60" height="61"/>
