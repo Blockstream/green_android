@@ -66,6 +66,7 @@ class BLEManager {
     weak var scanDelegate: BLEManagerScanDelegate?
     var fmwVersion: String?
     var boardType: String?
+    var session: SessionManager?
 
     init() {
         manager = CentralManager(queue: queue, options: nil)
@@ -139,6 +140,7 @@ class BLEManager {
 
     func connectLedger(_ p: Peripheral, account: Account) {
         let session = SessionsManager.new(for: account)
+        self.session = session
         var connection = Observable.just(p)
         if !p.isConnected {
             connection = p.establishConnection()
@@ -172,6 +174,7 @@ class BLEManager {
 
     func connectJade(_ p: Peripheral, account: Account) {
         let session = SessionsManager.new(for: account)
+        self.session = session
         let network = account.network
         var hasPin = false
         var connection = Observable.just(p)
@@ -299,6 +302,11 @@ class BLEManager {
                 }
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
+                // Update session and account
+                if SessionsManager.get(for: account) != nil {
+                    SessionsManager.shared.removeValue(forKey: account.id)
+                }
+                SessionsManager.shared[session?.account?.id ?? ""] = session
                 AccountsManager.shared.current = session?.account
                 self.delegate?.onLogin(p)
             }, onError: { err in

@@ -199,7 +199,8 @@ class SessionManager: Session {
                 if AccountsManager.shared.accounts.contains(where: {
                         $0.walletHashId == walletHashId &&
                         $0.id != self.account?.id &&
-                        $0.isSingleSig == isSingleSig
+                        $0.isSingleSig == isSingleSig &&
+                        $0.networkName == self.account?.networkName
                     }) {
                     throw LoginError.walletsJustRestored
                 }
@@ -314,17 +315,21 @@ class SessionManager: Session {
                 // update wallet hash id
                 let result = res["result"] as? [String: Any]
                 let walletHashId = result?["wallet_hash_id"] as? String
-                let prevHashId = self.account?.walletHashId
+                var prevHashId = self.account?.walletHashId
                 self.account?.walletHashId = walletHashId
-                // for hw, check previously used account
+                // for hw, use previously account if exist
                 if hwDevice != nil {
                     let acc = AccountsManager.shared.accounts.filter {
-                            $0.walletHashId == walletHashId &&
-                            $0.id != self.account?.id &&
-                            $0.isHW
+                        ($0.walletHashId == walletHashId || $0.walletHashId == nil) &&
+                        $0.name == self.account?.name &&
+                        $0.isSingleSig == self.account?.isSingleSig &&
+                        $0.id != self.account?.id &&
+                        $0.isHW
                     }.first
                     if let acc = acc {
+                        prevHashId = acc.walletHashId
                         self.account = acc
+                        self.account?.walletHashId = walletHashId
                     }
                 }
                 return prevHashId == nil

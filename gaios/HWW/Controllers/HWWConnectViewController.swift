@@ -202,7 +202,6 @@ class HWWConnectViewController: UIViewController {
                 isLedger: BLEManager.shared.isLedger(peripheral),
                 isSingleSig: network.contains("electrum"))
         self.account = account
-        AccountsManager.shared.current = account
         // connect Ledger X
         if BLEManager.shared.isLedger(peripheral) {
             BLEManager.shared.connect(peripheral, account: account)
@@ -413,7 +412,7 @@ extension HWWConnectViewController: BLEManagerDelegate {
     }
 
     func onLogin(_: Peripheral) {
-        AnalyticsManager.shared.loginWallet(loginType: .hardware, account: AccountsManager.shared.current)
+        AnalyticsManager.shared.loginWallet(loginType: .hardware, account: self.account)
         DispatchQueue.main.async {
             getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }
