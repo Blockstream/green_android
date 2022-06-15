@@ -13,6 +13,9 @@ interface WalletDao {
     suspend fun insertSuspend(wallet: Wallet) : Long
 
     @Delete
+    suspend fun deleteSuspend(wallet: Wallet)
+
+    @Delete
     fun deleteSync(wallet: Wallet)
 
     @Query("DELETE FROM wallets")

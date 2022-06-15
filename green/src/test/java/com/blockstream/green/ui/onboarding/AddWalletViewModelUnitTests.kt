@@ -3,14 +3,9 @@ package com.blockstream.green.ui.onboarding
 import androidx.lifecycle.Observer
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.database.WalletRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Before
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -22,26 +17,13 @@ class AddWalletViewModelUnitTests : TestViewModel<AddWalletViewModel>(){
 
     private lateinit var termsObserver : Observer<Boolean>
 
-    private val testDispatcher = TestCoroutineDispatcher()
-
-    @Before
-    fun setup() {
-        Dispatchers.setMain(testDispatcher)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-        testDispatcher.cleanupTestCoroutines()
-    }
-
     private fun init(walletExists: Boolean = false) = runBlockingTest {
         termsObserver = mock()
 
         val walletRepository : WalletRepository = mock()
         whenever(walletRepository.walletsExistsSuspend()).thenReturn(walletExists)
 
-        viewModel = AddWalletViewModel(mock(), walletRepository, null)
+        viewModel = AddWalletViewModel(mock(), walletRepository, mock(),null)
         viewModel.termsChecked.observeForever(termsObserver)
     }
 
@@ -73,7 +55,7 @@ class AddWalletViewModelUnitTests : TestViewModel<AddWalletViewModel>(){
     }
 
     @Test
-    fun whenWalletExists_termsShouldBeChecked(){
+    fun whenWalletExists_termsShouldBeChecked() = runTest {
         init(true)
 
         verify(termsObserver).onChanged(eq(true))

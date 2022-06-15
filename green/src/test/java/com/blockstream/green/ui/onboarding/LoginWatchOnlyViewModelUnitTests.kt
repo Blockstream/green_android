@@ -3,11 +3,9 @@ package com.blockstream.green.ui.onboarding
 import androidx.lifecycle.Observer
 import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.Networks
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
-import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.utils.ConsumableEvent
 import org.junit.Before
@@ -24,9 +22,6 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
     private lateinit var sessionManager: SessionManager
 
     @Mock
-    private lateinit var greenSession: GreenSession
-
-    @Mock
     private lateinit var isLoginEnabledObserver: Observer<Boolean>
 
     @Mock
@@ -35,11 +30,10 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
     @Mock
     private lateinit var newWalletObserver: Observer<Wallet>
 
-    @Mock
-    private lateinit var networks: Networks
-
     @Before
-    fun setup() {
+    override fun setup() {
+        super.setup()
+
         val network = Network(
             "testnet",
             "Testnet",
@@ -49,6 +43,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
             true
         )
 
+        whenever(greenSession.countly).thenReturn(countly)
         whenever(greenSession.network).thenReturn(network)
         whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(greenSession)
 
@@ -56,7 +51,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
             walletRepository = mock(),
             sessionManager = sessionManager,
             appKeystore = mock(),
-            countly = mock(),
+            countly = countly,
             onboardingOptions = OnboardingOptions(isRestoreFlow = true, isWatchOnly = true, isSinglesig = false, network = network)
         )
         viewModel.isLoginEnabled.observeForever(isLoginEnabledObserver)

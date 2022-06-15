@@ -4,7 +4,6 @@ import androidx.lifecycle.Observer
 import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.TestViewModel
-import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
@@ -30,9 +29,6 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
     private lateinit var walletRepository: WalletRepository
 
     @Mock
-    private lateinit var countly: Countly
-
-    @Mock
     private lateinit var session: GreenSession
 
     @Mock
@@ -40,7 +36,6 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
 
     @Mock
     private lateinit var errorObserver: Observer<ConsumableEvent<Throwable>>
-
 
     private var restoreWallet: Wallet = Wallet(walletHashId = "", name = "restore", network = "testnet")
 
@@ -64,7 +59,9 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
     )
 
     @Before
-    fun setup() {
+    override fun setup() {
+        super.setup()
+
         whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(session)
 
         whenever(session.loginWithMnemonic(any(), any(), any(), any())).thenAnswer {

@@ -74,21 +74,23 @@ class ReceiveViewModel @AssistedInject constructor(
         address.value?.let { address ->
             deviceAddressValidationEvent.value = ConsumableEvent(null)
 
-            session.hwWallet?.observable(timeout = 30) {
-                val subAccount = session.getActiveSubAccount()
-                it.getGreenAddress(session.network, subAccount, address.userPath, address.subType ?: 0)
-            }?.subscribeBy(
-                onError = {
-                    onError.value = ConsumableEvent(it)
-                },
-                onSuccess = {
-                    if(it == address.address){
-                        deviceAddressValidationEvent.value = ConsumableEvent(true)
-                    }else{
-                        deviceAddressValidationEvent.value = ConsumableEvent(false)
+            session.hwWallet?.let { hwWallet ->
+                session.observable(timeout = 30) {
+                    val subAccount = session.getActiveSubAccount()
+                    hwWallet.getGreenAddress(session.network, subAccount, address.userPath, address.subType ?: 0)
+                }.subscribeBy(
+                    onError = {
+                        onError.value = ConsumableEvent(it)
+                    },
+                    onSuccess = {
+                        if(it == address.address){
+                            deviceAddressValidationEvent.value = ConsumableEvent(true)
+                        }else{
+                            deviceAddressValidationEvent.value = ConsumableEvent(false)
+                        }
                     }
-                }
-            )?.addTo(disposables)
+                ).addTo(disposables)
+            }
         }
     }
 

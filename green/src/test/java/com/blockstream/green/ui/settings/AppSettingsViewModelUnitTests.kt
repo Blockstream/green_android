@@ -22,7 +22,9 @@ class AppSettingsViewModelUnitTests : TestViewModel<AppSettingsViewModel>() {
     private lateinit var settingsManager: SettingsManager
 
     @Before
-    fun setup() {
+    override fun setup() {
+        super.setup()
+
         whenever(settingsManager.getApplicationSettings()).thenReturn(ApplicationSettings())
         whenever(settingsManager.getApplicationSettingsLiveData()).thenReturn(MutableLiveData(ApplicationSettings()))
         viewModel = AppSettingsViewModel(settingsManager, mock())

@@ -8,9 +8,9 @@ import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.logException
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -18,7 +18,9 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
@@ -70,22 +72,16 @@ open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
     }
     
     fun deleteWallet(wallet: Wallet, sessionManager: SessionManager, walletRepository: WalletRepository, countly: Countly) {
-        wallet.observable {
-            sessionManager.destroyWalletSession(wallet)
-            walletRepository.deleteWallet(wallet)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                onEvent.postValue(ConsumableEvent(AbstractWalletViewModel.WalletEvent.DeleteWallet))
-                countly.deleteWallet()
+
+        viewModelScope.launch(context = logException(countly, onError = onError)) {
+            withContext(context = Dispatchers.IO) {
+                sessionManager.destroyWalletSession(wallet)
             }
-        )
+            walletRepository.deleteWalletSuspend(wallet)
+
+            onEvent.postValue(ConsumableEvent(AbstractWalletViewModel.WalletEvent.DeleteWallet))
+            countly.deleteWallet()
+        }
     }
 
     override fun onCleared() {

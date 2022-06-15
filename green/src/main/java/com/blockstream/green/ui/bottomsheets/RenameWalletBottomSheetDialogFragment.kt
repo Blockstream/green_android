@@ -9,8 +9,10 @@ import com.blockstream.green.ApplicationScope
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.RenameWalletBottomSheetBinding
+import com.blockstream.green.utils.logException
 import com.blockstream.green.utils.nameCleanup
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import mu.KLogging
 import javax.inject.Inject
 
@@ -47,10 +49,10 @@ class RenameWalletBottomSheetDialogFragment :
         binding.name = wallet.name
 
         binding.buttonSave.setOnClickListener {
-            lifecycleScope.launchWhenCreated {
+            lifecycleScope.launch(context = logException(countly)) {
                 val name = binding.name.nameCleanup() ?: ""
 
-                if (name.isBlank()) return@launchWhenCreated
+                if (name.isBlank()) return@launch
 
                 wallet.name = name
                 walletRepository.updateWalletSuspend(wallet)

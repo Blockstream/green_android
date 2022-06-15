@@ -8,9 +8,9 @@ import com.blockstream.green.views.RecoveryPhraseKeyboardView
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.*
 
 @RunWith(MockitoJUnitRunner::class)
 class EnterRecoveryPhraseViewModelUnitTests : TestViewModel<EnterRecoveryPhraseViewModel>(){
@@ -25,7 +25,8 @@ class EnterRecoveryPhraseViewModelUnitTests : TestViewModel<EnterRecoveryPhraseV
     private lateinit var greenWallet: GreenWallet
 
     @Before
-    fun setup(){
+    override fun setup(){
+        super.setup()
 
         TestData.recoveryPhrases.forEach {
             whenever(greenWallet.isMnemonicValid(it)).thenReturn(true)
@@ -36,7 +37,6 @@ class EnterRecoveryPhraseViewModelUnitTests : TestViewModel<EnterRecoveryPhraseV
         viewModel.showPasteButton.observeForever(showPasteButtonObserver)
         viewModel.showHelpButton.observeForever(showHelpButtonObserver)
         viewModel.isValid.observeForever(isValidObserver)
-
     }
 
     @Test

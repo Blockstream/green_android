@@ -9,7 +9,8 @@ import javax.inject.Singleton
 @Singleton
 class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
 
-    fun deleteWallet(wallet: Wallet) = walletDao.deleteSync(wallet)
+    suspend fun deleteWalletSuspend(wallet: Wallet) = walletDao.deleteSuspend(wallet)
+    fun deleteWalletSync(wallet: Wallet) = walletDao.deleteSync(wallet)
     fun updateWalletSync(wallet: Wallet) = walletDao.updateSync(wallet)
     suspend fun updateWalletSuspend(wallet: Wallet) = walletDao.updateSuspend(wallet)
 

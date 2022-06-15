@@ -13,7 +13,9 @@ import org.mockito.kotlin.mock
 class WalletNameViewModelUnitTests : TestViewModel<WalletNameViewModel>(){
 
     @Before
-    fun setup(){
+    override fun setup(){
+        super.setup()
+
         viewModel = WalletNameViewModel(mock(), mock(), mock(), mock(), mock())
     }
 

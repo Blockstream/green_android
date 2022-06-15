@@ -2,6 +2,7 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.params.UpdateSubAccountParams
 import com.blockstream.green.data.AppEvent
@@ -14,11 +15,13 @@ import com.blockstream.green.gdk.async
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.logException
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.launch
 import mu.KLogging
 import java.util.concurrent.TimeUnit
 
@@ -131,9 +134,9 @@ abstract class AbstractWalletViewModel constructor(
         wallet.activeAccount = account.pointer
 
         if(!wallet.isHardware) {
-            wallet.observable {
-                walletRepository.updateWalletSync(wallet)
-            }.subscribeBy()
+            viewModelScope.launch(context = logException(countly)){
+                walletRepository.updateWalletSuspend(wallet)
+            }
         }
 
         session.setActiveAccount(account.pointer)
@@ -191,23 +194,6 @@ abstract class AbstractWalletViewModel constructor(
                 session.updateSubAccounts()
 
                 callback?.invoke()
-            }
-        )
-    }
-
-    fun renameWallet(name: String) {
-        if (name.isBlank()) return
-
-        wallet.observable {
-            wallet.name = name.trim()
-            walletRepository.updateWalletSync(wallet)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                onEvent.postValue(ConsumableEvent(WalletEvent.RenameWallet))
-                countly.renameWallet()
             }
         )
     }

@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import com.blockstream.green.R
 import com.blockstream.green.databinding.IntroFragmentBinding
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
+import com.blockstream.green.utils.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -25,6 +26,18 @@ class IntroFragment : WalletListCommonFragment<IntroFragmentBinding>(R.layout.in
 
         binding.buttonAppSettings.setOnClickListener {
             AppSettingsDialogFragment.show(childFragmentManager)
+        }
+
+        activityViewModel.onError.observe(viewLifecycleOwner){
+            it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
+                errorDialog(throwable)
+            }
+        }
+
+        viewModel.onError.observe(viewLifecycleOwner){
+            it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
+                errorDialog(throwable)
+            }
         }
 
         init(binding.common, viewModel)

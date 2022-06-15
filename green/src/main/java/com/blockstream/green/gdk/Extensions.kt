@@ -133,8 +133,9 @@ fun String.isNotAuthorized() =
 
 fun String.isConnectionError() = this.contains("failed to connect")
 
-// Run mapper on IO, observer in Android Main
+
 @Suppress("UNCHECKED_CAST")
+@Deprecated("Use Coroutines")
 fun <T, R: Any> T.observable(timeout: Long = 0, mapper: (T) -> R): Single<R> =
     Single.just(this)
         .subscribeOn(Schedulers.io())
@@ -147,6 +148,24 @@ fun <T, R: Any> T.observable(timeout: Long = 0, mapper: (T) -> R): Single<R> =
         }
         .map(mapper)
         .observeOn(AndroidSchedulers.mainThread())
+
+// Run mapper on IO, observer in Android Main
+@Suppress("UNCHECKED_CAST")
+fun <R: Any> GreenSession.observable(timeout: Long = 0, mapper: (GreenSession) -> R): Single<R> =
+    Single.just(this)
+        .subscribeOn(Schedulers.io())
+        .let {
+            if(timeout > 0){
+                it.timeout(timeout, TimeUnit.SECONDS)
+            }else{
+                it
+            }
+        }
+        .map(mapper)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnError {
+            countly.recordException(it)
+        }
 
 fun <T: Any> Single<T>.async(mapper: (T) -> T = { it : T -> it }): Single<T> =
     this.subscribeOn(Schedulers.io())

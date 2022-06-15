@@ -42,7 +42,7 @@ class GreenSession constructor(
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
-    private val countly: Countly
+    val countly: Countly
 ) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
     var isWatchOnly: Boolean = false
 
