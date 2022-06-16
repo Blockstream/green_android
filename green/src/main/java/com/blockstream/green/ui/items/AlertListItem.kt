@@ -1,16 +1,13 @@
 package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAlertBinding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-class AlertListItem constructor(private val alertType: AlertType, val action : (isClose: Boolean) -> Unit) : AbstractBindingItem<ListItemAlertBinding>() {
+data class AlertListItem constructor(private val alertType: AlertType, val action : (isClose: Boolean) -> Unit) : AbstractBindingItem<ListItemAlertBinding>() {
     override val type: Int
         get() = R.id.fastadapter_alert_item_id
 

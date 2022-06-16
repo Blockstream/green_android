@@ -1,6 +1,5 @@
 package com.blockstream.green.di
 
-import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.hardware.usb.UsbManager
 import com.blockstream.green.devices.DeviceManager
@@ -25,7 +24,6 @@ class DeviceModule {
             context,
             sessionManager,
             context.getSystemService(Context.USB_SERVICE) as UsbManager,
-            context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager,
             RxBleClient.create(context)
         )
     }

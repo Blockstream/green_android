@@ -5,7 +5,6 @@ import android.util.SparseArray
 import com.blockstream.gdk.*
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
-import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
@@ -25,8 +24,9 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
@@ -37,13 +37,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
 class GreenSession constructor(
-    private val applicationScope: ApplicationScope,
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
     val countly: Countly
 ) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + logException(countly))
+
     var isWatchOnly: Boolean = false
 
     var activeAccount = 0L
@@ -160,7 +161,7 @@ class GreenSession constructor(
         activeAccount = account
         activeAccountData = null
 
-        applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
             try{
                 getActiveSubAccount()
             }catch (e: Exception){
@@ -248,12 +249,8 @@ class GreenSession constructor(
     fun getProxySettings() = greenWallet.getProxySettings(gaSession)
 
     fun reconnectHint(hint: ReconnectHintParams) =
-        applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
-            try{
-                greenWallet.reconnectHint(gaSession, hint)
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
+            greenWallet.reconnectHint(gaSession, hint)
         }
 
     fun disconnect() {
@@ -290,16 +287,13 @@ class GreenSession constructor(
         // Disconnect only if needed
         if(isConnected) {
             isConnected = false
-            try {
-                applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
-                    disconnect()
 
-                    if(hasDevice){
-                        sessionManager.destroyHardwareSession(greenSession = this@GreenSession)
-                    }
+            scope.launch(context = Dispatchers.IO + logException(countly)) {
+                disconnect()
+
+                if(hasDevice){
+                    sessionManager.destroyHardwareSession(greenSession = this@GreenSession)
                 }
-            }catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }
@@ -410,14 +404,12 @@ class GreenSession constructor(
             connect(network)
         }
 
-        device.deviceState
-            .async()
-            .subscribe {
-                // Device went offline
-                if(it == Device.DeviceState.DISCONNECTED){
-                    disconnectAsync()
-                }
-            }.addTo(disposables)
+        device.deviceState.onEach {
+            // Device went offline
+            if(it == Device.DeviceState.DISCONNECTED){
+                disconnectAsync()
+            }
+        }.launchIn(scope)
 
         val gdkDevice = device.hwWallet?.device
 
@@ -944,12 +936,8 @@ class GreenSession constructor(
 
                     if(isConnected){
                         if(event.isConnected && authenticationRequired){
-                            applicationScope.launch(context = Dispatchers.IO + logException(countly)){
-                                try{
-                                    reLogin()
-                                }catch (e: Exception){
-                                    e.printStackTrace()
-                                }
+                            scope.launch(context = Dispatchers.IO + logException(countly)){
+                                reLogin()
                             }
                         }else if(!event.isConnected){
                             // mark re-authentication is required
@@ -983,6 +971,7 @@ class GreenSession constructor(
     internal fun destroy() {
         disconnect()
         disposables.clear()
+        scope.cancel("Destroy")
     }
 
     companion object: KLogging(){

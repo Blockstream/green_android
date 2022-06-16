@@ -6,6 +6,7 @@ import androidx.arch.core.util.Function
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.data.AppEvent
@@ -29,7 +30,6 @@ import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import mu.KLogging
 import javax.inject.Inject
@@ -63,15 +63,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
     var session = sessionManager.getOnBoardingSession()
 
-    val deviceState = MutableLiveData<Device.DeviceState>()
-
-    init {
-        device
-            .deviceState
-            .subscribe {
-                deviceState.postValue(it)
-            }.addTo(disposables)
-    }
+    val deviceState = device.deviceState.asLiveData()
 
     fun connectDeviceToNetwork(network: String){
         // Device is unlocked

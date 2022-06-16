@@ -4,9 +4,7 @@ import android.bluetooth.BluetoothDevice
 import android.hardware.usb.UsbDevice
 import android.os.ParcelUuid
 import android.os.SystemClock
-import androidx.lifecycle.MutableLiveData
 import com.blockstream.DeviceBrand
-import com.blockstream.gdk.data.Assets
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.jade.JadeBleImpl
@@ -15,7 +13,8 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import mu.KLogging
 import kotlin.properties.Delegates
 
@@ -34,7 +33,9 @@ class Device constructor(
         SCANNED, DISCONNECTED
     }
 
-    val deviceState: BehaviorSubject<DeviceState> = BehaviorSubject.createDefault(DeviceState.SCANNED)
+    private val _deviceState : MutableStateFlow<DeviceState> = MutableStateFlow(DeviceState.SCANNED)
+    val deviceState
+        get() = _deviceState.asStateFlow()
 
     private val bleDisposables = CompositeDisposable()
 
@@ -58,6 +59,8 @@ class Device constructor(
 
     val usbManager
         get() = deviceManager.usbManager
+
+    val isOffline = deviceState.value == DeviceState.DISCONNECTED
 
     val isJade by lazy {
         bleService == ParcelUuid(JadeBleImpl.IO_SERVICE_UUID) || usbDevice?.vendorId == VENDOR_JADE_A  || usbDevice?.vendorId == VENDOR_JADE_B
@@ -153,19 +156,27 @@ class Device constructor(
 
     fun offline() {
         logger.info { "Device went offline" }
-        deviceState.onNext(DeviceState.DISCONNECTED)
+        _deviceState.compareAndSet(DeviceState.SCANNED, DeviceState.DISCONNECTED)
     }
 
     fun disconnect() {
         bleDisposables.clear()
         hwWallet?.disconnect()
+        hwWallet = null
+
+        // Mark it as offline
+        offline()
     }
 
     fun updateFromScan(newBleDevice: RxBleDevice) {
         // Update bleDevice as the it can be changed due to RPA
         bleDevice = newBleDevice
+
         // Update timeout
         timeout = SystemClock.elapsedRealtimeNanos()
+
+        // Mark it as online if required
+        _deviceState.compareAndSet(DeviceState.DISCONNECTED, DeviceState.SCANNED)
     }
 
     enum class ConnectionType {

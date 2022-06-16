@@ -2,7 +2,6 @@ package com.blockstream.green.devices
 
 import android.app.PendingIntent
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -35,7 +34,6 @@ class DeviceManager constructor(
     private val context: Context,
     val sessionManager: SessionManager,
     val usbManager: UsbManager,
-    val bluetoothManager: BluetoothManager,
     private val rxBleClient: RxBleClient
 ) {
     private var onPermissionSuccess: WeakReference<(() -> Unit)>? = null
@@ -128,12 +126,12 @@ class DeviceManager constructor(
 
         addBleConnectedDevices()
 
-        Observable.interval( 2, 1, TimeUnit.SECONDS)
+        Observable.interval( 0, 1, TimeUnit.SECONDS)
             .doOnNext { addBleConnectedDevices() }
             .map { SystemClock.elapsedRealtimeNanos() - 5000000000 } // 5 seconds
             .subscribe{ ts ->
                 bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value?.filter {
-                    it.timeout == 0L || it.timeout > ts
+                    !it.isOffline && (it.timeout == 0L || it.timeout > ts)
                 })
 
             }.addTo(bleScanDisposable)
@@ -225,12 +223,8 @@ class DeviceManager constructor(
     }
 
     private fun addBleConnectedDevices(){
-        sessionManager.getHardwareWalletSessions().forEach {
-            it.device?.let { device ->
-                if(device.isBle){
-                    addBluetoothDevice(device)
-                }
-            }
+        sessionManager.getConnectedDevices().filter { it.isBle }.forEach {
+            addBluetoothDevice(it)
         }
     }
 

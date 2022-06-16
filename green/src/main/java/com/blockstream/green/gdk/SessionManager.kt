@@ -43,7 +43,6 @@ class SessionManager constructor(
 
     private val torNetworkSession : GreenSession by lazy {
         GreenSession(
-            applicationScope = applicationScope,
             sessionManager = this,
             settingsManager = settingsManager,
             assetManager = assetManager,
@@ -107,7 +106,7 @@ class SessionManager constructor(
         }
 
         connectionChangeEvent.observeForever {
-            getHardwareWalletSessions().filter { it.isConnected }.mapNotNull { it.hardwareWallet }.let {
+            getConnectedHardwareWalletSessions().mapNotNull { it.hardwareWallet }.let {
                 hardwareWallets.postValue(it)
             }
         }
@@ -163,13 +162,29 @@ class SessionManager constructor(
     }
 
     fun destroyHardwareSession(greenSession: GreenSession){
+        // Remove from greenSessions
         greenSessions.remove(greenSession)
+
+        // Remove from walletSessions
         greenSession.hardwareWallet?.let { walletSessions.remove(it.id) }
+
         greenSession.destroy()
+
+        // Disconnect device if there is no other connected session with that device
+        if(getConnectedHardwareWalletSessions().none { it.device?.id == greenSession.device?.id }){
+            greenSession.device?.disconnect()
+        }
     }
 
-    fun getHardwareWalletSessions(): List<GreenSession>{
+    private fun getConnectedHardwareWalletSessions(): List<GreenSession>{
         return walletSessions.values.filter { it.hardwareWallet?.isHardware == true && it.isConnected }.toList()
+    }
+
+    fun getConnectedDevices(): List<Device>{
+        return walletSessions.values
+            .filter { it.device?.isOffline == false }
+            .mapNotNull { it.device }
+            .toList()
     }
 
     // OnBoardingSession waits patiently to be upgraded to a proper wallet session
@@ -202,7 +217,6 @@ class SessionManager constructor(
     // Always use this method to create a Session as it keeps track of gaSession & GreenSession
     private fun createSession(): GreenSession {
         val session = GreenSession(
-            applicationScope = applicationScope,
             sessionManager = this,
             settingsManager = settingsManager,
             assetManager = assetManager,

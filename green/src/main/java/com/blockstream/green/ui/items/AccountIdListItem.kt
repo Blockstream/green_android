@@ -8,7 +8,7 @@ import com.blockstream.green.databinding.ListItemAccountIdBinding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
-class AccountIdListItem constructor(val listener : View.OnClickListener) : AbstractBindingItem<ListItemAccountIdBinding>() {
+data class AccountIdListItem constructor(val listener : View.OnClickListener) : AbstractBindingItem<ListItemAccountIdBinding>() {
     override val type: Int
         get() = R.id.fastadapter_account_id_item_id
 

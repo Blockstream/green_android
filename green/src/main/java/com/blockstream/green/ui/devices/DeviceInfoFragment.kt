@@ -67,7 +67,8 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     override fun getAppViewModel(): AppViewModel = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (deviceManager.getDevice(args.deviceId) == null) {
+        if (device == null) {
+            snackbar("Device not longer available")
             findNavController().popBackStack()
             return
         }
@@ -87,6 +88,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         viewModel.deviceState.observe(viewLifecycleOwner){
             // Device went offline
             if(it == Device.DeviceState.DISCONNECTED){
+                snackbar("Device not longer available")
                 findNavController().popBackStack()
             }
         }

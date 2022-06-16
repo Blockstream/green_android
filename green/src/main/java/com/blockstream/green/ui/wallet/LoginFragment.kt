@@ -205,15 +205,13 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         }
 
         binding.buttonLoginWithDevice.setOnClickListener {
-             device?.let { it1 ->
-                 viewModel.loginWithDevice(it1)
-             }
+            viewModel.loginWithDevice()
         }
 
-        device?.let { device ->
+        viewModel.device?.let {
             if(viewModel.initialAction.value == false){
                 viewModel.initialAction.value = true
-                viewModel.loginWithDevice(device)
+                viewModel.loginWithDevice()
             }
         }
     }

@@ -232,7 +232,8 @@ class LoginViewModel @AssistedInject constructor(
         )
     }
 
-    fun loginWithDevice(device: Device) {
+    fun loginWithDevice() {
+        if(device == null) return
 
         session.observable {
             it.loginWithDevice(it.networks.getNetworkById(wallet.network),

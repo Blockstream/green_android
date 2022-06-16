@@ -7,7 +7,7 @@ import com.blockstream.green.databinding.ListItemDeviceBinding
 import com.blockstream.green.devices.Device
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-class DeviceListItem(val device: Device) : AbstractBindingItem<ListItemDeviceBinding>() {
+data class DeviceListItem constructor(val device: Device) : AbstractBindingItem<ListItemDeviceBinding>() {
     override val type: Int
         get() = R.id.fastadapter_device_item_id
 
