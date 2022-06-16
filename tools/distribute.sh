@@ -55,9 +55,8 @@ if [ -z ${DEST} ]; then
 fi
 
 # --- Build distribution files
-rm -rf ${DEST}
-mkdir ${DEST}
-cp ${APP} ${DEST}
+mkdir -p ${DEST}
+cp ${APP} ${DEST} | true
 
 cat > "${DEST}/index.html" <<EOL
 <html>

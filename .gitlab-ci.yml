@@ -32,15 +32,16 @@ build_signed_adhoc_release:
     expire_in: 1 day
     when: on_success
     paths:
-      - dev/Green-dev.ipa
-      - dist
+      - dev
   variables:
     GDK_COMMIT: latest
   script:
     - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_signed_adhoc_release
-    - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dist --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
+    - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
+    - ./Pods/Countly/countly_dsym_uploader.sh "https://countly.blockstream.com" "cb8e449057253add71d2f9b65e5f66f73c073e63" ./tmp/gaios.app.dSYM
+    - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
     - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
     - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html" | qrencode -t UTF8
 
@@ -55,10 +56,12 @@ build_signed_prod_release:
     expire_in: 1 day
     when: on_success
     paths:
-      - release/Green.ipa
+      - release
   script:
     - ./tools/fetch_gdk_binaries.sh
     - fastlane build_signed_prod_release
+    - mkdir tmp && unzip ./release/Green.app.dSYM.zip -d tmp
+    - ./Pods/Countly/countly_dsym_uploader.sh "https://countly.blockstream.com" "351d316234a4a83169fecd7e760ef64bfd638d21" ./tmp/gaios.app.dSYM
 
 ui_tests:
   stage: test
@@ -90,7 +93,7 @@ cp_gcloud:
     - echo $GCLOUD_PUSH_KEY > $TMPF
     - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
     - gcloud auth activate-service-account --key-file=$TMPF
-    - gsutil cp -r $CI_PROJECT_DIR/dist gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
+    - gsutil cp -r $CI_PROJECT_DIR/dev gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
     - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
   dependencies:
     - build_signed_adhoc_release
