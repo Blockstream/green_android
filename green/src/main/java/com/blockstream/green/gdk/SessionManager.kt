@@ -230,7 +230,9 @@ class SessionManager constructor(
     }
 
     private fun startTorNetworkSessionIfNeeded() {
-        if (settingsManager.getApplicationSettings().tor) {
+        val applicationSettings = settingsManager.getApplicationSettings()
+        // If user provides a "sock5://", handle it as Orbot proxy, no need to start GDK TOR session
+        if (applicationSettings.tor && applicationSettings.proxyUrl?.startsWith("socks5://") != true) {
             if (!torNetworkSession.isConnected) {
                 // Re-initiate connection
                 applicationScope.launch(context = Dispatchers.IO + logException(countly)) {

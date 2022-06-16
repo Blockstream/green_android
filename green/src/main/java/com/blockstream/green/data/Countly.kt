@@ -105,7 +105,12 @@ class Countly constructor(
         get() {
             val appSettings = settingsManager.getApplicationSettings()
             return if(appSettings.tor){
-                sessionManager.torProxy.value ?: "socks5://tor_not_initialized"
+                // Use Orbot
+                if(appSettings.proxyUrl?.startsWith("socks5://") == true){
+                    appSettings.proxyUrl
+                }else {
+                    sessionManager.torProxy.value ?: "socks5://tor_not_initialized"
+                }
             }else if(!appSettings.proxyUrl.isNullOrBlank()){
                 appSettings.proxyUrl
             }else{
