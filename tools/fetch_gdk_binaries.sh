@@ -20,12 +20,12 @@ _EOF_
 
 # ----- Vars
 NAME="gdk-iphone"
-SHA256="e51669c78b75c85a64ca11bc0b44828ef236e198522ffde7bd58f3948c659d96"
-TAGNAME="release_0.0.54"
+SHA256="f0a92f58b867dfac33b8817b492cbad9fb6f29a0a150cbac0c88536836ae1ca4"
+TAGNAME="release_0.0.54.post1"
 TARBALL="${NAME}.tar.gz"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
 NAME_IPHONESIM="gdk-iphone-sim"
-SHA256_IPHONESIM="2adf95d2868afc5c267509f94d03602af41a7fb544ea07dc2cc09ccd90841df8"
+SHA256_IPHONESIM="b36a4a7aa2c19c36480704b5aa7f9242bfe2ed7ff21ccc638ff355107d129b25"
 SIMULATOR=false
 VALIDATE_CHECKSUM=true
 COMMIT=false

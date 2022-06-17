@@ -9,8 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Drop addresses in transaction list
+- Update GDK to 0.0.54.post1
 
 ### Fixed
+
 ## [3.8.3] - 2022-06-10
 
 ### Added

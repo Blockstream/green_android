@@ -36,7 +36,7 @@ fi
 Pods/SwiftLint/swiftlint --strict
 
 # check gdk build
-TAGNAME="release_0.0.54"
+TAGNAME="release_0.0.54.post1"
 if [[ "$BUILD_GDK" -eq 1 ]]; then
     git clone https://github.com/Blockstream/gdk.git
     cd gdk
