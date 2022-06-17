@@ -119,9 +119,9 @@ class SessionManager: Session {
         }
     }
 
-    func subaccount() -> Promise<WalletItem> {
+    func subaccount(_ pointer: UInt32? = nil) -> Promise<WalletItem> {
         let bgq = DispatchQueue.global(qos: .background)
-        let pointer = activeWallet
+        let pointer = pointer ?? activeWallet
         return Guarantee().then(on: bgq) {
             try self.getSubaccount(subaccount: pointer).resolve()
         }.recover {_ in

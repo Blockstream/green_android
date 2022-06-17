@@ -211,6 +211,11 @@ class UserSettingsViewController: UIViewController {
             subtitle: versionSubtitle,
             section: .about,
             type: .Version)
+        let support = UserSettingsItem(
+            title: NSLocalizedString("id_support", comment: ""),
+            subtitle: "Copy support ID",
+            section: .about,
+            type: .SupportID)
         let termOfUse = UserSettingsItem(
             title: NSLocalizedString("id_terms_of_use", comment: ""),
             subtitle: "",
@@ -221,7 +226,10 @@ class UserSettingsViewController: UIViewController {
             subtitle: "",
             section: .about,
             type: .PrivacyPolicy)
-        return [version, termOfUse, privacyPolicy]
+        if account?.isSingleSig ?? false {
+            return [version, termOfUse, privacyPolicy]
+        }
+        return [version, support, termOfUse, privacyPolicy]
     }
 
     func getRecoveryItems() -> [UserSettingsItem] {
@@ -421,6 +429,12 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             navigationController?.pushViewController(vc, animated: true)
         case .Version:
             break
+        case .SupportID:
+            SessionsManager.current?.subaccount(0).done { wallet in
+                UIPasteboard.general.string = wallet.receivingId
+                DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+            }.catch { _ in }
         case .TermsOfUse:
             UIApplication.shared.open(URL(string: "https://blockstream.com/green/terms/")!)
         case .PrivacyPolicy:

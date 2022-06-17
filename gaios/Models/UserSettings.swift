@@ -55,6 +55,7 @@ enum UserSettingsType: String, Codable, CaseIterable {
     case Sweep
 
     case Version
+    case SupportID
     case TermsOfUse
     case PrivacyPolicy
 }
