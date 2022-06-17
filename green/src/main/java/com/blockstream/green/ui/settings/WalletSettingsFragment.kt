@@ -110,7 +110,7 @@ class WalletSettingsFragment :
 
         binding.vm = viewModel
 
-        supportIdPreference = PreferenceListItem(StringHolder(R.string.id_copy_support_id), iconRes = R.drawable.ic_baseline_content_copy_24)
+        supportIdPreference = PreferenceListItem(StringHolder(R.string.id_support), StringHolder(R.string.id_copy_support_id), iconRes = R.drawable.ic_baseline_content_copy_24)
         watchOnlyMultisigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
         watchOnlySinglesigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_details))
         logoutPreference = PreferenceListItem(StringHolder(wallet.name), StringHolder(R.string.id_logout), withSubtitleRed = true)
@@ -432,16 +432,14 @@ class WalletSettingsFragment :
                         list += pgpPreference
                     }
                 }
-
-                if(session.isMultisig) {
-                    list += TitleListItem(StringHolder(R.string.id_support))
-                    list += supportIdPreference
-                }
             }
 
             list += TitleListItem(StringHolder(R.string.id_about))
 
             list += versionPreference
+            if(session.isMultisig) {
+                list += supportIdPreference
+            }
             list += termsOfServicePreference
             list += privacyPolicyPreference
         }
