@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.8.4] - 2022-06-17
+### Changed
+- Update GDK to 0.0.54.post1
+
+### Fixed
+- Fix balances after bumping transaction fees
+
 ## [3.8.3] - 2022-06-09
 ### Added
 - SPV for Bitcoin multisig shield wallets
