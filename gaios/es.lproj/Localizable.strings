@@ -1,14 +1,14 @@
 "id_1030_minutes" = "~ 10-30 minutos";
 "id_12_confirmations" = "1/2 confirmaciones";
-"id_12_months_51840_blocks" = "12 meses (51 840 bloques)";
-"id_12_words" = "12 words";
-"id_15_months_65535_blocks" = "15 meses (65 535 bloques)";
+"id_12_months_51840_blocks" = "12 meses (51840 bloques)";
+"id_12_words" = "12 palabras";
+"id_15_months_65535_blocks" = "15 meses (65535 bloques)";
 "id_1_double_check_all_of_your" = "1. Revise la frase de recuperación entera, palabra por palabra. ¿Coinciden todas las palabras?\n2. ¡El orden de las palabras importa! Asegúrese de haberlas escrito en el orden correcto.\n\nSi ninguno de estos consejos lo ayudó, o si no cuenta con una frase de recuperación de 12, 24 o 27 palabras, consulte nuestro centro de ayuda.";
 "id_1d_2s_ago" = "Hace %1$d%2$@";
 "id_1d_minutes" = "%1$d minutos";
 "id_1s_blocks_left_2d" = "Restan %1$@ bloques %2$d";
 "id_1s_twofactor_setup" = "%1$@ Configuración de la autenticación de dos factores";
-"id_24_words" = "24 words";
+"id_24_words" = "24 palabras";
 "id_2_hours" = "~ 2 Horas";
 "id_2fa_dispute_in_progress" = "Disputa 2FA en curso";
 "id_2fa_expired" = "2FA vencido";
@@ -19,7 +19,7 @@
 "id_2of3_account" = "Cuenta 2-de-3";
 "id_4_hours" = "~ 4 horas";
 "id_5_seconds_minimum" = "5 segundos como mínimo";
-"id_6_months_25920_blocks" = "6 meses (25 920 bloques)";
+"id_6_months_25920_blocks" = "6 meses (25920 bloques)";
 "id_a_2of3_account_requires_two_out" = "Una cuenta 2-de-3 requiere de 2 de las 3 firmas para gastar los fondos. La tercera firma proviene de una llave de respaldo que solo tú conoces. Esto te proporciona los beneficios de seguridad de una cuenta estándar y al mismo tiempo te permite gestionar tus fondos de manera independiente en cualquier momento.";
 "id_a_new_transaction_has_just" = "Una nueva transacción acaba de llegar a tu cartera.";
 "id_a_newer_version_of_blockstream" = "Ya está disponible una versión más reciente de Blockstream Green.";
