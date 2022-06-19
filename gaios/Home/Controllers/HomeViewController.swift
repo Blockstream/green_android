@@ -178,6 +178,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 1 && AccountsManager.shared.hwAccounts.isEmpty {
+            return 0
+        }
         return headerH
     }
 
@@ -199,6 +202,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
         case 1:
+            if AccountsManager.shared.hwAccounts.isEmpty {
+                return UIView()
+            }
             return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
         case 2:
             return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
