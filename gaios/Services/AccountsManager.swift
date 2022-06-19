@@ -5,15 +5,19 @@ class AccountsManager {
     let attrService = "AccountsManager_Service"
     static let shared = AccountsManager()
 
-    private var currentId = ""
-
-    // List of saved accounts
+    // List of saved accounts with cache
+    private var accountsCached: [Account]?
     var accounts: [Account] {
         get {
-            return (try? read()) ?? []
+            if let cached = accountsCached {
+                return cached
+            }
+            accountsCached = try? read()
+            return accountsCached ?? []
         }
         set {
             try? write(newValue)
+            accountsCached = newValue
         }
     }
 
@@ -29,6 +33,7 @@ class AccountsManager {
                        Account(name: "Ledger Nano X", network: "mainnet", isLedger: true, isSingleSig: false) ]
 
     // Current Account
+    private var currentId = ""
     var current: Account? {
         get {
             (accounts).filter({ $0.id == currentId }).first
@@ -51,6 +56,7 @@ class AccountsManager {
         }
         if !UserDefaults.standard.bool(forKey: "FirstInitialization") {
             try? remove()
+            accounts = []
             UserDefaults.standard.set(true, forKey: "FirstInitialization")
 
             // Handle wallet migration
