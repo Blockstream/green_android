@@ -37,6 +37,8 @@ class ChooseSecurityViewController: UIViewController {
         case .restore:
             // not used now
             AnalyticsManager.shared.recordView(.onBoardChooseSecurity, sgmt: AnalyticsManager.shared.chooseSecuritySgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
+        case .watchonly:
+            AnalyticsManager.shared.recordView(.onBoardWatchOnlyChooseSecurity, sgmt: AnalyticsManager.shared.chooseSecuritySgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
         }
     }
 
@@ -62,13 +64,25 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     @objc func didPressCardSimple() {
-        securityOption = .single
-        selectLength()
+        switch LandingViewController.flowType {
+        case .watchonly:
+            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
+        default:
+            securityOption = .single
+            selectLength()
+        }
     }
 
     @objc func didPressCardAdvanced() {
-        securityOption = .multi
-        selectLength()
+        switch LandingViewController.flowType {
+        case .watchonly:
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        default:
+            securityOption = .multi
+            selectLength()
+        }
     }
 
     func selectLength() {

@@ -3,6 +3,7 @@ import UIKit
 enum OnBoardingFlowType {
     case add
     case restore
+    case watchonly
 }
 
 enum ActionOnButton {
@@ -119,9 +120,14 @@ class LandingViewController: UIViewController {
             let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
             navigationController?.pushViewController(vc, animated: true)
         case .watchOnly:
+            LandingViewController.flowType = .watchonly
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
+            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
             navigationController?.pushViewController(vc, animated: true)
+            // andare in choose security
+//            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+//            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
+//            navigationController?.pushViewController(vc, animated: true)
         }
     }
 

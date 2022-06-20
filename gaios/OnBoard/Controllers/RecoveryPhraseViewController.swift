@@ -29,6 +29,8 @@ class RecoveryPhraseViewController: UIViewController {
             AnalyticsManager.shared.recordView(.onBoardChooseRecovery, sgmt: AnalyticsManager.shared.chooseRecoverySgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
         case .restore:
             AnalyticsManager.shared.recordView(.onBoardChooseRecovery, sgmt: AnalyticsManager.shared.chooseRecoverySgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
+        case .watchonly:
+            break
         }
     }
 

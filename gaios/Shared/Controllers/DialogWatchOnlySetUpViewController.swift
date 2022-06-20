@@ -26,9 +26,9 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var btnsStack: UIStackView!
     @IBOutlet weak var lblError: UILabel!
-
     @IBOutlet weak var lblUsernameError: UILabel!
     @IBOutlet weak var lblPasswordError: UILabel!
+    @IBOutlet weak var btnSecure: UIButton!
 
     weak var delegate: DialogWatchOnlySetUpViewControllerDelegate?
 
@@ -53,6 +53,8 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         }
         validate()
         lblError.isHidden = true
+        passwordField.isSecureTextEntry = true
+        updateSecureBtn()
     }
 
     func setContent() {
@@ -73,6 +75,11 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         passwordField.setRightPaddingPoints(10.0)
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+    }
+
+    func updateSecureBtn() {
+        let img = passwordField.isSecureTextEntry == true ? UIImage(named: "ic_eye")!.maskWithColor(color: UIColor.customMatrixGreen()) : UIImage(named: "ic_hide")!.maskWithColor(color: UIColor.customMatrixGreen())
+        btnSecure.setImage(img, for: .normal)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -213,4 +220,8 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         validate()
     }
 
+    @IBAction func btnSecure(_ sender: Any) {
+        passwordField.isSecureTextEntry.toggle()
+        updateSecureBtn()
+    }
 }

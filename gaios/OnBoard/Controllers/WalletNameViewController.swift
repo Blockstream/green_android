@@ -37,6 +37,8 @@ class WalletNameViewController: UIViewController {
             AnalyticsManager.shared.recordView(.onBoardWalletName, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strCreate))
         case .restore:
             AnalyticsManager.shared.recordView(.onBoardWalletName, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
+        case .watchonly:
+            break
         }
 
     }

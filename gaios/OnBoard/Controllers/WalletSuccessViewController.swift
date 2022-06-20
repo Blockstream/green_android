@@ -32,6 +32,8 @@ class WalletSuccessViewController: UIViewController {
             btnWallet.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
             btnBackup.isHidden = true
             AnalyticsManager.shared.recordView(.onBoardSuccess, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
+        case .watchonly:
+            break
         }
     }
 

@@ -28,10 +28,6 @@ class ChooseNetworkViewController: UIViewController {
         setStyle()
         setActions()
 
-        if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) != true {
-            cardTestnet.isHidden = true
-            cardLiquidTestnet.isHidden = true
-        }
         view.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.view
         cardTestnet.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.testnetCard
         cardLiquidTestnet.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.liquidTestnetCard
@@ -41,7 +37,17 @@ class ChooseNetworkViewController: UIViewController {
             AnalyticsManager.shared.recordView(.onBoardChooseNetwork, sgmt: AnalyticsManager.shared.chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow.strCreate))
         case .restore:
             AnalyticsManager.shared.recordView(.onBoardChooseNetwork, sgmt: AnalyticsManager.shared.chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow.strRestore))
+        case .watchonly:
+            AnalyticsManager.shared.recordView(.onBoardChooseNetwork, sgmt: AnalyticsManager.shared.chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow.strCreate))
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        let hideTestnets: Bool = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) != true
+        cardTestnet.isHidden = hideTestnets
+        cardLiquidTestnet.isHidden = hideTestnets
     }
 
     func setContent() {
@@ -74,23 +80,51 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     @objc func didPressCardBitcoin() {
-        OnBoardManager.shared.params = OnBoardParams(network: "mainnet")
-        next()
+        switch LandingViewController.flowType {
+        case .watchonly:
+            nextWatchOnly(.bitcoin)
+        default:
+            OnBoardManager.shared.params = OnBoardParams(network: AvailableNetworks.bitcoin.rawValue)
+            next()
+        }
     }
 
     @objc func didPressCardLiquid() {
-        OnBoardManager.shared.params = OnBoardParams(network: "liquid")
-        next()
+        switch LandingViewController.flowType {
+        case .watchonly:
+            nextWatchOnly(.liquid)
+        default:
+            OnBoardManager.shared.params = OnBoardParams(network: AvailableNetworks.liquid.rawValue)
+            next()
+        }
     }
 
     @objc func didPressCardTestnet() {
-        OnBoardManager.shared.params = OnBoardParams(network: "testnet")
-        next()
+        switch LandingViewController.flowType {
+        case .watchonly:
+            nextWatchOnly(.testnet)
+        default:
+            OnBoardManager.shared.params = OnBoardParams(network: AvailableNetworks.testnet.rawValue)
+            next()
+        }
     }
 
     @objc func didPressCardLiquidTestnet() {
-        OnBoardManager.shared.params = OnBoardParams(network: "testnet-liquid")
-        next()
+        switch LandingViewController.flowType {
+        case .watchonly:
+            nextWatchOnly(.testnetLiquid)
+        default:
+            OnBoardManager.shared.params = OnBoardParams(network: AvailableNetworks.testnetLiquid.rawValue)
+            next()
+        }
+    }
+
+    func nextWatchOnly(_ network: AvailableNetworks) {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController") as? WatchOnlyViewController {
+            vc.network = network
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     func next() {
@@ -103,6 +137,8 @@ class ChooseNetworkViewController: UIViewController {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
             navigationController?.pushViewController(vc, animated: true)
+        case .watchonly:
+            break
         }
     }
 }

@@ -20,6 +20,8 @@ class WatchOnlyViewController: KeyboardViewController {
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
 
+    var network: AvailableNetworks?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -55,6 +57,8 @@ class WatchOnlyViewController: KeyboardViewController {
         testnetSwitch.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.testnetSwitch
         loginButton.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.loginBtn
 
+        cardTestnet.isHidden = true
+
         AnalyticsManager.shared.recordView(.onBoardWatchOnlyCredentials)
     }
 
@@ -74,6 +78,10 @@ class WatchOnlyViewController: KeyboardViewController {
     }
 
     @objc func testnetSwitchChange(_ sender: UISwitch) {
+    }
+
+    @objc func back(sender: UIBarButtonItem) {
+        navigationController?.popViewController(animated: true)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -125,13 +133,14 @@ class WatchOnlyViewController: KeyboardViewController {
     }
 
     @objc func click(_ sender: Any) {
-        let network = testnetSwitch.isOn ? "testnet" : "mainnet"
+        guard let network = network else { return } //testnetSwitch.isOn ? "testnet" : "mainnet"
         let username = self.usernameTextField.text ?? ""
         let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
-        let name = "\(AccountsManager.shared.nameLabel(network)) watch-only"
-        var account = Account(name: name, network: network, username: username, isSingleSig: false)
+
+        let name = "\(network.name()) watch-only"
+        var account = Account(name: name, network: network.rawValue, username: username, isSingleSig: false)
         if self.rememberSwitch.isOn {
             account.password = password
         }
@@ -179,6 +188,6 @@ extension WatchOnlyViewController: WalletSettingsViewControllerDelegate {
         //
     }
     func didSet(testnet: Bool) {
-        cardTestnet.isHidden = !testnet
+        // cardTestnet.isHidden = !testnet
     }
 }

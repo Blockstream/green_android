@@ -69,9 +69,8 @@ class UserSettingsViewController: UIViewController {
             if let settings = try session.getSettings() {
                 SessionsManager.current?.settings = Settings.from(settings)
             }
-            if let account = account, let network = account.gdkNetwork,
-               !(account.isSingleSig ?? false) && !network.liquid {
-                // watchonly available on multisig for not liquid networks
+            if let account = account, !(account.isSingleSig ?? false) {
+                // watchonly available on multisig
                     self.username = try session.getWatchOnlyUsername()
             }
         }
@@ -106,7 +105,7 @@ class UserSettingsViewController: UIViewController {
             subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_disabled" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .general,
             type: .WatchOnly)
-        if isLiquid || isSingleSig || isWatchOnly || isResetActive {} else {
+        if  isSingleSig || isWatchOnly || isResetActive {} else {
             items += [watchOnly]
         }
         if let settings = SessionsManager.current?.settings {
