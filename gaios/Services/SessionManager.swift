@@ -58,7 +58,6 @@ class SessionManager: Session {
     }
 
     public func connect() throws {
-        print("connect")
         if connected == false {
             try connect(network: self.account?.networkName ?? "mainnet")
         }
@@ -110,7 +109,7 @@ class SessionManager: Session {
         let bgq = DispatchQueue.global(qos: .background)
         let pointer = activeWallet
         return Guarantee().then(on: bgq) {_ in
-            try self.getTransactions(details: ["subaccount": pointer, "first": first, "count": Constants.trxPerPage]).resolve()
+            try self.getTransactions(details: ["subaccount": pointer, "first": first, "count": Constants.trxPerPage]).resolve(session: self)
         }.compactMap(on: bgq) { data in
             let result = data["result"] as? [String: Any]
             let dict = result?["transactions"] as? [[String: Any]]
@@ -123,12 +122,12 @@ class SessionManager: Session {
         let bgq = DispatchQueue.global(qos: .background)
         let pointer = pointer ?? activeWallet
         return Guarantee().then(on: bgq) {
-            try self.getSubaccount(subaccount: pointer).resolve()
+            try self.getSubaccount(subaccount: pointer).resolve(session: self)
         }.recover {_ in
             return Guarantee().compactMap { [self] in
                 activeWallet = 0
             }.then(on: bgq) {
-                try self.getSubaccount(subaccount: 0).resolve()
+                try self.getSubaccount(subaccount: 0).resolve(session: self)
             }
         }.compactMap(on: bgq) { data in
             let result = data["result"] as? [String: Any]
@@ -140,7 +139,7 @@ class SessionManager: Session {
     func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().then(on: bgq) {
-            try self.getSubaccounts(details: ["refresh": refresh]).resolve()
+            try self.getSubaccounts(details: ["refresh": refresh]).resolve(session: self)
         }.compactMap(on: bgq) { data in
             let result = data["result"] as? [String: Any]
             let subaccounts = result?["subaccounts"] as? [[String: Any]]
@@ -191,7 +190,7 @@ class SessionManager: Session {
             }.map(on: bgq) {
                 try self.connect()
             }.then(on: bgq) { _ in
-                try super.loginUser(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hw_device: [:]).resolve()
+                try super.loginUser(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hw_device: [:]).resolve(session: self)
             }.map(on: bgq) { res in
                 // check if wallet just exist
                 let result = res["result"] as? [String: Any]
@@ -280,7 +279,7 @@ class SessionManager: Session {
                 }
                 return [:]
             }.then(on: bgq) { device in
-                try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve()
+                try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve(session: self)
             }.asVoid()
     }
 
@@ -290,7 +289,7 @@ class SessionManager: Session {
             .map(on: bgq) {
                 try self.connect()
             }.then(on: bgq) {
-                try super.loginUser(details: [:]).resolve().asVoid()
+                try super.loginUser(details: [:]).resolve(session: self).asVoid()
             }
     }
 
@@ -309,7 +308,7 @@ class SessionManager: Session {
                 }
                 return (details, [:])
             }.then(on: bgq) { (details, device) in
-                try super.loginUser(details: details, hw_device: device).resolve()
+                try super.loginUser(details: details, hw_device: device).resolve(session: self)
             }.compactMap { res in
                 self.logged = true
                 // update wallet hash id
@@ -344,7 +343,7 @@ class SessionManager: Session {
                 // create a default segwit account if doesn't exist on singlesig
                 if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
                     return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
-                        .resolve().asVoid()
+                        .resolve(session: self).asVoid()
                 }
                 return Promise<Void>().asVoid()
             }.then { _ -> Promise<Void> in

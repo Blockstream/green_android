@@ -9,13 +9,13 @@ enum TwoFactorCallError: Error {
 
 extension TwoFactorCall {
 
-    func resolve(connected: @escaping() -> Bool = { true }) -> Promise<[String: Any]> {
+    func resolve(connected: @escaping() -> Bool = { true }, session: SessionManager? = nil) -> Promise<[String: Any]> {
         func step() -> Promise<[String: Any]> {
             let bgq = DispatchQueue.global(qos: .background)
             return Guarantee().map(on: bgq) {
                 try self.getStatus()!
             }.then { json in
-                try self.resolving(json: json, connected: connected).map { _ in json }
+                try self.resolving(json: json, connected: connected, session: (session ?? SessionsManager.current)!).map { _ in json }
             }.then(on: bgq) { json -> Promise<[String: Any]> in
                 guard let status = json["status"] as? String else { throw GaError.GenericError }
                 if status == "done" {
@@ -28,7 +28,7 @@ extension TwoFactorCall {
         return step()
     }
 
-    private func resolving(json: [String: Any], connected: @escaping() -> Bool = { true }) throws -> Promise<Void> {
+    private func resolving(json: [String: Any], connected: @escaping() -> Bool = { true }, session: SessionManager) throws -> Promise<Void> {
         guard let status = json["status"] as? String else { throw GaError.GenericError }
         let bgq = DispatchQueue.global(qos: .background)
         switch status {
@@ -60,7 +60,7 @@ extension TwoFactorCall {
                 let device = requiredData["device"] as? [String: Any],
                 let json = try? JSONSerialization.data(withJSONObject: device, options: []),
                 let hwdevice = try? JSONDecoder().decode(HWDevice.self, from: json) {
-                return HWResolver.shared.resolveCode(action: action, device: hwdevice, requiredData: requiredData)
+                return HWResolver(session: session).resolveCode(action: action, device: hwdevice, requiredData: requiredData)
                     .compactMap(on: bgq) { code in
                         try self.resolveCode(code: code)
                 }
