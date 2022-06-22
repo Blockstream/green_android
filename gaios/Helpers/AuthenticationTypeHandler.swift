@@ -304,14 +304,18 @@ class AuthenticationTypeHandler {
         return callWrapper(fun: SecItemDelete(q as CFDictionary)) == errSecSuccess
     }
 
-    static func addBiometryType(data: [String: Any], extraData: String, forNetwork: String) throws {
+    static func addBiometryType(pinData: PinData, extraData: String, forNetwork: String) throws {
         let encrypted = try encrypt(plaintext: extraData, forNetwork: forNetwork)
-        var extended = data
-        extended["encrypted_biometric"] = encrypted
-        try set(method: AuthKeyBiometric, data: extended, forNetwork: forNetwork)
+        var pindata = pinData
+        pindata.encryptedBiometric = encrypted
+        let data = try? JSONEncoder().encode(pindata)
+        let extended = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        try set(method: AuthKeyBiometric, data: extended ?? [:], forNetwork: forNetwork)
     }
 
-    static func addPIN(data: [String: Any], forNetwork: String) throws {
-        try set(method: AuthKeyPIN, data: data, forNetwork: forNetwork)
+    static func addPIN(pinData: PinData, forNetwork: String) throws {
+        let data = try? JSONEncoder().encode(pinData)
+        let extended = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        try set(method: AuthKeyPIN, data: extended ?? [:], forNetwork: forNetwork)
     }
 }

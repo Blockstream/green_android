@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import PromiseKit
 
 struct Account: Codable, Equatable {
 
@@ -135,25 +136,29 @@ struct Account: Codable, Equatable {
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: keychain)
     }
 
-    func addBioPin(session: Session) throws {
-        if UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + keychain) == nil {
-            try AuthenticationTypeHandler.generateBiometricPrivateKey(network: keychain)
-        }
+    func addBioPin(session: SessionManager) -> Promise<Void> {
         let password = String.random(length: 14)
-        let deviceid = String.random(length: 14)
-        let mnemonics = try session.getMnemonicPassphrase(password: "")
-        guard let pindata = try session.setPin(mnemonic: mnemonics, pin: password, device: deviceid) else {
-            throw AuthenticationTypeHandler.AuthError.NotSupported
-        }
-        try AuthenticationTypeHandler.addBiometryType(data: pindata, extraData: password, forNetwork: keychain)
+        let authKeyBiometricPrivateKey = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + keychain)
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .map(on: bgq) {
+                if authKeyBiometricPrivateKey == nil {
+                    try AuthenticationTypeHandler.generateBiometricPrivateKey(network: keychain)
+                }
+            }.then(on: bgq) {
+                session.getCredentials(password: "") }
+            .then(on: bgq) {
+                session.encryptWithPin(pin: password, text: ["mnemonic": $0]) }
+            .compactMap(on: bgq) { try AuthenticationTypeHandler.addBiometryType(pinData: $0, extraData: password, forNetwork: keychain) }
     }
 
-    func addPin(session: Session, pin: String, mnemonic: String) throws {
-        let deviceid = String.random(length: 14)
-        guard let pindata = try session.setPin(mnemonic: mnemonic, pin: pin, device: deviceid) else {
-            throw AuthenticationTypeHandler.AuthError.NotSupported
-        }
-        try AuthenticationTypeHandler.addPIN(data: pindata, forNetwork: keychain)
+    func addPin(session: SessionManager, pin: String, mnemonic: String) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .then(on: bgq) {
+                session.encryptWithPin(pin: pin, text: ["mnemonic": mnemonic]) }
+            .map(on: bgq) {
+                try AuthenticationTypeHandler.addPIN(pinData: $0, forNetwork: keychain) }
     }
 
     var networkName: String {

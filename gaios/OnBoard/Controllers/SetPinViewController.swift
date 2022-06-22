@@ -194,14 +194,15 @@ class SetPinViewController: UIViewController {
                 self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""))
             }
             return Guarantee()
-        }.compactMap(on: bgq) {
-            let mnemonic = try session.getMnemonicPassphrase(password: "")
-            try account.addPin(session: session, pin: pin, mnemonic: mnemonic)
-            account.attempts = 0
-            AccountsManager.shared.current = account
+        }.then(on: bgq) {
+            session.getCredentials(password: "")
+        }.then(on: bgq) { mnemonic in
+            account.addPin(session: session, pin: pin, mnemonic: mnemonic)
         }.ensure {
             self.stopLoader()
         }.done { _ in
+            account.attempts = 0
+            AccountsManager.shared.current = account
             switch self.pinFlow {
             case .settings:
                 self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)

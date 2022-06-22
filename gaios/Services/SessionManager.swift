@@ -252,6 +252,13 @@ class SessionManager: Session {
         return Guarantee()
             .map(on: bgq) {
                 try self.connect()
+            }.then(on: bgq) { _ -> Promise<Void> in
+                if let hwDevice = hwDevice {
+                    return self.registerHW(hw: hwDevice)
+                } else if let mnemonic = mnemonic {
+                    return self.registerUser(mnemonic: mnemonic)
+                }
+                return Promise().asVoid()
             }.then(on: bgq) { _ in
                 self.registerUser(mnemonic: mnemonic, hwDevice: hwDevice)
             }.then(on: bgq) { _ in
@@ -356,6 +363,40 @@ class SessionManager: Session {
                 // load async assets registry
                 self.registry?.cache(session: self)
                 self.registry?.loadAsync(session: self)
+            }
+    }
+
+    func getCredentials(password: String) -> Promise<String> {
+        return Guarantee()
+            .then { try super.getCredentials(details: ["password": password]).resolve() }
+            .compactMap {
+                let result = $0["result"] as? [String: Any]
+                return result?["mnemonic"] as? String
+            }
+    }
+
+    func registerUser(mnemonic: String) -> Promise<Void> {
+        return Guarantee()
+            .then { try super.registerUser(details: ["mnemonic": mnemonic], hw_device: [:]).resolve() }
+            .asVoid()
+    }
+
+    func registerHW(hw: HWDevice) -> Promise<Void> {
+        let data = try? JSONEncoder().encode(hw)
+        let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments)
+        return Guarantee()
+            .then { try super.registerUser(details: [:], hw_device: ["device": device ?? [:]]).resolve() }
+            .asVoid()
+    }
+
+    func encryptWithPin(pin: String, text: [String: Any?]) -> Promise<PinData> {
+        return Guarantee()
+            .then { try super.encryptWithPin(details: ["pin": pin, "plaintext": text]).resolve() }
+            .compactMap { res in
+                let result = res["result"] as? [String: Any]
+                let txt = result?["pin_data"] as? [String: Any]
+                let jsonData = try JSONSerialization.data(withJSONObject: txt ?? "")
+                return try JSONDecoder().decode(PinData.self, from: jsonData)
             }
     }
 }

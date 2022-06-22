@@ -146,6 +146,8 @@ class WalletNameViewController: UIViewController {
                 self.error(session, message: NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
             case LoginError.connectionFailed:
                 self.error(session, message: NSLocalizedString("id_connection_failed", comment: ""))
+            case TwoFactorCallError.cancel(localizedDescription: let desc), TwoFactorCallError.failure(localizedDescription: let desc):
+                self.error(session, message: desc)
             default:
                 self.error(session, message: error.localizedDescription)
             }
