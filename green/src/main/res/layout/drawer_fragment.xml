@@ -52,6 +52,7 @@
             <androidx.core.widget.NestedScrollView
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -71,9 +72,9 @@
                         android:id="@+id/helpCenter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginTop="16dp"
                         android:gravity="center_vertical"
-                        android:layout_marginTop="16dp">
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:layout_width="24dp"
@@ -89,16 +90,16 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="24dp"
                             android:layout_marginBottom="16dp"
-                            android:textColor="@color/color_on_surface_emphasis_low"
-                            android:text="@string/id_help"
+                            android:layout_weight="1"
                             android:drawablePadding="8dp"
-                            android:textAppearance="?attr/textAppearanceBody1"
                             android:gravity="center_vertical"
+                            android:text="@string/id_help"
+                            android:textAppearance="?attr/textAppearanceBody1"
+                            android:textColor="@color/color_on_surface_emphasis_low"
                             app:drawableEndCompat="@drawable/ic_baseline_link_18"
                             app:drawableTint="@color/color_on_surface_emphasis_very_low" />
 
@@ -120,18 +121,20 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
-                android:id="@+id/textView6"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAbout"
+                style="@style/Widget.Green.Button.Text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@{activityVm.buildVersion}"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="@color/color_on_surface_emphasis_very_low"
+                android:layout_marginStart="8dp"
+                android:text="@string/id_about"
+                android:textColor="@color/color_on_surface_emphasis_low"
                 android:textSize="12sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/buttonAppSettings"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:text="Build 3.14.00" />
+                app:icon="@drawable/ic_shield_white"
+                app:iconSize="24dp"
+                app:iconTint="@color/color_on_surface_emphasis_medium"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

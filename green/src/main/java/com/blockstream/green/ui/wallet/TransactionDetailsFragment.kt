@@ -138,7 +138,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
                                 if (!it.isNullOrBlank()) "#blinded=$it" else ""
                             }
 
-                            share("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
+                            openBrowser("${session.network.explorerUrl}${args.transaction.txHash}$blinder")
                         }
                     }, childFragmentManager)
                 } else {

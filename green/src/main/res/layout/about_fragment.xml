@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="buildVersion"
+            type="String" />
+
+        <variable
+            name="year"
+            type="String" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.6"
+            app:srcCompat="@drawable/green_brand_logo" />
+
+        <ImageView
+            android:id="@+id/website"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="8dp"
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/twitter"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/version"
+            app:srcCompat="@drawable/ic_globe_solid"
+            app:tint="@color/white" />
+
+
+        <ImageView
+            android:id="@+id/twitter"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/linkedin"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/website"
+            app:layout_constraintTop_toTopOf="@+id/website"
+            app:srcCompat="@drawable/ic_twitter_brands"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/linkedin"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/facebook"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/twitter"
+            app:layout_constraintTop_toTopOf="@+id/twitter"
+            app:srcCompat="@drawable/ic_linkedin_in_brands"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/facebook"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linkedin"
+            app:layout_constraintTop_toTopOf="@+id/linkedin"
+            app:srcCompat="@drawable/ic_facebook_f_brands"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/telegram"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/github"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/website"
+            app:srcCompat="@drawable/ic_telegram_brands"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/github"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:padding="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/youtube"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/telegram"
+            app:layout_constraintTop_toTopOf="@+id/telegram"
+            app:srcCompat="@drawable/ic_github_brands"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/youtube"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/github"
+            app:layout_constraintTop_toTopOf="@+id/github"
+            app:srcCompat="@drawable/ic_youtube"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@{buildVersion}"
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/logo"
+            app:layout_constraintTop_toBottomOf="@+id/logo"
+            tools:text="4.0.0" />
+
+        <TextView
+            android:id="@+id/copyright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@{`© ` + year + ` Blockstream Corporation Inc.`}"
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="@color/color_on_surface_emphasis_low"
+            android:textSize="11dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="© 2022 Blockstream Corporation Inc." />
+
+        <com.blockstream.green.views.GappedLinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="vertical"
+            app:gap="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonTermsOfService"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/telegram">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/rateUs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/buttonTermsOfService"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/telegram">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toTopOf="@+id/buttonRateUs"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_baseline_star_24"
+                            app:tint="@color/brand_green" />
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_baseline_star_24"
+                            app:tint="@color/brand_green" />
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_baseline_star_24"
+                            app:tint="@color/brand_green" />
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_baseline_star_24"
+                            app:tint="@color/brand_green" />
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_baseline_star_24"
+                            app:tint="@color/brand_green" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/buttonRateUs"
+                        style="@style/Widget.Green.Button.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:clickable="false"
+                        android:text="@string/id_rate_us_on_google_play"
+                        app:layout_constraintBottom_toTopOf="@+id/buttonTermsOfService"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/github" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/buttonHelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:layout_constraintBottom_toBottomOf="@+id/materialCardView4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/materialCardView4"
+                app:layout_constraintTop_toTopOf="@+id/materialCardView4">
+
+                <TextView
+                    style="@style/Widget.Green.Button.Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:clickable="false"
+                    android:text="@string/id_visit_the_blockstream_help"
+                    app:layout_constraintBottom_toTopOf="@+id/buttonTermsOfService"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/github" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </com.blockstream.green.views.GappedLinearLayout>
+
+
+        <Button
+            android:id="@+id/buttonTermsOfService"
+            style="@style/Widget.Green.Button.Text.Tiny"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/id_terms_of_service"
+            app:layout_constraintBottom_toTopOf="@+id/copyright"
+            app:layout_constraintEnd_toStartOf="@+id/buttonPrivacyPolocy"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/buttonPrivacyPolocy"
+            style="@style/Widget.Green.Button.Text.Tiny"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/id_privacy_policy"
+            app:layout_constraintBaseline_toBaselineOf="@+id/buttonTermsOfService"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/buttonTermsOfService" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

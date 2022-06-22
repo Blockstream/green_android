@@ -220,7 +220,7 @@ class MainActivity : AppActivity() {
             }
 
             binding.appBarLayout.isInvisible =
-                (destination.id == R.id.introFragment || destination.id == R.id.onBoardingCompleteFragment)
+                (destination.id == R.id.onBoardingCompleteFragment)
         }
 
         // Set version into the main VM

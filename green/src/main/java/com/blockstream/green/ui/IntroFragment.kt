@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.IntroFragmentBinding
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
@@ -40,16 +41,10 @@ class IntroFragment : WalletListCommonFragment<IntroFragmentBinding>(R.layout.in
             }
         }
 
+        binding.buttonAbout.setOnClickListener {
+            navigate(NavGraphDirections.actionGlobalAboutFragment())
+        }
+
         init(binding.common, viewModel)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        (requireActivity() as AppActivity).lockDrawer(true)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        (requireActivity() as AppActivity).lockDrawer(false)
     }
 }

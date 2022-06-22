@@ -5,6 +5,15 @@ object Database {
 }
 
 object Urls {
+    const val BLOCKSTREAM_GREEN_WEBSITE = "https://blockstream.com/green/"
+    const val BLOCKSTREAM_TWITTER = "https://twitter.com/Blockstream"
+    const val BLOCKSTREAM_LINKEDIN = "https://www.linkedin.com/company/blockstream"
+    const val BLOCKSTREAM_FACEBOOK = "https://www.facebook.com/Blockstream"
+    const val BLOCKSTREAM_TELEGRAM = "https://t.me/blockstream_green"
+    const val BLOCKSTREAM_GITHUB = "https://github.com/Blockstream"
+    const val BLOCKSTREAM_YOUTUBE = "https://www.youtube.com/channel/UCZNt3fZazX9cwWcC9vjDJ4Q"
+    const val BLOCKSTREAM_GOOGLE_PLAY = "https://play.google.com/store/apps/details?id=com.greenaddress.greenbits_android_wallet"
+
     const val TERMS_OF_SERVICE = "https://blockstream.com/green/terms/"
     const val PRIVACY_POLICY = "https://blockstream.com/green/privacy/"
     const val HELP_MNEMONIC_NOT_WORKING = "https://help.blockstream.com/hc/en-us/articles/900001388566-Why-is-my-mnemonic-backup-not-working-"

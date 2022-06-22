@@ -1129,4 +1129,5 @@
   <string name="id_standard">Standard</string>
   <string name="id_amp">AMP</string>
   <string name="id_2of3">2of3</string>
+  <string name="id_you_have_successfully_send_a_transaction">You have successfully send a transaction. Please give us your feedback to improve our app.</string>
 </resources>

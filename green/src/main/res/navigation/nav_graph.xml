@@ -653,5 +653,13 @@
             android:name="accountType"
             app:argType="com.blockstream.gdk.data.AccountType" />
     </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.blockstream.green.ui.AboutFragment"
+        android:label=""
+        tools:layout="@layout/about_fragment" />
+    <action
+        android:id="@+id/action_global_aboutFragment"
+        app:destination="@id/aboutFragment" />
 
 </navigation>

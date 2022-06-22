@@ -75,8 +75,6 @@ class WalletSettingsFragment :
     private lateinit var changePinPreference: PreferenceListItem
 
     private lateinit var versionPreference: PreferenceListItem
-    private lateinit var termsOfServicePreference: PreferenceListItem
-    private lateinit var privacyPolicyPreference: PreferenceListItem
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -108,7 +106,7 @@ class WalletSettingsFragment :
 
         binding.vm = viewModel
 
-        supportIdPreference = PreferenceListItem(StringHolder(R.string.id_support), StringHolder(R.string.id_copy_support_id), iconRes = R.drawable.ic_baseline_content_copy_24)
+        supportIdPreference = PreferenceListItem(StringHolder(R.string.id_support), subtitle = StringHolder(R.string.id_copy_support_id), iconRes = R.drawable.ic_baseline_content_copy_24)
         watchOnlyMultisigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
         watchOnlySinglesigPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_details))
         logoutPreference = PreferenceListItem(StringHolder(wallet.name), StringHolder(R.string.id_logout), withSubtitleRed = true)
@@ -157,8 +155,6 @@ class WalletSettingsFragment :
                     BuildConfig.BUILD_TYPE
                 )
             )))
-        termsOfServicePreference = PreferenceListItem(StringHolder(R.string.id_terms_of_service), iconRes = R.drawable.ic_baseline_link_24)
-        privacyPolicyPreference = PreferenceListItem(StringHolder(R.string.id_privacy_policy), iconRes = R.drawable.ic_baseline_link_24)
 
         updateAdapter()
 
@@ -247,12 +243,6 @@ class WalletSettingsFragment :
                     }
                     pgpPreference -> {
                         handlePGP()
-                    }
-                    termsOfServicePreference -> {
-                        openBrowser(settingsManager.getApplicationSettings(), Urls.TERMS_OF_SERVICE)
-                    }
-                    privacyPolicyPreference -> {
-                        openBrowser(settingsManager.getApplicationSettings(), Urls.PRIVACY_POLICY)
                     }
                     biometricsPreference -> {
                         if (viewModel.biometricsLiveData.value == null) {
@@ -438,8 +428,6 @@ class WalletSettingsFragment :
             if(session.isMultisig) {
                 list += supportIdPreference
             }
-            list += termsOfServicePreference
-            list += privacyPolicyPreference
         }
 
         updateBiometricsSubtitle()

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.DrawerFragmentBinding
@@ -31,12 +32,18 @@ class DrawerFragment : WalletListCommonFragment<DrawerFragmentBinding>(R.layout.
         init(binding.common, viewModel)
 
         binding.buttonAppSettings.setOnClickListener {
-            AppSettingsDialogFragment.show(childFragmentManager)
             closeDrawer()
+            AppSettingsDialogFragment.show(childFragmentManager)
         }
 
         binding.helpCenter.setOnClickListener {
+            closeDrawer()
             openBrowser(Urls.HELP_CENTER)
+        }
+
+        binding.buttonAbout.setOnClickListener {
+            closeDrawer()
+            navigate(NavGraphDirections.actionGlobalAboutFragment())
         }
     }
 }
