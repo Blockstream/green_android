@@ -55,6 +55,13 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         lblError.isHidden = true
         passwordField.isSecureTextEntry = true
         updateSecureBtn()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.view
+        usernameField.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.usernameField
+        passwordField.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.passwordField
+        btnSave.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.saveBtn
+        btnDelete.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.deleteBtn
+        btnDismiss.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.dismissBtn
     }
 
     func setContent() {
@@ -63,8 +70,8 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         btnDelete.setTitle("Delete credentials", for: .normal)
         usernameField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_username", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         passwordField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_password", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        lblUsernameError.text = NSLocalizedString("id_at_least_8_character_required", comment: "")
-        lblPasswordError.text = NSLocalizedString("id_at_least_8_character_required", comment: "")
+        lblUsernameError.text = NSLocalizedString("id_at_least_8_characters_required", comment: "")
+        lblPasswordError.text = NSLocalizedString("id_at_least_8_characters_required", comment: "")
     }
 
     func setStyle() {

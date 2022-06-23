@@ -236,7 +236,7 @@ class AddWalletUITests: XCTestBase {
         restoreWallet(walletName: walletName, words: words, isSingleSig: false, isLiquid: false)
     }
 
-    func testWatchOnlySetUp() {
+    func testWatchOnlyTestnetSetUp() {
         let walletName = Constants.walletName
         let words = Constants.mnemonic
         
@@ -261,22 +261,51 @@ class AddWalletUITests: XCTestBase {
         Settings()
             .pause(1)
             .tapWatchOnly()
+        
+        DialogWatchOnlySetUp()
+            .pause(1)
+
+        if DialogWatchOnlySetUp().hasCredentials(Constants.cryptoUser) {
+            DialogWatchOnlySetUp()
+                .deleteCredentials()
+                .pause(1)
+        } else {
+            DialogWatchOnlySetUp()
+                .dismiss()
+        }
+        
+        Settings()
+            .pause(1)
+            .tapWatchOnly()
+        
+        DialogWatchOnlySetUp()
+            .pause(1)
+            .clearUsername()
             .pause(1)
             .typeUsername(Constants.cryptoUser)
             .pause(1)
             .typePassword(Constants.cryptoPwd)
-            .tapSave()
             .pause(1)
+            .saveCredentials()
+            .pause(1)
+        
+        Settings()
             .tapLogOut()
         
         Home()
             .pause(1)
             .tapAddWalletView()
-        
+
         Landing()
             .tapAcceptTerms()
             .pause(1)
             .tapWatchOnlyWallet()
+
+        ChooseSecurity()
+            .tapMultiSigCard()
+        
+        ChooseNetwork()
+            .tapTestnetCard()
         
         WatchOnly()
             .pause(1)
@@ -284,10 +313,98 @@ class AddWalletUITests: XCTestBase {
             .pause(1)
             .typePassword(Constants.cryptoPwd)
             .pause(1)
-            .tapTestnetSwitch()
+            .tapLogin()
+
+        Overview()
+            .pause(1)
+            .waitTransactionsLoad()
+    }
+    
+    func testWatchOnlyLiquidTestnetSetUp() {
+        let walletName = Constants.walletNameLiquid
+        let words = Constants.mnemonicLiquid
+        
+        if Home().existsWallet(named: walletName) {
+            
+            Home()
+                .selectWallet(named: walletName)
+
+            Login()
+                .pause(1)
+                .digitPin()
+            
+        } else {
+            restoreWallet(walletName: walletName,
+                          words: words,
+                          isSingleSig: false,
+                          isLiquid: true)
+        }
+        
+        Overview()
+            .pause(1)
+            .waitIsReady()
+            .tapSettings()
+        
+        Settings()
+            .pause(1)
+            .tapWatchOnly()
+        
+        DialogWatchOnlySetUp()
+            .pause(1)
+
+        if DialogWatchOnlySetUp().hasCredentials(Constants.cryptoLiquidUser) {
+            DialogWatchOnlySetUp()
+                .deleteCredentials()
+                .pause(1)
+        } else {
+            DialogWatchOnlySetUp()
+                .dismiss()
+        }
+        
+        Settings()
+            .pause(1)
+            .tapWatchOnly()
+        
+        DialogWatchOnlySetUp()
+            .pause(1)
+            .clearUsername()
+            .pause(1)
+            .typeUsername(Constants.cryptoLiquidUser)
+            .pause(1)
+            .typePassword(Constants.cryptoLiquidPwd)
+            .pause(1)
+            .saveCredentials()
+            .pause(1)
+        
+        Settings()
+            .tapLogOut()
+        
+        Home()
+            .pause(1)
+            .tapAddWalletView()
+
+        Landing()
+            .tapAcceptTerms()
+            .pause(1)
+            .tapWatchOnlyWallet()
+
+        ChooseSecurity()
+            .tapMultiSigCard()
+        
+        ChooseNetwork()
+            .pause(1)
+            .swipeListUp()
+            .pause(1)
+            .tapLiquidTestnetCard()
+        
+        WatchOnly()
+            .pause(1)
+            .typeUsername(Constants.cryptoLiquidUser)
+            .pause(1)
+            .typePassword(Constants.cryptoLiquidPwd)
             .pause(1)
             .tapLogin()
-            
+
         Overview()
             .pause(1)
             .waitTransactionsLoad()

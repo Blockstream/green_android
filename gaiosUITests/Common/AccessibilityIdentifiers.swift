@@ -262,4 +262,13 @@ struct AccessibilityIdentifiers {
     struct KeyboardView {
         static let done = "done_btn"
     }
+
+    struct DialogWatchOnlySetUpScreen {
+        static let view = "view_dialog_watch_only_set_up"
+        static let usernameField = "username_field"
+        static let passwordField = "password_field"
+        static let saveBtn = "save_btn"
+        static let deleteBtn = "delete_btn"
+        static let dismissBtn = "dismiss_btn"
+    }
 }

@@ -56,6 +56,14 @@ class Screen {
         return Foundation.NSLocalizedString(key, tableName:nil, bundle: bundle, comment: "")
     }
     
+    @discardableResult
+    func clearTextField(identifier: String) -> Self {
+        let e = app.textFields[identifier]
+        
+        let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: (e.value as! String).count)
+        return type(value: deleteString, in: e)
+    }
+    
 //    @discardableResult
 //    func matchStaticText(identifier: String) -> Self {
 //        XCTAssert(exists(staticText: identifier, timeout: 10))

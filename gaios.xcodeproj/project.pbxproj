@@ -190,6 +190,7 @@
 		34CBA41F270AE23800C85B05 /* Overview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CBA41E270AE23800C85B05 /* Overview.swift */; };
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
+		34D330442863485E009CDBB3 /* DialogWatchOnlySetUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
 		34D678AF261F060F00DBC0BB /* WalletDrawerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D678AE261F060F00DBC0BB /* WalletDrawerCell.swift */; };
 		34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */; };
@@ -518,6 +519,7 @@
 		34CBA41E270AE23800C85B05 /* Overview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overview.swift; sourceTree = "<group>"; };
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWatchOnlySetUp.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
 		34D678AE261F060F00DBC0BB /* WalletDrawerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDrawerCell.swift; sourceTree = "<group>"; };
 		34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDrawerHDCell.swift; sourceTree = "<group>"; };
@@ -832,6 +834,7 @@
 				34FF27AD27CCE926008FD72C /* DialogCustomFee.swift */,
 				3486AD7127CFC5060013D8FF /* AssetsList.swift */,
 				34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */,
+				34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -2104,6 +2107,7 @@
 				345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */,
 				342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */,
 				34237FC7276A479700618502 /* ExistingWallets.swift in Sources */,
+				34D330442863485E009CDBB3 /* DialogWatchOnlySetUp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

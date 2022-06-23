@@ -17,4 +17,11 @@ class ChooseNetwork: Screen {
         tap(app.otherElements[AccessibilityIdentifiers.ChooseNetworkScreen.liquidTestnetCard])
         return self
     }
+    
+    @discardableResult
+    func swipeListUp() -> Self {
+        rootElement.scrollViews.firstMatch.swipeUp()
+        return self
+    }
+    
 }

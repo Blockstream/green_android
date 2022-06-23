@@ -348,10 +348,10 @@ class SessionManager: Session {
                 return Promise<Void>().asVoid()
             }.then { _ -> Promise<Void> in
                 // load 2fa config on multisig
-                if isWatchonly && !isSingleSig {
+                if !isWatchonly && !isSingleSig {
                     return self.loadTwoFactorConfig().asVoid()
                 }
-                return Promise<Void>()
+                return Promise<Void>().asVoid()
             }.map { _ in
                 // load async assets registry
                 self.registry?.cache(session: self)
