@@ -288,7 +288,7 @@ class OverviewViewController: UIViewController {
 
     func reloadData() {
         isLoading = true
-        transactions.removeAll()
+//        transactions.removeAll()
         assets = [(key: String, value: UInt64)]()
         tableView.reloadData {
             self.loadSubaccounts()
