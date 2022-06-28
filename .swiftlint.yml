@@ -25,3 +25,4 @@ disabled_rules:
    - file_length
    - variable_name
    - implicit_getter
+   - no_space_in_method_call

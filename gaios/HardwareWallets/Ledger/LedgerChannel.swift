@@ -15,8 +15,8 @@ class LedgerChannel: HWChannelProtocol {
     static let WRITE_CHARACTERISTIC_UUID = CBUUID(string: "13D63400-2C97-0004-0002-4C6564676572")
     static let NOTIFY_CHARACTERISTIC_UUID = CBUUID(string: "13D63400-2C97-0004-0001-4C6564676572")
     static let CLIENT_CHARACTERISTIC_CONFIG = CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
-    var MTU: UInt8 = 128
-    var TIMEOUT: Int = 30
+    var MTU = 128
+    var TIMEOUT = 30
 
     // Status codes
     enum SWCode: UInt16 {
@@ -95,37 +95,45 @@ class LedgerChannel: HWChannelProtocol {
         #if DEBUG
         print("=> " + data.map { String(format: "%02hhx", $0) }.joined())
         #endif
-        let buf = try? LedgerWrapper.wrapCommandAPDUInternal(channel: 0, command: data, packetSize: MTU, hasChannel: false)
-        guard characteristicWrite != nil, let buffer = buf else {
-            return Observable.error(SWError(SWCode.SW_ABORT))
+        guard let buf = try? LedgerWrapper.wrapCommandAPDU(command: data, packetSize: MTU) else {
+            return Observable.error(GaError.GenericError)
         }
-        return self.characteristicWrite!.writeValue(buffer, type: .withResponse).asObservable()
-            .subscribeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { _ in return self.characteristicNotify!.observeValueUpdate() }
-            .timeoutIfNoEvent(RxTimeInterval.seconds(TIMEOUT))
-            .take(1)
-            .flatMap { characteristic -> Observable<Data> in
-                guard let buffer = characteristic.value else {
-                    return Observable.error(SWError(SWCode.SW_ABORT))
+        return write(buf)
+            .flatMap { _ in return self.read() }
+            .map { buffer -> Data in
+                let res = try LedgerWrapper.unwrapResponseAPDU(data: buffer, packetSize: buffer.count)
+                #if DEBUG
+                print("<= " + res.map { String(format: "%02hhx", $0) }.joined())
+                #endif
+                let command = res[0..<res.count-2]
+                let lastSW = (UInt16(res[res.count - 2]) << 8) + UInt16(res[res.count - 1])
+                if lastSW != SWCode.SW_OK.rawValue {
+                    throw SWError(SWCode.init(rawValue: lastSW) ?? SWCode.SW_ABORT)
                 }
-                return self.response(buffer)
+                return command
+            }
+    }
+
+    func write(_ data: Data) -> Observable<Characteristic> {
+        guard let characteristic = characteristicWrite else {
+            return Observable.error(GaError.GenericError)
+        }
+        if data.count <= 128 {
+            return characteristic.writeValue(data, type: .withResponse).asObservable()
+        }
+        return characteristic.writeValue(Data(data[0...127]), type: .withResponse).asObservable().flatMap { _ in
+            return self.write(Data(data[128...data.count-1]))
         }
     }
 
-    private func response(_ buffer: Data) -> Observable<Data> {
-        do {
-            let res = try LedgerWrapper.unwrapResponseAPDUInternal(channel: 0, data: buffer, packetSize: UInt8(buffer.count), hasChannel: false)
-            #if DEBUG
-            print("<= " + res.map { String(format: "%02hhx", $0) }.joined())
-            #endif
-            let command = res[0..<res.count-2]
-            let lastSW = (UInt16(res[res.count - 2]) << 8) + UInt16(res[res.count - 1])
-            if lastSW != SWCode.SW_OK.rawValue {
-                return Observable.error(SWError(SWCode.init(rawValue: lastSW) ?? SWCode.SW_ABORT))
+    func read(_ prefix: Data? = nil) -> Observable<Data> {
+        return self.characteristicNotify!.observeValueUpdate().take(1)
+        .flatMap { characteristic -> Observable<Data> in
+            guard let buffer = characteristic.value else {
+                return Observable.error(GaError.GenericError)
             }
-            return Observable.just(command)
-        } catch {
-            return Observable.error(error)
+            let payload = (prefix ?? Data()) + buffer
+            return Observable.just(payload)
         }
     }
 
