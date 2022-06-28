@@ -124,10 +124,6 @@ class LandingViewController: UIViewController {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
             navigationController?.pushViewController(vc, animated: true)
-            // andare in choose security
-//            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-//            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
-//            navigationController?.pushViewController(vc, animated: true)
         }
     }
 

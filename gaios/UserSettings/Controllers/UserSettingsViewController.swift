@@ -101,7 +101,7 @@ class UserSettingsViewController: UIViewController {
     func getGeneralItems() -> [UserSettingsItem] {
         var items = [UserSettingsItem]()
         let watchOnly = UserSettingsItem(
-            title: NSLocalizedString("id_watchonly_login", comment: ""),
+            title: "Watch-only credentials",
             subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_disabled" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .general,
             type: .WatchOnly)

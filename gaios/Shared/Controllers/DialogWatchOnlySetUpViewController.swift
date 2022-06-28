@@ -36,6 +36,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     var buttonConstraint: NSLayoutConstraint?
     var wallet: WalletItem?
     var username: String?
+    var preDeleteFlag = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -211,7 +212,13 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
     @IBAction func btnDelete(_ sender: Any) {
 
-        updateWatchOnly(username: "", password: "", action: .delete)
+        if preDeleteFlag {
+            updateWatchOnly(username: "", password: "", action: .delete)
+        } else {
+            preDeleteFlag = true
+            btnDelete.backgroundColor = UIColor.customDestructiveRed()
+            btnDelete.setTitleColor(.white, for: .normal)
+        }
     }
 
     @IBAction func btnDismiss(_ sender: Any) {
