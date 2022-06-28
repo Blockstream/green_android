@@ -652,7 +652,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case OverviewSection.account.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAccountCell") as? OverviewAccountCell {
                 var action: VoidToVoid?
-                if showAccounts {
+                if showAccounts && account?.isWatchonly == false {
                     action = { [weak self] in
                         self?.presentAccountMenu(frame: cell.frame, index: indexPath.row)
                     }
