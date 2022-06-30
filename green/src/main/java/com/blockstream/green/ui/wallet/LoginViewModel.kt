@@ -18,8 +18,10 @@ import com.blockstream.green.utils.logException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
 
@@ -157,79 +159,81 @@ class LoginViewModel @AssistedInject constructor(
         updateWatchOnlyPassword: Boolean = false,
         mapper: (GreenSession) -> Unit
     ) {
-        session.observable {
-            mapper.invoke(it)
+        Single.just(session)
+            .subscribeOn(Schedulers.io())
+            .map(mapper)
+            .map {
 
-            // Migrate - add walletHashId
-            if (wallet.walletHashId.isBlank()) {
-                wallet.walletHashId = session.walletHashId ?: ""
-                walletRepository.updateWalletSync(wallet)
-            }
+                // Migrate - add walletHashId
+                if(wallet.walletHashId.isBlank()){
+                    wallet.walletHashId = session.walletHashId ?: ""
+                    walletRepository.updateWalletSync(wallet)
+                }
 
-            // Change active account if necessary (account archived)
-            if (wallet.activeAccount != session.activeAccount) {
-                wallet.activeAccount = session.activeAccount
-                walletRepository.updateWalletSync(wallet)
-            }
+                // Change active account if necessary (account archived)
+                if(wallet.activeAccount != session.activeAccount){
+                    wallet.activeAccount = session.activeAccount
+                    walletRepository.updateWalletSync(wallet)
+                }
 
-            // Reset counter
-            loginCredentials?.also {
-                it.counter = 0
-                walletRepository.updateLoginCredentialsSync(it)
-            }
-
-            // Update watchonly password if needed
-            if (updateWatchOnlyPassword) {
-                keystoreCredentials.value?.let {
-                    it.encryptedData =
-                        appKeystore.encryptData(watchOnlyPassword.value!!.toByteArray())
+                // Reset counter
+                loginCredentials?.also{
+                    it.counter = 0
                     walletRepository.updateLoginCredentialsSync(it)
                 }
-            }
 
-            session
-        }
-        .doOnError {
-            // isNotAuthorized only catches multisig login errors, singlesig or watchonly are not caught
-            // and the counter is not incremented
-            if (it.isNotAuthorized()) {
-                loginCredentials?.also { loginCredentials ->
-                    loginCredentials.counter += 1
-
-                    if (loginCredentials.counter < 3) {
-                        walletRepository.updateLoginCredentialsSync(loginCredentials)
-                    } else {
-                        walletRepository.deleteLoginCredentialsSync(loginCredentials)
+                // Update watchonly password if needed
+                if(updateWatchOnlyPassword){
+                    keystoreCredentials.value?.let {
+                        it.encryptedData = appKeystore.encryptData(watchOnlyPassword.value!!.toByteArray())
+                        walletRepository.updateLoginCredentialsSync(it)
                     }
                 }
 
-                if (isWatchOnly) {
+                session
+            }
+            .doOnError {
+                // isNotAuthorized only catches multisig/singlesig login errors, watchonly are not caught
+                // and the counter is not incremented
+                if(it.isNotAuthorized()){
+                    loginCredentials?.also{ loginCredentials ->
+                        loginCredentials.counter += 1
+
+                        if(loginCredentials.counter < 3){
+                            walletRepository.updateLoginCredentialsSync(loginCredentials)
+                        }else{
+                             walletRepository.deleteLoginCredentialsSync(loginCredentials)
+                        }
+                    }
+
+                    if(isWatchOnly){
+                        onErrorMessage.postValue(ConsumableEvent(it))
+                    }
+
+                }else{
                     onErrorMessage.postValue(ConsumableEvent(it))
                 }
-
-            } else {
-                onErrorMessage.postValue(ConsumableEvent(it))
             }
-        }
-        .doOnSubscribe {
-            onProgress.postValue(true)
-        }
-        .subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-                // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
-                onProgress.postValue(false)
-                countly.failedWalletLogin(session, it)
-            },
-            onSuccess = {
-                countly.loginWallet(
-                    wallet = wallet,
-                    session = session,
-                    loginCredentials = loginCredentials
-                )
-                actionLogin.postValue(true)
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                onProgress.postValue(true)
             }
-        )
+            .subscribeBy(
+                onError = {
+                    onError.postValue(ConsumableEvent(it))
+                    // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
+                    onProgress.postValue(false)
+                    countly.failedWalletLogin(session, it)
+                },
+                onSuccess = {
+                    countly.loginWallet(
+                        wallet = wallet,
+                        session = session,
+                        loginCredentials = loginCredentials
+                    )
+                    actionLogin.postValue(true)
+                }
+            )
     }
 
     fun loginWithDevice() {

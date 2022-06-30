@@ -184,7 +184,7 @@
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:orientation="vertical"
-            tools:visibility="visible"
+            tools:visibility="gone"
             app:gap="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
