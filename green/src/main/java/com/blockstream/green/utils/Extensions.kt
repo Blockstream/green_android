@@ -6,6 +6,7 @@ import android.view.ViewParent
 import android.widget.ImageView
 import androidx.core.util.valueIterator
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
 import com.google.android.material.textfield.TextInputEditText
@@ -61,5 +62,8 @@ fun <E: View> Collection<E>.setOnClickListener(onClickListener: (e: View) -> Uni
         it.setOnClickListener(onClickListener)
     }
 }
+
+fun MutableLiveData<String>.string() : String = value ?: ""
+fun MutableLiveData<Boolean>.boolean() : Boolean = value ?: false
 
 inline fun <reified V> SparseArray<V>.toList() = valueIterator().asSequence().toList()

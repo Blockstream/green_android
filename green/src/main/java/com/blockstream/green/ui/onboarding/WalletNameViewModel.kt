@@ -29,7 +29,7 @@ class WalletNameViewModel @AssistedInject constructor(
     val walletName = MutableLiveData(restoreWallet?.name ?: "")
     val walletNameHint = MutableLiveData("").also {
         viewModelScope.launch(context = logException(countly)){
-            it.value = generateWalletNameSuspend(onboardingOptions.network!!, null)
+            it.value = generateWalletNameSuspend(network = onboardingOptions.network!!, userInputName = null)
         }
     }
 

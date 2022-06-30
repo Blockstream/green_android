@@ -4,8 +4,8 @@ import androidx.lifecycle.Observer
 import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.TestViewModel
+import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.OnboardingOptions
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.utils.ConsumableEvent
 import org.junit.Before
@@ -28,7 +28,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
     private lateinit var errorObserver: Observer<ConsumableEvent<Throwable>>
 
     @Mock
-    private lateinit var newWalletObserver: Observer<Wallet>
+    private lateinit var newWalletObserver: Observer<ConsumableEvent<AppEvent>>
 
     @Before
     override fun setup() {
@@ -55,7 +55,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
             onboardingOptions = OnboardingOptions(isRestoreFlow = true, isWatchOnly = true, isSinglesig = false, network = network)
         )
         viewModel.isLoginEnabled.observeForever(isLoginEnabledObserver)
-        viewModel.newWallet.observeForever(newWalletObserver)
+        viewModel.onEvent.observeForever(newWalletObserver)
         viewModel.onError.observeForever(errorObserver)
     }
 
@@ -96,7 +96,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
         viewModel.username.value = "username"
         viewModel.password.value = "password"
 
-        viewModel.login()
+        viewModel.createNewWatchOnlyWallet()
 
         verify(newWalletObserver, never()).onChanged(eq(null))
         verify(errorObserver).onChanged(argThat {
@@ -111,7 +111,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
         viewModel.username.value = "username"
         viewModel.password.value = "password"
 
-        viewModel.login()
+        viewModel.createNewWatchOnlyWallet()
 
         verify(newWalletObserver).onChanged(notNull())
         verify(errorObserver, never()).onChanged(any())

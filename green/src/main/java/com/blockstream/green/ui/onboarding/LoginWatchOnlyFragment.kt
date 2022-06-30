@@ -5,6 +5,8 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
+import com.blockstream.green.data.NavigateEvent
+import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.LoginWatchOnlyFragmentBinding
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
@@ -60,20 +62,19 @@ class LoginWatchOnlyFragment :
         }
 
         binding.buttonLogin.setOnClickListener {
-            viewModel.login()
+            viewModel.createNewWatchOnlyWallet()
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
                 errorDialog(it)
-                // errorDialog(getString(if (it.getGDKErrorCode() == KotlinGDK.GA_ERROR) R.string.id_user_not_found_or_invalid else R.string.id_connection_failed))
             }
         }
 
-        viewModel.newWallet.observe(viewLifecycleOwner) {
-            if (it != null) {
+        viewModel.onEvent.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let { navigate ->
                 hideKeyboard()
-                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(it))
+                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(navigate.data as Wallet))
             }
         }
     }

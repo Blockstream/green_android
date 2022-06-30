@@ -13,7 +13,10 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import mu.KLogging
 
 
@@ -41,7 +44,7 @@ open class OnboardingViewModel constructor(
 
             val wallet = Wallet(
                 walletHashId = loginData.walletHashId,
-                name = generateWalletNameSync(network, options.walletName),
+                name = generateWalletNameSync(network = network, userInputName = options.walletName),
                 network = network.id,
                 isRecoveryPhraseConfirmed = true, // options.isRestoreFlow || !mnemonic.isNullOrBlank(),
                 isHardware = false
@@ -75,30 +78,79 @@ open class OnboardingViewModel constructor(
         })
     }
 
-    private fun generateWalletNameSync(network: Network, userInputName: String?): String {
+    fun createNewWatchOnlyWallet(appKeystore: AppKeystore, options: OnboardingOptions, username: String, password: String, savePassword: Boolean) {
+        session.observable {
+            val network = options.network!!
+
+            val loginData =
+                it.loginWatchOnly(network, username, password)
+
+            val wallet = Wallet(
+                walletHashId = loginData.walletHashId,
+                name = generateWalletNameSync(network = network, userInputName = null),
+                network = session.network.id,
+                isRecoveryPhraseConfirmed = true,
+                watchOnlyUsername = username
+            )
+
+            wallet.id = walletRepository.addWallet(wallet)
+
+            if (savePassword) {
+                val encryptedData = appKeystore.encryptData(password.toByteArray())
+                walletRepository.addLoginCredentialsSync(
+                    LoginCredentials(
+                        walletId = wallet.id,
+                        credentialType = CredentialType.KEYSTORE,
+                        encryptedData = encryptedData
+                    )
+                )
+            }
+
+            sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+            countly.restoreWatchOnlyWallet(session)
+            wallet
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onError = {
+                onError.value = ConsumableEvent(it)
+            },
+            onSuccess = {
+                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
+            }
+        ).addTo(disposables)
+    }
+
+    fun generateWalletNameSync(network: Network, userInputName: String?): String {
         return generateWalletName(
-            walletRepository.getWalletsForNetworkSync(network),
-            network,
-            userInputName
+            wallets = walletRepository.getWalletsForNetworkSync(network),
+            network = network,
+            userInputName = userInputName
         )
     }
 
     suspend fun generateWalletNameSuspend(network: Network, userInputName: String?): String {
         return generateWalletName(
-            walletRepository.getWalletsForNetworkSuspend(network),
-            network,
-            userInputName
+            wallets = walletRepository.getWalletsForNetworkSuspend(network),
+            network = network,
+            userInputName = userInputName
         )
     }
 
-    private fun generateWalletName(wallets: List<Wallet>, network:Network, userInputName: String?) : String{
+    private fun generateWalletName(
+        wallets: List<Wallet>,
+        network: Network,
+        userInputName: String?
+    ): String {
         return userInputName?.replace(SkipPinData, "")?.trim() ?: run {
 
-            return@run if(wallets.isNotEmpty()){
+            return@run (if(wallets.isNotEmpty()){
                 "${network.productName} #${wallets.size + 1}"
             }else{
                 network.productName
-            }
+            })
         }
     }
 
@@ -148,7 +200,7 @@ open class OnboardingViewModel constructor(
                 wallet  = restoreWallet
                     ?: Wallet(
                         walletHashId = it.walletHashId ?: "",
-                        name = generateWalletNameSync(network, options.walletName),
+                        name = generateWalletNameSync(network = network, userInputName = options.walletName),
                         network = network.id,
                         isRecoveryPhraseConfirmed = options.isRestoreFlow,
                         isHardware = false
