@@ -165,6 +165,9 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                             twoFactorResolver = DialogTwoFactorResolver(requireContext())
                         )
                     }
+                    TwoFactorSetupAction.SETUP,TwoFactorSetupAction.SETUP_EMAIL, TwoFactorSetupAction.CANCEL -> {
+
+                    }
                 }
             }
         }

@@ -158,6 +158,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         hideKeyboard()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.share -> {

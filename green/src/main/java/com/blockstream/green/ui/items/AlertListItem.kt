@@ -43,12 +43,15 @@ data class AlertListItem constructor(private val alertType: AlertType, val actio
                 binding.alertView.setMaxLines(0)
                 binding.alertView.closeButton(null)
             }
-            AlertType.TestnetWarning -> {
+            is AlertType.TestnetWarning -> {
                 binding.alertView.title = res.getString(R.string.id_warning)
                 binding.alertView.message = res.getString(R.string.id_this_wallet_operates_on_a_test)
                 binding.alertView.setMaxLines(0)
                 binding.alertView.closeButton(null)
                 binding.alertView.primaryButton("", null)
+            }
+            is AlertType.Abstract2FA -> {
+
             }
         }
 

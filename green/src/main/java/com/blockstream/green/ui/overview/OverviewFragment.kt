@@ -238,6 +238,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
@@ -363,6 +364,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     is AlertType.Abstract2FA -> {
                         TwoFactorResetBottomSheetDialogFragment.show(it.twoFactorReset, childFragmentManager)
                     }
+                    is AlertType.SystemMessage, AlertType.TestnetWarning -> {}
                 }
             }
         }.observeList(viewLifecycleOwner, viewModel.getAlerts())

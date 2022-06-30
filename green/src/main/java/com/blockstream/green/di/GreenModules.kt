@@ -170,7 +170,7 @@ class GreenModules {
 
         if (isDevelopmentOrDebug) {
             Beagle.initialize(
-                context as GreenApplication,
+                application = context as GreenApplication,
                 behavior = Behavior(
                     bugReportingBehavior = Behavior.BugReportingBehavior(
                         // Enabling this feature will disable the crash collection of Firebase Crashlytics,

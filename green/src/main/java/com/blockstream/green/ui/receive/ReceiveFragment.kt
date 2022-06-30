@@ -274,6 +274,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.help -> {

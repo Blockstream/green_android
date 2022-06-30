@@ -182,12 +182,14 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater).also {
             menu.findItem(R.id.updateFirmware).isVisible = isDevelopmentFlavor && device?.isJade == true
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.updateFirmware -> {

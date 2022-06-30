@@ -222,6 +222,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         menuDelete?.isVisible = !wallet.isHardware
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menuHelp = menu.findItem(R.id.help)
@@ -230,6 +231,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         updateMenu()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.delete -> {

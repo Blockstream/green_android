@@ -170,12 +170,12 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Android / Google ------------------------------------------------------------------- */
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "androidx.appcompat:appcompat:1.4.1"
-    implementation "com.google.android.material:material:1.6.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
+    implementation "androidx.core:core-ktx:1.8.0"
+    implementation "androidx.appcompat:appcompat:1.4.2"
+    implementation "com.google.android.material:material:1.6.1"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation "androidx.activity:activity-ktx:1.4.0"
+    implementation "androidx.activity:activity-ktx:1.5.0"
     implementation "androidx.biometric:biometric:1.2.0-alpha04"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.browser:browser:1.4.0"
@@ -183,17 +183,17 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
-    implementation "androidx.lifecycle:lifecycle-process:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.0"
+    implementation "androidx.lifecycle:lifecycle-process:2.5.0"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Navigation ------------------------------------------------------------------------- */
-    implementation "androidx.navigation:navigation-fragment-ktx:2.4.2"
-    implementation "androidx.navigation:navigation-ui-ktx:2.4.2"
-    testImplementation "androidx.navigation:navigation-testing:2.4.2"
-    androidTestImplementation "androidx.navigation:navigation-testing:2.4.2"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.0"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.0"
+    testImplementation "androidx.navigation:navigation-testing:2.5.0"
+    androidTestImplementation "androidx.navigation:navigation-testing:2.5.0"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Room ------------------------------------------------------------------------------- */
@@ -257,14 +257,14 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Beagle  ---------------------------------------------------------------------------- */
-    developmentImplementation "com.github.pandulapeter.beagle:ui-drawer:2.6.5"
-    developmentImplementation "com.github.pandulapeter.beagle:log-crash:2.6.5"
+    developmentImplementation "io.github.pandulapeter.beagle:ui-drawer:2.8.2"
+    developmentImplementation "io.github.pandulapeter.beagle:log-crash:2.8.2"
 
-    productionGoogleImplementation "com.github.pandulapeter.beagle:noop:2.6.5"
-    productionGoogleImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.5"
+    productionGoogleImplementation "io.github.pandulapeter.beagle:noop:2.8.2"
+    productionGoogleImplementation "io.github.pandulapeter.beagle:log-crash-noop:2.8.2"
 
-    productionImplementation "com.github.pandulapeter.beagle:noop:2.6.5"
-    productionImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.5"
+    productionImplementation "io.github.pandulapeter.beagle:noop:2.8.2"
+    productionImplementation "io.github.pandulapeter.beagle:log-crash-noop:2.8.2"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Slide To Act ----------------------------------------------------------------------- */
@@ -275,7 +275,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.3'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

@@ -162,6 +162,7 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         if (menuRes > 0) {
             inflater.inflate(menuRes, menu)
