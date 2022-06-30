@@ -18,8 +18,11 @@ build_unsigned_debug:
   tags:
     - fastosx
     - osx
+  variables:
+    GDK_COMMIT: latest
   script:
-    - ./tools/fetch_gdk_binaries.sh
+    - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
+    - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_unsigned_debug
 
 build_signed_adhoc_release:
