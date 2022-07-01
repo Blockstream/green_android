@@ -96,7 +96,7 @@ class LedgerChannel: HWChannelProtocol {
         print("=> " + data.map { String(format: "%02hhx", $0) }.joined())
         #endif
         guard let buf = try? LedgerWrapper.wrapCommandAPDU(command: data, packetSize: MTU) else {
-            return Observable.error(GaError.GenericError)
+            return Observable.error(GaError.GenericError())
         }
         return write(buf)
             .flatMap { _ in return self.read() }
@@ -116,7 +116,7 @@ class LedgerChannel: HWChannelProtocol {
 
     func write(_ data: Data) -> Observable<Characteristic> {
         guard let characteristic = characteristicWrite else {
-            return Observable.error(GaError.GenericError)
+            return Observable.error(GaError.GenericError())
         }
         if data.count <= 128 {
             return characteristic.writeValue(data, type: .withResponse).asObservable()
@@ -130,7 +130,7 @@ class LedgerChannel: HWChannelProtocol {
         return self.characteristicNotify!.observeValueUpdate().take(1)
         .flatMap { characteristic -> Observable<Data> in
             guard let buffer = characteristic.value else {
-                return Observable.error(GaError.GenericError)
+                return Observable.error(GaError.GenericError())
             }
             let payload = (prefix ?? Data()) + buffer
             return Observable.just(payload)

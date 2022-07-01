@@ -260,8 +260,6 @@ class SessionManager: Session {
                 }
                 return Promise().asVoid()
             }.then(on: bgq) { _ in
-                self.registerUser(mnemonic: mnemonic, hwDevice: hwDevice)
-            }.then(on: bgq) { _ in
                 self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hwDevice: hwDevice)
             }.recover { err in
                 switch err {
@@ -273,21 +271,6 @@ class SessionManager: Session {
                     throw err
                 }
             }
-    }
-
-    private func registerUser(mnemonic: String?, hwDevice: HWDevice? = nil) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .map(on: bgq) {
-                if let hwDevice = hwDevice,
-                    let data = try? JSONEncoder().encode(hwDevice),
-                    let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
-                    return ["device": device]
-                }
-                return [:]
-            }.then(on: bgq) { device in
-                try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve(session: self)
-            }.asVoid()
     }
 
     func reconnect() -> Promise<Void> {
