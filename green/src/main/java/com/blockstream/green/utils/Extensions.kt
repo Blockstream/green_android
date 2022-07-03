@@ -1,6 +1,8 @@
 package com.blockstream.green.utils
 
+
 import android.graphics.drawable.Drawable
+import android.text.TextUtils
 import android.util.SparseArray
 import android.view.View
 import android.view.ViewParent
@@ -68,6 +70,10 @@ fun <E: View> Collection<E>.setOnClickListener(onClickListener: (e: View) -> Uni
     this.forEach {
         it.setOnClickListener(onClickListener)
     }
+}
+
+fun CharSequence?.isEmailValid(): Boolean {
+    return !TextUtils.isEmpty(this) && android.util.Patterns.EMAIL_ADDRESS.matcher(this).matches()
 }
 
 fun MutableLiveData<String>.string() : String = value ?: ""

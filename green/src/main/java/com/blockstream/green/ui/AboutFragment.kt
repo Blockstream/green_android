@@ -6,19 +6,26 @@ import android.view.View
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.AboutFragmentBinding
+import com.blockstream.green.utils.AppReviewHelper
 import com.blockstream.green.utils.getVersionName
 import com.blockstream.green.utils.openBrowser
+import com.google.android.play.core.review.ReviewManager
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class AboutFragment : AppFragment<AboutFragmentBinding>(R.layout.about_fragment, menuRes = 0) {
     override val screenName = "About"
 
+    @Inject
+    lateinit var reviewManager: ReviewManager
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.rateGooglePlay = countly.rateGooglePlayEnabled
         binding.buildVersion = getVersionName(requireContext())
         binding.year = Calendar.getInstance().get(Calendar.YEAR).toString()
 
@@ -62,8 +69,8 @@ class AboutFragment : AppFragment<AboutFragmentBinding>(R.layout.about_fragment,
             openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_CENTER)
         }
 
-        binding.rateUs.setOnClickListener {
-            openBrowser(settingsManager.getApplicationSettings(), Urls.BLOCKSTREAM_GOOGLE_PLAY)
+        binding.buttonFeedback.setOnClickListener {
+            AppReviewHelper.showFeedback(this)
         }
     }
 

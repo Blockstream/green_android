@@ -73,7 +73,7 @@ data class AlertListItem constructor(private val alertType: AlertType, val actio
                     binding.alertView.binding.titleTextView.setDrawable(drawableLeft = it, padding = 6)
                 }
             }
-            is AlertType.Abstract2FA -> {
+            is AlertType.AppReview, is AlertType.Abstract2FA -> {
 
             }
         }
@@ -92,4 +92,5 @@ sealed class AlertType{
     class Reset2FA(twoFactorReset: TwoFactorReset): Abstract2FA(twoFactorReset)
     object TestnetWarning : AlertType()
     object EphemeralBip39 : AlertType()
+    object AppReview : AlertType()
 }

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="rate"
+            type="Integer" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/white">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/closeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/transparent"
+                android:src="@drawable/ic_close"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/black" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:includeFontPadding="false"
+                android:text="@string/id_congratulations"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/closeButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="24dp"
+                android:ellipsize="end"
+                android:text="@string/id_you_have_successfully_sent_a_transaction"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title" />
+
+            <com.blockstream.green.views.GappedLinearLayout
+                android:id="@+id/gappedLinearLayout6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:gap="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/message">
+
+                <ImageView
+                    android:id="@+id/star_1"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@{rate > 0 ? @drawable/ic_baseline_star_24 : @drawable/ic_baseline_star_outline_24}"
+                    app:tint="@color/brand_green"
+                    tools:src="@drawable/ic_baseline_star_outline_24" />
+
+                <ImageView
+                    android:id="@+id/star_2"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@{rate > 1 ? @drawable/ic_baseline_star_24 : @drawable/ic_baseline_star_outline_24}"
+                    app:tint="@color/brand_green"
+                    tools:src="@drawable/ic_baseline_star_outline_24" />
+
+                <ImageView
+                    android:id="@+id/star_3"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@{rate > 2 ? @drawable/ic_baseline_star_24 : @drawable/ic_baseline_star_outline_24}"
+                    app:tint="@color/brand_green"
+                    tools:src="@drawable/ic_baseline_star_outline_24" />
+
+                <ImageView
+                    android:id="@+id/star_4"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@{rate > 3 ? @drawable/ic_baseline_star_24 : @drawable/ic_baseline_star_outline_24}"
+                    app:tint="@color/brand_green"
+                    tools:src="@drawable/ic_baseline_star_outline_24" />
+
+                <ImageView
+                    android:id="@+id/star_5"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@{rate > 4 ? @drawable/ic_baseline_star_24 : @drawable/ic_baseline_star_outline_24}"
+                    app:tint="@color/brand_green"
+                    tools:src="@drawable/ic_baseline_star_outline_24" />
+
+            </com.blockstream.green.views.GappedLinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

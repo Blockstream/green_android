@@ -134,6 +134,31 @@
                             android:layout_marginStart="@dimen/settings_element_margin" />
 
                         <TextView
+                            android:id="@+id/errorCounter"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Errors" />
+
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Clear local settings (device_id, consent dialog, app review)" />
+
+                        <Button
+                            android:id="@+id/buttonClearLocalSettings"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:text="Clear local settings" />
+
+                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"

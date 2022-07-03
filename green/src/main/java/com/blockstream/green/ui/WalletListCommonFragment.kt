@@ -41,12 +41,8 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
 
         val softwareWalletsModel = ModelAdapter { model: Wallet ->
             val session = sessionManager.getWalletSession(model)
-            WalletListItem(model, isConnected = session.isConnected, session = session)
-        }
-
-        viewModel.wallets.observe(viewLifecycleOwner){
-            softwareWalletsModel.set(it)
-        }
+            WalletListItem(model, session = session)
+        }.observeList(viewLifecycleOwner, viewModel.wallets)
 
         val softwareWalletsAdapter = FastAdapter.with(softwareWalletsModel)
 
@@ -58,7 +54,7 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
 
         val ephemeralWalletsModel = ModelAdapter { model: Wallet ->
             val session = sessionManager.getWalletSession(model)
-            WalletListItem(model, isConnected = session.isConnected, session = session)
+            WalletListItem(model, session = session)
         }.observeList(viewLifecycleOwner, viewModel.ephemeralWallets)
 
         val ephemeralWalletsAdapter = FastAdapter.with(ephemeralWalletsModel)
@@ -71,12 +67,8 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
 
         val hardwareWalletsModel = ModelAdapter { model: Wallet ->
             val session = sessionManager.getWalletSession(model)
-            WalletListItem(model, isConnected = session.isConnected, session = session)
-        }
-
-        viewModel.hardwareWallets.observe(viewLifecycleOwner){
-            hardwareWalletsModel.set(it)
-        }
+            WalletListItem(model, session = session)
+        }.observeList(viewLifecycleOwner, viewModel.hardwareWallets)
 
         val hardwareWalletsAdapter = FastAdapter.with(hardwareWalletsModel)
 
@@ -152,6 +144,8 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
 
         sessionManager.connectionChangeEvent.observe(viewLifecycleOwner){
             softwareWalletsAdapter.notifyAdapterDataSetChanged()
+            ephemeralWalletsAdapter.notifyAdapterDataSetChanged()
+            hardwareWalletsAdapter.notifyAdapterDataSetChanged()
         }
     }
 

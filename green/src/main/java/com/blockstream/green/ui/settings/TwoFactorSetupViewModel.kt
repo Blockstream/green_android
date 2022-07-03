@@ -1,7 +1,6 @@
 package com.blockstream.green.ui.settings
 
 import android.graphics.Bitmap
-import android.util.Patterns
 import androidx.lifecycle.*
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.ApplicationScope
@@ -14,6 +13,7 @@ import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.createQrBitmap
+import com.blockstream.green.utils.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -41,7 +41,7 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
         MediatorLiveData<Boolean>().apply {
             val block = { _: Any? ->
                 value = if(method == TwoFactorMethod.EMAIL){
-                    Patterns.EMAIL_ADDRESS.matcher(email.value ?: "").matches()
+                    email.value.isEmailValid()
                 }else if(method == TwoFactorMethod.SMS || method == TwoFactorMethod.PHONE || method == TwoFactorMethod.TELEGRAM){
                     !country.value.isNullOrBlank() && (phoneNumber.value?.trim()?.length ?: 0) > 7
                 }else{

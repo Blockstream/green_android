@@ -19,6 +19,8 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.*
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
+import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.pandulapeter.beagle.Beagle
 import com.pandulapeter.beagle.common.configuration.Behavior
 import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
@@ -140,6 +142,12 @@ class GreenModules {
     @Provides
     fun provideAndroidNotificationManager(@ApplicationContext context: Context): android.app.NotificationManager {
         return context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+    }
+
+    @Singleton
+    @Provides
+    fun provideReviewManager(@ApplicationContext context: Context): ReviewManager {
+        return ReviewManagerFactory.create(context)
     }
 
     @Singleton

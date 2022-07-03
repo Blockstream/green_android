@@ -11,9 +11,11 @@ import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.Notification
 import com.blockstream.green.ApplicationScope
+import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.QaTesterActivityBinding
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.items.NetworkListItem
@@ -48,6 +50,12 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
     @Inject
     lateinit var applicationScope: ApplicationScope
 
+    @Inject
+    lateinit var countly: Countly
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,6 +85,10 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
 
         binding.buttonKill.setOnClickListener {
             exitProcess(0)
+        }
+
+        binding.buttonClearLocalSettings.setOnClickListener {
+            settingsManager.clearAll()
         }
 
         binding.buttonBack.setOnClickListener {
@@ -110,8 +122,13 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
                 delay(1500)
                 exitProcess(0)
             }
-
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        binding.errorCounter.text = "Exception Counter: ${countly.exceptionCounter}"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

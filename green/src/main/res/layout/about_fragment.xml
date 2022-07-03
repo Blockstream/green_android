@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="rateGooglePlay"
+            type="Boolean" />
+
+        <variable
             name="buildVersion"
             type="String" />
 
@@ -172,75 +176,24 @@
             app:layout_constraintTop_toBottomOf="@+id/telegram">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/rateUs"
+                android:id="@+id/buttonFeedback"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/buttonTermsOfService"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/telegram">
+                android:layout_weight="1">
 
-                <LinearLayout
+                <TextView
+                    style="@style/Widget.Green.Button.Text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintBottom_toTopOf="@+id/buttonRateUs"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_baseline_star_24"
-                            app:tint="@color/brand_green" />
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_baseline_star_24"
-                            app:tint="@color/brand_green" />
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_baseline_star_24"
-                            app:tint="@color/brand_green" />
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_baseline_star_24"
-                            app:tint="@color/brand_green" />
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_baseline_star_24"
-                            app:tint="@color/brand_green" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/buttonRateUs"
-                        style="@style/Widget.Green.Button.Text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:clickable="false"
-                        android:text="@string/id_rate_us_on_google_play"
-                        app:layout_constraintBottom_toTopOf="@+id/buttonTermsOfService"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/github" />
-
-                </LinearLayout>
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:clickable="false"
+                    android:text="@string/id_give_us_your_feedback"
+                    app:layout_constraintBottom_toTopOf="@+id/buttonTermsOfService"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/github" />
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -248,11 +201,7 @@
                 android:id="@+id/buttonHelp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:layout_constraintBottom_toBottomOf="@+id/materialCardView4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/materialCardView4"
-                app:layout_constraintTop_toTopOf="@+id/materialCardView4">
+                android:layout_weight="1">
 
                 <TextView
                     style="@style/Widget.Green.Button.Text"

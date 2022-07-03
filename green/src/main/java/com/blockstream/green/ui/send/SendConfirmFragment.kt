@@ -16,6 +16,7 @@ import com.blockstream.green.ui.items.GenericDetailListItem
 import com.blockstream.green.ui.items.TransactionAmountListItem
 import com.blockstream.green.ui.items.TransactionFeeListItem
 import com.blockstream.green.ui.looks.ConfirmTransactionLook
+import com.blockstream.green.ui.overview.OverviewFragment
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.utils.*
 import com.mikepenz.fastadapter.FastAdapter
@@ -86,7 +87,10 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
+            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
+                (it.data as? Boolean)?.let { isSendAll ->
+                    setNavigationResult(result = isSendAll, key = OverviewFragment.BROADCASTED_TRANSACTION, destinationId = R.id.overviewFragment)
+                }
                 snackbar(R.string.id_transaction_sent)
                 findNavController().popBackStack(R.id.overviewFragment, false)
             }

@@ -66,6 +66,7 @@ android {
             resValue "string", "app_name", "Green Dev"
             resValue "string", "application_id", applicationId
             resValue "bool", "feature_analytics", "true"
+            resValue "bool", "feature_rate_google_play", "true"
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher_dev",
                     appIconRound: "@mipmap/ic_launcher_dev_round",
@@ -78,6 +79,7 @@ android {
             resValue "string", "app_name", "Green"
             resValue "string", "application_id", applicationId
             resValue "bool", "feature_analytics", "true"
+            resValue "bool", "feature_rate_google_play", "true"
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher",
                     appIconRound: "@mipmap/ic_launcher_round",
@@ -91,6 +93,7 @@ android {
             resValue "string", "app_name", "Green"
             resValue "string", "application_id", applicationId
             resValue "bool", "feature_analytics", "false"
+            resValue "bool", "feature_rate_google_play", "false"
             manifestPlaceholders = [
                     appIcon: "@mipmap/ic_launcher",
                     appIconRound: "@mipmap/ic_launcher_round",
@@ -167,6 +170,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinx_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.0")
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Android / Google ------------------------------------------------------------------- */
@@ -179,7 +183,8 @@ dependencies {
     implementation "androidx.biometric:biometric:1.2.0-alpha04"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.browser:browser:1.4.0"
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+    implementation "com.google.android.play:review-ktx:2.0.0"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
@@ -253,7 +258,7 @@ dependencies {
 
     /**  --- Countly ---------------------------------------------------------------------------- */
     // implementation 'ly.count.android:sdk:21.11.1'
-    implementation 'com.github.angelix:countly-sdk-android:08fc14246c'
+    implementation 'com.github.angelix:countly-sdk-android:81ed2c919e'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Beagle  ---------------------------------------------------------------------------- */

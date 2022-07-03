@@ -83,7 +83,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 },
                 onError = {
                     it.printStackTrace()
-                    countly.recordException(it)
                 }
             )
         }
@@ -127,7 +126,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             onError = {
                 it.printStackTrace()
                 onError.value = ConsumableEvent(it)
-                countly.recordException(it)
             },
             onSuccess = {
                 updateTwoFactorConfig()
@@ -145,7 +143,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.value = ConsumableEvent(it)
-                countly.recordException(it)
             },
             onSuccess = {
 
@@ -165,7 +162,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.value = ConsumableEvent(it)
-                countly.recordException(it)
             },
             onSuccess = {
                 updateTwoFactorConfig()
@@ -186,7 +182,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.value = ConsumableEvent(it)
-                countly.recordException(it)
             },
             onSuccess = {
                 updateTwoFactorConfig()
@@ -207,7 +202,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.value = ConsumableEvent(it)
-                countly.recordException(it)
             },
             onSuccess = {
                 logout(LogoutReason.USER_ACTION)
@@ -227,7 +221,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.value = ConsumableEvent(it)
-                countly.recordException(it)
             },
             onSuccess = {
                 logout(LogoutReason.USER_ACTION)
@@ -247,7 +240,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.value = ConsumableEvent(it)
-                countly.recordException(it)
             },
             onSuccess = {
                 logout(LogoutReason.USER_ACTION)
@@ -281,7 +273,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.postValue(ConsumableEvent(it))
-                countly.recordException(it)
             },
             onSuccess = {
                 onEvent.postValue(ConsumableEvent(GdkEvent.Success))
@@ -300,7 +291,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.postValue(ConsumableEvent(it))
-                countly.recordException(it)
             },
             onSuccess = {
                 updateWatchOnlyUsername()
@@ -321,7 +311,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.postValue(ConsumableEvent(it))
-                countly.recordException(it)
             },
             onSuccess = {
                 onEvent.postValue(ConsumableEvent(GdkEvent.Success))
@@ -354,7 +343,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onError = {
                 onError.postValue(ConsumableEvent(it))
-                countly.recordException(it)
             },
             onSuccess = {
 

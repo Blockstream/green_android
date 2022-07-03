@@ -35,6 +35,7 @@ class OverviewViewModel @AssistedInject constructor(
 
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
+    private val appReview: MutableLiveData<Boolean> = MutableLiveData(false)
     val systemMessage: MutableLiveData<AlertType?> = MutableLiveData()
     private val twoFactorState: MutableLiveData<AlertType?> = MutableLiveData()
 
@@ -45,14 +46,17 @@ class OverviewViewModel @AssistedInject constructor(
                     twoFactorState.value,
                     systemMessage.value,
                     if (wallet.isEphemeral && !wallet.isHardware) AlertType.EphemeralBip39 else null,
-                    if (session.isTestnet) AlertType.TestnetWarning else null
+                    if (session.isTestnet) AlertType.TestnetWarning else null,
+                    if (appReview.value == true) AlertType.AppReview else null
                 )
             }
             addSource(twoFactorState, combine)
             addSource(systemMessage, combine)
+            addSource(appReview, combine)
         }
     }
-    
+
+
     private val state: MutableLiveData<State> = MutableLiveData(State.Overview)
     private val filteredSubAccounts: MutableLiveData<List<SubAccount>> = MutableLiveData()
     private val archivedAccounts = MutableLiveData(0)
@@ -155,6 +159,10 @@ class OverviewViewModel @AssistedInject constructor(
         session.updateSubAccountsAndBalances(refresh = true)
         session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
         session.updateLiquidAssets()
+    }
+
+    fun setAppReview(showAppReview: Boolean){
+        appReview.postValue(showAppReview)
     }
 
     private fun filterSubAccounts(subAccounts: List<SubAccount>): List<SubAccount> {

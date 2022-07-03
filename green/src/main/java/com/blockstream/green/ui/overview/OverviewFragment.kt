@@ -35,6 +35,7 @@ import com.blockstream.green.utils.*
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.blockstream.green.views.NpaLinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.play.core.review.ReviewManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericFastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -61,6 +62,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 ) {
     val args: OverviewFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
+
+    @Inject
+    lateinit var reviewManager: ReviewManager
 
     @Inject
     lateinit var applicationScope: ApplicationScope
@@ -126,6 +130,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
     companion object {
         const val SET_ACCOUNT = "SET_ACCOUNT"
+        const val BROADCASTED_TRANSACTION = "BROADCASTED_TRANSACTION"
     }
 
     override fun getWalletViewModel() = viewModel
@@ -136,6 +141,19 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 viewModel.setSubAccount(it)
                 closeInnerAdapter()
                 clearNavigationResult(SET_ACCOUNT)
+            }
+        }
+
+        getNavigationResult<Boolean>(BROADCASTED_TRANSACTION)?.observe(viewLifecycleOwner) { isSendAll ->
+            // Avoid requesting for review on send all transactions
+            if (isSendAll == false) {
+                if (AppReviewHelper.shouldAskForReview(settingsManager, countly)) {
+                    applicationScope.launch(context = logException(countly)) {
+                        delay(1000)
+                        viewModel.setAppReview(true)
+                    }
+                }
+                clearNavigationResult(BROADCASTED_TRANSACTION)
             }
         }
 
@@ -358,23 +376,36 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         viewModel.getFilteredSubAccounts().observe(viewLifecycleOwner, removeAccountsLoader)
 
         // Alert cards
-        val alertCardsAdapter =  ModelAdapter<AlertType, AlertListItem> {
-            AlertListItem(it) { isClose ->
-                when(it){
-                    is AlertType.Abstract2FA -> {
-                        TwoFactorResetBottomSheetDialogFragment.show(it.twoFactorReset, childFragmentManager)
+        val alertCardsAdapter =  ModelAdapter<AlertType, GenericItem> {
+            if(it is AlertType.AppReview){
+                AppReviewListItem { rate ->
+                    if(rate > 0){
+                        AppReviewHelper.showGooglePlayInAppReviewDialog(this, reviewManager)
                     }
-                    is AlertType.SystemMessage -> {
-                        if(isClose){
-                            viewModel.systemMessage.postValue(null)
-                        }else {
-                            SystemMessageBottomSheetDialogFragment.show(
-                                it.message,
+                    settingsManager.setAskedAboutAppReview()
+                    viewModel.setAppReview(false)
+                }
+            }else {
+                AlertListItem(it) { isClose ->
+                    when (it) {
+                        is AlertType.Abstract2FA -> {
+                            TwoFactorResetBottomSheetDialogFragment.show(
+                                it.twoFactorReset,
                                 childFragmentManager
                             )
                         }
+                        is AlertType.SystemMessage -> {
+                            if (isClose) {
+                                viewModel.systemMessage.postValue(null)
+                            } else {
+                                SystemMessageBottomSheetDialogFragment.show(
+                                    it.message,
+                                    childFragmentManager
+                                )
+                            }
+                        }
+                        AlertType.EphemeralBip39, AlertType.TestnetWarning, AlertType.AppReview -> {}
                     }
-                    AlertType.EphemeralBip39, AlertType.TestnetWarning -> {}
                 }
             }
         }.observeList(viewLifecycleOwner, viewModel.getAlerts())

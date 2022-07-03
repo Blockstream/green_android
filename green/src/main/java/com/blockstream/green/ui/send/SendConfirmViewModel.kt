@@ -59,14 +59,14 @@ class SendConfirmViewModel @AssistedInject constructor(
             } else {
                  it.sendTransaction(signedTransaction, twoFactorResolver = twoFactorResolver).txHash!!
             }
-
         }.doOnSubscribe {
             onProgress.postValue(true)
         }
         .subscribeBy(
-            onSuccess = {
+            onSuccess = { txHash ->
                 deviceAddressValidationEvent.value = ConsumableEvent(true)
-                onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
+                val isSendAll = session.pendingTransaction?.first?.sendAll ?: false
+                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(isSendAll)))
                 countly.sendTransaction(
                     session = session,
                     subAccount = getSubAccountLiveData().value,

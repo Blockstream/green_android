@@ -25,8 +25,11 @@ import com.blockstream.green.utils.toList
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import ly.count.android.sdk.Countly
 import ly.count.android.sdk.CountlyConfig
+import ly.count.android.sdk.RemoteConfigCallback
 import mu.KLogging
 import kotlin.properties.Delegates
 
@@ -40,6 +43,7 @@ class Countly constructor(
     private val walletRepository: WalletRepository,
 ) {
     val analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics)
+    val rateGooglePlayEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play)
 
     private val countly = Countly.sharedInstance().also { countly ->
         val config = CountlyConfig(
@@ -64,6 +68,8 @@ class Countly constructor(
             it.setRequiresConsent(true)
             // Set Device ID
             it.setDeviceId(settingsManager.getCountlyDeviceId())
+            // Set automatic remote config download
+            it.setRemoteConfigAutomaticDownload(true, RemoteConfigCallback { error -> logger.info { if(error.isNullOrBlank()) "Remote Config Completed" else "Remote Config error: $error" } })
             // Add initial enabled features
             it.setConsentEnabled(
                 if (settingsManager.getApplicationSettings().analytics) {
@@ -85,6 +91,7 @@ class Countly constructor(
     private val crashes = countly.crashes()
     private val consent = countly.consent()
     private val userProfile = countly.userProfile()
+    private val remoteConfig = countly.remoteConfig()
 
     private var analyticsConsent : Boolean by Delegates.observable(settingsManager.getApplicationSettings().analytics) { _, oldValue, newValue ->
         if(oldValue != newValue){
@@ -95,6 +102,9 @@ class Countly constructor(
             }
         }
     }
+
+    var exceptionCounter = 0L
+        private set
 
     val deviceId: String
         get() = countly.deviceId().id
@@ -183,6 +193,7 @@ class Countly constructor(
 
     fun recordException(throwable: Throwable) {
         if(!skipExceptionRecording.contains(throwable.message)) {
+            exceptionCounter++
             crashes.recordHandledException(throwable)
         }
     }
@@ -461,6 +472,38 @@ class Countly constructor(
                 segmentation[PARAM_2FA] = twoFactorMethod.gdkType
             }
 
+    fun recordRating(rating: Int, comment :String){
+        countly.ratings().recordRatingWidgetWithID(RATING_WIDGET_ID, rating, null, comment, false)
+    }
+
+    fun recordFeedback(rating: Int, email: String?, comment :String){
+        countly.ratings().recordRatingWidgetWithID(RATING_WIDGET_ID, rating, email.takeIf { !it.isNullOrBlank() }, comment, !email.isNullOrBlank())
+    }
+
+    fun getRemoteConfigValue(key: String): Any? = remoteConfig.getValueForKey(key)
+
+    fun getRemoteConfigValueAsString(key: String): String? {
+        return remoteConfig.getValueForKey(key) as? String
+    }
+
+    fun getRemoteConfigValueAsInt(key: String): Int? {
+        return remoteConfig.getValueForKey(key) as? Int
+    }
+
+    fun getRemoteConfigValueAsLong(key: String): Long? {
+        return getRemoteConfigValueAsInt(key)?.toLong() ?: remoteConfig.getValueForKey(key) as? Long
+    }
+
+    fun getRemoteConfigValueAsBoolean(key: String): Boolean? {
+        return remoteConfig.getValueForKey(key) as? Boolean
+    }
+
+    fun getRemoteConfigValueAsJsonElement(key: String): JsonElement? {
+        return remoteConfig.getValueForKey(key)?.let {
+            Json.parseToJsonElement(it.toString())
+        }
+    }
+
     private fun appSettingsToString(appSettings: ApplicationSettings): String {
         val settingsAsSet = mutableSetOf<String>()
 
@@ -511,6 +554,8 @@ class Countly constructor(
 
         const val MAX_OFFSET_PRODUCTION     = 12 * 60 * 60 * 1000L // 12 hours
         const val MAX_OFFSET_DEVELOPMENT    =      30 * 60 * 1000L // 30 mins
+
+        const val RATING_WIDGET_ID = "5f15c01425f83c169c33cb65"
 
         const val PARAM_NETWORK = "network"
         const val PARAM_SECURITY = "security"
@@ -574,7 +619,9 @@ class Countly constructor(
             "id_insufficient_funds",
             "id_invalid_private_key",
             "id_action_canceled",
-            "id_login_failed"
+            "id_login_failed",
+            "id_error_parsing",
+            "id_invalid_address"
         )
 
         val consentRequiredGroup = arrayOf(
@@ -589,6 +636,7 @@ class Countly constructor(
         )
 
         val noConsentRequiredGroup = arrayOf(
+            Countly.CountlyFeatureNames.metrics,
             Countly.CountlyFeatureNames.users,
             Countly.CountlyFeatureNames.push,
             Countly.CountlyFeatureNames.starRating,

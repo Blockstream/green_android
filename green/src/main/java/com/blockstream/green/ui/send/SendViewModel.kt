@@ -274,7 +274,7 @@ class SendViewModel @AssistedInject constructor(
 
                     // TODO calculate exchange from string input or from satoshi ?
 
-                    UserInput.parseUserInput(
+                    UserInput.parseUserInputSafe(
                             session,
                             amount,
                             isFiat = isFiat

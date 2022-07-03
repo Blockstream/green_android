@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.utils.SecureRandom
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import java.util.*
 
 class SettingsManager constructor(context: Context, private val sharedPreferences: SharedPreferences) {
@@ -27,6 +29,13 @@ class SettingsManager constructor(context: Context, private val sharedPreference
 
     fun isAskedAboutAnalyticsConsent() = sharedPreferences.getInt(KEY_ASKED_ANALYTICS_CONSENT, 0) == 1
     fun setAskedAboutAnalyticsConsent() = sharedPreferences.edit().putInt(KEY_ASKED_ANALYTICS_CONSENT, 1).apply()
+
+    fun whenIsAskedAboutAppReview(): Instant = Instant.fromEpochMilliseconds(sharedPreferences.getLong(KEY_ASKED_APP_REVIEW, 0))
+
+    fun setAskedAboutAppReview() {
+        // Set now in milliseconds
+        sharedPreferences.edit().putLong(KEY_ASKED_APP_REVIEW, Clock.System.now().toEpochMilliseconds()).apply()
+    }
 
     fun getCountlyDeviceId(): String {
         return sharedPreferences.getString(KEY_COUNTLY_DEVICE_ID, null) ?: run {
@@ -56,11 +65,16 @@ class SettingsManager constructor(context: Context, private val sharedPreference
         sharedPreferences.edit().putLong(KEY_COUNTLY_OFFSET, 0).apply()
     }
 
+    fun clearAll(){
+        sharedPreferences.edit().clear().apply()
+    }
+
     companion object {
         const val APPLICATION_SETTINGS_NAME = "application_settings"
 
         const val KEY_DEVICE_TERMS_ACCEPTED = "device_terms_accepted"
         const val KEY_ASKED_ANALYTICS_CONSENT = "asked_analytics_consent"
+        const val KEY_ASKED_APP_REVIEW = "asked_app_review"
         const val KEY_COUNTLY_DEVICE_ID = "countly_device_id"
         const val KEY_COUNTLY_OFFSET = "countly_offset"
     }
