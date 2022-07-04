@@ -144,7 +144,7 @@ public class LedgerDeviceBLE implements BTChipTransport {
       }
       switch(event.getEventType()) {
         case GATT_MTU_CHANGED:
-          setMtu(event.getMtu() - 3);
+          setMtu(event.getMtu());
           break;
         case GATT_CONNECTION_STATE_CHANGE:
           switch(event.getNewState()) {
@@ -229,6 +229,7 @@ public class LedgerDeviceBLE implements BTChipTransport {
     event = waitEvent(GattCallback.GattEventType.GATT_CHARACTERISTIC_CHANGED, NOTIFY_CHARACTERISTIC_UUID);
     byte[] data = event.getData();
     Log.d(LOG_STRING, "Device MTU answer " + Dump.dump(data));
+    setMtu(data[5] & 0xff);
     opened = true;
   }
 
@@ -268,6 +269,7 @@ public class LedgerDeviceBLE implements BTChipTransport {
     if (!event.getEventType().equals(GattCallback.GattEventType.GATT_CHARACTERISTIC_CHANGED)) {
       event = null;
     }
+    int packageSize = mtu;
     while (responseData == null) {
       if (event == null) {
         event = waitEvent(GattCallback.GattEventType.GATT_CHARACTERISTIC_CHANGED, NOTIFY_CHARACTERISTIC_UUID);
@@ -276,8 +278,11 @@ public class LedgerDeviceBLE implements BTChipTransport {
       if (debug) {
         Log.d(LOG_STRING, "<= Fragment " + Dump.dump(data));
       }
+
       response.write(data, 0, data.length);
-      responseData = LedgerWrapper.unwrapResponseAPDU(response.toByteArray(), mtu);
+      responseData = LedgerWrapper.unwrapResponseAPDU(response.toByteArray(), packageSize);
+      if (responseData == null)
+        packageSize = data.length;
       event = null;
     }
     if (debug) {
