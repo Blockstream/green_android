@@ -49,7 +49,7 @@ public class LedgerDeviceBLE implements BTChipTransport {
   private static final int DEFAULT_MTU = 20;
   private static final int DEFAULT_MAX_MTU = 100;
   private static final int DEFAULT_QUEUE_CAPACITY = 100;
-  private static final int DEFAULT_TIMEOUT_MS = 15000;
+  private static final int DEFAULT_TIMEOUT_MS = 30000;
   private static final String LOG_STRING = "LedgerDeviceBLE";
 
   private BluetoothGatt connection;
