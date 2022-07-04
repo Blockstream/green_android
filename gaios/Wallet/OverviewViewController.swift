@@ -287,8 +287,11 @@ class OverviewViewController: UIViewController {
     }
 
     func reloadData() {
+        if isLoading == true {
+            return
+        }
         isLoading = true
-//        transactions.removeAll()
+        transactions.removeAll()
         assets = [(key: String, value: UInt64)]()
         tableView.reloadData {
             self.loadSubaccounts()
@@ -297,6 +300,7 @@ class OverviewViewController: UIViewController {
             }.done {
                 self.reloadWallet()
             }.catch { err in
+                self.isLoading = false
                 print(err.localizedDescription)
             }
         }
