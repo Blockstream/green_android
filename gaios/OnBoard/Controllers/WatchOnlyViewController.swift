@@ -21,6 +21,7 @@ class WatchOnlyViewController: KeyboardViewController {
     private var progressToken: NSObjectProtocol?
 
     var network: AvailableNetworks?
+    var watchOnlySecurityOption: SecurityOption = .multi
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -139,7 +140,16 @@ class WatchOnlyViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
-        let name = "\(network.name()) watch-only"
+        let baseName = "\(watchOnlySecurityOption.rawValue) \(network.name())"
+        var name = baseName
+        for num in 0...999 {
+            name = num == 0 ? baseName : "\(baseName) #\(num + 1)"
+            if (AccountsManager.shared.swAccounts.filter { $0.name.lowercased().hasPrefix(name.lowercased()) }.count) > 0 {
+            } else {
+                break
+            }
+        }
+
         var account = Account(name: name, network: network.rawValue, username: username, isSingleSig: false)
         if self.rememberSwitch.isOn {
             account.password = password

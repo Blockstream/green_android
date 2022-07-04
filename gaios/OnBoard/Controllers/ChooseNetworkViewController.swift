@@ -20,6 +20,7 @@ class ChooseNetworkViewController: UIViewController {
     @IBOutlet weak var cardLiquidTestnet: UIView!
 
     var restoreSingleSig = false
+    var watchOnlySecurityOption: SecurityOption = .multi
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,6 +124,7 @@ class ChooseNetworkViewController: UIViewController {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController") as? WatchOnlyViewController {
             vc.network = network
+            vc.watchOnlySecurityOption = watchOnlySecurityOption
             navigationController?.pushViewController(vc, animated: true)
         }
     }

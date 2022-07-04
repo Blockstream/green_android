@@ -1,5 +1,10 @@
 import UIKit
 
+enum SecurityOption: String {
+    case single = "SingleSig"
+    case multi = "MultiSig"
+}
+
 class ChooseSecurityViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -12,11 +17,6 @@ class ChooseSecurityViewController: UIViewController {
     @IBOutlet weak var cardAdvanced: UIView!
     @IBOutlet weak var lblAdvancedTitle: UILabel!
     @IBOutlet weak var lblAdvancedHint: UILabel!
-
-    enum SecurityOption: Int {
-        case single
-        case multi
-    }
 
     var securityOption: SecurityOption?
 
@@ -77,8 +77,11 @@ class ChooseSecurityViewController: UIViewController {
         switch LandingViewController.flowType {
         case .watchonly:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
-            navigationController?.pushViewController(vc, animated: true)
+
+            if let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController") as? ChooseNetworkViewController {
+                vc.watchOnlySecurityOption = .multi
+                navigationController?.pushViewController(vc, animated: true)
+            }
         default:
             securityOption = .multi
             selectLength()

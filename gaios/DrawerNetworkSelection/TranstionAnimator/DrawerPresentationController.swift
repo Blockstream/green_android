@@ -18,7 +18,7 @@ class DrawerPresentationController: UIPresentationController {
     }
 
     override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
-        return CGSize(width: parentSize.width * 0.75, height: parentSize.height)
+        return CGSize(width: parentSize.width * 0.80, height: parentSize.height)
     }
 
     override func presentationTransitionWillBegin() {
