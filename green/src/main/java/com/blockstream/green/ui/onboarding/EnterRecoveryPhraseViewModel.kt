@@ -1,5 +1,6 @@
 package com.blockstream.green.ui.onboarding
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,12 +11,10 @@ import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlin.properties.Delegates
 
 class EnterRecoveryPhraseViewModel @AssistedInject constructor(
     private val greenWallet: GreenWallet,
     @Assisted private val recoveryPhrase: String?,
-    @Assisted val isBip39: Boolean
 ) : AppViewModel() {
 
     val showPasteButton = MutableLiveData(true)
@@ -28,13 +27,18 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
     val recoveryWords = MutableLiveData<List<RecoveryPhraseWordListItem>>()
     var isEncryptionPasswordRequired = false
 
-    var recoverySize: Int by Delegates.observable(recoveryPhraseState.value?.phrase?.size ?: 0) { _, _, _ ->
+    private val _recoveryPhraseSize = MutableLiveData(12)
+    val recoveryPhraseSize: LiveData<Int>
+        get() = _recoveryPhraseSize
+
+    init {
         recoveryPhraseState.value?.let {
             updateRecoveryPhrase(it)
         }
     }
 
-    init {
+    fun setRecoveryPhraseSize(length : Int){
+        _recoveryPhraseSize.value = length
         recoveryPhraseState.value?.let {
             updateRecoveryPhrase(it)
         }
@@ -49,9 +53,17 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
             list += RecoveryPhraseWordListItem(list.size + 1, word, state.activeIndex == list.size)
         }
 
-        while (list.size < recoverySize) {
+        while (list.size < _recoveryPhraseSize.value!!) {
             list += RecoveryPhraseWordListItem(list.size + 1, "", list.isEmpty())
         }
+
+        _recoveryPhraseSize.postValue(when(list.size){
+            in 0..12 -> 12
+            in 12..24 -> 24
+            else -> {
+                27
+            }
+        })
 
         validate(state)
 
@@ -72,38 +84,23 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
             false
         }
 
-        val msgRes: Int
-
-        if (isBip39) {
-            msgRes = if (len < 12) {
-                R.string.id_enter_yournrecovery_phrase
-            } else if (valid) {
-                R.string.id_well_done_you_can_continue
-            } else if (len == 12 || len == 24) {
-                R.string.id_invalid_mnemonic_continue
-            } else {
-                R.string.id_enter_yournrecovery_phrase
-            }
-
+        val msgRes = if (len < 12) {
+            R.string.id_enter_your_12_24_or_27_words
+        } else if (valid) {
+            R.string.id_well_done_you_can_continue
+        } else if (len < 24) {
+            R.string.id_enter_your_24_or_27_words
+        } else if (valid && len == 27) {
+            R.string.id_well_done_you_can_continue_with
+        } else if (!valid && len == 24) {
+            R.string.id_invalid_mnemonic_continue
+        } else if (len < 27) {
+            R.string.id_enter_your_27_words_recovery
         } else {
-            msgRes = if (len < 12) {
-                R.string.id_enter_your_12_24_or_27_words
-            } else if (valid) {
-                R.string.id_well_done_you_can_continue
-            } else if (len < 24) {
-                R.string.id_enter_your_24_or_27_words
-            } else if (valid && len == 27) {
-                R.string.id_well_done_you_can_continue_with
-            } else if (!valid && len == 24) {
-                R.string.id_invalid_mnemonic_continue
-            } else if (len < 27) {
-                R.string.id_enter_your_27_words_recovery
-            } else {
-                0
-            }
+            0
         }
 
-        isEncryptionPasswordRequired = !isBip39 && len == 27
+        isEncryptionPasswordRequired = len == 27
 
         val showHelp = !valid && (len >= 12 && len % 3 == 0)
 
@@ -111,25 +108,24 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
 
         isValid.value = valid
 
-        showInvalidMnemonicError.value = showHelp && !isEditMode && len >= recoverySize
+        showInvalidMnemonicError.value = showHelp && !isEditMode && len >= _recoveryPhraseSize.value!!
         showPasteButton.value = recoveryPhrase.size == 0
         showHelpButton.value = showHelp
     }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
-        fun create(recoveryPhrase: String?, isBip39: Boolean): EnterRecoveryPhraseViewModel
+        fun create(recoveryPhrase: String?): EnterRecoveryPhraseViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            recoveryPhrase: String?,
-            isBip39: Boolean
+            recoveryPhrase: String?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(recoveryPhrase, isBip39) as T
+                return assistedFactory.create(recoveryPhrase) as T
             }
         }
     }

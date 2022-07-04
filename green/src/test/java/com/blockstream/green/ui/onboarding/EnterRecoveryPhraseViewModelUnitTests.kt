@@ -32,7 +32,7 @@ class EnterRecoveryPhraseViewModelUnitTests : TestViewModel<EnterRecoveryPhraseV
             whenever(greenWallet.isMnemonicValid(it)).thenReturn(true)
         }
 
-        viewModel = EnterRecoveryPhraseViewModel(greenWallet, null,false)
+        viewModel = EnterRecoveryPhraseViewModel(greenWallet, null)
 
         viewModel.showPasteButton.observeForever(showPasteButtonObserver)
         viewModel.showHelpButton.observeForever(showHelpButtonObserver)

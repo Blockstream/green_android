@@ -21,8 +21,8 @@ class ScanWalletViewModel @AssistedInject constructor(
     @Assisted val onboardingOptions: OnboardingOptions,
     @Assisted mnemonic: String
 ) : OnboardingViewModel(sessionManager, walletRepository, countly,null) {
-    val multiSig = MutableLiveData<Boolean?>(null) // true = can be added , false -> already in app , null -> not available
-    val singleSig = MutableLiveData<Boolean?>(null)
+    val multiSig = MutableLiveData<String?>(null) // "" = can be added , "wallet_name" -> already in app , null -> not available
+    val singleSig = MutableLiveData<String?>(null)
 
     init {
         scan(onboardingOptions.networkType!!, mnemonic, "")
@@ -35,20 +35,20 @@ class ScanWalletViewModel @AssistedInject constructor(
         /*
             How wallet identification works with Boolean?
             null -> wallet not found
-            false -> wallet already exists in app
-            true -> wallet can be added
+            "wallet_name" -> wallet already exists in app
+            "" -> wallet can be added
          */
 
         session.observable {
-            val multisig: Boolean? = try{
+            val multisig: String? = try{
                 val multiSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = false)
                 val multisigLoginData = it.loginWithMnemonic(multiSigNetwork, mnemonic, mnemonicPassword, initializeSession = false)
-                !walletRepository.walletsExistsSync(multisigLoginData.walletHashId, false)
+                walletRepository.getWalletWithHashIdSync(multisigLoginData.walletHashId, false)?.name ?: ""
             }catch (e: Exception){
                 null
             }
 
-            val singlesig: Boolean? = try{
+            val singlesig: String? = try{
                 val singleSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = true)
                 val singleSigLoginData = it.loginWithMnemonic(singleSigNetwork, mnemonic, mnemonicPassword, initializeSession = false)
 
@@ -56,7 +56,7 @@ class ScanWalletViewModel @AssistedInject constructor(
                     subaccount.bip44Discovered == true
                 }.let { subAccountWithTransactions ->
                     if (subAccountWithTransactions != null) {
-                        !walletRepository.walletsExistsSync(singleSigLoginData.walletHashId, false)
+                        walletRepository.getWalletWithHashIdSync(singleSigLoginData.walletHashId, false)?.name ?: ""
                     } else {
                         null
                     }

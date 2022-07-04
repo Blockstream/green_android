@@ -7,6 +7,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,14 +45,14 @@ class EnterRecoveryPhraseFragment :
     override val segmentation: HashMap<String, Any>? = null
 
     @Inject
-    lateinit var appWallet: GreenWallet
+    lateinit var greenWallet: GreenWallet
 
     @Inject
     lateinit var assistedFactory: EnterRecoveryPhraseViewModel.AssistedFactory
 
     val viewModel: EnterRecoveryPhraseViewModel by viewModels{
         EnterRecoveryPhraseViewModel.provideFactory(
-            assistedFactory = assistedFactory, recoveryPhrase = args.scannedInput , isBip39 = options?.isSinglesig ?: true
+            assistedFactory = assistedFactory, recoveryPhrase = args.scannedInput
         )
     }
 
@@ -60,7 +61,7 @@ class EnterRecoveryPhraseFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        options = args.onboardingOptions // ?: OnboardingOptions(true, isBIP39 = false)
+        options = args.onboardingOptions
 
         binding.vm = viewModel
 
@@ -87,7 +88,20 @@ class EnterRecoveryPhraseFragment :
                     .setTitle(R.string.id_encryption_passphrase)
                     .setView(dialogBinding.root)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
-                        navigate(options = options, mnemonic = viewModel.recoveryPhraseState.value!!.toMnemonic(), mnemonicPassword = dialogBinding.text ?: "")
+
+                        // A 27-word mnemonic is a multisig network
+                        options?.apply {
+                            navigate(
+                                options = createCopyForNetwork(
+                                    greenWallet = greenWallet,
+                                    networkType = networkType!!,
+                                    isElectrum = false,
+                                ),
+                                mnemonic = viewModel.recoveryPhraseState.value!!.toMnemonic(),
+                                mnemonicPassword = dialogBinding.text ?: ""
+                            )
+                        }
+
                     }
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()
@@ -115,7 +129,7 @@ class EnterRecoveryPhraseFragment :
             adapter = fastAdapter
         }
 
-        binding.recoveryPhraseKeyboardView.setWordList(appWallet.getMnemonicWordList())
+        binding.recoveryPhraseKeyboardView.setWordList(greenWallet.getMnemonicWordList())
 
         binding.recoveryPhraseKeyboardView.setOnRecoveryPhraseKeyboardListener(object :
             RecoveryPhraseKeyboardView.OnRecoveryPhraseKeyboardListener {
@@ -144,25 +158,26 @@ class EnterRecoveryPhraseFragment :
 
         binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if(isChecked) {
-                viewModel.recoverySize = (when (checkedId) {
+                viewModel.setRecoveryPhraseSize(when (checkedId) {
                     R.id.button12 -> 12
                     R.id.button24 -> 24
                     else -> 27
                 })
             }
         }
-        
-        binding.toggleRecoverySize.check(when(viewModel.recoverySize){
-            0, 12 -> R.id.button12
-            24 -> R.id.button24
-            27 -> R.id.button27
-            else -> 0
-        })
+
+        viewModel.recoveryPhraseSize.distinctUntilChanged().observe(viewLifecycleOwner){
+            binding.toggleRecoverySize.check(when(it){
+                0, 12 -> R.id.button12
+                24 -> R.id.button24
+                27 -> R.id.button27
+                else -> 0
+            })
+        }
 
         viewModel.recoveryPhraseState.value?.let {
             binding.recoveryPhraseKeyboardView.setRecoveryPhraseState(it)
         }
-
 
         viewModel.recoveryWords.observe(viewLifecycleOwner) {
             FastAdapterDiffUtil.set(itemAdapter.itemAdapter, it, false)
@@ -170,17 +185,29 @@ class EnterRecoveryPhraseFragment :
         }
     }
 
-    fun navigate(options: OnboardingOptions? , mnemonic: String, mnemonicPassword: String ){
+    fun navigate(options: OnboardingOptions? , mnemonic: String, mnemonicPassword: String){
         if(options != null){
             if(args.wallet == null) {
-                navigate(
-                    EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToScanWalletFragment(
-                        onboardingOptions = options,
-                        mnemonic = mnemonic,
-                        mnemonicPassword = mnemonicPassword
+                // Scan is required
+                if (mnemonicPassword.isBlank()) {
+                    navigate(
+                        EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToScanWalletFragment(
+                            onboardingOptions = options,
+                            mnemonic = mnemonic,
+                            mnemonicPassword = mnemonicPassword
+                        )
                     )
-                )
-            }else{
+                } else {
+                    // Multisig network based on 27-words mnemonic & password
+                    navigate(
+                        EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToWalletNameFragment(
+                            onboardingOptions = options,
+                            mnemonic = mnemonic,
+                            mnemonicPassword = mnemonicPassword
+                        )
+                    )
+                }
+            } else {
                 navigate(
                     EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToWalletNameFragment(
                         onboardingOptions = options,
@@ -190,7 +217,7 @@ class EnterRecoveryPhraseFragment :
                     )
                 )
             }
-        }else if (args.wallet != null){
+        } else if (args.wallet != null){
             navigate(
                 EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToAddAccountFragment(
                     accountType = AccountType.TWO_OF_THREE,

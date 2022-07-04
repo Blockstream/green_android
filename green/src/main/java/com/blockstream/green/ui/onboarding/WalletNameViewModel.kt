@@ -4,7 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
+import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -20,6 +22,8 @@ class WalletNameViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     countly: Countly,
     @Assisted val onboardingOptions: OnboardingOptions,
+    @Assisted("mnemonic") val mnemonic: String,
+    @Assisted("mnemonicPassword") val mnemonicPassword: String,
     @Assisted restoreWallet: Wallet?
 ) : OnboardingViewModel(sessionManager, walletRepository, countly, restoreWallet) {
     val walletName = MutableLiveData(restoreWallet?.name ?: "")
@@ -29,12 +33,25 @@ class WalletNameViewModel @AssistedInject constructor(
         }
     }
 
+    init {
+        // Check mnemonic password
+        if(!mnemonicPassword.isNullOrBlank()){
+            checkRecoveryPhrase(GdkEvent.Success)
+        }
+    }
+
     fun getName() = walletName.value.nameCleanup()
+
+    fun checkRecoveryPhrase(successEvent: AppEvent) {
+        checkRecoveryPhrase(onboardingOptions.network!!, mnemonic, mnemonicPassword, successEvent)
+    }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
             onboardingOptions: OnboardingOptions,
+            @Assisted("mnemonic") mnemonic: String,
+            @Assisted("mnemonicPassword") mnemonicPassword: String,
             restoreWallet: Wallet?
         ): WalletNameViewModel
     }
@@ -43,11 +60,13 @@ class WalletNameViewModel @AssistedInject constructor(
         fun provideFactory(
             assistedFactory: AssistedFactory,
             onboardingOptions: OnboardingOptions,
+            mnemonic: String,
+            mnemonicPassword: String,
             restoreWallet: Wallet?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(onboardingOptions, restoreWallet) as T
+                return assistedFactory.create(onboardingOptions, mnemonic, mnemonicPassword, restoreWallet) as T
             }
         }
     }

@@ -105,7 +105,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
 
     @Test
     fun test_recoveryPhrase_valid() {
-        viewModel.checkRecoveryPhrase(multisigNetwork, "valid", "")
+        viewModel.checkRecoveryPhrase(multisigNetwork, "valid", "", NavigateEvent.Navigate)
 
         verify(eventObserver).onChanged(any())
         verify(errorObserver, never()).onChanged(any())
@@ -113,7 +113,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
 
     @Test
     fun test_recoveryPhrase_invalid() {
-        viewModel.checkRecoveryPhrase(multisigNetwork, "invalid", "")
+        viewModel.checkRecoveryPhrase(multisigNetwork, "invalid", "", NavigateEvent.Navigate)
 
         verify(eventObserver, never()).onChanged(any())
         verify(errorObserver).onChanged(any())

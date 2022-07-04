@@ -10,7 +10,6 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import com.blockstream.green.R
-import java.util.*
 
 class RecoveryPhraseKeyboardView @JvmOverloads constructor(
     context: Context,
@@ -84,7 +83,7 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
         }
 
         // Disable keys for words greater than 27
-        if(state.phrase.size >= 27 ){
+        if(state.phrase.size >= 27 && state.activeIndex == -1) {
             for (key in letterKeys) {
                 key.isEnabled = false
             }
@@ -217,7 +216,7 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
                 }
 
                 // Case where you are on the last empty word, its better on that case to completely
-                // remove the word, that way we can imediatelly show the paste buttno
+                // remove the word, that way we can imediatelly show the paste button
                 if(phrase.size == 1 && phrase[0].isEmpty()){
                     deleteCharacter()
                 }

@@ -42,36 +42,24 @@ class ScanWalletFragment :
         binding.vm = viewModel
 
         viewModel.singleSig.observe(viewLifecycleOwner){
-            binding.singleSig.alpha = if(it == true) 1.0f else 0.6f
-            binding.singleSig.isEnabled = it == true
+            binding.singleSig.alpha = if(it == "") 1.0f else 0.6f
+            binding.singleSig.isEnabled = it == ""
 
             binding.singleSig.setCaption(when(it){
-                true -> {
-                    getString(R.string.id_wallet_found)
-                }
-                false -> {
-                    getString(R.string.id_wallet_already_restored)
-                }
-                else -> {
-                    getString(R.string.id_wallet_not_found)
-                }
+                "" -> getString(R.string.id_wallet_found)
+                null -> getString(R.string.id_wallet_not_found)
+                else -> getString(R.string.id_wallet_already_restored) + "\n$it"
             })
         }
 
         viewModel.multiSig.observe(viewLifecycleOwner){
-            binding.multiSig.alpha = if(it == true) 1.0f else 0.6f
-            binding.multiSig.isEnabled = it == true
+            binding.multiSig.alpha = if(it == "") 1.0f else 0.6f
+            binding.multiSig.isEnabled = it == ""
 
             binding.multiSig.setCaption(when(it){
-                true -> {
-                    getString(R.string.id_wallet_found)
-                }
-                false -> {
-                    getString(R.string.id_wallet_already_restored)
-                }
-                else -> {
-                    getString(R.string.id_wallet_not_found)
-                }
+                "" -> getString(R.string.id_wallet_found)
+                null -> getString(R.string.id_wallet_not_found)
+                else -> getString(R.string.id_wallet_already_restored) + "\n$it"
             })
         }
 

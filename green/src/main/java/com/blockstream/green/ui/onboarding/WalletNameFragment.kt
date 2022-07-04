@@ -29,7 +29,7 @@ class WalletNameFragment : AbstractOnboardingFragment<WalletNameFragmentBinding>
     @Inject
     lateinit var viewModelFactory: WalletNameViewModel.AssistedFactory
     val viewModel: WalletNameViewModel by viewModels {
-        WalletNameViewModel.provideFactory(viewModelFactory, args.onboardingOptions, args.restoreWallet)
+        WalletNameViewModel.provideFactory(viewModelFactory, args.onboardingOptions, args.mnemonic, args.mnemonicPassword, args.restoreWallet)
     }
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
@@ -48,7 +48,7 @@ class WalletNameFragment : AbstractOnboardingFragment<WalletNameFragmentBinding>
         binding.buttonContinue.setOnClickListener {
             options?.let {
                 if(it.isRestoreFlow){
-                    viewModel.checkRecoveryPhrase(it.network!!, args.mnemonic, args.mnemonicPassword)
+                    viewModel.checkRecoveryPhrase(NavigateEvent.Navigate)
                 }else{
                     navigateToPin()
                 }
@@ -65,8 +65,16 @@ class WalletNameFragment : AbstractOnboardingFragment<WalletNameFragmentBinding>
                     dialog(title = getString(R.string.id_wallet_not_found), message = getString(R.string.id_no_multisig_shield_wallet)) {
                         popBackStack()
                     }
+                }else if(error.message?.contains("decrypt_mnemonic") == true){
+                    dialog(title = getString(R.string.id_error), message = getString(R.string.id_error_passphrases_do_not_match)) {
+                        popBackStack()
+                    }
                 }else{
-                    errorDialog(error)
+                    errorDialog(error) {
+                        if(error.message == "id_wallet_already_restored"){
+                            popBackStack()
+                        }
+                    }
                 }
             }
         }

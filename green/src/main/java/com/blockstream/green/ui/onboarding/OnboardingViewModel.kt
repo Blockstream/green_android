@@ -2,6 +2,7 @@ package com.blockstream.green.ui.onboarding
 
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.PinData
+import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
@@ -101,7 +102,7 @@ open class OnboardingViewModel constructor(
         }
     }
 
-    fun checkRecoveryPhrase(network: Network , mnemonic: String, mnemonicPassword: String) {
+    fun checkRecoveryPhrase(network: Network , mnemonic: String, mnemonicPassword: String, successEvent: AppEvent) {
         session.observable {
             it.loginWithMnemonic(network, mnemonic, mnemonicPassword)
 
@@ -125,7 +126,7 @@ open class OnboardingViewModel constructor(
         }.doOnTerminate {
             onProgress.value = false
         }.subscribe({
-            onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
+            onEvent.postValue(ConsumableEvent(successEvent))
         }, {
             onError.value = ConsumableEvent(it)
         })

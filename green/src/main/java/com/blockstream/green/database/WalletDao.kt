@@ -54,6 +54,9 @@ interface WalletDao {
     @Query("SELECT * FROM wallets WHERE id = :id")
     suspend fun getWalletSuspend(id: WalletId): Wallet?
 
+    @Query("SELECT * FROM wallets WHERE wallet_hash_id = :walletHashId AND is_hardware = :isHardware LIMIT 1")
+    fun getWalletWithHashIdSync(walletHashId: String, isHardware: Boolean): Wallet?
+
     @Query("SELECT * FROM wallets")
     fun getWalletsLiveData(): LiveData<List<Wallet>>
 
