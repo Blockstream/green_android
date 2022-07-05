@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Support concurrent hardware wallets logins
 - Liquid network: support for watch-only wallets
 - Watch-only wallets: support to delete credentials
+- Wallet onboard: automatic unique name creation support
  
 ### Changed
 - Improve performance of login with hardware wallets

@@ -140,15 +140,9 @@ class WatchOnlyViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
-        let baseName = "\(watchOnlySecurityOption.rawValue) \(network.name())"
-        var name = baseName
-        for num in 0...999 {
-            name = num == 0 ? baseName : "\(baseName) #\(num + 1)"
-            if (AccountsManager.shared.swAccounts.filter { $0.name.lowercased().hasPrefix(name.lowercased()) }.count) > 0 {
-            } else {
-                break
-            }
-        }
+        let name = AccountsManager.shared.getUniqueAccountName(
+            securityOption: watchOnlySecurityOption,
+            network: network)
 
         var account = Account(name: name, network: network.rawValue, username: username, isSingleSig: false)
         if self.rememberSwitch.isOn {

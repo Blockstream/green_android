@@ -161,4 +161,20 @@ class AccountsManager {
         }
         accounts = currentList
     }
+
+    func getUniqueAccountName(
+        securityOption: SecurityOption,
+        network: AvailableNetworks) -> String {
+
+        let baseName = "\(securityOption.rawValue) \(network.name())"
+        var name = baseName
+        for num in 0...999 {
+            name = num == 0 ? baseName : "\(baseName) #\(num + 1)"
+            if (AccountsManager.shared.swAccounts.filter { $0.name.lowercased().hasPrefix(name.lowercased()) }.count) > 0 {
+            } else {
+                break
+            }
+        }
+        return name
+    }
 }

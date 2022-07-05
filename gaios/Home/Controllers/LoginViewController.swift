@@ -41,7 +41,7 @@ class LoginViewController: UIViewController {
         ntwBtn.setImage(img.withRenderingMode(.alwaysOriginal), for: .normal)
         ntwBtn.imageView?.contentMode = .scaleAspectFit
         ntwBtn.addTarget(self, action: #selector(LoginViewController.back), for: .touchUpInside)
-        ntwBtn.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        ntwBtn.contentEdgeInsets = UIEdgeInsets(top: 9, left: -16, bottom: 9, right: 0)
         navigationItem.leftBarButtonItems =
             [UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(LoginViewController.back)),
              UIBarButtonItem(customView: ntwBtn)

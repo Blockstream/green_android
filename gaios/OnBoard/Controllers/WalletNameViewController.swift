@@ -17,11 +17,25 @@ class WalletNameViewController: UIViewController {
         }
     }
 
+    private var defaultName = ""
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if let isSingleSig = OnBoardManager.shared.account.isSingleSig,
+            let network: AvailableNetworks = (AvailableNetworks.allCases.filter { $0.rawValue == OnBoardManager.shared.account.network}).first {
+
+            defaultName = AccountsManager.shared.getUniqueAccountName(
+                securityOption: isSingleSig ? .single : .multi,
+                network: network)
+        }
+
         fieldName.delegate = self
         fieldName.text = OnBoardManager.shared.params?.walletName ?? ""
+        fieldName.attributedPlaceholder = NSAttributedString(
+            string: defaultName,
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+
         setContent()
         setStyle()
         updateUI()
@@ -62,17 +76,23 @@ class WalletNameViewController: UIViewController {
         btnSettings.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
     }
 
-    func updateUI() {
-        if fieldName.text?.count ?? 0 > 2 {
-            btnNext.setStyle(.primary)
-        } else {
-            btnNext.setStyle(.primaryDisabled)
+    func getValidTxt() -> String? {
+        if let txt = fieldName.text {
+            if txt.count == 0 && !defaultName.isEmpty {
+                return defaultName
+            } else if txt.count > 2 {
+                return txt
+            }
         }
+        return nil
     }
 
-    func nameIsSet() {
-        OnBoardManager.shared.params?.walletName = fieldName.text ?? ""
-        setup(restored: LandingViewController.flowType == .restore)
+    func updateUI() {
+        if getValidTxt() != nil {
+            btnNext.setStyle(.primary)
+            return
+        }
+        btnNext.setStyle(.primaryDisabled)
     }
 
     @IBAction func nameDidChange(_ sender: Any) {
@@ -88,7 +108,9 @@ class WalletNameViewController: UIViewController {
     }
 
     @IBAction func btnNext(_ sender: Any) {
-        nameIsSet()
+        let txt = getValidTxt()
+        OnBoardManager.shared.params?.walletName = txt
+        setup(restored: LandingViewController.flowType == .restore)
     }
 
     func setup(restored: Bool) {
