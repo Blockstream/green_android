@@ -30,15 +30,21 @@ class SendConfirmViewModel @AssistedInject constructor(
     val editableNote = MutableLiveData(session.pendingTransaction?.second?.memo ?: "") // bump memo
     val deviceAddressValidationEvent = MutableLiveData<ConsumableEvent<Boolean?>>()
 
+    val memo: String
+        get() = (editableNote.value ?: "").trim()
+
     fun broadcastTransaction(twoFactorResolver: TwoFactorResolver) {
         session.observable {
 
             // Create transaction with memo
             val params = it.pendingTransaction!!.first.copy(
-                memo = (editableNote.value ?: "").trim()
+                memo = memo
             )
 
-            val transaction = it.createTransaction(params)
+            val transaction = it.createTransaction(params).also { tx ->
+                // Update pending transaction so that VerifyTransactionBottomSheet can get the actual tx to be broadcast
+                it.pendingTransaction = params to tx
+            }
 
             if(session.hasDevice){
                 deviceAddressValidationEvent.postValue(ConsumableEvent(null))
