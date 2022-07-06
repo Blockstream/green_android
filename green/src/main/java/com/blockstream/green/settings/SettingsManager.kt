@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.utils.SecureRandom
-import com.blockstream.green.utils.isDevelopmentFlavor
 import java.util.*
 
 class SettingsManager constructor(context: Context, private val sharedPreferences: SharedPreferences) {
@@ -12,7 +11,7 @@ class SettingsManager constructor(context: Context, private val sharedPreference
     private var appSettingsSharedPreferences: SharedPreferences =
         context.getSharedPreferences(APPLICATION_SETTINGS_NAME, Context.MODE_PRIVATE)
 
-    private var appSettings = MutableLiveData(ApplicationSettings.fromSharedPreferences(isDevelopmentFlavor, appSettingsSharedPreferences))
+    private var appSettings = MutableLiveData(ApplicationSettings.fromSharedPreferences(appSettingsSharedPreferences))
 
     fun getApplicationSettingsLiveData() = appSettings
 

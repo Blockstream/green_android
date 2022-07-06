@@ -9,10 +9,8 @@ import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseNetworkFragmentBinding
-import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
-import com.blockstream.green.utils.isDevelopmentFlavor
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
@@ -117,15 +115,11 @@ class ChooseNetworkFragment :
     private fun navigate(options: OnboardingOptions) {
         if(options.isRestoreFlow){
             if(options.isWatchOnly){
-                if(isDevelopmentFlavor || options.network?.isLiquid != true){
-                    navigate(
-                        ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToLoginWatchOnlyFragment(
-                            options
-                        )
+                navigate(
+                    ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToLoginWatchOnlyFragment(
+                        options
                     )
-                }else{
-                    ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
-                }
+                )
             }else{
                 navigate(
                     ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToChooseRecoveryPhraseFragment(

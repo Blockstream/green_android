@@ -9,7 +9,6 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
@@ -20,7 +19,7 @@ class ApplicationSettingsUnitTests {
 
     @Test
     fun test_initial_values_with_empty_prefs(){
-        val appSettings = ApplicationSettings.fromSharedPreferences(false, prefs)
+        val appSettings = ApplicationSettings.fromSharedPreferences(prefs)
 
         Assert.assertFalse(appSettings.tor)
         Assert.assertNull(appSettings.proxyUrl)
@@ -34,7 +33,7 @@ class ApplicationSettingsUnitTests {
         }
         whenever(prefs.getBoolean(any(), any())).thenReturn(true)
 
-        val appSettings = ApplicationSettings.fromSharedPreferences(false, prefs)
+        val appSettings = ApplicationSettings.fromSharedPreferences(prefs)
 
         Assert.assertEquals("proxyURL", appSettings.proxyUrl)
         Assert.assertTrue(appSettings.tor)

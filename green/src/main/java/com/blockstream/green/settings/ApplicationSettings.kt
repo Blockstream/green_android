@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Parcelable
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.ui.settings.ScreenLockSetting
+import com.blockstream.green.utils.isDevelopmentFlavor
 import kotlinx.parcelize.Parcelize
 
 
@@ -81,7 +82,7 @@ data class ApplicationSettings constructor(
         private const val SPV_TESTNET_ELECTRUM_SERVER = "spvTestnetElectrumServer"
         private const val SPV_TESTNET_LIQUID_ELECTRUM_SERVER = "spvTestnetLiquidElectrumServer"
 
-        fun fromSharedPreferences(isDevelopmentFlavor: Boolean, prefs: SharedPreferences): ApplicationSettings {
+        fun fromSharedPreferences(prefs: SharedPreferences): ApplicationSettings {
             try{
                 return ApplicationSettings(
                     enhancedPrivacy = prefs.getBoolean(ENHANCED_PRIVACY, false),
