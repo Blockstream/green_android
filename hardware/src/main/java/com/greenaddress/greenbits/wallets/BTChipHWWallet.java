@@ -150,8 +150,8 @@ public class BTChipHWWallet extends HWWallet {
     @Override
     public String getGreenAddress(final Network network, final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws BTChipException {
         // Only supported for liquid mutisig shield
-        if (network.isSinglesig() || network.isLiquid()) {
-            return null;
+        if (network.isSinglesig() && network.isLiquid()) {
+            throw new RuntimeException("Liquid singlesig is not supported yet");
         }
 
         // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
