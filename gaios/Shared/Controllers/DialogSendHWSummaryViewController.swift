@@ -25,6 +25,9 @@ class DialogSendHWSummaryViewController: UIViewController {
     @IBOutlet weak var lblFeeFiat: UILabel!
     @IBOutlet weak var lblFeeInfo: UILabel!
 
+    @IBOutlet weak var lblChangeTitle: UILabel!
+    @IBOutlet weak var lblChangeHint: UILabel!
+
     private var btc: String {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
@@ -107,8 +110,31 @@ class DialogSendHWSummaryViewController: UIViewController {
                 lblFeeFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
                 lblFeeInfo.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(transaction.feeRate) / 1000))"
             }
+            lblChangeTitle.isHidden = true
+            lblChangeHint.isHidden = true
+            if isLedger {
+                handleChange(transaction)
+            }
         }
+    }
 
+    func handleChange(_ transaction: Transaction) {
+        if let outputs = transaction.transactionOutputs, !outputs.isEmpty {
+            var changeAddress = [String]()
+            outputs.forEach { output in
+                let isChange = output["is_change"] as? Bool ?? false
+                let isFee = output["is_fee"] as? Bool ?? false
+                if isChange && !isFee, let address = output["address"] as? String {
+                    changeAddress.append(address)
+                }
+            }
+            if !changeAddress.isEmpty {
+                lblChangeTitle.text = NSLocalizedString("id_change", comment: "")
+                lblChangeHint.text = changeAddress.map { "\($0)"}.joined(separator: "\n")
+                lblChangeTitle.isHidden = false
+                lblChangeHint.isHidden = false
+            }
+        }
     }
 
     func setStyle() {
