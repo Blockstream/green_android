@@ -61,16 +61,26 @@ class SendConfirmViewController: KeyboardViewController {
         }
     }
 
+    func dismissHWSummary() {
+        presentedViewController?.dismiss(animated: false, completion: nil)
+    }
+
     func send() {
+        let account = AccountsManager.shared.current
+
         guard let transaction = transaction else { return }
         guard let session = SessionsManager.current else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             sliderView.isUserInteractionEnabled = false
-            let account = AccountsManager.shared.current
             if account?.isHW ?? false {
-                self.startAnimating()
-                DropAlert().success(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""), delay: 4)
+                let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSendHWSummaryViewController") as? DialogSendHWSummaryViewController {
+                    vc.modalPresentationStyle = .overFullScreen
+                    vc.transaction = transaction
+                    vc.isLedger = account?.isLedger ?? false
+                    present(vc, animated: false, completion: nil)
+                }
             }
             return Guarantee()
         }.then(on: bgq) {
@@ -92,35 +102,41 @@ class SendConfirmViewController: KeyboardViewController {
             call?.resolve(connected: {
                 return self.connected }) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
         }.ensure {
+            if account?.isHW ?? false {
+                self.dismissHWSummary()
+            }
             self.stopAnimating()
         }.done { _ in
             self.executeOnDone()
-        }.catch { error in
+        }.catch { [weak self] error in
 
+            if account?.isHW ?? false {
+                self?.dismissHWSummary()
+            }
             var prettyError: String?
-            self.sliderView.isUserInteractionEnabled = true
-            self.sliderView.reset()
+            self?.sliderView.isUserInteractionEnabled = true
+            self?.sliderView.reset()
             switch error {
             case JadeError.Abort(let desc),
                  JadeError.Declined(let desc):
-                self.showError(desc)
+                self?.showError(desc)
                 prettyError = desc
             case LedgerWrapper.LedgerError.IOError,
                  LedgerWrapper.LedgerError.InvalidParameter:
-                self.showError(NSLocalizedString("id_operation_failure", comment: ""))
+                self?.showError(NSLocalizedString("id_operation_failure", comment: ""))
                 prettyError = "id_operation_failure"
             case TwoFactorCallError.failure(let localizedDescription),
                  TwoFactorCallError.cancel(let localizedDescription):
-                self.showError(localizedDescription)
+                self?.showError(localizedDescription)
                 prettyError = localizedDescription
             case TransactionError.invalid(let localizedDescription):
-                self.showError(localizedDescription)
+                self?.showError(localizedDescription)
                 prettyError = localizedDescription
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                self.showError(NSLocalizedString("id_you_are_not_connected", comment: ""))
+                self?.showError(NSLocalizedString("id_you_are_not_connected", comment: ""))
                 prettyError = "id_you_are_not_connected"
             default:
-                self.showError(error.localizedDescription)
+                self?.showError(error.localizedDescription)
                 prettyError = error.localizedDescription
             }
             AnalyticsManager.shared.failedTransaction(account: AccountsManager.shared.current, error: error, prettyError: prettyError)

@@ -41,6 +41,7 @@
 		3418BAE32743BDAD00F9B2D0 /* ArcView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAE22743BDAD00F9B2D0 /* ArcView.swift */; };
 		3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */; };
 		3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */; };
+		341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
 		341D0325279EB9E900E2ABAB /* ValidateTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D0324279EB9E900E2ABAB /* ValidateTask.swift */; };
 		34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */; };
@@ -370,6 +371,7 @@
 		3418BAE22743BDAD00F9B2D0 /* ArcView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcView.swift; sourceTree = "<group>"; };
 		3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionBarItem.swift; sourceTree = "<group>"; };
 		3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionBarItem.xib; sourceTree = "<group>"; };
+		341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogSendHWSummaryViewController.swift; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
 		341D0324279EB9E900E2ABAB /* ValidateTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateTask.swift; sourceTree = "<group>"; };
 		34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCountlyConsentViewController.swift; sourceTree = "<group>"; };
@@ -1221,6 +1223,7 @@
 				3423C6E627C380DD001D9E2C /* DialogMnemonicLengthViewController.swift */,
 				343A697A27E08921008D5F4C /* DialogAssetDetailViewController.swift */,
 				34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */,
+				341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1837,6 +1840,7 @@
 				3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */,
 				3418BABC2743984400F9B2D0 /* TransactionDetailCell.swift in Sources */,
 				34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */,
+				341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */,
 				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,
 				344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */,
 				34C3020426E7531E00A3F910 /* OverviewViewController.swift in Sources */,
