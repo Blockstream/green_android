@@ -26,6 +26,7 @@ import com.blockstream.green.databinding.SettingsWatchOnlyDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.filters.NumberValueFilter
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.WatchOnlyBottomSheetDialogFragment
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
@@ -179,7 +180,7 @@ class WalletSettingsFragment :
                         }
                     }
                     watchOnlyMultisigPreference -> {
-                        handleWatchOnly()
+                        WatchOnlyBottomSheetDialogFragment.show(childFragmentManager)
                     }
                     watchOnlySinglesigPreference -> {
                         navigate(
@@ -480,59 +481,6 @@ class WalletSettingsFragment :
     }
 
     private fun notifyDataSetChanged() { binding.recycler.adapter?.notifyDataSetChanged() }
-
-
-    private fun handleWatchOnly(): Boolean {
-        val dialogBinding = SettingsWatchOnlyDialogBinding.inflate(requireActivity().layoutInflater)
-
-        viewModel.watchOnlyUsernameLiveData.value?.let {
-            dialogBinding.username = it
-        }
-
-        dialogBinding.usernameTextInputEditText.doOnTextChanged { text, _, _, _ ->
-            dialogBinding.usernameTextInputLayout.error =
-                if (text.isNullOrBlank() || text.trimmedLength() >= 8) null else getString(R.string.id_at_least_8_characters_required)
-        }
-
-        dialogBinding.passwordTextInputEditText.doOnTextChanged { text, _, _, _ ->
-            dialogBinding.passwordTextInputLayout.error =
-                if (text.isNullOrBlank() || text.trimmedLength() >= 8) null else getString(R.string.id_at_least_8_characters_required)
-        }
-
-        MaterialAlertDialogBuilder(
-            requireContext(),
-            R.style.ThemeOverlay_Green_MaterialAlertDialog
-        )
-            .setTitle(R.string.id_watchonly_login)
-            .setView(dialogBinding.root)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                if (dialogBinding.username.isNullOrBlank()) {
-                    errorDialog(getString(R.string.id_the_username_cant_be_empty))
-                    return@setPositiveButton
-                }
-
-                if (dialogBinding.password.isNullOrBlank()) {
-                    errorDialog(getString(R.string.id_the_password_cant_be_empty))
-                    return@setPositiveButton
-                }
-
-                viewModel.setWatchOnly(
-                    username = dialogBinding.username ?: "",
-                    password = dialogBinding.password ?: ""
-                )
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .also {
-                if (!viewModel.watchOnlyUsernameLiveData.value.isNullOrBlank()) {
-                    it.setNeutralButton(R.string.id_delete) { _, _ ->
-                        viewModel.setWatchOnly(username = "", password = "")
-                    }
-                }
-            }
-            .show()
-
-        return true
-    }
 
     private fun handlePGP() {
         viewModel.settingsLiveData.value?.let { settings ->

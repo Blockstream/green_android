@@ -89,7 +89,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateWatchOnlyUsername(){
+    fun updateWatchOnlyUsername(){
         if(!session.isWatchOnly) {
             session.observable {
                 it.getWatchOnlyUsername()

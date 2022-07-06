@@ -206,3 +206,13 @@ fun Fragment.showPopupMenu(
     popup.setOnMenuItemClickListener(listener)
     popup.show()
 }
+
+
+fun BottomSheetDialogFragment.makeItConstant(){
+    // Keep the height of the window always constant
+    view?.also {
+        val params = it.layoutParams
+        params.height = resources.displayMetrics.heightPixels
+        it.layoutParams = params
+    }
+}

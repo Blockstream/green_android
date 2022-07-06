@@ -1101,4 +1101,6 @@
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.</string>
   <string name="id_copy_support_id">Copy support ID</string>
+  <string name="id_watchonly_credentials">Watch-only credentials</string>
+  <string name="id_delete_credentials">Delete credentials</string>
 </resources>

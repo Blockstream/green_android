@@ -3,12 +3,12 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.FrameLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.green.databinding.FilterBottomSheetBinding
+import com.blockstream.green.utils.makeItConstant
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -26,9 +26,7 @@ class FilterBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<FilterB
         super.onViewCreated(view, savedInstanceState)
 
         // Keep the height of the window always constant
-        val params = binding.linear.layoutParams as FrameLayout.LayoutParams
-        params.height = resources.displayMetrics.heightPixels
-        binding.linear.layoutParams = params
+        makeItConstant()
 
         // QATesterActivity is the only activity that uses it without Fragment
         val parent = (parentFragment ?: activity) as FilterableDataProvider

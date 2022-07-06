@@ -53,7 +53,6 @@
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:inputType="textShortMessage"
-                android:maxLength="42"
                 android:singleLine="true"
                 android:text="@={passphrase}" />
 
@@ -78,7 +77,6 @@
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:inputType="textShortMessage"
-                android:maxLength="42"
                 android:singleLine="true"
                 android:text="@={passphraseConfirm}" />
 
