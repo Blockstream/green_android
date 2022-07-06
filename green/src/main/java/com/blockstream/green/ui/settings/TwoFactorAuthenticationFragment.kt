@@ -374,19 +374,14 @@ class TwoFactorAuthenticationFragment :
                     dialog.dismiss()
                 }
                 .setNegativeButton(android.R.string.cancel, null)
-                .apply {
-                    if(!session.isLiquid) {
-                        setNeutralButton(R.string.id_i_lost_my_2fa) { _: DialogInterface, _: Int ->
-                            navigate(
-                                TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
-                                    wallet = wallet,
-                                    action = TwoFactorSetupAction.RESET
-                                )
-                            )
-                        }
-                    }
+                .setNeutralButton(R.string.id_i_lost_my_2fa) { _: DialogInterface, _: Int ->
+                    navigate(
+                        TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
+                            wallet = wallet,
+                            action = TwoFactorSetupAction.RESET
+                        )
+                    )
                 }
-
                 .show()
         }
     }
