@@ -63,6 +63,8 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         btnSave.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.saveBtn
         btnDelete.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.deleteBtn
         btnDismiss.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.dismissBtn
+
+        AnalyticsManager.shared.recordView(.watchOnlyCredentials)
     }
 
     func setContent() {

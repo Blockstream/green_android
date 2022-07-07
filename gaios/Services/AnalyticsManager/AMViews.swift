@@ -57,4 +57,5 @@ enum AnalyticsViewName: String {
     case verifyAddress = "VerifyAddress"
     case archivedAccounts = "ArchivedAccounts"
     case watchOnlyDetails = "WatchOnlyDetails"
+    case watchOnlyCredentials = "WatchOnlyCredentials"
 }
