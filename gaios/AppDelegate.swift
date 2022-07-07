@@ -47,6 +47,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         nav.pushViewController(vc, animated: false)
                         UIApplication.shared.keyWindow?.rootViewController = nav
                 }
+            } else if AccountsManager.shared.current?.isHW ?? false {
+                let homeS = UIStoryboard(name: "Home", bundle: nil)
+                let hwwS = UIStoryboard(name: "HWW", bundle: nil)
+                if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                   let vc = hwwS.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
+                        vc.jade = AccountsManager.shared.current?.isJade == true
+                        nav.pushViewController(vc, animated: false)
+                        UIApplication.shared.keyWindow?.rootViewController = nav
+                }
             } else {
                 let homeS = UIStoryboard(name: "Home", bundle: nil)
                 if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
