@@ -351,7 +351,7 @@ class SessionManager: Session {
 
     func getCredentials(password: String) -> Promise<String> {
         return Guarantee()
-            .then { try super.getCredentials(details: ["password": password]).resolve() }
+            .then { try super.getCredentials(details: ["password": password]).resolve(session: self) }
             .compactMap {
                 let result = $0["result"] as? [String: Any]
                 return result?["mnemonic"] as? String
@@ -360,7 +360,7 @@ class SessionManager: Session {
 
     func registerUser(mnemonic: String) -> Promise<Void> {
         return Guarantee()
-            .then { try super.registerUser(details: ["mnemonic": mnemonic], hw_device: [:]).resolve() }
+            .then { try super.registerUser(details: ["mnemonic": mnemonic], hw_device: [:]).resolve(session: self) }
             .asVoid()
     }
 
@@ -368,13 +368,13 @@ class SessionManager: Session {
         let data = try? JSONEncoder().encode(hw)
         let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments)
         return Guarantee()
-            .then { try super.registerUser(details: [:], hw_device: ["device": device ?? [:]]).resolve() }
+            .then { try super.registerUser(details: [:], hw_device: ["device": device ?? [:]]).resolve(session: self) }
             .asVoid()
     }
 
     func encryptWithPin(pin: String, text: [String: Any?]) -> Promise<PinData> {
         return Guarantee()
-            .then { try super.encryptWithPin(details: ["pin": pin, "plaintext": text]).resolve() }
+            .then { try super.encryptWithPin(details: ["pin": pin, "plaintext": text]).resolve(session: self) }
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
                 let txt = result?["pin_data"] as? [String: Any]
