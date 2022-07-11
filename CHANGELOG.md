@@ -14,10 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
  
 ### Changed
 - Improve performance of login with hardware wallets
+- Update GDK to 0.0.55
 
 ### Fixed
 - Create 2of3 subaccount with ledger
 - Fix hardware wallets logout view hierarchy
+- Improving error messages
 
 ## [3.8.4] - 2022-06-17
 
