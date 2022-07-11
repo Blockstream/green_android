@@ -422,7 +422,7 @@ extension HWWConnectViewController: BLEManagerDelegate {
     }
 
     func onCheckFirmware(_ peripheral: Peripheral,
-                         fmw: [String: String],
+                         fmw: Firmware,
                          currentVersion: String,
                          needCableUpdate: Bool) {
 
@@ -432,13 +432,13 @@ extension HWWConnectViewController: BLEManagerDelegate {
             vc.modalPresentationStyle = .overFullScreen
             vc.isRequired = required
             vc.needCableUpdate = needCableUpdate
-            vc.firrmwareVersion = fmw["version"] ?? ""
+            vc.firrmwareVersion = fmw.version
 
             vc.onSelect = { [weak self] (action: OTAAction) in
                 switch action {
                 case .update:
                     self?.hwwState = .upgradingFirmware
-                    BLEManager.shared.updateFirmware(peripheral, fmwFile: fmw, currentVersion: currentVersion)
+                    BLEManager.shared.updateFirmware(peripheral, fmw: fmw, currentVersion: currentVersion)
                 case .readMore:
                     BLEManager.shared.dispose()
                     UIApplication.shared.open(ExternalUrls.otaReadMore, options: [:], completionHandler: nil)

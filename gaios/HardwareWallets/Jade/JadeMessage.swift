@@ -129,6 +129,8 @@ struct JadeOta: Codable {
     let fwsize: Int
     let cmpsize: Int
     let otachunk: Int
+    let cmphash: Data
+    let patchsize: Int?
 }
 
 struct JadeAuthRequest: Codable {

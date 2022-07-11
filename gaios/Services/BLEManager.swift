@@ -37,7 +37,7 @@ protocol BLEManagerDelegate: class {
     func onLogin(_: Peripheral)
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
-    func onCheckFirmware(_: Peripheral, fmw: [String: String], currentVersion: String, needCableUpdate: Bool)
+    func onCheckFirmware(_: Peripheral, fmw: Firmware, currentVersion: String, needCableUpdate: Bool)
     func onUpdateFirmware(_: Peripheral, version: String, prevVersion: String)
 }
 
@@ -222,12 +222,13 @@ class BLEManager {
                 Jade.shared.version()
             }.compactMap { info in
                 verInfo = info
-                return try Jade.shared.checkFirmware(info)
-            }.observeOn(MainScheduler.instance)
-            .compactMap { (fmwFile: [String: String]?) in
+                return try Jade.shared.firmwareData(info)
+            }
+            .catchErrorJustReturn(nil)
+            .observeOn(MainScheduler.instance)
+            .compactMap { (fmw: Firmware?) in
                 self.fmwVersion = verInfo?.jadeVersion
-                if let fmw = fmwFile,
-                   let ver = verInfo?.jadeVersion {
+                if let ver = verInfo?.jadeVersion, let fmw = fmw {
                     let needCableUpdate = ver == Jade.BOARD_TYPE_JADE_V1_1 && ver < "0.1.28"
                     self.delegate?.onCheckFirmware(p, fmw: fmw, currentVersion: ver, needCableUpdate: needCableUpdate)
                     throw BLEManagerError.firmwareErr(txt: "")
@@ -236,15 +237,15 @@ class BLEManager {
             }
     }
 
-    func updateFirmware(_ p: Peripheral, fmwFile: [String: String], currentVersion: String) {
+    func updateFirmware(_ p: Peripheral, fmw: Firmware, currentVersion: String) {
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Jade.shared.version() }
-            .flatMap { Jade.shared.updateFirmare(verInfo: $0, fmwFile: fmwFile) }
+            .flatMap {  Jade.shared.updateFirmware($0, fmw) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.enstablishDispose?.dispose()
-                self.delegate?.onUpdateFirmware(p, version: fmwFile["version"] ?? "", prevVersion: currentVersion)
+                self.delegate?.onUpdateFirmware(p, version: fmw.version, prevVersion: currentVersion)
             }, onError: { err in
                 self.onError(err, network: nil)
             })

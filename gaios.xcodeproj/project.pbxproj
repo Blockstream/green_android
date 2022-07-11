@@ -243,6 +243,7 @@
 		6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DF2DEE823F38314005F16E9 /* HelpViewController.swift */; };
 		81073D7821E8B27700E08F86 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81073D7A21E8B27700E08F86 /* Localizable.strings */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
+		8111485F287891F500C6F030 /* JadeOTA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8111485E287891F500C6F030 /* JadeOTA.swift */; };
 		811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
 		811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */; };
 		81205D6921C3B7EB005180CF /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81205D6821C3B7EB005180CF /* Events.swift */; };
@@ -586,6 +587,7 @@
 		810E052827B45AA700F917E2 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
 		810E052927B45AA800F917E2 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
+		8111485E287891F500C6F030 /* JadeOTA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeOTA.swift; sourceTree = "<group>"; };
 		811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorConfig.swift; sourceTree = "<group>"; };
 		811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		81205D6821C3B7EB005180CF /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
@@ -1422,6 +1424,7 @@
 				815431952445C0EE00EE34DB /* JadeChannel.swift */,
 				8158974A2701980700DDF6D4 /* JadeError.swift */,
 				8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */,
+				8111485E287891F500C6F030 /* JadeOTA.swift */,
 			);
 			path = Jade;
 			sourceTree = "<group>";
@@ -1946,6 +1949,7 @@
 				34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */,
 				349C75242796DBB90046DA59 /* AssetCell.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
+				8111485F287891F500C6F030 /* JadeOTA.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
