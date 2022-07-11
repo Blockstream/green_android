@@ -10,8 +10,8 @@ interface Logger{
     fun log(message: String)
 }
 
-class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean, private val extraLogger: Logger? = null) : GDK.JSONConverter {
-    private val maskFields = listOf("pin", "mnemonic", "password", "recovery_mnemonic")
+class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boolean, private val extraLogger: Logger? = null) : GDK.JSONConverter {
+    private val maskFields = listOf("pin", "mnemonic", "password", "recovery_mnemonic", "seed")
 
     private val jsonSerializer by lazy { Json {  } }
 

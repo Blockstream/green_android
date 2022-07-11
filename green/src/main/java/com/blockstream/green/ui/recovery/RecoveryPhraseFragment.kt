@@ -40,7 +40,15 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        val mnemonic = session.getMnemonicPassphrase()
+        val credentials = session.getCredentials()
+
+        if(!credentials.bip39Passphrase.isNullOrBlank()){
+            //Note that if a wallet has a bip39 passphrase,
+            //we should never show the mnemonic without the passphrase,
+            //since adding (or removing) the bip39 passphrase changes the seed, thus the addresses and thus is an entirely different wallet.
+            TODO("bip39 is not yet supported")
+        }
+        val mnemonic = credentials.mnemonic
         val words = mnemonic.split(" ")
 
         binding.recoveryQR.setImageDrawable(BitmapDrawable(resources, createQrBitmap(mnemonic)).also { bitmap ->

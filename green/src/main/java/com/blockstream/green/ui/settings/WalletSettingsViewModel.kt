@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.*
+import com.blockstream.gdk.params.EncryptWithPinParams
 import com.blockstream.gdk.params.Limits
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.Countly
@@ -256,7 +257,8 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
     fun changePin(newPin: String){
         session.observable {
-            val pinData = it.setPin(newPin)
+            val credentials = it.getCredentials()
+            val pinData = it.encryptWithPin(EncryptWithPinParams(newPin, credentials)).pinData
 
             // Replace PinData
             walletRepository.addLoginCredentialsSync(
@@ -330,7 +332,8 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     fun enableBiometrics(cipher: Cipher) {
         session.observable {
             val pin = greenWallet.randomChars(15)
-            val pinData = it.setPin(pin)
+            val credentials = it.getCredentials()
+            val pinData = it.encryptWithPin(EncryptWithPinParams(pin, credentials)).pinData
 
             val encryptedData = appKeystore.encryptData(cipher, pin.toByteArray())
 

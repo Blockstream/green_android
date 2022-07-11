@@ -117,32 +117,21 @@ class GreenWallet constructor(
 
     fun registerUser(
         session: GASession,
-        deviceParams: DeviceParams,
-        mnemonic: String
-    ) = gdk.registerUser(session, deviceParams, mnemonic)
+        deviceParams: DeviceParams = DeviceParams(),
+        loginCredentialsParams: LoginCredentialsParams = LoginCredentialsParams()
+    ) = gdk.registerUser(session, deviceParams, loginCredentialsParams)
 
     fun loginUser(session: GASession,
-                  deviceParams: DeviceParams? = null,
-                  loginCredentialsParams: LoginCredentialsParams? = null
+                  deviceParams: DeviceParams = DeviceParams(),
+                  loginCredentialsParams: LoginCredentialsParams = LoginCredentialsParams()
     ) = gdk.loginUser(session, deviceParams, loginCredentialsParams)
 
-    fun setPin(
+    fun encryptWithPin(
         session: GASession,
-        mnemonicPassphrase: String,
-        pin: String,
-        device: String = "default"
-    ): PinData =
-        JsonDeserializer.decodeFromJsonElement(
-            gdk.setPin(
-                session,
-                mnemonicPassphrase,
-                pin,
-                device
-            ) as JsonElement
-        )
+        encryptWithPinParams: EncryptWithPinParams
+    ) = gdk.encryptWithPin(session, encryptWithPinParams)
 
-    fun getMnemonicPassphrase(session: GASession) =
-        gdk.getMnemonicPassphrase(session) as String
+    fun getCredentials(session: GASession, params: CredentialsParams) = gdk.getCredentials(session, params)
 
     fun getReceiveAddress(
         session: GASession,

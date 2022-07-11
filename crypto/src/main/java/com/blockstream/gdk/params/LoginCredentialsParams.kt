@@ -10,10 +10,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LoginCredentialsParams(
     @SerialName("mnemonic") val mnemonic: String? = null,
-    @SerialName("password") val password: String? = null,
     @SerialName("pin") val pin: String? = null,
     @SerialName("pin_data") val pinData: PinData? = null,
-    @SerialName("username") val username: String? = null
+    @SerialName("username") val username: String? = null,
+    @SerialName("password") val password: String? = null
 ) : GAJson<LoginCredentialsParams>() {
     override val encodeDefaultsValues = false
 

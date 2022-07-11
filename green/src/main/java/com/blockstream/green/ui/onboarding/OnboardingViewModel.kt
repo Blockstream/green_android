@@ -2,6 +2,7 @@ package com.blockstream.green.ui.onboarding
 
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.PinData
+import com.blockstream.gdk.params.EncryptWithPinParams
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
@@ -39,7 +40,8 @@ open class OnboardingViewModel constructor(
             var pinData : PinData? = null
 
             if(withPinData(options)){
-                pinData = it.setPin(pin)
+                val credentials = it.getCredentials()
+                pinData = it.encryptWithPin(EncryptWithPinParams(pin, credentials)).pinData
             }
 
             val wallet = Wallet(
@@ -191,7 +193,8 @@ open class OnboardingViewModel constructor(
             var pinData : PinData? = null
 
             if(withPinData(options)){
-                pinData = it.setPin(pin)
+                val credentials = it.getCredentials()
+                pinData = it.encryptWithPin(EncryptWithPinParams(pin, credentials)).pinData
             }
 
             val wallet : Wallet

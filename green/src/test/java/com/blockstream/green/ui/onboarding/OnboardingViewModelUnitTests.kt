@@ -1,8 +1,7 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
-import com.blockstream.gdk.data.LoginData
-import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.*
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
@@ -77,6 +76,9 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         whenever(session.walletHashId).thenReturn("")
 
         whenever(session.createNewWallet(any(), any())).thenAnswer { LoginData("") }
+
+        whenever(session.getCredentials(anyOrNull())).thenReturn(Credentials(mnemonic = ""))
+        whenever(session.encryptWithPin(anyOrNull())).thenReturn(EncryptWithPin(pinData = PinData("","","")))
 
         setupViewModel()
     }

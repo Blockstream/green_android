@@ -26,21 +26,22 @@ class KotlinGDK {
 
     fun httpRequest(session: GASession, data: JsonElement) = GDK.http_request(session, data)
 
-    fun registerUser(session: GASession, deviceParams: DeviceParams, mnemonic: String): GAAuthHandler =
-        GDK.register_user(session, deviceParams, mnemonic)
+    fun registerUser(
+        session: GASession,
+        deviceParams: DeviceParams,
+        loginCredentialsParams: LoginCredentialsParams
+    ): GAAuthHandler =
+        GDK.register_user(session, deviceParams, loginCredentialsParams)
 
     fun loginUser(
         session: GASession,
-        deviceParams: DeviceParams?,
-        loginCredentialsParams: LoginCredentialsParams?
+        deviceParams: DeviceParams,
+        loginCredentialsParams: LoginCredentialsParams
     ): GAAuthHandler = GDK.login_user(session, deviceParams, loginCredentialsParams)
 
-    fun setPin(session: GASession, mnemonicPassphrase: String, pin: String, device: String) =
-        GDK.set_pin(session, mnemonicPassphrase, pin, device)
+    fun encryptWithPin(session: GASession, params: EncryptWithPinParams): GAAuthHandler = GDK.encrypt_with_pin(session, params)
 
-    // TODO at the moment the encrypted mnemonic is not supported so we are always passing the empty string
-    fun getMnemonicPassphrase(session: GASession) =
-        GDK.get_mnemonic_passphrase(session, "")
+    fun getCredentials(session: GASession, params: CredentialsParams) = GDK.get_credentials(session, params)
 
     fun getReceiveAddress(session: GASession, params: ReceiveAddressParams): GAAuthHandler =
         GDK.get_receive_address(session, params)

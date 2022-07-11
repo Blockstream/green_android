@@ -354,14 +354,16 @@ class GreenSession constructor(
 
         connect(network)
 
+        val loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic)
+
         AuthHandler(
             greenWallet,
-            greenWallet.registerUser(gaSession, DeviceParams(), mnemonic)
+            greenWallet.registerUser(session = gaSession, loginCredentialsParams = loginCredentialsParams)
         ).resolve()
 
         return AuthHandler(
             greenWallet,
-            greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic))
+            greenWallet.loginUser(gaSession, loginCredentialsParams = loginCredentialsParams)
         ).result<LoginData>().also {
             if(network.isElectrum){
                 // Create SegWit Account
@@ -411,18 +413,18 @@ class GreenSession constructor(
             }
         }.launchIn(scope)
 
-        val gdkDevice = device.hwWallet?.device
+        val deviceParams = DeviceParams(device.hwWallet?.device)
 
         if(registerUser) {
             AuthHandler(
                 greenWallet,
-                greenWallet.registerUser(gaSession, DeviceParams(gdkDevice), "")
+                greenWallet.registerUser(gaSession, deviceParams = deviceParams)
             ).resolve(hardwareWalletResolver = hardwareWalletResolver)
         }
 
         return AuthHandler(
             greenWallet,
-            greenWallet.loginUser(gaSession, deviceParams = DeviceParams(gdkDevice))
+            greenWallet.loginUser(gaSession, deviceParams = deviceParams)
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
 
             if(network.isElectrum){
@@ -487,11 +489,7 @@ class GreenSession constructor(
     private fun reLogin(): LoginData {
         return AuthHandler(
             greenWallet,
-            greenWallet.loginUser(
-                gaSession,
-                deviceParams = DeviceParams(),
-                loginCredentialsParams = LoginCredentialsParams()
-            )
+            greenWallet.loginUser(gaSession)
         ).result<LoginData>(hardwareWalletResolver = DeviceResolver(this)).also {
             authenticationRequired = false
         }
@@ -559,10 +557,14 @@ class GreenSession constructor(
         false
     }
 
-    fun setPin(pin: String) =
-        greenWallet.setPin(gaSession, greenWallet.getMnemonicPassphrase(gaSession), pin)
+    fun encryptWithPin(encryptWithPinParams: EncryptWithPinParams) = AuthHandler(
+        greenWallet,
+        greenWallet.encryptWithPin(gaSession, encryptWithPinParams)
+    ).result<EncryptWithPin>(hardwareWalletResolver = DeviceResolver(this))
 
-    fun getMnemonicPassphrase() = greenWallet.getMnemonicPassphrase(gaSession)
+    fun getCredentials(params: CredentialsParams = CredentialsParams()) =
+        AuthHandler(greenWallet, greenWallet.getCredentials(gaSession, params))
+            .result<Credentials>(hardwareWalletResolver = DeviceResolver(this))
 
     fun getReceiveAddress(index: Long) = AuthHandler(
         greenWallet,
