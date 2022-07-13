@@ -51,7 +51,12 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     override fun getAssetId(index: Int): String = assets[index].first
 
     // GDK returns non-confidential addresses for Liquid. Hide them for now
-    override fun getAddress(index: Int) = if(session.isLiquid) null else tx.addressees.getOrNull(index)
+    override fun getAddress(index: Int): String? = when {
+        session.isLiquid -> null
+        txType == Transaction.Type.OUT -> tx.addressees.getOrNull(index)
+        txType == Transaction.Type.IN -> tx.outputs.filter { it.isRelevant == true }.getOrNull(index)?.address
+        else -> null
+    }
 
     // Cache amounts to avoid calling convert every time for performance reasons
     private val cacheAmounts = hashMapOf<Int, String>()

@@ -3,7 +3,6 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionAmountBinding
 import com.blockstream.green.ui.looks.AddreseeLookInterface
@@ -29,7 +28,7 @@ data class TransactionAmountListItem constructor(
     override fun bindView(binding: ListItemTransactionAmountBinding, payloads: List<Any>) {
         binding.isChange = look.isChange(index)
         binding.type = look.txType
-        binding.address = if(look.txType == Transaction.Type.OUT) look.getAddress(index) else null
+        binding.address = look.getAddress(index)
 
         if(withStroke){
             binding.card.strokeWidth = binding.root.context.toPixels(1)

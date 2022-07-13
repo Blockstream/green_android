@@ -195,7 +195,7 @@ class GreenModules {
                 ScreenCaptureToolboxModule(),
                 DividerModule(),
                 TextModule("Logs", TextModule.Type.SECTION_HEADER),
-                LogListModule(maxItemCount = 50),
+                LogListModule(maxItemCount = 25),
                 DividerModule(),
                 TextModule("Other", TextModule.Type.SECTION_HEADER),
                 DeviceInfoModule(),

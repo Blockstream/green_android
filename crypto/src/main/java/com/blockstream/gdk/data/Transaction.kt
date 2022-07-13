@@ -3,9 +3,11 @@ package com.blockstream.gdk.data
 
 import android.os.Parcelable
 import com.blockstream.gdk.BalancePair
+import com.blockstream.gdk.GAJson
 import com.blockstream.gdk.serializers.DateAsMicrosecondsSerializer
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.*
@@ -43,7 +45,8 @@ data class Transaction(
     @SerialName("user_signed") val userSigned: Boolean,
 
     @SerialName("satoshi") val satoshi: Map<String, Long>
-) : Parcelable {
+) : GAJson<Transaction>(),Parcelable {
+    override fun kSerializer() = serializer()
 
     enum class SPVResult {
         Disabled, InProgress, NotVerified, NotLongest, Unconfirmed, Verified;

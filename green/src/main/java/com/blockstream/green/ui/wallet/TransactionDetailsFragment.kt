@@ -28,7 +28,9 @@ import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.itemanimators.AlphaInAnimator
+import com.pandulapeter.beagle.Beagle
 import dagger.hilt.android.AndroidEntryPoint
+import mu.KLogging
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,6 +54,9 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
     lateinit var noteListItem: GenericDetailListItem
 
     @Inject
+    lateinit var beagle: Beagle
+
+    @Inject
     lateinit var viewModelFactory: TransactionDetailsViewModel.AssistedFactory
     val viewModel: TransactionDetailsViewModel by viewModels {
         TransactionDetailsViewModel.provideFactory(viewModelFactory, wallet, args.transaction)
@@ -68,6 +73,13 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
+
+        if(isDevelopmentOrDebug){
+            args.transaction.toJson().also {
+                logger.info { it }
+                beagle.log(it)
+            }
+        }
 
         noteListItem = GenericDetailListItem(
             title = StringHolder(R.string.id_my_notes),
@@ -246,4 +258,6 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
     }
 
     override fun getWalletViewModel() = viewModel
+
+    companion object: KLogging()
 }
