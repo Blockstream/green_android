@@ -2842,22 +2842,8 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="8VJ-Cm-ntI">
                                                         <rect key="frame" x="36" y="267" width="342" height="104"/>
                                                         <subviews>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Dl-QE-X1S" userLabel="Next">
-                                                                <rect key="frame" x="0.0" y="0.0" width="342" height="40"/>
-                                                                <color key="backgroundColor" name="customMatrixGreen"/>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="height" constant="40" id="RWf-dR-O6x"/>
-                                                                </constraints>
-                                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                                <state key="normal" title="Save">
-                                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                </state>
-                                                                <connections>
-                                                                    <action selector="btnSave:" destination="buk-t5-cT8" eventType="touchUpInside" id="iCm-fK-Djk"/>
-                                                                </connections>
-                                                            </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GNM-nc-cdl" userLabel="Next">
-                                                                <rect key="frame" x="0.0" y="64" width="342" height="40"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="342" height="40"/>
                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="40" id="Nha-xU-L5Q"/>
@@ -2869,6 +2855,20 @@
                                                                 <connections>
                                                                     <action selector="btnDelete:" destination="jRI-KK-O5R" eventType="touchUpInside" id="ERY-ph-8YS"/>
                                                                     <action selector="btnDelete:" destination="buk-t5-cT8" eventType="touchUpInside" id="KN5-B7-VGR"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Dl-QE-X1S" userLabel="Next">
+                                                                <rect key="frame" x="0.0" y="64" width="342" height="40"/>
+                                                                <color key="backgroundColor" name="customMatrixGreen"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="40" id="RWf-dR-O6x"/>
+                                                                </constraints>
+                                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                                                <state key="normal" title="Save">
+                                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                </state>
+                                                                <connections>
+                                                                    <action selector="btnSave:" destination="buk-t5-cT8" eventType="touchUpInside" id="iCm-fK-Djk"/>
                                                                 </connections>
                                                             </button>
                                                         </subviews>
