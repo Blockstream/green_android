@@ -14,6 +14,7 @@ import com.blockstream.green.utils.*
 import mu.KLogging
 
 abstract class TransactionLook constructor(open val session: GreenSession, internal open val tx: Transaction): FeeLookInterface, AddreseeLookInterface {
+    abstract val substractFeeFromOutgoing : Boolean
     abstract val showFiat : Boolean
     abstract val assetSize : Int
     abstract val hideSPVInAsset: Boolean
@@ -64,6 +65,18 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
                     withGrouping = true,
                     withMinimumDigits = true
                 )
+            } else if (substractFeeFromOutgoing && tx.txType == Transaction.Type.OUT && assets.getOrNull(index)?.first == session.policyAsset) {
+                // OUT transactions in BTC/L-BTC have fee included
+                cacheAmounts[index] = assets.getOrNull(index)?.let {
+                    (it.second - tx.fee).toAmountLookOrNa(
+                        session,
+                        assetId = it.first,
+                        withUnit = false,
+                        withDirection = tx.txType,
+                        withGrouping = true,
+                        withMinimumDigits = true
+                    )
+                } ?: "-"
             } else {
                 cacheAmounts[index] = assets.getOrNull(index)?.let {
                     it.second.toAmountLookOrNa(
