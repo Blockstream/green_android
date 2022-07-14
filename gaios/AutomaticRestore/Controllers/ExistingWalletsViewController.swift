@@ -76,7 +76,7 @@ class ExistingWalletsViewController: UIViewController {
         let params = OnBoardManager.shared.params
         let session = SessionManager(account: OnBoardManager.shared.account)
         return Promise { seal in
-            session.discover(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, hwDevice: nil)
+            session.discover(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
             .ensure {
                 session.destroy()
             }.done { _ in

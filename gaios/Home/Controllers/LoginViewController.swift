@@ -149,7 +149,7 @@ class LoginViewController: UIViewController {
             try session.account?.auth(usingAuth)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-        }.then(on: bgq) { data -> Promise<Void> in
+        }.then(on: bgq) { data -> Promise<Bool> in
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]

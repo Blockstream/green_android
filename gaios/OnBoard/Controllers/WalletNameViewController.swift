@@ -115,16 +115,29 @@ class WalletNameViewController: UIViewController {
 
     func setup(restored: Bool) {
         let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionsManager.new(for: OnBoardManager.shared.account)
+        let account =  OnBoardManager.shared.account
+        let session = SessionsManager.new(for: account)
         let params = OnBoardManager.shared.params
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.then(on: bgq) { () -> Promise<Void> in
             if restored {
-                return session.restore(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, hwDevice: nil)
+                return session.discover(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
+                    .recover { err in
+                        switch err {
+                        case LoginError.walletNotFound:
+                            if !(account.isSingleSig ?? false) {
+                                throw err
+                            }
+                        default:
+                            throw err
+                        }
+                    }.then {
+                        session.restore(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
+                    }
             } else {
-                return session.create(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, hwDevice: nil)
+                return session.create(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
             }
         }.ensure {
             self.stopLoader()

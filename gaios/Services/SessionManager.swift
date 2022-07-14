@@ -177,7 +177,7 @@ class SessionManager: Session {
         }
     }
 
-    func discover(mnemonic: String?, password: String?, hwDevice: HWDevice?) -> Promise<Void> {
+    func discover(mnemonic: String?, password: String?) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         let isSingleSig = account?.isSingleSig ?? false
         return Guarantee()
@@ -229,38 +229,43 @@ class SessionManager: Session {
            }.asVoid()
     }
 
-    func restore(mnemonic: String?, password: String?, hwDevice: HWDevice? = nil) -> Promise<Void> {
+    func restore(mnemonic: String?, password: String?) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         let isSingleSig = account?.isSingleSig ?? false
-        return self.discover(mnemonic: mnemonic, password: password, hwDevice: hwDevice)
-            .recover { err in
-                switch err {
-                case LoginError.walletNotFound:
-                    if !isSingleSig {
-                        throw err
+        return self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""])
+            .then(on: bgq) { _ in
+                // discover subaccounts at 1st login
+                self.subaccounts(true).recover { _ in
+                    Promise { _ in
+                        throw LoginError.connectionFailed
                     }
-                default:
-                    throw err
                 }
-            }.then(on: bgq) { _ in
-                self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hwDevice: hwDevice)
+            }.then(on: bgq) { wallets -> Promise<Void> in
+                // create a default segwit account if doesn't exist on singlesig
+                if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
+                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
+                        .resolve(session: self).asVoid()
+                }
+                return Promise<Void>().asVoid()
             }
     }
 
-    func create(mnemonic: String? = nil, password: String? = nil, hwDevice: HWDevice? = nil) -> Promise<Void> {
+    func create(mnemonic: String? = nil, password: String? = nil) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .map(on: bgq) {
                 try self.connect()
             }.then(on: bgq) { _ -> Promise<Void> in
-                if let hwDevice = hwDevice {
-                    return self.registerHW(hw: hwDevice)
-                } else if let mnemonic = mnemonic {
-                    return self.registerUser(mnemonic: mnemonic)
-                }
-                return Promise().asVoid()
+                self.registerUser(mnemonic: mnemonic ?? "")
             }.then(on: bgq) { _ in
-                self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hwDevice: hwDevice)
+                self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""])
+            }.then(on: bgq) { _ -> Promise<Void> in
+                // create a default segwit account if doesn't exist on singlesig
+                if self.account?.isSingleSig ?? false {
+                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
+                        .resolve(session: self).asVoid()
+                }
+                return Promise<Void>().asVoid()
             }.recover { err in
                 switch err {
                 case LoginError.walletNotFound,
@@ -270,6 +275,31 @@ class SessionManager: Session {
                 default:
                     throw err
                 }
+            }
+    }
+
+    func loginHW(_ hwDevice: HWDevice? = nil) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let isSingleSig = account?.isSingleSig ?? false
+        return Guarantee()
+            .map(on: bgq) {
+                try self.connect()
+            }.then(on: bgq) { _ in
+                self.login(details: [:], hwDevice: hwDevice)
+            }.then(on: bgq) { firstLogin in
+                // discover subaccounts at 1st login
+                self.subaccounts(firstLogin).recover { _ in
+                    Promise { _ in
+                        throw LoginError.connectionFailed
+                    }
+                }
+            }.then(on: bgq) { wallets -> Promise<Void> in
+                // create a default segwit account if doesn't exist on singlesig
+                if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
+                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
+                        .resolve(session: self).asVoid()
+                }
+                return Promise<Void>().asVoid()
             }
     }
 
@@ -283,10 +313,11 @@ class SessionManager: Session {
             }
     }
 
-    func login(details: [String: Any], hwDevice: HWDevice? = nil) -> Promise<Void> {
+    func login(details: [String: Any], hwDevice: HWDevice? = nil) -> Promise<Bool> {
         let bgq = DispatchQueue.global(qos: .background)
         let isSingleSig = self.account?.isSingleSig ?? false
         let isWatchonly = self.account?.isWatchonly ?? false
+        var firstLogin = false
         return Guarantee()
             .map(on: bgq) {
                 try self.connect()
@@ -321,21 +352,7 @@ class SessionManager: Session {
                         self.account?.walletHashId = walletHashId
                     }
                 }
-                return prevHashId == nil
-            }.then(on: bgq) { firstInitialization in
-                // discover subaccounts at 1st login
-                self.subaccounts(firstInitialization).recover { _ in
-                    Promise { _ in
-                        throw LoginError.connectionFailed
-                    }
-                }
-            }.then(on: bgq) { wallets -> Promise<Void> in
-                // create a default segwit account if doesn't exist on singlesig
-                if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
-                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
-                        .resolve(session: self).asVoid()
-                }
-                return Promise<Void>().asVoid()
+                firstLogin = prevHashId == nil
             }.then { _ -> Promise<Void> in
                 // load 2fa config on multisig
                 if !isWatchonly && !isSingleSig {
@@ -346,6 +363,7 @@ class SessionManager: Session {
                 // load async assets registry
                 self.registry?.cache(session: self)
                 self.registry?.loadAsync(session: self)
+                return firstLogin
             }
     }
 
