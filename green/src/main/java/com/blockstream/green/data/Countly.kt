@@ -434,6 +434,12 @@ class Countly constructor(
                     segmentation[PARAM_CONNECTION] = if (device.isUsb) USB else BLE
                 }
 
+                session.ephemeralWallet?.also {
+                    if(it.isBip39Ephemeral){
+                        segmentation[PARAM_EPHEMERAL_BIP39] = true
+                    }
+                }
+
                 appSettingsAsString?.let {
                     segmentation[USER_PROPERTY_APP_SETTINGS] = it
                 }
@@ -518,6 +524,7 @@ class Countly constructor(
         const val PARAM_CONNECTION = "connection"
         const val PARAM_ERROR = "error"
         const val PARAM_FLOW = "flow"
+        const val PARAM_EPHEMERAL_BIP39 = "ephemeral_bip39"
 
         const val PARAM_TRANSACTION_TYPE = "tx_type"
         const val PARAM_ADDRESS_INPUT = "address_input"

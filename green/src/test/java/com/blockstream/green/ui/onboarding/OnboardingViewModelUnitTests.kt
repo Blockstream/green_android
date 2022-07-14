@@ -2,6 +2,7 @@ package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
 import com.blockstream.gdk.data.*
+import com.blockstream.gdk.params.LoginCredentialsParams
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
@@ -63,10 +64,10 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
 
         whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(session)
 
-        whenever(session.loginWithMnemonic(any(), any(), any(), any())).thenAnswer {
+        whenever(session.loginWithMnemonic(any(), any(), any())).thenAnswer {
             // value is same as requested key
-            val recovery = it.arguments[1] as String
-            if (recovery != "valid") {
+            val loginCredentials = it.arguments[1] as LoginCredentialsParams
+            if (loginCredentials.mnemonic != "valid") {
                 throw Exception("invalid recovery phrase")
             }else{
                 LoginData("")

@@ -8,8 +8,6 @@ import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.core.text.trimmedLength
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
@@ -22,7 +20,6 @@ import com.blockstream.green.Urls
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.ListItemHelpBinding
-import com.blockstream.green.databinding.SettingsWatchOnlyDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.filters.NumberValueFilter
 import com.blockstream.green.ui.WalletFragment
@@ -405,7 +402,7 @@ class WalletSettingsFragment :
 
                     list += TitleListItem(StringHolder(R.string.id_security))
 
-                    if (!session.hasDevice) {
+                    if(!wallet.isEphemeral){
                         list += changePinPreference
                         list += biometricsPreference
                     }

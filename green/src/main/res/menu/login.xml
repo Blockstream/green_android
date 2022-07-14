@@ -9,6 +9,10 @@
         app:showAsAction="always"/>
 
     <item
+        android:id="@+id/bip39_passphrase"
+        android:title="@string/id_bip39_passphrase_login" />
+
+    <item
         android:id="@+id/rename"
         android:title="@string/id_rename_wallet" />
 

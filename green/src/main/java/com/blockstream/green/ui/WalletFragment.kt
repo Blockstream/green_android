@@ -59,6 +59,16 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                     )
                 }
 
+                // BIP39 Passhphrase
+                if(wallet.isEphemeral && !wallet.isHardware){
+                    toolbar.setBubble(
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_bip39_passphrase_24
+                        )
+                    )
+                }
+
                 session.device?.let {
                     toolbar.subtitle = it.name
                     toolbar.setBubble(
@@ -122,8 +132,8 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
                 it.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
                     consumableEvent.getContentIfNotHandledForType<AbstractWalletViewModel.WalletEvent.Logout>()?.let {
-                        // If is hardware wallet, prefer going to intro
-                        if (wallet.isHardware) {
+                        // If is ephemeral wallet, prefer going to intro
+                        if (wallet.isEphemeral) {
                             NavGraphDirections.actionGlobalIntroFragment()
                         } else {
                             NavGraphDirections.actionGlobalLoginFragment(wallet)

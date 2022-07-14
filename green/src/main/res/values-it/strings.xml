@@ -72,6 +72,7 @@
   <string name="id_allow_data_collection">Consenti raccolta dati</string>
   <string name="id_allows_you_to_quickly_check">Permette di controllare il tuo saldo, ricevere fondi o eseguire lo sweep di un paper wallet. Non è possibile inviare fondi in modalità watch only.</string>
   <string name="id_always">Sempre</string>
+  <string name="id_always_ask">Always ask</string>
   <string name="id_amount">Importo</string>
   <string name="id_amount_in_s">Importo in %s</string>
   <string name="id_amp_account">Account AMP</string>
@@ -117,6 +118,8 @@
   <string name="id_biometric_login_is_disabled">Login biometrico disabilitato</string>
   <string name="id_biometric_login_is_enabled">Login biometrico abilitato</string>
   <string name="id_biometrics_authentication">Autenticazione biometrica</string>
+  <string name="id_bip39_passphrase">BIP39 Passphrase</string>
+  <string name="id_bip39_passphrase_login">BIP39 Passphrase login</string>
   <string name="id_bip49_accounts_allow_you_to">Gli account BIP49 ti consentono di segregare fondi e ricevere indirizzi su wrapped segwit, garantendo così la massima retrocompatibilità nel ricevere fondi da qualsiasi utente del network.</string>
   <string name="id_bip84_accounts_allow_you_to">Gli account BIP84 ti consentono di segregare fondi e ricevere indirizzi native segwit su bech32. Questo tipo di account garantisce transazioni più vantaggiose quando si inviano fondi, anche se non tutti i servizi supportano ancora indirizzi bech32.</string>
   <string name="id_bitcoin_and_liquid">Bitcoin e Liquid</string>
@@ -150,8 +153,8 @@
   <string name="id_cancel_twofactor_reset">Annulla reset Due Fattori</string>
   <string name="id_cannot_remove_enabled_network">Impossibile rimuovere il network abilitato. Ti preghiamo di disabilitarlo.</string>
   <string name="id_cant_connect_to_this_url">Impossibile connettersi a questo URL</string>
-  <string name="id_change">Modifica</string>
-  <string name="id_change_address">Modifica indirizzo</string>
+  <string name="id_change">Resto</string>
+  <string name="id_change_address">Indirizzo per il resto</string>
   <string name="id_change_pin">Modifica PIN</string>
   <string name="id_changing_reference_exchange">Modificando il tasso di cambio di riferimento resetterai la tua soglia 2FA a 0. Ricorda di ripristinare la soglia 2FA una volta speso. </string>
   <string name="id_check_device">Controlla il dispositivo</string>
@@ -173,6 +176,7 @@
   <string name="id_choose_watchonly">Seleziona modalità Watch-Only</string>
   <string name="id_choose_your_network">Seleziona rete</string>
   <string name="id_clear">Cancella</string>
+  <string name="id_clear_cache">Clear cache</string>
   <string name="id_click_to_copy">Clicca per copiare</string>
   <string name="id_click_to_receive_an_email_with">Clicca per ricevere un\'e-mail con i tuoi dati di recupero criptati</string>
   <string name="id_code">Codice</string>
@@ -190,7 +194,7 @@
   <string name="id_coming_soon">Coming soon!</string>
   <string name="id_communication_timed_out_make">Comunicazione scaduta. Assicurati che il dispositivo sia acceso e riprova.</string>
   <string name="id_completed">Completo</string>
-  <string name="id_confidential">Riservato</string>
+  <string name="id_confidential">Confidenziale</string>
   <string name="id_confidential_transaction">Confidential Transaction</string>
   <string name="id_confirm_action">Conferma azione</string>
   <string name="id_confirm_by_typing_the_wallet">Conferma digitando il nome del wallet</string>
@@ -220,7 +224,6 @@
   <string name="id_connecting_to_tor_onion_nodes">La connessione a nodi Tor (.onion) garantisce massima privacy e sicurezza. Seleziona "OK" per continuare.</string>
   <string name="id_connecting_to_your_device">Connessione al tuo dispositivo in corso</string>
   <string name="id_connection">Connessione</string>
-  <string name="id_connection_amp_validation">Connessione &amp;amp; Impostazioni Validazione </string>
   <string name="id_connection_failed">Connessione fallita</string>
   <string name="id_connection_to_device_failed">Connessione al dispositivo fallita! Avvicinalo e riprova.</string>
   <string name="id_contact_support_at_s_or_visit_s">Per ricevere supporto contatta %s oppure visita %s</string>
@@ -232,6 +235,7 @@
   <string name="id_copy_details">Copia dettagli</string>
   <string name="id_copy_device_id">Copia ID dispositivo</string>
   <string name="id_copy_raw_transaction">Copia raw transaction</string>
+  <string name="id_copy_support_id">Copy support ID</string>
   <string name="id_copy_to_clipboard">Copia in Clipboard</string>
   <string name="id_copy_transaction_id">Copia ID di transazione</string>
   <string name="id_copy_unblinded_link">Copia unblinded link</string>
@@ -269,6 +273,7 @@
   <string name="id_default_custom_fee_rate">Custom fee rate di default</string>
   <string name="id_default_transaction_priority">Priorità transazioni di default</string>
   <string name="id_delete">Elimina</string>
+  <string name="id_delete_credentials">Delete credentials</string>
   <string name="id_delete_permanently_your_wallet">Elimina il tuo wallet dal database di Blockstream Green in modo permanente. Così facendo, non potrai più accedervi</string>
   <string name="id_delete_s_twofactor">Elimina %s Due Fattori</string>
   <string name="id_delete_wallet">Elimina Wallet</string>
@@ -278,6 +283,7 @@
   <string name="id_details">Dettagli</string>
   <string name="id_device">Dispositivo</string>
   <string name="id_devices">Dispositivi</string>
+  <string name="id_different_passphrases_generate">Different passphrases generate new wallets!\n\nRemember you can only restore this wallet with both your recovery phrase and the passphrase.</string>
   <string name="id_disable">Disabilita</string>
   <string name="id_disable_pin_access">Disabilita accesso PIN</string>
   <string name="id_disable_pin_access_for_this">Disabilita accesso PIN per questo wallet su tutti i dispositivi</string>
@@ -350,6 +356,7 @@
   <string name="id_enter_your_xpub_to_add_a">Inserisci il tuo xPub per aggiungere un wallet watch-only su cui ricevere fondi e controllare il tuo saldo senza importare chiavi private.</string>
   <string name="id_enter_yournrecovery_phrase">Inserisci\nRecovery Phrase</string>
   <string name="id_entity">Entità</string>
+  <string name="id_ephemeral_wallets">Ephemeral wallets</string>
   <string name="id_error">Errore</string>
   <string name="id_error_logging_in_with_hardware">Errore durante il login con Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">Errore: impossibile scrivere tag NFC </string>
@@ -379,6 +386,7 @@
   <string name="id_fee_rate_must_be_at_least_s">La fee rate deve essere superiore a %s satoshi/vbyte.</string>
   <string name="id_fee_rate_s">Fee rate: %s</string>
   <string name="id_fee_s__s">Fee: %s / %s</string>
+  <string name="id_feedback">Feedback</string>
   <string name="id_fees_are_too_low">Fee troppo basse</string>
   <string name="id_fetching_new_firmware">Nuovo firmware esclusivo</string>
   <string name="id_filters">Filtri</string>
@@ -400,6 +408,7 @@
   <string name="id_get_id">Ottieni ID</string>
   <string name="id_get_jade">Acquista Jade</string>
   <string name="id_give_bluetooth_permissions">Autorizza Bluetooth</string>
+  <string name="id_give_us_your_feedback">Give us your feedback</string>
   <string name="id_go_to_account">Vai all\'Account</string>
   <string name="id_go_to_receive_to_get_your">Vai su Ricevi per ottenere il tuo Account ID</string>
   <string name="id_go_to_wallet">Vai al Wallet</string>
@@ -538,6 +547,7 @@
   <string name="id_login_failed">Accesso Fallito</string>
   <string name="id_login_options">Opzioni login</string>
   <string name="id_login_with_biometrics">Accedi con Biometria</string>
+  <string name="id_login_with_bip39_passphrase">Login with BIP39 Passphrase</string>
   <string name="id_logout">Logout</string>
   <string name="id_logout_and_switch">Logout e Cambio</string>
   <string name="id_look_at_the_device_for_the">Controlla il tuo dispositivo per la posizione dei numeri</string>
@@ -652,6 +662,7 @@
   <string name="id_p2wsh">P2sh</string>
   <string name="id_page_visits_button_presses">Pagine visitate, bottoni cliccati, configurazione generale dell\'app</string>
   <string name="id_passphrase">Passphrase</string>
+  <string name="id_passphrase_protected">Passphrase protected</string>
   <string name="id_password">Password</string>
   <string name="id_password_protected">Protetta da password</string>
   <string name="id_paste">Incolla</string>
@@ -701,6 +712,9 @@
   <string name="id_qr_code">QR code</string>
   <string name="id_qr_scanner">QR Scanner</string>
   <string name="id_radio_firmware">Radio firmware</string>
+  <string name="id_rate">Rate</string>
+  <string name="id_rate_us">Rate us</string>
+  <string name="id_rate_your_experience">Rate your experience</string>
   <string name="id_read_more">Maggiori informazioni</string>
   <string name="id_read_more_at_our_s">Per maggiori informazioni consulta %s</string>
   <string name="id_ready">Pronto</string>
@@ -737,7 +751,7 @@
   <string name="id_remove_wallet">Rimuovi wallet</string>
   <string name="id_rename">Rinomina</string>
   <string name="id_rename_account">Rinomina account</string>
-  <string name="id_rename_wallet">Rinomina Wallet</string>
+  <string name="id_rename_wallet">Rename wallet</string>
   <string name="id_replaceable">sostituibile</string>
   <string name="id_request_amount">Richiedi importo</string>
   <string name="id_request_failed">Richiesta fallita</string>
@@ -896,6 +910,7 @@
   <string name="id_testnet_electrum_server">Server Testnet Electrum</string>
   <string name="id_testnet_wallets">Wallet Testnet</string>
   <string name="id_thank_you_for_downloading_green">Grazie per aver scaricato Green! Ricordati di lasciarci una recensione appena puoi</string>
+  <string name="id_thank_you_for_your_feedback">Thank you for your feedback</string>
   <string name="id_the_1_year_2fa_reset_process">Il processo di reset della 2FA durata di 1 anno era in corso ma è stato bloccato a causa di una contestazione.</string>
   <string name="id_the_address_is_valid">Indirizzo valido.</string>
   <string name="id_the_addresses_dont_match">Gli indirizzi non coincidono.</string>
@@ -910,6 +925,7 @@
   <string name="id_the_new_email_will_be_used_for">La nuova e-mail verrà utilizzata per l\'Autenticazione a Due Fattori quando il reset sarà completato. Il reset richiede 12 mesi più eventuali timelock rimanenti.</string>
   <string name="id_the_new_firmware_requires_you">Il nuovo firmware richiede di disaccoppiare Jade dalle impostazioni Bluetooth.</string>
   <string name="id_the_password_cant_be_empty">La password non può essere vuota</string>
+  <string name="id_the_qr_code_does_not_include">The QR code does not include the BIP39 Passphrase</string>
   <string name="id_the_recovery_key_below_will_not">La recovery key di seguito riportata non verrà mostrata in futuro. Esegui subito il backup per assicurarti di poter sempre accedere ai tuoi fondi.</string>
   <string name="id_the_recovery_phrase_can_be_used">La tua recovery phrase può essere utilizzata per richiedere/reclamare i tuoi fondi. Preservala in un posto sicuro e riservato.</string>
   <string name="id_the_recovery_phrase_doesnt">La recovery phrase non coincide con il wallet precedente. Riprova con una recovery phrase diversa.</string>
@@ -923,6 +939,7 @@
   <string name="id_these_settings_apply_for_every">Queste impostazioni valgono per tutti i wallet su Blockstream Green</string>
   <string name="id_this_feature_is_coming_soon">Nuova funzionalità in arrivo. Stay tuned!</string>
   <string name="id_this_transaction_spent">Con questa transazione sono stati spesi non-confidential fund.</string>
+  <string name="id_this_wallet_is_based_on_your">This wallet is based on your recovery phrase and a BIP39 Passphrase</string>
   <string name="id_this_wallet_operates_on_a_test">Questo wallet è attivo su un test network. Tutto quello che ricevi o invii non ha alcun valore</string>
   <string name="id_this_will_disable_pin_login_for">In questo modo disabiliterai il login tramite PIN per il wallet su tutti i tuoi dispositivi. Avrai bisogno di una recovery phrase per accedere al tuo wallet.</string>
   <string name="id_this_will_log_you_out_and">In questo modo effettuerai il log out e cancellerai il wallet dall\'app e dal database dei server Blockstream.</string>
@@ -981,7 +998,7 @@
   <string name="id_unlocked_coins_can_be_spent_and">I coin sbloccati possono essere spesi e sono inclusi nel tuo saldo.</string>
   <string name="id_unlocking_coins">Sblocco coin in corso</string>
   <string name="id_unstable_internet_connection">Connessione internet instabile</string>
-  <string name="id_update">Aggiornamento</string>
+  <string name="id_update">Aggiorna</string>
   <string name="id_updated">aggiornato</string>
   <string name="id_updating_firmware">Aggiornamento firmware in corso...</string>
   <string name="id_uploading_firmware">Caricamento firmware</string>
@@ -1033,6 +1050,7 @@
   <string name="id_warning_watchonly_credentials">Attenzione: le credenziali watch-only verranno salvate su questo dispositivo</string>
   <string name="id_warning_you_need_a_positive">Attenzione! Per inviare transazioni è necessario un saldo L-BTC positivo.</string>
   <string name="id_watchonly">Watch-only</string>
+  <string name="id_watchonly_credentials">Watch-only credentials</string>
   <string name="id_watchonly_details">Dettagli Watch-only</string>
   <string name="id_watchonly_disabled">Watch-only disabilitato</string>
   <string name="id_watchonly_login">Login watch-only</string>
@@ -1071,11 +1089,13 @@
   <string name="id_you_have_no_coins_to_send">Non hai alcun coin da inviare. Crea un indirizzo per ricevere bitcoin.</string>
   <string name="id_you_have_received_s">Hai ricevuto %s</string>
   <string name="id_you_have_successfully_changed">Il tuo PIN è stato modificato con successo</string>
+  <string name="id_you_have_successfully_sent_a">You have successfully sent a transaction. Please give us your feedback to improve Green.</string>
   <string name="id_you_have_to_authenticate_using">Devi effettuare l\'Autenticazione tramite biometria</string>
   <string name="id_you_have_tor_enabled_are_you">Tor è abilitato. Sei sicuro di voler aprire questa pagina?</string>
   <string name="id_you_must_first_log_out_before">Devi effettuare il logout prima di poter accedere.</string>
   <string name="id_you_must_save_this_mnemonic_now">Salva la mnemonic ORA</string>
   <string name="id_you_only_have_one_twofactor">Hai attivato un solo metodo di autenticazione a due fattori</string>
+  <string name="id_you_will_be_asked_to_enter_your">You will be asked to enter your passphrase at every login.</string>
   <string name="id_you_will_need_to_reenter_your">Se non imposti un PIN dovrai digitare nuovamente la tua mnemonic per accedere. Premi "OK" per continuare.</string>
   <string name="id_you_will_see_your_coins_here">I tuoi coin appariranno qui</string>
   <string name="id_youll_need_to_back_up_your">Dovrai effettuare il backup della tua recovery phrase prima di poter inviare o ricevere fondi. Puoi comunque dare un\'occhiata al tuo wallet per il momento.</string>
@@ -1098,6 +1118,6 @@
   <string name="id_your_wallet_is_locked_for_a">Wallet bloccato per reset Autenticazione a Due Fattori. Il reset verrà completato tra %d giorni.</string>
   <string name="id_your_wallet_is_locked_under_2fa">Wallet bloccato per contestazione 2FA.</string>
   <string name="id_your_wallet_is_not_yet_fully">Il tuo wallet non è ancora completamente al sicuro.\nAbilita Autenticazione a Due Fattori.</string>
-  <string name="id_your_watchonly_username_and">Il tuo username e la tua password watch-only verranno salvati in modalità non criptata su questo dispositivo. Se il tuo dispositivo è compromesso, soggetti terzi possono accedere alle cronologia delle tue transazioni. Premi OK per continuare.</string>
+  <string name="id_your_watchonly_username_and">Il tuo username e la tua password watch-only verranno salvati in chiaro su questo dispositivo. Se il tuo dispositivo è compromesso, soggetti terzi possono accedere alle cronologia delle tue transazioni. Premi OK per continuare.</string>
   <string name="id_youve_entered_an_invalid_pin">PIN non valido inserito troppe volte.</string>
 </resources>

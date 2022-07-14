@@ -80,7 +80,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     private fun switchSessions(session: GreenSession){
-        onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(session.hardwareWallet)))
+        onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(session.ephemeralWallet)))
     }
 
     private fun connectOnNetwork(network: String){
@@ -88,7 +88,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
         session.observable { session ->
             session.disconnect()
-            session.hardwareWallet = Wallet.createEmulatedHardwareWallet(greenWallet.networks.getNetworkById(network))
+            session.ephemeralWallet = Wallet.createEphemeralWallet(greenWallet.networks.getNetworkById(network), isHardware = true)
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
@@ -109,7 +109,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         session.observable { session ->
             // Disconnect any previous hww connection
             session.disconnect()
-            session.hardwareWallet = Wallet.createEmulatedHardwareWallet(greenWallet.networks.getNetworkById(network))
+            session.ephemeralWallet = Wallet.createEphemeralWallet(greenWallet.networks.getNetworkById(network), isHardware = true)
             hardwareConnect.connectDevice(this, session, device)
         }.doOnSubscribe {
             onProgress.postValue(true)
@@ -136,7 +136,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         return session
     }
 
-    override fun getConnectionNetwork() = getGreenSession().networkFromWallet(getGreenSession().hardwareWallet!!)
+    override fun getConnectionNetwork() = getGreenSession().networkFromWallet(getGreenSession().ephemeralWallet!!)
 
     override fun showError(err: String) {
         logger.info { "Shown error $err" }
@@ -146,7 +146,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     override fun onDeviceReady() {
         onProgress.postValue(false)
 
-        session.hardwareWallet?.let {
+        session.ephemeralWallet?.let {
             sessionManager.upgradeOnBoardingSessionToWallet(it)
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
         }

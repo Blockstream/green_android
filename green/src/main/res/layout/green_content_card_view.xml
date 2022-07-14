@@ -5,7 +5,7 @@
     tools:context="com.blockstream.green.views.GreenContentCardView">
 
     <data>
-        <import type="com.blockstream.green.gdk.ExtensionsKt"/>
+        <import type="com.blockstream.green.utils.ExtensionsKt"/>
         <variable
             name="title"
             type="String" />

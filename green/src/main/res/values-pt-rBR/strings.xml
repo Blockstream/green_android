@@ -22,7 +22,7 @@
   <string name="id_4_hours">~ 4 horas</string>
   <string name="id_5_seconds_minimum">mínimo de 5 segundos</string>
   <string name="id_6_months_25920_blocks">6 meses (25920 blocos)</string>
-  <string name="id_a_2of3_account_requires_two_out">Contas conjuntas 2de3 exigem duas assinaturas para movimentar os fundos. A terceira assinatura é uma chave conhecida somente por você. Isso oferece os benefícios e a segurança de uma conta conjunta 2de2 e ainda proporciona a liberdade de realizar transações de forma independente, a qualquer hora e sem a necessidade da permissão de terceiros.</string>
+  <string name="id_a_2of3_account_requires_two_out">Contas conjuntas 2de3 exigem duas assinaturas para movimentar os fundos. Duas assinaturas são de chaves exclusivas sua e a terceira é de uma chave conhecida somente pela empresa Blockstream. Isso oferece os benefícios e a segurança de uma conta conjunta 2de2 e ainda proporciona a liberdade de realizar transações de forma independente, a qualquer hora e sem a necessidade da permissão de terceiros.</string>
   <string name="id_a_new_transaction_has_just">Você acabou de receber uma nova transação.</string>
   <string name="id_a_newer_version_of_blockstream">Uma nova versão da Blockstream Green está disponível para download</string>
   <string name="id_a_screen_lock_must_be_enabled">O bloqueio de tela precisa ser habilitado nas configurações do Android</string>
@@ -31,7 +31,7 @@
   <string name="id_accept">ACEITAR</string>
   <string name="id_access">Acesso</string>
   <string name="id_account">CONTA</string>
-  <string name="id_account_extended_public_keys">Chaves públicas estendidas de conta</string>
+  <string name="id_account_extended_public_keys">Chaves públicas estendidas da conta</string>
   <string name="id_account_id">ID da conta</string>
   <string name="id_account_name">Nome da conta</string>
   <string name="id_account_type">Tipo de conta</string>
@@ -68,10 +68,11 @@
   <string name="id_all_of_the_accounts_in_your">Para excluir sua carteira, primeiro é necessário esvaziar as contas contidas nela. </string>
   <string name="id_all_the_coins_received_or">Todas as moedas recebidas ou criadas como troco.</string>
   <string name="id_all_wallets">Todas as carteiras</string>
-  <string name="id_allow_collection">Permitir coleta de dados</string>
+  <string name="id_allow_collection">Permitir coleta</string>
   <string name="id_allow_data_collection">Permitir coleta de dados</string>
   <string name="id_allows_you_to_quickly_check">Permite que você verifique seu saldo, receba fundos ou resgate bitcoins de uma carteira de papel. Não é possível enviar fundos no modo somente leitura. </string>
   <string name="id_always">Sempre</string>
+  <string name="id_always_ask">Always ask</string>
   <string name="id_amount">Quantidade</string>
   <string name="id_amount_in_s">Quantidade em %s</string>
   <string name="id_amp_account">Conta AMP</string>
@@ -85,7 +86,7 @@
   <string name="id_archive_account">Arquivar conta</string>
   <string name="id_archived">Arquivada</string>
   <string name="id_archived_accounts">Contas arquivadas</string>
-  <string name="id_are_you_sure_you_want_to_remove">Tem certeza de que deseja eliminar o destinatário?</string>
+  <string name="id_are_you_sure_you_want_to_remove">Tem certeza de que deseja remover o destinatário?</string>
   <string name="id_are_you_sure_you_want_to_view">Tem certeza de que deseja visualizar a transação usando %s?</string>
   <string name="id_as_easy_as_snapping_a_photo">Tão fácil quanto tirar uma foto com seu telefone. Se você já tiver uma carteira, verifique sua frase de recuperação nas configurações.</string>
   <string name="id_asset">Ativo</string>
@@ -95,7 +96,7 @@
   <string name="id_asset_name">Nome do ativo</string>
   <string name="id_assets">Ativos</string>
   <string name="id_assets_cannot_be_used_on_bitcoin">Ativos não podem ser usados ​​na rede Bitcoin</string>
-  <string name="id_at_least_8_characters_required">At least 8 characters required</string>
+  <string name="id_at_least_8_characters_required">São necessários pelo menos 8 caracteres</string>
   <string name="id_attempts_remaining_d">Tentativas restantes: %d</string>
   <string name="id_authenticate_to_view_the">Autentique para ver a sua frase de recuperação</string>
   <string name="id_authentication_error_s">Erro de autenticação %s</string>
@@ -103,11 +104,11 @@
   <string name="id_authenticator_app">App autenticador</string>
   <string name="id_authenticator_qr_code">Código QR do autenticador</string>
   <string name="id_authenticator_secret_key">Chave secreta do autenticador</string>
-  <string name="id_auto_logout_timeout">Encerrar sessão automaticamente</string>
+  <string name="id_auto_logout_timeout">Deslogar automaticamente após</string>
   <string name="id_auto_logout_timeout_expired">Sessão expirada</string>
   <string name="id_autolock_after">Bloquear após</string>
   <string name="id_available">Disponível</string>
-  <string name="id_available_funds_s">Fundos disponíveis %s</string>
+  <string name="id_available_funds_s">Disponível %s</string>
   <string name="id_back">Voltar</string>
   <string name="id_back_up_recovery_phrase">Frase de recuperação</string>
   <string name="id_backup_the_recovery_mnemonic">Faça o backup do mnemônico e da xpub para recuperar os fundos da sua conta conjunta 2de3.</string>
@@ -116,7 +117,9 @@
   <string name="id_be_sure_your_recovery_phrase_is">Certifique-se de ter feito o backup da sua frase de recuperação antes de remover esta carteira.</string>
   <string name="id_biometric_login_is_disabled">Acesso por biometria desativado</string>
   <string name="id_biometric_login_is_enabled">Acesso por biometria ativado</string>
-  <string name="id_biometrics_authentication">Autenticação biométrica</string>
+  <string name="id_biometrics_authentication">Autenticação por biométria</string>
+  <string name="id_bip39_passphrase">BIP39 Passphrase</string>
+  <string name="id_bip39_passphrase_login">BIP39 Passphrase login</string>
   <string name="id_bip49_accounts_allow_you_to">As contas BIP49 oferecem a possibilidade de separação dos fundos e o recebimento em endereços do tipo Segwit, garantindo a compatibilidade com versões de endereços anteriores, permitindo receber fundos de qualquer pessoa na rede.</string>
   <string name="id_bip84_accounts_allow_you_to">As contas BIP84 oferecem a possibilidade de separação dos fundos e o recebimento em endereços Segwit nativos bech32. Esse tipo de conta garante transações mais baratas ao enviar fundos, mas nem todos os serviços suportam endereços bech32 ainda.</string>
   <string name="id_bitcoin_and_liquid">Bitcoin e Liquid</string>
@@ -135,7 +138,7 @@
   <string name="id_blockstream_devices">Dispositivos Blockstream</string>
   <string name="id_blockstream_does_not_have">A Blockstream não tem acesso ao backup da sua carteira e não poderá ajudá-lo caso você o perca</string>
   <string name="id_blockstream_green_needs_access">A Blockstream Green precisa acessar o Bluetooth para se conectar às carteiras físicas. Os dados de localização não são usados ​​ou mantidos pela Blockstream.</string>
-  <string name="id_blockstream_green_supports_both">A carteira Blockstream Green suporta tanto a rede Bitcoin como a rede Liquid. Não se preocupe, você pode criar quantas carteiras desejar e em qualquer uma das redes.</string>
+  <string name="id_blockstream_green_supports_both">A Blockstream Green suporta carteiras da rede Bitcoin e da rede Liquid. Não se preocupe, você pode criar quantas carteiras desejar e em qualquer uma das redes.</string>
   <string name="id_blockstream_greennsimple_and">Blockstream Green:\nSimples e Segura</string>
   <string name="id_blockstream_store">Loja Blockstream</string>
   <string name="id_bluetooth">Bluetooth</string>
@@ -159,7 +162,7 @@
   <string name="id_check_for_updates_on_startup">Verificar se há atualizações ao iniciar</string>
   <string name="id_check_your_backup">Confirme as palavras </string>
   <string name="id_choose">Escolha</string>
-  <string name="id_choose_a_name_for_your_new">Escolha um nome para sua nova carteira Blockstream Green.</string>
+  <string name="id_choose_a_name_for_your_new">Escolha um nome para sua nova carteira.</string>
   <string name="id_choose_a_name_for_your_wallet">Escolha um nome para sua carteira</string>
   <string name="id_choose_method_to_authorize_the">Escolha um método para autorizar a ação</string>
   <string name="id_choose_recovery_phrase_length">Escolha a quantidade de palavras da frase de recuperação</string>
@@ -173,6 +176,7 @@
   <string name="id_choose_watchonly">Carteira somente leitura</string>
   <string name="id_choose_your_network">Escolha a rede</string>
   <string name="id_clear">Limpar</string>
+  <string name="id_clear_cache">Clear cache</string>
   <string name="id_click_to_copy">Clique para copiar</string>
   <string name="id_click_to_receive_an_email_with">Clique para receber um email com seu pacote de recuperação em formato criptografado.</string>
   <string name="id_code">Código</string>
@@ -202,7 +206,7 @@
   <string name="id_confirm_update_on_your_jade">Confirme a atualização na sua Jade</string>
   <string name="id_confirm_via_2fa_that_you">Confirme via 2FA que você autoriza esta alteração.</string>
   <string name="id_confirmation_in_d_blocks">Confirmação em %d blocos</string>
-  <string name="id_confirmation_time">Confirmação</string>
+  <string name="id_confirmation_time">Prazo de confirmação</string>
   <string name="id_confirmations">Confirmações</string>
   <string name="id_congratulations">Parabéns!</string>
   <string name="id_connect_hardware_wallet">Conectar carteira física</string>
@@ -220,7 +224,6 @@
   <string name="id_connecting_to_tor_onion_nodes">Conectar através da rede Tor (.onion) garante máxima privacidade e segurança. Pressione "OK" para continuar.</string>
   <string name="id_connecting_to_your_device">Conectando ao seu dispositivo</string>
   <string name="id_connection">Conexão</string>
-  <string name="id_connection_amp_validation">Conexão &amp; amp; Configurações de validação</string>
   <string name="id_connection_failed">A conexão falhou</string>
   <string name="id_connection_to_device_failed">Falha na conexão com o dispositivo! Aproxime-se do dispositivo e tente novamente.</string>
   <string name="id_contact_support_at_s_or_visit_s">Contate o suporte em %s ou  visite %s</string>
@@ -232,9 +235,10 @@
   <string name="id_copy_details">Copiar detalhes</string>
   <string name="id_copy_device_id">Copiar ID do dispositivo</string>
   <string name="id_copy_raw_transaction">Copiar transação raw</string>
+  <string name="id_copy_support_id">Copy support ID</string>
   <string name="id_copy_to_clipboard">Copiar para a área de transferência</string>
-  <string name="id_copy_transaction_id">Copiar ID da transação</string>
-  <string name="id_copy_unblinded_link">Copiar link dados visíveis</string>
+  <string name="id_copy_transaction_id">Copiar o ID da transação</string>
+  <string name="id_copy_unblinded_link">Copiar o link dados visíveis</string>
   <string name="id_copy_unblinding_data">Copiar dados confidenciais</string>
   <string name="id_copy_uri">Copiar URI</string>
   <string name="id_copy_xpub">Copiar xPub</string>
@@ -269,6 +273,7 @@
   <string name="id_default_custom_fee_rate">Taxa de rede personalizada</string>
   <string name="id_default_transaction_priority">Padrão de prioridade das transações</string>
   <string name="id_delete">Excluir</string>
+  <string name="id_delete_credentials">Excluir credenciais</string>
   <string name="id_delete_permanently_your_wallet">Exclua permanentemente sua carteira do banco de dados da Blockstream Green. Nunca mais será possível logar nesta carteira. </string>
   <string name="id_delete_s_twofactor">Remover autenticação de dois fatores %s</string>
   <string name="id_delete_wallet">Excluir carteira</string>
@@ -278,6 +283,7 @@
   <string name="id_details">Detalhes</string>
   <string name="id_device">Dispositivo</string>
   <string name="id_devices">Dispositivos</string>
+  <string name="id_different_passphrases_generate">Different passphrases generate new wallets!\n\nRemember you can only restore this wallet with both your recovery phrase and the passphrase.</string>
   <string name="id_disable">Desativar</string>
   <string name="id_disable_pin_access">Desativar acesso por PIN</string>
   <string name="id_disable_pin_access_for_this">Desativar o acesso por PIN para esta carteira em todos os dispositivos</string>
@@ -350,6 +356,7 @@
   <string name="id_enter_your_xpub_to_add_a">Insira a chave xPub para adicionar uma carteira somente leitura, onde você pode receber fundos e verificar seu saldo sem a necessidade de expor suas chaves privadas.</string>
   <string name="id_enter_yournrecovery_phrase">Insira sua\nFrase de recuperação</string>
   <string name="id_entity">Entidade</string>
+  <string name="id_ephemeral_wallets">Ephemeral wallets</string>
   <string name="id_error">Erro</string>
   <string name="id_error_logging_in_with_hardware">Erro ao fazer login com sua carteira física</string>
   <string name="id_error_nfc_tag_not_writable">Erro: Tag NFC não gravável</string>
@@ -364,7 +371,7 @@
   <string name="id_expand_sidebar">Mostrar barra lateral</string>
   <string name="id_explore_your_wallet">Explore sua carteira</string>
   <string name="id_export_transactions_to_csv_file">Exportar transações para arquivo CSV</string>
-  <string name="id_exports_an_accounts_extended">Exporta a chave pública estendida de uma conta (xPub/yPub/zPub) para visualização somente para leitura.</string>
+  <string name="id_exports_an_accounts_extended">Exporta a chave pública estendida  (xPub/yPub/zPub) para importar em uma carteira somente leitura</string>
   <string name="id_extended_public_key">Chave pública estendida</string>
   <string name="id_face_id">Face ID</string>
   <string name="id_failed_to_load_asset_icons">Falha ao carregar ícones de ativos</string>
@@ -379,6 +386,7 @@
   <string name="id_fee_rate_must_be_at_least_s">A taxa de rede deve ser no mínimo %s satoshi/vbyte.</string>
   <string name="id_fee_rate_s">Taxa de rede: %s</string>
   <string name="id_fee_s__s">Taxa: %s / %s</string>
+  <string name="id_feedback">Feedback</string>
   <string name="id_fees_are_too_low">Taxa muito baixa</string>
   <string name="id_fetching_new_firmware">Buscando novo firmware</string>
   <string name="id_filters">Filtros</string>
@@ -400,6 +408,7 @@
   <string name="id_get_id">Mostrar ID</string>
   <string name="id_get_jade">Comprar Jade</string>
   <string name="id_give_bluetooth_permissions">Permitir conexão bluetooth</string>
+  <string name="id_give_us_your_feedback">Give us your feedback</string>
   <string name="id_go_to_account">Ir para a conta</string>
   <string name="id_go_to_receive_to_get_your">Ir em receber para acessar seu ID da conta.</string>
   <string name="id_go_to_wallet">Ir para a carteira</string>
@@ -446,7 +455,7 @@
   <string name="id_if_you_have_access_to_a">Se você tiver acesso a um dos métodos de autenticação de dois fatores desta carteira, cancele a redefinição para poder gastar seus fundos, caso contrário aguarde %d dias</string>
   <string name="id_if_you_have_some_coins_on_the">Se você tiver algumas moedas em endereços do tipo legacy e não as gastará em breve, talvez seja interessante configurar um e-mail e receber suas transações de recuperação para ter certeza de que está sempre no controle de seus fundos.</string>
   <string name="id_if_you_initiated_the_2fa_reset">Se você iniciou a disputa de redefinição 2FA por engano, você pode desfazê-la e voltar para o estado de redefinição 2FA anterior.</string>
-  <string name="id_import_a_multisig_shield_wallet">Restaure uma carteira conjunta criada pela Blockstream Green.</string>
+  <string name="id_import_a_multisig_shield_wallet">Restaure uma carteira conjunta criada na Blockstream Green.</string>
   <string name="id_import_a_wallet_created_on">Importar uma carteira criada na Blockstream Green.</string>
   <string name="id_import_a_wallet_created_with">Restaure carteiras criadas em outros aplicativos. Esta opção funciona somente em carteiras individuais BIP39 e com os as seguintes derivações BIP44, BIP49, or BIP84.</string>
   <string name="id_incoming">Recebida</string>
@@ -486,7 +495,7 @@
   <string name="id_is_a_noncustodial">é uma carteira não custodiante</string>
   <string name="id_issuer">Emissor</string>
   <string name="id_issuer_domain_s">Domínio do emissor: %s</string>
-  <string name="id_it_looks_like_you_have_no">Você ainda não possui nenhuma carteira. Clique abaixo para adicionar uma.</string>
+  <string name="id_it_looks_like_you_have_no">Nenhuma carteira foi encontrada. Clique abaixo para adicionar uma.</string>
   <string name="id_jade_unlocked">Jade desbloqueada</string>
   <string name="id_jade_was_initialized_for_testnet">A Jade foi inicializada na rede de teste</string>
   <string name="id_just_a_few_more_steps_to_get">Faltam apenas mais algumas etapas para restaurar a carteira.</string>
@@ -502,7 +511,7 @@
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detectada, por favor, abra o aplicativo correto para acessar.</string>
   <string name="id_ledger_devices">Dispositivos Ledger</string>
   <string name="id_ledger_supports_a_limited_set">A Ledger suporta uma quantidade limitada de ativos: clique aqui para verificar a lista.</string>
-  <string name="id_legacy_account">Conta legacy</string>
+  <string name="id_legacy_account">Conta Legacy</string>
   <string name="id_legacy_script_coins">Moedas script legacy</string>
   <string name="id_lets_get_you_set_up">Vamos lá então configurar sua carteira.</string>
   <string name="id_liquid_electrum_server">Servidor Liquid Electrum</string>
@@ -538,6 +547,7 @@
   <string name="id_login_failed">Falha ao logar</string>
   <string name="id_login_options">Opções de login</string>
   <string name="id_login_with_biometrics">Habilitar biometria</string>
+  <string name="id_login_with_bip39_passphrase">Login with BIP39 Passphrase</string>
   <string name="id_logout">Sair</string>
   <string name="id_logout_and_switch">Sair e alterar rede</string>
   <string name="id_look_at_the_device_for_the">Verifique o dispositivo para ver a posição dos números</string>
@@ -643,7 +653,7 @@
   <string name="id_optional_memo">Memo opcional</string>
   <string name="id_optional_password">Senha opcional</string>
   <string name="id_or">OU</string>
-  <string name="id_os__app_version_loading_times">OS &amp; app version, loading times</string>
+  <string name="id_os__app_version_loading_times">Versão do sistema operacional e do aplicativo, tempo de carregamentos, falhas</string>
   <string name="id_our_support_page">nossa página de suporte</string>
   <string name="id_outdated_hardware_wallet">O firmware da carteira física está desatualizado. Por favor, atualize-o para a versão mais recente por meio do seu computador.</string>
   <string name="id_outgoing">Enviada</string>
@@ -652,6 +662,7 @@
   <string name="id_p2wsh">P2wsh</string>
   <string name="id_page_visits_button_presses">Visitas em páginas, cliques, configuração geral do aplicativo</string>
   <string name="id_passphrase">Senha</string>
+  <string name="id_passphrase_protected">Passphrase protected</string>
   <string name="id_password">Senha</string>
   <string name="id_password_protected">Senha protegida</string>
   <string name="id_paste">Colar</string>
@@ -701,6 +712,9 @@
   <string name="id_qr_code">Código QR</string>
   <string name="id_qr_scanner">Leitor de código QR</string>
   <string name="id_radio_firmware">Firmware de rádio</string>
+  <string name="id_rate">Rate</string>
+  <string name="id_rate_us">Rate us</string>
+  <string name="id_rate_your_experience">Rate your experience</string>
   <string name="id_read_more">Ler mais</string>
   <string name="id_read_more_at_our_s">Saiba mais em nossa%s</string>
   <string name="id_ready">Pronto</string>
@@ -718,8 +732,8 @@
   <string name="id_recovery_mnemonic">Recuperar mnemônico</string>
   <string name="id_recovery_phrase">Frase de recuperação</string>
   <string name="id_recovery_phrase_check">Verificando a frase de recuperação</string>
-  <string name="id_recovery_phrase_length">Total de palavras </string>
-  <string name="id_recovery_phrases_key_material">Recovery phrases, key material, addresses, balances</string>
+  <string name="id_recovery_phrase_length">Total de palavras da seed</string>
+  <string name="id_recovery_phrases_key_material">Chaves de recuperação, chaves públicas, endereços, saldos</string>
   <string name="id_recovery_tool">Ferramenta de recuperação</string>
   <string name="id_recovery_transaction_emails">Recuperar e-mails de transação</string>
   <string name="id_recovery_transaction_request">Recuperar solicitações de transação enviadas</string>
@@ -739,7 +753,7 @@
   <string name="id_rename_account">Editar</string>
   <string name="id_rename_wallet">Editar</string>
   <string name="id_replaceable">substituível</string>
-  <string name="id_request_amount">Solicitar quantidade específica</string>
+  <string name="id_request_amount">Solicitar quantia específica</string>
   <string name="id_request_failed">Falha na solicitação</string>
   <string name="id_request_recovery_transactions">Solicitar transações de recuperação</string>
   <string name="id_request_sent">Solicitação enviada</string>
@@ -749,7 +763,7 @@
   <string name="id_reset_spv">Redefinir SPV</string>
   <string name="id_resetting_your_twofactor_takes">Redefinir seu fator duplo de autenticação leva no mínimo 12 meses. Se você tem certeza de que não tem mais acesso ao 2FA, por favor, forneça um novo endereço de email abaixo para iniciar o processo de redefinição.</string>
   <string name="id_restore">Restaurar</string>
-  <string name="id_restore_a_blockstream_green">Restaure uma carteira Blockstream Green usando seu mnemônico de 24 palavras. Você pode encontrá-lo nas configurações de qualquer aplicativo Blockstream Green.</string>
+  <string name="id_restore_a_blockstream_green">Restaure uma carteira criada na Blockstream Green usando seu mnemônico de 24 palavras. Você pode encontrá-lo nas configurações de qualquer aplicativo Blockstream Green.</string>
   <string name="id_restore_a_singlesig_wallet">Restaure carteiras criadas na Blockstream Green ou em outros aplicativos. Esta opção só funciona em carteiras individuais com padrão mnemônico BIP39 e seguindo as derivações BIP44, BIP49 ou BIP84.</string>
   <string name="id_restore_a_wallet">Restaurar carteira</string>
   <string name="id_restore_green_wallet">Restaurar carteira Green</string>
@@ -767,7 +781,7 @@
   <string name="id_save_a_summary_of_your_accounts">Copie o resumo dos dados das suas contas para acelerar a recuperação, caso precise usar nossa ferramenta de recuperação.</string>
   <string name="id_save_your_mnemonic">Guarde seu mnemônico</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Ler um código QR para parear o SPV</string>
-  <string name="id_scan_or_paste_your_extended">Digitalize ou cole sua chave pública estendida (xPub/yPub/zPub) para fazer login em sua carteira somente para leitura.</string>
+  <string name="id_scan_or_paste_your_extended">Leia ou cole sua chave pública estendida (xPub/yPub/zPub) para acessar sua carteira somente leitura.</string>
   <string name="id_scan_qr_code">Ler código QR</string>
   <string name="id_scan_the_qr_code_with_an">Leia o código QR usando o app autenticador</string>
   <string name="id_scan_to_send_here">Leia este código QR ou envie para o endereço abaixo</string>
@@ -826,7 +840,7 @@
   <string name="id_set_wallet_name">Definir nome da carteira</string>
   <string name="id_setting_up_your_wallet">Configurando sua carteira</string>
   <string name="id_setting_updated">Configuração atualizada</string>
-  <string name="id_settings">Configurações da carteira</string>
+  <string name="id_settings">Configurações </string>
   <string name="id_setup_jade">Configurar Jade</string>
   <string name="id_setup_pin">Configurar PIN</string>
   <string name="id_setup_pin_and_s">Configurar PIN e %s</string>
@@ -870,7 +884,7 @@
   <string name="id_spv_unverified">SPV não verificado</string>
   <string name="id_spv_verification">Verificação SPV</string>
   <string name="id_standard_account">Conta conjunta 2de2</string>
-  <string name="id_standard_accounts_allow_you_to">Contas conjuntas 2de2 exigem duas assinaturas para movimentar os fundos. A segunda assinatura é uma chave conhecida somente pela empresa Blockstream.\nObs. É possível resgatar os fundos mesmo que a empresa Blockstream deixe de existir ou pare de assinar as transações.</string>
+  <string name="id_standard_accounts_allow_you_to">Contas conjuntas 2de2 exigem duas assinaturas para movimentar os fundos. Uma assinatura é de uma chave exclusiva sua e a outra é de uma chave conhecida somente pela empresa Blockstream.\nObs. É possível resgatar os fundos mesmo se a empresa Blockstream deixar de existir ou assinar as transações.</string>
   <string name="id_standard_wallet">Individual</string>
   <string name="id_start_a_2fa_reset_process_if">Inicie o processo para redefinir o 2FA caso você tenha perdido o acesso a todos os seus métodos de autenticação de dois fatores.</string>
   <string name="id_start_receiving_funds_and_set">Comece a receber fundos e defina um e-mail para receber o pacote de recuperação da sua carteira</string>
@@ -896,6 +910,7 @@
   <string name="id_testnet_electrum_server">Servidor Electrum de testes</string>
   <string name="id_testnet_wallets">Carteiras da rede de teste</string>
   <string name="id_thank_you_for_downloading_green">Obrigado por baixar a Green! Avalie nosso app quando puder.</string>
+  <string name="id_thank_you_for_your_feedback">Thank you for your feedback</string>
   <string name="id_the_1_year_2fa_reset_process">O processo de redefinição 2FA de 1 ano estava em andamento, mas alguém bloqueou contestando a redefinição.</string>
   <string name="id_the_address_is_valid">O endereço é válido.</string>
   <string name="id_the_addresses_dont_match">Os endereços não conferem.</string>
@@ -905,17 +920,18 @@
   <string name="id_the_easier_safer_and_faster">a carteira mais fácil, segura e rápida</string>
   <string name="id_the_email_will_also_be_used_to">O e-mail também será usado para receber o pacote de recuperação e notificações de transação</string>
   <string name="id_the_hardware_wallet_you_are">A carteira física que você está utilizando ainda não é suportada</string>
-  <string name="id_the_liquid_network_is_a_bitcoin">A rede Liquid é uma solução de segunda camada do Bitcoin que permite a liquidação e emissão de ativos digitais, como moedas estáveis, tokens de valores mobiliários e outros instrumentos financeiros.</string>
+  <string name="id_the_liquid_network_is_a_bitcoin">Liquid é uma rede alternativa de Bitcoin que permite a liquidação e emissão de ativos digitais, como moedas estáveis, tokens de valores mobiliários e outros instrumentos financeiros.</string>
   <string name="id_the_network_selected_on_the">A rede selecionada no aplicativo Green é diferente da rede selecionada na carteira física. Selecione a mesma rede nos dois aparelhos.</string>
   <string name="id_the_new_email_will_be_used_for">O novo e-mail será usado para a autenticação de dois fatores quando a redefinição for concluída. A redefinição leva 12 meses mais o período restante do timelock. </string>
   <string name="id_the_new_firmware_requires_you">O novo firmware exige que você desemparelhe sua Jade nas configurações de Bluetooth.</string>
   <string name="id_the_password_cant_be_empty">A senha não pode ficar em branco</string>
+  <string name="id_the_qr_code_does_not_include">The QR code does not include the BIP39 Passphrase</string>
   <string name="id_the_recovery_key_below_will_not">A chave de recuperação abaixo não será mostrada novamente. Por favor, faça imediatamente um backup seguro dela para você sempre ter acessar seus fundos.</string>
   <string name="id_the_recovery_phrase_can_be_used">A frase de recuperação, também conhecida como seed ou mnemônico, é o backup da sua carteira e permite recuperar seus fundos. Mantenha-a privada e não compartilhe com ninguém.</string>
   <string name="id_the_recovery_phrase_doesnt">A frase de recuperação não corresponde à carteira existente anteriormente. Tente novamente com uma frase de recuperação diferente.</string>
   <string name="id_the_source_code_is_available_at">O código-fonte está disponível em %s</string>
   <string name="id_the_transaction_contains">A transação contém fundos não confidenciais.</string>
-  <string name="id_the_username_cant_be_empty">O nome de usuário não pode estar vazio.</string>
+  <string name="id_the_username_cant_be_empty">É preciso inserir um nome de usuário</string>
   <string name="id_the_waiting_period_is_necessary">O período de espera é necessário para garantir a segurança da sua carteira, evitando que ladrões burlem a proteção de dois fatores.</string>
   <string name="id_there_are_no_results_for_the">Não há resultados para o filtro aplicado</string>
   <string name="id_there_is_already_a_pin_set_for">Já existe um PIN configurado para a carteira %s. Mesmo prosseguindo não será possível configurar um novo PIN e para acessar será necessário utilizar o mnemônico de 24 palavras. Você pode desativar o PIN nas configurações ou realizando 3 tentativas de login inválidas.</string>
@@ -923,6 +939,7 @@
   <string name="id_these_settings_apply_for_every">Essas configurações se aplicam em todas suas carteiras na Blockstream Green.</string>
   <string name="id_this_feature_is_coming_soon">Esse recurso estará disponível em breve!</string>
   <string name="id_this_transaction_spent">Esta transação gastou fundos não confidenciais.</string>
+  <string name="id_this_wallet_is_based_on_your">This wallet is based on your recovery phrase and a BIP39 Passphrase</string>
   <string name="id_this_wallet_operates_on_a_test">Esta carteira opera em uma rede de testes. Qualquer coisa que você receber ou enviar aqui não tem nenhum valor</string>
   <string name="id_this_will_disable_pin_login_for">O acesso por PIN será desativado para esta carteira em todos os seus dispositivos. Você precisará de sua frase de recuperação para acessar sua carteira.</string>
   <string name="id_this_will_log_you_out_and">Você será desconectado e sua carteira será excluída do aplicativo e do banco de dados dos servidores da Blockstream.</string>
@@ -1033,7 +1050,8 @@
   <string name="id_warning_watchonly_credentials">Aviso: As credenciais de acesso ao modo somente leitura serão salvas neste aparelho</string>
   <string name="id_warning_you_need_a_positive">Aviso! Você precisa ter saldo positivo de L-BTC para enviar transações.</string>
   <string name="id_watchonly">Somente leitura</string>
-  <string name="id_watchonly_details">Detalhes do modo somente leitura</string>
+  <string name="id_watchonly_credentials">Credenciais carteira somente leitura</string>
+  <string name="id_watchonly_details">Detalhes modo somente leitura</string>
   <string name="id_watchonly_disabled">Modo somente leitura desativado</string>
   <string name="id_watchonly_login">Habilitar modo somente leitura</string>
   <string name="id_watchonly_mode_can_be_activated">O modo somente leitura pode ser habilitado nas configurações após você acessar sua carteira usando o PIN, mnemônico ou carteira física.</string>
@@ -1068,14 +1086,16 @@
   <string name="id_you_cannot_create_or_restore_a">Você não pode criar ou restaurar uma carteira na %s porque você já tem uma carteira protegida com PIN.</string>
   <string name="id_you_have_clicked_a_payment_uri">Você clicou em uma URI de pagamento, selecione uma carteira para lidar com isso</string>
   <string name="id_you_have_control_on_your_funds">Você tem controle sobre seus fundos</string>
-  <string name="id_you_have_no_coins_to_send">Esta conta está vazia. Clique em receber para gerar um endereço bitcoin.</string>
+  <string name="id_you_have_no_coins_to_send">Esta conta está sem saldo. Clique em receber para gerar um endereço bitcoin.</string>
   <string name="id_you_have_received_s">Você recebeu %s</string>
   <string name="id_you_have_successfully_changed">PIN alterado com sucesso</string>
+  <string name="id_you_have_successfully_sent_a">You have successfully sent a transaction. Please give us your feedback to improve Green.</string>
   <string name="id_you_have_to_authenticate_using">Você tem que autenticar usando biometria</string>
   <string name="id_you_have_tor_enabled_are_you">Você ativou o Tor, tem certeza que deseja abrir esta página da web?</string>
   <string name="id_you_must_first_log_out_before">Você primeiro precisa sair antes de acessar.</string>
   <string name="id_you_must_save_this_mnemonic_now">Você DEVE salvar este mnemônico AGORA</string>
   <string name="id_you_only_have_one_twofactor">Você tem apenas um método de autenticação de dois fatores ativado</string>
+  <string name="id_you_will_be_asked_to_enter_your">You will be asked to enter your passphrase at every login.</string>
   <string name="id_you_will_need_to_reenter_your">Caso você não configure um PIN, toda vez que for acessar a carteira será necessário reinserir seu mnemônico. Pressione "OK" para continuar.</string>
   <string name="id_you_will_see_your_coins_here">Suas moedas aparecerão aqui</string>
   <string name="id_youll_need_to_back_up_your">Para enviar ou receber fundos é necessário antes realizar o backup da sua carteira.</string>
@@ -1085,8 +1105,8 @@
   <string name="id_your_2fa_expires_so_that_if_you">A proteção 2FA expira para permitir você recuperar seus fundos mesmo que o serviço da Blockstream Green fique indisponível ou você perca o acesso ao seus métodos de autenticação. Você sempre pode recuperar seus bitcoins usando a ferramenta de recuperação</string>
   <string name="id_your_device_was_disconnected">Seu dispositivo foi desconectado</string>
   <string name="id_your_favourite_exchange_rate_is">Seu câmbio de referência favorito não está disponível no momento. Você pode alterá-lo nas configurações.</string>
-  <string name="id_your_funds_are_secured_by">Os fundos são administrados por duas ou mais chaves, sendo uma chave em seu dispositivo e outra em nossos servidores protegida com seu 2FA, além da possibilidade de criar contas com uma terceira chave de sua posse. Selecione essa opção se deseja maior segurança. </string>
-  <string name="id_your_funds_are_secured_by_a">Os fundos são administrados por uma única chave armazenada em seu dispositivo. É mais simples de usar e configurar do que uma carteira do tipo conjunta. Na dúvida, escolha essa opção.</string>
+  <string name="id_your_funds_are_secured_by">Duas ou mais chaves são necessárias para movimentar os fundos. Uma chave fica armazenada no seu dispositivo e a outra em nossos servidores protegida por 2FA, pronta para aprovar suas transações. Contas com uma terceira chave de sua posse também podem ser criadas. Selecione essa opção se deseja maior segurança.  </string>
+  <string name="id_your_funds_are_secured_by_a">Uma única chave armazenada no seu dispositivo é necessária para movimentar os fundos. É mais simples de usar e configurar do que uma carteira do tipo conjunta. Na dúvida, escolha essa opção.</string>
   <string name="id_your_green_wallet_is_now_ready">Sua carteira Green está pronta para uso.</string>
   <string name="id_your_ios_device_might_not_be">Seu aparelho iOS pode não ser compatível</string>
   <string name="id_your_notifications_will_be">Suas notificações serão mostradas aqui.</string>
@@ -1094,7 +1114,7 @@
   <string name="id_your_s_sent_to_s_has_been">Seus %s enviados para %s foram confirmados</string>
   <string name="id_your_transactions_will_be_shown">Suas transações serão mostradas aqui.</string>
   <string name="id_your_twofactor_threshold_is_s">O valor máximo que você definiu para ser gasto sem 2FA é de %s.</string>
-  <string name="id_your_wallet_backup_is_made_of">O backup da sua carteira é uma frase composta por 24 palavras, também conhecido como seed ou mnemônico. Mantenha e guarde ela em um local seguro, pois se alguém encontra-lá poderá roubar seu dinheiro. O backup também pode ser usado para restaurar a sua carteira Blockstream Green, por exemplo em caso de perda, dano ou furto do seu aparelho atual.  </string>
+  <string name="id_your_wallet_backup_is_made_of">O backup da sua carteira é uma frase composta por 24 palavras, também conhecido como seed ou mnemônico. Mantenha e guarde ela em um local seguro, pois se alguém encontra-lá poderá roubar seu dinheiro. O backup também pode ser usado para restaurar carteiras criadas na Blockstream Green, por exemplo em caso de perda, dano ou furto do seu aparelho atual.  </string>
   <string name="id_your_wallet_is_locked_for_a">Sua carteira está bloqueada até que seja finalizado o processo de redefinição da autenticação de dois fatores. A redefinição será concluída em %d dias.</string>
   <string name="id_your_wallet_is_locked_under_2fa">Sua carteira está bloqueada devido uma disputa 2FA.</string>
   <string name="id_your_wallet_is_not_yet_fully">Sua carteira não está completamente segura.\nPor favor, ative a autenticação de dois fatores.</string>

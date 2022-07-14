@@ -94,6 +94,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="24dp"
+                isVisible="@{!vm.ephemeralWallets.empty}"
+                android:text="@string/id_ephemeral_wallets"
+                android:textAppearance="?attr/textAppearanceOverline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerEphemeralWallets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="24dp"
                 isVisible="@{!vm.hardwareWallets.empty}"
                 android:text="@string/id_hardware_wallets"
                 android:textAppearance="?attr/textAppearanceOverline"

@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LoginCredentialsParams(
     @SerialName("mnemonic") val mnemonic: String? = null,
+    @SerialName("bip39_passphrase") val bip39Passphrase: String? = null,
     @SerialName("pin") val pin: String? = null,
     @SerialName("pin_data") val pinData: PinData? = null,
     @SerialName("username") val username: String? = null,

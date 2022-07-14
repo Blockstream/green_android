@@ -15,10 +15,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.*
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.UserInput
-import com.blockstream.green.utils.feeRateWithUnit
-import com.blockstream.green.utils.toAmountLook
+import com.blockstream.green.utils.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo

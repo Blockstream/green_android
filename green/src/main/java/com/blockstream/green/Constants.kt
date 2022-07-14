@@ -15,6 +15,7 @@ object Urls {
     const val HELP_GET_LIQUID = "https://help.blockstream.com/hc/en-us/articles/900000630846-How-do-I-get-Liquid-Bitcoin-L-BTC-"
     const val HELP_JADE_USB_UPGRADE = "https://help.blockstream.com/hc/en-us/articles/4408030503577"
     const val HELP_WHATS_COLLECTED = "https://help.blockstream.com/hc/en-us/articles/5988514431897"
+    const val HELP_BIP39_PASSPHRASE = "https://help.blockstream.com/hc/en-us/articles/8712301763737"
     const val HELP_CENTER = "https://help.blockstream.com/hc/en-us/categories/900000056183-Blockstream-Green/"
     const val RECOVERY_TOOL = "https://github.com/greenaddress/garecovery"
     const val JADE_STORE = "https://store.blockstream.com/product/blockstream-jade/"

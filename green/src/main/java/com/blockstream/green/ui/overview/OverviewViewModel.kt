@@ -1,10 +1,7 @@
 package com.blockstream.green.ui.overview
 
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.blockstream.gdk.BalanceLoading
 import com.blockstream.gdk.BalancePair
 import com.blockstream.gdk.Balances
@@ -17,6 +14,7 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.utils.isNotBlank
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -37,15 +35,30 @@ class OverviewViewModel @AssistedInject constructor(
 
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
+    val systemMessage: MutableLiveData<AlertType?> = MutableLiveData()
+    private val twoFactorState: MutableLiveData<AlertType?> = MutableLiveData()
 
-    private val systemMessage: MutableLiveData<String?> = MutableLiveData()
+    private val _alerts: LiveData<List<AlertType>> by lazy {
+        MediatorLiveData<List<AlertType>>().apply {
+            val combine = { _: Any? ->
+                value = listOfNotNull(
+                    twoFactorState.value,
+                    systemMessage.value,
+                    if (wallet.isEphemeral && !wallet.isHardware) AlertType.EphemeralBip39 else null,
+                    if (session.isTestnet) AlertType.TestnetWarning else null
+                )
+            }
+            addSource(twoFactorState, combine)
+            addSource(systemMessage, combine)
+        }
+    }
+    
     private val state: MutableLiveData<State> = MutableLiveData(State.Overview)
     private val filteredSubAccounts: MutableLiveData<List<SubAccount>> = MutableLiveData()
     private val archivedAccounts = MutableLiveData(0)
 
     private var allBalances: Balances = linkedMapOf(BalanceLoading)
     private val shownBalances: MutableLiveData<Balances> = MutableLiveData(allBalances)
-    private val alerts = MutableLiveData<List<AlertType>>(if(session.isTestnet) listOf(AlertType.TestnetWarning) else listOf())
     private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData(listOf(
         Transaction.LoadingTransaction))
 
@@ -53,12 +66,11 @@ class OverviewViewModel @AssistedInject constructor(
 
     private val block: MutableLiveData<Block> = MutableLiveData()
 
-    fun getSystemMessage(): LiveData<String?> = systemMessage
     fun getState(): LiveData<State> = state
     fun getFilteredSubAccounts(): LiveData<List<SubAccount>> = filteredSubAccounts
     fun getArchivedAccounts(): LiveData<Int> = archivedAccounts
     fun getBalancesLiveData(): LiveData<Balances> = shownBalances
-    fun getAlerts(): LiveData<List<AlertType>> = alerts
+    fun getAlerts(): LiveData<List<AlertType>> = _alerts
     fun isMainnet(): LiveData<Boolean> = MutableLiveData(session.isMainnet)
     fun isLiquid(): LiveData<Boolean> = MutableLiveData(wallet.isLiquid)
     fun getTransactions(): LiveData<List<Transaction>> = transactions
@@ -115,24 +127,27 @@ class OverviewViewModel @AssistedInject constructor(
             .getSystemMessageObservable()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                systemMessage.postValue(it)
+                if(it.isNotBlank()) {
+                    systemMessage.postValue(AlertType.SystemMessage(it))
+                }else{
+                    systemMessage.postValue(null)
+                }
             }.addTo(disposables)
 
         session
             .getTwoFactorResetObservable()
             .subscribe {
-                if (it.isActive == true){
-                    val list = mutableListOf<AlertType>()
-                    if(it.isDisputed == true){
-                        list += AlertType.Dispute2FA(it)
-                    }else{
-                        list += AlertType.Reset2FA(it)
+                twoFactorState.postValue(
+                    if (it.isActive == true) {
+                        if (it.isDisputed == true) {
+                            AlertType.Dispute2FA(it)
+                        } else {
+                            AlertType.Reset2FA(it)
+                        }
+                    } else {
+                        null
                     }
-                    if(session.isTestnet){
-                        list += AlertType.TestnetWarning
-                    }
-                    alerts.postValue(list)
-                }
+                )
             }.addTo(disposables)
     }
 

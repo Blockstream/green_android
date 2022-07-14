@@ -54,6 +54,22 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
             true
         }
 
+        val ephemeralWalletsModel = ModelAdapter { model: Wallet ->
+            WalletListItem(model, sessionManager.getWalletSession(model))
+        }
+
+        viewModel.ephemeralWallets.observe(viewLifecycleOwner){
+            ephemeralWalletsModel.set(it)
+        }
+
+        val ephemeralWalletsAdapter = FastAdapter.with(ephemeralWalletsModel)
+
+        ephemeralWalletsAdapter.onClickListener = { _, _, item, _ ->
+            navigate(item.wallet)
+            closeDrawer()
+            true
+        }
+
         val hardwareWalletsModel = ModelAdapter { model: Wallet ->
             WalletListItem(model, sessionManager.getWalletSession(model))
         }
@@ -112,6 +128,11 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
 
         binding.recyclerSoftwareWallets.apply {
             adapter = softwareWalletsAdapter
+            itemAnimator = SlideDownAlphaAnimator()
+        }
+
+        binding.recyclerEphemeralWallets.apply {
+            adapter = ephemeralWalletsAdapter
             itemAnimator = SlideDownAlphaAnimator()
         }
 

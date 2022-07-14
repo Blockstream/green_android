@@ -6,6 +6,7 @@
     <data>
         <import type="com.blockstream.green.devices.Device" />
         <import type="com.blockstream.green.devices.Device.DeviceState" />
+        <import type="com.blockstream.green.utils.ExtensionsKt"/>
         <variable
             name="vm"
             type="com.blockstream.green.ui.wallet.LoginViewModel" />
@@ -26,6 +27,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
             android:orientation="vertical"
+            tools:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -157,11 +159,27 @@
             android:layout_height="wrap_content"
             android:text="@string/id_enter_your_pin"
             android:textAppearance="?attr/textAppearanceHeadline6"
-            tools:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/passphraseButton"
+            style="@style/Widget.Green.Button.Text.Small"
+            isVisible="@{(vm.pinCredentials != null || vm.passwordCredentials != null) &amp;&amp; ExtensionsKt.isNotBlank(vm.bip39Passphrase)  &amp;&amp; !vm.onProgress }"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/id_bip39_passphrase_login"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            app:icon="@drawable/ic_bip39_passphrase_16"
+            app:iconGravity="start"
+            app:iconPadding="6dp"
+            app:iconTint="@color/color_on_surface_emphasis_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
 
         <com.blockstream.green.views.GreenPinView
             android:id="@+id/pinView"

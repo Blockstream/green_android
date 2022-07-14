@@ -78,15 +78,15 @@ class NotificationManager constructor(
     }
 
     private fun updateNotifications(isForeground: Boolean) {
-        sessionManager.getSessions().forEach {
+
+        // do a for list to avoid Concurrent modification exception
+        // TODO fix
+        sessionManager.getSessions().toList().forEach {
 
             applicationScope.launch(context = logException(countly)) {
 
-                (it.hardwareWallet ?: walletRepository.getWalletSuspend(
-                    sessionManager.getWalletIdFromSession(
-                        it
-                    )
-                ))?.let { wallet ->
+                (it.ephemeralWallet ?: sessionManager.getWalletIdFromSession(it)
+                    ?.let { walletId -> walletRepository.getWalletSuspend(walletId) })?.let { wallet ->
                     if (it.isConnected) {
                         val sessionTimeout =
                             if (isForeground) 0 else (it.getSettings()?.altimeout

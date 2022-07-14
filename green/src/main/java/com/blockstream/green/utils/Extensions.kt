@@ -1,9 +1,11 @@
 package com.blockstream.green.utils
 
+import android.graphics.drawable.Drawable
 import android.util.SparseArray
 import android.view.View
 import android.view.ViewParent
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.util.valueIterator
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.MutableLiveData
@@ -32,6 +34,11 @@ fun TextInputLayout.endIconCopyMode(pasteListener: (() -> Unit)? = null ) {
             editText?.text?.clear()
         }
     }
+}
+
+fun TextView.setDrawable(drawableLeft: Drawable? = null, drawableRight: Drawable? = null, padding: Int = 8) {
+    compoundDrawablePadding = padding.dp(this)
+    setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, drawableRight, null)
 }
 
 fun ImageView.updateAssetPadding(session: GreenSession, assetId: String, padding : Int){
@@ -65,5 +72,9 @@ fun <E: View> Collection<E>.setOnClickListener(onClickListener: (e: View) -> Uni
 
 fun MutableLiveData<String>.string() : String = value ?: ""
 fun MutableLiveData<Boolean>.boolean() : Boolean = value ?: false
+
+// Helper fn for Data Binding as the original fn is InlineOnly
+fun String?.isBlank() = isNullOrBlank()
+fun String?.isNotBlank() = !isNullOrBlank()
 
 inline fun <reified V> SparseArray<V>.toList() = valueIterator().asSequence().toList()

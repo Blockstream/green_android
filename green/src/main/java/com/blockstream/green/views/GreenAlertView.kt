@@ -16,27 +16,27 @@ class GreenAlertView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.materialCardViewStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    private var binding: GreenAlertViewBinding =
+    var binding: GreenAlertViewBinding =
         GreenAlertViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     init {
         backgroundTintList = ContextCompat.getColorStateList(context, R.color.white)
     }
 
-    var title: String
-        get() = binding.title.text.toString()
+    var title: String?
+        get() = binding.title
         set(value) {
-            binding.title.text = value
+            binding.title = value
         }
 
-    var message: String
-        get() = binding.message.text.toString()
+    var message: String?
+        get() = binding.message
         set(value) {
-            binding.message.text = value
+            binding.message = value
         }
 
     fun setMaxLines(maxLines: Int){
-        binding.message.maxLines = if(maxLines > 0) maxLines else Int.MAX_VALUE
+        binding.messageTextView.maxLines = if(maxLines > 0) maxLines else Int.MAX_VALUE
     }
 
     fun primaryButton(text: String?, listener: OnClickListener?) {

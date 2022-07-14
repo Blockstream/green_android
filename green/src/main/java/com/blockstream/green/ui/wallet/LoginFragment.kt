@@ -16,12 +16,15 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.R
 import com.blockstream.green.Urls
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.LoginCredentials
+import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.LoginFragmentBinding
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.bottomsheets.Bip39PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
@@ -41,6 +44,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     val device by lazy { deviceManager.getDevice(args.deviceId) }
 
     private var menuHelp: MenuItem? = null
+    private var menuBip39Passphrase: MenuItem? = null
     private var menuRename: MenuItem? = null
     private var menuDelete: MenuItem? = null
 
@@ -66,7 +70,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
     override val screenName = "Login"
 
-
     override fun isLoggedInRequired(): Boolean = false
 
     override fun getWalletViewModel() = viewModel
@@ -77,14 +80,28 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
-        viewModel.getWalletLiveData().observe(viewLifecycleOwner){
-            updateToolbar()
+        viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
+            onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
+                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(it.data as Wallet))
+            }
+
+            onEvent.getContentIfNotHandledForType<LoginViewModel.LoginEvent.LaunchBiometrics>()?.let {
+                if(args.autoLogin) {
+                    launchBiometricPrompt(it.loginCredentials)
+                }
+            }
+
+            onEvent.getContentIfNotHandledForType<LoginViewModel.LoginEvent.LoginDevice>()?.let {
+                viewModel.loginWithDevice()
+            }
+
+            onEvent.getContentIfNotHandledForType<LoginViewModel.LoginEvent.AskBip39Passphrase>()?.let {
+                Bip39PassphraseBottomSheetDialogFragment.show(childFragmentManager)
+            }
         }
 
-        viewModel.actionLogin.observe(viewLifecycleOwner) {
-            if (it) {
-                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(viewModel.wallet))
-            }
+        viewModel.getWalletLiveData().observe(viewLifecycleOwner){
+            updateToolbar()
         }
 
         viewModel.pinCredentials.observe(viewLifecycleOwner) {
@@ -119,18 +136,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             }
 
             updateMenu()
-        }
-
-        viewModel.biometricsCredentials.observe(viewLifecycleOwner) {
-            it?.let {
-                /**
-                 * We can get multiple events, so launch prompt only the first time
-                 */
-                if(args.autoLogin && viewModel.initialAction.value == false){
-                    viewModel.initialAction.value = true
-                    launchBiometricPrompt(it)
-                }
-            }
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {
@@ -208,16 +213,14 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             viewModel.loginWithDevice()
         }
 
-        viewModel.device?.let {
-            if(viewModel.initialAction.value == false){
-                viewModel.initialAction.value = true
-                viewModel.loginWithDevice()
-            }
+        binding.passphraseButton.setOnClickListener {
+            Bip39PassphraseBottomSheetDialogFragment.show(childFragmentManager)
         }
     }
 
     private fun updateMenu(){
         menuHelp?.isVisible = !wallet.isHardware && !viewModel.wallet.isWatchOnly && viewModel.pinCredentials.isReadyAndNull && viewModel.passwordCredentials.isReadyAndNull
+        menuBip39Passphrase?.isVisible = !wallet.isHardware && !wallet.isWatchOnly
         menuRename?.isVisible = !wallet.isHardware
         menuDelete?.isVisible = !wallet.isHardware
     }
@@ -226,6 +229,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menuHelp = menu.findItem(R.id.help)
+        menuBip39Passphrase = menu.findItem(R.id.bip39_passphrase)
         menuRename = menu.findItem(R.id.rename)
         menuDelete = menu.findItem(R.id.delete)
         updateMenu()
@@ -234,14 +238,15 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.bip39_passphrase -> {
+                Bip39PassphraseBottomSheetDialogFragment.show(childFragmentManager)
+            }
             R.id.delete -> {
                 DeleteWalletBottomSheetDialogFragment.show(wallet, childFragmentManager)
             }
-
             R.id.rename -> {
                 RenameWalletBottomSheetDialogFragment.show(wallet, childFragmentManager)
             }
-
             R.id.help -> {
                 openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_MNEMONIC_BACKUP)
             }

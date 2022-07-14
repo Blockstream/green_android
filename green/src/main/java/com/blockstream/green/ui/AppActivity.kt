@@ -36,6 +36,7 @@ abstract class AppActivity : AppCompatActivity() {
         R.id.recoveryCheckFragment,
         R.id.recoveryWordsFragment,
         R.id.recoveryPhraseFragment,
+        R.id.loginFragment,
         R.id.setPinFragment,
         R.id.changePinFragment
     )

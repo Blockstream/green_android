@@ -16,6 +16,7 @@ class WalletListCommonViewModel @Inject constructor(
 ) : AppViewModel() {
     val wallets: LiveData<List<Wallet>> = walletRepository.getWalletsLiveData()
 
+    val ephemeralWallets = sessionManager.ephemeralWallets
     val hardwareWallets = sessionManager.hardwareWallets
 
     fun deleteWallet(wallet: Wallet) {

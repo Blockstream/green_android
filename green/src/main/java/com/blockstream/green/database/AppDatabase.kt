@@ -4,11 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.blockstream.green.utils.isDevelopmentFlavor
 
 @Database(
     entities = [Wallet::class, LoginCredentials::class],
-    version = 2
+    version = 3,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun walletDao(): WalletDao
@@ -33,10 +32,12 @@ abstract class AppDatabase : RoomDatabase() {
             )
 
             builder.addMigrations(MIGRATION_1_2).build()
+            builder.addMigrations(MIGRATION_2_3).build()
 
-            if (isDevelopmentFlavor) {
-                builder.fallbackToDestructiveMigration()
-            }
+
+//            if (isDevelopmentFlavor) {
+//                builder.fallbackToDestructiveMigration()
+//            }
 
             return builder.build()
         }

@@ -24,7 +24,11 @@ data class WalletListItem constructor(val wallet: Wallet, val greenSession: Gree
         binding.connectionIcon.isVisible = greenSession.isConnected
         binding.device = greenSession.device
 
-        setGreenDevice(binding.hardware, greenSession.device)
+        if(wallet.isBip39Ephemeral){
+            binding.endIcon.setImageResource(R.drawable.ic_bip39_passphrase_24)
+        }else{
+            setGreenDevice(binding.endIcon, greenSession.device)
+        }
     }
 
     override fun createBinding(

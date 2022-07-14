@@ -3,6 +3,7 @@ package com.blockstream.green.ui.onboarding
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.PinData
 import com.blockstream.gdk.params.EncryptWithPinParams
+import com.blockstream.gdk.params.LoginCredentialsParams
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
@@ -158,7 +159,7 @@ open class OnboardingViewModel constructor(
 
     fun checkRecoveryPhrase(network: Network , mnemonic: String, mnemonicPassword: String, successEvent: AppEvent) {
         session.observable {
-            it.loginWithMnemonic(network, mnemonic, mnemonicPassword)
+            it.loginWithMnemonic(network, LoginCredentialsParams(mnemonic = mnemonic, password = mnemonicPassword))
 
             if(restoreWallet == null) {
                 // Check if wallet already exists

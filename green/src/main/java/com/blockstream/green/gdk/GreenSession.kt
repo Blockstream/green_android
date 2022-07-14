@@ -78,7 +78,7 @@ class GreenSession constructor(
     var device: Device? = null
         private set
 
-    var hardwareWallet: Wallet? = null
+    var ephemeralWallet: Wallet? = null
 
     lateinit var network: Network
         private set
@@ -373,7 +373,7 @@ class GreenSession constructor(
                 ).resolve()
             }
 
-            onLoginSuccess(it, 0)
+            onLoginSuccess(it, initAccountIndex = 0, initializeSession = true)
         }
     }
 
@@ -389,7 +389,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(username = username, password = password))
         ).result<LoginData>().also {
-            onLoginSuccess(it, 0)
+            onLoginSuccess(it, initAccountIndex = 0, initializeSession = true)
         }
     }
 
@@ -440,14 +440,13 @@ class GreenSession constructor(
                 }
             }
 
-            onLoginSuccess(it, 0)
+            onLoginSuccess(it, initAccountIndex = 0, initializeSession = true)
         }
     }
 
     fun loginWithMnemonic(
         network: Network,
-        mnemonic: String,
-        password: String = "",
+        loginCredentialsParams: LoginCredentialsParams,
         initializeSession: Boolean = true,
     ): LoginData {
         isWatchOnly = false
@@ -455,7 +454,7 @@ class GreenSession constructor(
         connect(network)
         return AuthHandler(
             greenWallet,
-            greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic, password = password))
+            greenWallet.loginUser(gaSession, loginCredentialsParams = loginCredentialsParams)
         ).result<LoginData>().also {
            if(initializeSession && network.isElectrum){
                // On Singlesig, check if there is a SegWit account already restored or create one
@@ -474,7 +473,12 @@ class GreenSession constructor(
         }
     }
 
-    fun loginWithPin(wallet: Wallet, pin: String, pinData: PinData): LoginData {
+    fun loginWithPin(
+        wallet: Wallet,
+        pin: String,
+        pinData: PinData,
+        initializeSession: Boolean = true,
+    ): LoginData {
         isWatchOnly = false
 
         connect(networkFromWallet(wallet))
@@ -482,7 +486,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(pin = pin, pinData = pinData))
         ).result<LoginData>().also {
-            onLoginSuccess(it, wallet.activeAccount)
+            onLoginSuccess(it, initAccountIndex = wallet.activeAccount, initializeSession = initializeSession)
         }
     }
 
@@ -495,7 +499,7 @@ class GreenSession constructor(
         }
     }
 
-    private fun onLoginSuccess(loginData: LoginData, initAccountIndex: Long, initializeSession: Boolean = true) {
+    private fun onLoginSuccess(loginData: LoginData, initAccountIndex: Long, initializeSession: Boolean) {
         isConnected = true
         walletHashId = loginData.walletHashId
         if(initializeSession) {

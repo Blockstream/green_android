@@ -72,6 +72,7 @@
   <string name="id_allow_data_collection">Allow data collection</string>
   <string name="id_allows_you_to_quickly_check">Дозволяє швидко перевірити ваш баланс, отримати кошти або зробити свіп паперового гаманця. Ви не можете надсилати кошти в режимі лише-для-перегляду.</string>
   <string name="id_always">Завжди</string>
+  <string name="id_always_ask">Always ask</string>
   <string name="id_amount">Сума</string>
   <string name="id_amount_in_s">Сума в %s</string>
   <string name="id_amp_account">Акаунт AMP</string>
@@ -117,6 +118,8 @@
   <string name="id_biometric_login_is_disabled">Біометричний вхід відключений</string>
   <string name="id_biometric_login_is_enabled">Біометричний вхід включений</string>
   <string name="id_biometrics_authentication">Біометрична аутентифікація</string>
+  <string name="id_bip39_passphrase">BIP39 Passphrase</string>
+  <string name="id_bip39_passphrase_login">BIP39 Passphrase login</string>
   <string name="id_bip49_accounts_allow_you_to">Акаунти BIP49 дозволяють розділяти кошти і отримувати їх на SegWit адреси, забезпечуючи тим самим найвищу зворотну сумісність при отриманні коштів від будь-кого в мережі.</string>
   <string name="id_bip84_accounts_allow_you_to">Акаунти  BIP84 дозволяють розділяти ваші кошти і отримувати їх на власні SegWit адреси в форматі bech32. Цей тип рахунку забезпечує більш дешеві транзакції при відправці коштів, але поки не всі сервіси підтримують адреси в форматі bech32.</string>
   <string name="id_bitcoin_and_liquid">Bitcoin та Liquid</string>
@@ -173,6 +176,7 @@
   <string name="id_choose_watchonly">Оберіть watch-only</string>
   <string name="id_choose_your_network">Виберіть мережу</string>
   <string name="id_clear">Очистити</string>
+  <string name="id_clear_cache">Clear cache</string>
   <string name="id_click_to_copy">Натисніть, щоб скопіювати</string>
   <string name="id_click_to_receive_an_email_with">Натисніть, щоб отримати електронний лист із вашими зашифрованими даними для відновлення.</string>
   <string name="id_code">Код</string>
@@ -220,7 +224,6 @@
   <string name="id_connecting_to_tor_onion_nodes">Підключення до Tor (.onion) вузлів забезпечує максимальну конфіденційність і безпеку. Натисніть "OK", щоб продовжити.</string>
   <string name="id_connecting_to_your_device">Підключення до вашого пристрою</string>
   <string name="id_connection">З\'єднання</string>
-  <string name="id_connection_amp_validation">Підключення &amp; amp; налаштування валідації</string>
   <string name="id_connection_failed">Помилка підключення</string>
   <string name="id_connection_to_device_failed">Помилка з\'єднання із пристроєм! Наблизьтесь до пристрою і спробуйте ще раз.</string>
   <string name="id_contact_support_at_s_or_visit_s">Зверніться в службу підтримки %s або відвідайте %s</string>
@@ -232,6 +235,7 @@
   <string name="id_copy_details">Копіювати деталі</string>
   <string name="id_copy_device_id">Copy Device ID</string>
   <string name="id_copy_raw_transaction">Скопіювати raw транзакцію</string>
+  <string name="id_copy_support_id">Copy support ID</string>
   <string name="id_copy_to_clipboard">Скопіювати в буфер обміну</string>
   <string name="id_copy_transaction_id">Скопіювати ID транзакції</string>
   <string name="id_copy_unblinded_link">Скопіювати неосліплене посилання</string>
@@ -269,6 +273,7 @@
   <string name="id_default_custom_fee_rate">Стандартна комісія</string>
   <string name="id_default_transaction_priority">Стандартний пріоритет транзакції</string>
   <string name="id_delete">Видалити</string>
+  <string name="id_delete_credentials">Delete credentials</string>
   <string name="id_delete_permanently_your_wallet">Видалити назавжди ваш гаманець з бази даних Blockstream Green. Після цього ви ніколи не зможете увійти в нього.</string>
   <string name="id_delete_s_twofactor">Видалити %s двофакторне налаштування</string>
   <string name="id_delete_wallet">Видалити гаманець</string>
@@ -278,6 +283,7 @@
   <string name="id_details">Деталі</string>
   <string name="id_device">Пристрій</string>
   <string name="id_devices">Пристрої</string>
+  <string name="id_different_passphrases_generate">Different passphrases generate new wallets!\n\nRemember you can only restore this wallet with both your recovery phrase and the passphrase.</string>
   <string name="id_disable">Вимкнути</string>
   <string name="id_disable_pin_access">Відключити доступ з PIN-кодом</string>
   <string name="id_disable_pin_access_for_this">Відключити доступ з PIN-кодом для цього гаманця на всіх пристроях</string>
@@ -350,6 +356,7 @@
   <string name="id_enter_your_xpub_to_add_a">Введіть свій xPub, щоб додати гаманець watch-only, на за допомогою якого ви можете отримувати кошти і перевіряти свій баланс, не імпортуючи свої особисті ключі.</string>
   <string name="id_enter_yournrecovery_phrase">Введіть вашу\nФразу Відновлення</string>
   <string name="id_entity">Організація</string>
+  <string name="id_ephemeral_wallets">Ephemeral wallets</string>
   <string name="id_error">Помилка</string>
   <string name="id_error_logging_in_with_hardware">Помилка при вході за допомогою апаратного гаманця</string>
   <string name="id_error_nfc_tag_not_writable">Помилка: неможливо створити NFC-тег</string>
@@ -379,6 +386,7 @@
   <string name="id_fee_rate_must_be_at_least_s">Комісія не може бути меншою за %s сатоші/vbyte.</string>
   <string name="id_fee_rate_s">Комісія: %s</string>
   <string name="id_fee_s__s">Комісія всього: %s/%s</string>
+  <string name="id_feedback">Feedback</string>
   <string name="id_fees_are_too_low">Комісії занадто низькі</string>
   <string name="id_fetching_new_firmware">Отримання нової прошивки</string>
   <string name="id_filters">Фільтри</string>
@@ -400,6 +408,7 @@
   <string name="id_get_id">Отримати ID</string>
   <string name="id_get_jade">Отримати Jade</string>
   <string name="id_give_bluetooth_permissions">Дозволити використовувати Bluetooth</string>
+  <string name="id_give_us_your_feedback">Give us your feedback</string>
   <string name="id_go_to_account">Перейти до облікового запису</string>
   <string name="id_go_to_receive_to_get_your">Перейдіть до розділу «Отримати», щоб отримати ідентифікатор свого облікового запису.</string>
   <string name="id_go_to_wallet">Перейти до гаманця</string>
@@ -538,6 +547,7 @@
   <string name="id_login_failed">Вхід неможливий</string>
   <string name="id_login_options">Варіанти входу</string>
   <string name="id_login_with_biometrics">Увійти за допомогою біометрії</string>
+  <string name="id_login_with_bip39_passphrase">Login with BIP39 Passphrase</string>
   <string name="id_logout">Вийти</string>
   <string name="id_logout_and_switch">Вийти і Переключитися</string>
   <string name="id_look_at_the_device_for_the">Подивіться на розташування чисел на пристрої</string>
@@ -652,6 +662,7 @@
   <string name="id_p2wsh">P2wsh</string>
   <string name="id_page_visits_button_presses">Page visits, button presses, general app configuration</string>
   <string name="id_passphrase">Passphrase</string>
+  <string name="id_passphrase_protected">Passphrase protected</string>
   <string name="id_password">Пароль</string>
   <string name="id_password_protected">Захищено паролем</string>
   <string name="id_paste">Вставити</string>
@@ -701,6 +712,9 @@
   <string name="id_qr_code">QR-код</string>
   <string name="id_qr_scanner">QR-сканер</string>
   <string name="id_radio_firmware">Radio firmware</string>
+  <string name="id_rate">Rate</string>
+  <string name="id_rate_us">Rate us</string>
+  <string name="id_rate_your_experience">Rate your experience</string>
   <string name="id_read_more">Детальніше</string>
   <string name="id_read_more_at_our_s">Дізнайтеся більше на нашому %s</string>
   <string name="id_ready">Готовий</string>
@@ -737,7 +751,7 @@
   <string name="id_remove_wallet">Видалити гаманець</string>
   <string name="id_rename">Перейменувати</string>
   <string name="id_rename_account">Перейменувати акаунт</string>
-  <string name="id_rename_wallet">Перейменувати гаманець</string>
+  <string name="id_rename_wallet">Rename wallet</string>
   <string name="id_replaceable">замінний</string>
   <string name="id_request_amount">Запит суми</string>
   <string name="id_request_failed">Помилка запиту</string>
@@ -896,6 +910,7 @@
   <string name="id_testnet_electrum_server">Сервер Testnet Electrum</string>
   <string name="id_testnet_wallets">Testnet-гаманці</string>
   <string name="id_thank_you_for_downloading_green">Дякуємо вам за завантаження гаманця Green! Будь ласка, залиште свій відгук, якщо у вас буде така можливість</string>
+  <string name="id_thank_you_for_your_feedback">Thank you for your feedback</string>
   <string name="id_the_1_year_2fa_reset_process">Процес скидання 2FA тривав протягом 1 року, але хтось заблокував його, оскарживши скидання 2FA.</string>
   <string name="id_the_address_is_valid">Адреса дійсна.</string>
   <string name="id_the_addresses_dont_match">Адреси не збігаються.</string>
@@ -910,6 +925,7 @@
   <string name="id_the_new_email_will_be_used_for">Нова адреса електронної пошти буде використовуватися для двофакторної аутентифікації після завершення скидання. Скидання займає 12 місяців плюс залишившийся час блокування.</string>
   <string name="id_the_new_firmware_requires_you">The new firmware requires you to unpair your Jade from the Bluetooth settings.</string>
   <string name="id_the_password_cant_be_empty">Поле пароля не може залишатись порожнім</string>
+  <string name="id_the_qr_code_does_not_include">The QR code does not include the BIP39 Passphrase</string>
   <string name="id_the_recovery_key_below_will_not">Ключ відновлення більше не буде показано. Виконайте резервне копіювання для того, щоб завжди мати доступ до власних коштів. </string>
   <string name="id_the_recovery_phrase_can_be_used">Фразу відновлення можна використовувати для запиту ваших коштів в будь-який момент. Тримайте її в безпеці і в секреті.</string>
   <string name="id_the_recovery_phrase_doesnt">Фраза відновлення не відповідає раніше існуючому гаманцю. Повторіть спробу, використовуючи іншу фразу відновлення.</string>
@@ -923,6 +939,7 @@
   <string name="id_these_settings_apply_for_every">Ці настройки застосовуються для кожного гаманця, який ви використовуєте в Blockstream Green.</string>
   <string name="id_this_feature_is_coming_soon">Ця функція скоро з\'явиться, слідкуйте за оновленнями!</string>
   <string name="id_this_transaction_spent">На цю транзакцію витрачені неконфіденційні кошти.</string>
+  <string name="id_this_wallet_is_based_on_your">This wallet is based on your recovery phrase and a BIP39 Passphrase</string>
   <string name="id_this_wallet_operates_on_a_test">Цей гаманець працює у тестовій мережі. Все, що ви отримуєте або надсилаєте тут, не має цінності</string>
   <string name="id_this_will_disable_pin_login_for">Ця дія відключить вхід за допомогою PIN-коду для цього гаманця на всіх ваших пристроях. Для доступу до гаманця вам знадобиться фраза відновлення.</string>
   <string name="id_this_will_log_you_out_and">Ця дія призведе до виходу з системи і видалення цього гаманця з програми і бази даних серверів Blockstream.</string>
@@ -1033,6 +1050,7 @@
   <string name="id_warning_watchonly_credentials">Увага! Облікові дані watch-only будуть збережені на вашому пристрої</string>
   <string name="id_warning_you_need_a_positive">Увага! Вам потрібен позитивний баланс L-BTC, щоб мати можливість відправляти транзакції.</string>
   <string name="id_watchonly">Холодний гаманець</string>
+  <string name="id_watchonly_credentials">Watch-only credentials</string>
   <string name="id_watchonly_details">Watch-only details</string>
   <string name="id_watchonly_disabled">Холодний гаманець відключено</string>
   <string name="id_watchonly_login">Логін холодного гаманця</string>
@@ -1071,11 +1089,13 @@
   <string name="id_you_have_no_coins_to_send">У вас немає монет для відправки. Створіть адресу для отримання біткоінів.</string>
   <string name="id_you_have_received_s">Ви отримали %s</string>
   <string name="id_you_have_successfully_changed">Ви успішно змінили свій PIN-код</string>
+  <string name="id_you_have_successfully_sent_a">You have successfully sent a transaction. Please give us your feedback to improve Green.</string>
   <string name="id_you_have_to_authenticate_using">Вам необхідно пройти аутентифікацію за допомогою біометричних даних</string>
   <string name="id_you_have_tor_enabled_are_you">У вас включений Tor, ви впевнені, що хочете відкрити цю веб-сторінку?</string>
   <string name="id_you_must_first_log_out_before">Перед тим, як увійти, спочатку вийдіть.</string>
   <string name="id_you_must_save_this_mnemonic_now">Вам ПОТРІБНО зберегти цю мнемонічну фразу ЗАРАЗ</string>
   <string name="id_you_only_have_one_twofactor">У вас підключено лише один метод двофакторної аутентифікації</string>
+  <string name="id_you_will_be_asked_to_enter_your">You will be asked to enter your passphrase at every login.</string>
   <string name="id_you_will_need_to_reenter_your">Якщо ви не встановите PIN-код, кожного разу, для входу, вам потрібно буде вводити вашу мнемонічну фразу. Натисність "OK" для продовження.</string>
   <string name="id_you_will_see_your_coins_here">Ви побачите свої монети тут</string>
   <string name="id_youll_need_to_back_up_your">Вам потрібно створити резервну копію фрази відновлення, перш ніж ви зможете надсилати та отримувати кошти, але поки ви все одно можете перевіряти свій гаманець.</string>

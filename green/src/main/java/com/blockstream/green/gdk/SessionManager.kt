@@ -79,6 +79,7 @@ class SessionManager constructor(
     var connectionChangeEvent = MutableLiveData<Boolean>()
 
     var hardwareWallets = MutableLiveData<List<Wallet>>(listOf())
+    var ephemeralWallets = MutableLiveData<List<Wallet>>(listOf())
 
     init {
         // Listen to foreground / background events
@@ -106,8 +107,12 @@ class SessionManager constructor(
         }
 
         connectionChangeEvent.observeForever {
-            getConnectedHardwareWalletSessions().mapNotNull { it.hardwareWallet }.let {
+            getConnectedHardwareWalletSessions().mapNotNull { it.ephemeralWallet }.let {
                 hardwareWallets.postValue(it)
+            }
+
+            getConnectedEphemeralWalletSessions().mapNotNull { it.ephemeralWallet }.let {
+                ephemeralWallets.postValue(it)
             }
         }
     }
@@ -125,29 +130,23 @@ class SessionManager constructor(
     }
 
     fun getWalletSessionOrNull(walletId: WalletId): GreenSession? {
-        return walletSessions[walletId]
-    }
-
-    private fun getWalletSession(walletId: WalletId): GreenSession {
         if(walletId < 0){
-            greenSessions.find { it.hardwareWallet?.id == walletId }?.let {
+            greenSessions.find { it.ephemeralWallet?.id == walletId }?.let {
                 return it
             }
         }
 
+        return walletSessions[walletId]
+    }
+
+    private fun getWalletSession(walletId: WalletId): GreenSession {
         return getWalletSessionOrNull(walletId) ?: createSession().also {
             walletSessions[walletId] = it
         }
     }
 
-    fun getWalletIdFromSession(session: GreenSession): WalletId {
-        for (key in walletSessions.keys){
-            if(walletSessions[key] == session){
-                return key
-            }
-        }
-
-        return -1
+    fun getWalletIdFromSession(session: GreenSession): WalletId? {
+        return walletSessions.filterValues { it == session }.keys.firstOrNull()
     }
 
     fun getSessions() : Set<GreenSession> = greenSessions
@@ -166,7 +165,7 @@ class SessionManager constructor(
         greenSessions.remove(greenSession)
 
         // Remove from walletSessions
-        greenSession.hardwareWallet?.let { walletSessions.remove(it.id) }
+        greenSession.ephemeralWallet?.let { walletSessions.remove(it.id) }
 
         greenSession.destroy()
 
@@ -177,7 +176,11 @@ class SessionManager constructor(
     }
 
     private fun getConnectedHardwareWalletSessions(): List<GreenSession>{
-        return walletSessions.values.filter { it.hardwareWallet?.isHardware == true && it.isConnected }.toList()
+        return walletSessions.values.filter { it.ephemeralWallet?.isHardware == true && it.isConnected }.toList()
+    }
+
+    private fun getConnectedEphemeralWalletSessions(): List<GreenSession>{
+        return walletSessions.values.filter { it.ephemeralWallet?.isHardware == false && it.isConnected }.toList()
     }
 
     fun getConnectedDevices(): List<Device>{

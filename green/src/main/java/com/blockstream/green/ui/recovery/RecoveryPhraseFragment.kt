@@ -4,11 +4,10 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
+import com.blockstream.green.Urls
 import com.blockstream.green.databinding.RecoveryPhraseFragmentBinding
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.RecoveryWordListItem
@@ -16,6 +15,7 @@ import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.createQrBitmap
+import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.AlphaInAnimator
@@ -42,22 +42,24 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         val credentials = session.getCredentials()
 
-        if(!credentials.bip39Passphrase.isNullOrBlank()){
-            //Note that if a wallet has a bip39 passphrase,
-            //we should never show the mnemonic without the passphrase,
-            //since adding (or removing) the bip39 passphrase changes the seed, thus the addresses and thus is an entirely different wallet.
-            TODO("bip39 is not yet supported")
-        }
+        // Note that if a wallet has a bip39 passphrase,
+        // we should never show the mnemonic without the passphrase,
+        // since adding (or removing) the bip39 passphrase changes the seed, thus the addresses and thus is an entirely different wallet.
+        binding.passphrase = credentials.bip39Passphrase
+
         val mnemonic = credentials.mnemonic
         val words = mnemonic.split(" ")
+
+        binding.buttonLearnMore.setOnClickListener {
+            openBrowser(Urls.HELP_BIP39_PASSPHRASE)
+        }
 
         binding.recoveryQR.setImageDrawable(BitmapDrawable(resources, createQrBitmap(mnemonic)).also { bitmap ->
             bitmap.isFilterBitmap = false
         })
 
         binding.buttonShowQR.setOnClickListener {
-            binding.buttonShowQR.isInvisible = true
-            binding.recoveryQR.isVisible = true
+            binding.showQR = true
             binding.materialCardView.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
         }
 

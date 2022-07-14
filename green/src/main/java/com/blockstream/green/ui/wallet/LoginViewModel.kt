@@ -3,8 +3,11 @@ package com.blockstream.green.ui.wallet
 import android.util.Base64
 import androidx.lifecycle.*
 import com.blockstream.gdk.data.TorEvent
+import com.blockstream.gdk.params.LoginCredentialsParams
 import com.blockstream.green.ApplicationScope
+import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -15,6 +18,7 @@ import com.blockstream.green.lifecycle.PendingLiveData
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.logException
+import com.blockstream.green.utils.string
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -35,6 +39,12 @@ class LoginViewModel @AssistedInject constructor(
     @Assisted val device: Device?
 ) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
+    sealed class LoginEvent: AppEvent {
+        data class LaunchBiometrics(val loginCredentials: LoginCredentials) : WalletEvent()
+        object LoginDevice : WalletEvent()
+        object AskBip39Passphrase : WalletEvent()
+    }
+
     val onErrorMessage = MutableLiveData<ConsumableEvent<Throwable>>()
 
     var biometricsCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
@@ -47,7 +57,9 @@ class LoginViewModel @AssistedInject constructor(
 
     val torEvent: MutableLiveData<TorEvent> = MutableLiveData()
 
-    var actionLogin = MutableLiveData<Boolean>()
+    var bip39Passphrase = MutableLiveData("")
+    private val isBip39Login
+        get() = bip39Passphrase.string().trim().isNotBlank()
 
     val isWatchOnlyLoginEnabled: LiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
@@ -76,38 +88,68 @@ class LoginViewModel @AssistedInject constructor(
     var loginCredentialsInitialized = false
 
     init {
-        if (session.isConnected) {
-            actionLogin.value = true
+        if(session.isConnected){
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
+        }else{
+            if (wallet.askForBip39Passphrase) {
+                onEvent.postValue(ConsumableEvent(LoginEvent.AskBip39Passphrase))
+            }
+
+            device?.let {
+                onEvent.postValue(ConsumableEvent(LoginEvent.LoginDevice))
+            }
+
+            // Beware as this will fire new values if eg. you change a login credential
+            walletRepository
+                .getWalletLoginCredentialsObservable(wallet.id)
+                .async()
+                .subscribeBy(
+                    onError = {
+                        it.printStackTrace()
+                    },
+                    onNext = {
+                        loginCredentialsInitialized = true
+                        biometricsCredentials.value = it.biometrics
+                        keystoreCredentials.value = it.keystore
+                        pinCredentials.value = it.pin
+                        passwordCredentials.value = it.password
+
+                        if(initialAction.value == false && !wallet.askForBip39Passphrase){
+                            it.biometrics?.let { biometricsCredentials ->
+                                onEvent.postValue(ConsumableEvent(LoginEvent.LaunchBiometrics(biometricsCredentials)))
+                                initialAction.postValue(true)
+                            }
+                        }
+                    }
+                ).addTo(disposables)
+
+            session.getTorStatusObservable()
+                .async()
+                .subscribe {
+                    torEvent.value = it
+                }.addTo(disposables)
+        }
+    }
+
+    fun setBip39Passphrase(passphrase: String?, alwaysAsk: Boolean){
+        bip39Passphrase.value = passphrase?.trim()
+        viewModelScope.launch(context = logException(countly)) {
+            wallet.askForBip39Passphrase = alwaysAsk
+            walletRepository.updateWalletSuspend(wallet)
         }
 
-        // Beware as this will fire new values if eg. you change a login credential
-        walletRepository
-            .getWalletLoginCredentialsObservable(wallet.id)
-            .async()
-            .subscribeBy(
-                onError = {
-                    it.printStackTrace()
-                },
-                onNext = {
-                    loginCredentialsInitialized = true
-                    biometricsCredentials.value = it.biometrics
-                    keystoreCredentials.value = it.keystore
-                    pinCredentials.value = it.pin
-                    passwordCredentials.value = it.password
-                }
-            ).addTo(disposables)
-
-        session.getTorStatusObservable()
-            .async()
-            .subscribe {
-                torEvent.value = it
-            }.addTo(disposables)
-
+        if(initialAction.value == false){
+            biometricsCredentials.value?.let { biometricsCredentials ->
+                onEvent.postValue(ConsumableEvent(LoginEvent.LaunchBiometrics(biometricsCredentials)))
+                initialAction.postValue(true)
+            }
+        }
     }
 
     fun loginWithPin(pin: String, loginCredentials: LoginCredentials) {
         login(loginCredentials) {
-            session.loginWithPin(wallet, pin, loginCredentials.pinData!!)
+            // if bip39 passphrase, don't initialize the session as we need to re-connect || initializeSession = bip39Passphrase.isNullOrBlank())
+            session.loginWithPin(wallet, pin, loginCredentials.pinData!!, initializeSession = !isBip39Login)
         }
     }
 
@@ -127,7 +169,8 @@ class LoginViewModel @AssistedInject constructor(
         loginCredentials.encryptedData?.let { encryptedData ->
             login(loginCredentials) {
                 val pin = String(appKeystore.decryptData(cipher, encryptedData))
-                session.loginWithPin(wallet, pin, loginCredentials.pinData!!)
+                // if bip39 passphrase, don't initialize the session as we need to re-connect
+                session.loginWithPin(wallet, pin, loginCredentials.pinData!!, initializeSession = !isBip39Login)
             }
         }
     }
@@ -138,7 +181,8 @@ class LoginViewModel @AssistedInject constructor(
                 val decrypted = appKeystore.decryptData(cipher, encryptedData)
                 // Migrated from v3
                 val pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15)
-                session.loginWithPin(wallet, pin, loginCredentials.pinData!!)
+                // if bip39 passphrase, don't initialize the session as we need to re-connect
+                session.loginWithPin(wallet, pin, loginCredentials.pinData!!, initializeSession = !isBip39Login)
             }
         }
     }
@@ -190,7 +234,32 @@ class LoginViewModel @AssistedInject constructor(
                     }
                 }
 
-                session
+                if(isBip39Login){
+                    val network = session.network
+
+                    val mnemonic = session.getCredentials().mnemonic
+
+                    // Disconnect as no longer needed
+                    session.disconnectAsync()
+
+                    val ephemeralWallet = Wallet.createEphemeralWallet(network = network, isHardware = false)
+
+                    // Create an ephemeral session
+                    val ephemeralSession = sessionManager.getWalletSession(ephemeralWallet)
+
+                    // Set Ephemeral wallet
+                    ephemeralSession.ephemeralWallet = ephemeralWallet
+
+                    val loginData = ephemeralSession.loginWithMnemonic(network, LoginCredentialsParams(mnemonic = mnemonic, bip39Passphrase = bip39Passphrase.string().trim()), initializeSession = true)
+
+                    ephemeralWallet.walletHashId = loginData.walletHashId
+
+                    // Return the ephemeral wallet
+                    ephemeralWallet to ephemeralSession
+                }else{
+                    // Return the wallet
+                    wallet to session
+                }
             }
             .doOnError {
                 // isNotAuthorized only catches multisig/singlesig login errors, watchonly are not caught
@@ -210,6 +279,10 @@ class LoginViewModel @AssistedInject constructor(
                         onErrorMessage.postValue(ConsumableEvent(it))
                     }
 
+                }else if(isBip39Login && it.message == "id_login_failed"){
+                    // On Multisig & BIP39 Passphrase login, instead of registering a new wallet, show error "Wallet not found"
+                    // Jade users restoring can still login
+                    onErrorMessage.postValue(ConsumableEvent(Exception("id_wallet_not_found")))
                 }else{
                     onErrorMessage.postValue(ConsumableEvent(it))
                 }
@@ -225,13 +298,13 @@ class LoginViewModel @AssistedInject constructor(
                     onProgress.postValue(false)
                     countly.failedWalletLogin(session, it)
                 },
-                onSuccess = {
+                onSuccess = { pair ->
                     countly.loginWallet(
-                        wallet = wallet,
-                        session = session,
+                        wallet = pair.first,
+                        session = pair.second,
                         loginCredentials = loginCredentials
                     )
-                    actionLogin.postValue(true)
+                    onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(pair.first)))
                 }
             )
     }
@@ -259,7 +332,7 @@ class LoginViewModel @AssistedInject constructor(
             },
             onSuccess = {
                 countly.loginWallet(wallet = wallet, session = session)
-                actionLogin.postValue(true)
+                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
             }
         )
     }

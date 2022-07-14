@@ -359,32 +359,25 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         // Alert cards
         val alertCardsAdapter =  ModelAdapter<AlertType, AlertListItem> {
-            AlertListItem(it) { _ ->
+            AlertListItem(it) { isClose ->
                 when(it){
                     is AlertType.Abstract2FA -> {
                         TwoFactorResetBottomSheetDialogFragment.show(it.twoFactorReset, childFragmentManager)
                     }
-                    is AlertType.SystemMessage, AlertType.TestnetWarning -> {}
+                    is AlertType.SystemMessage -> {
+                        if(isClose){
+                            viewModel.systemMessage.postValue(null)
+                        }else {
+                            SystemMessageBottomSheetDialogFragment.show(
+                                it.message,
+                                childFragmentManager
+                            )
+                        }
+                    }
+                    AlertType.EphemeralBip39, AlertType.TestnetWarning -> {}
                 }
             }
         }.observeList(viewLifecycleOwner, viewModel.getAlerts())
-
-        // System message card
-        val systemMessageAdapter = FastItemAdapter<AlertListItem>()
-
-        viewModel.getSystemMessage().observe(viewLifecycleOwner){ message ->
-            if(message.isNullOrBlank()){
-                systemMessageAdapter.clear()
-            }else {
-                systemMessageAdapter.set(listOf(AlertListItem(AlertType.SystemMessage(message)) {
-                    if (it) {
-                        systemMessageAdapter.clear()
-                    } else {
-                        SystemMessageBottomSheetDialogFragment.show(message, childFragmentManager)
-                    }
-                }))
-            }
-        }
 
         // Block headers
         val blockHeaderAdapter = FastItemAdapter<GenericItem>()
@@ -471,7 +464,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             accountsModelAdapter,
             accountsFooterAdapter,
             alertCardsAdapter,
-            systemMessageAdapter,
             managedAssetsAccountIdAdapter,
             blockHeaderAdapter,
             assetsTitleAdapter,
@@ -613,7 +605,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             accountsFooterAdapter.itemAdapter.active = isAccount
 
             alertCardsAdapter.active = isOverviewOrAssets
-            systemMessageAdapter.itemAdapter.active = isOverviewOrAssets
             managedAssetsAccountIdAdapter.itemAdapter.active = isOverviewState
             assetsTitleAdapter.itemAdapter.active = isOverviewOrAssets && wallet.isLiquid
             assetsBalanceAdapter.active = isOverviewOrAssets

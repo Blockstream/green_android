@@ -31,14 +31,14 @@ class ConsentBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Consen
         super.onViewCreated(view, savedInstanceState)
 
 
+        val hideButtons = arguments?.getBoolean(HIDE_BUTTONS, false) ?: false
+
         binding.detailsAreVisible = false
-        binding.hideButtons = arguments?.getBoolean(HIDE_BUTTONS, false)
+        binding.hideButtons = hideButtons
         binding.isDevelopment = isDevelopmentFlavor
 
         // Make it swipe-dismissible
-        isCancelable = settingsManager.isAskedAboutAnalyticsConsent()
-
-
+        isCancelable = hideButtons || settingsManager.isAskedAboutAnalyticsConsent()
 
         binding.switcher.setOnClickListener {
             (!(binding.detailsAreVisible as Boolean)).let { detailsAreVisible ->

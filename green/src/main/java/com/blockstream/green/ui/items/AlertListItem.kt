@@ -2,9 +2,11 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAlertBinding
+import com.blockstream.green.utils.setDrawable
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 data class AlertListItem constructor(private val alertType: AlertType, val action : (isClose: Boolean) -> Unit) : AbstractBindingItem<ListItemAlertBinding>() {
@@ -50,6 +52,27 @@ data class AlertListItem constructor(private val alertType: AlertType, val actio
                 binding.alertView.closeButton(null)
                 binding.alertView.primaryButton("", null)
             }
+            is AlertType.EphemeralBip39 -> {
+                binding.alertView.title = res.getString(R.string.id_passphrase_protected)
+                binding.alertView.message = res.getString(R.string.id_this_wallet_is_based_on_your)
+                binding.alertView.setMaxLines(0)
+                binding.alertView.closeButton(null)
+                binding.alertView.primaryButton("", null)
+
+                ContextCompat.getDrawable(
+                    binding.root.context,
+                    R.drawable.ic_bip39_passphrase_24
+                )?.also {
+                    it.setTint(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.black
+                        )
+                    )
+                }?.let {
+                    binding.alertView.binding.titleTextView.setDrawable(drawableLeft = it, padding = 6)
+                }
+            }
             is AlertType.Abstract2FA -> {
 
             }
@@ -68,4 +91,5 @@ sealed class AlertType{
     class Dispute2FA(twoFactorReset: TwoFactorReset) : Abstract2FA(twoFactorReset)
     class Reset2FA(twoFactorReset: TwoFactorReset): Abstract2FA(twoFactorReset)
     object TestnetWarning : AlertType()
+    object EphemeralBip39 : AlertType()
 }

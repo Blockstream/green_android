@@ -5,7 +5,14 @@
     tools:context=".ui.onboarding.EnterRecoveryPhraseFragment">
 
     <data>
+        <import type="com.blockstream.green.utils.ExtensionsKt" />
+        <variable
+            name="passphrase"
+            type="String" />
 
+        <variable
+            name="showQR"
+            type="Boolean" />
     </data>
 
 
@@ -67,45 +74,114 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:spanCount="3" />
 
+                <LinearLayout
+                    android:id="@+id/bip39PasshraseWrap"
+                    isVisible="@{ExtensionsKt.isNotBlank(passphrase)}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
+                    android:hint="@string/id_bip39_passphrase"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/recycler"
+                    app:startIconDrawable="@drawable/ic_bip39_passphrase_24">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_bip39_passphrase"
+                        android:textAppearance="?attr/textAppearanceCaption" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/passphraseTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:drawablePadding="8dp"
+                        android:text="@{passphrase}"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:textColor="@color/color_on_surface_emphasis_high"
+                        android:textSize="17sp"
+                        app:drawableStartCompat="@drawable/ic_bip39_passphrase_24"
+                        app:drawableTint="@color/brand_green"
+                        tools:text="AVE" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonLearnMore"
+                        style="@style/Widget.Green.Button.Text.Tiny"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:text="@string/id_learn_more"
+                        app:icon="@drawable/ic_baseline_open_in_new_16"
+                        app:iconGravity="end"
+                        app:iconPadding="8dp"
+                        app:layout_constraintStart_toStartOf="@+id/textView13"
+                        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+                </LinearLayout>
+
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/materialCardView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="24dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="24dp"
                     android:scaleType="fitCenter"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_max="190dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/recycler"
+                    app:layout_constraintTop_toBottomOf="@+id/bip39PasshraseWrap"
+                    app:layout_constraintWidth_max="190dp"
                     app:layout_optimizationLevel="ratio">
 
                     <ImageView
                         android:id="@+id/recoveryQR"
+                        isVisible="@{showQR}"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="10dp"
-                        android:scaleType="fitCenter"
                         android:layout_gravity="center"
+                        android:layout_margin="10dp"
                         android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
                         android:visibility="gone"
                         tools:src="@mipmap/ic_launcher" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonShowQR"
+                        style="@style/Widget.Green.Button.Text.Small"
+                        isVisible="@{!showQR}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_margin="16dp"
-                        style="@style/Widget.Green.Button.Text.Small"
-                        app:icon="@drawable/ic_baseline_visibility_24"
                         android:src="@drawable/ic_baseline_visibility_off_24"
-                        android:text="@string/id_show_qr_code" />
+                        android:text="@string/id_show_qr_code"
+                        app:icon="@drawable/ic_baseline_visibility_24" />
 
                 </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
+                    isVisible="@{ExtensionsKt.isNotBlank(passphrase) &amp;&amp; showQR}"
+                    android:text="@string/id_the_qr_code_does_not_include"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textSize="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,0 +1,180 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "472d787fc52dd76bd425a4c91835f0b2",
+    "entities": [
+      {
+        "tableName": "wallets",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `wallet_hash_id` TEXT NOT NULL DEFAULT '', `name` TEXT NOT NULL, `network` TEXT NOT NULL, `is_recovery_confirmed` INTEGER NOT NULL, `ask_bip39_passphrase` INTEGER NOT NULL, `watch_only_username` TEXT, `is_hardware` INTEGER NOT NULL, `active_account` INTEGER NOT NULL, `order` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "walletHashId",
+            "columnName": "wallet_hash_id",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "network",
+            "columnName": "network",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isRecoveryPhraseConfirmed",
+            "columnName": "is_recovery_confirmed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "askForBip39Passphrase",
+            "columnName": "ask_bip39_passphrase",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "watchOnlyUsername",
+            "columnName": "watch_only_username",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isHardware",
+            "columnName": "is_hardware",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "activeAccount",
+            "columnName": "active_account",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_wallets_order",
+            "unique": false,
+            "columnNames": [
+              "order"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wallets_order` ON `${TABLE_NAME}` (`order`)"
+          },
+          {
+            "name": "index_wallets_is_hardware",
+            "unique": false,
+            "columnNames": [
+              "is_hardware"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wallets_is_hardware` ON `${TABLE_NAME}` (`is_hardware`)"
+          },
+          {
+            "name": "index_wallets_wallet_hash_id",
+            "unique": false,
+            "columnNames": [
+              "wallet_hash_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wallets_wallet_hash_id` ON `${TABLE_NAME}` (`wallet_hash_id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "login_credentials",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wallet_id` INTEGER NOT NULL, `credential_type` INTEGER NOT NULL, `pin_data` TEXT, `keystore` TEXT, `encrypted_data` TEXT, `counter` INTEGER NOT NULL, PRIMARY KEY(`wallet_id`, `credential_type`), FOREIGN KEY(`wallet_id`) REFERENCES `wallets`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "walletId",
+            "columnName": "wallet_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "credentialType",
+            "columnName": "credential_type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pinData",
+            "columnName": "pin_data",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "keystore",
+            "columnName": "keystore",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encryptedData",
+            "columnName": "encrypted_data",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "counter",
+            "columnName": "counter",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "wallet_id",
+            "credential_type"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "wallets",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wallet_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '472d787fc52dd76bd425a4c91835f0b2')"
+    ]
+  }
+}

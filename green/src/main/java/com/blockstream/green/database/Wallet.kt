@@ -1,10 +1,7 @@
 package com.blockstream.green.database
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.blockstream.gdk.data.Network
 import kotlinx.parcelize.Parcelize
 import mu.KLogging
@@ -13,7 +10,7 @@ typealias WalletId = Long
 
 @Entity(tableName = "wallets", indices = [Index(value = ["order"]), Index(value = ["is_hardware"]), Index(value = ["wallet_hash_id"])])
 @Parcelize
-data class Wallet(
+data class Wallet constructor(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: WalletId = 0,
@@ -32,6 +29,9 @@ data class Wallet(
     @ColumnInfo(name = "is_recovery_confirmed")
     val isRecoveryPhraseConfirmed: Boolean = true,
 
+    @ColumnInfo(name = "ask_bip39_passphrase")
+    var askForBip39Passphrase: Boolean = false,
+
     @ColumnInfo(name = "watch_only_username")
     val watchOnlyUsername: String? = null,
 
@@ -43,7 +43,37 @@ data class Wallet(
 
     @ColumnInfo(name = "order")
     val order: Int = 0,
+
+    @Ignore
+    val isEphemeral: Boolean = false
 ) : Parcelable {
+
+    // Make Room compile by providing a constructor without the @Ignore property
+    constructor(
+        id: WalletId,
+        walletHashId: String,
+        name: String,
+        network: String,
+        isRecoveryPhraseConfirmed: Boolean,
+        askForBip39Passphrase: Boolean,
+        watchOnlyUsername: String?,
+        isHardware: Boolean,
+        activeAccount: Long,
+        order: Int
+    ) : this(
+        id,
+        walletHashId,
+        name,
+        network,
+        isRecoveryPhraseConfirmed,
+        askForBip39Passphrase,
+        watchOnlyUsername,
+        isHardware,
+        activeAccount,
+        order,
+        false
+    )
+
     val isLiquid
         get() = network.contains("liquid")
 
@@ -53,18 +83,22 @@ data class Wallet(
     val isWatchOnly
         get() = watchOnlyUsername != null
 
-    companion object : KLogging() {
-        private var hardwareWalletIdCounter = -1L
+    val isBip39Ephemeral
+        get() = isEphemeral && !isHardware
 
-        fun createEmulatedHardwareWallet(network: Network): Wallet {
+    companion object : KLogging() {
+        private var ephemeralWalletIdCounter = -1L
+
+        fun createEphemeralWallet(network: Network, isHardware: Boolean = false): Wallet {
             return Wallet(
-                id = hardwareWalletIdCounter--,
+                id = ephemeralWalletIdCounter--,
                 walletHashId = network.id,
                 name = network.productName,
                 network = network.network,
                 isRecoveryPhraseConfirmed = true,
-                isHardware = true,
-                activeAccount = 0
+                isHardware = isHardware,
+                activeAccount = 0,
+                isEphemeral = true
             )
         }
     }

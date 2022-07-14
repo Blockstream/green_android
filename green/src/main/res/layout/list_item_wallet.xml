@@ -58,7 +58,7 @@
             android:text="@{wallet.name}"
             android:textAppearance="?attr/textAppearanceBody1"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/hardware"
+            app:layout_constraintEnd_toStartOf="@+id/endIcon"
             app:layout_constraintStart_toEndOf="@+id/icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="My Bitcoin Wallet" />
@@ -84,11 +84,10 @@
             tools:visibility="visible" />
 
         <ImageView
-            android:id="@+id/hardware"
+            android:id="@+id/endIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            isVisible="@{device != null}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

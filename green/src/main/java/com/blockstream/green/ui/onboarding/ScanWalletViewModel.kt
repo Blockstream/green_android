@@ -3,6 +3,7 @@ package com.blockstream.green.ui.onboarding
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.blockstream.gdk.params.LoginCredentialsParams
 import com.blockstream.gdk.params.SubAccountsParams
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.OnboardingOptions
@@ -42,7 +43,7 @@ class ScanWalletViewModel @AssistedInject constructor(
         session.observable {
             val multisig: String? = try{
                 val multiSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = false)
-                val multisigLoginData = it.loginWithMnemonic(multiSigNetwork, mnemonic, mnemonicPassword, initializeSession = false)
+                val multisigLoginData = it.loginWithMnemonic(multiSigNetwork, LoginCredentialsParams(mnemonic = mnemonic, password = mnemonicPassword), initializeSession = false)
                 walletRepository.getWalletWithHashIdSync(multisigLoginData.walletHashId, false)?.name ?: ""
             }catch (e: Exception){
                 null
@@ -50,7 +51,7 @@ class ScanWalletViewModel @AssistedInject constructor(
 
             val singlesig: String? = try{
                 val singleSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = true)
-                val singleSigLoginData = it.loginWithMnemonic(singleSigNetwork, mnemonic, mnemonicPassword, initializeSession = false)
+                val singleSigLoginData = it.loginWithMnemonic(singleSigNetwork, LoginCredentialsParams(mnemonic = mnemonic, password = mnemonicPassword), initializeSession = false)
 
                 it.getSubAccounts(params = SubAccountsParams(refresh = true)).subaccounts.find { subaccount ->
                     subaccount.bip44Discovered == true
