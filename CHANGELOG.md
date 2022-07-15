@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Improve performance of login with hardware wallets
 - Update GDK to 0.0.55
+- Update translations
 
 ### Fixed
 - Create 2of3 subaccount with ledger
