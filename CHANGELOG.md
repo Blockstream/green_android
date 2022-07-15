@@ -3,25 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.8.5] - 2022-07-15
 
 ### Added
-- Support concurrent hardware wallets logins
-- Liquid network: support for watch-only wallets
+- Support for login with multiple hardware wallets concurrently
+- Support to set up watch-only credentials on Liquid multisig shield wallets
 - Watch-only wallets: support to delete credentials
-- Wallet onboard: automatic unique name creation support
-- Transaction summary dialog for hardware wallets
-- Jade firmware upgrade with OTA deltas
+- Improved transaction review dialog for hardware wallets
+- Faster Jade firmware upgrades
  
 ### Changed
-- Improve performance of login with hardware wallets
+- Improved login performance with hardware wallets
 - Update GDK to 0.0.55
-- Update translations
+- Onboarding: automatic wallet naming
 
 ### Fixed
-- Create 2of3 subaccount with ledger
-- Fix hardware wallets logout view hierarchy
-- Improving error messages
+- Create 2of3 subaccount with Ledger
+- Hardware wallets logout view hierarchy
+- Improved error messages
 
 ## [3.8.4] - 2022-06-17
 
