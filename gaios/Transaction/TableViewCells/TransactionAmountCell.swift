@@ -36,36 +36,41 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = true
     }
 
-    func configure(transaction: Transaction, network: String?, index: Int, copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
+    func configure(tx: Transaction, network: String?, index: Int, copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
 
         self.copyAmount = copyAmount
         self.copyRecipient = copyRecipient
 
         copyRecipientIcon.image = copyRecipientIcon.image?.maskWithColor(color: .white)
-        let isIncoming = transaction.type == "incoming"
-        let isOutgoing = transaction.type == "outgoing"
-        let color: UIColor = isOutgoing ? UIColor.white : UIColor.customMatrixGreen()
+        let color: UIColor = tx.type == .outgoing ? UIColor.white : UIColor.customMatrixGreen()
         copyAmountIcon.image = copyAmountIcon.image?.maskWithColor(color: color)
         lblTitle.text = NSLocalizedString("id_recipient", comment: "")
-        if isIncoming {
+        if tx.type == .incoming {
             lblTitle.text = NSLocalizedString("id_received", comment: "")
         }
-        lblRecipient.text = transaction.address()
-        lblRecipient.isHidden = isIncoming
+        lblRecipient.text = tx.address()
+        lblRecipient.isHidden = tx.type == .incoming
         lblAmount.textColor = color
         lblFiat.textColor = color
-        copyRecipientIcon.isHidden = (transaction.address() ?? "").isEmpty
+        copyRecipientIcon.isHidden = (tx.address() ?? "").isEmpty
 
         if network == "mainnet" {
             icon.image = UIImage(named: "ntw_btc")
         } else if network == "testnet" {
             icon.image = UIImage(named: "ntw_testnet")
         } else {
-            icon.image = SessionsManager.current?.registry?.image(for: transaction.defaultAsset)
+            icon.image = SessionsManager.current?.registry?.image(for: tx.defaultAsset)
         }
 
-        if transaction.defaultAsset == btc {
-            if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+        let amounts = Transaction.sort(tx.amounts)
+        var amount = amounts[index]
+        // OUT transactions in BTC/L-BTC have fee included
+        if tx.type == .outgoing && amount.key == tx.defaultAsset {
+            amount.value -= tx.fee
+        }
+
+        if tx.defaultAsset == btc {
+            if let balance = Balance.convert(details: ["satoshi": amount.value]) {
                 let (amount, denom) = balance.get(tag: btc)
                 lblAmount.text = String(format: "%@", amount ?? "")
                 lblAsset.text = "\(denom)"
@@ -77,24 +82,19 @@ class TransactionAmountCell: UITableViewCell {
                 lblFiat.isHidden = false
             }
         } else {
-            let amounts = Transaction.sort(transaction.amounts)
-            if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
-                let info = SessionsManager.current?.registry?.infos[amount.key]
-                let icon = SessionsManager.current?.registry?.image(for: amount.key)
-                let tag = amount.key
-                let asset = info ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
-                let satoshi = transaction.amounts[amount.key] ?? 0
-                let details = ["satoshi": satoshi, "asset_info": asset.encode()!] as [String: Any]
-
-                if let balance = Balance.convert(details: details) {
-                    let (amount, denom) = balance.get(tag: tag)
-                    lblAmount.text = String(format: "%@", amount ?? "")
-                    lblAsset.text = denom
-                    self.icon.image = icon
-                    lblFiat.isHidden = true
-                    lblRecipient.isHidden = true
-                    copyRecipientIcon.isHidden = true
-                }
+            let info = SessionsManager.current?.registry?.infos[amount.key]
+            let icon = SessionsManager.current?.registry?.image(for: amount.key)
+            let tag = amount.key
+            let asset = info ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
+            let details = ["satoshi": amount.value, "asset_info": asset.encode()!] as [String: Any]
+            if let balance = Balance.convert(details: details) {
+                let (amount, denom) = balance.get(tag: tag)
+                lblAmount.text = String(format: "%@", amount ?? "")
+                lblAsset.text = denom
+                self.icon.image = icon
+                lblFiat.isHidden = true
+                lblRecipient.isHidden = true
+                copyRecipientIcon.isHidden = true
             }
         }
     }

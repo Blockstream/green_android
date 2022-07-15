@@ -30,7 +30,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
 
     var buttonConstraint: NSLayoutConstraint?
     var isAccountRename = false
-    var selectedType = TransactionType.BTC
+    var selectedType = TransactionBaseType.BTC
     var prefill: UInt64?
     var wallet: WalletItem?
 
@@ -97,7 +97,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
 
     func updateEstimate() {
         let satoshi = getSatoshi() ?? 0
-        let tag = selectedType == TransactionType.BTC ? "fiat": "btc"
+        let tag = selectedType == TransactionBaseType.BTC ? "fiat": "btc"
         if let (amount, denom) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: tag) {
             lblHint.text = "≈ \(amount ?? "N.A.") \(denom)"
         }
@@ -107,7 +107,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         guard let settings = SessionsManager.current?.settings else {
             return
         }
-        if selectedType == TransactionType.BTC {
+        if selectedType == TransactionBaseType.BTC {
             btnFiat.setTitle(settings.denomination.string, for: UIControl.State.normal)
             btnFiat.backgroundColor = UIColor.customMatrixGreen()
             btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)
@@ -125,7 +125,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0,
                 let denomination = SessionsManager.current?.settings?.denomination  else { return nil }
-        let key = selectedType == TransactionType.BTC ? denomination.rawValue : "fiat"
+        let key = selectedType == TransactionBaseType.BTC ? denomination.rawValue : "fiat"
         return Balance.convert(details: [key: amountText])?.satoshi
     }
 
@@ -167,18 +167,18 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     @IBAction func btnFiat(_ sender: Any) {
         let satoshi = getSatoshi() ?? 0
         let balance = Balance.convert(details: ["satoshi": satoshi])
-        if let (amount, _) = balance?.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc") {
+        if let (amount, _) = balance?.get(tag: selectedType == TransactionBaseType.BTC ? "fiat": "btc") {
             if amount == nil {
                 showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
                 return
             }
         }
-        if selectedType == TransactionType.BTC {
-            selectedType = TransactionType.FIAT
+        if selectedType == TransactionBaseType.BTC {
+            selectedType = TransactionBaseType.FIAT
         } else {
-            selectedType = TransactionType.BTC
+            selectedType = TransactionBaseType.BTC
         }
-        let tag = selectedType == TransactionType.BTC ? "btc" : "fiat"
+        let tag = selectedType == TransactionBaseType.BTC ? "btc" : "fiat"
         let amountStr = balance?.get(tag: tag).0 ?? ""
         let amount = Double(amountStr)
         amountTextField.text = amountStr

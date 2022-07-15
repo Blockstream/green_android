@@ -42,12 +42,12 @@ class TransactionViewController: UIViewController {
 
     var isIncoming: Bool {
         get {
-            transaction.type == "incoming"
+            transaction.type == .incoming
         }
     }
     var isRedeposit: Bool {
         get {
-            transaction.type == "redeposit"
+            transaction.type == .redeposit
         }
     }
     var isLiquid: Bool {
@@ -352,7 +352,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 self?.copyToClipboard(value)
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
-                cell.configure(transaction: transaction, network: account?.network, index: indexPath.row, copyAmount: copyAmount, copyRecipient: copyRecipient)
+                cell.configure(tx: transaction, network: account?.network, index: indexPath.row, copyAmount: copyAmount, copyRecipient: copyRecipient)
                 cell.selectionStyle = .none
                 return cell
             }

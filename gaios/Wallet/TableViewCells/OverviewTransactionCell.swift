@@ -20,10 +20,6 @@ class OverviewTransactionCell: UITableViewCell {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
-    var multipleAssets: Bool!
-    var isIncoming: Bool!
-    var isRedeposit: Bool!
-
     override func layoutSubviews() {
         super.layoutSubviews()
     }
@@ -49,9 +45,9 @@ class OverviewTransactionCell: UITableViewCell {
         self.backgroundColor = UIColor.customTitaniumDark()
         statusBadge.layer.cornerRadius = 3.0
         let assetTag = transaction.defaultAsset
-        multipleAssets = transaction.amounts.count > 1
-        isIncoming = transaction.type == "incoming"
-        isRedeposit = transaction.type == "redeposit"
+        let multipleAssets = transaction.amounts.count > 1
+        let isRedeposit = transaction.type == .redeposit
+        let isIncoming = transaction.type == .incoming
         if isRedeposit, let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
             // For redeposits we show fees paid in btc
             let (fee, denom) = balance.get(tag: btc)
@@ -62,7 +58,7 @@ class OverviewTransactionCell: UITableViewCell {
         } else if transaction.defaultAsset == btc {
             if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
                 let (value, denom) = balance.get(tag: btc)
-                lblAmount.text = String(format: "%@%@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "+", value ?? "")
+                lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value ?? "")
                 lblDenom.text = "\(denom)"
             }
         } else {
@@ -71,7 +67,7 @@ class OverviewTransactionCell: UITableViewCell {
             let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
             if let balance = Balance.convert(details: details) {
                 let (value, ticker) = balance.get(tag: transaction.defaultAsset)
-                lblAmount.text = String(format: "%@%@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "+", value ?? "")
+                lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value ?? "")
                 lblDenom.text = "\(ticker)"
             }
         }
@@ -164,7 +160,7 @@ class OverviewTransactionCell: UITableViewCell {
     }
 
     func checkTransactionType(transaction: Transaction) {
-        if isIncoming {
+        if transaction.type == .incoming {
             lblAmount.textColor = isLiquid ? UIColor.blueLight() : UIColor.customMatrixGreen()
         } else {
             lblAmount.textColor = UIColor.white

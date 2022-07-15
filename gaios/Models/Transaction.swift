@@ -23,6 +23,12 @@ struct Addressee: Codable {
     }
 }
 
+enum TransactionType: String {
+    case incoming
+    case outgoing
+    case redeposit
+}
+
 struct Transaction {
     var details: [String: Any]
 
@@ -104,6 +110,7 @@ struct Transaction {
             return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
         }
     }
+
     var satoshi: UInt64 {
         get {
             let dict = get("satoshi") as [String: Any]?
@@ -151,8 +158,8 @@ struct Transaction {
         get { return get("transaction_vsize") ?? 0 }
     }
 
-    var type: String {
-        get { return get("type") ?? String() }
+    var type: TransactionType {
+        get { TransactionType(rawValue: get("type") ?? "") ?? .outgoing }
     }
 
     // tx outputs in create transaction

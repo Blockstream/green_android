@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 import LinkPresentation
 
-public enum TransactionType: UInt32 {
+public enum TransactionBaseType: UInt32 {
     case BTC = 0
     case FIAT = 1
 }
@@ -21,7 +21,7 @@ class ReceiveViewController: UIViewController {
     @IBOutlet weak var btnVerify: UIButton!
 
     var wallet: WalletItem?
-    var selectedType = TransactionType.BTC
+    var selectedType = TransactionBaseType.BTC
 
     private var newAddressToken: NSObjectProtocol?
     private var account = AccountsManager.shared.current
