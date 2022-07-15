@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.8.5] - 2022-07-15
+### Added
+- Enable watch-only in Liquid
+
+### Changed
+- Update GDK to 0.0.55
+- Updated project dependencies
+- Display the receive address in Transaction Details
+- Display the amount without the fee in Transaction Details
+
+### Fixed
+- Fix error message on wrong PIN
+- Fix 27-words mnemonic wallet restore
+- Fix change address verification on hardware wallets
+
 ## [3.8.4] - 2022-06-17
 ### Changed
 - Update GDK to 0.0.54.post1
