@@ -105,17 +105,12 @@ struct Transaction {
         set { details["memo"] = newValue }
     }
 
-    static var feeAsset: String {
-        get {
-            return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-        }
+    var isLiquid: Bool {
+        amounts.count >= 1 && amounts["btc"] != nil
     }
 
-    var satoshi: UInt64 {
-        get {
-            let dict = get("satoshi") as [String: Any]?
-            return dict?[Transaction.feeAsset] as? UInt64 ?? 0
-        }
+    static var feeAsset: String {
+        AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     var amounts: [String: UInt64] {
@@ -179,14 +174,6 @@ struct Transaction {
 
     var spvVerified: String? {
         get { return get("spv_verified") }
-    }
-
-    func address() -> String? {
-        let out: [String] = get("addressees") ?? []
-        guard !out.isEmpty else {
-            return nil
-        }
-        return out[0]
     }
 
     func date(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {

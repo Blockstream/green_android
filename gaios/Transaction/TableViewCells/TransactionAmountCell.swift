@@ -48,11 +48,11 @@ class TransactionAmountCell: UITableViewCell {
         if tx.type == .incoming {
             lblTitle.text = NSLocalizedString("id_received", comment: "")
         }
-        lblRecipient.text = tx.address()
-        lblRecipient.isHidden = tx.type == .incoming
-        lblAmount.textColor = color
+        lblRecipient.text = address(tx)
+        lblRecipient.isHidden = tx.isLiquid
         lblFiat.textColor = color
-        copyRecipientIcon.isHidden = (tx.address() ?? "").isEmpty
+        copyRecipientIcon.isHidden = tx.isLiquid
+        lblAmount.textColor = color
 
         if network == "mainnet" {
             icon.image = UIImage(named: "ntw_btc")
@@ -62,13 +62,7 @@ class TransactionAmountCell: UITableViewCell {
             icon.image = SessionsManager.current?.registry?.image(for: tx.defaultAsset)
         }
 
-        let amounts = Transaction.sort(tx.amounts)
-        var amount = amounts[index]
-        // OUT transactions in BTC/L-BTC have fee included
-        if tx.type == .outgoing && amount.key == tx.defaultAsset {
-            amount.value -= tx.fee
-        }
-
+        let amount = amount(tx, index: index)
         if tx.defaultAsset == btc {
             if let balance = Balance.convert(details: ["satoshi": amount.value]) {
                 let (amount, denom) = balance.get(tag: btc)
@@ -97,6 +91,29 @@ class TransactionAmountCell: UITableViewCell {
                 copyRecipientIcon.isHidden = true
             }
         }
+    }
+
+    func amount(_ tx: Transaction, index: Int) -> (key: String, value: UInt64) {
+        let amounts = Transaction.sort(tx.amounts)
+        var amount = amounts[index]
+        // OUT transactions in BTC/L-BTC have fee included
+        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
+        if tx.type == .outgoing && amount.key == feeAsset {
+            amount.value -= tx.fee
+        }
+        return amount
+    }
+
+    func address(_ tx: Transaction) -> String? {
+        if tx.isLiquid {
+            return nil
+        } else if tx.type == .outgoing {
+            return tx.addressees.first?.address
+        } else if tx.type == .incoming {
+            let output = tx.outputs?.filter { $0["is_relevant"] as? Bool == true}.first
+            return output?["address"] as? String
+        }
+        return nil
     }
 
     @IBAction func copyRecipientBtn(_ sender: Any) {

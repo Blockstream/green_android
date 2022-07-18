@@ -56,7 +56,7 @@ class OverviewTransactionCell: UITableViewCell {
         } else if multipleAssets && isIncoming {
             lblAmount.text = NSLocalizedString("id_multiple_assets", comment: "")
         } else if transaction.defaultAsset == btc {
-            if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+            if let balance = Balance.convert(details: ["satoshi": transaction.amounts[btc]]) {
                 let (value, denom) = balance.get(tag: btc)
                 lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value ?? "")
                 lblDenom.text = "\(denom)"
