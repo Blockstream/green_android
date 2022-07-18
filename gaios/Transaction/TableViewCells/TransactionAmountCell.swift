@@ -53,37 +53,19 @@ class TransactionAmountCell: UITableViewCell {
         lblFiat.textColor = color
         copyRecipientIcon.isHidden = tx.isLiquid
         lblAmount.textColor = color
+        lblFiat.isHidden = tx.defaultAsset != btc
 
         let registry = SessionsManager.current?.registry
-        icon.image = registry?.image(for: tx.defaultAsset)
-
         let amount = amount(tx, index: index)
-        if tx.defaultAsset == btc {
-            if let balance = Balance.convert(details: ["satoshi": amount.value]) {
-                let (amount, denom) = balance.get(tag: btc)
-                lblAmount.text = String(format: "%@", amount ?? "")
-                lblAsset.text = "\(denom)"
-                if let fiat = balance.fiat {
-                    lblFiat.text = "≈ \(fiat) \(balance.fiatCurrency)"
-                }
-                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-                lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
-                lblFiat.isHidden = false
-            }
-        } else {
-            let asset = registry?.info(for: amount.key)
-            let icon = registry?.image(for: amount.key)
-            let tag = amount.key
-            let details = ["satoshi": amount.value, "asset_info": asset!.encode()] as [String: Any]
-            if let balance = Balance.convert(details: details) {
-                let (amount, denom) = balance.get(tag: tag)
-                lblAmount.text = String(format: "%@", amount ?? "")
-                lblAsset.text = denom
-                self.icon.image = icon
-                lblFiat.isHidden = true
-                lblRecipient.isHidden = true
-                copyRecipientIcon.isHidden = true
-            }
+        let asset = registry?.info(for: amount.key)
+        icon.image =  registry?.image(for: amount.key)
+
+        if let balance = Balance.fromSatoshi(amount.value, asset: asset) {
+            let (amount, denom) = balance.toValue()
+            lblAmount.text = amount
+            lblAsset.text = denom
+            let (fiat, curr) = balance.toFiat()
+            lblFiat.text = "≈ \(fiat) \(curr)"
         }
     }
 

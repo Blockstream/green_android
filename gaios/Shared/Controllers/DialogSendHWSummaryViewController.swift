@@ -70,44 +70,27 @@ class DialogSendHWSummaryViewController: UIViewController {
             let addreessee = transaction.addressees.first
             var value = addreessee?.satoshi ?? 0
             let network = AccountsManager.shared.current?.gdkNetwork
-            let asset = (network?.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
+            let assetId = (network?.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
             if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
-                value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
+                value = transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
             }
-            if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
-                if let balance = Balance.convert(details: ["satoshi": value]) {
-                    let (value, denom) = value == 0 ? ("", "") : balance.get(tag: btc)
-                    lblAmount.text = value ?? ""
-                    lblDenomination.text = "\(denom)"
-                    let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-                    lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
-                }
-            } else {
-                let info = SessionsManager.current?.registry?.info(for: asset)
-                if let assetInfo = info!.encode() {
-                    let details = ["satoshi": value, "asset_info": assetInfo] as [String: Any]
-                    if let balance = Balance.convert(details: details) {
-                        let (amount, ticker) = value == 0 ? ("", "") : balance.get(tag: asset)
-                        lblAmount.text = amount ?? "N.A."
-                        lblDenomination.text = "\(ticker)"
-                        lblFiat.isHidden = true
-                    }
-                }
+            let registry = SessionsManager.current?.registry
+            let info = registry?.info(for: assetId)
+            if let balance = Balance.fromSatoshi(value, asset: info) {
+                let (value, ticker) = balance.toValue()
+                let (fiat, fiatCurrency) = balance.toFiat()
+                lblAmount.text = value
+                lblDenomination.text = "\(ticker)"
+                lblFiat.text = "≈ \(fiat) \(fiatCurrency)"
             }
-            icon.image = UIImage(named: "default_asset_icon")!
-            if AccountsManager.shared.current?.network == "mainnet" {
-                icon.image = UIImage(named: "ntw_btc")
-            } else if AccountsManager.shared.current?.network == "testnet" {
-                icon.image = UIImage(named: "ntw_testnet")
-            } else {
-                icon.image = SessionsManager.current?.registry?.image(for: asset)
-            }
+            lblFiat.isHidden = network?.liquid ?? false
+            icon.image = registry?.image(for: assetId)
             lblFeeTitle.text = NSLocalizedString("id_fee", comment: "")
-            if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
-                let (amount, denom) = balance.get(tag: btc)
-                lblFeeAmount.text = "\(amount ?? "") \(denom)"
-                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-                lblFeeFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+            if let balance = Balance.fromSatoshi(transaction.fee) {
+                let (amount, denom) = balance.toDenom()
+                let (fiat, fiatCurrency) = balance.toFiat()
+                lblFeeAmount.text = "\(amount) \(denom)"
+                lblFeeFiat.text = "≈ \(fiat) \(fiatCurrency)"
                 lblFeeInfo.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(transaction.feeRate) / 1000))"
             }
             lblChangeTitle.isHidden = true

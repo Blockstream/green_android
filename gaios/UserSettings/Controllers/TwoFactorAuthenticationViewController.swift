@@ -143,17 +143,17 @@ class TwoFactorAuthenticationViewController: UIViewController {
             let settings = session.settings,
             let twoFactorConfig = self.twoFactorConfig {
 
-            var balance: Balance?
             let limits = twoFactorConfig.limits
-            let denom = settings.denomination.rawValue
+            var (amount, den) = ("", "")
             if limits.isFiat {
-                balance = Balance.convert(details: ["fiat": limits.fiat])
+                let balance = Balance.fromFiat(limits.fiat ?? "0")
+                (amount, den) = balance?.toDenom() ?? ("", "")
             } else {
-                balance = Balance.convert(details: [denom: limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)!])
+                let denom = settings.denomination.rawValue
+                let balance = Balance.fromDenomination(limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!) ?? "0")
+                (amount, den) = balance?.toFiat() ?? ("", "")
             }
-            let (amount, den) = balance?.get(tag: limits.isFiat ? "fiat" : "btc") ?? ("", "")
-            let thresholdValue = String(format: "%@ %@", amount ?? "N.A.", den)
-
+            let thresholdValue = String(format: "%@ %@", amount, den)
             thresholdView.isHidden = false
             lbl2faThresholdCardTitle.text = NSLocalizedString("id_twofactor_threshold", comment: "")
             lbl2faThresholdCardHint.text = String(format: NSLocalizedString(thresholdValue == "" ? "" : "%@", comment: ""), thresholdValue)

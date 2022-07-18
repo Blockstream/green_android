@@ -259,11 +259,15 @@ class RecipientCell: UITableViewCell {
         }
 
         if let satoshi = getSatoshi(), (recipient?.txError ?? "").isEmpty, let asset = recipient?.assetId {
-            if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
+            if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset,
+                let balance = Balance.fromSatoshi(satoshi) {
                 lblAmountExchange.isHidden = false
-                if let balance = Balance.convert(details: ["satoshi": satoshi]) {
-                    let (fiat, fiatCurrency) = balance.get(tag: !isFiat ? "fiat" : asset)
-                    lblAmountExchange.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+                if isFiat {
+                    let (fiat, fiatCurrency) = balance.toFiat()
+                    lblAmountExchange.text = "≈ \(fiat) \(fiatCurrency)"
+                } else {
+                    let (fiat, fiatCurrency) = balance.toValue()
+                    lblAmountExchange.text = "≈ \(fiat) \(fiatCurrency)"
                 }
             }
         }
@@ -278,10 +282,9 @@ class RecipientCell: UITableViewCell {
             return ""
         }
         let satoshi = wallet!.satoshi?[assetId] ?? 0
-        let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
-        if let balance = Balance.convert(details: details) {
-            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : assetId)
-            return "\(amount ?? "N.A.") \(denom)"
+        if let balance = Balance.fromSatoshi(satoshi, asset: asset) {
+            let (amount, denom) = isFiat ? balance.toFiat() : balance.toValue()
+            return "\(amount) \(denom)"
         }
         return ""
     }
@@ -291,46 +294,34 @@ class RecipientCell: UITableViewCell {
             return ""
         }
         let satoshi = wallet!.satoshi?[assetId] ?? 0
-        let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
-        if let balance = Balance.convert(details: details) {
-            let (_, denom) = balance.get(tag: isFiat ? "fiat" : assetId)
+        if let balance = Balance.fromSatoshi(satoshi, asset: asset) {
+            let (_, denom) = isFiat ? balance.toFiat() : balance.toValue()
             return "\(denom)"
         }
         return ""
     }
 
     func getSatoshi() -> UInt64? {
-        guard let assetId = recipient?.assetId else {
-            return nil
-        }
         var amountText = amountTextField.text ?? ""
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
-        let isBtc = assetId == btc
-        guard let settings = SessionsManager.current?.settings else {
-            return nil
-        }
-        let denominationBtc = settings.denomination.rawValue
-        let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetId)
-        let details: [String: Any]
-        if isBtc {
-            details = [key: amountText]
-        } else {
-            details = [key: amountText, "asset_info": asset!.encode()!]
-        }
-        return Balance.convert(details: details)?.satoshi
+        let balance = isFiat ? Balance.fromFiat(amountText) :
+            Balance.fromDenomination(amountText)
+        return balance?.satoshi
     }
 
     func convertAmount() {
-        guard let assetId = recipient?.assetId else {
+        if recipient?.assetId != nil {
             return
         }
         let satoshi = getSatoshi() ?? 0
         recipient?.isFiat = !isFiat
-        let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
-        let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetId) ?? ("", "")
-        amountTextField.text = amount
+        if isFiat {
+            amountTextField.text = Balance.fromSatoshi(satoshi, asset: asset)?.toFiat().0
+        } else {
+            amountTextField.text = Balance.fromSatoshi(satoshi, asset: asset)?.toValue().0
+        }
     }
 
     func isBipAddress() -> Bool {

@@ -13,10 +13,6 @@ class AddresseeCell: UITableViewCell {
 
     var isFiat = false
 
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-    }
-
     var network: String? {
         get {
             return AccountsManager.shared.current?.network
@@ -48,24 +44,17 @@ class AddresseeCell: UITableViewCell {
         if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
             value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
-            if let balance = Balance.convert(details: ["satoshi": value]) {
-                let (value, denom) = value == 0 ? ("", "") : balance.get(tag: btc)
-                lblAmount.text = value ?? ""
-                lblDenomination.text = "\(denom)"
-                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-                lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+        let assetInfo = SessionsManager.current?.registry?.info(for: asset)
+        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
+        if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
+            let (amount, ticker) = value == 0 ? ("", "") : balance.toValue()
+            lblAmount.text = amount
+            lblDenomination.text = ticker
+            if asset == feeAsset {
+                let (fiat, fiatCurrency) = balance.toFiat()
+                lblFiat.text = "≈ \(fiat) \(fiatCurrency)"
             }
-        } else {
-            if let assetInfo = SessionsManager.current?.registry?.info(for: asset).encode() {
-                let details = ["satoshi": value, "asset_info": assetInfo] as [String: Any]
-                if let balance = Balance.convert(details: details) {
-                    let (amount, ticker) = value == 0 ? ("", "") : balance.get(tag: asset)
-                    lblAmount.text = amount ?? "N.A."
-                    lblDenomination.text = "\(ticker)"
-                    lblFiat.isHidden = true
-                }
-            }
+            lblFiat.isHidden = asset != feeAsset
         }
         icon.image = SessionsManager.current?.registry?.image(for: asset)
     }

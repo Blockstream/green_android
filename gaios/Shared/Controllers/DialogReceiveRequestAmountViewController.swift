@@ -42,10 +42,8 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         view.alpha = 0.0
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
         if let satoshi = prefill {
-            if let (amount, _) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: "btc") {
-                if let valid = amount {
-                    amountTextField.text = "\(valid)"
-                }
+            if let (amount, _) = Balance.fromSatoshi(satoshi)?.toValue() {
+                amountTextField.text = "\(amount)"
             }
         }
 
@@ -98,8 +96,12 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     func updateEstimate() {
         let satoshi = getSatoshi() ?? 0
         let tag = selectedType == TransactionBaseType.BTC ? "fiat": "btc"
-        if let (amount, denom) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: tag) {
-            lblHint.text = "≈ \(amount ?? "N.A.") \(denom)"
+        if selectedType == TransactionBaseType.BTC {
+            let (amount, denom) = Balance.fromSatoshi(satoshi)?.toFiat() ?? ("", "")
+            lblHint.text = "≈ \(amount) \(denom)"
+        } else {
+            let (amount, denom) = Balance.fromSatoshi(satoshi)?.toValue() ?? ("", "")
+            lblHint.text = "≈ \(amount) \(denom)"
         }
     }
 
@@ -123,10 +125,12 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         var amountText = amountTextField.text!
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)
-        guard let number = Double(amountText), number > 0,
-                let denomination = SessionsManager.current?.settings?.denomination  else { return nil }
-        let key = selectedType == TransactionBaseType.BTC ? denomination.rawValue : "fiat"
-        return Balance.convert(details: [key: amountText])?.satoshi
+        guard let number = Double(amountText), number > 0 else { return nil }
+        if selectedType == TransactionBaseType.BTC {
+            return Balance.fromDenomination(amountText)?.satoshi
+        } else {
+            return Balance.fromFiat(amountText)?.satoshi
+        }
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -166,8 +170,8 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
 
     @IBAction func btnFiat(_ sender: Any) {
         let satoshi = getSatoshi() ?? 0
-        let balance = Balance.convert(details: ["satoshi": satoshi])
-        if let (amount, _) = balance?.get(tag: selectedType == TransactionBaseType.BTC ? "fiat": "btc") {
+        if let balance = Balance.fromSatoshi(satoshi) {
+            let (amount, _) = selectedType == TransactionBaseType.BTC ? balance.toDenom() : balance.toFiat()
             if amount == nil {
                 showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
                 return
@@ -178,12 +182,13 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         } else {
             selectedType = TransactionBaseType.BTC
         }
-        let tag = selectedType == TransactionBaseType.BTC ? "btc" : "fiat"
-        let amountStr = balance?.get(tag: tag).0 ?? ""
-        let amount = Double(amountStr)
-        amountTextField.text = amountStr
-        if amount == 0.0 {
-            amountTextField.text = ""
+        if let balance = Balance.fromSatoshi(satoshi) {
+            let (amountStr, _) = selectedType == TransactionBaseType.BTC ? balance.toDenom() : balance.toFiat()
+            let amount = Double(amountStr)
+            amountTextField.text = amountStr
+            if amount == 0.0 {
+                amountTextField.text = ""
+            }
         }
         reload()
     }

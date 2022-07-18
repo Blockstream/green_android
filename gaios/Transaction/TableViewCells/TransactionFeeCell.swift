@@ -46,12 +46,12 @@ class TransactionFeeCell: UITableViewCell {
         btnFee.setStyle(.primary)
         self.feeAction = feeAction
 
-        if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
-            let (amount, denom) = balance.get(tag: btc)
-            lblValue.text = "\(amount ?? "") \(denom)"
+        if let balance = Balance.fromSatoshi(transaction.fee) {
+            let (amount, denom) = balance.toValue()
+            let (fiat, fiatCurrency) = balance.toFiat()
+            lblValue.text = "\(amount) \(denom)"
             self.amount = amount
-            let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-            lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+            lblFiat.text = "≈ \(fiat) \(fiatCurrency)"
             lblHint.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(transaction.feeRate) / 1000))"
         }
         let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false

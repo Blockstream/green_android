@@ -48,9 +48,9 @@ class OverviewAccountCell: UITableViewCell {
         if showAccounts { bgShadow.backgroundColor = .clear } else { bgShadow.backgroundColor = color }
         self.lblAccountTitle.text = account.localizedName()
 
-        if let converted = Balance.convert(details: ["satoshi": account.btc]) {
-            let (amount, denom) = converted.get(tag: btc)
-            lblBalance.text = "\(denom) \(amount!)"
+        if let converted = Balance.fromSatoshi(account.btc) {
+            let (amount, denom) = converted.toValue()
+            lblBalance.text = "\(denom) \(amount)"
             lblBalance.isHidden = !showAccounts
         }
 

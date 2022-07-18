@@ -15,10 +15,6 @@ class AccountArchiveCell: UITableViewCell {
     var action: VoidToVoid?
     let iconW: CGFloat = 18
 
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-    }
-
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -44,9 +40,9 @@ class AccountArchiveCell: UITableViewCell {
         bg.backgroundColor = color
         self.lblAccountTitle.text = account.localizedName()
 
-        if let converted = Balance.convert(details: ["satoshi": account.btc]) {
-            let (amount, denom) = converted.get(tag: btc)
-            lblBalance.text = "\(denom) \(amount!)"
+        if let converted = Balance.fromSatoshi(account.btc) {
+            let (amount, denom) = converted.toDenom()
+            lblBalance.text = "\(denom) \(amount)"
             lblBalance.isHidden = false
         }
 

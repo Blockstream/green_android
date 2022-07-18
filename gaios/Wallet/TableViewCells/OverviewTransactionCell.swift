@@ -48,26 +48,25 @@ class OverviewTransactionCell: UITableViewCell {
         let multipleAssets = transaction.amounts.count > 1
         let isRedeposit = transaction.type == .redeposit
         let isIncoming = transaction.type == .incoming
-        if isRedeposit, let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
+        if isRedeposit, let balance = Balance.fromSatoshi(transaction.fee) {
             // For redeposits we show fees paid in btc
-            let (fee, denom) = balance.get(tag: btc)
-            lblAmount.text = "-\(fee ?? "")"
+            let (fee, denom) = balance.toDenom()
+            lblAmount.text = "-\(fee)"
             lblDenom.text = "\(denom)"
         } else if multipleAssets && isIncoming {
             lblAmount.text = NSLocalizedString("id_multiple_assets", comment: "")
         } else if transaction.defaultAsset == btc {
-            if let balance = Balance.convert(details: ["satoshi": transaction.amounts[btc]]) {
-                let (value, denom) = balance.get(tag: btc)
-                lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value ?? "")
+            if let balance = Balance.fromSatoshi(transaction.amounts[btc] ?? 0) {
+                let (value, denom) = balance.toValue()
+                lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value)
                 lblDenom.text = "\(denom)"
             }
         } else {
             let asset = transaction.defaultAsset
             let info = SessionsManager.current?.registry?.info(for: asset)
-            let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info!.encode()] as [String: Any]
-            if let balance = Balance.convert(details: details) {
-                let (value, ticker) = balance.get(tag: transaction.defaultAsset)
-                lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value ?? "")
+            if let balance = Balance.fromSatoshi(transaction.amounts[asset] ?? 0, asset: info) {
+                let (value, ticker) = balance.toValue()
+                lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value)
                 lblDenom.text = "\(ticker)"
             }
         }

@@ -28,11 +28,11 @@ class FeeSummaryCell: UITableViewCell {
     }
 
     func configure(_ tx: Transaction) {
-        if let balance = Balance.convert(details: ["satoshi": tx.fee]) {
-            let (amount, denom) = balance.get(tag: btc)
-            lblFeeAmount.text = "\(amount ?? "") \(denom)"
-            let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-            lblFeeFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+        if let balance = Balance.fromSatoshi(tx.fee) {
+            let (amount, denom) = balance.toDenom()
+            lblFeeAmount.text = "\(amount) \(denom)"
+            let (fiat, fiatCurrency) = balance.toFiat()
+            lblFeeFiat.text = "≈ \(fiat) \(fiatCurrency)"
             lblFeeInfo.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(tx.feeRate) / 1000))"
         }
     }

@@ -96,11 +96,11 @@ class FeeEditCell: UITableViewCell {
         }
 
         if ((txError ?? "").isEmpty || txError == "id_invalid_replacement_fee_rate"), let fee = fee, let feeRate = feeRate {
-            if let balance = Balance.convert(details: ["satoshi": fee]) {
-                let (amount, denom) = balance.get(tag: btc)
-                lblFeeValue.text = "\(amount ?? "") \(denom)"
-                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-                lblFeeFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+            if let balance = Balance.fromSatoshi(fee) {
+                let (amount, denom) = balance.toDenom()
+                lblFeeValue.text = "\(amount) \(denom)"
+                let (fiat, fiatCurrency) = balance.toFiat()
+                lblFeeFiat.text = "≈ \(fiat) \(fiatCurrency)"
                 lblFeeRate.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(feeRate) / 1000))"
                 lblFeeValue.isHidden = false
                 lblFeeRate.isHidden = false
@@ -108,7 +108,6 @@ class FeeEditCell: UITableViewCell {
             }
         }
         lblInvalidFee.isHidden = !(txError == "id_invalid_replacement_fee_rate")
-
         btnCustomFee.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.setCutomFeeBtn
     }
 

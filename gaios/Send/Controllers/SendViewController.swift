@@ -119,8 +119,7 @@ class SendViewController: KeyboardViewController {
             recipient.address = addressee?.address
 
             if let satoshi = addressee?.satoshi {
-                let details = ["satoshi": satoshi]
-                let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: "btc") ?? ("", "")
+                let (amount, _) = satoshi == 0 ? ("", "") : Balance.fromSatoshi(satoshi)?.toDenom() ?? ("", "")
                 recipient.amount = amount
             }
             recipient.txError = transaction?.error ?? ""
@@ -275,19 +274,10 @@ class SendViewController: KeyboardViewController {
         if !(AccountsManager.shared.current?.isSingleSig ?? false) && tx?.sendAll ?? false {
             value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset {
-            if let balance = Balance.convert(details: ["satoshi": value]) {
-                let (value, _) = value == 0 ? ("", "") : balance.get(tag: recipients.first?.isFiat ?? false ? "fiat" : asset)
-                recipients.first?.amount = value ?? ""
-            }
-        } else {
-            if let assetInfo = SessionsManager.current?.registry?.info(for: asset).encode() {
-                let details = ["satoshi": value, "asset_info": assetInfo] as [String: Any]
-                if let balance = Balance.convert(details: details) {
-                    let (amount, _) = value == 0 ? ("", "") : balance.get(tag: asset)
-                    recipients.first?.amount = amount ?? ""
-                }
-            }
+        let assetInfo = SessionsManager.current?.registry?.info(for: asset)
+        if let balance = Balance.fromSatoshi(value, asset: assetInfo)  {
+            let (amount, _) = value == 0 ? ("", "") : balance.toValue()
+            recipients.first?.amount = amount
         }
     }
 

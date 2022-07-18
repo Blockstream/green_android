@@ -24,8 +24,11 @@ class TwoFactorLimitViewController: KeyboardViewController {
 
     var satoshi: UInt64? {
         guard amount != nil else { return nil }
-        let details = [(isFiat ? "fiat" : denomination.rawValue): amount!]
-        return Balance.convert(details: details)?.satoshi
+        if isFiat {
+            return Balance.fromFiat(amount ?? "0")?.satoshi
+        } else {
+            return Balance.fromDenomination(amount ?? "0")?.satoshi
+        }
     }
 
     var limits: TwoFactorConfigLimits? {
@@ -62,31 +65,31 @@ class TwoFactorLimitViewController: KeyboardViewController {
     func reload() {
         guard let limits = limits else { return }
         isFiat = limits.isFiat
-        var balance: Balance?
         if limits.isFiat {
-            balance = Balance.convert(details: ["fiat": limits.fiat])
+            let (amount, denom) = Balance.fromFiat(limits.fiat ?? "0")?.toValue() ?? ("", "")
+            descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
         } else {
             let denom = denomination.rawValue
-            balance = Balance.convert(details: [denom: limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)!])
-        }
-        if let (amount, denom) = balance?.get(tag: limits.isFiat ? "fiat" : "btc") {
-            descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount ?? "N.A.") \(denom)")
+            let value: String? = limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)
+            let (amount, _) = Balance.fromDenomination(value ?? "0")?.toFiat() ?? ("", "")
+            descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
         }
         refresh()
     }
 
     func refresh() {
-        guard let balance = Balance.convert(details: ["satoshi": satoshi ?? 0]) else { return }
-        let (amount, denom) = balance.get(tag: (isFiat ? "btc"  : "fiat"))
-        let denomination = balance.get(tag: (isFiat ? "fiat"  : "btc")).1
-        convertedLabel.text = "≈ \(amount ?? "N.A.") \(denom)"
-        fiatButton.setTitle(denomination, for: UIControl.State.normal)
-        fiatButton.backgroundColor = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
+        if let balance = Balance.fromSatoshi(satoshi ?? 0) {
+            let (amount, denom) = isFiat ? balance.toDenom() : balance.toFiat()
+            let denomination = isFiat ? balance.toFiat().1 : balance.toDenom().1
+            convertedLabel.text = "≈ \(amount) \(denom)"
+            fiatButton.setTitle(denomination, for: UIControl.State.normal)
+            fiatButton.backgroundColor = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
+        }
     }
 
     @objc func currencySwitchClick(_ sender: UIButton) {
-        if let balance = Balance.convert(details: ["satoshi": satoshi ?? 0]) {
-            let (amount, _) = balance.get(tag: (isFiat ? "fiat"  : "btc"))
+        if let balance = Balance.fromSatoshi(satoshi ?? 0) {
+            let amount = isFiat ? balance.toFiat().0 : balance.toDenom().0
             limitTextField.text = amount
         }
         isFiat = !isFiat

@@ -253,7 +253,7 @@ class OverviewViewController: UIViewController {
                 cards.append(AlertCardType.systemMessage(text))
             }
         }.map(on: bgq) { () -> (String?, String) in
-            return Balance.convert(details: ["satoshi": 0])?.get(tag: "fiat") ?? (nil, "")
+            Balance.fromSatoshi(0)?.toFiat() ?? ("n/a", "")
         }.done { (amount, _) in
             if amount == nil {
                 cards.append(AlertCardType.fiatMissing)

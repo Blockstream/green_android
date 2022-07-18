@@ -1,67 +1,6 @@
 import Foundation
 import PromiseKit
 
-struct Balance: Codable {
-
-    enum CodingKeys: String, CodingKey {
-        case bits
-        case btc
-        case fiat
-        case fiatCurrency = "fiat_currency"
-        case fiatRate = "fiat_rate"
-        case mbtc
-        case satoshi
-        case ubtc
-        case sats
-        case assetInfo = "asset_info"
-        case asset
-    }
-
-    let bits: String
-    let btc: String
-    let fiat: String?
-    let fiatCurrency: String
-    let fiatRate: String?
-    let mbtc: String
-    let satoshi: UInt64
-    let ubtc: String
-    let sats: String
-    let assetInfo: AssetInfo?
-    var asset: [String: String]?
-
-    static func convert(details: [String: Any]) -> Balance? {
-        guard let session = SessionsManager.current,
-            var res = try? session.convertAmount(input: details) else {
-                return nil
-        }
-        res["asset_info"] = details["asset_info"]
-        var balance = try? JSONDecoder().decode(Balance.self, from: JSONSerialization.data(withJSONObject: res, options: []))
-        if let assetInfo = balance?.assetInfo {
-            let value = res[assetInfo.assetId] as? String
-            balance?.asset = [assetInfo.assetId: value!]
-        }
-        return balance
-    }
-
-    func get(tag: String) -> (String?, String) {
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
-        let mainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
-        if "fiat" == tag {
-            return (fiat?.localeFormattedString(2), mainnet ? fiatCurrency : "FIAT")
-        }
-        if feeAsset == tag {
-            let denomination = SessionsManager.current?.settings?.denomination ?? .BTC
-            let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
-            let value = res![denomination.rawValue] as? String
-            return (value!.localeFormattedString(denomination.digits), denomination.string)
-        }
-        if let asset = asset?[tag] {
-            return (asset.localeFormattedString(Int(assetInfo?.precision ?? 8)), assetInfo?.ticker ?? "")
-        }
-        return (nil, "")
-    }
-}
-
 func getTransactionDetails(txhash: String) -> Promise<[String: Any]> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {

@@ -18,10 +18,6 @@ class OverviewAssetCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-    }
-
     override func prepareForReuse() {
         lblDenom.text = ""
         lblAsset.text = ""
@@ -32,21 +28,14 @@ class OverviewAssetCell: UITableViewCell {
 
     func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64, isLiquid: Bool = false) {
         prepareForReuse()
-        let isBtc = tag == btc
-        var details = ["satoshi": satoshi] as [String: Any]
-        if let encode = info!.encode(), !isBtc {
-            details["asset_info"] = encode
-        }
-        if let balance = Balance.convert(details: details) {
-            let (amount, denom) = balance.get(tag: tag)
-            let ticker = isBtc ? denom : info?.ticker ?? ""
-            let amountTxt = amount
-            lblAmount.text = "\(amountTxt ?? "")"
-            lblDenom.text = "\(ticker)"
+        if let balance = Balance.fromSatoshi(satoshi, asset: info) {
+            let (amount, denom) = balance.toValue()
+            lblAmount.text = amount
+            lblDenom.text = denom
             lblAmount2.text = ""
-            if isBtc || tag == getGdkNetwork("liquid").policyAsset {
-                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-                lblAmount2.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+            if tag == AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? "" {
+                let (fiat, fiatCurrency) = balance.toFiat()
+                lblAmount2.text = "≈ \(fiat) \(fiatCurrency)"
             }
         }
         selectionStyle = .none
