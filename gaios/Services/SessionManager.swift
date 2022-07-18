@@ -17,9 +17,10 @@ class SessionManager: Session {
     var notificationManager: NotificationManager
     var twoFactorConfig: TwoFactorConfig?
     var settings: Settings?
-    var registry: AssetsManager? {
-        if let network = account?.gdkNetwork, network.liquid {
-            return network.mainnet ? AssetsManager.liquid : AssetsManager.elements
+
+    var registry: AssetsManagerProtocol? {
+        if let network = account?.gdkNetwork {
+            return AssetsManager.get(for: network)
         }
         return nil
     }

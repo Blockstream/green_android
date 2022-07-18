@@ -57,8 +57,7 @@ class AddresseeCell: UITableViewCell {
                 lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
             }
         } else {
-            let info = SessionsManager.current?.registry?.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-            if let assetInfo = info.encode() {
+            if let assetInfo = SessionsManager.current?.registry?.info(for: asset).encode() {
                 let details = ["satoshi": value, "asset_info": assetInfo] as [String: Any]
                 if let balance = Balance.convert(details: details) {
                     let (amount, ticker) = value == 0 ? ("", "") : balance.get(tag: asset)
@@ -68,14 +67,7 @@ class AddresseeCell: UITableViewCell {
                 }
             }
         }
-        icon.image = UIImage(named: "default_asset_icon")!
-        if AccountsManager.shared.current?.network == "mainnet" {
-            icon.image = UIImage(named: "ntw_btc")
-        } else if AccountsManager.shared.current?.network == "testnet" {
-            icon.image = UIImage(named: "ntw_testnet")
-        } else {
-            icon.image = SessionsManager.current?.registry?.image(for: asset)
-        }
+        icon.image = SessionsManager.current?.registry?.image(for: asset)
     }
 
     func setStyle() {

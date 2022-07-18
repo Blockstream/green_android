@@ -63,8 +63,8 @@ class OverviewTransactionCell: UITableViewCell {
             }
         } else {
             let asset = transaction.defaultAsset
-            let info = SessionsManager.current?.registry?.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
-            let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
+            let info = SessionsManager.current?.registry?.info(for: asset)
+            let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info!.encode()] as [String: Any]
             if let balance = Balance.convert(details: details) {
                 let (value, ticker) = balance.get(tag: transaction.defaultAsset)
                 lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value ?? "")
@@ -77,10 +77,10 @@ class OverviewTransactionCell: UITableViewCell {
         let isAsset = !(assetTag == "btc")
         if !transaction.memo.isEmpty {
             lblNote.text = transaction.memo
-        } else if isAsset && SessionsManager.current?.registry?.infos[assetTag]?.entity?.domain != nil {
+        } else if isAsset && SessionsManager.current?.registry?.info(for: assetTag).entity?.domain != nil {
             lblNote.text = multipleAssets && isIncoming ?
                 NSLocalizedString("id_multiple_assets", comment: "") :
-            SessionsManager.current?.registry?.infos[assetTag]?.entity?.domain ?? ""
+            SessionsManager.current?.registry?.info(for: assetTag).entity?.domain ?? ""
         } else if isRedeposit {
             lblNote.text = String(format: "%@ %@", NSLocalizedString("id_redeposited", comment: ""),
                                   isAsset ? NSLocalizedString("id_asset", comment: "") : "")
@@ -90,19 +90,8 @@ class OverviewTransactionCell: UITableViewCell {
         } else {
             lblNote.text = String(format: "%@ %@", NSLocalizedString("id_sent", comment: ""), isLiquid && isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         }
-
-        setIcon(transaction: transaction, network: network)
+        icon.image = SessionsManager.current?.registry?.image(for: transaction.defaultAsset)
         setSpvVerifyIcon(tx: transaction)
-    }
-
-    func setIcon(transaction: Transaction, network: String?) {
-        if network == "mainnet" {
-            icon.image = UIImage(named: "ntw_btc")
-        } else if network == "testnet" {
-            icon.image = UIImage(named: "ntw_testnet")
-        } else {
-            icon.image = SessionsManager.current?.registry?.image(for: transaction.defaultAsset)
-        }
     }
 
     func setSpvVerifyIcon(tx: Transaction) {

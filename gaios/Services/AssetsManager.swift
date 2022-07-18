@@ -2,14 +2,71 @@ import Foundation
 import UIKit
 import PromiseKit
 
-class AssetsManager: Codable {
+protocol AssetsManagerProtocol {
+    func info(for key: String) -> AssetInfo
+    func image(for key: String) -> UIImage
+    func hasImage(for key: String?) -> Bool
+    func cache(session: SessionManager)
+    func refresh(session: SessionManager)
+    func loadAsync(session: SessionManager)
+}
 
-    static let liquid = AssetsManager()
-    static let elements = AssetsManager()
+class AssetsManager {
+    static let liquid = AssetsManagerLiquid()
+    static let elements = AssetsManagerLiquid()
+    static let mainnet = AssetsManagerBitcoin()
+    static let testnet = AssetsManagerTestnet()
+
+    static func get(for network: GdkNetwork) -> AssetsManagerProtocol? {
+        if network.liquid && network.mainnet {
+            return AssetsManager.liquid
+        } else if network.liquid {
+            return AssetsManager.elements
+        } else if network.mainnet {
+            return AssetsManager.mainnet
+        } else if !network.mainnet {
+            return AssetsManager.testnet
+        }
+        return nil
+    }
+}
+
+class AssetsManagerBitcoin: Codable, AssetsManagerProtocol {
+    func info(for key: String) -> AssetInfo {
+        let denomination = SessionsManager.current?.settings?.denomination
+        let precision = UInt8(denomination?.digits ?? 8)
+        let ticker = denomination?.string ?? "BTC"
+        return AssetInfo(assetId: "btc", name: "Bitcoin", precision: precision, ticker: ticker)
+    }
+    func image(for key: String) -> UIImage {
+        return UIImage(named: "ntw_btc") ?? UIImage()
+    }
+    func hasImage(for key: String?) -> Bool { true }
+    func cache(session: SessionManager) { }
+    func refresh(session: SessionManager) { }
+    func loadAsync(session: SessionManager) { }
+}
+
+class AssetsManagerTestnet: Codable, AssetsManagerProtocol {
+    func info(for key: String) -> AssetInfo {
+        let denomination = SessionsManager.current?.settings?.denomination
+        let precision = UInt8(denomination?.digits ?? 8)
+        let ticker = denomination?.string ?? "TEST"
+        return AssetInfo(assetId: "btc", name: "Testnet", precision: precision, ticker: ticker)
+    }
+    func image(for key: String) -> UIImage {
+        return UIImage(named: "ntw_testnet") ?? UIImage()
+    }
+    func hasImage(for key: String?) -> Bool { true }
+    func cache(session: SessionManager) { }
+    func refresh(session: SessionManager) { }
+    func loadAsync(session: SessionManager) { }
+}
+
+class AssetsManagerLiquid: Codable, AssetsManagerProtocol {
 
     var infos: [String: AssetInfo]
     var icons: [String: String]
-
     var iconsTask: Bool = false
     var assetsTask: Bool = false
 
@@ -18,12 +75,18 @@ class AssetsManager: Codable {
         self.icons = icons
     }
 
-    func image(for key: String?) -> UIImage? {
-        if let icon = icons.filter({ $0.key == key }).first {
-            // read icon from memory
-            return UIImage(base64: icon.value)
+    func info(for key: String) -> AssetInfo {
+        if var info = infos[key] {
+            if key == SessionsManager.current?.account?.gdkNetwork?.getFeeAsset() {
+                info.name = "Liquid Bitcoin"
+            }
+            return info
         }
-        return UIImage(named: "default_asset_icon")
+        return AssetInfo(assetId: key, name: "", precision: 0, ticker: "")
+    }
+
+    func image(for key: String) -> UIImage {
+        UIImage(base64: icons[key]) ?? UIImage(named: "default_asset_icon") ?? UIImage()
     }
 
     func hasImage(for key: String?) -> Bool {

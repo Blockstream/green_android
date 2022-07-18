@@ -75,7 +75,7 @@ class RecipientCell: UITableViewCell {
 
     private var asset: AssetInfo? {
         if let assetId = recipient?.assetId {
-            return SessionsManager.current?.registry?.infos[assetId] ?? AssetInfo(assetId: assetId, name: assetId, precision: 0, ticker: "")
+            return SessionsManager.current?.registry?.info(for: assetId)
         }
         return nil
     }
@@ -121,17 +121,8 @@ class RecipientCell: UITableViewCell {
         lblAddressHint.text = NSLocalizedString(inputType == .sweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
         iconAsset.image = UIImage(named: "default_asset_icon")!
         lblAssetName.text = NSLocalizedString("id_asset", comment: "")
-        if network == "mainnet" {
-            iconAsset.image = UIImage(named: "ntw_btc")
-            lblAssetName.text = "Bitcoin"
-        } else if network == "testnet" {
-            iconAsset.image = UIImage(named: "ntw_testnet")
-            lblAssetName.text = "Testnet Bitcoin"
-        } else {
-            iconAsset.image = SessionsManager.current?.registry?.image(for: asset?.assetId)
-            let name = asset?.assetId == btc ? "Liquid Bitcoin" : asset?.name
-            lblAssetName.text = name ?? NSLocalizedString("id_asset", comment: "")
-        }
+        iconAsset.image = SessionsManager.current?.registry?.image(for: asset?.assetId ?? "")
+        lblAssetName.text = SessionsManager.current?.registry?.info(for: asset?.assetId ?? "").name
         onChange()
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
         addressTextView.textContainer.maximumNumberOfLines = 10
@@ -256,7 +247,7 @@ class RecipientCell: UITableViewCell {
                 lblAvailableFunds.text = ""
                 amountTextField.text = ""
             } else {
-                iconAsset.image = SessionsManager.current?.registry?.image(for: recipient?.assetId)
+                iconAsset.image = SessionsManager.current?.registry?.image(for: recipient?.assetId ?? "")
                 lblAssetName.text = getDenomination()
                 lblCurrency.text = getDenomination()
                 lblAvailableFunds.text = getBalance()

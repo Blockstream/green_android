@@ -709,13 +709,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case OverviewSection.asset.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAssetCell", for: indexPath) as? OverviewAssetCell {
                 let tag = assets[indexPath.row].key
-                let info = SessionsManager.current?.registry?.infos[tag]
-                var icon = SessionsManager.current?.registry?.image(for: tag)
-                if account?.network == "mainnet" {
-                    icon = UIImage(named: "ntw_btc")
-                } else if account?.network == "testnet" {
-                    icon = UIImage(named: "ntw_testnet")
-                }
+                let info = SessionsManager.current?.registry?.info(for: tag)
+                let icon = SessionsManager.current?.registry?.image(for: tag)
                 let satoshi = assets[indexPath.row].value
                 cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi, isLiquid: isLiquid)
                 return cell
@@ -822,7 +817,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
                 let tag = assets[indexPath.row].key
                 vc.tag = tag
-                vc.asset = SessionsManager.current?.registry?.infos[tag]
+                vc.asset = SessionsManager.current?.registry?.info(for: tag)
                 vc.satoshi = presentingWallet?.satoshi?[tag]
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: false, completion: nil)

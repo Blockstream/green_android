@@ -109,12 +109,11 @@ extension DialogAssetDetailViewController: UITableViewDelegate, UITableViewDataS
             let cellType = assetDetailCellTypes[indexPath.row]
             switch cellType {
             case .name:
-                cell.configure(NSLocalizedString("id_asset_name", comment: ""), isLBTC ? "Liquid Bitcoin" : asset?.name ?? NSLocalizedString("id_no_registered_name_for_this", comment: ""))
+                cell.configure(NSLocalizedString("id_asset_name", comment: ""), asset?.name ?? NSLocalizedString("id_no_registered_name_for_this", comment: ""))
             case .identifier:
                 cell.configure(NSLocalizedString("id_asset_id", comment: ""), tag)
             case .amount:
-                let assetInfo = asset ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
-                let balance = Balance.convert(details: ["satoshi": satoshi ?? 0, "asset_info": assetInfo.encode()!])
+                let balance = Balance.convert(details: ["satoshi": satoshi ?? 0, "asset_info": asset!.encode()])
                 cell.configure(NSLocalizedString("id_total_balance", comment: ""), balance?.get(tag: tag).0 ?? "")
             case .precision:
                 cell.configure(NSLocalizedString("id_precision", comment: ""), isLBTC ? "8" : String(asset?.precision ?? 0))

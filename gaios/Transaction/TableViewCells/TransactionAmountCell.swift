@@ -54,13 +54,8 @@ class TransactionAmountCell: UITableViewCell {
         copyRecipientIcon.isHidden = tx.isLiquid
         lblAmount.textColor = color
 
-        if network == "mainnet" {
-            icon.image = UIImage(named: "ntw_btc")
-        } else if network == "testnet" {
-            icon.image = UIImage(named: "ntw_testnet")
-        } else {
-            icon.image = SessionsManager.current?.registry?.image(for: tx.defaultAsset)
-        }
+        let registry = SessionsManager.current?.registry
+        icon.image = registry?.image(for: tx.defaultAsset)
 
         let amount = amount(tx, index: index)
         if tx.defaultAsset == btc {
@@ -76,11 +71,10 @@ class TransactionAmountCell: UITableViewCell {
                 lblFiat.isHidden = false
             }
         } else {
-            let info = SessionsManager.current?.registry?.infos[amount.key]
-            let icon = SessionsManager.current?.registry?.image(for: amount.key)
+            let asset = registry?.info(for: amount.key)
+            let icon = registry?.image(for: amount.key)
             let tag = amount.key
-            let asset = info ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
-            let details = ["satoshi": amount.value, "asset_info": asset.encode()!] as [String: Any]
+            let details = ["satoshi": amount.value, "asset_info": asset!.encode()] as [String: Any]
             if let balance = Balance.convert(details: details) {
                 let (amount, denom) = balance.get(tag: tag)
                 lblAmount.text = String(format: "%@", amount ?? "")
