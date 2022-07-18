@@ -133,11 +133,13 @@ class JadeOTA: JadeChannel {
         guard let binary = try? getBinary(verInfo, fmw) else {
             return Observable.error(JadeError.Abort("Error downloading firmware file"))
         }
+        let hash = sha256(binary)
         let cmd = JadeOta(fwsize: fmw.fwsize,
                           cmpsize: binary.count,
                           otachunk: verInfo.jadeOtaMaxChunk,
-                          cmphash: sha256(binary),
+                          cmphash: hash,
                           patchsize: fmw.patchSize)
+        BLEManager.shared.onBinaryFetched(hash: "\(hash.map { String(format: "%02hhx", $0) }.joined())")
         return exchange(JadeRequest(method: fmw.isDelta ? "ota" : "ota_delta",
                                     params: cmd))
             .flatMap { (_: JadeResponse<Bool>) in

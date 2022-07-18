@@ -468,6 +468,29 @@ extension HWWConnectViewController: BLEManagerDelegate {
             self.present(alert, animated: true, completion: nil)
         }
     }
+
+    func onComputedHash(_ hash: String) {
+        if self.hwwState == .upgradingFirmware {
+
+            let titleAttributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.white
+            ]
+            let hashAttributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.customGrayLight(),
+                .font: UIFont.systemFont(ofSize: 16)
+            ]
+            let title = NSLocalizedString("id_updating_firmware", comment: "")
+            let hint = "\n\n" + "Firmware hash:" + "\n" + hash
+
+            let attributedTitleString = NSMutableAttributedString(string: title)
+            attributedTitleString.setAttributes(titleAttributes, for: title)
+            let attributedHintString = NSMutableAttributedString(string: hint)
+            attributedHintString.setAttributes(hashAttributes, for: hint)
+            attributedTitleString.append(attributedHintString)
+
+            lblStateHint.attributedText = attributedTitleString
+        }
+    }
 }
 
 extension HWWConnectViewController: WalletSettingsViewControllerDelegate {

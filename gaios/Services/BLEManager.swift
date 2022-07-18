@@ -26,12 +26,12 @@ enum DeviceError: Error {
     case outdated_app
 }
 
-protocol BLEManagerScanDelegate: class {
+protocol BLEManagerScanDelegate: AnyObject {
     func didUpdatePeripherals(_: [Peripheral])
     func onError(_: BLEManagerError)
 }
 
-protocol BLEManagerDelegate: class {
+protocol BLEManagerDelegate: AnyObject {
     func onPrepare(_: Peripheral, reset: Bool)
     func onAuthenticate(_: Peripheral, network: String, firstInitialization: Bool)
     func onLogin(_: Peripheral)
@@ -39,6 +39,7 @@ protocol BLEManagerDelegate: class {
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
     func onCheckFirmware(_: Peripheral, fmw: Firmware, currentVersion: String, needCableUpdate: Bool)
     func onUpdateFirmware(_: Peripheral, version: String, prevVersion: String)
+    func onComputedHash(_ hash: String)
 }
 
 class BLEManager {
@@ -249,6 +250,12 @@ class BLEManager {
             }, onError: { err in
                 self.onError(err, network: nil)
             })
+    }
+
+    func onBinaryFetched(hash: String) {
+        DispatchQueue.main.async {
+            self.delegate?.onComputedHash(hash)
+        }
     }
 
     func connect(_ p: Peripheral, account: Account) {

@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+- Display firmware hash during Jade OTA
+
+### Changed
+
+
+### Fixed
+
+
 ## [3.8.5] - 2022-07-15
 
 ### Added
