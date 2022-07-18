@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Connectez-vous à des nœuds sur le réseau Tor (.onion) et bénéficiez du maximum de confidentialité et de sécurité. Appuyez sur \"OK\" pour continuer. ";
 "id_connecting_to_your_device" = "Connexion à votre appareil";
 "id_connection" = "Connexion";
-"id_connection_amp_validation" = "Connexion &amp; Paramètres de validation";
 "id_connection_failed" = "La connexion a échoué";
 "id_connection_to_device_failed" = "La connexion à l'appareil a échoué ! Rapprochez-vous de l'appareil et réessayez.";
 "id_contact_support_at_s_or_visit_s" = "Contactez l'assistance à %@ ou visitez %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Montant des frais par défaut ";
 "id_default_transaction_priority" = "Priorité des transactions par défaut";
 "id_delete" = "Supprimez";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Supprimez définitivement votre portefeuille de la base de données Blockstream Green. Vous ne pourrez plus jamais vous y connecter par la suite.";
 "id_delete_s_twofactor" = "Supprimez le deuxième facteur %@";
 "id_delete_wallet" = "Supprimer le portefeuille";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Supprimer le portefeuille";
 "id_rename" = "Renommer";
 "id_rename_account" = "Renommer le compte";
-"id_rename_wallet" = "Renommer le portefeuille";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "Remplaçable";
 "id_request_amount" = "Montant de la demande";
 "id_request_failed" = "Échec de la demande";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "Avertissement : Les identifiants de surveillance seulement seront enregistrés sur votre appareil.";
 "id_warning_you_need_a_positive" = "Attention! Vous devez avoir un solde positif de L-BTC pour pouvoir envoyer des transactions.";
 "id_watchonly" = "Watch-only";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "Watch-only désactivé";
 "id_watchonly_login" = "Connexion en mode watch-only";

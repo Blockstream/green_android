@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Tor(.onion) 노드에 연결하여 최고의 보안과 개인정보보호 기능을 누릴 수 있습니다. 계속하시려면 \"OK\"를 누르세요.";
 "id_connecting_to_your_device" = "사용자 기기와 연결 중";
 "id_connection" = "연결";
-"id_connection_amp_validation" = "연결 &amp; 검증 설정";
 "id_connection_failed" = "연결 실패";
 "id_connection_to_device_failed" = "기기 연결에 실패했습니다! 기기를 더 가까이 하여 다시 시도하세요.";
 "id_contact_support_at_s_or_visit_s" = "%@에서 고객 센터에 문의하거나 %@를 방문하세요";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "기본 사용자 지정 수수료";
 "id_default_transaction_priority" = "기본 거래 우선 순위";
 "id_delete" = "삭제하기";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Blockstream Green 데이터베이스에서 지갑을 영구적으로 삭제하세요. 삭제 후에는 다시 로그인할 수 없습니다.";
 "id_delete_s_twofactor" = "이중 인증 %@ 삭제";
 "id_delete_wallet" = "지갑 삭제하기";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "지갑 삭제하기";
 "id_rename" = "이름 변경하기";
 "id_rename_account" = "계정 이름 변경하기";
-"id_rename_wallet" = "지갑 이름 변경하기";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "대체 가능";
 "id_request_amount" = "요청 금액";
 "id_request_failed" = "요청 실패";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "경고 : 보기 전용 자격 증명이 사용자 기기에 저장됩니다.";
 "id_warning_you_need_a_positive" = "경고! L-BTC 잔액이 남아있어야 거래를 보낼 수 있습니다.";
 "id_watchonly" = "보기 전용";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "보기 전용 모드가 비활성화되었습니다";
 "id_watchonly_login" = "보기 전용 로그인";

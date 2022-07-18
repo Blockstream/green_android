@@ -68,7 +68,7 @@
 "id_all_wallets" = "Все кошельки";
 "id_allow_collection" = "Allow collection";
 "id_allow_data_collection" = "Allow data collection";
-"id_allows_you_to_quickly_check" = "Позволяет быстро проверить ваш баланс, получить средства или смести бумажный кошелек. Вы не можете отправлять средства в режиме холодного кошелька.";
+"id_allows_you_to_quickly_check" = "Позволяет быстро проверить ваш баланс, получить средства или смести бумажный кошелек. Вы не можете отправлять средства в режиме watch-only кошелька.";
 "id_always" = "Всегда";
 "id_amount" = "Сумма";
 "id_amount_in_s" = "Сумма в%@";
@@ -166,9 +166,9 @@
 "id_choose_the_security_policy_that" = "Choose the security policy that matches your wallet.";
 "id_choose_the_security_policy_you" = "Choose the security policy you want to restore this wallet on.";
 "id_choose_this_version_to_connect" = "Выберите эту версию для подключения к Blockstream Jade как с помощью кабеля USB, так и по беспроводной сети.";
-"id_choose_this_version_to_disable" = "Выберите эту версию, чтобы отключить всю радиосвязь на Blockstream Jade. Это сделает ваш Blockstream Jade несовместимым с устройствами iOS.";
+"id_choose_this_version_to_disable" = "Выберите эту версию, чтобы отключить всю радиосвязь на Blockstream Jade. Это сделает ваш Blockstream Jade несовместимым с iOS-устройствами.";
 "id_choose_twofactor_authentication" = "Выберите метод двухфакторной аутентификации";
-"id_choose_watchonly" = "Выберите Watch-Only";
+"id_choose_watchonly" = "Выберите функцию только для просмотра (watch-only)";
 "id_choose_your_network" = "Выберите сеть";
 "id_clear" = "Очистить";
 "id_click_to_copy" = "Нажмите, чтобы скопировать";
@@ -178,7 +178,7 @@
 "id_coins" = "Монеты";
 "id_coins_for_which_2fa_protection" = "Монеты, для которых истек срок защиты 2FA.";
 "id_coins_locked" = "Монеты заблокированы";
-"id_coins_protected_by_the_legacy" = "Монеты, защищенные устаревшим скриптом, могут быть восстановлены с помощью вашего файла nlocktimes.zip.";
+"id_coins_protected_by_the_legacy" = "Монеты, защищенные legacy-скриптом, могут быть восстановлены с помощью вашего файла nlocktimes.zip.";
 "id_coins_protected_by_the_new" = "Монеты защищены новым скриптом со встроенным истечением срока действия 2FA через CheckSequenceVerify.";
 "id_coins_received_or_created" = "Монеты, полученные или созданные до активации SegWit.";
 "id_coins_unlocked" = "Монеты разблокированы";
@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Подключение к Tor (.onion) узлам обеспечивает максимальную конфиденциальность и безопасность. Нажмите \"OK\" для продолжения.";
 "id_connecting_to_your_device" = "Подключение к вашему устройству";
 "id_connection" = "Соединение";
-"id_connection_amp_validation" = "Подключение & amp; Настройки валидации";
 "id_connection_failed" = "Ошибка подключения";
 "id_connection_to_device_failed" = "Не удалось подключиться к устройству! Приблизьтесь к устройству и попробуйте еще раз.";
 "id_contact_support_at_s_or_visit_s" = "Обратитесь в службу поддержки %@ или посетите %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Комиссия по умолчанию";
 "id_default_transaction_priority" = "Приоритет транзакции по умолчанию";
 "id_delete" = "Удалить";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Удалить ваш кошелек из базы данных Blockstream Green навсегда. После этого вы никогда не сможете войти в него.";
 "id_delete_s_twofactor" = "Удалить %@ фактор";
 "id_delete_wallet" = "Удалить кошелек";
@@ -345,7 +345,7 @@
 "id_enter_your_s_wallet_mnemonic" = "Введите%@ мнемоническую фразу вашего кошелька";
 "id_enter_your_wallet_mnemonic" = "Введите вашу мнемоническую фразу";
 "id_enter_your_xpub" = "Введите свой xpub";
-"id_enter_your_xpub_to_add_a" = "Введите свой xPub, чтобы добавить кошелек watch-only, на который вы можете получать средства и проверять свой баланс, не импортируя свои личные ключи.";
+"id_enter_your_xpub_to_add_a" = "Введите свой xPub, чтобы добавить watch-only кошелек, на который вы можете получать средства и проверять свой баланс, не импортируя свои личные ключи.";
 "id_enter_yournrecovery_phrase" = "Введите свою\nфразу восстановления";
 "id_entity" = "Организация";
 "id_error" = "Ошибка";
@@ -378,7 +378,7 @@
 "id_fee_rate_s" = "Комиссия: %@";
 "id_fee_s__s" = "Комиссия всего: %@/%@";
 "id_fees_are_too_low" = "Комиссии слишком низкие";
-"id_fetching_new_firmware" = "Получение новой прошивки";
+"id_fetching_new_firmware" = "Идет получение новой прошивки";
 "id_filters" = "Фильтры";
 "id_finishing_up" = "Заканчивать";
 "id_firmware" = "Прошивка";
@@ -442,7 +442,7 @@
 "id_if_you_are_the_rightful_owner" = "Если вы являетесь владельцем этого кошелька и у вас все еще есть один из активных методов 2FA, отмените сброс, чтобы иметь возможность потратить средства и очистить этот кошелек.";
 "id_if_you_did_not_request_the" = "Если вы не запрашивали сброс, но не можете отменить процесс сброса, потому что у вас нет доступа ни к каким существующим методам двухфакторной авторизации, оспорьте этот сброс 2FA. Это навсегда заблокирует ваш кошелек, но вы сможете отменить это действие.";
 "id_if_you_have_access_to_a" = "Если у вас есть доступ к двухфакторному методу для этого кошелька, отмените сброс, чтобы иметь возможность тратить и получать средства моментально, или подождите %d дней.";
-"id_if_you_have_some_coins_on_the" = "Если у вас есть монеты на legacy-адресе и вы не собираетесь тратить их в ближайшее время, вам может потребоваться настроить электронную почту и получать транзакции восстановления, чтобы знать, что вы всегда контролируете свои средства.";
+"id_if_you_have_some_coins_on_the" = "Если у вас есть монеты на legacy-адресе и вы не собираетесь их тратить в ближайшее время, вам может потребоваться настроить электронную почту и получать транзакции восстановления, чтобы знать, что вы всегда контролируете свои средства.";
 "id_if_you_initiated_the_2fa_reset" = "Если вы инициировали спор о сбросе 2FA по ошибке, вы можете отменить его и вернуть кошелек в состояние сброса 2FA.";
 "id_import_a_multisig_shield_wallet" = "Импортируйте кошелек Multisig Shield, созданный в Blockstream Green.";
 "id_import_a_wallet_created_on" = "Импортируйте кошелек, созданный в Blockstream Green.";
@@ -500,7 +500,7 @@
 "id_ledger_dashboard_detected" = "Обнаружена панель Ledger, пожалуйста, откройте приложение для доступа.";
 "id_ledger_devices" = "Устройства Ledger";
 "id_ledger_supports_a_limited_set" = "Ledger поддерживает ограниченный набор активов: нажмите здесь, чтобы просмотреть список.";
-"id_legacy_account" = "Аккаунт Legacy";
+"id_legacy_account" = "Legacy-аккаунт";
 "id_legacy_script_coins" = "Монеты с legacy-скриптом";
 "id_lets_get_you_set_up" = "Давайте произведем настройку.";
 "id_liquid_electrum_server" = "Сервер Liquid Electrum";
@@ -526,9 +526,9 @@
 "id_log_file" = "Лог-файл";
 "id_log_in" = "Войти";
 "id_log_in_into_your_s_wallet" = "Войдите в свой %@ кошелек";
-"id_log_in_to_your_multisig_shield" = "Войдите в свой watch-only Multisig Shield кошелек с помощью имени пользователя и пароля. Вы можете создать учетные данные для работы функции watch-only (только для просмотра), войдя в свой кошелек Multisig Shield.";
+"id_log_in_to_your_multisig_shield" = "Войдите в свой Multisig Shield watch-only кошелек с помощью имени пользователя и пароля. Вы можете создать учетные данные для работы функции watch-only (только для просмотра), войдя в свой кошелек Multisig Shield.";
 "id_log_in_using_mnemonic" = "Войти с использованием мнемонической фразы";
-"id_log_in_via_watchonly_to_receive" = "Войдите с помощью холодного кошелька, чтобы получить средства и проверить баланс.";
+"id_log_in_via_watchonly_to_receive" = "Войдите с помощью watch-only кошелька, чтобы получить средства и проверить баланс.";
 "id_log_out" = "Выйти";
 "id_logged_in_wallets" = "Авторизованные кошельки";
 "id_logging_in" = "Выполняется вход...";
@@ -548,7 +548,7 @@
 "id_malleated" = "деформированная";
 "id_managed_assets" = "Managed Assets";
 "id_managed_assets_account" = "Аккаунт Managed Assets";
-"id_managed_assets_accounts_are" = "Аккаунты с управляемыми активами доступны только на кошельках Liquid. Для получения Managed Asset может потребоваться предоставить ID вашей учетной записи эмитентам.";
+"id_managed_assets_accounts_are" = "Аккаунты Managed Asset доступны только на кошельках Liquid. Для получения Managed Asset может потребоваться предоставить ID вашей учетной записи эмитентам.";
 "id_manual_coin_selection" = "Ручной выбор монет";
 "id_manual_restore" = "Manual Restore";
 "id_medium" = "Средний";
@@ -611,7 +611,7 @@
 "id_non_confidential" = "Неконфиденциально";
 "id_non_confidential_transaction" = "Неконфиденциальная транзакция";
 "id_nonconfidential_addresses_not" = "Неконфиденциальные адреса не поддерживаются";
-"id_noradio_firmware" = "No-radio firmware";
+"id_noradio_firmware" = "Прошивка без радио";
 "id_normal" = "Нормальный";
 "id_not_a_valid_email_address" = "Недействительный адрес электронной почты";
 "id_not_a_valid_phone_number" = "Неверный номер телефона";
@@ -698,7 +698,7 @@
 "id_pseudonymous_identifier_country" = "Pseudonymous identifier, country";
 "id_qr_code" = "QR-код";
 "id_qr_scanner" = "QR-сканер";
-"id_radio_firmware" = "Radio firmware";
+"id_radio_firmware" = "Прошивка с радио";
 "id_read_more" = "Подробнее";
 "id_read_more_at_our_s" = "Узнайте больше на нашем %@";
 "id_ready" = "Готовый";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Удалить кошелек";
 "id_rename" = "Переименовать";
 "id_rename_account" = "Переименовать аккаунт";
-"id_rename_wallet" = "Переименовать кошелек";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "заменяемый";
 "id_request_amount" = "Сумма запроса";
 "id_request_failed" = "Ошибка запроса";
@@ -795,7 +795,7 @@
 "id_send_all" = "Отправить все";
 "id_send_all_funds" = "Отправить всю сумму";
 "id_send_all_requires_a_single" = "Для отправки всей суммы требуется один получатель";
-"id_send_and_receive_liquidbased" = "Отправляйте и получайте управляемые активы на основе Liquid";
+"id_send_and_receive_liquidbased" = "Отправляйте и получайте Managed Assets на основе Liquid";
 "id_send_to" = "Отправить";
 "id_sending" = "ОТПРАВКА";
 "id_sending_request" = "Отправка запроса...";
@@ -819,8 +819,8 @@
 "id_set_up_credentials_to_access_in" = "Настроить учетные данные для доступа в режиме watch-only, чтобы получать монеты, не подвергая риску свои личные ключи. Доступ с любого устройства с помощью приложения Blockstream Green";
 "id_set_up_pgp_key_for" = "Установить PGP-ключ для связи";
 "id_set_up_twofactor_authentication" = "Установить двухфакторную аутентификацию";
-"id_set_up_watchonly" = "Настроить холодный кошелек";
-"id_set_up_watchonly_credentials" = "Установить параметры холодного кошелька в режиме watch-only";
+"id_set_up_watchonly" = "Настроить watch-only кошелек";
+"id_set_up_watchonly_credentials" = "Установить учетные данные для работы в режиме watch-only для этого кошелька";
 "id_set_wallet_name" = "Установить название кошелька";
 "id_setting_up_your_wallet" = "Настройка вашего кошелька";
 "id_setting_updated" = "Настройки обновлены";
@@ -842,7 +842,7 @@
 "id_show_fiat" = "Показать фиат";
 "id_show_my_wallet_backup" = "Показать резервную копию моего кошелька";
 "id_show_qr_code" = "Показать QR-код";
-"id_signature_validation_failed_if" = "Проверка подписи не удалась. Если эта ошибка является неожиданной и повторялась неоднократно, возможно, аппаратный кошелек неисправен или был взломан. Возможно, произошла утечка ваших ключей, что может привести к потере средств. Пожалуйста, подумайте о замене аппаратного кошелька.";
+"id_signature_validation_failed_if" = "Проверка подписи не удалась. Если эта ошибка является неожиданной и повторяется неоднократно, возможно, аппаратный кошелек неисправен или был взломан. Возможно, произошла утечка ваших ключей, что может привести к потере средств. Пожалуйста, подумайте о замене аппаратного кошелька.";
 "id_signup_in_progress" = "Регистрация продолжается";
 "id_simplified_payment_verification" = "Упрощенная верификация платежей SPV проверяет ваши транзакции и баланс, используя сеть Биткоин, за пределами Green-серверов. Включение повышает системные требования к пропускной способности и обработке.";
 "id_singlesig" = "Одноподписной";
@@ -860,7 +860,7 @@
 "id_spend_your_bitcoin_without_2fa" = "Тратьте свои биткоины без 2FA до определенного порога. После того, как вы потратите сумму, равную этому порогу, вам нужно будет его сбросить, чтобы продолжать тратить биткоины без двухфакторной аутентификации.";
 "id_spv_is_always_synchronized_on" = "SPV всегда синхронизируется в таких немобильных сетях, как WiFi или Ethernet. Этот параметр также синхронизируется при использовании мобильных данных. Этот вариант может быть дорогостоящим в зависимости от вашего тарифного плана, поэтому будьте внимательны при его включении.";
 "id_spv_mode_is_currently_available" = "Режим SPV в настоящее время доступен только для одноподписных биткоин-кошельков.";
-"id_spv_not_fully_synced" = "SPV не полностью синхронизирован";
+"id_spv_not_fully_synced" = "SPV-узел не полностью синхронизирован";
 "id_spv_notifications" = "Уведомления SPV";
 "id_spv_reset_and_restarted" = "SPV переустановлен и перезапущен";
 "id_spv_synchronization" = "SPV синхронизация";
@@ -1011,7 +1011,7 @@
 "id_view_in_explorer" = "Посмотреть в обозревателе";
 "id_view_more" = "Посмотреть больше";
 "id_visit_s_for_further_information" = "Посетите %@ для получения дополнительной информации о программном обеспечении";
-"id_visit_the_blockstream_help" = "Посетите Blockstream Help Center";
+"id_visit_the_blockstream_help" = "Посетите Справочный центр";
 "id_waiting_for_transaction" = "Ожидание транзакции ...";
 "id_wallet" = "Кошелек";
 "id_wallet_already_restored" = "Кошелек уже восстановлен";
@@ -1028,13 +1028,14 @@
 "id_warning_resetting_twofactor" = "ВНИМАНИЕ: перезагрузка двухфакторной аутентификации заблокирует ваш кошелек";
 "id_warning_there_is_already_a" = "ВНИМАНИЕ: Поступил запрос на двухфакторную аутентификацию вашего кошелька. Если вы повторите запрос с нового адреса электронной почты, ваш кошелек станет оспариваемым и, вероятно, недоступным для вас навсегда.";
 "id_warning_wallet_locked_by" = "ВНИМАНИЕ: Кошелек заблокирован. Обратитесь в службу поддержки за дополнительной информацией.";
-"id_warning_watchonly_credentials" = "Внимание! Учетные данные watch-only будут сохранены на вашем устройстве.";
+"id_warning_watchonly_credentials" = "Внимание! Учетные данные для работы в режиме watch-only будут сохранены на вашем устройстве.";
 "id_warning_you_need_a_positive" = "Внимание! Вам нужен положительный баланс L-BTC, чтобы иметь возможность отправлять транзакции.";
-"id_watchonly" = "Холодный кошелек";
-"id_watchonly_details" = "Watch-only details";
-"id_watchonly_disabled" = "Холодный кошелек отключен";
-"id_watchonly_login" = "Логин холодного кошелька";
-"id_watchonly_mode_can_be_activated" = "Режим холодного кошелька можно активировать в настройках после входа в систему с помощью PIN-кода, мнемонической фразы или аппаратного кошелька.";
+"id_watchonly" = "Watch-only";
+"id_watchonly_credentials" = "Watch-only credentials";
+"id_watchonly_details" = "Информация о режиме watch-only";
+"id_watchonly_disabled" = "Режим watch-only отключен";
+"id_watchonly_login" = "Вход в watch-only кошелек";
+"id_watchonly_mode_can_be_activated" = "Режим watch-only можно активировать в настройках после входа в систему с помощью PIN-кода, мнемонической фразы или аппаратного кошелька.";
 "id_watchonly_mode_cannot_be" = "Режим watch-only нельзя активировать на Liquid, так как ваши средства полностью конфиденциальны.";
 "id_watchonly_wallet" = "Watch-only кошелек";
 "id_we_use_the_camera_to_scan_qr" = "Мы используем камеру для сканирования QR-кодов";
@@ -1044,13 +1045,13 @@
 "id_well_done_you_can_continue" = "Отлично, можно продолжать";
 "id_well_done_you_can_continue_with" = "Отлично, теперь можете ввести свой пароль";
 "id_well_get_you_set_up_in_no_time" = "Мы все вам настроим в кратчайшие сроки. Убедитесь, что у вас под рукой есть ручка и бумага!";
-"id_well_get_you_set_up_with_an_amp" = "Мы в кратчайшие сроки предоставим вам AMP-кошелек. Обратите внимание, что вы также можете создать учетные записи AMP в любом существующем кошельке Liquid.";
+"id_well_get_you_set_up_with_an_amp" = "Предоставим AMP-кошелек в кратчайшие сроки. Обратите внимание, что вы также можете создавать учетные записи AMP в любом существующем кошельке Liquid.";
 "id_what_type_of_account_would_you" = "Какой тип учетной записи вы хотите добавить?";
 "id_whats_collected" = "What's collected";
 "id_whats_new" = "Что нового?";
 "id_whats_not_collected" = "What's NOT collected";
 "id_where_would_you_like_to" = "Куда бы вы хотели перевести средства?";
-"id_wireless" = "Беспроводной";
+"id_wireless" = "Беспроводный";
 "id_word" = "Слово";
 "id_word_d_of_d" = "Слово %d из %d";
 "id_write_down_the_words" = "Запишите слова";
@@ -1086,7 +1087,7 @@
 "id_your_funds_are_secured_by" = "Ваши средства защищены несколькими ключами, один из которых находится на вашем устройстве, а другой - на наших серверах, защищенных вашей 2FA. Выберите этот вариант, чтобы повысить уровень безопасности.";
 "id_your_funds_are_secured_by_a" = "Ваши средства защищены одним ключом на вашем устройстве. Этот вариант проще в настройке и эксплуатации, чем мультиподпись. Если сомневаетесь, выберите этот вариант.";
 "id_your_green_wallet_is_now_ready" = "Ваш Green-кошелек готов к использованию.";
-"id_your_ios_device_might_not_be" = "Ваше устройство iOS может не поддерживаться";
+"id_your_ios_device_might_not_be" = "Ваше iOS-устройство может не поддерживаться";
 "id_your_notifications_will_be" = "Здесь будут показаны ваши уведомления.";
 "id_your_pin_or_your_mnemonic_will" = "Для доступа к кошельку потребуется PIN-код или мнемоническая фраза.";
 "id_your_s_sent_to_s_has_been" = "Ваша %@ , отправленная на %@ , подтверждена";
@@ -1096,5 +1097,5 @@
 "id_your_wallet_is_locked_for_a" = "Ваш кошелек заблокирован для сброса двухфакторной аутентификации. Сброс будет завершен через%d дней.";
 "id_your_wallet_is_locked_under_2fa" = "Ваш кошелек заблокирован из-за спора 2FA.";
 "id_your_wallet_is_not_yet_fully" = "Ваш кошелек не защищен.\nПожалуйста, включите двухфакторную аутентификацию.";
-"id_your_watchonly_username_and" = "Ваше имя пользователя и пароль watch-only будут храниться на этом устройстве в незашифрованном виде. Если ваше устройство будет взломано, третьи лица смогут получить доступ к вашей истории транзакций. Нажмите «ОК», чтобы продолжить.";
+"id_your_watchonly_username_and" = "Ваше имя пользователя и пароль для режима watch-only будут храниться на этом устройстве в незашифрованном виде. Если ваше устройство будет взломано, третьи лица смогут получить доступ к истории ваших транзакций. Нажмите «ОК», чтобы продолжить.";
 "id_youve_entered_an_invalid_pin" = "Вы ввели неверный PIN-код слишком много раз.";

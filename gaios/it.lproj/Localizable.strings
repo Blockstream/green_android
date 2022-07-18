@@ -148,8 +148,8 @@
 "id_cancel_twofactor_reset" = "Annulla reset Due Fattori";
 "id_cannot_remove_enabled_network" = "Impossibile rimuovere il network abilitato. Ti preghiamo di disabilitarlo.";
 "id_cant_connect_to_this_url" = "Impossibile connettersi a questo URL";
-"id_change" = "Modifica";
-"id_change_address" = "Modifica indirizzo";
+"id_change" = "Resto";
+"id_change_address" = "Indirizzo per il resto";
 "id_change_pin" = "Modifica PIN";
 "id_changing_reference_exchange" = "Modificando il tasso di cambio di riferimento resetterai la tua soglia 2FA a 0. Ricorda di ripristinare la soglia 2FA una volta speso. ";
 "id_check_device" = "Controlla il dispositivo";
@@ -188,7 +188,7 @@
 "id_coming_soon" = "Coming soon!";
 "id_communication_timed_out_make" = "Comunicazione scaduta. Assicurati che il dispositivo sia acceso e riprova.";
 "id_completed" = "Completo";
-"id_confidential" = "Riservato";
+"id_confidential" = "Confidenziale";
 "id_confidential_transaction" = "Confidential Transaction";
 "id_confirm_action" = "Conferma azione";
 "id_confirm_by_typing_the_wallet" = "Conferma digitando il nome del wallet";
@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "La connessione a nodi Tor (.onion) garantisce massima privacy e sicurezza. Seleziona \"OK\" per continuare.";
 "id_connecting_to_your_device" = "Connessione al tuo dispositivo in corso";
 "id_connection" = "Connessione";
-"id_connection_amp_validation" = "Connessione &amp; Impostazioni Validazione ";
 "id_connection_failed" = "Connessione fallita";
 "id_connection_to_device_failed" = "Connessione al dispositivo fallita! Avvicinalo e riprova.";
 "id_contact_support_at_s_or_visit_s" = "Per ricevere supporto contatta %@ oppure visita %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Custom fee rate di default";
 "id_default_transaction_priority" = "Priorità transazioni di default";
 "id_delete" = "Elimina";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Elimina il tuo wallet dal database di Blockstream Green in modo permanente. Così facendo, non potrai più accedervi";
 "id_delete_s_twofactor" = "Elimina %@ Due Fattori";
 "id_delete_wallet" = "Elimina Wallet";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Rimuovi wallet";
 "id_rename" = "Rinomina";
 "id_rename_account" = "Rinomina account";
-"id_rename_wallet" = "Rinomina Wallet";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "sostituibile";
 "id_request_amount" = "Richiedi importo";
 "id_request_failed" = "Richiesta fallita";
@@ -979,7 +979,7 @@
 "id_unlocked_coins_can_be_spent_and" = "I coin sbloccati possono essere spesi e sono inclusi nel tuo saldo.";
 "id_unlocking_coins" = "Sblocco coin in corso";
 "id_unstable_internet_connection" = "Connessione internet instabile";
-"id_update" = "Aggiornamento";
+"id_update" = "Aggiorna";
 "id_updated" = "aggiornato";
 "id_updating_firmware" = "Aggiornamento firmware in corso...";
 "id_uploading_firmware" = "Caricamento firmware";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "Attenzione: le credenziali watch-only verranno salvate su questo dispositivo";
 "id_warning_you_need_a_positive" = "Attenzione! Per inviare transazioni è necessario un saldo L-BTC positivo.";
 "id_watchonly" = "Watch-only";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Dettagli Watch-only";
 "id_watchonly_disabled" = "Watch-only disabilitato";
 "id_watchonly_login" = "Login watch-only";
@@ -1096,5 +1097,5 @@
 "id_your_wallet_is_locked_for_a" = "Wallet bloccato per reset Autenticazione a Due Fattori. Il reset verrà completato tra %d giorni.";
 "id_your_wallet_is_locked_under_2fa" = "Wallet bloccato per contestazione 2FA.";
 "id_your_wallet_is_not_yet_fully" = "Il tuo wallet non è ancora completamente al sicuro.\nAbilita Autenticazione a Due Fattori.";
-"id_your_watchonly_username_and" = "Il tuo username e la tua password watch-only verranno salvati in modalità non criptata su questo dispositivo. Se il tuo dispositivo è compromesso, soggetti terzi possono accedere alle cronologia delle tue transazioni. Premi OK per continuare.";
+"id_your_watchonly_username_and" = "Il tuo username e la tua password watch-only verranno salvati in chiaro su questo dispositivo. Se il tuo dispositivo è compromesso, soggetti terzi possono accedere alle cronologia delle tue transazioni. Premi OK per continuare.";
 "id_youve_entered_an_invalid_pin" = "PIN non valido inserito troppe volte.";

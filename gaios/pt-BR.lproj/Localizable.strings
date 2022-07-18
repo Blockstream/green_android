@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Conectar através da rede Tor (.onion) garante máxima privacidade e segurança. Pressione \"OK\" para continuar.";
 "id_connecting_to_your_device" = "Conectando ao seu dispositivo";
 "id_connection" = "Conexão";
-"id_connection_amp_validation" = "Conexão & amp; Configurações de validação";
 "id_connection_failed" = "A conexão falhou";
 "id_connection_to_device_failed" = "Falha na conexão com o dispositivo! Aproxime-se do dispositivo e tente novamente.";
 "id_contact_support_at_s_or_visit_s" = "Contate o suporte em %@ ou  visite %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Taxa de rede personalizada";
 "id_default_transaction_priority" = "Padrão de prioridade das transações";
 "id_delete" = "Excluir";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Exclua permanentemente sua carteira do banco de dados da Blockstream Green. Nunca mais será possível logar nesta carteira. ";
 "id_delete_s_twofactor" = "Remover autenticação de dois fatores %@";
 "id_delete_wallet" = "Excluir carteira";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Remover carteira";
 "id_rename" = "Editar";
 "id_rename_account" = "Editar";
-"id_rename_wallet" = "Editar";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "substituível";
 "id_request_amount" = "Solicitar quantia específica";
 "id_request_failed" = "Falha na solicitação";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "Aviso: As credenciais de acesso ao modo somente leitura serão salvas neste aparelho";
 "id_warning_you_need_a_positive" = "Aviso! Você precisa ter saldo positivo de L-BTC para enviar transações.";
 "id_watchonly" = "Somente leitura";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Detalhes modo somente leitura";
 "id_watchonly_disabled" = "Modo somente leitura desativado";
 "id_watchonly_login" = "Habilitar modo somente leitura";

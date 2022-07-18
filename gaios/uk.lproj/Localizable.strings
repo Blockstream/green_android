@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Підключення до Tor (.onion) вузлів забезпечує максимальну конфіденційність і безпеку. Натисніть \"OK\", щоб продовжити.";
 "id_connecting_to_your_device" = "Підключення до вашого пристрою";
 "id_connection" = "З'єднання";
-"id_connection_amp_validation" = "Підключення & amp; налаштування валідації";
 "id_connection_failed" = "Помилка підключення";
 "id_connection_to_device_failed" = "Помилка з'єднання із пристроєм! Наблизьтесь до пристрою і спробуйте ще раз.";
 "id_contact_support_at_s_or_visit_s" = "Зверніться в службу підтримки %@ або відвідайте %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Стандартна комісія";
 "id_default_transaction_priority" = "Стандартний пріоритет транзакції";
 "id_delete" = "Видалити";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Видалити назавжди ваш гаманець з бази даних Blockstream Green. Після цього ви ніколи не зможете увійти в нього.";
 "id_delete_s_twofactor" = "Видалити %@ двофакторне налаштування";
 "id_delete_wallet" = "Видалити гаманець";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Видалити гаманець";
 "id_rename" = "Перейменувати";
 "id_rename_account" = "Перейменувати акаунт";
-"id_rename_wallet" = "Перейменувати гаманець";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "замінний";
 "id_request_amount" = "Запит суми";
 "id_request_failed" = "Помилка запиту";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "Увага! Облікові дані watch-only будуть збережені на вашому пристрої";
 "id_warning_you_need_a_positive" = "Увага! Вам потрібен позитивний баланс L-BTC, щоб мати можливість відправляти транзакції.";
 "id_watchonly" = "Холодний гаманець";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "Холодний гаманець відключено";
 "id_watchonly_login" = "Логін холодного гаманця";

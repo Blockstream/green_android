@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Připojení k uzlům Tor (.onion) umožňuje maximální soukromí a zabezpečení. Pokračujte stisknutím tlačítka „OK“.";
 "id_connecting_to_your_device" = "Připojování k zařízení";
 "id_connection" = "Připojení";
-"id_connection_amp_validation" = "Nastavení připojení &amp; ověření";
 "id_connection_failed" = "Připojení se nezdařilo";
 "id_connection_to_device_failed" = "Připojení k zařízení selhalo! Přesuňte se blíže k zařízení a zkuste to znovu.";
 "id_contact_support_at_s_or_visit_s" = "Kontaktujte podporu na %@ nebo navštivte %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Výchozí sazba vlastního poplatku";
 "id_default_transaction_priority" = "Výchozí priorita transakce";
 "id_delete" = "Smazat";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Trvale odstraňte svou peněženku z databáze Blockstream Green. Poté se k ní již nikdy nebudete moci přihlásit.";
 "id_delete_s_twofactor" = "Smazat %@ 2-Faktor";
 "id_delete_wallet" = "Smazat peněženku";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Odebrat peněženku";
 "id_rename" = "Přejmenovat";
 "id_rename_account" = "Přejmenovat účet";
-"id_rename_wallet" = "Přejmenovat peněženku";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "zaměnitelný";
 "id_request_amount" = "Vyžádat částku";
 "id_request_failed" = "Požadavek selhal";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "Varování: Vaše údaje pro režim Pouze-pro-sledování budou uložena do vašeho zařízení";
 "id_warning_you_need_a_positive" = "Varování! Abyste mohli odesílat transakce, potřebujete kladný zůstatek L-BTC.";
 "id_watchonly" = "Pouze-pro-sledování";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Pouze pro sledování - podrobnosti";
 "id_watchonly_disabled" = "Pouze-pro-sledování je zakázáno";
 "id_watchonly_login" = "Přihlášení Pouze-pro-sledování";

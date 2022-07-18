@@ -1,14 +1,14 @@
 "id_1030_minutes" = "~ 10-30分钟";
 "id_12_confirmations" = "已确认1/2";
 "id_12_months_51840_blocks" = "12个月（51840个区块）";
-"id_12_words" = "12 words";
+"id_12_words" = "12个单词";
 "id_15_months_65535_blocks" = "15个月（65535个区块）";
 "id_1_double_check_all_of_your" = "1. 请仔细检查所有助记词，所有单词都正确吗？\n2. 助记词的顺序很重要！请确保您已按正确顺序输入单词。\n\n如果这些提示都没有帮助到您，或者您没有12、24或27个单词的助记词，请查看我们的帮助中心。";
 "id_1d_2s_ago" = "%1$d %2$@前";
 "id_1d_minutes" = "%1$d分钟";
 "id_1s_blocks_left_2d" = "剩余%1$@区块%2$d";
 "id_1s_twofactor_setup" = "%1$@设置双重验证";
-"id_24_words" = "24 words";
+"id_24_words" = "24个单词";
 "id_2_hours" = "~ 2小时";
 "id_2fa_dispute_in_progress" = "2FA争议正在进行中";
 "id_2fa_expired" = "双重验证（2FA）已失效";
@@ -29,7 +29,7 @@
 "id_accept" = "接受";
 "id_access" = "接入";
 "id_account" = "账户";
-"id_account_extended_public_keys" = "Account Extended Public Keys";
+"id_account_extended_public_keys" = "账户扩展公钥";
 "id_account_id" = "账户ID";
 "id_account_name" = "账户名称";
 "id_account_type" = "账户类型";
@@ -46,7 +46,7 @@
 "id_add_custom_network_by_qr_code" = "通过二维码添加自定义网络";
 "id_add_custom_network_by_url" = "通过URL来添加自定义网络";
 "id_add_new_account" = "添加新账户";
-"id_add_recipient" = "Add Recipient";
+"id_add_recipient" = "添加收款人";
 "id_add_wallet" = "添加钱包";
 "id_additional_networks" = "更多网络";
 "id_additional_security" = "更多安全设置";
@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "连接至Tor (.onion)节点将使得隐私及安全性能最大化。点击\"OK\"继续。";
 "id_connecting_to_your_device" = "正在连接到你的设备";
 "id_connection" = "连接";
-"id_connection_amp_validation" = "连接&amp;验证设置";
 "id_connection_failed" = "连接失败";
 "id_connection_to_device_failed" = "连接设备失败！将设备离的近一点再试一次。";
 "id_contact_support_at_s_or_visit_s" = "联系支持人员%@或者访问%@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "默认自定义转账手续费";
 "id_default_transaction_priority" = "默认转账优先级";
 "id_delete" = "删除";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "从 Blockstream Green数据库中永久删除您的钱包。此后您将永远无法登录。";
 "id_delete_s_twofactor" = "删除%@双重验证";
 "id_delete_wallet" = "删除钱包";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "移除钱包";
 "id_rename" = "重命名";
 "id_rename_account" = "重命名账户";
-"id_rename_wallet" = "重命名钱包";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "可替换";
 "id_request_amount" = "需要的金额";
 "id_request_failed" = "请求失败";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "警告：Watch-only登录信息将被保存在你的设备上";
 "id_warning_you_need_a_positive" = "警告！您的L-BTC余额需要大于0，才能发起转账。";
 "id_watchonly" = "Watch-only";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "Watch-only已关闭";
 "id_watchonly_login" = "Watch-only登录";

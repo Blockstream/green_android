@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Tor(.onion)ノードに接続することで最高のセキュリティとプライバシーを保証します。このまま進めるには \"OK\" を押してください。";
 "id_connecting_to_your_device" = "デバイスに接続中";
 "id_connection" = "接続";
-"id_connection_amp_validation" = "接続と検証の設定";
 "id_connection_failed" = "接続失敗";
 "id_connection_to_device_failed" = "デバイスへの接続に失敗しました。デバイスに近づいて再度お試しください。";
 "id_contact_support_at_s_or_visit_s" = "%@までサポートにご連絡いただくか、%@をご覧ください。";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "既定のカスタム手数料率";
 "id_default_transaction_priority" = "既定のトランザクション優先順位";
 "id_delete" = "消去";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Blockstream Greenデータベースから永久にウォレットを消去します。その後二度とログインすることはできません。";
 "id_delete_s_twofactor" = "%@の2段階認証を消去";
 "id_delete_wallet" = "ウォレットを消去する";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "ウォレットを消去";
 "id_rename" = "名前を変更する";
 "id_rename_account" = "アカウント名を変更";
-"id_rename_wallet" = "ウォレットの名前を変更する";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "代替可能";
 "id_request_amount" = "正確な金額をリクエスト";
 "id_request_failed" = "要請失敗";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "注意: 読み取りモードの情報はデバイスに保存されます";
 "id_warning_you_need_a_positive" = "注意: トランザクションの送信にはL-BTC残高が必要です。";
 "id_watchonly" = "読み取りモード";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "読み取りモードが無効";
 "id_watchonly_login" = "読み取りモードでログイン";

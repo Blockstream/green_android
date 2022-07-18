@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Das Verbinden mit Tor (.onion) Nodes ermöglicht maximale Privatsphäre und Sicherheit. Klicke \"OK\" um fortzufahren.";
 "id_connecting_to_your_device" = "Verbindet sich zu deinem Gerät";
 "id_connection" = "Verbindung";
-"id_connection_amp_validation" = "Einstellungen für Verbindung &amp; Validierung";
 "id_connection_failed" = "Verbindung fehlgeschlagen";
 "id_connection_to_device_failed" = "Verbindung zum Gerät fehlgeschlagen! Bewege dich näher zum Gerät und versuche es erneut.";
 "id_contact_support_at_s_or_visit_s" = "Kontaktiere den Support unter %@ oder besuche %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Benutzerdefinierte Gebührenrate";
 "id_default_transaction_priority" = "Eigene Transaktionspriorität";
 "id_delete" = "Löschen";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Dein Wallet dauerhaft aus der Blockstream Green-Datenbank löschen. Danach wirst du dich nicht wieder einloggen können.";
 "id_delete_s_twofactor" = "%@ Zwei-Faktor löschen";
 "id_delete_wallet" = "Wallet löschen";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Wallet entfernen";
 "id_rename" = "Umbenennen";
 "id_rename_account" = "Konto umbenennen";
-"id_rename_wallet" = "Wallet umbenennen";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "austauschbar";
 "id_request_amount" = "Betrag anfragen";
 "id_request_failed" = "Anfrage gescheitert";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "Achtung: Watch-Only Anmeldedaten werden auf deinem Gerät gespeichert.";
 "id_warning_you_need_a_positive" = "Achtung! Sie brauchen ein positives L-BTC Guthaben um Transaktionen zu tätigen";
 "id_watchonly" = "Watch-Only";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "Watch-Only deaktiviert";
 "id_watchonly_login" = "Watch-Only Login";

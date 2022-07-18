@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Door te verbinden met Tor (.onion) nodes, verzeker je jezelf van maximale privacy en veiligheid. Druk op \"OK\" om door te gaan.";
 "id_connecting_to_your_device" = "Verbinden met je apparaat";
 "id_connection" = "Verbinding";
-"id_connection_amp_validation" = "Verbindings- en validatie-instellingen";
 "id_connection_failed" = "Verbinding verbroken";
 "id_connection_to_device_failed" = "De verbinding met het apparaat is verbroken! Blijf dichter in de buurt van het apparaat en probeer het opnieuw.";
 "id_contact_support_at_s_or_visit_s" = "Neem contact op met de ondersteuning op %@ of bezoek %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Aangepast standaardtarief";
 "id_default_transaction_priority" = "Standaard transactieprioriteit";
 "id_delete" = "Verwijderen";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Verwijder je wallet permanent uit de Blockstream Green-database. Je kunt daarna nooit meer inloggen.";
 "id_delete_s_twofactor" = "Verwijder tweetrapsauthenticatie %@";
 "id_delete_wallet" = "Wallet verwijderen";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Wallet verwijderen";
 "id_rename" = "Hernoemen";
 "id_rename_account" = "Account hernoemen";
-"id_rename_wallet" = "Wallet hernoemen";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "vervangbaar";
 "id_request_amount" = "Bedrag vragen";
 "id_request_failed" = "Verzoek mislukt";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "Waarschuwing: aanmeldingsgegevens voor watch-only worden opgeslagen op je apparaat";
 "id_warning_you_need_a_positive" = "Waarschuwing! Je hebt een positieve L-BTC-balans nodig om transacties te versturen.";
 "id_watchonly" = "Watch-only";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "Watch-only uitgeschakeld";
 "id_watchonly_login" = "Aanmelden Watch-only";

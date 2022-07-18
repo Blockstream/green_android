@@ -58,7 +58,7 @@ extension PopoverMenuAccountViewController: UITableViewDataSource, UITableViewDe
             let option = menuOptions[indexPath.row]
             switch option {
             case .rename:
-                cell.textLabel?.text = NSLocalizedString("id_rename_wallet", comment: "")
+                cell.textLabel?.text = NSLocalizedString("id_rename_account", comment: "")
             case .archive:
                 cell.textLabel?.text = NSLocalizedString("id_archive", comment: "")
             }

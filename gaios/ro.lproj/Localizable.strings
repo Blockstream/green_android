@@ -218,7 +218,6 @@
 "id_connecting_to_tor_onion_nodes" = "Conectarea la noduri Tor (.onion) permite un nivel maxim de confidențialitate și securitate. Apăsați \"OK\" pentru a continua.";
 "id_connecting_to_your_device" = "Connecting to your device";
 "id_connection" = "Conexiune";
-"id_connection_amp_validation" = "Setări de conectare și validare";
 "id_connection_failed" = "Conectare eșuată";
 "id_connection_to_device_failed" = "Conectarea la dispozitiv a eșuat! Apropiați-vă de dispozitiv și încercați din nou.";
 "id_contact_support_at_s_or_visit_s" = "Contactați echipa de suport la adresa %@ sau vizitați %@";
@@ -267,6 +266,7 @@
 "id_default_custom_fee_rate" = "Rată implicită de plată a comisioanelor ";
 "id_default_transaction_priority" = "Prioritate implicită a tranzacției";
 "id_delete" = "Șterge";
+"id_delete_credentials" = "Delete credentials";
 "id_delete_permanently_your_wallet" = "Șterge definitiv portofelul din baza de date Blockstream Green. Nu vă veți mai putea loga cu acest portofel niciodată.";
 "id_delete_s_twofactor" = "Ștergere %@ Autentificare cu Doi Factori";
 "id_delete_wallet" = "Șterge portofel";
@@ -735,7 +735,7 @@
 "id_remove_wallet" = "Eliminare portofel";
 "id_rename" = "Rename";
 "id_rename_account" = "Redenumire cont";
-"id_rename_wallet" = "Redenumește portofel";
+"id_rename_wallet" = "Rename wallet";
 "id_replaceable" = "înlocuibil";
 "id_request_amount" = "Request Amount";
 "id_request_failed" = "Cerere Eșuată";
@@ -1031,6 +1031,7 @@
 "id_warning_watchonly_credentials" = "Avertisment: Datele pentru logare în modul watch-only vor fi salvate în dispozitivul dvs.";
 "id_warning_you_need_a_positive" = "Atenție! Aveți nevoie de o cantitate mai mare de 0 L-BTC pentru a trimite tranzacții.";
 "id_watchonly" = "Watch-only (doar verificare și primire)";
+"id_watchonly_credentials" = "Watch-only credentials";
 "id_watchonly_details" = "Watch-only details";
 "id_watchonly_disabled" = "Modul watch-only este dezactivat";
 "id_watchonly_login" = "Logare în modul watch-only";
