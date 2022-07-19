@@ -32,8 +32,6 @@ data class Transaction(
     @SerialName("memo") val memo: String,
     @SerialName("rbf_optin") val rbfOptin: Boolean,
 
-    @SerialName("server_signed") val serverSigned: Boolean,
-
     @SerialName("spv_verified") val spvVerified: String,
     @SerialName("transaction_size") val txSize: Long,
     @SerialName("transaction_vsize") val txVSize: Long,
@@ -42,7 +40,6 @@ data class Transaction(
     @SerialName("txhash") val txHash: String,
 
     @SerialName("type") val type: String,
-    @SerialName("user_signed") val userSigned: Boolean,
 
     @SerialName("satoshi") val satoshi: Map<String, Long>
 ) : GAJson<Transaction>(),Parcelable {
@@ -141,14 +138,12 @@ data class Transaction(
             feeRate = 0,
             memo = "",
             rbfOptin = false,
-            serverSigned = false,
             spvVerified = "",
             txSize = 0,
             txVSize = 0,
             txWeight = 0,
             txHash = "",
             type = "",
-            userSigned = false,
             satoshi = mapOf()
         )
     }
