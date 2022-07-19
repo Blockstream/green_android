@@ -87,7 +87,7 @@ struct Balance: Codable {
     }
 
     func toAssetValue() -> (String, String) {
-        return (asset?.first?.value.localeFormattedString(Int(assetInfo?.precision ?? 8)) ?? "n/a", assetInfo?.ticker ?? "")
+        return (asset?.first?.value.localeFormattedString(Int(assetInfo?.precision ?? 8)) ?? "n/a", assetInfo?.ticker ?? "n/a")
     }
 
     func toValue() -> (String, String) {

@@ -285,14 +285,7 @@ class TransactionViewController: UIViewController {
 
             if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
                 vc.tag = amount.key
-                if let asset = SessionsManager.current?.registry?.info(for: amount.key) {
-                    vc.asset = asset
-                } else {
-                    vc.asset = AssetInfo(assetId: amount.key,
-                                         name: NSLocalizedString("id_no_registered_name_for_this", comment: ""),
-                                         precision: 0,
-                                         ticker: NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
-                }
+                vc.asset = SessionsManager.current?.registry?.info(for: amount.key)
                 vc.satoshi = wallet?.satoshi?[amount.key] ?? 0
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: false, completion: nil)

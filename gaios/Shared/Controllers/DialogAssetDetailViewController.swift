@@ -107,9 +107,11 @@ extension DialogAssetDetailViewController: UITableViewDelegate, UITableViewDataS
         if let cell = tableView.dequeueReusableCell(withIdentifier: "AssetDetailCell") as? AssetDetailCell {
             cell.selectionStyle = .none
             let cellType = assetDetailCellTypes[indexPath.row]
+            let assetName = asset?.name == "" ? nil : asset?.name
+            let assetTicker = asset?.ticker == "" ? nil : asset?.ticker
             switch cellType {
             case .name:
-                cell.configure(NSLocalizedString("id_asset_name", comment: ""), asset?.name ?? NSLocalizedString("id_no_registered_name_for_this", comment: ""))
+                cell.configure(NSLocalizedString("id_asset_name", comment: ""), assetName ?? NSLocalizedString("id_no_registered_name_for_this", comment: ""))
             case .identifier:
                 cell.configure(NSLocalizedString("id_asset_id", comment: ""), tag)
             case .amount:
@@ -118,7 +120,7 @@ extension DialogAssetDetailViewController: UITableViewDelegate, UITableViewDataS
             case .precision:
                 cell.configure(NSLocalizedString("id_precision", comment: ""), isLBTC ? "8" : String(asset?.precision ?? 0))
             case .ticker:
-                cell.configure(NSLocalizedString("id_ticker", comment: ""), isLBTC ? "L-BTC" : asset?.ticker ?? NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
+                cell.configure(NSLocalizedString("id_ticker", comment: ""), assetTicker ?? NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
             case .issuer:
                 cell.configure(NSLocalizedString("id_issuer", comment: ""), isLBTC ? NSLocalizedString("id_lbtc_has_no_issuer_and_is", comment: "") : asset?.entity?.domain ?? NSLocalizedString("id_unknown", comment: ""))
             }

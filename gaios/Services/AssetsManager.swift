@@ -82,7 +82,7 @@ class AssetsManagerLiquid: Codable, AssetsManagerProtocol {
             }
             return info
         }
-        return AssetInfo(assetId: key, name: "", precision: 0, ticker: "")
+        return AssetInfo(assetId: key, name: nil, precision: 0, ticker: nil)
     }
 
     func image(for key: String) -> UIImage {
