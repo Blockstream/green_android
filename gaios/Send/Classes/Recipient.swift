@@ -9,21 +9,11 @@ class Recipient: Codable {
 
     var isSendAll: Bool = false
 
-    private var asset: AssetInfo? {
-        guard let assetId = self.assetId else {
-            return nil
-        }
-        return SessionsManager.current?.registry?.info(for: assetId)
-    }
-
     private var btc: String {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     func getSatoshi() -> UInt64? {
-        if self.assetId == nil {
-            return nil
-        }
         var amountText = amount ?? ""
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)
@@ -32,8 +22,11 @@ class Recipient: Codable {
         }
         if isFiat {
             return Balance.fromFiat(amountText)?.satoshi
-        } else {
+        } else if assetId == nil || assetId == btc {
             return Balance.fromDenomination(amountText)?.satoshi
+        } else {
+            let asset = SessionsManager.current?.registry?.info(for: assetId ?? btc)
+            return Balance.fromValue(amountText, asset: asset)?.satoshi
         }
     }
 }

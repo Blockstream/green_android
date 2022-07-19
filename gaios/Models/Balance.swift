@@ -55,6 +55,16 @@ struct Balance: Codable {
         return Balance.from(details: details)
     }
 
+    static func fromValue(_ value: String, asset: AssetInfo? = nil) -> Balance? {
+        let feeAsset = SessionsManager.current?.account?.gdkNetwork?.getFeeAsset()
+        let assetId = asset?.assetId ?? feeAsset ?? "btc"
+        var details: [String: Any] = [assetId: value]
+        if let asset = asset, assetId != feeAsset {
+            details["asset_info"] = asset.encode()
+        }
+        return Balance.from(details: details)
+    }
+
     static func fromSatoshi(_ satoshi: UInt64, asset: AssetInfo? = nil) -> Balance? {
         let feeAsset = SessionsManager.current?.account?.gdkNetwork?.getFeeAsset()
         var details: [String: Any] = ["satoshi": satoshi]

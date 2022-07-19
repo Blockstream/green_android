@@ -263,10 +263,10 @@ class RecipientCell: UITableViewCell {
                 let balance = Balance.fromSatoshi(satoshi) {
                 lblAmountExchange.isHidden = false
                 if isFiat {
-                    let (fiat, fiatCurrency) = balance.toFiat()
+                    let (fiat, fiatCurrency) = balance.toValue()
                     lblAmountExchange.text = "≈ \(fiat) \(fiatCurrency)"
                 } else {
-                    let (fiat, fiatCurrency) = balance.toValue()
+                    let (fiat, fiatCurrency) = balance.toFiat()
                     lblAmountExchange.text = "≈ \(fiat) \(fiatCurrency)"
                 }
             }
@@ -312,7 +312,8 @@ class RecipientCell: UITableViewCell {
     }
 
     func convertAmount() {
-        if recipient?.assetId != nil {
+        if let assetId = recipient?.assetId,
+           assetId != btc {
             return
         }
         let satoshi = getSatoshi() ?? 0
