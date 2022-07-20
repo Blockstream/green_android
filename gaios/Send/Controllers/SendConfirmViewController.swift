@@ -150,6 +150,10 @@ class SendConfirmViewController: KeyboardViewController {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()
             self.navigationController?.popToRootViewController(animated: true)
+
+            StoreReviewHelper
+                .shared
+                .request()
         }
     }
 

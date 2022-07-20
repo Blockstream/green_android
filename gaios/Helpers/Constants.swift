@@ -29,6 +29,7 @@ enum AppStorage {
     static let analyticsUUID = "analytics_uuid"
     static let countlyOffset = "countly_offset"
     static let alwaysAskPassphrase = "always_ask_passphrase"
+    static let storeReviewDate = "store_review_date"
 }
 
 enum ExternalUrls {

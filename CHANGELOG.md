@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Enable OTP feature on Jade
 - Enable Emergency Restore on Jade
+- Add Apple Store inapp rating
 
 ### Changed
 - Update labels on app settings
