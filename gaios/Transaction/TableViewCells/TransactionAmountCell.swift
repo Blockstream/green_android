@@ -70,7 +70,7 @@ class TransactionAmountCell: UITableViewCell {
     }
 
     func amount(_ tx: Transaction, index: Int) -> (key: String, value: UInt64) {
-        let amounts = Transaction.sort(tx.amounts)
+        let amounts = Array(tx.amounts)
         var amount = amounts[index]
         // OUT transactions in BTC/L-BTC have fee included
         let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()

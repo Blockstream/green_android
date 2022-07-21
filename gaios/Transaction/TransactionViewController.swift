@@ -16,11 +16,6 @@ class TransactionViewController: UIViewController {
     var transaction: Transaction!
 
     private var account = AccountsManager.shared.current
-    private var amounts: [(key: String, value: UInt64)] {
-        get {
-            return Transaction.sort(transaction.amounts)
-        }
-    }
 
     var viewInExplorerPreference: Bool {
         get {
@@ -282,7 +277,7 @@ class TransactionViewController: UIViewController {
 
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
-
+            let amounts = Array(transaction.amounts)
             if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
                 vc.tag = amount.key
                 vc.asset = SessionsManager.current?.registry?.info(for: amount.key)
@@ -303,22 +298,14 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case TransactionSection.amount.rawValue:
-            var items = 0
-            if isLiquid {
-                if isIncoming {
-                    items = amounts.count
-                } else {
-                    items = 1
-                }
-                if isRedeposit {
-                    items = 0
-                }
-            } else {
-                if !isRedeposit {
-                    items = 1
-                }
+            switch transaction.type {
+            case .incoming:
+                return transaction.amounts.count
+            case .redeposit:
+                return 0
+            default:
+                return 1
             }
-            return items
         case TransactionSection.fee.rawValue:
             return 1
         case TransactionSection.status.rawValue:
