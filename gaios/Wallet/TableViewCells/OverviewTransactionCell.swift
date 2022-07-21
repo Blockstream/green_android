@@ -90,6 +90,7 @@ class OverviewTransactionCell: UITableViewCell {
             lblNote.text = String(format: "%@ %@", NSLocalizedString("id_sent", comment: ""), isLiquid && isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         }
         icon.image = SessionsManager.current?.registry?.image(for: transaction.defaultAsset)
+        lblAmount.textColor = color(tx: transaction)
         setSpvVerifyIcon(tx: transaction)
     }
 
@@ -147,11 +148,12 @@ class OverviewTransactionCell: UITableViewCell {
         }
     }
 
-    func checkTransactionType(transaction: Transaction) {
-        if transaction.type == .incoming {
-            lblAmount.textColor = isLiquid ? UIColor.blueLight() : UIColor.customMatrixGreen()
-        } else {
-            lblAmount.textColor = UIColor.white
+    func color(tx: Transaction) -> UIColor {
+        switch tx.type {
+        case .incoming:
+            return tx.isLiquid ? UIColor.blueLight() : UIColor.customMatrixGreen()
+        default:
+            return UIColor.white
         }
     }
 }

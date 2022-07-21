@@ -29,27 +29,22 @@ class TransactionViewController: UIViewController {
     private var transactionToken: NSObjectProtocol?
     private var blockToken: NSObjectProtocol?
     private var cantBumpFees: Bool {
-        get {
             return SessionsManager.current?.isResetActive ?? false ||
             !transaction.canRBF || account?.isWatchonly ?? false
+    }
+    private var amounts: [(key: String, value: UInt64)] {
+        if transaction?.type == .some(.redeposit) {
+            return []
         }
+        var amounts = Array(transaction.amounts)
+        // OUT transactions in BTC/L-BTC have fee included
+        if transaction.type == .some(.outgoing) {
+            let feeAsset = account?.gdkNetwork?.getFeeAsset()
+            amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value - transaction.fee) : $0 }
+        }
+        return amounts.filter({ $0.value != 0 })
     }
 
-    var isIncoming: Bool {
-        get {
-            transaction.type == .incoming
-        }
-    }
-    var isRedeposit: Bool {
-        get {
-            transaction.type == .redeposit
-        }
-    }
-    var isLiquid: Bool {
-        get {
-            account?.gdkNetwork?.liquid ?? false
-        }
-    }
     var headerH: CGFloat = 44.0
 
     override func viewDidLoad() {
@@ -83,9 +78,9 @@ class TransactionViewController: UIViewController {
 
     func navBarSetup() {
         var status = NSLocalizedString("id_sent", comment: "")
-        if isRedeposit {
+        if transaction.type == .redeposit {
             status = NSLocalizedString("id_redeposited", comment: "")
-        } else if isIncoming {
+        } else if transaction.type == .incoming {
             status = NSLocalizedString("id_received_on", comment: "")
         }
         let leftBarItem = ((Bundle.main.loadNibNamed("TransactionBarItem", owner: self, options: nil)![0] as? TransactionBarItem)!)
@@ -122,7 +117,7 @@ class TransactionViewController: UIViewController {
 
         AnalyticsManager.shared.shareTransaction(account: AccountsManager.shared.current, isShare: true)
         // We have more options in liquid for confidential txs
-        if isLiquid {
+        if transaction.isLiquid {
             let storyboard = UIStoryboard(name: "Shared", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogShareTxOptionViewController") as? DialogShareTxOptionViewController {
                 vc.modalPresentationStyle = .overFullScreen
@@ -203,7 +198,7 @@ class TransactionViewController: UIViewController {
     }
 
     func explorerAction() {
-        if isLiquid {
+        if transaction.isLiquid {
             let storyboard = UIStoryboard(name: "Shared", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogExplorerOptionsViewController") as? DialogExplorerOptionsViewController {
                 vc.modalPresentationStyle = .overFullScreen
@@ -273,18 +268,16 @@ class TransactionViewController: UIViewController {
     }
 
     func didSelectAmountAt(_ index: Int) {
-        if !isLiquid { return }
+        if !transaction.isLiquid { return }
 
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
-            let amounts = Array(transaction.amounts)
-            if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
-                vc.tag = amount.key
-                vc.asset = SessionsManager.current?.registry?.info(for: amount.key)
-                vc.satoshi = wallet?.satoshi?[amount.key] ?? 0
-                vc.modalPresentationStyle = .overFullScreen
-                present(vc, animated: false, completion: nil)
-            }
+            let amount = amounts[index]
+            vc.tag = amount.key
+            vc.asset = SessionsManager.current?.registry?.info(for: amount.key)
+            vc.satoshi = wallet?.satoshi?[amount.key] ?? 0
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 }
@@ -298,14 +291,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case TransactionSection.amount.rawValue:
-            switch transaction.type {
-            case .incoming:
-                return transaction.amounts.count
-            case .redeposit:
-                return 0
-            default:
-                return 1
-            }
+            return amounts.count
         case TransactionSection.fee.rawValue:
             return 1
         case TransactionSection.status.rawValue:
@@ -317,14 +303,9 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
 
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        //
-    }
-
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        switch indexPath.section {
-        case TransactionSection.amount.rawValue:
+        switch TransactionSection(rawValue: indexPath.section) {
+        case .amount:
             let copyAmount: ((String) -> Void)? = { [weak self] value in
                 self?.copyToClipboard(value)
             }
@@ -332,11 +313,12 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 self?.copyToClipboard(value)
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
-                cell.configure(tx: transaction, network: account?.network, index: indexPath.row, copyAmount: copyAmount, copyRecipient: copyRecipient)
+                let amount = amounts[indexPath.row]
+                cell.configure(tx: transaction, id: amount.key, value: amount.value, copyAmount: copyAmount, copyRecipient: copyRecipient)
                 cell.selectionStyle = .none
                 return cell
             }
-        case TransactionSection.fee.rawValue:
+        case .fee:
             let feeAction: VoidToVoid? = { [weak self] in
                 self?.increaseFeeTapped()
             }
@@ -345,19 +327,19 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionFeeCell") as? TransactionFeeCell {
                 cell.configure(transaction: transaction,
-                               isLiquid: isLiquid,
+                               isLiquid: transaction.isLiquid,
                                feeAction: feeAction,
                                copyFee: copyFee)
                 cell.selectionStyle = .none
                 return cell
             }
-        case TransactionSection.status.rawValue:
+        case .status:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionStatusCell") as? TransactionStatusCell {
-                cell.configure(transaction: transaction, isLiquid: isLiquid)
+                cell.configure(transaction: transaction, isLiquid: transaction.isLiquid)
                 cell.selectionStyle = .none
                 return cell
             }
-        case TransactionSection.detail.rawValue:
+        case .detail:
             let noteAction: VoidToVoid? = { [weak self] in
                 self?.editNote()
             }
@@ -380,7 +362,6 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
         default:
             break
         }
-
         return UITableViewCell()
     }
 

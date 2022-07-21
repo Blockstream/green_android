@@ -9,7 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Display firmware hash during Jade OTA
 
 ### Changed
-
+- Display the receive address in Transaction Details
+- Display the amount without the fee in Transaction Details
 
 ### Fixed
 

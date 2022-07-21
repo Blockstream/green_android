@@ -36,7 +36,7 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = true
     }
 
-    func configure(tx: Transaction, network: String?, index: Int, copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
+    func configure(tx: Transaction, id: String, value: UInt64, copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
 
         self.copyAmount = copyAmount
         self.copyRecipient = copyRecipient
@@ -56,11 +56,10 @@ class TransactionAmountCell: UITableViewCell {
         lblFiat.isHidden = tx.defaultAsset != btc
 
         let registry = SessionsManager.current?.registry
-        let amount = amount(tx, index: index)
-        let asset = registry?.info(for: amount.key)
-        icon.image =  registry?.image(for: amount.key)
+        let asset = registry?.info(for: id)
+        icon.image =  registry?.image(for: id)
 
-        if let balance = Balance.fromSatoshi(amount.value, asset: asset) {
+        if let balance = Balance.fromSatoshi(value, asset: asset) {
             let (amount, denom) = balance.toValue()
             lblAmount.text = amount
             lblAsset.text = denom
@@ -69,27 +68,19 @@ class TransactionAmountCell: UITableViewCell {
         }
     }
 
-    func amount(_ tx: Transaction, index: Int) -> (key: String, value: UInt64) {
-        let amounts = Array(tx.amounts)
-        var amount = amounts[index]
-        // OUT transactions in BTC/L-BTC have fee included
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
-        if tx.type == .outgoing && amount.key == feeAsset {
-            amount.value -= tx.fee
-        }
-        return amount
-    }
-
     func address(_ tx: Transaction) -> String? {
         if tx.isLiquid {
             return nil
-        } else if tx.type == .outgoing {
-            return tx.addressees.first?.address
-        } else if tx.type == .incoming {
+        }
+        switch tx.type {
+        case .outgoing:
+            return tx.addresseesList.first ?? ""
+        case .incoming:
             let output = tx.outputs?.filter { $0["is_relevant"] as? Bool == true}.first
             return output?["address"] as? String
+        default:
+            return nil
         }
-        return nil
     }
 
     @IBAction func copyRecipientBtn(_ sender: Any) {

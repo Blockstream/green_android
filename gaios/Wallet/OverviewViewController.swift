@@ -720,7 +720,6 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 let transaction = transactions[indexPath.row]
                 cell.setup(transaction: transaction, network: account?.network)
                 cell.checkBlockHeight(transaction: transaction, blockHeight: SessionsManager.current?.notificationManager.blockHeight ?? 0)
-                cell.checkTransactionType(transaction: transaction)
                 return cell
             }
         default:

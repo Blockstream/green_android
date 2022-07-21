@@ -62,6 +62,10 @@ struct Transaction {
         }
     }
 
+    var addresseesList: [String] {
+        get { get("addressees") ?? [] }
+    }
+
     var addresseesReadOnly: Bool {
         get { return get("addressees_read_only") ?? false }
     }
@@ -106,7 +110,7 @@ struct Transaction {
     }
 
     var isLiquid: Bool {
-        amounts.count >= 1 && amounts["btc"] != nil
+        amounts["btc"] == nil
     }
 
     static var feeAsset: String {
