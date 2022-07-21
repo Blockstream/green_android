@@ -2,10 +2,16 @@ import UIKit
 import PromiseKit
 import simd
 
+enum FailingState {
+    case notFound
+    case isJustRestored
+    case disconnect
+    case invalid
+}
+
 struct ExistingWallet {
     let isSingleSig: Bool
-    let isFound: Bool
-    let isJustRestored: Bool
+    let failure: FailingState?
 }
 
 class ExistingWalletsViewController: UIViewController {
@@ -64,7 +70,7 @@ class ExistingWalletsViewController: UIViewController {
                 self.stopLoader()
                 self.lblLoading.isHidden = true
                 self.tableView.isHidden = false
-                self.btnManualRestore.isHidden = self.wallets.filter { !$0.isFound }.count > 0 ? false : true
+                self.btnManualRestore.isHidden = self.wallets.filter { $0.failure != .notFound }.count > 0 ? false : true
             }
         }.catch { error in
             print(error)
@@ -80,22 +86,19 @@ class ExistingWalletsViewController: UIViewController {
             .ensure {
                 session.destroy()
             }.done { _ in
-                seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: true, isJustRestored: false))
+                seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, failure: nil))
             }.catch { error in
                 switch error {
                 case LoginError.walletNotFound:
-                    seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: false, isJustRestored: false))
+                    seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, failure: .notFound))
                 case LoginError.walletsJustRestored:
-                    seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: false, isJustRestored: true))
+                    seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, failure: .isJustRestored))
                 case LoginError.invalidMnemonic:
-                    DropAlert().error(message: NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
-                    seal.reject(error)
+                    seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, failure: .invalid))
                 case LoginError.connectionFailed:
-                    DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-                    seal.reject(error)
+                    seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, failure: .disconnect))
                 default:
-                    print(error)
-                    DropAlert().error(message: error.localizedDescription)
+                    DropAlert().error(message: NSLocalizedString(error, comment: ""))
                     seal.reject(error)
                 }
             }
@@ -132,7 +135,7 @@ extension ExistingWalletsViewController: UITableViewDelegate, UITableViewDataSou
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let existingWallet = wallets[indexPath.row]
-        if existingWallet.isFound {
+        if existingWallet.failure == nil {
             OnBoardManager.shared.params?.singleSig = existingWallet.isSingleSig
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")

@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Display the amount without the fee in Transaction Details
 
 ### Fixed
-
+- Check connectivity on restoring wallet
 
 ## [3.8.5] - 2022-07-15
 

@@ -24,11 +24,20 @@ class ExistingWalletCell: UITableViewCell {
 
     func configure(_ wallet: ExistingWallet) {
         lblSecurity.text = wallet.isSingleSig ? NSLocalizedString("id_singlesig", comment: "") : NSLocalizedString("id_multisig_shield", comment: "")
-        lblStatus.text = NSLocalizedString(wallet.isFound ? "id_wallet_found" : "id_wallet_not_found", comment: "")
-        if wallet.isJustRestored {
+        icon.image = wallet.isSingleSig ? UIImage(named: "ic_key")! : UIImage(named: "ic_keys_invert")!
+        bg.alpha = 0.5
+        switch wallet.failure {
+        case .some(.invalid):
+            lblStatus.text = NSLocalizedString("id_invalid_recovery_phrase", comment: "")
+        case .some(.notFound):
+            lblStatus.text = NSLocalizedString("id_wallet_not_found", comment: "")
+        case .some(.isJustRestored):
             lblStatus.text = NSLocalizedString("id_wallet_already_restored", comment: "")
+        case .some(.disconnect):
+            lblStatus.text = NSLocalizedString("id_connection_failed", comment: "")
+        case .none:
+            lblStatus.text = NSLocalizedString("id_wallet_found", comment: "")
+            bg.alpha = 1.0
         }
-        self.icon.image = wallet.isSingleSig ? UIImage(named: "ic_key")! : UIImage(named: "ic_keys_invert")!
-        bg.alpha = wallet.isFound || !wallet.isJustRestored ? 1.0 : 0.5
     }
 }
