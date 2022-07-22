@@ -29,6 +29,7 @@ import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragme
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.*
+import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenPinViewListener
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.UnrecoverableKeyException
@@ -69,6 +70,8 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     var biometricPrompt : BiometricPrompt? = null
 
     override val screenName = "Login"
+
+    override fun getBannerAlertView(): GreenAlertView = binding.banner
 
     override fun isLoggedInRequired(): Boolean = false
 

@@ -189,9 +189,9 @@
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/banner"
             app:withShuffle="true"
-            tools:visibility="gone" />
+            />
 
         <com.blockstream.green.views.GappedLinearLayout
             isVisible="@{vm.wallet.isWatchOnly &amp;&amp; !vm.onProgress}"
@@ -358,6 +358,18 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.2" />
+
+        <com.blockstream.green.views.GreenAlertView
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            banner="@{vm.banner}"
+            isVisible="@{!vm.onProgress &amp;&amp; vm.banner != null}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

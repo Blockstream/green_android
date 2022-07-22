@@ -27,6 +27,7 @@ import com.blockstream.green.ui.bottomsheets.VerifyAddressBottomSheetDialogFragm
 import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
+import com.blockstream.green.views.GreenAlertView
 import com.mikepenz.fastadapter.GenericItem
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -52,6 +53,8 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
             wallet
         )
     }
+
+    override fun getBannerAlertView(): GreenAlertView = binding.banner
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 

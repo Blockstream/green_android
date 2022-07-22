@@ -9,6 +9,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.IntroFragmentBinding
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.errorDialog
+import com.blockstream.green.views.GreenAlertView
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -18,6 +19,8 @@ class IntroFragment : WalletListCommonFragment<IntroFragmentBinding>(R.layout.in
 
     val viewModel: WalletListCommonViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
+
+    override fun getAppViewModel(): AppViewModel = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,4 +50,6 @@ class IntroFragment : WalletListCommonFragment<IntroFragmentBinding>(R.layout.in
 
         init(binding.common, viewModel)
     }
+
+    override fun getBannerAlertView(): GreenAlertView = binding.banner
 }

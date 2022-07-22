@@ -7,7 +7,6 @@ import com.blockstream.green.R
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.isDevelopmentFlavor
-import com.blockstream.green.utils.notifyDevelopmentFeature
 import com.blockstream.green.views.GreenToolbar
 import javax.inject.Inject
 
@@ -74,7 +73,7 @@ abstract class AppActivity : AppCompatActivity() {
 
         // In development flavor allow screen capturing
         if (isDevelopmentFlavor) {
-            notifyDevelopmentFeature("FLAG_SECURE = $isSecure")
+            // notifyDevelopmentFeature("FLAG_SECURE = $isSecure")
             return
         }
 

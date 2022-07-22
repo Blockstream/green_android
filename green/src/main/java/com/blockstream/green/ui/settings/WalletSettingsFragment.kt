@@ -50,6 +50,7 @@ class WalletSettingsFragment :
 
     override val screenName by lazy { if(args.showRecoveryTransactions) "WalletSettingsRecoveryTransactions" else "WalletSettings" }
 
+    private val bannerAdapter = ItemAdapter<GenericItem>()
     private val itemAdapter = ItemAdapter<GenericItem>()
 
     private lateinit var logoutPreference: PreferenceListItem
@@ -158,7 +159,11 @@ class WalletSettingsFragment :
 
         updateAdapter()
 
-        val fastAdapter = FastAdapter.with(itemAdapter)
+        viewModel.banner.observe(viewLifecycleOwner) { banner ->
+//            AlertListItem()
+        }
+
+        val fastAdapter = FastAdapter.with(listOf(bannerAdapter, itemAdapter))
 
         fastAdapter.onClickListener =
             { _: View?, _: IAdapter<GenericItem>, iItem: GenericItem, _: Int ->

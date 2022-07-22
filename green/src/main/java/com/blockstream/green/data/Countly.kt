@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.lifecycle.MutableLiveData
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.WalletBalances
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.SubAccount
@@ -22,9 +24,11 @@ import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
 import com.blockstream.green.utils.toList
+import com.blockstream.green.views.GreenAlertView
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import ly.count.android.sdk.Countly
@@ -44,6 +48,8 @@ class Countly constructor(
 ) {
     val analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics)
     val rateGooglePlayEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play)
+
+    val remoteConfigUpdateEvent = MutableLiveData(0)
 
     private val countly = Countly.sharedInstance().also { countly ->
         val config = CountlyConfig(
@@ -69,7 +75,13 @@ class Countly constructor(
             // Set Device ID
             it.setDeviceId(settingsManager.getCountlyDeviceId())
             // Set automatic remote config download
-            it.setRemoteConfigAutomaticDownload(true, RemoteConfigCallback { error -> logger.info { if(error.isNullOrBlank()) "Remote Config Completed" else "Remote Config error: $error" } })
+            it.setRemoteConfigAutomaticDownload(true, RemoteConfigCallback { error ->
+                logger.info { if (error.isNullOrBlank()) "Remote Config Completed" else "Remote Config error: $error" }
+
+                if(error.isNullOrBlank()){
+                    remoteConfigUpdateEvent.postValue(remoteConfigUpdateEvent.value?.plus(1))
+                }
+            })
             // Add initial enabled features
             it.setConsentEnabled(
                 if (settingsManager.getApplicationSettings().analytics) {
@@ -91,7 +103,7 @@ class Countly constructor(
     private val crashes = countly.crashes()
     private val consent = countly.consent()
     private val userProfile = countly.userProfile()
-    private val remoteConfig = countly.remoteConfig()
+    val remoteConfig = countly.remoteConfig()
 
     private var analyticsConsent : Boolean by Delegates.observable(settingsManager.getApplicationSettings().analytics) { _, oldValue, newValue ->
         if(oldValue != newValue){
@@ -480,7 +492,7 @@ class Countly constructor(
         countly.ratings().recordRatingWidgetWithID(RATING_WIDGET_ID, rating, email.takeIf { !it.isNullOrBlank() }, comment, !email.isNullOrBlank())
     }
 
-    fun getRemoteConfigValue(key: String): Any? = remoteConfig.getValueForKey(key)
+//    fun getRemoteConfigValue(key: String): Any? = remoteConfig.getValueForKey(key)
 
     fun getRemoteConfigValueAsString(key: String): String? {
         return remoteConfig.getValueForKey(key) as? String
@@ -501,6 +513,17 @@ class Countly constructor(
     fun getRemoteConfigValueAsJsonElement(key: String): JsonElement? {
         return remoteConfig.getValueForKey(key)?.let {
             Json.parseToJsonElement(it.toString())
+        }
+    }
+
+    fun getRemoteConfigValueForBanners(key: String): List<Banner>? {
+        return try {
+            remoteConfig.getValueForKey(key)?.let {
+                GreenWallet.JsonDeserializer.decodeFromString<List<Banner>>(it.toString())
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
         }
     }
 
@@ -688,4 +711,8 @@ interface ScreenView{
     var screenIsRecorded: Boolean
     val screenName: String?
     val segmentation: HashMap<String, Any>?
+}
+
+interface BannerView {
+    fun getBannerAlertView() : GreenAlertView?
 }

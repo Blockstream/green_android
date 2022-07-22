@@ -9,7 +9,7 @@ import com.blockstream.green.databinding.ListItemAlertBinding
 import com.blockstream.green.utils.setDrawable
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-data class AlertListItem constructor(private val alertType: AlertType, val action : (isClose: Boolean) -> Unit) : AbstractBindingItem<ListItemAlertBinding>() {
+data class AlertListItem constructor(val alertType: AlertType) : AbstractBindingItem<ListItemAlertBinding>() {
     override val type: Int
         get() = R.id.fastadapter_alert_item_id
 
@@ -17,11 +17,13 @@ data class AlertListItem constructor(private val alertType: AlertType, val actio
         identifier = "AlertListItem".hashCode() + alertType.hashCode().toLong()
     }
 
+    var action: ((isClose: Boolean) -> Unit)? = null
+
     override fun bindView(binding: ListItemAlertBinding, payloads: List<Any>) {
         val res = binding.root.resources
 
         binding.alertView.primaryButton(res.getString(R.string.id_learn_more)){
-            action.invoke(false)
+            action?.invoke(false)
         }
 
         when(alertType){
@@ -30,7 +32,7 @@ data class AlertListItem constructor(private val alertType: AlertType, val actio
                 binding.alertView.message = alertType.message
                 binding.alertView.setMaxLines(3)
                 binding.alertView.closeButton {
-                    action.invoke(true)
+                    action?.invoke(true)
                 }
             }
             is AlertType.Dispute2FA -> {
@@ -70,10 +72,22 @@ data class AlertListItem constructor(private val alertType: AlertType, val actio
                         )
                     )
                 }?.let {
-                    binding.alertView.binding.titleTextView.setDrawable(drawableLeft = it, padding = 6)
+                    binding.alertView.binding.titleTextView.setDrawable(
+                        drawableLeft = it,
+                        padding = 6
+                    )
                 }
             }
-            is AlertType.AppReview, is AlertType.Abstract2FA -> {
+            is AlertType.Banner -> {
+                binding.banner = alertType.banner
+
+                if(alertType.banner.dismissable == true) {
+                    binding.alertView.closeButton {
+                        action?.invoke(true)
+                    }
+                }
+            }
+            is AlertType.AppReview -> {
 
             }
         }
@@ -86,11 +100,11 @@ data class AlertListItem constructor(private val alertType: AlertType, val actio
 }
 
 sealed class AlertType{
-    class SystemMessage(val message: String) : AlertType()
-    abstract class Abstract2FA(val twoFactorReset: TwoFactorReset) : AlertType()
-    class Dispute2FA(twoFactorReset: TwoFactorReset) : Abstract2FA(twoFactorReset)
-    class Reset2FA(twoFactorReset: TwoFactorReset): Abstract2FA(twoFactorReset)
+    data class SystemMessage(val message: String) : AlertType()
+    data class Dispute2FA(val twoFactorReset: TwoFactorReset) : AlertType()
+    data class Reset2FA(val twoFactorReset: TwoFactorReset): AlertType()
     object TestnetWarning : AlertType()
     object EphemeralBip39 : AlertType()
     object AppReview : AlertType()
+    data class Banner(val banner: com.blockstream.green.data.Banner) : AlertType()
 }

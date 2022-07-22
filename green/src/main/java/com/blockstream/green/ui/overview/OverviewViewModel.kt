@@ -43,16 +43,18 @@ class OverviewViewModel @AssistedInject constructor(
         MediatorLiveData<List<AlertType>>().apply {
             val combine = { _: Any? ->
                 value = listOfNotNull(
+                    if (session.isTestnet) AlertType.TestnetWarning else null,
                     twoFactorState.value,
                     systemMessage.value,
                     if (wallet.isEphemeral && !wallet.isHardware) AlertType.EphemeralBip39 else null,
-                    if (session.isTestnet) AlertType.TestnetWarning else null,
+                    banner.value?.let { banner -> AlertType.Banner(banner) },
                     if (appReview.value == true) AlertType.AppReview else null
                 )
             }
             addSource(twoFactorState, combine)
             addSource(systemMessage, combine)
             addSource(appReview, combine)
+            addSource(banner, combine)
         }
     }
 

@@ -9,6 +9,7 @@ import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.AddWalletFragmentBinding
+import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DismissBottomSheetDialogListener
@@ -33,6 +34,8 @@ class AddWalletFragment :
     private val viewModel: AddWalletViewModel by viewModels {
         AddWalletViewModel.provideFactory(assistedFactory, args.deviceId)
     }
+
+    override fun getAppViewModel(): AppViewModel = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

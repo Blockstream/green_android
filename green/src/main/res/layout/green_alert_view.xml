@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.blockstream.green.utils.ExtensionsKt"/>
+
+        <import type="com.blockstream.green.utils.ExtensionsKt" />
+
         <variable
             name="title"
             type="String" />
@@ -14,73 +16,100 @@
             type="String" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:background="@color/white"
-        android:paddingTop="16dp">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/closeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:backgroundTint="@android:color/transparent"
             android:src="@drawable/ic_close"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/titleTextView"
-            app:tint="@color/black"
             tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/titleTextView"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:includeFontPadding="false"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            android:textColor="@color/black"
-            android:text="@{title}"
-            isVisible="@{ExtensionsKt.isNotBlank(title)}"
-            app:layout_constraintEnd_toStartOf="@+id/closeButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Important!" />
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
-        <TextView
-            android:id="@+id/messageTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="24dp"
-            android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="@color/black"
-            android:ellipsize="end"
-            android:text="@{message}"
-            isVisible="@{ExtensionsKt.isNotBlank(message)}"
-            app:layout_constraintBottom_toTopOf="@+id/buttonPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleTextView"
-            tools:text="You’ll need to set up a Recovery Phrase before you can send or receive funds, but you can still check out the wallet for now." />
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="3dp"
+                android:paddingEnd="18dp"
+                android:src="@drawable/ic_alert_triangle"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonPrimary"
-            style="@style/Widget.Green.Button.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="4dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:visibility="gone"
-            tools:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Set Up Recovery Phrase" />
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="right"
+                app:constraint_referenced_ids="icon" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/titleTextView"
+                isVisible="@{ExtensionsKt.isNotBlank(title)}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:includeFontPadding="false"
+                android:text="@{title}"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/barrier2"
+                app:layout_constraintTop_toTopOf="@+id/guideline2"
+                tools:text="Important!" />
+
+            <TextView
+                android:id="@+id/messageTextView"
+                isVisible="@{ExtensionsKt.isNotBlank(message)}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:text="@{message}"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:layout_constraintBottom_toTopOf="@+id/buttonPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/barrier2"
+                app:layout_constraintTop_toBottomOf="@+id/titleTextView"
+                tools:text="You’ll need to set up a Recovery Phrase before you can send or receive funds, but you can still check out the wallet for now." />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPrimary"
+                style="@style/Widget.Green.Button.Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Set Up Recovery Phrase"
+                tools:visibility="visible" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="16dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 </layout>

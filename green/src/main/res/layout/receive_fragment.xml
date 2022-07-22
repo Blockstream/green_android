@@ -29,6 +29,14 @@
                 android:layout_marginEnd="32dp"
                 android:orientation="vertical">
 
+                <com.blockstream.green.views.GreenAlertView
+                    android:id="@+id/banner"
+                    isVisible="@{vm.banner != null}"
+                    banner="@{vm.banner}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"/>
+
                 <com.google.android.material.card.MaterialCardView
                     isVisible="@{vm.showAssetWhitelistWarning}"
                     android:layout_width="match_parent"

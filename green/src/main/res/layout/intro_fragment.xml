@@ -31,14 +31,24 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/brand" />
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/guideline">
+
+            <com.blockstream.green.views.GreenAlertView
+                android:id="@+id/banner"
+                isVisible="@{vm.banner != null}"
+                banner="@{vm.banner}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"/>
 
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/nestedScrollView"
@@ -54,7 +64,7 @@
                     layout="@layout/wallet_list_common" />
 
             </androidx.core.widget.NestedScrollView>
-        </FrameLayout>
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonAbout"

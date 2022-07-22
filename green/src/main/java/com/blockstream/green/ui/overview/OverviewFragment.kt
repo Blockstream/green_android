@@ -386,25 +386,36 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     viewModel.setAppReview(false)
                 }
             }else {
-                AlertListItem(it) { isClose ->
-                    when (it) {
-                        is AlertType.Abstract2FA -> {
-                            TwoFactorResetBottomSheetDialogFragment.show(
-                                it.twoFactorReset,
-                                childFragmentManager
-                            )
-                        }
-                        is AlertType.SystemMessage -> {
-                            if (isClose) {
-                                viewModel.systemMessage.postValue(null)
-                            } else {
-                                SystemMessageBottomSheetDialogFragment.show(
-                                    it.message,
+                AlertListItem(it).also { alertListItem ->
+                    alertListItem.action = { isClose ->
+                        when (alertListItem.alertType) {
+                            is AlertType.Reset2FA -> {
+                                TwoFactorResetBottomSheetDialogFragment.show(
+                                    alertListItem.alertType.twoFactorReset,
                                     childFragmentManager
                                 )
                             }
+                            is AlertType.Dispute2FA -> {
+                                TwoFactorResetBottomSheetDialogFragment.show(
+                                    alertListItem.alertType.twoFactorReset,
+                                    childFragmentManager
+                                )
+                            }
+                            is AlertType.SystemMessage -> {
+                                if (isClose) {
+                                    viewModel.systemMessage.postValue(null)
+                                } else {
+                                    SystemMessageBottomSheetDialogFragment.show(
+                                        alertListItem.alertType.message,
+                                        childFragmentManager
+                                    )
+                                }
+                            }
+                            is AlertType.Banner -> {
+                                BannersHelper.dismiss(this, alertListItem.alertType.banner)
+                            }
+                            AlertType.EphemeralBip39, AlertType.TestnetWarning, AlertType.AppReview -> {}
                         }
-                        AlertType.EphemeralBip39, AlertType.TestnetWarning, AlertType.AppReview -> {}
                     }
                 }
             }
@@ -583,6 +594,11 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 is TitleListItem -> {
                     if (item.showBackButton) {
                         closeOpenElements()
+                    }
+                }
+                is AlertListItem -> {
+                    if(item.alertType is AlertType.Banner){
+                        BannersHelper.handleClick(this, item.alertType.banner)
                     }
                 }
             }

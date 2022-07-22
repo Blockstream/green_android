@@ -8,7 +8,9 @@ import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ScanWalletFragmentBinding
+import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.errorFromResourcesAndGDK
+import com.blockstream.green.views.GreenAlertView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,6 +28,10 @@ class ScanWalletFragment :
     private val args: ScanWalletFragmentArgs by navArgs()
 
     override val screenName = "OnBoardScan"
+
+    override fun getAppViewModel(): AppViewModel = viewModel
+
+    override fun getBannerAlertView(): GreenAlertView = binding.banner
 
     @Inject
     lateinit var viewModelFactory: ScanWalletViewModel.AssistedFactory

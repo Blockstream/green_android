@@ -45,6 +45,14 @@
                 android:paddingBottom="16dp"
                 app:gap="16dp">
 
+                <com.blockstream.green.views.GreenAlertView
+                    android:id="@+id/banner"
+                    isVisible="@{vm.banner != null}"
+                    banner="@{vm.banner}"
+                    android:layout_marginTop="1dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
                 <com.blockstream.green.views.GappedLinearLayout
                     android:id="@+id/recipientContainer"
                     android:layout_width="match_parent"

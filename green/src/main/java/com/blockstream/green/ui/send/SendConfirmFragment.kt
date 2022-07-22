@@ -19,6 +19,7 @@ import com.blockstream.green.ui.looks.ConfirmTransactionLook
 import com.blockstream.green.ui.overview.OverviewFragment
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.utils.*
+import com.blockstream.green.views.GreenAlertView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -46,6 +47,8 @@ class SendConfirmFragment : WalletFragment<SendConfirmFragmentBinding>(
     val viewModel: SendConfirmViewModel by viewModels {
         SendConfirmViewModel.provideFactory(viewModelFactory, wallet, args.transactionSegmentation)
     }
+
+    override fun getBannerAlertView(): GreenAlertView = binding.banner
 
     override fun getWalletViewModel() = viewModel
 

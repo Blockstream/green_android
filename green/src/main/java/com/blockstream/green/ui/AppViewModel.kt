@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.data.AppEvent
+import com.blockstream.green.data.Banner
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -23,13 +24,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
+open class AppViewModel() : ViewModel(), HWWalletBridge, LifecycleOwner {
 
     internal val disposables = CompositeDisposable()
 
     val onEvent = MutableLiveData<ConsumableEvent<AppEvent>>()
     val onProgress = MutableLiveData(false)
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
+
+    val banner = MutableLiveData<Banner>()
+    val closedBanners = mutableListOf<Banner>()
 
     val onDeviceInteractionEvent = MutableLiveData<ConsumableEvent<Triple<Device, Completable?, String?>>>()
 

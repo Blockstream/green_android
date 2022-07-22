@@ -16,6 +16,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.data.AppEvent
+import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.ScreenView
 import com.blockstream.green.gdk.SessionManager
@@ -23,10 +24,8 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
 import com.blockstream.green.ui.devices.DeviceInteractionRequestBottomSheetDialogFragment
-import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.clearNavigationResult
-import com.blockstream.green.utils.getNavigationResult
-import com.blockstream.green.utils.navigate
+import com.blockstream.green.utils.*
+import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenToolbar
 import io.reactivex.rxjava3.core.Completable
 import mu.KLogging
@@ -49,7 +48,7 @@ import javax.inject.Inject
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
-) : Fragment(), ScreenView {
+) : Fragment(), ScreenView, BannerView {
 
     sealed class DeviceRequestEvent : AppEvent {
         object RequestPinMatrix: DeviceRequestEvent()
@@ -160,6 +159,8 @@ abstract class AppFragment<T : ViewDataBinding>(
             updateToolbar()
             countly.screenView(this)
         }
+
+        BannersHelper.handle(this, if(this is WalletFragment<*>) this.walletOrNull else null)
     }
 
     @Deprecated("Deprecated in Java")
@@ -213,6 +214,8 @@ abstract class AppFragment<T : ViewDataBinding>(
     private fun requestPassphrase() {
         PassphraseBottomSheetDialogFragment.show(childFragmentManager)
     }
+
+    override fun getBannerAlertView(): GreenAlertView? = null
 
     companion object: KLogging()
 }

@@ -18,15 +18,36 @@
         android:layout_height="match_parent"
         android:clipChildren="false">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler"
+        <com.blockstream.green.views.GappedLinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            app:gap="16dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonSend"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.blockstream.green.views.GreenAlertView
+                android:id="@+id/banner"
+                banner="@{vm.banner}"
+                isVisible="@{vm.banner != null}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        </com.blockstream.green.views.GappedLinearLayout>
+
 
         <TextView
             android:id="@+id/buttonSendHelp"

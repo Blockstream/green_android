@@ -33,6 +33,7 @@ import com.blockstream.green.ui.bottomsheets.SelectUtxosBottomSheetDialogFragmen
 import com.blockstream.green.ui.items.AssetListItem
 import com.blockstream.green.ui.looks.AssetLook
 import com.blockstream.green.utils.*
+import com.blockstream.green.views.GreenAlertView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.GenericItem
@@ -80,6 +81,8 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             bumpTransaction
         )
     }
+
+    override fun getBannerAlertView(): GreenAlertView = binding.banner
 
     override fun getWalletViewModel() = viewModel
 

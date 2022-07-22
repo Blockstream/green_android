@@ -11,8 +11,10 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import com.blockstream.gdk.data.Device
+import com.blockstream.green.data.Banner
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.errorFromResourcesAndGDK
+import com.blockstream.green.views.GreenAlertView
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
@@ -47,6 +49,17 @@ fun bindVisibility(view: View, visibility: Int) {
         1 -> View.INVISIBLE
         2 -> View.GONE
         else -> visibility
+    }
+}
+
+@BindingAdapter("banner")
+fun bindBanner(view: GreenAlertView, banner: Banner?) {
+    if(banner != null) {
+        view.title = banner.title ?: ""
+        view.message = banner.message ?: ""
+        view.setIconVisibility(banner.isWarning)
+        view.setMaxLines(3)
+        view.primaryButton(null, null)
     }
 }
 

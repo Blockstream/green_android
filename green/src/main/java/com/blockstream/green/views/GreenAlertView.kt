@@ -20,7 +20,7 @@ class GreenAlertView @JvmOverloads constructor(
         GreenAlertViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     init {
-        backgroundTintList = ContextCompat.getColorStateList(context, R.color.white)
+        backgroundTintList = ContextCompat.getColorStateList(context, R.color.brand_surface)
     }
 
     var title: String?
@@ -34,6 +34,10 @@ class GreenAlertView @JvmOverloads constructor(
         set(value) {
             binding.message = value
         }
+
+    fun setIconVisibility(isVisible: Boolean){
+        binding.icon.isVisible = isVisible
+    }
 
     fun setMaxLines(maxLines: Int){
         binding.messageTextView.maxLines = if(maxLines > 0) maxLines else Int.MAX_VALUE
@@ -51,5 +55,4 @@ class GreenAlertView @JvmOverloads constructor(
         binding.closeButton.setOnClickListener(listener)
         binding.closeButton.isVisible = listener != null
     }
-
 }
