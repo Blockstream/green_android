@@ -12,7 +12,6 @@ import com.blockstream.gdk.data.DeviceSupportsAntiExfilProtocol;
 import com.blockstream.gdk.data.DeviceSupportsLiquid;
 import com.blockstream.green.BuildConfig;
 import com.blockstream.green.R;
-import com.blockstream.green.utils.QATester;
 import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
@@ -38,7 +37,6 @@ import java.util.List;
 
 import hu.akarnokd.rxjava3.bridge.RxJavaBridge;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -162,6 +160,9 @@ public class HardwareConnect {
         final JadeVersion version = new JadeVersion(verInfo.getJadeVersion());
         final boolean supportsHostUnblinding = JADE_VERSION_SUPPORTS_HOST_UNBLINDING.compareTo(version) <= 0;
 
+        if (jadeFirmwareManager == null)
+            jadeFirmwareManager = new JadeFirmwareManager(interaction, interaction.getGreenSession(), JadeFirmwareManager.JADE_FW_VERSIONS_LATEST, false);
+
         mDisposables.add(Single.just(interaction.getGreenSession())
                 .subscribeOn(Schedulers.io())
 
@@ -182,7 +183,7 @@ public class HardwareConnect {
                 .map(device -> {
                     return new JadeHWWallet(jade, device, verInfo, qaTester);
                 })
-                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction.getConnectionNetwork(), interaction, jadeFirmwareManager != null ? jadeFirmwareManager : new JadeFirmwareManager(interaction, interaction.getGreenSession())).as(RxJavaBridge.toV3Single()))
+                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction.getConnectionNetwork(), interaction, jadeFirmwareManager).as(RxJavaBridge.toV3Single()))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
                 .observeOn(AndroidSchedulers.mainThread())

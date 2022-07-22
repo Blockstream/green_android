@@ -204,10 +204,13 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                     .setTitle("Select Firmware Channel")
                     .setItems(channels.toTypedArray()){ _: DialogInterface, i: Int ->
                         // Update
-                        viewModel.setJadeFirmwareManager(JadeFirmwareManager(viewModel, viewModel.getGreenSession()).also {
-                            it.setForceFirmwareUpdate(true)
-                            it.setJadeFwVersionFile(channels[i])
-                        })
+                        viewModel.setJadeFirmwareManager(
+                            JadeFirmwareManager(
+                                viewModel,
+                                viewModel.getGreenSession(),
+                                channels[i],
+                                true
+                            ))
                         connect(Network.GreenMainnet)
                     }
                     .setNegativeButton(android.R.string.cancel, null)

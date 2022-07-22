@@ -263,6 +263,7 @@ public class JadeAPI {
     // OTA firmware update
     public boolean otaUpdate(final byte[] compressed_firmware,
                              final int uncompressed_size,
+                             final Integer patchsize,
                              final int chunksize,
                              final boolean corruptHash,
                              final OtaProgressCallback cb) throws Exception {
@@ -276,11 +277,14 @@ public class JadeAPI {
         final int compressed_size = compressed_firmware.length;
 
         // Initiate OTA
-        final JsonNode result = this.jadeRpc("ota",
+        final String method = patchsize == null ? "ota" : "ota_delta";
+        final JsonNode result = this.jadeRpc(method,
                 makeParams("fwsize", uncompressed_size)
                         .put("cmpsize", compressed_size)
-                        .put("cmphash", cmphash),
-                TIMEOUT_AUTONOMOUS);
+                        .put("cmphash", cmphash)
+                        .put("otachunk", chunksize)
+                        .put("patchsize", patchsize),
+                TIMEOUT_USER_INTERACTION);
 
         if (!result.asBoolean()) {
             return false;
