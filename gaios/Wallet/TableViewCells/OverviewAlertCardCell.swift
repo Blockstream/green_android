@@ -7,6 +7,7 @@ enum AlertCardType {
     case systemMessage(String)
     case fiatMissing
     case testnetNoValue
+    case ephemeralWallet
 }
 
 class OverviewAlertCardCell: UITableViewCell {
@@ -75,6 +76,12 @@ class OverviewAlertCardCell: UITableViewCell {
         case .testnetNoValue:
             lblTitle.text = NSLocalizedString("id_warning", comment: "")
             lblHint.text = NSLocalizedString("id_this_wallet_operates_on_a_test", comment: "")
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
+        case .ephemeralWallet:
+            lblTitle.text = NSLocalizedString("Ephemeral wallet", comment: "")
+            lblHint.text = NSLocalizedString("This is an ephemeral wallet based on your Recovery Phrase and a BIP39 Passphrase", comment: "")
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true

@@ -7,6 +7,8 @@ class KeyboardViewController: UIViewController {
     private var showToken: NSObjectProtocol?
     private var hideToken: NSObjectProtocol?
 
+    var dismissDisabled = false
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         showToken = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main, using: keyboardWillShow)
@@ -40,6 +42,7 @@ class KeyboardViewController: UIViewController {
     }
 
     @objc func dismissKeyboard() {
+        if dismissDisabled == true { return }
         view.endEditing(true)
     }
 }

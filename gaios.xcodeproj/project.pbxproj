@@ -188,6 +188,7 @@
 		34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A9268DDD8C0061264D /* WatchOnly.swift */; };
 		34C9E10726B91F2500200D2F /* TwoFaCsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9E10626B91F2500200D2F /* TwoFaCsvTimeCell.swift */; };
 		34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9E10826B92F0B00200D2F /* DynamicTableView.swift */; };
+		34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */; };
 		34CBA41F270AE23800C85B05 /* Overview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CBA41E270AE23800C85B05 /* Overview.swift */; };
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
@@ -525,6 +526,7 @@
 		34C978A9268DDD8C0061264D /* WatchOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnly.swift; sourceTree = "<group>"; };
 		34C9E10626B91F2500200D2F /* TwoFaCsvTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFaCsvTimeCell.swift; sourceTree = "<group>"; };
 		34C9E10826B92F0B00200D2F /* DynamicTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTableView.swift; sourceTree = "<group>"; };
+		34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogLoginPassphraseViewController.swift; sourceTree = "<group>"; };
 		34CBA41E270AE23800C85B05 /* Overview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overview.swift; sourceTree = "<group>"; };
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -1238,6 +1240,7 @@
 				343A697A27E08921008D5F4C /* DialogAssetDetailViewController.swift */,
 				34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */,
 				341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */,
+				34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1963,6 +1966,7 @@
 				34EB670128212EBA0036D615 /* AMEvents.swift in Sources */,
 				34641F1D25F915B9002E6442 /* RecoveryPhraseViewController.swift in Sources */,
 				81A062D224532454003464A0 /* HWProtocol.swift in Sources */,
+				34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */,
 				8169EBBD2445F16F0053BC73 /* Jade.swift in Sources */,
 				34BAD9DE2636A12700FB8011 /* HWWScanViewController.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,

@@ -45,7 +45,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
 extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -53,8 +53,10 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 0:
             return AccountsManager.shared.swAccounts.count
         case 1:
-            return AccountsManager.shared.hwAccounts.count
+            return AccountsManager.shared.ephAccounts.count
         case 2:
+            return AccountsManager.shared.hwAccounts.count
+        case 3:
             return AccountsManager.shared.devices.count
         default:
             return 0
@@ -73,11 +75,24 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                     }
                     return false
                 }
-                cell.configure(account, selected())
+                cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none
                 return cell
             }
-        case 1:
+        case 1: /// EPHEMERAL
+            let account = AccountsManager.shared.ephAccounts[indexPath.row]
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
+                let selected = { () -> Bool in
+                    if let session = SessionsManager.get(for: account) {
+                        return session.connected && session.logged
+                    }
+                    return false
+                }
+                cell.configure(item: account, isSelected: selected(), isEphemeral: true)
+                cell.selectionStyle = .none
+                return cell
+            }
+        case 2:
             let account = AccountsManager.shared.hwAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
                 let selected = { () -> Bool in
@@ -86,11 +101,11 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                     }
                     return false
                 }
-                cell.configure(account, selected())
+                cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none
                 return cell
             }
-        case 2:
+        case 3:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerHDCell") as? WalletDrawerHDCell {
                 let hw = AccountsManager.shared.devices[indexPath.row]
                 let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
@@ -106,8 +121,11 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 1 && AccountsManager.shared.hwAccounts.isEmpty {
-            return 0
+        if section == 1 && AccountsManager.shared.ephAccounts.isEmpty {
+            return 0.1
+        }
+        if section == 2 && AccountsManager.shared.hwAccounts.isEmpty {
+            return 0.1
         }
         return headerH
     }
@@ -117,7 +135,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 0:
             return footerH
         default:
-            return 0
+            return 0.1
         }
     }
 
@@ -130,11 +148,16 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 0:
             return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
         case 1:
+            if AccountsManager.shared.ephAccounts.isEmpty {
+                return UIView()
+            }
+            return headerView(NSLocalizedString("EPHEMERAL WALLETS", comment: "").uppercased())
+        case 2:
             if AccountsManager.shared.hwAccounts.isEmpty {
                 return UIView()
             }
             return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
-        case 2:
+        case 3:
             return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
         default:
             return nil
@@ -156,9 +179,12 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             let account = AccountsManager.shared.swAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 1:
-            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            let account = AccountsManager.shared.ephAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 2:
+            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            self.delegate?.didSelectAccount(account: account)
+        case 3:
             let account = AccountsManager.shared.devices[indexPath.row]
             self.delegate?.didSelectHW(account: account)
         default:

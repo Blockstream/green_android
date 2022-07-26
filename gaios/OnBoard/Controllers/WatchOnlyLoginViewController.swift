@@ -79,6 +79,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
         if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
             popover.delegate = self
+            popover.menuOptions = [.edit, .delete]
             popover.modalPresentationStyle = .popover
             let popoverPresentationController = popover.popoverPresentationController
             popoverPresentationController?.backgroundColor = UIColor.customModalDark()
@@ -206,6 +207,8 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
 extension WatchOnlyLoginViewController: PopoverMenuWalletDelegate {
     func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
         switch menuOption {
+        case .passphrase:
+            break
         case .edit:
             walletRename()
         case .delete:

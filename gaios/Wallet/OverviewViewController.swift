@@ -95,7 +95,7 @@ class OverviewViewController: UIViewController {
         setStyle()
 
         let networkSelector = ((Bundle.main.loadNibNamed("NetworkSelectorBarItem", owner: self, options: nil)![0] as? NetworkSelectorBarItem)!)
-        networkSelector.configure({[weak self] () in
+        networkSelector.configure(isEphemeral: account?.isEphemeral ?? false, {[weak self] () in
             self?.switchNetwork()
         })
         let leftItem: UIBarButtonItem = UIBarButtonItem(customView: networkSelector)
@@ -241,7 +241,9 @@ class OverviewViewController: UIViewController {
                 cards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
             }
         }
-        // load testnet card
+        if account?.isEphemeral == true {
+            cards.append(AlertCardType.ephemeralWallet)
+        }
         if let network = account?.gdkNetwork, !network.mainnet {
             cards.append(AlertCardType.testnetNoValue)
         }
@@ -699,6 +701,10 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                                    onLeft: nil,
                                    onRight: nil)
                 case .testnetNoValue:
+                    cell.configure(alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil)
+                case .ephemeralWallet:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
                                    onRight: nil)

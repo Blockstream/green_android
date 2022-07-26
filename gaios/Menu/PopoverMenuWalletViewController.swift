@@ -1,6 +1,7 @@
 import UIKit
 
 enum MenuWalletOption {
+    case passphrase
     case edit
     case delete
 }
@@ -18,7 +19,7 @@ class PopoverMenuWalletViewController: UIViewController {
     weak var delegate: PopoverMenuWalletDelegate?
     private var isLiquid: Bool!
     private var kvoContext = 0
-    private var menuOptions = MenuWalletOption.allCases
+    var menuOptions: [MenuWalletOption] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +55,8 @@ extension PopoverMenuWalletViewController: UITableViewDataSource, UITableViewDel
         if let cell = tableView.dequeueReusableCell(withIdentifier: "MenuOptionCell") {
             let option = menuOptions[indexPath.row]
             switch option {
+            case .passphrase:
+                cell.textLabel?.text = NSLocalizedString("Login with BIP39 passphrase", comment: "")
             case .edit:
                 cell.textLabel?.text = NSLocalizedString("id_rename_wallet", comment: "")
             case .delete:

@@ -24,6 +24,9 @@ class AccountsManager {
     // Filtered account list of software wallets
     var swAccounts: [Account] { AccountsManager.shared.accounts.filter { !$0.isHW } }
 
+    // Filtered account list of software ephemeral wallets
+    var ephAccounts: [Account] { AccountsManager.shared.accounts.filter { account in (account.isEphemeral ?? false) && !SessionsManager.shared.filter {$0.key == account.id }.isEmpty } }
+
     // Filtered account list of hardware wallets
     var hwAccounts: [Account] { AccountsManager.shared.accounts.filter { account in
         account.isHW && !SessionsManager.shared.filter {$0.key == account.id }.isEmpty } }

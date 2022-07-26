@@ -25,6 +25,15 @@ class LoginViewController: UIViewController {
     private var pinCode = ""
     private let MAXATTEMPTS = 3
 
+    @IBOutlet weak var passphraseView: UIStackView!
+    @IBOutlet weak var lblPassphrase: UILabel!
+
+    var hasPassphrase = false {
+        didSet {
+            passphraseView.isHidden = !hasPassphrase
+        }
+    }
+
     private var networkSettings: [String: Any] {
         get {
             UserDefaults.standard.value(forKey: "network_settings") as? [String: Any] ?? [:]
@@ -50,6 +59,8 @@ class LoginViewController: UIViewController {
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
 
+        hasPassphrase = false
+
         setContent()
         setStyle()
 
@@ -72,6 +83,7 @@ class LoginViewController: UIViewController {
         btnWalletLock.setTitle(NSLocalizedString("id_restore_with_recovery_phrase", comment: ""), for: .normal)
         connectionSettingsButton.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
         cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
+        lblPassphrase.text = "BIP39 Passphrase login"
     }
 
     func setStyle() {
@@ -117,6 +129,7 @@ class LoginViewController: UIViewController {
         let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
         if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
             popover.delegate = self
+            popover.menuOptions = MenuWalletOption.allCases
             popover.modalPresentationStyle = .popover
             let popoverPresentationController = popover.popoverPresentationController
             popoverPresentationController?.backgroundColor = UIColor.customModalDark()
@@ -163,6 +176,7 @@ class LoginViewController: UIViewController {
                 session.account?.attempts = 0
             }
             AccountsManager.shared.current = session.account
+            AccountsManager.shared.current?.isEphemeral = self.hasPassphrase
         }.done { wallet in
 
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: AccountsManager.shared.current)
@@ -301,6 +315,15 @@ class LoginViewController: UIViewController {
         }
     }
 
+    func loginWithPassphrase() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogLoginPassphraseViewController") as? DialogLoginPassphraseViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnFaceID(_ sender: Any) {
     }
 
@@ -346,6 +369,8 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
 extension LoginViewController: PopoverMenuWalletDelegate {
     func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
         switch menuOption {
+        case .passphrase:
+            loginWithPassphrase()
         case .edit:
             walletRename()
         case .delete:
@@ -371,5 +396,12 @@ extension LoginViewController: WalletSettingsViewControllerDelegate {
     }
     func didSet(testnet: Bool) {
         //
+    }
+}
+
+extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
+    func didConfirm(passphrase: String) {
+        print(passphrase)
+        hasPassphrase = true
     }
 }
