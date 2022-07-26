@@ -13,6 +13,7 @@ help_message() {
     -b, --branch      Checkout remote branch
     -g, --gdk         Download GDK [app (app version), master (latest master), commitHash (specific commit hash)]
     -d, --development Development flavor
+    -a, --add-wallet  Add wallet and login credentials
     -q, --qa          Launch QA Tester activity
     -u, --uninstall   Uninstall before install
 
@@ -23,6 +24,7 @@ _EOF_
 # ----- Vars
 FLAVOR="production"
 GDK=false
+ADD_WALLET=false
 BRANCH=false
 UNINSTALL=false
 PACKAGE="com.greenaddress.greenbits_android_wallet"
@@ -45,6 +47,10 @@ case $key in
     -g | --gdk)
       shift
       GDK=$1
+      shift ;;
+    -a | --add-wallet)
+      shift
+      ADD_WALLET=$1
       shift ;;
     -u | --uninstall)
       UNINSTALL=true
@@ -90,7 +96,12 @@ launch(){
   # kill
   adb shell am force-stop $PACKAGE
   # launch
-  adb shell am start -n "$PACKAGE/com.blockstream.green.ui.$LAUNCH_ACTIVITY"
+  if [[ $1 != false ]]; then
+    adb shell am start -n "$PACKAGE/com.blockstream.green.ui.$LAUNCH_ACTIVITY" --es ADD_WALLET $1
+  else
+    adb shell am start -n "$PACKAGE/com.blockstream.green.ui.$LAUNCH_ACTIVITY"
+  fi
+
 }
 
 checkout(){
@@ -128,7 +139,7 @@ if [[ $GDK != false ]]; then
 fi
 
 install
-launch
+launch $ADD_WALLET
 
 echo "--------------------------------------------------------"
 echo "Branch:         `git branch --show-current`"

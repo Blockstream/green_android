@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
@@ -14,16 +15,20 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.databinding.OnRebindCallback
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.transition.TransitionManager
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.data.PinData
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.ScreenView
+import com.blockstream.green.database.CredentialType
+import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.MainActivityBinding
@@ -34,6 +39,10 @@ import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import mu.KLogging
 import javax.inject.Inject
 
@@ -115,6 +124,52 @@ class MainActivity : AppActivity() {
 
                 if (it.hasExtra(REGISTER_NETWORK_ID) && it.hasExtra(REGISTER_NETWORK_HOSTNAME)) {
                     greenWallet.registerCustomNetwork(it.getStringExtra(REGISTER_NETWORK_ID) ?: "", it.getStringExtra(REGISTER_NETWORK_HOSTNAME) ?: "")
+                }
+
+                if (it.hasExtra(ADD_WALLET)) {
+                    lifecycleScope.launch(context = handleException()) {
+                        val json = Json.parseToJsonElement(
+                            String(
+                                Base64.decode(
+                                    it.getStringExtra(ADD_WALLET)!!,
+                                    Base64.DEFAULT
+                                )!!
+                            )
+                        )
+
+                        val walletJson = json.jsonObject["wallet"]!!.jsonObject
+                        val network = walletJson["network"]!!.jsonPrimitive.content
+                        val name = walletJson["name"]?.jsonPrimitive?.content
+
+                        network.replaceFirstChar { it.titlecase() }
+
+                        val wallet = Wallet(
+                            walletHashId = "",
+                            name = name ?: network.replaceFirstChar { n -> n.titlecase() },
+                            network = network
+                        )
+
+                        val walletId = walletRepository.addWalletSuspend(wallet)
+
+                        json.jsonObject["login_credentials"]?.jsonObject?.let { loginCredentialsJson ->
+
+                            val pinData = loginCredentialsJson["pin_data"]!!.jsonObject.let {
+                                PinData(
+                                    encryptedData = it["encrypted_data"]!!.jsonPrimitive.content,
+                                    pinIdentifier = it["pin_identifier"]!!.jsonPrimitive.content,
+                                    salt = it["salt"]!!.jsonPrimitive.content,
+                                )
+                            }
+
+                            walletRepository.addLoginCredentialsSuspend(
+                                LoginCredentials(
+                                    walletId = walletId,
+                                    credentialType = CredentialType.PIN,
+                                    pinData = pinData
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -320,7 +375,7 @@ class MainActivity : AppActivity() {
         }
     }
 
-    fun getVisibleFragment() = navHostFragment.childFragmentManager.fragments.firstOrNull()
+    private fun getVisibleFragment() = navHostFragment.childFragmentManager.fragments.firstOrNull()
 
     companion object: KLogging() {
         const val OPEN_WALLET = "OPEN_WALLET"
@@ -334,5 +389,7 @@ class MainActivity : AppActivity() {
 
         const val REGISTER_NETWORK_ID = "REGISTER_NETWORK_ID"
         const val REGISTER_NETWORK_HOSTNAME = "REGISTER_NETWORK_HOSTNAME"
+
+        const val ADD_WALLET = "ADD_WALLET"
     }
 }

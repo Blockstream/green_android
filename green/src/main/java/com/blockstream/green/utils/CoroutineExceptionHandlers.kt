@@ -21,3 +21,16 @@ fun logException(
         onError?.postValue(ConsumableEvent(exception))
     }
 }
+
+fun handleException(
+    onError: MutableLiveData<ConsumableEvent<Throwable>>? = null
+): CoroutineExceptionHandler {
+    return CoroutineExceptionHandler { _, exception ->
+        if (isDevelopmentOrDebug) {
+            exception.printStackTrace()
+        }
+
+        // Show error
+        onError?.postValue(ConsumableEvent(exception))
+    }
+}
