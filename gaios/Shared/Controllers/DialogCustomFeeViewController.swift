@@ -27,7 +27,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
     var buttonConstraint: NSLayoutConstraint?
 
     private var minFeeRate: UInt64 = {
-        guard let estimates = getFeeEstimates() else {
+        guard let estimates = SessionsManager.current?.getFeeEstimates() else {
             let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
             return UInt64(defaultMinFee)
         }

@@ -110,8 +110,8 @@ class AccountArchiveViewController: UIViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try session.updateSubaccount(details: ["subaccount": self.accounts[index].pointer, "hidden": false]).resolve()
+        }.then(on: bgq) {
+            session.updateSubaccount(subaccount: self.accounts[index].pointer, hidden: false)
         }.ensure {
             self.stopAnimating()
         }.done { _ in

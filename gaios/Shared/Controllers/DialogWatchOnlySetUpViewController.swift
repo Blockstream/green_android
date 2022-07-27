@@ -109,13 +109,13 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
+        }.then(on: bgq) {
+            session.setWatchOnly(username: username, password: password)
         }.compactMap(on: bgq) {
-            try session.setWatchOnly(username: username, password: password)
             try self.load()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-
             self.dismiss(action)
         }.catch { error in
 
@@ -127,13 +127,15 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
     func load() throws {
         if let session = SessionsManager.current {
-            if let settings = try session.getSettings() {
+            if let settings = try session.session?.getSettings() {
                 SessionsManager.current?.settings = Settings.from(settings)
             }
             if let account = account, let network = account.gdkNetwork,
                !(account.isSingleSig ?? false) && !network.liquid {
                 // watchonly available on multisig for not liquid networks
-                    self.username = try session.getWatchOnlyUsername()
+                session.getWatchOnlyUsername().done {
+                    self.username = $0
+                }
             }
         }
     }

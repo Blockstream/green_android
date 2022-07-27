@@ -44,7 +44,7 @@ class SendViewController: KeyboardViewController {
 
     private var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
-        guard let estimates = getFeeEstimates() else {
+        guard let estimates = SessionsManager.current?.getFeeEstimates() else {
             // We use the default minimum fee rates when estimates are not available
             let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
             return [UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee)]

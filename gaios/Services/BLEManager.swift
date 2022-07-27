@@ -67,7 +67,7 @@ class BLEManager {
     weak var scanDelegate: BLEManagerScanDelegate?
     var fmwVersion: String?
     var boardType: String?
-    var session: SessionManager?
+    private var session: SessionManager?
 
     init() {
         manager = CentralManager(queue: queue, options: nil)
@@ -300,7 +300,8 @@ class BLEManager {
             .flatMap { _ in
                 return Observable<Void>.create { observer in
                     let device = self.device(isJade: account.isJade, fmwVersion: self.fmwVersion ?? "")
-                    session?.loginWithHW(device).done { res in
+                    session?.loginWithHW(device)
+                        .done { res in
                             observer.onNext(res)
                             observer.onCompleted()
                         }.catch { err in
@@ -310,12 +311,18 @@ class BLEManager {
                 }
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                // Update session and account
+                // update previously account if exist
+                var storedAccount = AccountsManager.shared.accounts.filter {
+                    $0.id != account.id && $0.isHW && $0.isSingleSig == account.isSingleSig &&
+                    $0.name == account.name && $0.network == account.network &&
+                    ($0.walletHashId == nil || $0.walletHashId == session?.account?.walletHashId)
+                }.first
+                storedAccount?.walletHashId = session?.account?.walletHashId
                 if SessionsManager.get(for: account) != nil {
                     SessionsManager.shared.removeValue(forKey: account.id)
                 }
-                SessionsManager.shared[session?.account?.id ?? ""] = session
-                AccountsManager.shared.current = session?.account
+                SessionsManager.shared[storedAccount?.id ?? ""] = session
+                AccountsManager.shared.current = storedAccount
                 self.delegate?.onLogin(p)
             }, onError: { err in
                 switch err {
@@ -423,7 +430,7 @@ class BLEManager {
 
 extension BLEManager: JadeGdkRequest {
     func httpRequest(params: [String: Any]) -> [String: Any]? {
-        return try? self.session?.httpRequest(params: params)
+        return try? self.session?.session?.httpRequest(params: params)
     }
 }
 

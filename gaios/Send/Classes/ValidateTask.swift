@@ -17,17 +17,11 @@ class ValidateTask {
         task = DispatchWorkItem {
             var details = details
             if inputType == .transaction && details["utxos"] == nil {
-                let unspentCall = try? session.getUnspentOutputs(details: ["subaccount": details["subaccount"] ?? 0, "num_confs": 0])
-                let unspentData = try? unspentCall?.resolve().wait()
-                let unspentResult = unspentData?["result"] as? [String: Any]
-                let unspent = unspentResult?["unspent_outputs"] as? [String: Any]
+                let subaccount = details["subaccount"] as? UInt32
+                let unspent = try? session.getUnspentOutputs(subaccount: subaccount ?? 0, numConfs: 0).wait()
                 details["utxos"] = unspent ?? [:]
             }
-
-            let createCall = try? session.createTransaction(details: details)
-            let createData = try? createCall?.resolve().wait()
-            let createResult = createData?["result"] as? [String: Any]
-            self.tx = Transaction(createResult ?? [:])
+            self.tx = try? session.createTransaction(tx: Transaction(details)).wait()
         }
     }
 

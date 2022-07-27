@@ -67,12 +67,8 @@ class SetPhoneViewController: KeyboardViewController {
             return Guarantee()
         }.compactMap {
             TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone)
-        }.compactMap(on: bgq) { config in
-            try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
-        }.compactMap(on: bgq) { details in
-            try session.changeSettingsTwoFactor(method: method.rawValue, details: details)
-        }.then(on: bgq) { call in
-            call.resolve(connected: { self.connected })
+        }.then(on: bgq) { config in
+            session.changeSettingsTwoFactor(method: method, config: config)
         }.then(on: bgq) { _ in
             session.loadTwoFactorConfig()
         }.ensure {

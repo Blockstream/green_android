@@ -85,7 +85,7 @@ class ReceiveViewController: UIViewController {
               wallet.pointer == pointer else {
             return
         }
-        Address.generate(with: session, wallet: wallet)
+        session.getReceiveAddress(subaccount: pointer ?? 0)
             .done { [weak self] addr in
                 self?.address = addr
                 self?.wallet?.receiveAddress = addr.address

@@ -63,8 +63,6 @@ class NotificationManager {
             guard let session = session, session.connected && session.logged else {
                 return
             }
-
-            session.currentConnected = connection.connected
             // notify disconnected network state
             if connection.currentState == "disconnected" {
                 self.post(event: EventType.Network, data: data)

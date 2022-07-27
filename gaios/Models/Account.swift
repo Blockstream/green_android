@@ -28,9 +28,9 @@ struct Account: Codable, Equatable {
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
     var walletHashId: String?
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
-    var isEphemeral: Bool?
+    var isEphemeral: Bool = false
 
-    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool) {
+    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool, isEphemeral: Bool = false) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -41,6 +41,7 @@ struct Account: Codable, Equatable {
         self.password = nil
         self.keychain = self.id
         self.isSingleSig = isSingleSig
+        self.isEphemeral = isEphemeral
     }
 
     init(name: String, network: String, username: String, password: String? = nil, isSingleSig: Bool) {

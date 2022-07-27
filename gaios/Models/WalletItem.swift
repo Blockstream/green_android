@@ -39,15 +39,10 @@ class WalletItem: Codable, Equatable {
         return NSLocalizedString("id_account", comment: "") + " \(pointer)"
     }
 
-    func generateNewAddress() -> Promise<String> {
+    func generateNewAddress() -> Promise<Address> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().compactMap(on: bgq) {_ in
-            try SessionsManager.current?.getReceiveAddress(details: ["subaccount": self.pointer])
-        }.then(on: bgq) { call in
-            call.resolve()
-        }.compactMap(on: bgq) { data in
-            let result = data["result"] as? [String: Any]
-            return result?["address"] as? String ?? ""
+        return Guarantee().then(on: bgq) {_ in
+            SessionsManager.current!.getReceiveAddress(subaccount: self.pointer)
         }
     }
 
@@ -58,20 +53,17 @@ class WalletItem: Codable, Equatable {
             }
         }
         return generateNewAddress().compactMap { address in
-            self.receiveAddress = address
-            return address
+            self.receiveAddress = address.address
+            return address.address
         }
     }
 
     func getBalance() -> Promise<[String: UInt64]> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().compactMap(on: bgq) {
-            try SessionsManager.current?.getBalance(details: ["subaccount": self.pointer, "num_confs": 0])
-        }.then(on: bgq) { call in
-            call.resolve()
-        }.compactMap { data in
-            let satoshi = data["result"] as? [String: UInt64]
-            self.satoshi = satoshi ?? [:]
+        return Guarantee().then(on: bgq) {
+            SessionsManager.current!.getBalance(subaccount: self.pointer, numConfs: 0)
+        }.compactMap { satoshi in
+            self.satoshi = satoshi
             return satoshi
         }
     }

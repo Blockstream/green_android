@@ -195,8 +195,7 @@ class HWWConnectViewController: UIViewController {
 
     func connect(_ peripheral: Peripheral, network: String) {
         hwwState = .connecting
-        let account = Account(id: nil,
-                name: peripheral.name ?? "HW",
+        let account = Account(name: peripheral.name ?? "HW",
                 network: network.replacingOccurrences(of: "electrum-", with: ""),
                 isJade: BLEManager.shared.isJade(peripheral),
                 isLedger: BLEManager.shared.isLedger(peripheral),

@@ -34,7 +34,7 @@ class SessionsManager {
     static func pause() {
         shared.forEach { (_, session) in
             if session.connected {
-                try? session.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
+                try? session.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
             }
         }
         if useTor() {
@@ -45,7 +45,7 @@ class SessionsManager {
     static func resume() {
         shared.forEach { (_, session) in
             if session.connected {
-                try? session.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
+                try? session.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
             }
         }
         if useTor() {

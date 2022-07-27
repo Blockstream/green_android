@@ -229,7 +229,7 @@ class TransactionViewController: UIViewController {
 
     func getFeeRate() -> UInt64 {
         var fee: UInt64 = self.transaction.feeRate
-        if let estimates = getFeeEstimates(), estimates.count > 2 {
+        if let estimates = SessionsManager.current?.getFeeEstimates(), estimates.count > 2 {
             fee = estimates[3]
         }
         return fee
@@ -242,16 +242,14 @@ class TransactionViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then {
-            try session.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 1]).resolve()
-        }.compactMap { data in
-            let result = data["result"] as? [String: Any]
-            let unspent = result?["unspent_outputs"] as? [String: Any]
+            session.getUnspentOutputs(subaccount: self.wallet?.pointer ?? 0, numConfs: 1)
+        }.compactMap { unspentOutputs in
             return ["previous_transaction": self.transaction.details,
                     "fee_rate": self.getFeeRate(),
                     "subaccount": self.wallet.pointer,
-                    "utxos": unspent ?? [:]]
+                    "utxos": unspentOutputs]
         }.then { details in
-            gaios.createTransaction(details: details)
+            session.createTransaction(tx: Transaction(details))
         }.ensure {
             self.stopAnimating()
         }.done { [weak self] tx in
@@ -437,7 +435,7 @@ extension TransactionViewController: DialogNoteViewControllerDelegate {
         self.startAnimating()
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) { _ in
-            try gaios.SessionsManager.current?.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
+            try? SessionsManager.current?.session?.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
             self.transaction.memo = note
             }.ensure {
                 self.stopAnimating()

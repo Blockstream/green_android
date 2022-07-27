@@ -67,7 +67,7 @@ class Learn2faViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try session.cancelTwoFactorReset().resolve()
+            session.cancelTwoFactorReset()
         }.then(on: bgq) { _ in
             session.loadTwoFactorConfig()
         }.ensure {
@@ -94,7 +94,7 @@ class Learn2faViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try session.resetTwoFactor(email: email, isDispute: true).resolve()
+            session.resetTwoFactor(email: email, isDispute: true)
         }.then(on: bgq) { _ in
             session.loadTwoFactorConfig()
         }.ensure {
@@ -118,7 +118,7 @@ class Learn2faViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try session.undoTwoFactorReset(email: email).resolve()
+            session.undoTwoFactorReset(email: email)
         }.then(on: bgq) { _ in
             session.loadTwoFactorConfig()
         }.ensure {

@@ -50,10 +50,8 @@ class SystemMessageViewController: UIViewController {
 
     @IBAction func confirmBtn(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {
-            try? SessionsManager.current?.ackSystemMessage(message: self.text ?? "")
-        }.then(on: bgq) { twoFactorCall in
-            twoFactorCall.resolve()
+        Guarantee().then(on: bgq) {
+            SessionsManager.current!.ackSystemMessage(message: self.text ?? "")
         }.done { _ in
             self.navigationController?.popViewController(animated: true)
         }.catch { _ in

@@ -34,7 +34,7 @@ class AssetsManagerLiquid: Codable, AssetsManagerProtocol {
 
     @discardableResult
     func fetchIcons(session: SessionManager, refresh: Bool) -> Bool {
-        let data = try? session.refreshAssets(params: ["icons": true, "assets": false, "refresh": refresh])
+        let data = try? session.refreshAssets(icons: true, assets: false, refresh: refresh)
         let iconsData = data?["icons"] as? [String: String]
         self.icons = iconsData ?? [:]
         return iconsData != nil
@@ -42,7 +42,7 @@ class AssetsManagerLiquid: Codable, AssetsManagerProtocol {
 
     @discardableResult
     func fetchAssets(session: SessionManager, refresh: Bool) -> Bool {
-        let data = try? session.refreshAssets(params: ["icons": false, "assets": true, "refresh": refresh])
+        let data = try? session.refreshAssets(icons: false, assets: true, refresh: refresh)
         let infosData = data?["assets"] as? [String: Any]
         let infosSer = try? JSONSerialization.data(withJSONObject: infosData ?? [:])
         let infos = try? JSONDecoder().decode([String: AssetInfo].self, from: infosSer ?? Data())

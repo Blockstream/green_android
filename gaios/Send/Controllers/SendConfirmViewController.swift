@@ -84,23 +84,15 @@ class SendConfirmViewController: KeyboardViewController {
             }
             return Guarantee()
         }.then(on: bgq) {
-            signTransaction(transaction: transaction)
-        }.then(on: bgq) { call in
-            call.resolve(connected: {
-                return self.connected
-            })
-        }.map(on: bgq) { resultDict in
-            let result = resultDict["result"] as? [String: Any]
+            session.signTransaction(tx: transaction)
+        }.then(on: bgq) { result -> Promise<Void> in
             if transaction.isSweep {
-                let tx = result!["transaction"] as? String
-                _ = try session.broadcastTransaction(tx_hex: tx!)
-                return nil
+                let tx = result["transaction"] as? String
+                return session.broadcastTransaction(txHex: tx ?? "")
             } else {
-                return try session.sendTransaction(details: result!)
+                let tx = Transaction(result)
+                return session.sendTransaction(tx: tx)
             }
-        }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
-            call?.resolve(connected: {
-                return self.connected }) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
         }.ensure {
             if account?.isHW ?? false {
                 self.dismissHWSummary()

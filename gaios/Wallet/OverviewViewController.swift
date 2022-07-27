@@ -248,10 +248,10 @@ class OverviewViewController: UIViewController {
             cards.append(AlertCardType.testnetNoValue)
         }
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map(on: bgq) {
-            try session.getSystemMessage()
+        Guarantee().then(on: bgq) {
+            session.loadSystemMessage()
         }.map { text in
-            if !text.isEmpty {
+            if let text = text, !text.isEmpty {
                 cards.append(AlertCardType.systemMessage(text))
             }
         }.map(on: bgq) { () -> (String?, String) in
@@ -605,8 +605,8 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try session.updateSubaccount(details: ["subaccount": self.accounts[index].pointer, "hidden": true]).resolve()
+        }.then(on: bgq) {
+            session.updateSubaccount(subaccount: self.accounts[index].pointer, hidden: true)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -1061,8 +1061,8 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try session.renameSubaccount(subaccount: self.accounts[index].pointer, newName: name)
+        }.then(on: bgq) {
+            session.renameSubaccount(subaccount: self.accounts[index].pointer, newName: name)
         }.ensure {
             self.stopAnimating()
         }.done { _ in

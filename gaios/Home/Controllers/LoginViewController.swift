@@ -20,7 +20,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var lblWalletLockHint1: UILabel!
     @IBOutlet weak var lblWalletLockHint2: UILabel!
     @IBOutlet weak var btnWalletLock: UIButton!
-    var account: Account?
+    var account: Account!
 
     private var pinCode = ""
     private let MAXATTEMPTS = 3
@@ -42,11 +42,11 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = account?.name ?? ""
+        navigationItem.title = account.name
         navigationItem.setHidesBackButton(true, animated: false)
 
         let ntwBtn = UIButton(type: .system)
-        let img = account?.icon ?? UIImage()
+        let img = account.icon
         ntwBtn.setImage(img.withRenderingMode(.alwaysOriginal), for: .normal)
         ntwBtn.imageView?.contentMode = .scaleAspectFit
         ntwBtn.addTarget(self, action: #selector(LoginViewController.back), for: .touchUpInside)
@@ -105,7 +105,7 @@ class LoginViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
 
-        if account?.hasBioPin ?? false {
+        if account.hasBioPin {
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
         } else if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
             showLock()
@@ -154,7 +154,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionsManager.new(for: account!)
+        var session = SessionsManager.new(for: account!)
         firstly {
             return Guarantee()
         }.compactMap {
@@ -163,17 +163,35 @@ class LoginViewController: UIViewController {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         }.then(on: bgq) { pinData -> Promise<Bool> in
             let pin = withPIN ?? pinData.plaintextBiometric ?? ""
-            return session.loginWithPin(pin, pinData: pinData, bip39passphrase: bip39passphrase)
-        }.compactMap { _ in
+            return session.loginWithPin(pin, pinData: pinData, refreshAssets: bip39passphrase == nil)
+        }.get { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
+        }.then(on: bgq) { (res: Bool) -> Promise<Bool> in
+            if let bip39passphrase = bip39passphrase {
+                return session.getCredentials(password: "")
+                    .compactMap { Credentials(mnemonic: $0.mnemonic, password: nil, bip39Passphrase: bip39passphrase) }
+                    .then { credentials -> Promise<Bool> in
+                        let ephAccount = Account(name: self.account.name,
+                                                 network: self.account.network,
+                                                 isSingleSig: self.account?.isSingleSig ?? true,
+                                                 isEphemeral: true)
+                        session.destroy()
+                        session = SessionsManager.new(for: ephAccount)
+                        return session.loginWithCredentials(credentials, refreshSubaccounts: true, refreshAssets: true)
+                    }
+            }
+            return Promise<Bool>.value(res)
         }.then(on: bgq) { _ in
             session.subaccount()
+        }.get(on: bgq) { _ in
+            // load async assets registry
+            session.registry?.cache(session: session)
+            session.registry?.loadAsync(session: session)
         }.get { _ in
             if withPIN != nil {
                 session.account?.attempts = 0
             }
             AccountsManager.shared.current = session.account
-            AccountsManager.shared.current?.isEphemeral = bip39passphrase != nil
         }.done { wallet in
 
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: AccountsManager.shared.current)

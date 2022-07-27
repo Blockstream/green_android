@@ -8,16 +8,32 @@ public enum LoginError: Error, Equatable {
     case connectionFailed
 }
 
-class SessionManager: Session {
-
-    var account: Account?
+class GDKSession: Session {
     var connected = false
     var logged = false
-    var currentConnected = false
     var ephemeral = false
+
+    override func connect(netParams: [String : Any]) throws {
+        try super.connect(netParams: netParams)
+        connected = true
+    }
+
+    override init() {
+        try! super.init()
+    }
+
+    deinit {
+        super.setNotificationHandler(notificationCompletionHandler: nil)
+    }
+}
+
+class SessionManager {
+
+    var account: Account?
     var notificationManager: NotificationManager
     var twoFactorConfig: TwoFactorConfig?
     var settings: Settings?
+    var session: GDKSession?
 
     var registry: AssetsManagerProtocol? {
         if let network = account?.gdkNetwork {
@@ -28,6 +44,14 @@ class SessionManager: Session {
 
     var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
+    }
+
+    var connected: Bool {
+        self.session?.connected ?? false
+    }
+
+    var logged: Bool {
+        self.session?.logged ?? false
     }
 
     var activeWallet: UInt32 {
@@ -43,24 +67,26 @@ class SessionManager: Session {
         }
     }
 
-    public init(account: Account) {
+    init(account: Account) {
         self.account = account
         notificationManager = NotificationManager(account: account)
-        try! super.init()
+        session = GDKSession()
     }
 
     deinit {
-        setNotificationHandler(notificationCompletionHandler: nil)
+        destroy()
+        session = nil
     }
 
     public func destroy() {
         if let id = account?.id {
             SessionsManager.shared.removeValue(forKey: id)
+            session = nil
         }
     }
 
     public func connect() throws {
-        if connected == false {
+        if session?.connected == false {
             try connect(network: self.account?.networkName ?? "mainnet")
         }
     }
@@ -98,10 +124,8 @@ class SessionManager: Session {
         }
         // Connect
         do {
-            setNotificationHandler(notificationCompletionHandler: notificationManager.newNotification)
-            try super.connect(netParams: netParams)
-            connected = true
-            currentConnected = true
+            session?.setNotificationHandler(notificationCompletionHandler: notificationManager.newNotification)
+            try session?.connect(netParams: netParams)
         } catch {
             throw LoginError.connectionFailed
         }
@@ -110,73 +134,70 @@ class SessionManager: Session {
     func transactions(first: UInt32 = 0) -> Promise<Transactions> {
         let bgq = DispatchQueue.global(qos: .background)
         let pointer = activeWallet
-        return Guarantee().then(on: bgq) {_ in
-            try self.getTransactions(details: ["subaccount": pointer, "first": first, "count": Constants.trxPerPage]).resolve(session: self)
-        }.compactMap(on: bgq) { data in
-            let result = data["result"] as? [String: Any]
-            let dict = result?["transactions"] as? [[String: Any]]
-            let list = dict?.map { Transaction($0) }
-            return Transactions(list: list ?? [])
-        }
+        return Guarantee()
+            .compactMap(on: bgq) { _ in try self.session?.getTransactions(details: ["subaccount": pointer,
+                                                        "first": first,
+                                                        "count": Constants.trxPerPage]) }
+            .then { $0.resolve(session: self) }
+            .compactMap(on: bgq) { data in
+                let result = data["result"] as? [String: Any]
+                let dict = result?["transactions"] as? [[String: Any]]
+                let list = dict?.map { Transaction($0) }
+                return Transactions(list: list ?? [])
+            }
     }
 
     func subaccount(_ pointer: UInt32? = nil) -> Promise<WalletItem> {
         let bgq = DispatchQueue.global(qos: .background)
         let pointer = pointer ?? activeWallet
-        return Guarantee().then(on: bgq) {
-            try self.getSubaccount(subaccount: pointer).resolve(session: self)
-        }.recover {_ in
-            return Guarantee().compactMap { [self] in
-                activeWallet = 0
-            }.then(on: bgq) {
-                try self.getSubaccount(subaccount: 0).resolve(session: self)
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.getSubaccount(subaccount: pointer) }
+            .then(on: bgq) { $0.resolve(session: self) }
+            .recover { _ in
+                Guarantee()
+                    .compactMap { self.activeWallet = 0 }
+                    .compactMap(on: bgq) { try self.session?.getSubaccount(subaccount: 0) }
+                    .then(on: bgq) { $0.resolve(session: self) }
+            }.compactMap(on: bgq) { data in
+                let result = data["result"] as? [String: Any]
+                let jsonData = try JSONSerialization.data(withJSONObject: result ?? [:])
+                return try JSONDecoder().decode(WalletItem.self, from: jsonData)
             }
-        }.compactMap(on: bgq) { data in
-            let result = data["result"] as? [String: Any]
-            let jsonData = try JSONSerialization.data(withJSONObject: result ?? [:])
-            return try JSONDecoder().decode(WalletItem.self, from: jsonData)
-        }
     }
 
     func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().then(on: bgq) {
-            try self.getSubaccounts(details: ["refresh": refresh]).resolve(session: self)
-        }.compactMap(on: bgq) { data in
-            let result = data["result"] as? [String: Any]
-            let subaccounts = result?["subaccounts"] as? [[String: Any]]
-            let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
-            let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
-            return wallets
-        }
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.getSubaccounts(details: ["refresh": refresh]) }
+            .then(on: bgq) { $0.resolve(session: self) }
+            .compactMap(on: bgq) { data in
+                let result = data["result"] as? [String: Any]
+                let subaccounts = result?["subaccounts"] as? [[String: Any]]
+                let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
+                let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
+                return wallets
+            }
     }
 
     func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().compactMap(on: bgq) {
-            try self.getTwoFactorConfig()
-        }.compactMap { dataTwoFactorConfig in
-            let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: []))
-            self.twoFactorConfig = twoFactorConfig
-            return twoFactorConfig
-        }
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.getTwoFactorConfig() }
+            .compactMap { dataTwoFactorConfig in
+                let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: []))
+                self.twoFactorConfig = twoFactorConfig
+                return twoFactorConfig
+            }
     }
 
-    func loadSettings() -> Promise<Settings> {
+    func loadSettings() -> Promise<Settings?> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().compactMap(on: bgq) {
-            try self.getSettings()
-        }.compactMap { data in
-            self.settings = Settings.from(data)
-            return self.settings
-        }
-    }
-
-    func loadSystemMessage() -> Promise<String> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().map(on: bgq) {
-            try self.getSystemMessage()
-        }
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.getSettings() }
+            .compactMap { data in
+                self.settings = Settings.from(data)
+                return self.settings
+            }
     }
 
     func discover(mnemonic: String?, password: String?) -> Promise<Void> {
@@ -192,13 +213,11 @@ class SessionManager: Session {
             }.map(on: bgq) {
                 try self.connect()
             }.then(on: bgq) { _ in
-                try super.loginUser(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""], hw_device: [:]).resolve(session: self)
-            }.map(on: bgq) { res in
+                self.loginUser(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""])
+            }.map(on: bgq) { walletHashId in
                 // check if wallet just exist
-                let result = res["result"] as? [String: Any]
-                let walletHashId = result?["wallet_hash_id"] as? String
                 if AccountsManager.shared.accounts.contains(where: {
-                        $0.walletHashId == walletHashId &&
+                        $0.walletHashId == self.account?.walletHashId &&
                         $0.id != self.account?.id &&
                         $0.isSingleSig == isSingleSig &&
                         $0.networkName == self.account?.networkName
@@ -231,44 +250,35 @@ class SessionManager: Session {
            }.asVoid()
     }
 
-    func restore(_ credentials: Credentials) -> Promise<Void> {
+    // create a default segwit account if doesn't exist on singlesig
+    func createDefaultSubaccount(wallets: [WalletItem]) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         let isSingleSig = account?.isSingleSig ?? false
-        return loginWithCredentials(credentials)
-            .then(on: bgq) { _ in
-                // discover subaccounts at 1st login
-                self.subaccounts(true).recover { _ in
-                    Promise { _ in
-                        throw LoginError.connectionFailed
-                    }
-                }
-            }.then(on: bgq) { wallets -> Promise<Void> in
-                // create a default segwit account if doesn't exist on singlesig
-                if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
-                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
-                        .resolve(session: self).asVoid()
-                }
-                return Promise<Void>().asVoid()
-            }
+        let notFound = !wallets.contains(where: {$0.type == AccountType.segWit.rawValue })
+        if isSingleSig && notFound {
+            return Guarantee()
+                .compactMap(on: bgq) { try self.session?.createSubaccount(details: ["name": "Segwit Account",
+                                                             "type": AccountType.segWit.rawValue]) }
+                .then(on: bgq) { $0.resolve(session: self) }.asVoid()
+        }
+        return Promise<Void>().asVoid()
+    }
+
+    func restore(_ credentials: Credentials) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .then(on: bgq) { self.loginWithCredentials(credentials, refreshSubaccounts: true, refreshAssets: true) }
+            .asVoid()
     }
 
     func create(_ credentials: Credentials) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .map(on: bgq) {
-                try self.connect()
-            }.then(on: bgq) { _ -> Promise<Void> in
-                self.registerSW(credentials)
-            }.then(on: bgq) { _ in
-                self.loginWithCredentials(credentials)
-            }.then(on: bgq) { _ -> Promise<Void> in
-                // create a default segwit account if doesn't exist on singlesig
-                if self.account?.isSingleSig ?? false {
-                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
-                        .resolve(session: self).asVoid()
-                }
-                return Promise<Void>().asVoid()
-            }.recover { err in
+            .map(on: bgq) { try self.connect() }
+            .then(on: bgq) { _ in self.registerSW(credentials) }
+            .then(on: bgq) { _ in self.loginWithCredentials(credentials, refreshSubaccounts: false, refreshAssets: true) }
+            .then(on: bgq) { _ -> Promise<Void> in self.createDefaultSubaccount(wallets: []) }
+            .recover { err in
                 switch err {
                 case LoginError.walletNotFound,
                     LoginError.walletsJustRestored:
@@ -283,137 +293,104 @@ class SessionManager: Session {
     func reconnect() -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .map(on: bgq) {
-                try self.connect()
-            }.then(on: bgq) {
-                try super.loginUser(details: [:]).resolve(session: self).asVoid()
+            .map(on: bgq) { try self.connect() }
+            .then(on: bgq) { self.loginUser().asVoid() }
+    }
+
+    private func loginUser(details: [String: Any] = [:], hwDevice: [String: Any] = [:]) -> Promise<Bool> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.loginUser(details: details, hw_device: hwDevice) }
+            .then(on: bgq) { $0.resolve(session: self) }
+            .compactMap { res in
+                self.session?.logged = true
+                let result = res["result"] as? [String: Any]
+                return result?["wallet_hash_id"] as? String
+            }.compactMap { (walletHashId: String) in
+                let prevHashId = self.account?.walletHashId
+                self.account?.walletHashId = walletHashId
+                return prevHashId == nil
+            }
+    }
+
+    func loginWithPin(_ pin: String, pinData: PinData, refreshAssets: Bool = true) -> Promise<Bool> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let data = try? JSONEncoder().encode(pinData)
+        let pin_data = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        return Guarantee()
+            .map(on: bgq) { try self.connect() }
+            .then(on: bgq) { self.loginUser(details: ["pin": pin, "pin_data": pin_data ?? [:]]) }
+            .compactMap(on: bgq) {
+                if refreshAssets {
+                    self.registry?.cache(session: self)
+                    self.registry?.loadAsync(session: self)
+                }
+                return $0
+            }
+    }
+
+    func loginWithCredentials(_ credentials: Credentials, refreshSubaccounts: Bool = true, refreshAssets: Bool = true) -> Promise<Bool> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let data = try? JSONEncoder().encode(credentials)
+        let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        return Guarantee()
+            .map(on: bgq) { try self.connect() }
+            .then(on: bgq) { self.loginUser(details: details ?? [:]) }
+            .then(on: bgq) { firstLogin -> Promise<Bool> in
+                if refreshSubaccounts && firstLogin {
+                    return self.subaccounts(true)
+                        .recover { _ in self.subaccounts(false) }
+                        .then(on: bgq) { self.createDefaultSubaccount(wallets: $0) }
+                        .compactMap { firstLogin}
+                }
+                return Promise<Bool>.value(firstLogin)
+            }.compactMap(on: bgq) {
+                if refreshAssets {
+                    self.registry?.cache(session: self)
+                    self.registry?.loadAsync(session: self)
+                }
+                return $0
             }
     }
 
     func loginWatchOnly(_ username: String, _ password: String) -> Promise<Bool> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().map(on: bgq) {
-            try self.connect()
-        }.then(on: bgq) {
-            try super.loginUser(details: ["username": username, "password": password], hw_device: [:]).resolve(session: self)
-        }.compactMap { res in
-            let result = res["result"] as? [String: Any]
-            let walletHashId = result?["wallet_hash_id"] as? String
-            let prevHashId = self.account?.walletHashId
-            self.account?.walletHashId = walletHashId
-            return prevHashId == nil
-        }.get { _ in
-            // load async assets registry
-            self.registry?.cache(session: self)
-            self.registry?.loadAsync(session: self)
-        }
-    }
-
-    func loginWithPin(_ pin: String, pinData: PinData, bip39passphrase: String?) -> Promise<Bool> {
-        var promise = loginWithPin(pin, pinData: pinData)
-        if let bip39passphrase = bip39passphrase {
-            promise = promise.then { [self] _ in getCredentials(password: "") }
-                .compactMap { Credentials(mnemonic: $0.mnemonic, password: nil, bip39Passphrase: bip39passphrase) }
-                .then { [self] in loginWithCredentials($0) }
-                .get { [self] _ in ephemeral = true }
-        }
-        return promise
-    }
-
-    private func loginWithPin(_ pin: String, pinData: PinData) -> Promise<Bool> {
-        let bgq = DispatchQueue.global(qos: .background)
-        let data = try? JSONEncoder().encode(pinData)
-        let pin_data = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        return Guarantee().map(on: bgq) {
-            try self.connect()
-        }.then(on: bgq) {
-            try super.loginUser(details: ["pin": pin, "pin_data": pin_data ?? [:]], hw_device: [:]).resolve(session: self)
-        }.compactMap { res in
-            let result = res["result"] as? [String: Any]
-            let walletHashId = result?["wallet_hash_id"] as? String
-            let prevHashId = self.account?.walletHashId
-            self.account?.walletHashId = walletHashId
-            return prevHashId == nil
-        }.get { _ in
-            // load async assets registry
-            self.registry?.cache(session: self)
-            self.registry?.loadAsync(session: self)
-        }
-    }
-
-    func loginWithCredentials(_ credentials: Credentials) -> Promise<Bool> {
-        let bgq = DispatchQueue.global(qos: .background)
-        let data = try? JSONEncoder().encode(credentials)
-        let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        return Guarantee().map(on: bgq) {
-            try self.connect()
-        }.then(on: bgq) {
-            try super.loginUser(details: details ?? [:], hw_device: [:]).resolve(session: self)
-        }.compactMap { res in
-            let result = res["result"] as? [String: Any]
-            let walletHashId = result?["wallet_hash_id"] as? String
-            let prevHashId = self.account?.walletHashId
-            self.account?.walletHashId = walletHashId
-            return prevHashId == nil
-        }.get { _ in
-            // load async assets registry
-            self.registry?.cache(session: self)
-            self.registry?.loadAsync(session: self)
-        }
+        return Guarantee().map(on: bgq) { try self.connect() }
+            .then(on: bgq) { self.loginUser(details: ["username": username, "password": password]) }
+            .get { _ in
+                self.registry?.cache(session: self)
+                self.registry?.loadAsync(session: self)
+            }
     }
 
     func loginWithHW(_ hwDevice: HWDevice) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         let data = try? JSONEncoder().encode(hwDevice)
         let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        return Guarantee().map(on: bgq) {
-            try self.connect()
-        }.then(on: bgq) {
-            try super.loginUser(details: [:], hw_device: device ?? [:]).resolve(session: self)
-        }.compactMap { res in
-            let result = res["result"] as? [String: Any]
-            let walletHashId = result?["wallet_hash_id"] as? String
-            var prevHashId = self.account?.walletHashId
-            self.account?.walletHashId = walletHashId
-            // for hw, use previously account if exist
-            let acc = AccountsManager.shared.accounts.filter {
-                ($0.walletHashId == walletHashId || $0.walletHashId == nil) &&
-                $0.name == self.account?.name &&
-                $0.isSingleSig == self.account?.isSingleSig &&
-                $0.id != self.account?.id &&
-                $0.isHW
-            }.first
-            if let acc = acc {
-                prevHashId = acc.walletHashId
-                self.account = acc
-                self.account?.walletHashId = walletHashId
+        return Guarantee()
+            .map(on: bgq) { try self.connect() }
+            .then(on: bgq) { self.registerHW(hw: hwDevice) }
+            .then(on: bgq) { self.loginUser(hwDevice: device ?? [:]) }
+            .then(on: bgq) { firstLogin in
+                // discover subaccounts at 1st login
+                self.subaccounts(firstLogin).recover { _ in
+                    Promise { _ in
+                        throw LoginError.connectionFailed
+                    }
+                }}
+            .then(on: bgq) { self.createDefaultSubaccount(wallets: $0) }
+            .get { _ in
+                // load async assets registry
+                self.registry?.cache(session: self)
+                self.registry?.loadAsync(session: self)
             }
-            return prevHashId == nil
-        }.then(on: bgq) { firstLogin in
-            // discover subaccounts at 1st login
-            self.subaccounts(firstLogin).recover { _ in
-                Promise { _ in
-                    throw LoginError.connectionFailed
-                }
-            }
-        }.then(on: bgq) { wallets -> Promise<Void> in
-            // create a default segwit account if doesn't exist on singlesig
-            let isSingleSig = self.account?.isSingleSig ?? false
-            if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
-                return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
-                    .resolve(session: self).asVoid()
-            }
-            return Promise<Void>().asVoid()
-        }.get { _ in
-            // load async assets registry
-            self.registry?.cache(session: self)
-            self.registry?.loadAsync(session: self)
-        }
     }
 
     func getCredentials(password: String) -> Promise<Credentials> {
+        let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .then { try super.getCredentials(details: ["password": password]).resolve(session: self) }
+            .compactMap(on: bgq) { try self.session?.getCredentials(details: ["password": password]) }
+            .then(on: bgq) { $0.resolve(session: self) }
             .compactMap {
                 let result = $0["result"] as? [String: Any]
                 let jsonData = try JSONSerialization.data(withJSONObject: result ?? "")
@@ -422,29 +399,196 @@ class SessionManager: Session {
     }
 
     func registerSW(_ credentials: Credentials) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
         let data = try? JSONEncoder().encode(credentials)
         let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
-            .then { try super.registerUser(details: details ?? [:], hw_device: [:]).resolve(session: self) }
+            .compactMap(on: bgq) { try self.session?.registerUser(details: details ?? [:], hw_device: [:]) }
+            .then(on: bgq) { $0.resolve(session: self) }
             .asVoid()
     }
 
     func registerHW(hw: HWDevice) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
         let data = try? JSONEncoder().encode(hw)
         let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments)
         return Guarantee()
-            .then { try super.registerUser(details: [:], hw_device: ["device": device ?? [:]]).resolve(session: self) }
+            .compactMap(on: bgq) { try self.session?.registerUser(details: [:], hw_device: ["device": device ?? [:]]) }
+            .then(on: bgq) { $0.resolve(session: self) }
             .asVoid()
     }
 
     func encryptWithPin(pin: String, text: [String: Any?]) -> Promise<PinData> {
+        let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .then { try super.encryptWithPin(details: ["pin": pin, "plaintext": text]).resolve(session: self) }
+            .compactMap(on: bgq) { try self.session?.encryptWithPin(details: ["pin": pin, "plaintext": text]) }
+            .then(on: bgq) { $0.resolve(session: self) }
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
                 let txt = result?["pin_data"] as? [String: Any]
                 let jsonData = try JSONSerialization.data(withJSONObject: txt ?? "")
                 return try JSONDecoder().decode(PinData.self, from: jsonData)
             }
+    }
+
+    func resetTwoFactor(email: String, isDispute: Bool) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.resetTwoFactor(email: email, isDispute: isDispute) }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func cancelTwoFactorReset() -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.cancelTwoFactorReset() }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func undoTwoFactorReset(email: String) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.undoTwoFactorReset(email: email) }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func setWatchOnly(username: String, password: String) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.setWatchOnly(username: username, password: password) }
+    }
+    func getWatchOnlyUsername() -> Promise<String> {
+        return Guarantee()
+            .compactMap { try self.session?.getWatchOnlyUsername() }
+    }
+
+    func setCSVTime(value: Int) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.setCSVTime(details: ["value": value]) }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func setTwoFactorLimit(details: [String: Any]) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.setTwoFactorLimit(details: details) }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func convertAmount(input: [String: Any]) throws -> [String: Any] {
+        try self.session?.convertAmount(input: input) ?? [:]
+    }
+
+    func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) throws -> [String: Any]? {
+        try self.session?.refreshAssets(params: ["icons": icons, "assets": assets, "refresh": refresh])
+    }
+
+    func getReceiveAddress(subaccount: UInt32) -> Promise<Address> {
+        return Guarantee()
+            .compactMap { try self.session?.getReceiveAddress(details: ["subaccount": subaccount]) }
+            .then { $0.resolve(session: self) }
+            .compactMap { res in
+                let result = res["result"] as? [String: Any]
+                let data = try? JSONSerialization.data(withJSONObject: result!, options: [])
+                return try? JSONDecoder().decode(Address.self, from: data!)
+            }
+    }
+
+    func getBalance(subaccount: UInt32, numConfs: Int) -> Promise<[String: UInt64]> {
+        return Guarantee()
+            .compactMap { try self.session?.getBalance(details: ["subaccount": subaccount, "num_confs": numConfs]) }
+            .then { $0.resolve(session: self) }
+            .compactMap { $0["result"] as? [String: UInt64] }
+    }
+
+    func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) -> Promise<Void> {
+        let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
+        return Guarantee()
+            .compactMap { try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: details ?? [:]) }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func updateSubaccount(subaccount: UInt32, hidden: Bool) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.updateSubaccount(details: ["subaccount": subaccount, "hidden": hidden]) }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func createSubaccount(details: [String: Any]) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.createSubaccount(details: details) }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func renameSubaccount(subaccount: UInt32, newName: String) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.renameSubaccount(subaccount: subaccount, newName: newName) }
+            .asVoid()
+    }
+
+    func changeSettings(settings: Settings) -> Promise<Void> {
+        let settings = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+        return Guarantee()
+            .compactMap { try self.session?.changeSettings(details: settings ?? [:]) }
+            .then { $0.resolve(session: self) }.asVoid()
+    }
+
+    func getUnspentOutputs(subaccount: UInt32, numConfs: Int) -> Promise<[String: Any]> {
+        return Guarantee()
+            .compactMap { try self.session?.getUnspentOutputs(details: ["subaccount": subaccount, "num_confs": numConfs]) }
+            .then { $0.resolve(session: self) }
+            .compactMap { res in
+                let result = res["result"] as? [String: Any]
+                return result?["unspent_outputs"] as? [String: Any]
+            }
+    }
+
+    func createTransaction(tx: Transaction) -> Promise<Transaction> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.createTransaction(details: tx.details) }
+            .then(on: bgq) { $0.resolve(session: self) }
+            .compactMap(on: bgq) { Transaction($0["result"] as? [String: Any] ?? [:]) }
+    }
+
+    func signTransaction(tx: Transaction) -> Promise<[String: Any]> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.signTransaction(details: tx.details) }
+            .then(on: bgq) { $0.resolve(session: self) }
+            .compactMap(on: bgq) { $0["result"] as? [String: Any] }
+    }
+
+    func broadcastTransaction(txHex: String) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.broadcastTransaction(tx_hex: txHex) }
+            .asVoid()
+    }
+
+    func sendTransaction(tx: Transaction) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.sendTransaction(details: tx.details) }
+            .then(on: bgq) { $0.resolve(session: self) }
+            .asVoid()
+    }
+
+    func getFeeEstimates() -> [UInt64]? {
+        let estimates = try? session?.getFeeEstimates()
+        return estimates == nil ? nil : estimates!["fees"] as? [UInt64]
+    }
+
+    func loadSystemMessage() -> Promise<String?> {
+        return Guarantee()
+            .compactMap { try self.session?.getSystemMessage() }
+    }
+
+    func ackSystemMessage(message: String) -> Promise<Void> {
+        return Guarantee()
+            .compactMap { try self.session?.ackSystemMessage(message: message) }
+            .then { $0.resolve(session: self) }
+            .asVoid()
+    }
+
+    func getAvailableCurrencies() -> Promise<[String: [String]]> {
+        return Guarantee()
+            .compactMap { try self.session?.getAvailableCurrencies() }
+            .compactMap { $0?["per_exchange"] as? [String: [String]] }
     }
 }

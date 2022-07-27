@@ -32,7 +32,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     var limits: TwoFactorConfigLimits? {
-        guard let dataTwoFactorConfig = try? SessionsManager.current?.getTwoFactorConfig() else { return nil }
+        guard let dataTwoFactorConfig = try? SessionsManager.current?.session?.getTwoFactorConfig() else { return nil }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return nil }
         return twoFactorConfig.limits
     }
@@ -103,10 +103,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try SessionsManager.current?.setTwoFactorLimit(details: details)
-        }.then(on: bgq) { call in
-            call.resolve()
+        }.then(on: bgq) {
+            SessionsManager.current!.setTwoFactorLimit(details: details)
         }.ensure {
             self.stopAnimating()
         }.done { _ in

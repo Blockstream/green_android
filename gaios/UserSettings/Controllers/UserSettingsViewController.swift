@@ -66,12 +66,14 @@ class UserSettingsViewController: UIViewController {
 
     func load() throws {
         if let session = SessionsManager.current {
-            if let settings = try session.getSettings() {
+            if let settings = try session.session?.getSettings() {
                 SessionsManager.current?.settings = Settings.from(settings)
             }
             if let account = account, !(account.isSingleSig ?? false) {
                 // watchonly available on multisig
-                    self.username = try session.getWatchOnlyUsername()
+                session.getWatchOnlyUsername().done {
+                    self.username = $0
+                }
             }
         }
     }
@@ -539,7 +541,7 @@ extension UserSettingsViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionsManager.current?.setWatchOnly(username: username, password: password)
+            SessionsManager.current?.setWatchOnly(username: username, password: password)
             try self.load()
         }.ensure {
             self.stopAnimating()
@@ -571,13 +573,12 @@ extension UserSettingsViewController {
     }
 
     func changeSettings(_ settings: Settings) {
-        let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
         guard let session = SessionsManager.current else { return }
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {_ in
             self.startAnimating()
         }.then(on: bgq) { _ in
-            try session.changeSettings(details: details!).resolve()
+            session.changeSettings(settings: settings)
         }.compactMap(on: bgq) { _ in
             try self.load()
         }.ensure {

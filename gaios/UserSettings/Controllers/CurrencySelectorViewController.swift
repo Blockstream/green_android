@@ -91,12 +91,8 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
 
         Guarantee().compactMap {
             settings.pricing = pricing
-        }.compactMap(on: bgq) {
-            try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-        }.compactMap(on: bgq) { details in
-            try session.changeSettings(details: details)
-        }.then(on: bgq) { call in
-            call.resolve()
+        }.then(on: bgq) { details in
+            session.changeSettings(settings: settings)
         }.done { _ in
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "settings"), object: nil, userInfo: nil)
             self.navigationController?.popViewController(animated: true)
@@ -108,11 +104,9 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     func getExchangeRate() {
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
-        Guarantee().compactMap(on: bgq) {
-            try session.getAvailableCurrencies()
-        }.done { (data: [String: Any]?) in
-            guard let json = data else { return }
-            guard let perExchange = json["per_exchange"] as? [String: [String]] else { throw GaError.GenericError() }
+        Guarantee().then(on: bgq) {
+            session.getAvailableCurrencies()
+        }.done { perExchange in
             self.currencyList.removeAll()
             for (exchange, array) in perExchange {
                 for currency in array {

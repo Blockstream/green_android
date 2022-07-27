@@ -63,12 +63,8 @@ class SetEmailViewController: KeyboardViewController {
             return Guarantee()
         }.compactMap {
             TwoFactorConfigItem(enabled: self.isSetRecovery ? false : true, confirmed: true, data: text)
-        }.compactMap(on: bgq) { config in
-            try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
-        }.compactMap(on: bgq) { details in
-            try SessionsManager.current?.changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: details)
-        }.then(on: bgq) { call in
-            call.resolve(connected: { self.connected })
+        }.then(on: bgq) { config in
+            session.changeSettingsTwoFactor(method: .email, config: config)
         }.then(on: bgq) { _ in
             session.loadTwoFactorConfig()
         }.ensure {

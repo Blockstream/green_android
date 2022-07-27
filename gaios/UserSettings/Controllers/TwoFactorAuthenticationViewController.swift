@@ -126,7 +126,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func reloadData() {
-        guard let dataTwoFactorConfig = try? SessionsManager.current?.getTwoFactorConfig() else { return }
+        guard let dataTwoFactorConfig = try? SessionsManager.current?.session?.getTwoFactorConfig() else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
         self.twoFactorConfig = twoFactorConfig
         factors.removeAll()
@@ -176,10 +176,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
             return Guarantee()
         }.compactMap {
             TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
-        }.compactMap(on: bgq) { config in
-            try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
-        }.then(on: bgq) { details in
-            try session.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
+        }.then(on: bgq) { config in
+            session.changeSettingsTwoFactor(method: type, config: config)
         }.then(on: bgq) { _ in
             session.loadTwoFactorConfig()
         }.ensure {
@@ -201,15 +199,13 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func setCsvTimeLock(csv: Settings.CsvTime) {
-        var details = [String: Any]()
-        details["value"] = csv.value()
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try session.setCSVTime(details: details).resolve()
+            session.setCSVTime(value: csv.value()!)
         }.then(on: bgq) { _ in
             session.loadSettings()
         }.ensure {
@@ -260,7 +256,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try session.resetTwoFactor(email: email, isDispute: false).resolve()
+            session.resetTwoFactor(email: email, isDispute: false)
         }.then(on: bgq) {_ in
             session.loadTwoFactorConfig()
         }.ensure {
