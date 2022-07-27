@@ -10,8 +10,8 @@ class ShowMnemonicsViewController: UIViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_recovery_phrase", comment: "")
 
-        SessionsManager.current?.getCredentials(password: "").done { mnemonic in
-            self.items = mnemonic.split(separator: " ").map(String.init)
+        SessionsManager.current?.getCredentials(password: "").done {
+            self.items = $0.mnemonic.split(separator: " ").map(String.init)
             self.collectionView.reloadData()
         }.catch { err in
             print(err)

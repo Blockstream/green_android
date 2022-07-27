@@ -99,7 +99,7 @@ struct Account: Codable, Equatable {
         }
     }
 
-    func auth(_ method: String) throws -> [String: Any] {
+    func auth(_ method: String) throws -> PinData {
         return try AuthenticationTypeHandler.getAuth(method: method, forNetwork: keychain)
     }
 
@@ -149,7 +149,7 @@ struct Account: Codable, Equatable {
             }.then(on: bgq) {
                 session.getCredentials(password: "") }
             .then(on: bgq) {
-                session.encryptWithPin(pin: password, text: ["mnemonic": $0]) }
+                session.encryptWithPin(pin: password, text: ["mnemonic": $0.mnemonic]) }
             .compactMap(on: bgq) { try AuthenticationTypeHandler.addBiometryType(pinData: $0, extraData: password, forNetwork: keychain) }
     }
 

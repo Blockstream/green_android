@@ -196,8 +196,8 @@ class SetPinViewController: UIViewController {
             return Guarantee()
         }.then(on: bgq) {
             session.getCredentials(password: "")
-        }.then(on: bgq) { mnemonic in
-            account.addPin(session: session, pin: pin, mnemonic: mnemonic)
+        }.then(on: bgq) {
+            account.addPin(session: session, pin: pin, mnemonic: $0.mnemonic)
         }.ensure {
             self.stopLoader()
         }.done { _ in

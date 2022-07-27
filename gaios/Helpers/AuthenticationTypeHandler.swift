@@ -275,8 +275,10 @@ class AuthenticationTypeHandler {
         return extended
     }
 
-    static func getAuth(method: String, forNetwork: String) throws -> [String: Any] {
-        return try get(method: method, toDecrypt: method == AuthKeyBiometric, forNetwork: forNetwork)
+    static func getAuth(method: String, forNetwork: String) throws -> PinData {
+        let pinData = try get(method: method, toDecrypt: method == AuthKeyBiometric, forNetwork: forNetwork)
+        let jsonData = try JSONSerialization.data(withJSONObject: pinData)
+        return try JSONDecoder().decode(PinData.self, from: jsonData)
     }
 
     static func findAuth(method: String, forNetwork: String) -> Bool {

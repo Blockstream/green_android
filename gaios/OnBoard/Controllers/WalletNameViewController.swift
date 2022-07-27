@@ -118,6 +118,7 @@ class WalletNameViewController: UIViewController {
         let account =  OnBoardManager.shared.account
         let session = SessionsManager.new(for: account)
         let params = OnBoardManager.shared.params
+        let credentials = Credentials(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, bip39Passphrase: nil)
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
@@ -134,10 +135,10 @@ class WalletNameViewController: UIViewController {
                             throw err
                         }
                     }.then {
-                        session.restore(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
+                        session.restore(credentials)
                     }
             } else {
-                return session.create(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
+                return session.create(credentials)
             }
         }.ensure {
             self.stopLoader()

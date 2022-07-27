@@ -156,7 +156,7 @@ class WatchOnlyViewController: KeyboardViewController {
         }.compactMap(on: bgq) {
             try session.connect()
         }.then(on: bgq) { _ in
-            session.login(details: ["username": username, "password": password])
+            session.loginWatchOnly(username, password)
         }.ensure {
             self.stopLoader()
         }.done { _ in

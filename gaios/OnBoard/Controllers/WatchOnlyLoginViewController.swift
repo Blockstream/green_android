@@ -152,7 +152,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.then(on: bgq) {
-            session.login(details: ["username": username, "password": password])
+            session.loginWatchOnly(username, password)
         }.ensure {
             self.stopLoader()
         }.done { _ in

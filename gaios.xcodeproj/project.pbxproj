@@ -301,6 +301,7 @@
 		81DC54352885BD8400DC37C9 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DC54342885BD8300DC37C9 /* Balance.swift */; };
 		81E0B4CB25531470001C8544 /* Commitment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4CA25531470001C8544 /* Commitment.swift */; };
 		81E0B4D725531AD6001C8544 /* TxInputLiquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */; };
+		81F72E0928904D3F00D4DEFF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F72E0828904D3F00D4DEFF /* Credentials.swift */; };
 		81F74BA52278857800A397C9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F74BA42278857800A397C9 /* Network.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
 		DD1C96BAC43AE08FD1433D9E /* libPods-gaiosUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */; };
@@ -674,6 +675,7 @@
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
 		81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputLiquid.swift; sourceTree = "<group>"; };
+		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		88A86540174AD367FC26E586 /* libPods-gaiosTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gaiosTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1513,6 +1515,7 @@
 				81D671F026C80D4E00682508 /* Connection.swift */,
 				81D671F226C80D6B00682508 /* TorNotification.swift */,
 				815D4A9F28638A56004DC015 /* PinData.swift */,
+				81F72E0828904D3F00D4DEFF /* Credentials.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1978,6 +1981,7 @@
 				3497936525F8B18C0029ECB1 /* LandingViewController.swift in Sources */,
 				34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */,
 				34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */,
+				81F72E0928904D3F00D4DEFF /* Credentials.swift in Sources */,
 				349C75242796DBB90046DA59 /* AssetCell.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				8111485F287891F500C6F030 /* JadeOTA.swift in Sources */,

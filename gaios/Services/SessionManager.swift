@@ -14,6 +14,7 @@ class SessionManager: Session {
     var connected = false
     var logged = false
     var currentConnected = false
+    var ephemeral = false
     var notificationManager: NotificationManager
     var twoFactorConfig: TwoFactorConfig?
     var settings: Settings?
@@ -230,10 +231,10 @@ class SessionManager: Session {
            }.asVoid()
     }
 
-    func restore(mnemonic: String?, password: String?) -> Promise<Void> {
+    func restore(_ credentials: Credentials) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         let isSingleSig = account?.isSingleSig ?? false
-        return self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""])
+        return loginWithCredentials(credentials)
             .then(on: bgq) { _ in
                 // discover subaccounts at 1st login
                 self.subaccounts(true).recover { _ in
@@ -251,15 +252,15 @@ class SessionManager: Session {
             }
     }
 
-    func create(mnemonic: String? = nil, password: String? = nil) -> Promise<Void> {
+    func create(_ credentials: Credentials) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .map(on: bgq) {
                 try self.connect()
             }.then(on: bgq) { _ -> Promise<Void> in
-                self.registerUser(mnemonic: mnemonic ?? "")
+                self.registerSW(credentials)
             }.then(on: bgq) { _ in
-                self.login(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""])
+                self.loginWithCredentials(credentials)
             }.then(on: bgq) { _ -> Promise<Void> in
                 // create a default segwit account if doesn't exist on singlesig
                 if self.account?.isSingleSig ?? false {
@@ -279,31 +280,6 @@ class SessionManager: Session {
             }
     }
 
-    func loginHW(_ hwDevice: HWDevice? = nil) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        let isSingleSig = account?.isSingleSig ?? false
-        return Guarantee()
-            .map(on: bgq) {
-                try self.connect()
-            }.then(on: bgq) { _ in
-                self.login(details: [:], hwDevice: hwDevice)
-            }.then(on: bgq) { firstLogin in
-                // discover subaccounts at 1st login
-                self.subaccounts(firstLogin).recover { _ in
-                    Promise { _ in
-                        throw LoginError.connectionFailed
-                    }
-                }
-            }.then(on: bgq) { wallets -> Promise<Void> in
-                // create a default segwit account if doesn't exist on singlesig
-                if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
-                    return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
-                        .resolve(session: self).asVoid()
-                }
-                return Promise<Void>().asVoid()
-            }
-    }
-
     func reconnect() -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
@@ -314,72 +290,142 @@ class SessionManager: Session {
             }
     }
 
-    func login(details: [String: Any], hwDevice: HWDevice? = nil) -> Promise<Bool> {
+    func loginWatchOnly(_ username: String, _ password: String) -> Promise<Bool> {
         let bgq = DispatchQueue.global(qos: .background)
-        let isSingleSig = self.account?.isSingleSig ?? false
-        let isWatchonly = self.account?.isWatchonly ?? false
-        var firstLogin = false
-        return Guarantee()
-            .map(on: bgq) {
-                try self.connect()
-            }.compactMap(on: bgq) { _ in
-                if let hwDevice = hwDevice,
-                    let data = try? JSONEncoder().encode(hwDevice),
-                    let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
-                    return ([:], ["device": device])
-                }
-                return (details, [:])
-            }.then(on: bgq) { (details, device) in
-                try super.loginUser(details: details, hw_device: device).resolve(session: self)
-            }.compactMap { res in
-                self.logged = true
-                // update wallet hash id
-                let result = res["result"] as? [String: Any]
-                let walletHashId = result?["wallet_hash_id"] as? String
-                var prevHashId = self.account?.walletHashId
-                self.account?.walletHashId = walletHashId
-                // for hw, use previously account if exist
-                if hwDevice != nil {
-                    let acc = AccountsManager.shared.accounts.filter {
-                        ($0.walletHashId == walletHashId || $0.walletHashId == nil) &&
-                        $0.name == self.account?.name &&
-                        $0.isSingleSig == self.account?.isSingleSig &&
-                        $0.id != self.account?.id &&
-                        $0.isHW
-                    }.first
-                    if let acc = acc {
-                        prevHashId = acc.walletHashId
-                        self.account = acc
-                        self.account?.walletHashId = walletHashId
-                    }
-                }
-                firstLogin = prevHashId == nil
-            }.then { _ -> Promise<Void> in
-                // load 2fa config on multisig
-                if !isWatchonly && !isSingleSig {
-                    return self.loadTwoFactorConfig().asVoid()
-                }
-                return Promise<Void>().asVoid()
-            }.map { _ in
-                // load async assets registry
-                self.registry?.cache(session: self)
-                self.registry?.loadAsync(session: self)
-                return firstLogin
-            }
+        return Guarantee().map(on: bgq) {
+            try self.connect()
+        }.then(on: bgq) {
+            try super.loginUser(details: ["username": username, "password": password], hw_device: [:]).resolve(session: self)
+        }.compactMap { res in
+            let result = res["result"] as? [String: Any]
+            let walletHashId = result?["wallet_hash_id"] as? String
+            let prevHashId = self.account?.walletHashId
+            self.account?.walletHashId = walletHashId
+            return prevHashId == nil
+        }.get { _ in
+            // load async assets registry
+            self.registry?.cache(session: self)
+            self.registry?.loadAsync(session: self)
+        }
     }
 
-    func getCredentials(password: String) -> Promise<String> {
+    func loginWithPin(_ pin: String, pinData: PinData, bip39passphrase: String?) -> Promise<Bool> {
+        var promise = loginWithPin(pin, pinData: pinData)
+        if let bip39passphrase = bip39passphrase {
+            promise = promise.then { [self] _ in getCredentials(password: "") }
+                .compactMap { Credentials(mnemonic: $0.mnemonic, password: "", bip39Passphrase: bip39passphrase) }
+                .then { [self] in loginWithCredentials($0) }
+                .get { [self] _ in ephemeral = true }
+        }
+        return promise
+    }
+
+    private func loginWithPin(_ pin: String, pinData: PinData) -> Promise<Bool> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let data = try? JSONEncoder().encode(pinData)
+        let pin_data = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        return Guarantee().map(on: bgq) {
+            try self.connect()
+        }.then(on: bgq) {
+            try super.loginUser(details: ["pin": pin, "pin_data": pin_data ?? [:]], hw_device: [:]).resolve(session: self)
+        }.compactMap { res in
+            let result = res["result"] as? [String: Any]
+            let walletHashId = result?["wallet_hash_id"] as? String
+            let prevHashId = self.account?.walletHashId
+            self.account?.walletHashId = walletHashId
+            return prevHashId == nil
+        }.get { _ in
+            // load async assets registry
+            self.registry?.cache(session: self)
+            self.registry?.loadAsync(session: self)
+        }
+    }
+
+    func loginWithCredentials(_ credentials: Credentials) -> Promise<Bool> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let data = try? JSONEncoder().encode(credentials)
+        let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        return Guarantee().map(on: bgq) {
+            try self.connect()
+        }.then(on: bgq) {
+            try super.loginUser(details: details ?? [:], hw_device: [:]).resolve(session: self)
+        }.compactMap { res in
+            let result = res["result"] as? [String: Any]
+            let walletHashId = result?["wallet_hash_id"] as? String
+            let prevHashId = self.account?.walletHashId
+            self.account?.walletHashId = walletHashId
+            return prevHashId == nil
+        }.get { _ in
+            // load async assets registry
+            self.registry?.cache(session: self)
+            self.registry?.loadAsync(session: self)
+        }
+    }
+
+    func loginWithHW(_ hwDevice: HWDevice) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let data = try? JSONEncoder().encode(hwDevice)
+        let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        return Guarantee().map(on: bgq) {
+            try self.connect()
+        }.then(on: bgq) {
+            try super.loginUser(details: [:], hw_device: device ?? [:]).resolve(session: self)
+        }.compactMap { res in
+            let result = res["result"] as? [String: Any]
+            let walletHashId = result?["wallet_hash_id"] as? String
+            var prevHashId = self.account?.walletHashId
+            self.account?.walletHashId = walletHashId
+            // for hw, use previously account if exist
+            let acc = AccountsManager.shared.accounts.filter {
+                ($0.walletHashId == walletHashId || $0.walletHashId == nil) &&
+                $0.name == self.account?.name &&
+                $0.isSingleSig == self.account?.isSingleSig &&
+                $0.id != self.account?.id &&
+                $0.isHW
+            }.first
+            if let acc = acc {
+                prevHashId = acc.walletHashId
+                self.account = acc
+                self.account?.walletHashId = walletHashId
+            }
+            return prevHashId == nil
+        }.then(on: bgq) { firstLogin in
+            // discover subaccounts at 1st login
+            self.subaccounts(firstLogin).recover { _ in
+                Promise { _ in
+                    throw LoginError.connectionFailed
+                }
+            }
+        }.then(on: bgq) { wallets -> Promise<Void> in
+            // create a default segwit account if doesn't exist on singlesig
+            let isSingleSig = self.account?.isSingleSig ?? false
+            if isSingleSig && !wallets.contains(where: {$0.type == AccountType.segWit.rawValue }) {
+                return try self.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue])
+                    .resolve(session: self).asVoid()
+            }
+            return Promise<Void>().asVoid()
+        }.get { _ in
+            // load async assets registry
+            self.registry?.cache(session: self)
+            self.registry?.loadAsync(session: self)
+        }
+    }
+
+    func getCredentials(password: String) -> Promise<Credentials> {
         return Guarantee()
             .then { try super.getCredentials(details: ["password": password]).resolve(session: self) }
             .compactMap {
                 let result = $0["result"] as? [String: Any]
-                return result?["mnemonic"] as? String
+                let jsonData = try JSONSerialization.data(withJSONObject: result ?? "")
+                return try JSONDecoder().decode(Credentials.self, from: jsonData)
             }
     }
 
-    func registerUser(mnemonic: String) -> Promise<Void> {
+    func registerSW(_ credentials: Credentials) -> Promise<Void> {
+        let data = try? JSONEncoder().encode(credentials)
+        let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
-            .then { try super.registerUser(details: ["mnemonic": mnemonic], hw_device: [:]).resolve(session: self) }
+            .then { try super.registerUser(details: details ?? [:], hw_device: [:]).resolve(session: self) }
             .asVoid()
     }
 

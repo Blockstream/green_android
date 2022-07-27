@@ -107,7 +107,7 @@ class LoginViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
 
         if account?.hasBioPin ?? false {
-            loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil)
+            loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
         } else if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
             showLock()
         }
@@ -153,7 +153,7 @@ class LoginViewController: UIViewController {
         }
     }
 
-    fileprivate func loginWithPin(usingAuth: String, withPIN: String?) {
+    fileprivate func loginWithPin(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         let session = SessionsManager.new(for: account!)
         firstly {
@@ -162,11 +162,9 @@ class LoginViewController: UIViewController {
             try session.account?.auth(usingAuth)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-        }.then(on: bgq) { data -> Promise<Bool> in
-            let jsonData = try JSONSerialization.data(withJSONObject: data)
-            let pin = withPIN ?? data["plaintext_biometric"] as? String
-            let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-            return session.login(details: ["pin": pin!, "pin_data": pinData!])
+        }.then(on: bgq) { pinData -> Promise<Bool> in
+            let pin = withPIN ?? pinData.plaintextBiometric ?? ""
+            return session.loginWithPin(pin, pinData: pinData, bip39passphrase: bip39passphrase)
         }.compactMap { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
         }.then(on: bgq) { _ in
@@ -268,7 +266,7 @@ class LoginViewController: UIViewController {
         guard pinCode.count == 6 else {
             return
         }
-        loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN, withPIN: self.pinCode)
+        loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN, withPIN: self.pinCode, bip39passphrase: nil)
     }
 
     func reload() {
