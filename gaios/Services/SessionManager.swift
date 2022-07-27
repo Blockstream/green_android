@@ -313,7 +313,7 @@ class SessionManager: Session {
         var promise = loginWithPin(pin, pinData: pinData)
         if let bip39passphrase = bip39passphrase {
             promise = promise.then { [self] _ in getCredentials(password: "") }
-                .compactMap { Credentials(mnemonic: $0.mnemonic, password: "", bip39Passphrase: bip39passphrase) }
+                .compactMap { Credentials(mnemonic: $0.mnemonic, password: nil, bip39Passphrase: bip39passphrase) }
                 .then { [self] in loginWithCredentials($0) }
                 .get { [self] _ in ephemeral = true }
         }

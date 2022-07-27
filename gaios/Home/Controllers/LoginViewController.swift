@@ -28,9 +28,9 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var passphraseView: UIStackView!
     @IBOutlet weak var lblPassphrase: UILabel!
 
-    var hasPassphrase = false {
+    var bip39passphare: String? {
         didSet {
-            passphraseView.isHidden = !hasPassphrase
+            passphraseView.isHidden = bip39passphare == nil
         }
     }
 
@@ -58,8 +58,7 @@ class LoginViewController: UIViewController {
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
-
-        hasPassphrase = false
+        passphraseView.isHidden = true
 
         setContent()
         setStyle()
@@ -174,7 +173,7 @@ class LoginViewController: UIViewController {
                 session.account?.attempts = 0
             }
             AccountsManager.shared.current = session.account
-            AccountsManager.shared.current?.isEphemeral = self.hasPassphrase
+            AccountsManager.shared.current?.isEphemeral = bip39passphrase != nil
         }.done { wallet in
 
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: AccountsManager.shared.current)
@@ -266,7 +265,9 @@ class LoginViewController: UIViewController {
         guard pinCode.count == 6 else {
             return
         }
-        loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN, withPIN: self.pinCode, bip39passphrase: nil)
+        loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN,
+                     withPIN: pinCode,
+                     bip39passphrase: bip39passphare)
     }
 
     func reload() {
@@ -399,7 +400,6 @@ extension LoginViewController: WalletSettingsViewControllerDelegate {
 
 extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
     func didConfirm(passphrase: String) {
-        print(passphrase)
-        hasPassphrase = true
+        bip39passphare = passphrase
     }
 }
