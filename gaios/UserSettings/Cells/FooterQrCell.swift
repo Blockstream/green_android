@@ -12,7 +12,7 @@ class FooterQrCell: UICollectionReusableView {
     var mnemonic: String?
     @IBOutlet weak var qrImg: UIImageView!
 
-    func configure(mnemonic: String?) {
+    func configure(mnemonic: String?, bip39Passphrase: String?) {
         self.mnemonic = mnemonic
 
         qrImg.image = QRImageGenerator.imageForTextWhite(text: mnemonic ?? "", frame: qrImg.frame)
@@ -23,7 +23,7 @@ class FooterQrCell: UICollectionReusableView {
         if isEphemeral {
             lblQrInfo.text = "The QR code does not include the BIP39 Passphrase"
             lblPassphraseTitle.text = "BIP39 Passphrase"
-            lblPassphraseValue.text = "TO DO"
+            lblPassphraseValue.text = bip39Passphrase ?? ""
             btnLearn.setTitle("Learn More", for: .normal)
             btnLearn.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
         }

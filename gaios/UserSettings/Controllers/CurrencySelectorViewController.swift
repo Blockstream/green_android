@@ -91,7 +91,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
 
         Guarantee().compactMap {
             settings.pricing = pricing
-        }.then(on: bgq) { details in
+        }.then(on: bgq) { _ in
             session.changeSettings(settings: settings)
         }.done { _ in
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "settings"), object: nil, userInfo: nil)

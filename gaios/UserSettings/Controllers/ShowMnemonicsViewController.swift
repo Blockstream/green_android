@@ -5,6 +5,7 @@ class ShowMnemonicsViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
     var items: [String] = []
+    var bip39Passphrase: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -12,6 +13,7 @@ class ShowMnemonicsViewController: UIViewController {
 
         SessionsManager.current?.getCredentials(password: "").done {
             self.items = $0.mnemonic.split(separator: " ").map(String.init)
+            self.bip39Passphrase = $0.bip39Passphrase
             self.collectionView.reloadData()
         }.catch { err in
             print(err)
@@ -38,7 +40,7 @@ extension ShowMnemonicsViewController: UICollectionViewDelegate, UICollectionVie
           if let fView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                          withReuseIdentifier: "FooterQrCell",
                                                                          for: indexPath) as? FooterQrCell {
-              fView.configure(mnemonic: self.items.joined(separator: " "))
+              fView.configure(mnemonic: self.items.joined(separator: " "), bip39Passphrase: self.bip39Passphrase)
               return fView
           }
           return UICollectionReusableView()

@@ -13,7 +13,7 @@ class GDKSession: Session {
     var logged = false
     var ephemeral = false
 
-    override func connect(netParams: [String : Any]) throws {
+    override func connect(netParams: [String: Any]) throws {
         try super.connect(netParams: netParams)
         connected = true
     }
