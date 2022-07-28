@@ -153,7 +153,7 @@ class SendConfirmViewController: KeyboardViewController {
 
             StoreReviewHelper
                 .shared
-                .request()
+                .request(isSendAll: isSendAll)
         }
     }
 

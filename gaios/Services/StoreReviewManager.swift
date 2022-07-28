@@ -9,14 +9,16 @@ class StoreReviewHelper {
         return 122 * 86400 // days * seconds
     }
 
-    func request() {
+    func request(isSendAll: Bool) {
 
-        if shouldReview() {
-            requestReview()
-        }
+        if isSendAll { return }
+
+        if !isReviewDateValid() { return }
+
+        requestReview()
     }
 
-    private func shouldReview() -> Bool {
+    private func isReviewDateValid() -> Bool {
 
         let now = Date()
 
