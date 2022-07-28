@@ -7,6 +7,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AddAccountFragmentBinding
+import com.blockstream.green.gdk.titleRes
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.overview.OverviewFragment
 import com.blockstream.green.utils.errorDialog
@@ -31,7 +32,7 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
     @Inject
     lateinit var viewModelFactory: AddAccountViewModel.AssistedFactory
     val viewModel: AddAccountViewModel by viewModels {
-        AddAccountViewModel.provideFactory(viewModelFactory, wallet, args.accountType, args.mnemonic, args.xpub)
+        AddAccountViewModel.provideFactory(viewModelFactory, wallet, args.accountType, getString(args.accountType.titleRes()), args.mnemonic, args.xpub)
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {

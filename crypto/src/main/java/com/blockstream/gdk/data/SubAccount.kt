@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.blockstream.gdk.GAJson
 import com.blockstream.gdk.serializers.AccountTypeSerializer
 import com.blockstream.libwally.Wally
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -25,14 +26,53 @@ data class SubAccount(
 
     override fun kSerializer() = serializer()
 
+    @IgnoredOnParcel
+    val isSinglesig by lazy {
+        when (type) {
+            AccountType.BIP44_LEGACY, AccountType.BIP49_SEGWIT_WRAPPED, AccountType.BIP84_SEGWIT, AccountType.BIP86_TAPROOT -> {
+                true
+            }
+            else -> false
+        }
+    }
+
+    @IgnoredOnParcel
+    val isMultisig by lazy {
+        when (type) {
+            AccountType.STANDARD, AccountType.AMP_ACCOUNT, AccountType.TWO_OF_THREE -> {
+                true
+            }
+            else -> false
+        }
+    }
+
     private val name: String
         get() = gdkName.ifBlank {
             when (type) {
                 AccountType.BIP44_LEGACY,
                 AccountType.BIP49_SEGWIT_WRAPPED,
-                AccountType.BIP84_SEGWIT -> {
-                    val type = if (type == AccountType.BIP84_SEGWIT) "Segwit" else "Legacy"
-                    "$type account $accountNumber"
+                AccountType.BIP84_SEGWIT,
+                AccountType.BIP86_TAPROOT -> {
+                    val type = when (type) {
+                        AccountType.BIP44_LEGACY -> {
+                            "Legacy"
+                        }
+                        AccountType.BIP49_SEGWIT_WRAPPED -> {
+                            "Legacy SegWit"
+                        }
+                        AccountType.BIP84_SEGWIT -> {
+                            "SegWit"
+                        }
+                        else -> {
+                            "Taproot"
+                        }
+                    }
+                    // Only on the #1 accounts, add the account word to help users understand the account based concept
+                    if (accountNumber == 1L) {
+                        "$type Account $accountNumber"
+                    } else {
+                        "$type $accountNumber"
+                    }
                 }
                 else -> {
                     ""
@@ -42,11 +82,12 @@ data class SubAccount(
 
     fun nameOrDefault(default: String): String = name.ifBlank { default }
 
-    private val accountNumber: Long
+    val accountNumber: Long
         get() = when (type) {
             AccountType.BIP44_LEGACY,
             AccountType.BIP49_SEGWIT_WRAPPED,
-            AccountType.BIP84_SEGWIT -> {
+            AccountType.BIP84_SEGWIT,
+            AccountType.BIP86_TAPROOT -> {
                 (pointer / 16) + 1
             }
             else -> {

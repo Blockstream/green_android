@@ -50,7 +50,8 @@ open class OnboardingViewModel constructor(
                 name = generateWalletNameSync(network = network, userInputName = options.walletName),
                 network = network.id,
                 isRecoveryPhraseConfirmed = true, // options.isRestoreFlow || !mnemonic.isNullOrBlank(),
-                isHardware = false
+                isHardware = false,
+                activeAccount = session.activeAccount
             )
 
             wallet.id = walletRepository.addWallet(wallet)
@@ -201,14 +202,17 @@ open class OnboardingViewModel constructor(
             val wallet : Wallet
 
             if(restoreWallet == null){
-                wallet  = restoreWallet
-                    ?: Wallet(
-                        walletHashId = it.walletHashId ?: "",
-                        name = generateWalletNameSync(network = network, userInputName = options.walletName),
-                        network = network.id,
-                        isRecoveryPhraseConfirmed = options.isRestoreFlow,
-                        isHardware = false
-                    )
+                wallet = Wallet(
+                    walletHashId = it.walletHashId ?: "",
+                    name = generateWalletNameSync(
+                        network = network,
+                        userInputName = options.walletName
+                    ),
+                    network = network.id,
+                    isRecoveryPhraseConfirmed = options.isRestoreFlow,
+                    isHardware = false,
+                    activeAccount = session.activeAccount
+                )
 
                 wallet.id = walletRepository.addWallet(wallet)
             }else{

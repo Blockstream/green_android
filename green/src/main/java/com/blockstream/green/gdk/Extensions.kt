@@ -3,10 +3,7 @@ package com.blockstream.green.gdk
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import com.blockstream.gdk.data.AccountType
-import com.blockstream.gdk.data.Device
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.gdk.data.*
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.libgreenaddress.KotlinGDK
@@ -26,9 +23,25 @@ fun AccountType?.titleRes(): Int = when (this) {
     AccountType.AMP_ACCOUNT -> R.string.id_amp_account
     AccountType.TWO_OF_THREE -> R.string.id_2of3_account
     AccountType.BIP44_LEGACY -> R.string.id_legacy_account
-    AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_legacy_account
+    AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_legacy_segwit_account
     AccountType.BIP84_SEGWIT -> R.string.id_segwit_account
+    AccountType.BIP86_TAPROOT -> R.string.id_taproot_account
     else -> R.string.id_unknown
+}
+
+fun AccountType?.titleWithBipRes(): Int = when (this) {
+    AccountType.STANDARD -> R.string.id_standard
+    AccountType.AMP_ACCOUNT -> R.string.id_amp
+    AccountType.TWO_OF_THREE -> R.string.id_2of3
+    AccountType.BIP44_LEGACY -> R.string.id_legacy_bip44
+    AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_legacy_segwit_bip49
+    AccountType.BIP84_SEGWIT -> R.string.id_segwit_bip84
+    AccountType.BIP86_TAPROOT -> R.string.id_taproot_bip86
+    else -> R.string.id_unknown
+}
+
+fun SubAccount.typeWithAccountNumber(context: Context) = type.titleWithBipRes().let {
+    "${context.getString(it)} #$accountNumber"
 }
 
 fun AccountType?.descriptionRes(): Int = when (this) {

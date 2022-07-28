@@ -11,6 +11,7 @@ enum class AccountType(val gdkType: String) {
     BIP44_LEGACY("p2pkh"),
     BIP49_SEGWIT_WRAPPED("p2sh-p2wpkh"),
     BIP84_SEGWIT("p2wpkh"),
+    BIP86_TAPROOT("p2tr"),
 
     UNKNOWN("unknown");
 
@@ -24,6 +25,7 @@ enum class AccountType(val gdkType: String) {
             "p2pkh" -> BIP44_LEGACY
             "p2sh-p2wpkh" -> BIP49_SEGWIT_WRAPPED
             "p2wpkh" -> BIP84_SEGWIT
+            "p2tr" -> BIP86_TAPROOT
             else -> UNKNOWN
         }
     }

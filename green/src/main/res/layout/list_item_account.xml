@@ -20,6 +20,10 @@
             type="Boolean" />
 
         <variable
+            name="isSinglesig"
+            type="Boolean" />
+
+        <variable
             name="isMainnet"
             type="Boolean" />
 
@@ -123,7 +127,7 @@
                     android:layout_marginTop="2dp"
                     android:background="@drawable/transparent_dark_round"
                     android:padding="4dp"
-                    android:text="@{ExtensionsKt.titleRes(subAccount.type)}"
+                    android:text="@{ExtensionsKt.typeWithAccountNumber(subAccount, context)}"
                     android:textAllCaps="true"
                     android:textColor="@color/color_on_surface_emphasis_medium"
                     android:textSize="10sp"
@@ -158,8 +162,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/type"
                     app:layout_constraintTop_toBottomOf="@+id/type">
-
-
 
                     <TextView
                         android:id="@+id/symbol"

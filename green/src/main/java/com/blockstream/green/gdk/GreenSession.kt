@@ -367,15 +367,14 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = loginCredentialsParams)
         ).result<LoginData>().also {
+            var initAccountIndex = 0L
+
             if(network.isElectrum){
                 // Create SegWit Account
-                AuthHandler(greenWallet,
-                    greenWallet
-                        .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
-                ).resolve()
+                initAccountIndex = createSubAccount(SubAccountParams("", AccountType.BIP84_SEGWIT)).pointer
             }
 
-            onLoginSuccess(it, initAccountIndex = 0, initializeSession = true)
+            onLoginSuccess(it, initAccountIndex = initAccountIndex, initializeSession = true)
         }
     }
 
@@ -429,21 +428,22 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = deviceParams, loginCredentialsParams = LoginCredentialsParams.empty)
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
-
+            var initAccountIndex = 0L
             if(network.isElectrum){
                 // On Singlesig, check if there is a SegWit account already restored or create one
                 val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
 
-                if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
+                var segWitAccount = subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT }
+                if(segWitAccount == null){
                     // Create SegWit Account
-                    AuthHandler(greenWallet,
-                        greenWallet
-                            .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
-                    ).resolve(hardwareWalletResolver = hardwareWalletResolver)
+                    segWitAccount = createSubAccount(SubAccountParams("", AccountType.BIP84_SEGWIT), hardwareWalletResolver = hardwareWalletResolver)
                 }
+
+                // Default to SegWit Account
+                initAccountIndex = segWitAccount.pointer
             }
 
-            onLoginSuccess(it, initAccountIndex = 0, initializeSession = true)
+            onLoginSuccess(it, initAccountIndex = initAccountIndex, initializeSession = true)
         }
     }
 
@@ -460,20 +460,22 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = loginCredentialsParams)
         ).result<LoginData>().also {
-           if(initializeSession && network.isElectrum){
-               // On Singlesig, check if there is a SegWit account already restored or create one
-               val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
+            var initAccountIndex = 0L
+            if (initializeSession && network.isElectrum) {
+                // On Singlesig, check if there is a SegWit account already restored or create one
+                val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
 
-               if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
-                   // Create SegWit Account
-                   AuthHandler(greenWallet,
-                       greenWallet
-                           .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
-                   ).resolve(hardwareWalletResolver = DeviceResolver(this))
-               }
-           }
+                var segWitAccount = subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT }
+                if (segWitAccount == null) {
+                    // Create SegWit Account
+                    segWitAccount = createSubAccount(SubAccountParams("", AccountType.BIP84_SEGWIT))
+                }
 
-            onLoginSuccess(loginData = it, initAccountIndex = 0, initializeSession = initializeSession)
+                // Default to SegWit Account
+                initAccountIndex = segWitAccount.pointer
+            }
+
+            onLoginSuccess(it, initAccountIndex = initAccountIndex, initializeSession = initializeSession)
         }
     }
 
@@ -582,8 +584,8 @@ class GreenSession constructor(
 
     override fun refreshAssets(params: AssetsParams) = greenWallet.refreshAssets(gaSession, params)
 
-    fun createSubAccount(params: SubAccountParams, hardwareWalletResolver: HardwareWalletResolver) = AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
-            .result<SubAccount>(hardwareWalletResolver = hardwareWalletResolver)
+    fun createSubAccount(params: SubAccountParams, hardwareWalletResolver : HardwareWalletResolver? = null) = AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
+            .result<SubAccount>(hardwareWalletResolver = hardwareWalletResolver ?: DeviceResolver(this))
 
     fun getSubAccounts(params: SubAccountsParams = SubAccountsParams()) = AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession, params))
         .result<SubAccounts>(hardwareWalletResolver = DeviceResolver(this))

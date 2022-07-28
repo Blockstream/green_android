@@ -40,6 +40,7 @@ data class AccountListItem constructor(
         binding.isAccountListOpen = isAccountListOpen
         binding.isMainnet = session.isMainnet
         binding.isLiquid = session.isLiquid
+        binding.isSinglesig = session.isSinglesig
         binding.isWatchOnly = session.isWatchOnly
         binding.subAccount = subAccount
 

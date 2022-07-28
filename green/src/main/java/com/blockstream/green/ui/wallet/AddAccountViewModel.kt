@@ -24,13 +24,14 @@ class AddAccountViewModel @AssistedInject constructor(
     countly: Countly,
     @Assisted wallet: Wallet,
     @Assisted val accountType: AccountType,
+    @Assisted("suggestedName") val suggestedName: String,
     @Assisted("mnemonic") val mnemonic: String?,
     @Assisted("xpub") val xpub: String?,
 ) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     val isEnabled = MutableLiveData(false)
 
-    val accountName = ListenableLiveData("") {
+    val accountName = ListenableLiveData(suggestedName) {
         isEnabled.value = it.isNotBlank()
     }
 
@@ -64,6 +65,8 @@ class AddAccountViewModel @AssistedInject constructor(
         fun create(
             wallet: Wallet,
             accountType: AccountType,
+            @Assisted("suggestedName")
+            suggestedName: String,
             @Assisted("mnemonic")
             mnemonic: String?,
             @Assisted("xpub")
@@ -76,12 +79,13 @@ class AddAccountViewModel @AssistedInject constructor(
             assistedFactory: AssistedFactory,
             wallet: Wallet,
             accountType: AccountType,
+            suggestedName: String,
             mnemonic: String?,
             xpub: String?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, accountType, mnemonic, xpub) as T
+                return assistedFactory.create(wallet, accountType, suggestedName, mnemonic, xpub) as T
             }
         }
     }
