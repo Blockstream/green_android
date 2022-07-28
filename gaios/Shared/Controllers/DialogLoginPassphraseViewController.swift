@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol DialogLoginPassphraseViewControllerDelegate: AnyObject {
-    func didConfirm(passphrase: String)
+    func didConfirm(passphrase: String, alwaysAsk: Bool)
 }
 
 enum LoginPassphraseAction {
@@ -32,6 +32,7 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
     weak var delegate: DialogLoginPassphraseViewControllerDelegate?
 
     var buttonConstraint: NSLayoutConstraint?
+    var isAlwaysAsk: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +40,7 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
+        switchAsk.isOn = isAlwaysAsk
     }
 
     func setContent() {
@@ -118,7 +120,7 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
                 break
             case .confirm:
                 if let passphrase = self.fieldPassphrase.text {
-                    self.delegate?.didConfirm(passphrase: passphrase)
+                    self.delegate?.didConfirm(passphrase: passphrase, alwaysAsk: self.switchAsk.isOn)
                 }
             }
         })

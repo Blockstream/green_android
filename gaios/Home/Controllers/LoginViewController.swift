@@ -34,6 +34,8 @@ class LoginViewController: UIViewController {
         }
     }
 
+    var alwaysAsk: Bool = false
+
     private var networkSettings: [String: Any] {
         get {
             UserDefaults.standard.value(forKey: "network_settings") as? [String: Any] ?? [:]
@@ -109,6 +111,8 @@ class LoginViewController: UIViewController {
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
         } else if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
             showLock()
+        } else if AlwaysAskPassphraseHelper.isInList(account?.id) {
+            loginWithPassphrase(isAlwaysAsk: true)
         }
     }
 
@@ -332,11 +336,12 @@ class LoginViewController: UIViewController {
         }
     }
 
-    func loginWithPassphrase() {
+    func loginWithPassphrase(isAlwaysAsk: Bool) {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogLoginPassphraseViewController") as? DialogLoginPassphraseViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
+            vc.isAlwaysAsk = isAlwaysAsk
             present(vc, animated: false, completion: nil)
         }
     }
@@ -387,7 +392,7 @@ extension LoginViewController: PopoverMenuWalletDelegate {
     func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
         switch menuOption {
         case .passphrase:
-            loginWithPassphrase()
+            loginWithPassphrase(isAlwaysAsk: false)
         case .edit:
             walletRename()
         case .delete:
@@ -417,7 +422,12 @@ extension LoginViewController: WalletSettingsViewControllerDelegate {
 }
 
 extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
-    func didConfirm(passphrase: String) {
+    func didConfirm(passphrase: String, alwaysAsk: Bool) {
         bip39passphare = passphrase
+        if alwaysAsk {
+            AlwaysAskPassphraseHelper.add(account?.id)
+        } else {
+            AlwaysAskPassphraseHelper.remove(account?.id)
+        }
     }
 }
