@@ -153,15 +153,10 @@ class UserSettingsViewController: UIViewController {
             section: .security,
             type: .LoginWithBiometrics)
 
-        if isHW {
-        } else {
-            if isLiquid || isSingleSig {
-                items += [changePin, loginWithBiometrics]
-            } else {
-                if !isWatchOnly && !isResetActive && !isHW {
-                    items += [changePin, loginWithBiometrics]
-                }
-            }
+        if let account = account,
+           !account.isEphemeral && !account.isHW &&
+            !account.isWatchonly && !isResetActive {
+            items += [changePin, loginWithBiometrics]
         }
 
         if let settings = SessionsManager.current?.settings {
@@ -170,9 +165,7 @@ class UserSettingsViewController: UIViewController {
                 subtitle: settings.autolock.string,
                 section: .security,
                 type: .AutoLogout)
-            if isHW {
-                items += [autolock]
-            } else if !isWatchOnly && !isResetActive {
+            if !isWatchOnly && !isResetActive {
                 items += [autolock]
             }
         }
@@ -183,8 +176,7 @@ class UserSettingsViewController: UIViewController {
             section: .security,
             type: .TwoFactorAuthentication)
 
-        if isWatchOnly || isSingleSig {
-        } else {
+        if !isWatchOnly && !isSingleSig {
             items += [twoFactorAuthentication]
         }
 
