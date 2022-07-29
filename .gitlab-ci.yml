@@ -1,3 +1,10 @@
+stages:
+  - build
+  - test
+  - deploy
+  - gcp_upload
+
+
 #####################################
 # Build Signed APKs
 
@@ -166,3 +173,45 @@ sign_google_play:
     - /opt/process_release
   needs:
     - build_google_play
+
+#####################################
+# Upload to GCS bucket
+.gcp_prep:
+  stage: gcp_upload
+  image: blockstream/gcloud-docker-tf:1.1.9
+  tags:
+    - ga
+
+gcp_auth:
+  extends: .gcp_prep
+  when: manual
+  variables:
+    POOL_ID: gitlab-2f4bb583
+    PROVIDER_ID: gitlab
+    SERVICE_ACCOUNT_EMAIL: green-android-builds-uploader@green-backend.iam.gserviceaccount.com
+  script:
+    - echo ${CI_JOB_JWT_V2} > .ci_job_jwt_file
+    - gcloud iam workload-identity-pools create-cred-config "projects/697214616889/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}"
+      --service-account="${SERVICE_ACCOUNT_EMAIL}"
+      --output-file=.gcp_temp_cred.json
+      --credential-source-file=.ci_job_jwt_file
+  artifacts:
+    paths:
+      - .gcp_temp_cred.json
+      - .ci_job_jwt_file
+    expire_in: 1h
+
+gcp_push_files:
+  extends: .gcp_prep
+  needs: ["gcp_auth", "production"]
+  variables:
+    GCS_BUCKET: green-android-builds
+    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA
+  before_script:
+    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
+  script:
+    - apk add libqrencode
+    - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
+    - gsutil -m cp -r $CI_PROJECT_DIR/green/build/outputs/apk/productionGoogle/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
+    - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
+    - qrencode -t UTF8 "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
