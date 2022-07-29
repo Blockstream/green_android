@@ -181,7 +181,9 @@ class LoginViewController: UIViewController {
                                                  isEphemeral: true)
                         session.destroy()
                         session = SessionsManager.new(for: ephAccount)
-                        return session.loginWithCredentials(credentials, refreshSubaccounts: true, refreshAssets: true)
+                        return session
+                            .loginWithCredentials(credentials, refreshSubaccounts: true, refreshAssets: true)
+                            .recover { _ in Promise().map { throw LoginError.walletNotFound }}
                     }
             }
             return Promise<Bool>.value(res)
@@ -209,7 +211,7 @@ class LoginViewController: UIViewController {
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
 
-            var prettyError: String?
+            var prettyError = "id_login_failed"
             session.destroy()
             self.stopLoader()
             switch error {
@@ -218,8 +220,11 @@ class LoginViewController: UIViewController {
             case AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
                 return self.onBioAuthError(error.localizedDescription)
             case LoginError.connectionFailed:
-                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
                 prettyError = "id_connection_failed"
+                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+            case LoginError.walletNotFound:
+                prettyError = "id_wallet_not_found"
+                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             case GaError.NotAuthorizedError:
                 self.wrongPin(usingAuth)
                 prettyError = "NotAuthorizedError"
@@ -228,12 +233,10 @@ class LoginViewController: UIViewController {
                     prettyError = "id_invalid_pin"
                     self.wrongPin(usingAuth)
                 } else {
-                    DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
-                    prettyError = "id_login_failed"
+                    DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
                 }
             default:
-                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
-                prettyError = "id_login_failed"
+                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             }
             AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
         }
