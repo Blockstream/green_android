@@ -137,6 +137,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/passwordTextInputLayout">
 
+            <Button
+                android:id="@+id/buttonSave"
+                style="@style/Widget.Green.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="@{onProgress == false &amp;&amp; username.length() >= 8 &amp;&amp; password.length() >= 8}"
+                android:text="@{hasWatchOnlyCredentials ? @string/id_update : @string/id_save}"
+                tools:text="@string/id_save" />
+
             <FrameLayout
                 isVisible="@{hasWatchOnlyCredentials}"
                 android:layout_width="match_parent"
@@ -159,15 +168,6 @@
                     android:text="@string/id_delete_credentials" />
 
             </FrameLayout>
-
-            <Button
-                android:id="@+id/buttonSave"
-                style="@style/Widget.Green.Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="@{onProgress == false &amp;&amp; username.length() >= 8 &amp;&amp; password.length() >= 8}"
-                android:text="@{hasWatchOnlyCredentials ? @string/id_update : @string/id_save}"
-                tools:text="@string/id_save" />
 
         </com.blockstream.green.views.GappedLinearLayout>
 
