@@ -29,8 +29,9 @@ struct Account: Codable, Equatable {
     var walletHashId: String?
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
     var isEphemeral: Bool = false
+    var askEphemeral: Bool = false
 
-    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool, isEphemeral: Bool = false) {
+    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool, isEphemeral: Bool = false, askEphemeral: Bool = false) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -42,6 +43,7 @@ struct Account: Codable, Equatable {
         self.keychain = self.id
         self.isSingleSig = isSingleSig
         self.isEphemeral = isEphemeral
+        self.askEphemeral = askEphemeral
     }
 
     init(name: String, network: String, username: String, password: String? = nil, isSingleSig: Bool) {

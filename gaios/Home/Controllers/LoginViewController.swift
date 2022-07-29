@@ -107,12 +107,13 @@ class LoginViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
 
-        if account.hasBioPin {
+        if account.askEphemeral {
+            loginWithPassphrase(isAlwaysAsk: account.askEphemeral)
+        } else if account.hasBioPin {
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
-        } else if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
+        }
+        if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
             showLock()
-        } else if AlwaysAskPassphraseHelper.isInList(account?.id) {
-            loginWithPassphrase(isAlwaysAsk: true)
         }
     }
 
@@ -427,10 +428,10 @@ extension LoginViewController: WalletSettingsViewControllerDelegate {
 extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
     func didConfirm(passphrase: String, alwaysAsk: Bool) {
         bip39passphare = passphrase
-        if alwaysAsk {
-            AlwaysAskPassphraseHelper.add(account?.id)
-        } else {
-            AlwaysAskPassphraseHelper.remove(account?.id)
+        account.askEphemeral = alwaysAsk
+        AccountsManager.shared.upsert(account)
+        if account.hasBioPin {
+            loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
         }
     }
 }
