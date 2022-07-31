@@ -1,49 +1,6 @@
 import Foundation
 import PromiseKit
 
-func getTransactionDetails(txhash: String) -> Promise<[String: Any]> {
-    let bgq = DispatchQueue.global(qos: .background)
-    return Guarantee().compactMap(on: bgq) {
-        try SessionsManager.current?.getTransactionDetails(txhash: txhash)
-    }
-}
-
-func createTransaction(details: [String: Any]) -> Promise<Transaction> {
-    let bgq = DispatchQueue.global(qos: .background)
-    return Guarantee().compactMap(on: bgq) {
-        try SessionsManager.current?.createTransaction(details: details)
-    }.then(on: bgq) { call in
-        call.resolve()
-    }.map(on: bgq) { data in
-        let result = data["result"] as? [String: Any]
-        return Transaction(result ?? [:])
-    }
-}
-
-func signTransaction(details: [String: Any]) -> Promise<TwoFactorCall> {
-    let bgq = DispatchQueue.global(qos: .background)
-    return Guarantee().compactMap(on: bgq) {
-        try SessionsManager.current?.signTransaction(details: details)
-    }
-}
-
-func createTransaction(transaction: Transaction) -> Promise<Transaction> {
-    return createTransaction(details: transaction.details)
-}
-
-func signTransaction(transaction: Transaction) -> Promise<TwoFactorCall> {
-    return signTransaction(details: transaction.details)
-}
-
-func convertAmount(details: [String: Any]) -> [String: Any]? {
-    return try? SessionsManager.current?.convertAmount(input: details)
-}
-
-func getFeeEstimates() -> [UInt64]? {
-    let estimates = try? SessionsManager.current?.getFeeEstimates()
-    return estimates == nil ? nil : estimates!["fees"] as? [UInt64]
-}
-
 func getUserNetworkSettings() -> [String: Any] {
     if let settings = UserDefaults.standard.value(forKey: "network_settings") as? [String: Any] {
         return settings
