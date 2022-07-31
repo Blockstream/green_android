@@ -43,8 +43,8 @@
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:textColor="@color/color_on_surface_emphasis_low"
                 android:includeFontPadding="false"
-                android:text="@{isChange ? @string/id_change : type == Type.OUT ? @string/id_recipient : @string/id_received}"
-                tools:text="Recipient" />
+                android:text="@{isChange ? @string/id_change : type == Type.OUT ? @string/id_sent_to : @string/id_received_on}"
+                tools:text="@string/id_sent_to" />
 
             <TextView
                 android:id="@+id/addressTextView"
