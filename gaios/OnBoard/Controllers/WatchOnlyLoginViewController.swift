@@ -10,7 +10,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var btnSettings: UIButton!
 
-    var account: Account?
+    var account: Account!
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
     let menuButton = UIButton(type: .system)
@@ -144,7 +144,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
         let username = self.account?.username ?? ""
         let password = self.passwordTextField.text ?? ""
-        let session = SessionsManager.new(for: account!)
+        let session = SessionManager(account.gdkNetwork!)
         let bgq = DispatchQueue.global(qos: .background)
 
         firstly {
@@ -157,12 +157,12 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             self.stopLoader()
         }.done { _ in
             AccountsManager.shared.current = self.account
+            SessionsManager.shared[self.account?.id ?? ""] = session
             AnalyticsManager.shared.loginWallet(loginType: .watchOnly, account: AccountsManager.shared.current)
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             var prettyError: String?
-            session.destroy()
             switch error {
             case LoginError.connectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))

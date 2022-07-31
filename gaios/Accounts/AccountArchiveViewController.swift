@@ -20,7 +20,7 @@ class AccountArchiveViewController: UIViewController {
             if subAccounts.count == 0 {
                 return []
             }
-            let activeWallet = SessionsManager.current?.activeWallet ?? 0
+            let activeWallet = account?.activeWallet ?? 0
             return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet}
         }
     }

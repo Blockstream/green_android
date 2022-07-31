@@ -21,4 +21,8 @@ class OnBoardManager {
         }
     }
 
+    var gdkNetwork: GdkNetwork {
+        getGdkNetwork(networkName)
+    }
+
 }

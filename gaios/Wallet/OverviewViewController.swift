@@ -46,7 +46,7 @@ class OverviewViewController: UIViewController {
             if subAccounts.count == 0 {
                 return []
             }
-            let activeWallet = SessionsManager.current?.activeWallet ?? 0
+            let activeWallet = account?.activeWallet ?? 0
             if showAccounts {
                 return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet && $0.hidden == false}
             } else {
@@ -66,7 +66,14 @@ class OverviewViewController: UIViewController {
             }
         }
     }
-    var account = AccountsManager.shared.current
+    var account = AccountsManager.shared.current {
+        didSet {
+            if let account = account {
+                AccountsManager.shared.current = account
+            }
+        }
+    }
+
     private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
     private var isAmp: Bool {
         guard let wallet = presentingWallet else { return false }
@@ -117,7 +124,7 @@ class OverviewViewController: UIViewController {
 
         startAnimating()
 
-        AnalyticsManager.shared.recordView(.overview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.overview, sgmt: AnalyticsManager.shared.sessSgmt(account))
     }
 
     func reloadSections(_ sections: [OverviewSection], animated: Bool) {
@@ -347,7 +354,7 @@ class OverviewViewController: UIViewController {
         let accounts: Int = subAccounts.count
         let accountsTypes: String = Array(Set(subAccounts.map { $0.type })).sorted().joined(separator: ",")
 
-        AnalyticsManager.shared.activeWallet(account: AccountsManager.shared.current, walletData: AnalyticsManager.WalletData(walletFunded: walletFunded, accountsFunded: accountsFunded, accounts: accounts, accountsTypes: accountsTypes))
+        AnalyticsManager.shared.activeWallet(account: account, walletData: AnalyticsManager.WalletData(walletFunded: walletFunded, accountsFunded: accountsFunded, accounts: accounts, accountsTypes: accountsTypes))
 
         if AnalyticsManager.shared.consent == .notDetermined {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
@@ -372,7 +379,7 @@ class OverviewViewController: UIViewController {
 
     func loadTransactions(_ pageId: Int = 0) -> Promise<Void> {
         guard let session = SessionsManager.current else { return Promise().asVoid() }
-        return session.transactions(first: UInt32(pageId))
+        return session.transactions(subaccount: presentingWallet?.pointer ?? 0, first: UInt32(pageId))
         .map { page in
             self.transactions.removeAll()
             self.transactions += page.list
@@ -402,8 +409,7 @@ class OverviewViewController: UIViewController {
     func onNewTransaction(_ notification: Notification) {
         if let dict = notification.userInfo as NSDictionary?,
            let subaccounts = dict["subaccounts"] as? [UInt32],
-           let session = SessionsManager.current,
-           subaccounts.contains(session.activeWallet) {
+           subaccounts.contains(account?.activeWallet ?? 0) {
             reloadData()
         }
     }
@@ -522,14 +528,15 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
 
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
-        if account.id == AccountsManager.shared.current?.id ?? "" {
+        if account.id == self.account?.id ?? "" {
             return
         }
         // switch on selected active session
-        if let session = SessionsManager.get(for: account),
+        if let session = SessionsManager.shared[account.id],
            session.connected && session.logged {
             session.subaccount().done { wallet in
                 AccountsManager.shared.current = account
+                SessionsManager.shared[account.id] = session
                 let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
                 let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
                 if let vc = nav?.topViewController as? ContainerViewController {
@@ -611,7 +618,7 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
             self.stopAnimating()
         }.done { _ in
             let present = (index == 0 ? self.accounts[1] : self.accounts[0])
-            SessionsManager.current?.activeWallet = present.pointer
+            self.account?.activeWallet = present.pointer
             self.presentingWallet = present
             self.reloadData()
         }.catch { e in
@@ -725,7 +732,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewTransactionCell", for: indexPath) as? OverviewTransactionCell {
                 let transaction = transactions[indexPath.row]
                 cell.setup(transaction: transaction, network: account?.network)
-                cell.checkBlockHeight(transaction: transaction, blockHeight: SessionsManager.current?.notificationManager.blockHeight ?? 0)
+                cell.checkBlockHeight(transaction: transaction, blockHeight: SessionsManager.current?.notificationManager?.blockHeight ?? 0)
                 return cell
             }
         default:
@@ -811,7 +818,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 reloadSections([OverviewSection.account], animated: true)
                 return
             } else {
-                SessionsManager.current?.activeWallet = accounts[indexPath.row].pointer
+                account?.activeWallet = accounts[indexPath.row].pointer
                 presentingWallet = accounts[indexPath.row]
                 showAccounts = !showAccounts
                 reloadData()
@@ -852,7 +859,8 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
                     print("----> null or pending")
                     return
                 }
-                self.fetchTxs = SessionsManager.current?.transactions(first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
+                let session = SessionsManager.shared[account?.id ?? ""]
+                self.fetchTxs = session?.transactions(subaccount: account?.activeWallet ?? 0, first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
                     let c = self.transactions.count
                     self.transactions += page.list
                     self.callPage += 1
@@ -1067,7 +1075,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            AnalyticsManager.shared.renameAccount(account: AccountsManager.shared.current, walletType: self.presentingWallet?.type)
+            AnalyticsManager.shared.renameAccount(account: self.account, walletType: self.presentingWallet?.type)
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)
@@ -1083,11 +1091,7 @@ extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faVi
         self.presentedViewController?.dismiss(animated: true, completion: {
             DispatchQueue.main.async {
                 self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
-                if let account = AccountsManager.shared.current {
-                   if let session = SessionsManager.get(for: account) {
-                       session.destroy()
-                   }
-                }
+                SessionsManager.remove(for: self.account?.id ?? "")
                 self.stopLoader()
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)
                 let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController

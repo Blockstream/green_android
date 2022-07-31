@@ -3,15 +3,11 @@ import PromiseKit
 
 class NotificationManager {
 
-    let account: Account
+    let session: SessionManager
     var blockHeight: UInt32 = 0
 
-    init(account: Account) {
-        self.account = account
-    }
-
-    var session: SessionManager? {
-        return SessionsManager.get(for: self.account)
+    init(session: SessionManager) {
+        self.session = session
     }
 
     public func newNotification(notification: [String: Any]?) {
@@ -43,16 +39,12 @@ class NotificationManager {
                 }
             } catch { break }
         case .TwoFactorReset:
-            if let session = session {
-                session.loadTwoFactorConfig().done { _ in
-                    self.post(event: .TwoFactorReset, data: data)
-                }
+            session.loadTwoFactorConfig().done { _ in
+                self.post(event: .TwoFactorReset, data: data)
             }
         case .Settings:
-            if let session = session {
-                session.settings = Settings.from(data)
-                post(event: .Settings, data: data)
-            }
+            session.settings = Settings.from(data)
+            post(event: .Settings, data: data)
         case .Network:
             guard let json = try? JSONSerialization.data(withJSONObject: data, options: []),
                   let connection = try? JSONDecoder().decode(Connection.self, from: json) else {
@@ -60,7 +52,7 @@ class NotificationManager {
             }
 
             // avoid handling notification for unlogged session
-            guard let session = session, session.connected && session.logged else {
+            guard session.connected && session.logged else {
                 return
             }
             // notify disconnected network state

@@ -19,16 +19,20 @@ class SessionsManager {
     }
 
     static func new(for account: Account) -> SessionManager {
-        if let session = shared[account.id] {
-            session.destroy()
+        if shared[account.id] != nil {
+            remove(for: account)
         }
-        let session = SessionManager(account: account)
+        let session = SessionManager(account.gdkNetwork!)
         shared[account.id] = session
         return session
     }
 
     static func remove(for account: Account) {
         shared.removeValue(forKey: account.id)
+    }
+
+    static func remove(for id: String) {
+        shared.removeValue(forKey: id)
     }
 
     static func pause() {

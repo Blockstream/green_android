@@ -148,7 +148,7 @@ class WatchOnlyViewController: KeyboardViewController {
         if self.rememberSwitch.isOn {
             account.password = password
         }
-        let session = SessionsManager.new(for: account)
+        let session = SessionManager(account.gdkNetwork!)
         firstly {
             dismissKeyboard()
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
@@ -161,11 +161,11 @@ class WatchOnlyViewController: KeyboardViewController {
             self.stopLoader()
         }.done { _ in
             AccountsManager.shared.current = account
+            SessionsManager.shared[account.id] = session
             AnalyticsManager.shared.loginWallet(loginType: .watchOnly, account: AccountsManager.shared.current)
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             var prettyError: String?
-            session.destroy()
             switch error {
             case LoginError.connectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))

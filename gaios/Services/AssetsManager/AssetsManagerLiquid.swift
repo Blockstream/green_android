@@ -16,7 +16,7 @@ class AssetsManagerLiquid: Codable, AssetsManagerProtocol {
 
     func info(for key: String) -> AssetInfo {
         if var info = infos[key] {
-            if key == SessionsManager.current?.account?.gdkNetwork?.getFeeAsset() {
+            if key == AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() {
                 info.name = "Liquid Bitcoin"
             }
             return info

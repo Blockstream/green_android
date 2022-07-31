@@ -139,8 +139,8 @@ class BLEManager {
         p.peripheral.name?.contains("Jade") ?? false
     }
 
-    func connectLedger(_ p: Peripheral, account: Account) {
-        let session = SessionsManager.new(for: account)
+    func connectLedger(_ p: Peripheral, network: GdkNetwork) {
+        let session = SessionManager(network)
         self.session = session
         var connection = Observable.just(p)
         if !p.isConnected {
@@ -156,7 +156,7 @@ class BLEManager {
                 let version = versionString.split(separator: ".").map {Int($0)}
                 if name.contains("OLOS") {
                     throw DeviceError.dashboard // open app from dashboard
-                } else if name != self.networkLabel(account.network) {
+                } else if name != self.networkLabel(network.network) {
                     throw DeviceError.wrong_app // change app
                 } else if name == "Bitcoin" && version[0] ?? 0 < 1 {
                     throw DeviceError.outdated_app
@@ -166,17 +166,16 @@ class BLEManager {
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onAuthenticate(p, network: account.network, firstInitialization: false)
+                self.delegate?.onAuthenticate(p, network: network.network, firstInitialization: false)
             }, onError: { err in
                 // session.destroy()
-                self.onError(err, network: account.network)
+                self.onError(err, network: network.name)
             })
     }
 
-    func connectJade(_ p: Peripheral, account: Account) {
-        let session = SessionsManager.new(for: account)
+    func connectJade(_ p: Peripheral, network: GdkNetwork) {
+        let session = SessionManager(network)
         self.session = session
-        let network = account.network
         var hasPin = false
         var connection = Observable.just(p)
         if !p.isConnected {
@@ -194,7 +193,7 @@ class BLEManager {
                 hasPin = version.jadeHasPin
                 self.fmwVersion = version.jadeVersion
                 self.boardType = version.boardType
-                let testnet = ["testnet", "testnet-liquid"].contains(network)
+                let testnet = ["testnet", "testnet-liquid"].contains(network.network)
                 if version.jadeNetworks == "TEST" && !testnet {
                     throw JadeError.Abort("\(network) not supported in Jade \(version.jadeNetworks) mode")
                 } else if version.jadeNetworks == "MAIN" && testnet {
@@ -203,15 +202,15 @@ class BLEManager {
                 if version.jadeState == "READY" {
                     return Observable.just(true)
                 }
-                return Jade.shared.auth(network: account.network)
+                let network = network.network.replacingOccurrences(of: Constants.electrumPrefix, with: "")
+                return Jade.shared.auth(network: network)
                     .retry(3)
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onAuthenticate(p, network: network, firstInitialization: !hasPin)
+                self.delegate?.onAuthenticate(p, network: network.network, firstInitialization: !hasPin)
             }, onError: { err in
-                // session.destroy()
-                self.onError(err, network: network)
+                self.onError(err, network: network.name)
             })
     }
 
@@ -258,12 +257,12 @@ class BLEManager {
         }
     }
 
-    func connect(_ p: Peripheral, account: Account) {
+    func connect(_ p: Peripheral, network: GdkNetwork) {
         addStatusListener(p)
         if isJade(p) {
-            connectJade(p, account: account)
+            connectJade(p, network: network)
         } else {
-            connectLedger(p, account: account)
+            connectLedger(p, network: network)
         }
     }
 
@@ -286,8 +285,8 @@ class BLEManager {
                          supportsHostUnblinding: supportUnblinding)
     }
 
-    func login(_ p: Peripheral, account: Account, checkFirmware: Bool = true) {
-        let session = SessionsManager.get(for: account)
+    func login(_ p: Peripheral, network: GdkNetwork, checkFirmware: Bool = true) {
+        let session = SessionManager(network)
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p -> Observable<Peripheral> in
@@ -298,9 +297,9 @@ class BLEManager {
                 }
             }
             .flatMap { _ in
-                return Observable<Void>.create { observer in
-                    let device = self.device(isJade: account.isJade, fmwVersion: self.fmwVersion ?? "")
-                    session?.loginWithHW(device)
+                return Observable<String>.create { observer in
+                    let device = self.device(isJade: self.isJade(p), fmwVersion: self.fmwVersion ?? "")
+                    session.loginWithHW(device)
                         .done { res in
                             observer.onNext(res)
                             observer.onCompleted()
@@ -310,26 +309,36 @@ class BLEManager {
                     return Disposables.create { }
                 }
             }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in
+            .subscribe(onNext: { walletHashId in
                 // update previously account if exist
-                var storedAccount = AccountsManager.shared.accounts.filter {
-                    $0.id != account.id && $0.isHW && $0.isSingleSig == account.isSingleSig &&
-                    $0.name == account.name && $0.network == account.network &&
-                    ($0.walletHashId == nil || $0.walletHashId == session?.account?.walletHashId)
+                let storedAccount = AccountsManager.shared.accounts.filter {
+                    $0.isHW && $0.walletHashId == walletHashId
                 }.first
-                storedAccount?.walletHashId = session?.account?.walletHashId
-                if SessionsManager.get(for: account) != nil {
-                    SessionsManager.shared.removeValue(forKey: account.id)
-                }
-                SessionsManager.shared[storedAccount?.id ?? ""] = session
-                AccountsManager.shared.current = storedAccount
-                self.delegate?.onLogin(p)
+                var account = storedAccount ??
+                    Account(name: p.name ?? "HW",
+                            network: network.network.replacingOccurrences(of: "electrum-", with: ""),
+                            isJade: BLEManager.shared.isJade(p),
+                            isLedger: BLEManager.shared.isLedger(p),
+                            isSingleSig: network.network.contains("electrum"))
+                let firstLogin = account.walletHashId == nil
+                account.walletHashId = walletHashId
+                session
+                    .load(refreshSubaccounts: firstLogin)
+                    .done {
+                        if SessionsManager.shared[account.id] != nil {
+                            SessionsManager.shared.removeValue(forKey: account.id)
+                        }
+                        SessionsManager.shared[account.id] = session
+                        AccountsManager.shared.current = account
+                        self.delegate?.onLogin(p)
+                    }.catch { _ in
+                        self.onError(LoginError.connectionFailed, network: nil)
+                    }
             }, onError: { err in
                 switch err {
                 case BLEManagerError.firmwareErr(_): // nothing to do
                     return
                 default:
-                    session?.destroy()
                     self.onError(err, network: nil)
                 }
             })

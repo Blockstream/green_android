@@ -80,13 +80,11 @@ class ExistingWalletsViewController: UIViewController {
     func checkWallet(isSinglesig: Bool) -> Promise<ExistingWallet> {
         OnBoardManager.shared.params?.singleSig = isSinglesig
         let params = OnBoardManager.shared.params
-        let session = SessionManager(account: OnBoardManager.shared.account)
+        let session = SessionManager(OnBoardManager.shared.gdkNetwork)
         return Promise { seal in
             session.discover(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
-            .ensure {
-                session.destroy()
-            }.done { _ in
-                seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, failure: nil))
+            .done { _ in
+                seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: true, isJustRestored: false))
             }.catch { error in
                 switch error {
                 case LoginError.walletNotFound:

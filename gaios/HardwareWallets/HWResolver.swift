@@ -17,7 +17,7 @@ class HWResolver {
             guard let paths = requiredData["paths"] as? [[Int]] else {
                 return Promise { $0.reject(GaError.GenericError()) }
             }
-            let chain = session.account?.gdkNetwork?.chain ?? "mainnet"
+            let chain = session.gdkNetwork.chain
             return getXpubs(hw: hw, paths: paths, chain: chain).compactMap {
                 let data = try JSONSerialization.data(withJSONObject: ["xpubs": $0], options: .fragmentsAllowed)
                 return String(data: data, encoding: .utf8)
@@ -28,7 +28,7 @@ class HWResolver {
                 return String(data: data ?? Data(), encoding: .utf8)
             }
         case "sign_tx":
-            let chain = session.account?.gdkNetwork?.chain ?? "mainnet"
+            let chain = session.gdkNetwork.chain
             return signTransaction(hw: hw, params: requiredData, chain: chain).compactMap {
                 let data = try? JSONSerialization.data(withJSONObject: $0, options: .fragmentsAllowed)
                 return String(data: data ?? Data(), encoding: .utf8)

@@ -38,10 +38,8 @@ class HomeViewController: UIViewController {
     func updateUI() {
     }
 
-    func enterWallet(_ index: Int) {
-        // watch only wallet
-        let account = AccountsManager.shared.swAccounts[index]
-        if let session = SessionsManager.get(for: account),
+    func enterWallet(_ account: Account) {
+        if let session = SessionsManager.shared[account.id],
            session.connected && session.logged {
             session.subaccount().done { wallet in
                 AccountsManager.shared.current = account
@@ -226,11 +224,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.section {
         case 0:
             if AccountsManager.shared.swAccounts.count > 0 {
-                enterWallet(indexPath.row)
+                let account = AccountsManager.shared.swAccounts[indexPath.row]
+                enterWallet(account)
             }
         case 1:
             if AccountsManager.shared.hwAccounts.count > 0 {
-                enterWallet(indexPath.row)
+                let account = AccountsManager.shared.hwAccounts[indexPath.row]
+                enterWallet(account)
             }
         case 2:
             showHardwareWallet(indexPath.row)

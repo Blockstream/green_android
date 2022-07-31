@@ -46,6 +46,9 @@ class AccountsManager {
             currentId = newValue?.id ?? ""
             if let account = newValue {
                 if account.isEphemeral {
+                    if ephAccounts.contains(where: { $0.id == account.id }) {
+                        ephAccounts.removeAll(where: { $0.id == account.id })
+                    }
                     ephAccounts += [account]
                 } else {
                     upsert(account)

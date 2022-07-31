@@ -159,49 +159,62 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        var session = SessionsManager.new(for: account!)
+        var session: SessionManager? = SessionManager(account.gdkNetwork!)
         firstly {
             return Guarantee()
         }.compactMap {
-            try session.account?.auth(usingAuth)
+            try self.account.auth(usingAuth)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-        }.then(on: bgq) { pinData -> Promise<Bool> in
+        }.then(on: bgq) { pinData -> Promise<String> in
             let pin = withPIN ?? pinData.plaintextBiometric ?? ""
-            return session.loginWithPin(pin, pinData: pinData, refreshAssets: bip39passphrase == nil)
+            return session!.loginWithPin(pin, pinData: pinData)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
-        }.then(on: bgq) { (res: Bool) -> Promise<Bool> in
+        }.then(on: bgq) { (res: String) -> Promise<String> in
             if let bip39passphrase = bip39passphrase {
-                return session.getCredentials(password: "")
+                return session!.getCredentials(password: "")
                     .compactMap { Credentials(mnemonic: $0.mnemonic, password: nil, bip39Passphrase: bip39passphrase) }
-                    .then { credentials -> Promise<Bool> in
-                        let ephAccount = Account(name: self.account.name,
-                                                 network: self.account.network,
-                                                 isSingleSig: self.account?.isSingleSig ?? true,
-                                                 isEphemeral: true)
-                        session.destroy()
-                        session = SessionsManager.new(for: ephAccount)
-                        return session
-                            .loginWithCredentials(credentials, refreshSubaccounts: true, refreshAssets: true)
+                    .then { credentials -> Promise<String> in
+                        session = nil
+                        session = SessionManager(self.account.gdkNetwork!)
+                        return session!
+                            .loginWithCredentials(credentials)
                             .recover { _ in Promise().map { throw LoginError.walletNotFound }}
                     }
             }
-            return Promise<Bool>.value(res)
-        }.then(on: bgq) { _ in
-            session.subaccount()
-        }.get(on: bgq) { _ in
-            // load async assets registry
-            session.registry?.cache(session: session)
-            session.registry?.loadAsync(session: session)
-        }.get { _ in
-            if withPIN != nil {
-                session.account?.attempts = 0
+            return Guarantee().map { res }
+        }.compactMap { walletHashId in
+            if bip39passphrase != nil {
+                let storedAccount = AccountsManager.shared.ephAccounts
+                    .filter { $0.walletHashId == walletHashId && !$0.isHW }
+                    .first
+                self.account = storedAccount ?? Account(name: self.account.name,
+                                network: self.account.network,
+                                isSingleSig: self.account?.isSingleSig ?? true,
+                                isEphemeral: true)
+                let firstLogin = self.account?.walletHashId == nil
+                self.account.walletHashId = walletHashId
+                return firstLogin
             }
-            AccountsManager.shared.current = session.account
+            let storedAccount = AccountsManager.shared.accounts
+                .filter { $0.walletHashId == walletHashId && !$0.isHW }
+                .first
+            self.account = storedAccount ?? self.account
+            let firstLogin = self.account?.walletHashId == nil
+            self.account.walletHashId = walletHashId
+            return firstLogin
+        }.then { (firstLogin: Bool) in
+            session!.load(refreshSubaccounts: firstLogin)
+        }.then(on: bgq) { _ in
+            session!.subaccount()
         }.done { wallet in
-
-            AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: AccountsManager.shared.current)
+            if withPIN != nil {
+                self.account.attempts = 0
+            }
+            AccountsManager.shared.current = self.account
+            SessionsManager.shared[self.account.id] = session
+            AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: self.account)
 
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
@@ -213,7 +226,6 @@ class LoginViewController: UIViewController {
         }.catch { error in
 
             var prettyError = "id_login_failed"
-            session.destroy()
             self.stopLoader()
             switch error {
             case AuthenticationTypeHandler.AuthError.CanceledByUser:
@@ -239,13 +251,13 @@ class LoginViewController: UIViewController {
             default:
                 DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             }
-            AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
+            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
         }
     }
 
     func wrongPin(_ usingAuth: String) {
         account?.attempts += 1
-        AccountsManager.shared.current = self.account
+        AccountsManager.shared.upsert(account)
         if account?.attempts == self.MAXATTEMPTS {
             showLock()
         } else {
@@ -376,7 +388,7 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
     func didRename(name: String, index: Int?) {
         self.account?.name = name
         if let account = self.account {
-            AccountsManager.shared.current = account
+            AccountsManager.shared.upsert(account)
             navigationItem.title = account.name
             AnalyticsManager.shared.renameWallet()
         }

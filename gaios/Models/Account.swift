@@ -173,4 +173,17 @@ struct Account: Codable, Equatable {
             return (isSingleSig ? Constants.electrumPrefix + ntw : ntw)
         }
     }
+
+    var activeWallet: UInt32 {
+        get {
+            let pointerKey = String(format: "%@_wallet_pointer", id)
+            let pointer = UserDefaults.standard.integer(forKey: pointerKey)
+            return UInt32(pointer)
+        }
+        set {
+            let pointerKey = String(format: "%@_wallet_pointer", id)
+            UserDefaults.standard.set(Int(newValue), forKey: pointerKey)
+            UserDefaults.standard.synchronize()
+        }
+    }
 }

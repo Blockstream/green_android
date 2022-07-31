@@ -115,8 +115,7 @@ class WalletNameViewController: UIViewController {
 
     func setup(restored: Bool) {
         let bgq = DispatchQueue.global(qos: .background)
-        let account =  OnBoardManager.shared.account
-        let session = SessionsManager.new(for: account)
+        let session = SessionManager(OnBoardManager.shared.gdkNetwork)
         let params = OnBoardManager.shared.params
         let credentials = Credentials(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, bip39Passphrase: nil)
         firstly {
@@ -128,7 +127,7 @@ class WalletNameViewController: UIViewController {
                     .recover { err in
                         switch err {
                         case LoginError.walletNotFound:
-                            if !(account.isSingleSig ?? false) {
+                            if !session.gdkNetwork.electrum {
                                 throw err
                             }
                         default:
@@ -143,7 +142,9 @@ class WalletNameViewController: UIViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            AccountsManager.shared.current = session.account
+            let account = OnBoardManager.shared.account
+            AccountsManager.shared.current = account
+            SessionsManager.shared[account.id] = session
             if restored {
                 AnalyticsManager.shared.restoreWallet(account: AccountsManager.shared.current)
             } else {
@@ -170,7 +171,6 @@ class WalletNameViewController: UIViewController {
 
     func error(_ session: SessionManager, message: String) {
         DropAlert().error(message: NSLocalizedString(message, comment: ""))
-        session.destroy()
     }
 
     func next() {

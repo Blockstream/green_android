@@ -33,7 +33,7 @@ class HWWConnectViewController: UIViewController {
     private var headerH2: CGFloat = 64.0
     private var openAdditionalNetworks = false
     private var resetBle = false
-    private var account: Account?
+    private var network = getGdkNetwork("mainnet")
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -195,20 +195,15 @@ class HWWConnectViewController: UIViewController {
 
     func connect(_ peripheral: Peripheral, network: String) {
         hwwState = .connecting
-        let account = Account(name: peripheral.name ?? "HW",
-                network: network.replacingOccurrences(of: "electrum-", with: ""),
-                isJade: BLEManager.shared.isJade(peripheral),
-                isLedger: BLEManager.shared.isLedger(peripheral),
-                isSingleSig: network.contains("electrum"))
-        self.account = account
+        self.network = getGdkNetwork(network)
         // connect Ledger X
         if BLEManager.shared.isLedger(peripheral) {
-            BLEManager.shared.connect(peripheral, account: account)
+            BLEManager.shared.connect(peripheral, network: self.network)
             return
         }
         // keep open connection with device, if connected
         if peripheral.isConnected && !resetBle {
-            BLEManager.shared.connect(peripheral, account: account)
+            BLEManager.shared.connect(peripheral, network: self.network)
             return
         }
         // start a new connection with jade
@@ -221,7 +216,7 @@ class HWWConnectViewController: UIViewController {
             after(seconds: 1)
         }.done { _ in
             self.hwwState = .followDevice
-            BLEManager.shared.connect(peripheral, account: account)
+            BLEManager.shared.connect(peripheral, network: self.network)
         }
     }
 
@@ -244,10 +239,9 @@ class HWWConnectViewController: UIViewController {
             hwwState = .connecting
             BLEManager.shared.dispose()
             navigationController?.popViewController(animated: true)
-        } else if let account = account {
-            hwwState = .connected
-            BLEManager.shared.login(peripheral, account: account)
         }
+        hwwState = .connected
+        BLEManager.shared.login(peripheral, network: network)
     }
 
     @IBAction func btnSettings(_ sender: Any) {
@@ -403,15 +397,15 @@ extension HWWConnectViewController: BLEManagerDelegate {
         DispatchQueue.main.async {
             if firstInitialization {
                 self.hwwState = .initialized
-            } else if let account = self.account {
-                self.hwwState = .connected
-                BLEManager.shared.login(peripheral, account: account)
             }
+            let network = getGdkNetwork(network)
+            self.hwwState = .connected
+            BLEManager.shared.login(peripheral, network: network)
         }
     }
 
     func onLogin(_: Peripheral) {
-        AnalyticsManager.shared.loginWallet(loginType: .hardware, account: self.account)
+        //AnalyticsManager.shared.loginWallet(loginType: .hardware, account: self.account)
         DispatchQueue.main.async {
             getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }
@@ -446,9 +440,8 @@ extension HWWConnectViewController: BLEManagerDelegate {
                     if required {
                         BLEManager.shared.dispose()
                         self?.onError(BLEManagerError.genericErr(txt: NSLocalizedString("id_new_jade_firmware_required", comment: "")))
-                    } else if let account = self?.account {
-                        BLEManager.shared.login(peripheral, account: account, checkFirmware: false)
                     }
+                    BLEManager.shared.login(peripheral, network: self!.network, checkFirmware: false)
                 }
             }
             present(vc, animated: false, completion: nil)
