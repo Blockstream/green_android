@@ -21,4 +21,8 @@ data class LoginCredentialsParams(
     override fun kSerializer(): KSerializer<LoginCredentialsParams> {
         return serializer()
     }
+
+    companion object{
+        val empty = LoginCredentialsParams()
+    }
 }

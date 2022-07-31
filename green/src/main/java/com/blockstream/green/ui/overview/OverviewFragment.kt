@@ -636,7 +636,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         var title = viewModel.wallet.name
-        var subtitle: String? = session.device?.name
+        var subtitle: String? = session.device?.name ?: viewModel.wallet.ephemeralBip39Name.takeIf { viewModel.wallet.isBip39Ephemeral }
 
         if (showAccountInToolbar) {
             if (isOverviewState) {

@@ -291,8 +291,9 @@ class GreenSession constructor(
             scope.launch(context = Dispatchers.IO + logException(countly)) {
                 disconnect()
 
-                if(hasDevice){
-                    sessionManager.destroyHardwareSession(greenSession = this@GreenSession)
+                // Destroy session if it's ephemeral
+                ephemeralWallet?.also {
+                    sessionManager.destroyEphemeralSession(greenSession = this@GreenSession)
                 }
             }
         }
@@ -351,6 +352,7 @@ class GreenSession constructor(
 
     fun createNewWallet(network: Network, mnemonic: String): LoginData {
         isWatchOnly = false
+        device = null
 
         connect(network)
 
@@ -382,6 +384,7 @@ class GreenSession constructor(
     }
 
     fun loginWatchOnly(network: Network, username: String, password: String): LoginData {
+        device = null
         isWatchOnly = true
 
         connect(network)
@@ -418,13 +421,13 @@ class GreenSession constructor(
         if(registerUser) {
             AuthHandler(
                 greenWallet,
-                greenWallet.registerUser(gaSession, deviceParams = deviceParams)
+                greenWallet.registerUser(gaSession, deviceParams = deviceParams, loginCredentialsParams = LoginCredentialsParams.empty)
             ).resolve(hardwareWalletResolver = hardwareWalletResolver)
         }
 
         return AuthHandler(
             greenWallet,
-            greenWallet.loginUser(gaSession, deviceParams = deviceParams)
+            greenWallet.loginUser(gaSession, deviceParams = deviceParams, loginCredentialsParams = LoginCredentialsParams.empty)
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
 
             if(network.isElectrum){
@@ -450,6 +453,7 @@ class GreenSession constructor(
         initializeSession: Boolean = true,
     ): LoginData {
         isWatchOnly = false
+        device = null
 
         connect(network)
         return AuthHandler(
@@ -480,6 +484,7 @@ class GreenSession constructor(
         initializeSession: Boolean = true,
     ): LoginData {
         isWatchOnly = false
+        device = null
 
         connect(networkFromWallet(wallet))
         return AuthHandler(
@@ -493,7 +498,7 @@ class GreenSession constructor(
     private fun reLogin(): LoginData {
         return AuthHandler(
             greenWallet,
-            greenWallet.loginUser(gaSession)
+            greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams.empty)
         ).result<LoginData>(hardwareWalletResolver = DeviceResolver(this)).also {
             authenticationRequired = false
         }

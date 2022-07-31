@@ -10,7 +10,7 @@ import com.blockstream.green.databinding.ListItemWalletBinding
 import com.blockstream.green.gdk.GreenSession
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-data class WalletListItem constructor(val wallet: Wallet, val greenSession: GreenSession) : AbstractBindingItem<ListItemWalletBinding>() {
+data class WalletListItem constructor(val wallet: Wallet, val isConnected: Boolean, val session: GreenSession) : AbstractBindingItem<ListItemWalletBinding>() {
     override val type: Int
         get() = R.id.fastadapter_wallet_item_id
 
@@ -21,13 +21,13 @@ data class WalletListItem constructor(val wallet: Wallet, val greenSession: Gree
     override fun bindView(binding: ListItemWalletBinding, payloads: List<Any>) {
         binding.wallet = wallet
         binding.innerIcon.setImageResource(if (wallet.isWatchOnly) R.drawable.ic_baseline_visibility_24 else if (wallet.isElectrum) R.drawable.ic_singlesig else R.drawable.ic_multisig)
-        binding.connectionIcon.isVisible = greenSession.isConnected
-        binding.device = greenSession.device
+        binding.connectionIcon.isVisible = isConnected
+        binding.device = session.device
 
         if(wallet.isBip39Ephemeral){
             binding.endIcon.setImageResource(R.drawable.ic_bip39_passphrase_24)
         }else{
-            setGreenDevice(binding.endIcon, greenSession.device)
+            setGreenDevice(binding.endIcon, session.device)
         }
     }
 

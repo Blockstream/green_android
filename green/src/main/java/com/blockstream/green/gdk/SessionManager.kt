@@ -107,11 +107,11 @@ class SessionManager constructor(
         }
 
         connectionChangeEvent.observeForever {
-            getConnectedHardwareWalletSessions().mapNotNull { it.ephemeralWallet }.let {
+            getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == true }.mapNotNull { it.ephemeralWallet }.let {
                 hardwareWallets.postValue(it)
             }
 
-            getConnectedEphemeralWalletSessions().mapNotNull { it.ephemeralWallet }.let {
+            getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == false }.mapNotNull { it.ephemeralWallet }.let {
                 ephemeralWallets.postValue(it)
             }
         }
@@ -139,6 +139,10 @@ class SessionManager constructor(
         return walletSessions[walletId]
     }
 
+    fun getEphemeralWalletSession(walletHashId: String, isHardware: Boolean = false) =
+        greenSessions.find { it.ephemeralWallet?.walletHashId == walletHashId && it.ephemeralWallet?.isHardware == isHardware }
+
+
     private fun getWalletSession(walletId: WalletId): GreenSession {
         return getWalletSessionOrNull(walletId) ?: createSession().also {
             walletSessions[walletId] = it
@@ -160,7 +164,7 @@ class SessionManager constructor(
         walletSessions.remove(wallet.id)
     }
 
-    fun destroyHardwareSession(greenSession: GreenSession){
+    fun destroyEphemeralSession(greenSession: GreenSession){
         // Remove from greenSessions
         greenSessions.remove(greenSession)
 
@@ -170,18 +174,16 @@ class SessionManager constructor(
         greenSession.destroy()
 
         // Disconnect device if there is no other connected session with that device
-        if(getConnectedHardwareWalletSessions().none { it.device?.id == greenSession.device?.id }){
+        if(getConnectedEphemeralWalletSessions().none { it.device?.id == greenSession.device?.id }){
             greenSession.device?.disconnect()
         }
     }
 
-    private fun getConnectedHardwareWalletSessions(): List<GreenSession>{
-        return walletSessions.values.filter { it.ephemeralWallet?.isHardware == true && it.isConnected }.toList()
+    private fun getConnectedEphemeralWalletSessions(): List<GreenSession>{
+        return walletSessions.values.filter { it.ephemeralWallet != null && it.isConnected }.toList()
     }
 
-    private fun getConnectedEphemeralWalletSessions(): List<GreenSession>{
-        return walletSessions.values.filter { it.ephemeralWallet?.isHardware == false && it.isConnected }.toList()
-    }
+    fun getNextEphemeralId() : Long = (getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == false }.mapNotNull { it.ephemeralWallet?.ephemeralId }.maxOrNull() ?: 0) + 1
 
     fun getConnectedDevices(): List<Device>{
         return walletSessions.values

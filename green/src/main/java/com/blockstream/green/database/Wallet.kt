@@ -45,7 +45,10 @@ data class Wallet constructor(
     val order: Int = 0,
 
     @Ignore
-    val isEphemeral: Boolean = false
+    var isEphemeral: Boolean = false,
+
+    @Ignore
+    var ephemeralId: Long = 0L
 ) : Parcelable {
 
     // Make Room compile by providing a constructor without the @Ignore property
@@ -71,7 +74,8 @@ data class Wallet constructor(
         isHardware,
         activeAccount,
         order,
-        false
+        false,
+        0L
     )
 
     val isLiquid
@@ -86,20 +90,25 @@ data class Wallet constructor(
     val isBip39Ephemeral
         get() = isEphemeral && !isHardware
 
+    val ephemeralBip39Name
+        get() = "BIP39 #${ephemeralId}"
+
     companion object : KLogging() {
         private var ephemeralWalletIdCounter = -1L
 
-        fun createEphemeralWallet(network: Network, isHardware: Boolean = false): Wallet {
+        fun createEphemeralWallet(ephemeralId: Long, network: Network, name: String? = null, isHardware: Boolean = false): Wallet {
             return Wallet(
                 id = ephemeralWalletIdCounter--,
                 walletHashId = network.id,
-                name = network.productName,
+                name = name ?: network.productName,
                 network = network.network,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = isHardware,
-                activeAccount = 0,
-                isEphemeral = true
-            )
+                activeAccount = 0
+            ).also {
+                it.isEphemeral = true
+                it.ephemeralId = ephemeralId
+            }
         }
     }
 }

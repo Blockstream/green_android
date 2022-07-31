@@ -242,7 +242,9 @@ class LoginViewModel @AssistedInject constructor(
                     // Disconnect as no longer needed
                     session.disconnectAsync()
 
-                    val ephemeralWallet = Wallet.createEphemeralWallet(network = network, isHardware = false)
+                    val walletName = wallet.name
+
+                    val ephemeralWallet = Wallet.createEphemeralWallet(ephemeralId = sessionManager.getNextEphemeralId(), network = network, name = walletName, isHardware = false)
 
                     // Create an ephemeral session
                     val ephemeralSession = sessionManager.getWalletSession(ephemeralWallet)
@@ -252,10 +254,19 @@ class LoginViewModel @AssistedInject constructor(
 
                     val loginData = ephemeralSession.loginWithMnemonic(network, LoginCredentialsParams(mnemonic = mnemonic, bip39Passphrase = bip39Passphrase.string().trim()), initializeSession = true)
 
-                    ephemeralWallet.walletHashId = loginData.walletHashId
+                    // Check if there is already a BIP39 ephemeral wallet
+                    sessionManager.getEphemeralWalletSession(loginData.walletHashId)?.let {
+                        // Disconnect the no longer needed session
+                        ephemeralSession.disconnectAsync()
 
-                    // Return the ephemeral wallet
-                    ephemeralWallet to ephemeralSession
+                        // Return the previous connected BIP39 ephemeral session
+                        it.ephemeralWallet!! to it
+                    } ?: run {
+                        ephemeralWallet.walletHashId = loginData.walletHashId
+
+                        // Return the ephemeral wallet
+                        ephemeralWallet to ephemeralSession
+                    }
                 }else{
                     // Return the wallet
                     wallet to session

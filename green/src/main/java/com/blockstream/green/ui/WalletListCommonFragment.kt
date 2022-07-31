@@ -13,6 +13,7 @@ import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragme
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.items.DeviceBrandListItem
 import com.blockstream.green.ui.items.WalletListItem
+import com.blockstream.green.utils.observeList
 import com.blockstream.green.utils.showPopupMenu
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -39,7 +40,8 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
         binding.lifecycleOwner = viewLifecycleOwner
 
         val softwareWalletsModel = ModelAdapter { model: Wallet ->
-            WalletListItem(model, sessionManager.getWalletSession(model))
+            val session = sessionManager.getWalletSession(model)
+            WalletListItem(model, isConnected = session.isConnected, session = session)
         }
 
         viewModel.wallets.observe(viewLifecycleOwner){
@@ -55,12 +57,9 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
         }
 
         val ephemeralWalletsModel = ModelAdapter { model: Wallet ->
-            WalletListItem(model, sessionManager.getWalletSession(model))
-        }
-
-        viewModel.ephemeralWallets.observe(viewLifecycleOwner){
-            ephemeralWalletsModel.set(it)
-        }
+            val session = sessionManager.getWalletSession(model)
+            WalletListItem(model, isConnected = session.isConnected, session = session)
+        }.observeList(viewLifecycleOwner, viewModel.ephemeralWallets)
 
         val ephemeralWalletsAdapter = FastAdapter.with(ephemeralWalletsModel)
 
@@ -71,7 +70,8 @@ abstract class WalletListCommonFragment<T : ViewDataBinding> constructor(
         }
 
         val hardwareWalletsModel = ModelAdapter { model: Wallet ->
-            WalletListItem(model, sessionManager.getWalletSession(model))
+            val session = sessionManager.getWalletSession(model)
+            WalletListItem(model, isConnected = session.isConnected, session = session)
         }
 
         viewModel.hardwareWallets.observe(viewLifecycleOwner){

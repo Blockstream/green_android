@@ -88,7 +88,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
         session.observable { session ->
             session.disconnect()
-            session.ephemeralWallet = Wallet.createEphemeralWallet(greenWallet.networks.getNetworkById(network), isHardware = true)
+            session.ephemeralWallet = Wallet.createEphemeralWallet(ephemeralId = 0, greenWallet.networks.getNetworkById(network), isHardware = true)
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
@@ -109,7 +109,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         session.observable { session ->
             // Disconnect any previous hww connection
             session.disconnect()
-            session.ephemeralWallet = Wallet.createEphemeralWallet(greenWallet.networks.getNetworkById(network), isHardware = true)
+            session.ephemeralWallet = Wallet.createEphemeralWallet(ephemeralId = 0, greenWallet.networks.getNetworkById(network), isHardware = true)
             hardwareConnect.connectDevice(this, session, device)
         }.doOnSubscribe {
             onProgress.postValue(true)
