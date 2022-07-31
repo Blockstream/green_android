@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import PromiseKit
 
 class AssetsManagerLiquid: Codable, AssetsManagerProtocol {
 
