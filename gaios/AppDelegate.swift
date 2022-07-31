@@ -25,48 +25,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout(with pin: Bool) {
-        var session: SessionManager?
-        if let account = AccountsManager.shared.current {
-            session = SessionsManager.get(for: account)
+        let account = AccountsManager.shared.current
+        if let account = account {
+            SessionsManager.remove(for: account)
         }
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            window?.rootViewController?.startAnimating()
-            return Guarantee()
-        }.map(on: bgq) {
-            session?.destroy()
-        }.ensure {
-            self.window?.rootViewController?.stopAnimating()
-        }.done {
-            if AccountsManager.shared.current?.isWatchonly == true {
-                let homeS = UIStoryboard(name: "Home", bundle: nil)
-                let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
-                if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                   let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
-                        vc.account = AccountsManager.shared.current
-                        nav.pushViewController(vc, animated: false)
-                        UIApplication.shared.keyWindow?.rootViewController = nav
-                }
-            } else if AccountsManager.shared.current?.isHW ?? false {
-                let homeS = UIStoryboard(name: "Home", bundle: nil)
-                let hwwS = UIStoryboard(name: "HWW", bundle: nil)
-                if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                   let vc = hwwS.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-                        vc.jade = AccountsManager.shared.current?.isJade == true
-                        nav.pushViewController(vc, animated: false)
-                        UIApplication.shared.keyWindow?.rootViewController = nav
-                }
-            } else {
-                let homeS = UIStoryboard(name: "Home", bundle: nil)
-                if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                   let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+        if account?.isWatchonly ?? false {
+            let homeS = UIStoryboard(name: "Home", bundle: nil)
+            let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
                     vc.account = AccountsManager.shared.current
                     nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
-                }
             }
-        }.catch { _ in
-            fatalError("disconnection error never happens")
+        } else if account?.isHW ?? false {
+            let homeS = UIStoryboard(name: "Home", bundle: nil)
+            let hwwS = UIStoryboard(name: "HWW", bundle: nil)
+            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                let vc = hwwS.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
+                    vc.jade = AccountsManager.shared.current?.isJade == true
+                    nav.pushViewController(vc, animated: false)
+                    UIApplication.shared.keyWindow?.rootViewController = nav
+            }
+        } else {
+            let homeS = UIStoryboard(name: "Home", bundle: nil)
+            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+                vc.account = AccountsManager.shared.current
+                nav.pushViewController(vc, animated: false)
+                UIApplication.shared.keyWindow?.rootViewController = nav
+            }
         }
     }
 
