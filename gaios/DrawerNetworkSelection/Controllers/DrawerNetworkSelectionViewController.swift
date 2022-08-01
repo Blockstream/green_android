@@ -20,6 +20,12 @@ class DrawerNetworkSelectionViewController: UIViewController {
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
 
+    private var ephAccounts: [Account] {
+        AccountsManager.shared.ephAccounts.filter { account in
+            account.isEphemeral && !SessionsManager.shared.filter {$0.key == account.id }.isEmpty
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -53,7 +59,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 0:
             return AccountsManager.shared.swAccounts.count
         case 1:
-            return AccountsManager.shared.ephAccounts.count
+            return ephAccounts.count
         case 2:
             return AccountsManager.shared.hwAccounts.count
         case 3:
@@ -80,7 +86,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case 1: /// EPHEMERAL
-            let account = AccountsManager.shared.ephAccounts[indexPath.row]
+            let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
                 let selected = { () -> Bool in
                     if let session = SessionsManager.get(for: account) {
@@ -121,7 +127,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 1 && AccountsManager.shared.ephAccounts.isEmpty {
+        if section == 1 && ephAccounts.isEmpty {
             return 0.1
         }
         if section == 2 && AccountsManager.shared.hwAccounts.isEmpty {
@@ -148,7 +154,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 0:
             return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
         case 1:
-            if AccountsManager.shared.ephAccounts.isEmpty {
+            if ephAccounts.isEmpty {
                 return UIView()
             }
             return headerView(NSLocalizedString("EPHEMERAL WALLETS", comment: "").uppercased())
@@ -179,7 +185,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             let account = AccountsManager.shared.swAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 1:
-            let account = AccountsManager.shared.ephAccounts[indexPath.row]
+            let account = ephAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 2:
             let account = AccountsManager.shared.hwAccounts[indexPath.row]
