@@ -98,7 +98,7 @@ class ExistingWalletsViewController: UIViewController {
                 case LoginError.connectionFailed:
                     seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, failure: .disconnect))
                 default:
-                    DropAlert().error(message: NSLocalizedString(error, comment: ""))
+                    DropAlert().error(message: error.localizedDescription)
                     seal.reject(error)
                 }
             }
