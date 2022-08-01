@@ -15,6 +15,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.subscribeBy
 
+sealed class ScanStatus {
+    object FOUND: ScanStatus()
+    object NOT_FOUND: ScanStatus()
+    class EXISTS(val walletName: String) : ScanStatus()
+    class ERROR(val error: String): ScanStatus()
+}
+
 class ScanWalletViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
@@ -22,8 +29,8 @@ class ScanWalletViewModel @AssistedInject constructor(
     @Assisted val onboardingOptions: OnboardingOptions,
     @Assisted mnemonic: String
 ) : OnboardingViewModel(sessionManager, walletRepository, countly,null) {
-    val multiSig = MutableLiveData<String?>(null) // "" = can be added , "wallet_name" -> already in app , null -> not available
-    val singleSig = MutableLiveData<String?>(null)
+    val multiSig = MutableLiveData<ScanStatus>()
+    val singleSig = MutableLiveData<ScanStatus>()
 
     init {
         scan(onboardingOptions.networkType!!, mnemonic, "")
@@ -33,23 +40,26 @@ class ScanWalletViewModel @AssistedInject constructor(
         // skip if we already scanning
         if(onProgress.value == true) return
 
-        /*
-            How wallet identification works with Boolean?
-            null -> wallet not found
-            "wallet_name" -> wallet already exists in app
-            "" -> wallet can be added
-         */
-
         session.observable {
-            val multisig: String? = try{
+            val multisig: ScanStatus = try{
                 val multiSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = false)
                 val multisigLoginData = it.loginWithMnemonic(multiSigNetwork, LoginCredentialsParams(mnemonic = mnemonic, password = mnemonicPassword), initializeSession = false)
-                walletRepository.getWalletWithHashIdSync(multisigLoginData.walletHashId, false)?.name ?: ""
+
+                walletRepository.getWalletWithHashIdSync(multisigLoginData.walletHashId, false)?.let { wallet ->
+                    ScanStatus.EXISTS(wallet.name)
+                } ?: run {
+                    ScanStatus.FOUND
+                }
+
             }catch (e: Exception){
-                null
+                if(e.message == "id_login_failed"){
+                    ScanStatus.NOT_FOUND
+                }else {
+                    ScanStatus.ERROR(e.message ?: "")
+                }
             }
 
-            val singlesig: String? = try{
+            val singlesig: ScanStatus = try{
                 val singleSigNetwork = session.networks.getNetworkByType(networkType, isElectrum = true)
                 val singleSigLoginData = it.loginWithMnemonic(singleSigNetwork, LoginCredentialsParams(mnemonic = mnemonic, password = mnemonicPassword), initializeSession = false)
 
@@ -57,9 +67,13 @@ class ScanWalletViewModel @AssistedInject constructor(
                     subaccount.bip44Discovered == true
                 }.let { subAccountWithTransactions ->
                     if (subAccountWithTransactions != null) {
-                        walletRepository.getWalletWithHashIdSync(singleSigLoginData.walletHashId, false)?.name ?: ""
+                        walletRepository.getWalletWithHashIdSync(singleSigLoginData.walletHashId, false)?.let { wallet ->
+                            ScanStatus.EXISTS(wallet.name)
+                        } ?: run {
+                            ScanStatus.FOUND
+                        }
                     } else {
-                        null
+                        ScanStatus.NOT_FOUND
                     }
                 }.also {
                     session.disconnect()
@@ -67,7 +81,7 @@ class ScanWalletViewModel @AssistedInject constructor(
 
             }catch (e: Exception){
                 e.printStackTrace()
-                null
+                ScanStatus.ERROR(e.message ?: "")
             }
 
             Pair(multisig, singlesig)
@@ -85,7 +99,6 @@ class ScanWalletViewModel @AssistedInject constructor(
             }
         )
     }
-
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {

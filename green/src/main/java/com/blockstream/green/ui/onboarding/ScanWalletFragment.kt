@@ -8,6 +8,7 @@ import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ScanWalletFragmentBinding
+import com.blockstream.green.utils.errorFromResourcesAndGDK
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,24 +43,26 @@ class ScanWalletFragment :
         binding.vm = viewModel
 
         viewModel.singleSig.observe(viewLifecycleOwner){
-            binding.singleSig.alpha = if(it == "") 1.0f else 0.6f
-            binding.singleSig.isEnabled = it == ""
+            binding.singleSig.alpha = if(it is ScanStatus.FOUND) 1.0f else 0.6f
+            binding.singleSig.isEnabled = it is ScanStatus.FOUND
 
             binding.singleSig.setCaption(when(it){
-                "" -> getString(R.string.id_wallet_found)
-                null -> getString(R.string.id_wallet_not_found)
-                else -> getString(R.string.id_wallet_already_restored) + "\n$it"
+                is ScanStatus.FOUND -> getString(R.string.id_wallet_found)
+                is ScanStatus.NOT_FOUND -> getString(R.string.id_wallet_not_found)
+                is ScanStatus.EXISTS -> getString(R.string.id_wallet_already_restored) + "\n${it.walletName}"
+                is ScanStatus.ERROR -> requireContext().errorFromResourcesAndGDK(it.error)
             })
         }
 
         viewModel.multiSig.observe(viewLifecycleOwner){
-            binding.multiSig.alpha = if(it == "") 1.0f else 0.6f
-            binding.multiSig.isEnabled = it == ""
+            binding.multiSig.alpha = if(it is ScanStatus.FOUND) 1.0f else 0.6f
+            binding.multiSig.isEnabled = it is ScanStatus.FOUND
 
             binding.multiSig.setCaption(when(it){
-                "" -> getString(R.string.id_wallet_found)
-                null -> getString(R.string.id_wallet_not_found)
-                else -> getString(R.string.id_wallet_already_restored) + "\n$it"
+                is ScanStatus.FOUND -> getString(R.string.id_wallet_found)
+                is ScanStatus.NOT_FOUND -> getString(R.string.id_wallet_not_found)
+                is ScanStatus.EXISTS -> getString(R.string.id_wallet_already_restored) + "\n${it.walletName}"
+                is ScanStatus.ERROR -> requireContext().errorFromResourcesAndGDK(it.error)
             })
         }
 
