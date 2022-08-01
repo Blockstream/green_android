@@ -34,7 +34,7 @@ protocol BLEManagerScanDelegate: AnyObject {
 protocol BLEManagerDelegate: AnyObject {
     func onPrepare(_: Peripheral, reset: Bool)
     func onAuthenticate(_: Peripheral, network: String, firstInitialization: Bool)
-    func onLogin(_: Peripheral)
+    func onLogin(_: Peripheral, account: Account)
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
     func onCheckFirmware(_: Peripheral, fmw: Firmware, currentVersion: String, needCableUpdate: Bool)
@@ -330,7 +330,7 @@ class BLEManager {
                         }
                         SessionsManager.shared[account.id] = session
                         AccountsManager.shared.current = account
-                        self.delegate?.onLogin(p)
+                        self.delegate?.onLogin(p, account: account)
                     }.catch { _ in
                         self.onError(LoginError.connectionFailed, network: nil)
                     }

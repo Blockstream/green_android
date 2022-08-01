@@ -214,7 +214,9 @@ class LoginViewController: UIViewController {
             }
             AccountsManager.shared.current = self.account
             SessionsManager.shared[self.account.id] = session
-            AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics), account: self.account)
+            AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
+                                                ephemeralBip39: self.account.isEphemeral,
+                                                account: self.account)
 
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController

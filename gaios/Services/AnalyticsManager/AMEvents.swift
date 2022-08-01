@@ -29,9 +29,10 @@ extension AnalyticsManager {
         }
     }
 
-    func loginWallet(loginType: AnalyticsManager.LoginType, account: Account?) {
+    func loginWallet(loginType: AnalyticsManager.LoginType, ephemeralBip39: Bool, account: Account?) {
         if var s = sessSgmt(account) {
             s[AnalyticsManager.strMethod] = loginType.rawValue
+            s[AnalyticsManager.strEphemeralBip39] = "\(ephemeralBip39)"
             recordEvent(.walletLogin, sgmt: s)
         }
     }

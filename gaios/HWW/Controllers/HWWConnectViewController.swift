@@ -404,8 +404,8 @@ extension HWWConnectViewController: BLEManagerDelegate {
         }
     }
 
-    func onLogin(_: Peripheral) {
-        //AnalyticsManager.shared.loginWallet(loginType: .hardware, account: self.account)
+    func onLogin(_: Peripheral, account: Account) {
+        AnalyticsManager.shared.loginWallet(loginType: .hardware, ephemeralBip39: false, account: account)
         DispatchQueue.main.async {
             getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }

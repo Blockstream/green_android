@@ -10,6 +10,7 @@ extension AnalyticsManager {
     static let strAccountType = "account_type"
     static let str2fa = "2fa"
     static let strMethod = "method"
+    static let strEphemeralBip39 = "ephemeral_bip39"
     static let strPage = "page"
     static let strBrand = "brand"
     static let strModel = "model"

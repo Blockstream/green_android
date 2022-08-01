@@ -162,7 +162,7 @@ class WatchOnlyViewController: KeyboardViewController {
         }.done { _ in
             AccountsManager.shared.current = account
             SessionsManager.shared[account.id] = session
-            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, account: AccountsManager.shared.current)
+            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsManager.shared.current)
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             var prettyError: String?
