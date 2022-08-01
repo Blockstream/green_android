@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pNH-gf-OFC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pNH-gf-OFC">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -64,13 +64,23 @@
                                                         <constraint firstAttribute="height" constant="30" id="rmD-PH-pyE"/>
                                                     </constraints>
                                                 </imageView>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_passphrase" translatesAutoresizingMaskIntoConstraints="NO" id="uGy-mG-Zof">
+                                                    <rect key="frame" x="343" y="24" width="16" height="16"/>
+                                                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="16" id="JO3-1e-5k7"/>
+                                                        <constraint firstAttribute="height" constant="16" id="Vhn-ke-KdU"/>
+                                                    </constraints>
+                                                </imageView>
                                             </subviews>
                                             <color key="backgroundColor" name="customTitaniumDark"/>
                                             <constraints>
                                                 <constraint firstItem="BYZ-lN-dtR" firstAttribute="leading" secondItem="P9I-lZ-pjv" secondAttribute="trailing" constant="4" id="7rq-Vg-0E2"/>
                                                 <constraint firstItem="Etj-W1-HWL" firstAttribute="top" secondItem="gwe-Z1-KVs" secondAttribute="top" constant="21" id="9QX-la-5bf"/>
+                                                <constraint firstItem="uGy-mG-Zof" firstAttribute="centerY" secondItem="gwe-Z1-KVs" secondAttribute="centerY" id="C3o-qn-12T"/>
                                                 <constraint firstItem="atD-gB-46b" firstAttribute="centerX" secondItem="BYZ-lN-dtR" secondAttribute="centerX" constant="15" id="Lr4-z3-PPa"/>
                                                 <constraint firstAttribute="bottom" secondItem="Etj-W1-HWL" secondAttribute="bottom" constant="21" id="T6w-gC-Ah7"/>
+                                                <constraint firstAttribute="trailing" secondItem="uGy-mG-Zof" secondAttribute="trailing" constant="16" id="T7R-9V-Z5c"/>
                                                 <constraint firstItem="P9I-lZ-pjv" firstAttribute="centerY" secondItem="BYZ-lN-dtR" secondAttribute="centerY" id="Upz-3q-UWO"/>
                                                 <constraint firstItem="Etj-W1-HWL" firstAttribute="leading" secondItem="BYZ-lN-dtR" secondAttribute="trailing" constant="23" id="cAb-eL-O14"/>
                                                 <constraint firstItem="atD-gB-46b" firstAttribute="centerY" secondItem="BYZ-lN-dtR" secondAttribute="centerY" constant="15" id="dd5-7I-f3s"/>
@@ -82,6 +92,7 @@
                                         <connections>
                                             <outlet property="circleImageView" destination="P9I-lZ-pjv" id="AB5-KQ-cN3"/>
                                             <outlet property="icon" destination="BYZ-lN-dtR" id="7on-xT-bS8"/>
+                                            <outlet property="iconPassphrase" destination="uGy-mG-Zof" id="Bqu-by-IYd"/>
                                             <outlet property="iconSecurityType" destination="atD-gB-46b" id="Hug-HL-uhW"/>
                                             <outlet property="lblTitle" destination="Etj-W1-HWL" id="g3H-06-dr1"/>
                                         </connections>
@@ -239,7 +250,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d39-zS-ZzC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2964" y="167"/>
+            <point key="canvasLocation" x="2964" y="166.8665667166417"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="SxP-xj-es2">

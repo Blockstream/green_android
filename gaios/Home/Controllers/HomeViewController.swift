@@ -106,7 +106,7 @@ class HomeViewController: UIViewController {
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -115,8 +115,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             return AccountsManager.shared.swAccounts.count == 0 ? 1 : AccountsManager.shared.swAccounts.count
         case 1:
-            return AccountsManager.shared.hwAccounts.count
+            return AccountsManager.shared.ephAccounts.count
         case 2:
+            return AccountsManager.shared.hwAccounts.count
+        case 3:
             return AccountsManager.shared.devices.count
         default:
             return 0
@@ -147,8 +149,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                     return cell
                 }
             }
-        case 1:
-            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+        case 1: /// EPHEMERAL
+            let account = AccountsManager.shared.ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
                 let selected = { () -> Bool in
                     if let session = SessionsManager.get(for: account) {
@@ -161,6 +163,19 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case 2:
+            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
+                let selected = { () -> Bool in
+                    if let session = SessionsManager.get(for: account) {
+                        return session.connected && session.logged
+                    }
+                    return false
+                }
+                cell.configure(account, selected())
+                cell.selectionStyle = .none
+                return cell
+            }
+        case 3:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletHDCell") as? WalletHDCell {
                 let hw = AccountsManager.shared.devices[indexPath.row]
                 let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
@@ -176,8 +191,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 1 && AccountsManager.shared.hwAccounts.isEmpty {
-            return 0
+        if section == 1 && AccountsManager.shared.ephAccounts.isEmpty {
+            return 0.1
+        }
+        if section == 2 && AccountsManager.shared.hwAccounts.isEmpty {
+            return 0.1
         }
         return headerH
     }
@@ -187,7 +205,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             return footerH
         default:
-            return 0
+            return 0.1
         }
     }
 
@@ -200,11 +218,16 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
         case 1:
+            if AccountsManager.shared.ephAccounts.isEmpty {
+                return UIView()
+            }
+            return headerView(NSLocalizedString("EPHEMERAL WALLETS", comment: "").uppercased())
+        case 2:
             if AccountsManager.shared.hwAccounts.isEmpty {
                 return UIView()
             }
             return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
-        case 2:
+        case 3:
             return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
         default:
             return nil
@@ -228,11 +251,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 enterWallet(account)
             }
         case 1:
+            let account = AccountsManager.shared.ephAccounts[indexPath.row]
+            enterWallet(account)
+        case 2:
             if AccountsManager.shared.hwAccounts.count > 0 {
                 let account = AccountsManager.shared.hwAccounts[indexPath.row]
                 enterWallet(account)
             }
-        case 2:
+        case 3:
             showHardwareWallet(indexPath.row)
         default:
             break

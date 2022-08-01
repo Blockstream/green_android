@@ -6,6 +6,7 @@ class WalletCell: UITableViewCell {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var iconSecurityType: UIImageView!
     @IBOutlet weak var circleImageView: UIImageView!
+    @IBOutlet weak var iconPassphrase: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -38,6 +39,7 @@ class WalletCell: UITableViewCell {
         if item.isWatchonly {
             self.iconSecurityType.image = UIImage(named: "ic_eye")!
         }
+        iconPassphrase.isHidden = !item.isEphemeral
     }
 
 }
