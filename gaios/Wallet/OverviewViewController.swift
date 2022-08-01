@@ -46,7 +46,6 @@ class OverviewViewController: UIViewController {
             if subAccounts.count == 0 {
                 return []
             }
-            let activeWallet = account?.activeWallet ?? 0
             if showAccounts {
                 return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet && $0.hidden == false}
             } else {
@@ -66,14 +65,8 @@ class OverviewViewController: UIViewController {
             }
         }
     }
-    var account = AccountsManager.shared.current {
-        didSet {
-            if let account = account {
-                AccountsManager.shared.current = account
-            }
-        }
-    }
-
+    private var account = AccountsManager.shared.current
+    private var activeWallet: UInt32 = 0
     private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
     private var isAmp: Bool {
         guard let wallet = presentingWallet else { return false }
@@ -302,6 +295,7 @@ class OverviewViewController: UIViewController {
         isLoading = true
         transactions.removeAll()
         assets = [(key: String, value: UInt64)]()
+        activeWallet = account?.activeWallet ?? 0
         tableView.reloadData {
             self.loadSubaccounts()
             .ensure {
@@ -618,7 +612,8 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
             self.stopAnimating()
         }.done { _ in
             let present = (index == 0 ? self.accounts[1] : self.accounts[0])
-            self.account?.activeWallet = present.pointer
+            self.activeWallet = present.pointer
+            self.account?.activeWallet = self.activeWallet
             self.presentingWallet = present
             self.reloadData()
         }.catch { e in
@@ -818,7 +813,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 reloadSections([OverviewSection.account], animated: true)
                 return
             } else {
-                account?.activeWallet = accounts[indexPath.row].pointer
+                activeWallet = accounts[indexPath.row].pointer
+                account?.activeWallet = activeWallet
                 presentingWallet = accounts[indexPath.row]
                 showAccounts = !showAccounts
                 reloadData()
@@ -860,7 +856,7 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
                     return
                 }
                 let session = SessionsManager.shared[account?.id ?? ""]
-                self.fetchTxs = session?.transactions(subaccount: account?.activeWallet ?? 0, first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
+                self.fetchTxs = session?.transactions(subaccount: activeWallet ?? 0, first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
                     let c = self.transactions.count
                     self.transactions += page.list
                     self.callPage += 1
