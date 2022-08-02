@@ -8,7 +8,10 @@ class OnBoardManager {
     var params: OnBoardParams?
 
     var account: Account {
-        return Account(id: params?.accountId, name: params?.walletName ?? "", network: params?.network ?? "mainnet", isSingleSig: params?.singleSig ?? false)
+        return Account(id: params?.accountId ?? UUID().uuidString,
+                       name: params?.walletName ?? "",
+                       network: params?.network ?? "mainnet",
+                       isSingleSig: params?.singleSig ?? false)
     }
 
     var networkName: String {

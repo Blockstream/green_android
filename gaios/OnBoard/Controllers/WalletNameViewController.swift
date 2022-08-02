@@ -130,6 +130,10 @@ class WalletNameViewController: UIViewController {
                             if !session.gdkNetwork.electrum {
                                 throw err
                             }
+                        case LoginError.walletsJustRestored:
+                            if params?.accountId == nil {
+                                throw err
+                            }
                         default:
                             throw err
                         }
