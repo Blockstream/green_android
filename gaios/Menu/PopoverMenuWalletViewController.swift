@@ -56,7 +56,7 @@ extension PopoverMenuWalletViewController: UITableViewDataSource, UITableViewDel
             let option = menuOptions[indexPath.row]
             switch option {
             case .passphrase:
-                cell.textLabel?.text = NSLocalizedString("Login with BIP39 passphrase", comment: "")
+                cell.textLabel?.text = NSLocalizedString("id_login_with_bip39_passphrase", comment: "")
             case .edit:
                 cell.textLabel?.text = NSLocalizedString("id_rename_wallet", comment: "")
             case .delete:

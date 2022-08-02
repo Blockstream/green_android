@@ -80,8 +80,8 @@ class OverviewAlertCardCell: UITableViewCell {
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
         case .ephemeralWallet:
-            lblTitle.text = NSLocalizedString("Ephemeral wallet", comment: "")
-            lblHint.text = NSLocalizedString("This is an ephemeral wallet based on your Recovery Phrase and a BIP39 Passphrase", comment: "")
+            lblTitle.text = NSLocalizedString("id_passphrase_protected", comment: "")
+            lblHint.text = NSLocalizedString("id_this_wallet_is_based_on_your", comment: "")
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true

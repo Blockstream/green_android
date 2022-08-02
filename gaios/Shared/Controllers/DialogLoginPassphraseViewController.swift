@@ -45,13 +45,12 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
 
     func setContent() {
 
-        lblTitle.text = "Login with BIP39 Passphrase"
+        lblTitle.text = NSLocalizedString("id_login_with_bip39_passphrase", comment: "")
         fieldPassphrase.attributedPlaceholder = NSAttributedString(string: "Passphrase", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        lblHint1.text = "Each different passphrase you use will generate a new wallet"
-        lblHint2.text = "Remomber you can only restore this wallet with both your seed and the passphrase"
-        btnLearn.setTitle("Learn More", for: .normal)
-        lblAskTitle.text = "Always ask"
-        lblAskHint.text = "By turning this off you won't be asked for a passphrase on your next login. This wallet will still be accessible through your menu on your PIN screen"
+        lblHint1.text = NSLocalizedString("id_different_passphrases_generate", comment: "")
+        btnLearn.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
+        lblAskTitle.text = NSLocalizedString("id_always_ask", comment: "")
+        lblAskHint.text = NSLocalizedString("id_you_will_be_asked_to_enter_your", comment: "")
         btnClear.setTitle(NSLocalizedString("id_clear", comment: ""), for: .normal)
         btnConfirm.setTitle(NSLocalizedString("id_ok", comment: ""), for: .normal)
     }

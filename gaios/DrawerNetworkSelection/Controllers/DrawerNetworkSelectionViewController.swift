@@ -157,7 +157,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             if ephAccounts.isEmpty {
                 return UIView()
             }
-            return headerView(NSLocalizedString("EPHEMERAL WALLETS", comment: "").uppercased())
+            return headerView(NSLocalizedString("id_ephemeral_wallets", comment: "").uppercased())
         case 2:
             if AccountsManager.shared.hwAccounts.isEmpty {
                 return UIView()

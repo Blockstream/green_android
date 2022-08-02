@@ -21,10 +21,10 @@ class FooterQrCell: UICollectionReusableView {
         passphraseView.isHidden = !isEphemeral
         lblQrInfo.isHidden = !isEphemeral
         if isEphemeral {
-            lblQrInfo.text = "The QR code does not include the BIP39 Passphrase"
-            lblPassphraseTitle.text = "BIP39 Passphrase"
+            lblQrInfo.text = NSLocalizedString("id_the_qr_code_does_not_include", comment: "")
+            lblPassphraseTitle.text = NSLocalizedString("id_bip39_passphrase", comment: "")
             lblPassphraseValue.text = bip39Passphrase ?? ""
-            btnLearn.setTitle("Learn More", for: .normal)
+            btnLearn.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLearn.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
         }
     }
