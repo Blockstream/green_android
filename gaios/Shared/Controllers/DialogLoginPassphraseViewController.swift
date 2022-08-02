@@ -76,7 +76,7 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         dismissDisabled = true
-        btnConfirm.setStyle(.primaryDisabled)
+        btnConfirm.setStyle(.primary)
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -122,18 +122,16 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
             passphrase.count <= 100 &&
             passphrase.first != " " &&
             passphrase.last != " " {
-            btnConfirm.setStyle(.primary)
         }
     }
 
     @IBAction func askDidChange(_ sender: Any) {
-        btnConfirm.setStyle(.primary)
     }
 
     @IBAction func btnClear(_ sender: Any) {
         fieldPassphrase.text = ""
         switchAsk.isOn = isAlwaysAsk
-        btnConfirm.setStyle(.primaryDisabled)
+        dismiss(.confirm)
     }
 
     @IBAction func btnConfirm(_ sender: Any) {

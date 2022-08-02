@@ -30,7 +30,7 @@ class LoginViewController: UIViewController {
 
     var bip39passphare: String? {
         didSet {
-            passphraseView.isHidden = bip39passphare == nil
+            passphraseView.isHidden = bip39passphare?.isEmpty ?? true
         }
     }
 
@@ -172,7 +172,7 @@ class LoginViewController: UIViewController {
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
         }.then(on: bgq) { (res: String) -> Promise<String> in
-            if let bip39passphrase = bip39passphrase {
+            if let bip39passphrase = bip39passphrase, !bip39passphrase.isEmpty {
                 return session!.getCredentials(password: "")
                     .compactMap { Credentials(mnemonic: $0.mnemonic, password: nil, bip39Passphrase: bip39passphrase) }
                     .then { credentials -> Promise<String> in
@@ -185,7 +185,7 @@ class LoginViewController: UIViewController {
             }
             return Guarantee().map { res }
         }.compactMap { walletHashId in
-            if bip39passphrase != nil {
+            if let bip39passphrase = bip39passphrase, !bip39passphrase.isEmpty {
                 let storedAccount = AccountsManager.shared.ephAccounts
                     .filter { $0.walletHashId == walletHashId && !$0.isHW }
                     .first

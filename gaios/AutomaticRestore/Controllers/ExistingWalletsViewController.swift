@@ -84,7 +84,7 @@ class ExistingWalletsViewController: UIViewController {
         return Promise { seal in
             session.discover(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword)
             .done { _ in
-                seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, isFound: true, isJustRestored: false))
+                seal.fulfill(ExistingWallet(isSingleSig: isSinglesig, failure: nil))
             }.catch { error in
                 switch error {
                 case LoginError.walletNotFound:
