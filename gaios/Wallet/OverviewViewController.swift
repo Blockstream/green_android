@@ -373,7 +373,7 @@ class OverviewViewController: UIViewController {
 
     func loadTransactions(_ pageId: Int = 0) -> Promise<Void> {
         guard let session = SessionsManager.current else { return Promise().asVoid() }
-        return session.transactions(subaccount: presentingWallet?.pointer ?? 0, first: UInt32(pageId))
+        return session.transactions(subaccount: activeWallet, first: UInt32(pageId))
         .map { page in
             self.transactions.removeAll()
             self.transactions += page.list
@@ -403,7 +403,7 @@ class OverviewViewController: UIViewController {
     func onNewTransaction(_ notification: Notification) {
         if let dict = notification.userInfo as NSDictionary?,
            let subaccounts = dict["subaccounts"] as? [UInt32],
-           subaccounts.contains(account?.activeWallet ?? 0) {
+           subaccounts.contains(activeWallet ?? 0) {
             reloadData()
         }
     }
@@ -813,9 +813,9 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 reloadSections([OverviewSection.account], animated: true)
                 return
             } else {
-                activeWallet = accounts[indexPath.row].pointer
-                account?.activeWallet = activeWallet
                 presentingWallet = accounts[indexPath.row]
+                activeWallet = presentingWallet?.pointer ?? 0
+                account?.activeWallet = activeWallet
                 showAccounts = !showAccounts
                 reloadData()
             }
@@ -856,7 +856,7 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
                     return
                 }
                 let session = SessionsManager.shared[account?.id ?? ""]
-                self.fetchTxs = session?.transactions(subaccount: activeWallet ?? 0, first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
+                self.fetchTxs = session?.transactions(subaccount: activeWallet, first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
                     let c = self.transactions.count
                     self.transactions += page.list
                     self.callPage += 1
