@@ -70,6 +70,7 @@
 "id_allow_data_collection" = "Autoriser la collecte de données";
 "id_allows_you_to_quickly_check" = "Vous permet de consulter rapidement votre solde, de recevoir des fonds ou de balayer un paperwallet. Vous ne pouvez pas envoyer de fonds en mode watch-only.";
 "id_always" = "Toujours";
+"id_always_ask" = "Always ask";
 "id_amount" = "Montant";
 "id_amount_in_s" = "Montant en %@";
 "id_amp_account" = "Compte AMP";
@@ -115,6 +116,8 @@
 "id_biometric_login_is_disabled" = "La connexion biométrique est désactivée";
 "id_biometric_login_is_enabled" = "La connexion biométrique est activée";
 "id_biometrics_authentication" = "Authentification biométrique";
+"id_bip39_passphrase" = "BIP39 Passphrase";
+"id_bip39_passphrase_login" = "BIP39 Passphrase login";
 "id_bip49_accounts_allow_you_to" = "Les comptes BIP49 vous permettent de séparer les fonds, et de recevoir sur des adresses segwit enveloppées, assurant ainsi la plus grande compatibilité ascendante lors de la réception de fonds de n'importe qui sur le réseau.";
 "id_bip84_accounts_allow_you_to" = "Les comptes BIP84 vous permettent de séparer vos fonds, et de recevoir sur des adresses segwit natives bech32. Ce type de compte garantit des transactions moins chères lors de l'envoi de fonds, mais tous les services ne prennent pas encore en charge les adresses bech32.";
 "id_bitcoin_and_liquid" = "Bitcoin and Liquid";
@@ -171,6 +174,7 @@
 "id_choose_watchonly" = "Choisir Surveillance seulement";
 "id_choose_your_network" = "Choisissez votre réseau";
 "id_clear" = "Effacé";
+"id_clear_cache" = "Clear cache";
 "id_click_to_copy" = "Cliquez pour copier";
 "id_click_to_receive_an_email_with" = "Cliquez pour recevoir un courriel contenant vos données de récupération cryptées.";
 "id_code" = "Code";
@@ -229,6 +233,7 @@
 "id_copy_details" = "Copiez les détails";
 "id_copy_device_id" = "Copy Device ID";
 "id_copy_raw_transaction" = "Copiez de la transaction brute";
+"id_copy_support_id" = "Copy support ID";
 "id_copy_to_clipboard" = "Copiez dans le presse-papier";
 "id_copy_transaction_id" = "Copiez l'ID de la transaction";
 "id_copy_unblinded_link" = "Copiez le lien non masqué";
@@ -276,6 +281,7 @@
 "id_details" = "Détails";
 "id_device" = "Appareil";
 "id_devices" = "Appareils";
+"id_different_passphrases_generate" = "Different passphrases generate new wallets!\n\nRemember you can only restore this wallet with both your recovery phrase and the passphrase.";
 "id_disable" = "Désactivez";
 "id_disable_pin_access" = "Désactivez l'accès par code PIN";
 "id_disable_pin_access_for_this" = "Désactivez l'accès au code PIN pour ce portefeuille sur tous les appareils.";
@@ -348,6 +354,7 @@
 "id_enter_your_xpub_to_add_a" = "Saisissez votre xPub pour ajouter un portefeuille de surveillance seulement où vous pouvez recevoir des fonds et vérifier votre solde sans importer vos clés privées.";
 "id_enter_yournrecovery_phrase" = "Saisissez votre \nphrase de récupération";
 "id_entity" = "Entité";
+"id_ephemeral_wallets" = "Ephemeral wallets";
 "id_error" = "Erreur";
 "id_error_logging_in_with_hardware" = "Erreur d'identification avec le hardware wallet";
 "id_error_nfc_tag_not_writable" = "Erreur : étiquette NFC non inscriptible";
@@ -377,6 +384,7 @@
 "id_fee_rate_must_be_at_least_s" = "Le taux des frais doit être d'au moins %@ satoshi/vbyte.";
 "id_fee_rate_s" = "Taux de frais : %@";
 "id_fee_s__s" = "Frais : %@ / %@";
+"id_feedback" = "Feedback";
 "id_fees_are_too_low" = "Les frais sont trop faibles";
 "id_fetching_new_firmware" = "Récupération d'un nouveau firmware";
 "id_filters" = "Filtres";
@@ -398,6 +406,7 @@
 "id_get_id" = "Obtenir l'ID";
 "id_get_jade" = "Obtenir Jade";
 "id_give_bluetooth_permissions" = "Donner des autorisations à Bluetooth";
+"id_give_us_your_feedback" = "Give us your feedback";
 "id_go_to_account" = "Accéder au compte";
 "id_go_to_receive_to_get_your" = "Allez sur Recevoir pour obtenir votre ID de compte.";
 "id_go_to_wallet" = "Aller au portefeuille";
@@ -536,6 +545,7 @@
 "id_login_failed" = "Échec de la connexion";
 "id_login_options" = "Options de connexion";
 "id_login_with_biometrics" = "Connexion avec la biométrie";
+"id_login_with_bip39_passphrase" = "Login with BIP39 Passphrase";
 "id_logout" = "Déconnexion";
 "id_logout_and_switch" = "Déconnexion et commutateur";
 "id_look_at_the_device_for_the" = "Regardez l'appareil pour obtenir les positions des numéros";
@@ -650,6 +660,7 @@
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_passphrase" = "Passphrase";
+"id_passphrase_protected" = "Passphrase protected";
 "id_password" = "Mot de passe";
 "id_password_protected" = "Protégé par mot de passe";
 "id_paste" = "Collez";
@@ -699,6 +710,9 @@
 "id_qr_code" = "QR Code";
 "id_qr_scanner" = "Scanner de QR code";
 "id_radio_firmware" = "Radio firmware";
+"id_rate" = "Rate";
+"id_rate_us" = "Rate us";
+"id_rate_your_experience" = "Rate your experience";
 "id_read_more" = "En savoir plus";
 "id_read_more_at_our_s" = "Read more at our %@";
 "id_ready" = "Prêt";
@@ -894,6 +908,7 @@
 "id_testnet_electrum_server" = "Serveur Testnet Electrum";
 "id_testnet_wallets" = "Portefeuille Testnet";
 "id_thank_you_for_downloading_green" = "Merci d'avoir téléchargé Green ! Donnez-nous votre avis à l'occasion";
+"id_thank_you_for_your_feedback" = "Thank you for your feedback";
 "id_the_1_year_2fa_reset_process" = "Le processus de réinitialisation de 2FA pendant 1 an était en cours, mais quelqu'un l'a bloqué en contestant la réinitialisation de 2FA.";
 "id_the_address_is_valid" = "L'adresse est valide.";
 "id_the_addresses_dont_match" = "Les adresses ne correspondent pas.";
@@ -908,6 +923,7 @@
 "id_the_new_email_will_be_used_for" = "Le nouvel email sera utilisé pour l'authentification à deux facteurs lorsque la réinitialisation sera terminée. La réinitialisation dure 12 mois, plus les délais restants.";
 "id_the_new_firmware_requires_you" = "The new firmware requires you to unpair your Jade from the Bluetooth settings.";
 "id_the_password_cant_be_empty" = "Le mot de passe ne peut pas être vide";
+"id_the_qr_code_does_not_include" = "The QR code does not include the BIP39 Passphrase";
 "id_the_recovery_key_below_will_not" = "La clé de récupération ci-dessous ne sera plus affichée. Veuillez en faire une copie de sauvegarde dès maintenant pour garantir l'accès permanent à vos fonds.";
 "id_the_recovery_phrase_can_be_used" = "La phrase de récupération peut être utilisée pour réclamer vos fonds à tout moment. Gardez-le en sécurité, gardez-le privé.";
 "id_the_recovery_phrase_doesnt" = "La phrase de récupération ne correspond pas au portefeuille existant. Veuillez réessayer avec une phrase de récupération différente.";
@@ -921,6 +937,7 @@
 "id_these_settings_apply_for_every" = "Ces paramètres s'appliquent à chaque portefeuille que vous utilisez sur Blockstream Green.";
 "id_this_feature_is_coming_soon" = "Cette fonctionnalité sera bientôt disponible, restez à l'écoute !";
 "id_this_transaction_spent" = "Cette transaction a généré des fonds non confidentiels.\n ";
+"id_this_wallet_is_based_on_your" = "This wallet is based on your recovery phrase and a BIP39 Passphrase";
 "id_this_wallet_operates_on_a_test" = "Ce portefeuile fonctionne sur un réseau de test. Tout ce que vous recevez ou envoyez ici n'a aucune valeur.";
 "id_this_will_disable_pin_login_for" = "Cela désactivera la connexion par code PIN pour ce portefeuille sur tous vos appareils. Vous aurez besoin de votre phrase de récupération pour accéder à votre portefeuille.";
 "id_this_will_log_you_out_and" = "Cela vous déconnectera et supprimera ce portefeuille de l'application et de la base de données des serveurs Blockstream.";
@@ -1070,11 +1087,13 @@
 "id_you_have_no_coins_to_send" = "Vous n'avez pas de pièces à envoyer. Générez une adresse pour recevoir des bitcoins.";
 "id_you_have_received_s" = "Vous avez reçu %@";
 "id_you_have_successfully_changed" = "Vous avez réussi à modifier votre code PIN";
+"id_you_have_successfully_sent_a" = "You have successfully sent a transaction. Please give us your feedback to improve Green.";
 "id_you_have_to_authenticate_using" = "Vous devez vous authentifier à l'aide de la biométrie.";
 "id_you_have_tor_enabled_are_you" = "Vous avez activé Tor, êtes-vous sûr de vouloir ouvrir cette page web ?";
 "id_you_must_first_log_out_before" = "Vous devez vous déconnecter avant de vous reconnecter.";
 "id_you_must_save_this_mnemonic_now" = "Vous devez ABSOLUMENT sauvegarder ce mnémonique MAINTENANT";
 "id_you_only_have_one_twofactor" = "Vous n'avez activé qu'une seule méthode d'authentification à double facteurs";
+"id_you_will_be_asked_to_enter_your" = "You will be asked to enter your passphrase at every login.";
 "id_you_will_need_to_reenter_your" = "Vous devrez ressaisir votre code mnémonique pour vous reconnecter si vous ne configurez pas de code PIN. Appuyez sur \"OK\" pour continuer.";
 "id_you_will_see_your_coins_here" = "Vous verrez vos pièces ici";
 "id_youll_need_to_back_up_your" = "Vous devrez sauvegarder votre phrase de récupération avant de pouvoir envoyer ou recevoir des fonds, mais vous pouvez toujours consulter le portefeuille pour le moment.";

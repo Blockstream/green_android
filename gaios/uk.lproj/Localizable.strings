@@ -70,6 +70,7 @@
 "id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "Дозволяє швидко перевірити ваш баланс, отримати кошти або зробити свіп паперового гаманця. Ви не можете надсилати кошти в режимі лише-для-перегляду.";
 "id_always" = "Завжди";
+"id_always_ask" = "Always ask";
 "id_amount" = "Сума";
 "id_amount_in_s" = "Сума в %@";
 "id_amp_account" = "Акаунт AMP";
@@ -115,6 +116,8 @@
 "id_biometric_login_is_disabled" = "Біометричний вхід відключений";
 "id_biometric_login_is_enabled" = "Біометричний вхід включений";
 "id_biometrics_authentication" = "Біометрична аутентифікація";
+"id_bip39_passphrase" = "BIP39 Passphrase";
+"id_bip39_passphrase_login" = "BIP39 Passphrase login";
 "id_bip49_accounts_allow_you_to" = "Акаунти BIP49 дозволяють розділяти кошти і отримувати їх на SegWit адреси, забезпечуючи тим самим найвищу зворотну сумісність при отриманні коштів від будь-кого в мережі.";
 "id_bip84_accounts_allow_you_to" = "Акаунти  BIP84 дозволяють розділяти ваші кошти і отримувати їх на власні SegWit адреси в форматі bech32. Цей тип рахунку забезпечує більш дешеві транзакції при відправці коштів, але поки не всі сервіси підтримують адреси в форматі bech32.";
 "id_bitcoin_and_liquid" = "Bitcoin та Liquid";
@@ -171,6 +174,7 @@
 "id_choose_watchonly" = "Оберіть watch-only";
 "id_choose_your_network" = "Виберіть мережу";
 "id_clear" = "Очистити";
+"id_clear_cache" = "Clear cache";
 "id_click_to_copy" = "Натисніть, щоб скопіювати";
 "id_click_to_receive_an_email_with" = "Натисніть, щоб отримати електронний лист із вашими зашифрованими даними для відновлення.";
 "id_code" = "Код";
@@ -229,6 +233,7 @@
 "id_copy_details" = "Копіювати деталі";
 "id_copy_device_id" = "Copy Device ID";
 "id_copy_raw_transaction" = "Скопіювати raw транзакцію";
+"id_copy_support_id" = "Copy support ID";
 "id_copy_to_clipboard" = "Скопіювати в буфер обміну";
 "id_copy_transaction_id" = "Скопіювати ID транзакції";
 "id_copy_unblinded_link" = "Скопіювати неосліплене посилання";
@@ -276,6 +281,7 @@
 "id_details" = "Деталі";
 "id_device" = "Пристрій";
 "id_devices" = "Пристрої";
+"id_different_passphrases_generate" = "Different passphrases generate new wallets!\n\nRemember you can only restore this wallet with both your recovery phrase and the passphrase.";
 "id_disable" = "Вимкнути";
 "id_disable_pin_access" = "Відключити доступ з PIN-кодом";
 "id_disable_pin_access_for_this" = "Відключити доступ з PIN-кодом для цього гаманця на всіх пристроях";
@@ -348,6 +354,7 @@
 "id_enter_your_xpub_to_add_a" = "Введіть свій xPub, щоб додати гаманець watch-only, на за допомогою якого ви можете отримувати кошти і перевіряти свій баланс, не імпортуючи свої особисті ключі.";
 "id_enter_yournrecovery_phrase" = "Введіть вашу\nФразу Відновлення";
 "id_entity" = "Організація";
+"id_ephemeral_wallets" = "Ephemeral wallets";
 "id_error" = "Помилка";
 "id_error_logging_in_with_hardware" = "Помилка при вході за допомогою апаратного гаманця";
 "id_error_nfc_tag_not_writable" = "Помилка: неможливо створити NFC-тег";
@@ -377,6 +384,7 @@
 "id_fee_rate_must_be_at_least_s" = "Комісія не може бути меншою за %@ сатоші/vbyte.";
 "id_fee_rate_s" = "Комісія: %@";
 "id_fee_s__s" = "Комісія всього: %@/%@";
+"id_feedback" = "Feedback";
 "id_fees_are_too_low" = "Комісії занадто низькі";
 "id_fetching_new_firmware" = "Отримання нової прошивки";
 "id_filters" = "Фільтри";
@@ -398,6 +406,7 @@
 "id_get_id" = "Отримати ID";
 "id_get_jade" = "Отримати Jade";
 "id_give_bluetooth_permissions" = "Дозволити використовувати Bluetooth";
+"id_give_us_your_feedback" = "Give us your feedback";
 "id_go_to_account" = "Перейти до облікового запису";
 "id_go_to_receive_to_get_your" = "Перейдіть до розділу «Отримати», щоб отримати ідентифікатор свого облікового запису.";
 "id_go_to_wallet" = "Перейти до гаманця";
@@ -536,6 +545,7 @@
 "id_login_failed" = "Вхід неможливий";
 "id_login_options" = "Варіанти входу";
 "id_login_with_biometrics" = "Увійти за допомогою біометрії";
+"id_login_with_bip39_passphrase" = "Login with BIP39 Passphrase";
 "id_logout" = "Вийти";
 "id_logout_and_switch" = "Вийти і Переключитися";
 "id_look_at_the_device_for_the" = "Подивіться на розташування чисел на пристрої";
@@ -650,6 +660,7 @@
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_passphrase" = "Passphrase";
+"id_passphrase_protected" = "Passphrase protected";
 "id_password" = "Пароль";
 "id_password_protected" = "Захищено паролем";
 "id_paste" = "Вставити";
@@ -699,6 +710,9 @@
 "id_qr_code" = "QR-код";
 "id_qr_scanner" = "QR-сканер";
 "id_radio_firmware" = "Radio firmware";
+"id_rate" = "Rate";
+"id_rate_us" = "Rate us";
+"id_rate_your_experience" = "Rate your experience";
 "id_read_more" = "Детальніше";
 "id_read_more_at_our_s" = "Дізнайтеся більше на нашому %@";
 "id_ready" = "Готовий";
@@ -894,6 +908,7 @@
 "id_testnet_electrum_server" = "Сервер Testnet Electrum";
 "id_testnet_wallets" = "Testnet-гаманці";
 "id_thank_you_for_downloading_green" = "Дякуємо вам за завантаження гаманця Green! Будь ласка, залиште свій відгук, якщо у вас буде така можливість";
+"id_thank_you_for_your_feedback" = "Thank you for your feedback";
 "id_the_1_year_2fa_reset_process" = "Процес скидання 2FA тривав протягом 1 року, але хтось заблокував його, оскарживши скидання 2FA.";
 "id_the_address_is_valid" = "Адреса дійсна.";
 "id_the_addresses_dont_match" = "Адреси не збігаються.";
@@ -908,6 +923,7 @@
 "id_the_new_email_will_be_used_for" = "Нова адреса електронної пошти буде використовуватися для двофакторної аутентифікації після завершення скидання. Скидання займає 12 місяців плюс залишившийся час блокування.";
 "id_the_new_firmware_requires_you" = "The new firmware requires you to unpair your Jade from the Bluetooth settings.";
 "id_the_password_cant_be_empty" = "Поле пароля не може залишатись порожнім";
+"id_the_qr_code_does_not_include" = "The QR code does not include the BIP39 Passphrase";
 "id_the_recovery_key_below_will_not" = "Ключ відновлення більше не буде показано. Виконайте резервне копіювання для того, щоб завжди мати доступ до власних коштів. ";
 "id_the_recovery_phrase_can_be_used" = "Фразу відновлення можна використовувати для запиту ваших коштів в будь-який момент. Тримайте її в безпеці і в секреті.";
 "id_the_recovery_phrase_doesnt" = "Фраза відновлення не відповідає раніше існуючому гаманцю. Повторіть спробу, використовуючи іншу фразу відновлення.";
@@ -921,6 +937,7 @@
 "id_these_settings_apply_for_every" = "Ці настройки застосовуються для кожного гаманця, який ви використовуєте в Blockstream Green.";
 "id_this_feature_is_coming_soon" = "Ця функція скоро з'явиться, слідкуйте за оновленнями!";
 "id_this_transaction_spent" = "На цю транзакцію витрачені неконфіденційні кошти.";
+"id_this_wallet_is_based_on_your" = "This wallet is based on your recovery phrase and a BIP39 Passphrase";
 "id_this_wallet_operates_on_a_test" = "Цей гаманець працює у тестовій мережі. Все, що ви отримуєте або надсилаєте тут, не має цінності";
 "id_this_will_disable_pin_login_for" = "Ця дія відключить вхід за допомогою PIN-коду для цього гаманця на всіх ваших пристроях. Для доступу до гаманця вам знадобиться фраза відновлення.";
 "id_this_will_log_you_out_and" = "Ця дія призведе до виходу з системи і видалення цього гаманця з програми і бази даних серверів Blockstream.";
@@ -1070,11 +1087,13 @@
 "id_you_have_no_coins_to_send" = "У вас немає монет для відправки. Створіть адресу для отримання біткоінів.";
 "id_you_have_received_s" = "Ви отримали %@";
 "id_you_have_successfully_changed" = "Ви успішно змінили свій PIN-код";
+"id_you_have_successfully_sent_a" = "You have successfully sent a transaction. Please give us your feedback to improve Green.";
 "id_you_have_to_authenticate_using" = "Вам необхідно пройти аутентифікацію за допомогою біометричних даних";
 "id_you_have_tor_enabled_are_you" = "У вас включений Tor, ви впевнені, що хочете відкрити цю веб-сторінку?";
 "id_you_must_first_log_out_before" = "Перед тим, як увійти, спочатку вийдіть.";
 "id_you_must_save_this_mnemonic_now" = "Вам ПОТРІБНО зберегти цю мнемонічну фразу ЗАРАЗ";
 "id_you_only_have_one_twofactor" = "У вас підключено лише один метод двофакторної аутентифікації";
+"id_you_will_be_asked_to_enter_your" = "You will be asked to enter your passphrase at every login.";
 "id_you_will_need_to_reenter_your" = "Якщо ви не встановите PIN-код, кожного разу, для входу, вам потрібно буде вводити вашу мнемонічну фразу. Натисність \"OK\" для продовження.";
 "id_you_will_see_your_coins_here" = "Ви побачите свої монети тут";
 "id_youll_need_to_back_up_your" = "Вам потрібно створити резервну копію фрази відновлення, перш ніж ви зможете надсилати та отримувати кошти, але поки ви все одно можете перевіряти свій гаманець.";

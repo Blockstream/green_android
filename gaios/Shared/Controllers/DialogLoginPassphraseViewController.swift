@@ -16,7 +16,6 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var fieldPassphrase: UITextField!
     @IBOutlet weak var lblHint1: UILabel!
-    @IBOutlet weak var lblHint2: UILabel!
     @IBOutlet weak var btnLearn: UIButton!
     @IBOutlet weak var lblAskTitle: UILabel!
     @IBOutlet weak var lblAskHint: UILabel!
@@ -46,7 +45,8 @@ class DialogLoginPassphraseViewController: KeyboardViewController {
     func setContent() {
 
         lblTitle.text = NSLocalizedString("id_login_with_bip39_passphrase", comment: "")
-        fieldPassphrase.attributedPlaceholder = NSAttributedString(string: "Passphrase", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        let hint = NSLocalizedString("id_bip39_passphrase", comment: "")
+        fieldPassphrase.attributedPlaceholder = NSAttributedString(string: hint, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         lblHint1.text = NSLocalizedString("id_different_passphrases_generate", comment: "")
         btnLearn.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
         lblAskTitle.text = NSLocalizedString("id_always_ask", comment: "")

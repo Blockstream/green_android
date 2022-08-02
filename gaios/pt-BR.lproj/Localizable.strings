@@ -70,6 +70,7 @@
 "id_allow_data_collection" = "Permitir coleta de dados";
 "id_allows_you_to_quickly_check" = "Permite que você verifique seu saldo, receba fundos ou resgate bitcoins de uma carteira de papel. Não é possível enviar fundos no modo somente leitura. ";
 "id_always" = "Sempre";
+"id_always_ask" = "Sempre perguntar";
 "id_amount" = "Quantidade";
 "id_amount_in_s" = "Quantidade em %@";
 "id_amp_account" = "Conta AMP";
@@ -78,7 +79,7 @@
 "id_amp_wallet" = "Carteira AMP";
 "id_another_2fa_method_is_already" = "Já existe outro método 2FA ativo. Confirme via 2FA que você autoriza esta alteração.";
 "id_any_wallet_found_will_be" = "As carteiras encontradas serão mostradas aqui.";
-"id_app_settings" = "Configurações do aplicativo";
+"id_app_settings" = "Configurações do App";
 "id_archive" = "Arquivar";
 "id_archive_account" = "Arquivar conta";
 "id_archived" = "Arquivada";
@@ -115,6 +116,8 @@
 "id_biometric_login_is_disabled" = "Acesso por biometria desativado";
 "id_biometric_login_is_enabled" = "Acesso por biometria ativado";
 "id_biometrics_authentication" = "Autenticação por biométria";
+"id_bip39_passphrase" = "Senha padrão BIP39";
+"id_bip39_passphrase_login" = "Acesso com senha BIP39";
 "id_bip49_accounts_allow_you_to" = "As contas BIP49 oferecem a possibilidade de separação dos fundos e o recebimento em endereços do tipo Segwit, garantindo a compatibilidade com versões de endereços anteriores, permitindo receber fundos de qualquer pessoa na rede.";
 "id_bip84_accounts_allow_you_to" = "As contas BIP84 oferecem a possibilidade de separação dos fundos e o recebimento em endereços Segwit nativos bech32. Esse tipo de conta garante transações mais baratas ao enviar fundos, mas nem todos os serviços suportam endereços bech32 ainda.";
 "id_bitcoin_and_liquid" = "Bitcoin e Liquid";
@@ -171,6 +174,7 @@
 "id_choose_watchonly" = "Carteira somente leitura";
 "id_choose_your_network" = "Escolha a rede";
 "id_clear" = "Limpar";
+"id_clear_cache" = "Limpar cache";
 "id_click_to_copy" = "Clique para copiar";
 "id_click_to_receive_an_email_with" = "Clique para receber um email com seu pacote de recuperação em formato criptografado.";
 "id_code" = "Código";
@@ -229,6 +233,7 @@
 "id_copy_details" = "Copiar detalhes";
 "id_copy_device_id" = "Copiar ID do dispositivo";
 "id_copy_raw_transaction" = "Copiar transação raw";
+"id_copy_support_id" = "Copiar ID de suporte";
 "id_copy_to_clipboard" = "Copiar para a área de transferência";
 "id_copy_transaction_id" = "Copiar o ID da transação";
 "id_copy_unblinded_link" = "Copiar o link dados visíveis";
@@ -266,7 +271,7 @@
 "id_default_custom_fee_rate" = "Taxa de rede personalizada";
 "id_default_transaction_priority" = "Padrão de prioridade das transações";
 "id_delete" = "Excluir";
-"id_delete_credentials" = "Delete credentials";
+"id_delete_credentials" = "Excluir credenciais";
 "id_delete_permanently_your_wallet" = "Exclua permanentemente sua carteira do banco de dados da Blockstream Green. Nunca mais será possível logar nesta carteira. ";
 "id_delete_s_twofactor" = "Remover autenticação de dois fatores %@";
 "id_delete_wallet" = "Excluir carteira";
@@ -276,6 +281,7 @@
 "id_details" = "Detalhes";
 "id_device" = "Dispositivo";
 "id_devices" = "Dispositivos";
+"id_different_passphrases_generate" = "Senhas diferentes geram novas carteiras!\n\nAtenção: Caso necessite restaurar essa carteira, é necessário tanto a frase de recuperação como a senha.";
 "id_disable" = "Desativar";
 "id_disable_pin_access" = "Desativar acesso por PIN";
 "id_disable_pin_access_for_this" = "Desativar o acesso por PIN para esta carteira em todos os dispositivos";
@@ -348,6 +354,7 @@
 "id_enter_your_xpub_to_add_a" = "Insira a chave xPub para adicionar uma carteira somente leitura, onde você pode receber fundos e verificar seu saldo sem a necessidade de expor suas chaves privadas.";
 "id_enter_yournrecovery_phrase" = "Insira sua\nFrase de recuperação";
 "id_entity" = "Entidade";
+"id_ephemeral_wallets" = "Carteiras efêmeras";
 "id_error" = "Erro";
 "id_error_logging_in_with_hardware" = "Erro ao fazer login com sua carteira física";
 "id_error_nfc_tag_not_writable" = "Erro: Tag NFC não gravável";
@@ -377,6 +384,7 @@
 "id_fee_rate_must_be_at_least_s" = "A taxa de rede deve ser no mínimo %@ satoshi/vbyte.";
 "id_fee_rate_s" = "Taxa de rede: %@";
 "id_fee_s__s" = "Taxa: %@ / %@";
+"id_feedback" = "Feedback";
 "id_fees_are_too_low" = "Taxa muito baixa";
 "id_fetching_new_firmware" = "Buscando novo firmware";
 "id_filters" = "Filtros";
@@ -398,6 +406,7 @@
 "id_get_id" = "Mostrar ID";
 "id_get_jade" = "Comprar Jade";
 "id_give_bluetooth_permissions" = "Permitir conexão bluetooth";
+"id_give_us_your_feedback" = "Mande seu feedback";
 "id_go_to_account" = "Ir para a conta";
 "id_go_to_receive_to_get_your" = "Ir em receber para acessar seu ID da conta.";
 "id_go_to_wallet" = "Ir para a carteira";
@@ -535,7 +544,8 @@
 "id_login" = "Acessar";
 "id_login_failed" = "Falha ao logar";
 "id_login_options" = "Opções de login";
-"id_login_with_biometrics" = "Habilitar biometria";
+"id_login_with_biometrics" = "Acesso por biometria";
+"id_login_with_bip39_passphrase" = "Acessar com senha BIP39";
 "id_logout" = "Sair";
 "id_logout_and_switch" = "Sair e alterar rede";
 "id_look_at_the_device_for_the" = "Verifique o dispositivo para ver a posição dos números";
@@ -650,6 +660,7 @@
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Visitas em páginas, cliques, configuração geral do aplicativo";
 "id_passphrase" = "Senha";
+"id_passphrase_protected" = "Protegida por senha";
 "id_password" = "Senha";
 "id_password_protected" = "Senha protegida";
 "id_paste" = "Colar";
@@ -699,6 +710,9 @@
 "id_qr_code" = "Código QR";
 "id_qr_scanner" = "Leitor de código QR";
 "id_radio_firmware" = "Firmware de rádio";
+"id_rate" = "Avaliar";
+"id_rate_us" = "Nos avalie";
+"id_rate_your_experience" = "Avalie sua experiência";
 "id_read_more" = "Ler mais";
 "id_read_more_at_our_s" = "Saiba mais em nossa%@";
 "id_ready" = "Pronto";
@@ -735,7 +749,7 @@
 "id_remove_wallet" = "Remover carteira";
 "id_rename" = "Editar";
 "id_rename_account" = "Editar";
-"id_rename_wallet" = "Rename wallet";
+"id_rename_wallet" = "Editar";
 "id_replaceable" = "substituível";
 "id_request_amount" = "Solicitar quantia específica";
 "id_request_failed" = "Falha na solicitação";
@@ -894,6 +908,7 @@
 "id_testnet_electrum_server" = "Servidor Electrum de testes";
 "id_testnet_wallets" = "Carteiras da rede de teste";
 "id_thank_you_for_downloading_green" = "Obrigado por baixar a Green! Avalie nosso app quando puder.";
+"id_thank_you_for_your_feedback" = "Obrigado pela sua opinião";
 "id_the_1_year_2fa_reset_process" = "O processo de redefinição 2FA de 1 ano estava em andamento, mas alguém bloqueou contestando a redefinição.";
 "id_the_address_is_valid" = "O endereço é válido.";
 "id_the_addresses_dont_match" = "Os endereços não conferem.";
@@ -908,6 +923,7 @@
 "id_the_new_email_will_be_used_for" = "O novo e-mail será usado para a autenticação de dois fatores quando a redefinição for concluída. A redefinição leva 12 meses mais o período restante do timelock. ";
 "id_the_new_firmware_requires_you" = "O novo firmware exige que você desemparelhe sua Jade nas configurações de Bluetooth.";
 "id_the_password_cant_be_empty" = "A senha não pode ficar em branco";
+"id_the_qr_code_does_not_include" = "O código QR não inclui a senha do padrão BIP39";
 "id_the_recovery_key_below_will_not" = "A chave de recuperação abaixo não será mostrada novamente. Por favor, faça imediatamente um backup seguro dela para você sempre ter acessar seus fundos.";
 "id_the_recovery_phrase_can_be_used" = "A frase de recuperação, também conhecida como seed ou mnemônico, é o backup da sua carteira e permite recuperar seus fundos. Mantenha-a privada e não compartilhe com ninguém.";
 "id_the_recovery_phrase_doesnt" = "A frase de recuperação não corresponde à carteira existente anteriormente. Tente novamente com uma frase de recuperação diferente.";
@@ -921,6 +937,7 @@
 "id_these_settings_apply_for_every" = "Essas configurações se aplicam em todas suas carteiras na Blockstream Green.";
 "id_this_feature_is_coming_soon" = "Esse recurso estará disponível em breve!";
 "id_this_transaction_spent" = "Esta transação gastou fundos não confidenciais.";
+"id_this_wallet_is_based_on_your" = "Esta carteira é baseada na sua chave de recuperação e na senha BIP39 escolhida";
 "id_this_wallet_operates_on_a_test" = "Esta carteira opera em uma rede de testes. Qualquer coisa que você receber ou enviar aqui não tem nenhum valor";
 "id_this_will_disable_pin_login_for" = "O acesso por PIN será desativado para esta carteira em todos os seus dispositivos. Você precisará de sua frase de recuperação para acessar sua carteira.";
 "id_this_will_log_you_out_and" = "Você será desconectado e sua carteira será excluída do aplicativo e do banco de dados dos servidores da Blockstream.";
@@ -945,7 +962,7 @@
 "id_touchface_id_not_available" = "Touch/Face ID não disponível";
 "id_transaction_already_confirmed" = "Transação já confirmada";
 "id_transaction_copied_to_clipboard" = "Transação copiada para a área de transferência";
-"id_transaction_details" = "Detalhes da transação";
+"id_transaction_details" = "Detalhes";
 "id_transaction_id" = "ID da transação";
 "id_transaction_sent" = "Transação enviada";
 "id_transaction_status" = "Status da transação";
@@ -1031,7 +1048,7 @@
 "id_warning_watchonly_credentials" = "Aviso: As credenciais de acesso ao modo somente leitura serão salvas neste aparelho";
 "id_warning_you_need_a_positive" = "Aviso! Você precisa ter saldo positivo de L-BTC para enviar transações.";
 "id_watchonly" = "Somente leitura";
-"id_watchonly_credentials" = "Watch-only credentials";
+"id_watchonly_credentials" = "Credenciais carteira somente leitura";
 "id_watchonly_details" = "Detalhes modo somente leitura";
 "id_watchonly_disabled" = "Modo somente leitura desativado";
 "id_watchonly_login" = "Habilitar modo somente leitura";
@@ -1070,11 +1087,13 @@
 "id_you_have_no_coins_to_send" = "Esta conta está sem saldo. Clique em receber para gerar um endereço bitcoin.";
 "id_you_have_received_s" = "Você recebeu %@";
 "id_you_have_successfully_changed" = "PIN alterado com sucesso";
+"id_you_have_successfully_sent_a" = "Você realizou uma transação com sucesso. Por favor, deixe sua opinião para que possamos melhorar a Green.";
 "id_you_have_to_authenticate_using" = "Você tem que autenticar usando biometria";
 "id_you_have_tor_enabled_are_you" = "Você ativou o Tor, tem certeza que deseja abrir esta página da web?";
 "id_you_must_first_log_out_before" = "Você primeiro precisa sair antes de acessar.";
 "id_you_must_save_this_mnemonic_now" = "Você DEVE salvar este mnemônico AGORA";
 "id_you_only_have_one_twofactor" = "Você tem apenas um método de autenticação de dois fatores ativado";
+"id_you_will_be_asked_to_enter_your" = "Sempre me lembrar de inserir a senha ao acessar a carteira.";
 "id_you_will_need_to_reenter_your" = "Caso você não configure um PIN, toda vez que for acessar a carteira será necessário reinserir seu mnemônico. Pressione \"OK\" para continuar.";
 "id_you_will_see_your_coins_here" = "Suas moedas aparecerão aqui";
 "id_youll_need_to_back_up_your" = "Para enviar ou receber fundos é necessário antes realizar o backup da sua carteira.";
@@ -1084,7 +1103,7 @@
 "id_your_2fa_expires_so_that_if_you" = "A proteção 2FA expira para permitir você recuperar seus fundos mesmo que o serviço da Blockstream Green fique indisponível ou você perca o acesso ao seus métodos de autenticação. Você sempre pode recuperar seus bitcoins usando a ferramenta de recuperação";
 "id_your_device_was_disconnected" = "Seu dispositivo foi desconectado";
 "id_your_favourite_exchange_rate_is" = "Seu câmbio de referência favorito não está disponível no momento. Você pode alterá-lo nas configurações.";
-"id_your_funds_are_secured_by" = "Duas ou mais chaves são necessárias para movimentar os fundos. Uma chave fica armazenada no seu dispositivo e a outra em nossos servidores protegida por 2FA, pronta para aprovar suas transações. Contas com uma terceira chave de sua posse também podem ser criadas. Selecione essa opção se deseja maior segurança.  ";
+"id_your_funds_are_secured_by" = "Duas ou mais chaves são necessárias para movimentar os fundos. Uma chave fica armazenada no seu dispositivo e a outra em nossos servidores protegida por 2FA, pronta para aprovar suas transações. Contas com uma terceira chave exclusiva sua também podem ser criadas. Selecione essa opção se deseja maior segurança.  ";
 "id_your_funds_are_secured_by_a" = "Uma única chave armazenada no seu dispositivo é necessária para movimentar os fundos. É mais simples de usar e configurar do que uma carteira do tipo conjunta. Na dúvida, escolha essa opção.";
 "id_your_green_wallet_is_now_ready" = "Sua carteira Green está pronta para uso.";
 "id_your_ios_device_might_not_be" = "Seu aparelho iOS pode não ser compatível";

@@ -70,6 +70,7 @@
 "id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "Cho phép bạn kiểm tra nhanh số dư, nhận quỹ và quẹt để nạp tiền từ ví giấy. Bạn không thể gửi tiền đi trong chế độ chỉ xem.";
 "id_always" = "Thường trực";
+"id_always_ask" = "Always ask";
 "id_amount" = "Số tiền";
 "id_amount_in_s" = "Amount in %@";
 "id_amp_account" = "AMP Account";
@@ -115,6 +116,8 @@
 "id_biometric_login_is_disabled" = "Biometric Login is Disabled";
 "id_biometric_login_is_enabled" = "Biometric Login is Enabled";
 "id_biometrics_authentication" = "Biometrics Authentication";
+"id_bip39_passphrase" = "BIP39 Passphrase";
+"id_bip39_passphrase_login" = "BIP39 Passphrase login";
 "id_bip49_accounts_allow_you_to" = "BIP49 accounts allow you to segregate funds, and to receive on wrapped segwit addresses, thus ensuring the highest backwards compatibility when receiving funds from anyone on the network.";
 "id_bip84_accounts_allow_you_to" = "BIP84 accounts allow you to segregate your funds, and to receive on bech32 native segwit addresses. This account type ensures cheaper transactions when sending funds, but not all services support bech32 addresses yet.";
 "id_bitcoin_and_liquid" = "Bitcoin and Liquid";
@@ -171,6 +174,7 @@
 "id_choose_watchonly" = "Choose Watch-Only";
 "id_choose_your_network" = "Chọn Mạng của bạn";
 "id_clear" = "Clear";
+"id_clear_cache" = "Clear cache";
 "id_click_to_copy" = "Click to copy";
 "id_click_to_receive_an_email_with" = "Click to receive an email with your encrypted recovery data.";
 "id_code" = "Code";
@@ -229,6 +233,7 @@
 "id_copy_details" = "Copy details";
 "id_copy_device_id" = "Copy Device ID";
 "id_copy_raw_transaction" = "Copy raw transaction";
+"id_copy_support_id" = "Copy support ID";
 "id_copy_to_clipboard" = "Sao chép vào clipboard";
 "id_copy_transaction_id" = "Copy transaction ID";
 "id_copy_unblinded_link" = "Copy unblinded link";
@@ -276,6 +281,7 @@
 "id_details" = "Details";
 "id_device" = "Device";
 "id_devices" = "Devices";
+"id_different_passphrases_generate" = "Different passphrases generate new wallets!\n\nRemember you can only restore this wallet with both your recovery phrase and the passphrase.";
 "id_disable" = "Ẩn/Hủy";
 "id_disable_pin_access" = "Disable PIN access";
 "id_disable_pin_access_for_this" = "Disable PIN access for this wallet on all devices";
@@ -348,6 +354,7 @@
 "id_enter_your_xpub_to_add_a" = "Enter your xPub to add a watch-only wallet where you can receive funds and check your balance without importing your private keys.";
 "id_enter_yournrecovery_phrase" = "Enter your\nRecovery Phrase";
 "id_entity" = "Thực thể";
+"id_ephemeral_wallets" = "Ephemeral wallets";
 "id_error" = "Lỗi rồi";
 "id_error_logging_in_with_hardware" = "Lỗi khi đăng nhập vào ví cứng";
 "id_error_nfc_tag_not_writable" = "Lỗi: không thể ghi vào thẻ NFC";
@@ -377,6 +384,7 @@
 "id_fee_rate_must_be_at_least_s" = "Lệ phí phải ít nhất %@ satoshi trên vbyte";
 "id_fee_rate_s" = "Lệ phí: %@";
 "id_fee_s__s" = "Phí: %@ / %@";
+"id_feedback" = "Feedback";
 "id_fees_are_too_low" = "Fees are too low";
 "id_fetching_new_firmware" = "Fetching new firmware";
 "id_filters" = "Filters";
@@ -398,6 +406,7 @@
 "id_get_id" = "Get ID";
 "id_get_jade" = "Get Jade";
 "id_give_bluetooth_permissions" = "Give Bluetooth Permissions";
+"id_give_us_your_feedback" = "Give us your feedback";
 "id_go_to_account" = "Go to Account";
 "id_go_to_receive_to_get_your" = "Go to Receive to get your Account ID.";
 "id_go_to_wallet" = "Đi đến ví";
@@ -536,6 +545,7 @@
 "id_login_failed" = "Đăng nhập thất bại";
 "id_login_options" = "Cài đặt Đăng nhập";
 "id_login_with_biometrics" = "Login with Biometrics";
+"id_login_with_bip39_passphrase" = "Login with BIP39 Passphrase";
 "id_logout" = "Logout";
 "id_logout_and_switch" = "Đăng xuất và Chuyển đổi";
 "id_look_at_the_device_for_the" = "Nhìn vào khóa cứng để biết vị trí các chữ số";
@@ -650,6 +660,7 @@
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_passphrase" = "Passphrase";
+"id_passphrase_protected" = "Passphrase protected";
 "id_password" = "Mật khẩu";
 "id_password_protected" = "Mật khẩu đã được bảo vệ";
 "id_paste" = "Dán";
@@ -699,6 +710,9 @@
 "id_qr_code" = "QR Code";
 "id_qr_scanner" = "Máy quét mã QR";
 "id_radio_firmware" = "Radio firmware";
+"id_rate" = "Rate";
+"id_rate_us" = "Rate us";
+"id_rate_your_experience" = "Rate your experience";
 "id_read_more" = "Read more";
 "id_read_more_at_our_s" = "Read more at our %@";
 "id_ready" = "Ready";
@@ -894,6 +908,7 @@
 "id_testnet_electrum_server" = "Testnet Electrum server";
 "id_testnet_wallets" = "Testnet wallets";
 "id_thank_you_for_downloading_green" = "Cảm ơn bạn đã tải xuống ví Green! Làm ơn để lại xem xét đánh giá của bạn khi bạn có cơ hội";
+"id_thank_you_for_your_feedback" = "Thank you for your feedback";
 "id_the_1_year_2fa_reset_process" = "The 1 year 2FA reset process was ongoing, but someone blocked it by disputing the 2FA reset.";
 "id_the_address_is_valid" = "The address is valid.";
 "id_the_addresses_dont_match" = "The addresses don't match.";
@@ -908,6 +923,7 @@
 "id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
 "id_the_new_firmware_requires_you" = "The new firmware requires you to unpair your Jade from the Bluetooth settings.";
 "id_the_password_cant_be_empty" = "Mật khẩu không thể trống";
+"id_the_qr_code_does_not_include" = "The QR code does not include the BIP39 Passphrase";
 "id_the_recovery_key_below_will_not" = "Khóa khôi phục bên dưới không hiện lại lần thứ 2. Làm ơn lưu trữ sao lưu cẩn thận nó từ bây giờ để chắc chắn bạn luôn mở được tiền của bạn.";
 "id_the_recovery_phrase_can_be_used" = "The recovery phrase can be used to claim your funds at any point. Keep it safe, keep it private.";
 "id_the_recovery_phrase_doesnt" = "The recovery phrase doesn't match the previously existing wallet. Please retry with a different recovery phrase.";
@@ -921,6 +937,7 @@
 "id_these_settings_apply_for_every" = "These settings apply for every wallet you use on Blockstream Green.";
 "id_this_feature_is_coming_soon" = "This feature is coming soon, stay tuned!";
 "id_this_transaction_spent" = "Giao dịch này đã tiêu tiền không bí mật.";
+"id_this_wallet_is_based_on_your" = "This wallet is based on your recovery phrase and a BIP39 Passphrase";
 "id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value";
 "id_this_will_disable_pin_login_for" = "This will disable PIN login for this wallet on all your devices. You will need your recovery phrase to access your wallet.";
 "id_this_will_log_you_out_and" = "This will log you out and delete this wallet from the app and the Blockstream servers database.";
@@ -1070,11 +1087,13 @@
 "id_you_have_no_coins_to_send" = "You have no coins to send. Generate an address to receive some bitcoins.";
 "id_you_have_received_s" = "Bạn vừa nhận %@";
 "id_you_have_successfully_changed" = "You have successfully changed your PIN";
+"id_you_have_successfully_sent_a" = "You have successfully sent a transaction. Please give us your feedback to improve Green.";
 "id_you_have_to_authenticate_using" = "You have to Authenticate using biometrics";
 "id_you_have_tor_enabled_are_you" = "You have Tor enabled, are you sure you want to open this webpage?";
 "id_you_must_first_log_out_before" = "Bạn phải đăng xuất trước khi đăng nhập";
 "id_you_must_save_this_mnemonic_now" = "Bạn PHẢI lưu các chữ gợi nhớ mnemonic NGÂY BAY GIỜ";
 "id_you_only_have_one_twofactor" = "Bạn chí có thể có 1 cách xác thực 2 lớp được kích hoạt.";
+"id_you_will_be_asked_to_enter_your" = "You will be asked to enter your passphrase at every login.";
 "id_you_will_need_to_reenter_your" = "Bạn sẽ cần nhập loại các chữ gợi nhớ mnemonic để đăng nhập lại nếu bạn không cài mã số PIN. Ấn \"OK\" để tiếp tục.";
 "id_you_will_see_your_coins_here" = "You will see your coins here";
 "id_youll_need_to_back_up_your" = "You’ll need to back up your recovery phrase before you can send or receive funds, but you can still check out the wallet for now.";

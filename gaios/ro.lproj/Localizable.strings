@@ -70,6 +70,7 @@
 "id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "Vă permite să verificați rapid situația contului, să primiți monede sau să scanati un portofel de hârtie (paper wallet). În modul watch-only nu veți putea trimite monede.";
 "id_always" = "Întotdeauna";
+"id_always_ask" = "Always ask";
 "id_amount" = "Sumă";
 "id_amount_in_s" = "Amount in %@";
 "id_amp_account" = "Cont AMP";
@@ -115,6 +116,8 @@
 "id_biometric_login_is_disabled" = "Logarea biometrică este dezactivată";
 "id_biometric_login_is_enabled" = "Logarea biometrică este activată";
 "id_biometrics_authentication" = "Biometrics Authentication";
+"id_bip39_passphrase" = "BIP39 Passphrase";
+"id_bip39_passphrase_login" = "BIP39 Passphrase login";
 "id_bip49_accounts_allow_you_to" = "BIP49 accounts allow you to segregate funds, and to receive on wrapped segwit addresses, thus ensuring the highest backwards compatibility when receiving funds from anyone on the network.";
 "id_bip84_accounts_allow_you_to" = "BIP84 accounts allow you to segregate your funds, and to receive on bech32 native segwit addresses. This account type ensures cheaper transactions when sending funds, but not all services support bech32 addresses yet.";
 "id_bitcoin_and_liquid" = "Bitcoin and Liquid";
@@ -171,6 +174,7 @@
 "id_choose_watchonly" = "Alegeți \"watch-only\"";
 "id_choose_your_network" = "Alegeți rețeaua";
 "id_clear" = "Șterge";
+"id_clear_cache" = "Clear cache";
 "id_click_to_copy" = "Click aici pentru copiere";
 "id_click_to_receive_an_email_with" = "Click aici pentru a primi un e-mail cu datele de recuperare criptate.";
 "id_code" = "Cod";
@@ -229,6 +233,7 @@
 "id_copy_details" = "Copiere detalii";
 "id_copy_device_id" = "Copy Device ID";
 "id_copy_raw_transaction" = "Copiere tranzacție brută";
+"id_copy_support_id" = "Copy support ID";
 "id_copy_to_clipboard" = "Copiere pe Clipboard ";
 "id_copy_transaction_id" = "Copiere ID Tranzacție";
 "id_copy_unblinded_link" = "Copy unblinded link";
@@ -276,6 +281,7 @@
 "id_details" = "Details";
 "id_device" = "Device";
 "id_devices" = "Dispozitive";
+"id_different_passphrases_generate" = "Different passphrases generate new wallets!\n\nRemember you can only restore this wallet with both your recovery phrase and the passphrase.";
 "id_disable" = "Dezactivare";
 "id_disable_pin_access" = "Dezactivează PIN";
 "id_disable_pin_access_for_this" = "Disable PIN access for this wallet on all devices";
@@ -348,6 +354,7 @@
 "id_enter_your_xpub_to_add_a" = "Introduceți cheia xPub pentru a adăuga un wallet \"watch-only\". Veți putea primi fonduri si verifica soldul fara sa adaugați cheile private.";
 "id_enter_yournrecovery_phrase" = "Introduceți \nfraza de recuperare";
 "id_entity" = "Entitate";
+"id_ephemeral_wallets" = "Ephemeral wallets";
 "id_error" = "Eroare";
 "id_error_logging_in_with_hardware" = "Eroare de logare cu portofelul hardware";
 "id_error_nfc_tag_not_writable" = "Eroare: Nu s-a putut scrie pe eticheta NFC";
@@ -377,6 +384,7 @@
 "id_fee_rate_must_be_at_least_s" = "Comisionul trebuie să fie de minim %@ satoshi/vbyte";
 "id_fee_rate_s" = "Rata comisionului: %@";
 "id_fee_s__s" = "Comision: %@/%@";
+"id_feedback" = "Feedback";
 "id_fees_are_too_low" = "Comisioanele sunt prea mici";
 "id_fetching_new_firmware" = "Se descarcă noul firmware";
 "id_filters" = "Filters";
@@ -398,6 +406,7 @@
 "id_get_id" = "Get ID";
 "id_get_jade" = "Obțineți Jade";
 "id_give_bluetooth_permissions" = "Give Bluetooth Permissions";
+"id_give_us_your_feedback" = "Give us your feedback";
 "id_go_to_account" = "Mergeți la cont";
 "id_go_to_receive_to_get_your" = "Mergeți la meniul \"Primire\" pentru a obține ID-ul contului.";
 "id_go_to_wallet" = "Mergeți la Portofel";
@@ -536,6 +545,7 @@
 "id_login_failed" = "Logarea a eșuat";
 "id_login_options" = "Opțiuni de logare";
 "id_login_with_biometrics" = "Logare biometrică";
+"id_login_with_bip39_passphrase" = "Login with BIP39 Passphrase";
 "id_logout" = "Delogare";
 "id_logout_and_switch" = "Delogare și Schimbare";
 "id_look_at_the_device_for_the" = "Priviți ecranul dispozitivului pentru a identifica pozițiile numerelor";
@@ -650,6 +660,7 @@
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_passphrase" = "Passphrase";
+"id_passphrase_protected" = "Passphrase protected";
 "id_password" = "Parolă";
 "id_password_protected" = "Protejat(ă) prin parolă";
 "id_paste" = "Lipire";
@@ -699,6 +710,9 @@
 "id_qr_code" = "Cod QR";
 "id_qr_scanner" = "Scanner QR";
 "id_radio_firmware" = "Firmware cu wireless";
+"id_rate" = "Rate";
+"id_rate_us" = "Rate us";
+"id_rate_your_experience" = "Rate your experience";
 "id_read_more" = "Read more";
 "id_read_more_at_our_s" = "Citiți mai multe la %@";
 "id_ready" = "Ready";
@@ -894,6 +908,7 @@
 "id_testnet_electrum_server" = "Testnet Electrum server";
 "id_testnet_wallets" = "Portofele testnet";
 "id_thank_you_for_downloading_green" = "Vă mulțumim că ați descărcat Green! Vă rugăm să ne lăsați o recenzie atunci când aveți timp.";
+"id_thank_you_for_your_feedback" = "Thank you for your feedback";
 "id_the_1_year_2fa_reset_process" = "Cineva a contestat procesul de resetare al 2FA. Portofelul este blocat. Vă rugăm contactați departamentul suport.";
 "id_the_address_is_valid" = "Adresa este validă.";
 "id_the_addresses_dont_match" = "Adresele nu se potrivesc.";
@@ -908,6 +923,7 @@
 "id_the_new_email_will_be_used_for" = "Noul e-mail va fi folosit pentru autentificare cu doi factori (2FA) după ce resetarea este completă. Resetarea va dura 12 luni, la care se adaugă orice setare timelock rămasă.";
 "id_the_new_firmware_requires_you" = "The new firmware requires you to unpair your Jade from the Bluetooth settings.";
 "id_the_password_cant_be_empty" = "Căsuța pentru parolă nu poate rămâne necompletată";
+"id_the_qr_code_does_not_include" = "The QR code does not include the BIP39 Passphrase";
 "id_the_recovery_key_below_will_not" = "Cheia de recuperare de mai jos nu va mai fi afișată din nou. Vă rugăm să realizați acum o copie de protecție pentru a vă asigura că veți avea mereu acces la monede.";
 "id_the_recovery_phrase_can_be_used" = "Fraza de recuperare poate fi utilizată pentru a restabili accesul la fondurile dvs. Păstrați-o in siguranță! Aveți grijă să nu o divulgați nimanui.";
 "id_the_recovery_phrase_doesnt" = "The recovery phrase doesn't match the previously existing wallet. Please retry with a different recovery phrase.";
@@ -921,6 +937,7 @@
 "id_these_settings_apply_for_every" = "Aceste setări se aplică pentru toate portofelele din Blockstream Green";
 "id_this_feature_is_coming_soon" = "This feature is coming soon, stay tuned!";
 "id_this_transaction_spent" = "Această tranzacție a trimis monede non-confidențiale.";
+"id_this_wallet_is_based_on_your" = "This wallet is based on your recovery phrase and a BIP39 Passphrase";
 "id_this_wallet_operates_on_a_test" = "This wallet operates on a test network. Anything you receive or send here has no value";
 "id_this_will_disable_pin_login_for" = "Această opțiune va dezactiva logarea cu PIN pe toate dispozitivele unde acest portofel este instalat. Veți avea nevoie de fraza de recuperare pentru a restabili accesul.";
 "id_this_will_log_you_out_and" = "Această opțiune vă va deloga și va șterge acest portofel din aplicație și din baza de date Blockstream.";
@@ -1070,11 +1087,13 @@
 "id_you_have_no_coins_to_send" = "You have no coins to send. Generate an address to receive some bitcoins.";
 "id_you_have_received_s" = "Ați primit %@";
 "id_you_have_successfully_changed" = "PIN-ul a fost schimbat";
+"id_you_have_successfully_sent_a" = "You have successfully sent a transaction. Please give us your feedback to improve Green.";
 "id_you_have_to_authenticate_using" = "You have to Authenticate using biometrics";
 "id_you_have_tor_enabled_are_you" = "You have Tor enabled, are you sure you want to open this webpage?";
 "id_you_must_first_log_out_before" = "Trebuie să vă deconectați înainte de a vă loga.";
 "id_you_must_save_this_mnemonic_now" = "TREBUIE să salvați această frază mnemonică ACUM";
 "id_you_only_have_one_twofactor" = "Ați activat doar o metodă de autentificare cu doi factori";
+"id_you_will_be_asked_to_enter_your" = "You will be asked to enter your passphrase at every login.";
 "id_you_will_need_to_reenter_your" = "Dacă nu setați un cod PIN, va trebui să reintroduceți fraza mnemonică pentru a vă loga din nou în cont. Apăsați \"OK\" pentru a continua.";
 "id_you_will_see_your_coins_here" = "You will see your coins here";
 "id_youll_need_to_back_up_your" = "Va trebui sa faceți o copie a frazei de recuperare înainte de a primi sau trimite fonduri dar puteți sa faceți un tur al portofelului.";

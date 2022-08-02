@@ -70,6 +70,7 @@
 "id_allow_data_collection" = "Allow data collection";
 "id_allows_you_to_quickly_check" = "간편하게 잔액을 확인하거나, 입금 받거나, 종이 지갑을 스윕하세요. 보기 전용 모드에서는 송금할 수 없습니다.";
 "id_always" = "항상";
+"id_always_ask" = "Always ask";
 "id_amount" = "금액";
 "id_amount_in_s" = "%@ 안의 금액";
 "id_amp_account" = "AMP 계정";
@@ -115,6 +116,8 @@
 "id_biometric_login_is_disabled" = "생체 인식 로그인이 비활성화되었습니다.";
 "id_biometric_login_is_enabled" = "생체 인식 로그인이 활성화되었습니다.";
 "id_biometrics_authentication" = "생체 인식 인증";
+"id_bip39_passphrase" = "BIP39 Passphrase";
+"id_bip39_passphrase_login" = "BIP39 Passphrase login";
 "id_bip49_accounts_allow_you_to" = "BIP49 계정을 사용하면 자금을 분리하고 랩트 세그윗 주소에서 받을 수 있어 네트워크의 모든 사용자로부터 송금을 받을 때 최고의 역호환성이 보장됩니다.";
 "id_bip84_accounts_allow_you_to" = "BIP84 계정을 사용하면 자금을 분리하고 bech32 네이티브 세그윗 주소에서 받을 수 있습니다. 이 계정 유형은 더 저렴한 송금 서비스를 제공하지만 아직 bech32 주소를 지원하지 않는 서비스도 있습니다.";
 "id_bitcoin_and_liquid" = "비트코인 및 Liquid";
@@ -171,6 +174,7 @@
 "id_choose_watchonly" = "보기 전용 선택하기";
 "id_choose_your_network" = "네트워크를 선택하세요";
 "id_clear" = "전체 삭제";
+"id_clear_cache" = "Clear cache";
 "id_click_to_copy" = "복사하려면 클릭하세요";
 "id_click_to_receive_an_email_with" = "암호화된 복구 데이터가 포함된 이메일을 받으려면 클릭하세요.";
 "id_code" = "코드";
@@ -229,6 +233,7 @@
 "id_copy_details" = "세부 정보 복사";
 "id_copy_device_id" = "Copy Device ID";
 "id_copy_raw_transaction" = "원시 거래 복사";
+"id_copy_support_id" = "Copy support ID";
 "id_copy_to_clipboard" = "클립보드에 복사하기";
 "id_copy_transaction_id" = "거래 ID 복사";
 "id_copy_unblinded_link" = "무작위 링크 복사하기";
@@ -276,6 +281,7 @@
 "id_details" = "세부 사항";
 "id_device" = "기기";
 "id_devices" = "기기";
+"id_different_passphrases_generate" = "Different passphrases generate new wallets!\n\nRemember you can only restore this wallet with both your recovery phrase and the passphrase.";
 "id_disable" = "비활성화하기";
 "id_disable_pin_access" = "PIN 액세스 비활성화하기";
 "id_disable_pin_access_for_this" = "모든 기기에서 이 지갑에 대한 PIN 액세스 비활성화하기";
@@ -348,6 +354,7 @@
 "id_enter_your_xpub_to_add_a" = "xPub을 입력하여 개인 키 없이도 송금 받고 잔액을 확인할 수 있는 보기 전용 지갑을 추가하세요.";
 "id_enter_yournrecovery_phrase" = "복구 구문을\n입력하세요";
 "id_entity" = "엔터티(Entity)";
+"id_ephemeral_wallets" = "Ephemeral wallets";
 "id_error" = "오류";
 "id_error_logging_in_with_hardware" = "하드웨어 지갑 로그인 시 오류 발생";
 "id_error_nfc_tag_not_writable" = "오류 : NFC 태그 쓰기 불가능";
@@ -377,6 +384,7 @@
 "id_fee_rate_must_be_at_least_s" = "수수료율은 %@ 사토시/vbyte보다 높아야 합니다.";
 "id_fee_rate_s" = "수수료율 : %@";
 "id_fee_s__s" = "수수료 : %@ / %@ ";
+"id_feedback" = "Feedback";
 "id_fees_are_too_low" = "수수료가 너무 낮습니다";
 "id_fetching_new_firmware" = "새 펌웨어 가져오기";
 "id_filters" = "필터";
@@ -398,6 +406,7 @@
 "id_get_id" = "ID 가져오기";
 "id_get_jade" = "Jade 가져오기";
 "id_give_bluetooth_permissions" = "블루투스 권한 부여하기";
+"id_give_us_your_feedback" = "Give us your feedback";
 "id_go_to_account" = "계정으로 이동";
 "id_go_to_receive_to_get_your" = "수신으로 이동하여 계정 ID를 받으세요.";
 "id_go_to_wallet" = "지갑으로 가기";
@@ -536,6 +545,7 @@
 "id_login_failed" = "로그인 실패";
 "id_login_options" = "로그인 설정";
 "id_login_with_biometrics" = "생체 인식으로 로그인하기";
+"id_login_with_bip39_passphrase" = "Login with BIP39 Passphrase";
 "id_logout" = "로그아웃";
 "id_logout_and_switch" = "로그아웃 후 전환하기";
 "id_look_at_the_device_for_the" = "기기에서 번호 배열을 확인하세요";
@@ -650,6 +660,7 @@
 "id_p2wsh" = "P2wsh";
 "id_page_visits_button_presses" = "Page visits, button presses, general app configuration";
 "id_passphrase" = "Passphrase";
+"id_passphrase_protected" = "Passphrase protected";
 "id_password" = "비밀번호";
 "id_password_protected" = "비밀번호로 보호";
 "id_paste" = "붙여넣기";
@@ -699,6 +710,9 @@
 "id_qr_code" = "QR 코드";
 "id_qr_scanner" = "QR 스캐너";
 "id_radio_firmware" = "Radio firmware";
+"id_rate" = "Rate";
+"id_rate_us" = "Rate us";
+"id_rate_your_experience" = "Rate your experience";
 "id_read_more" = "더 보기";
 "id_read_more_at_our_s" = "Blockstream의 %@에서 더 보기";
 "id_ready" = "준비";
@@ -894,6 +908,7 @@
 "id_testnet_electrum_server" = "테스트넷 Electrum 서버";
 "id_testnet_wallets" = "테스트넷 지갑";
 "id_thank_you_for_downloading_green" = "Green을 다운로드해주셔서 감사합니다! 나중에 사용 후기를 남겨주세요";
+"id_thank_you_for_your_feedback" = "Thank you for your feedback";
 "id_the_1_year_2fa_reset_process" = "1년의 2FA 초기화 과정이 진행 중이었으나 누군가 2FA 초기화에 이의를 제기해 중단되었습니다.";
 "id_the_address_is_valid" = "주소가 유효합니다.";
 "id_the_addresses_dont_match" = "주소가 일치하지 않습니다.";
@@ -908,6 +923,7 @@
 "id_the_new_email_will_be_used_for" = "초기화가 완료되면 새 이메일이 이중 인증에 사용됩니다. 초기화는 12개월에 남은 타임락 기간이 추가된 만큼 소요됩니다.";
 "id_the_new_firmware_requires_you" = "The new firmware requires you to unpair your Jade from the Bluetooth settings.";
 "id_the_password_cant_be_empty" = "비밀번호를 반드시 입력해야 합니다";
+"id_the_qr_code_does_not_include" = "The QR code does not include the BIP39 Passphrase";
 "id_the_recovery_key_below_will_not" = "아래 복원 키는 다시 볼 수 없습니다. 나의 자산에 언제나 액세스할 수 있도록 복원 키를 안전하게 보관하세요.";
 "id_the_recovery_phrase_can_be_used" = "복구 문구는 나의 자금 거래를 위해 언제든지 사용할 수 있습니다. 복구 문구를 안전하게 비공개로 보관하세요.";
 "id_the_recovery_phrase_doesnt" = "복구 문구가 기존 지갑과 일치하지 않습니다. 다른 복구 문구로 다시 시도해보세요.";
@@ -921,6 +937,7 @@
 "id_these_settings_apply_for_every" = "이 설정은 Blockstream Green에서 지원하는 모든 지갑에 적용됩니다.";
 "id_this_feature_is_coming_soon" = "이 기능은 곧 제공될 예정입니다. 조금만 기다려주세요!";
 "id_this_transaction_spent" = "이 거래에 공개 자금이 사용되었습니다.";
+"id_this_wallet_is_based_on_your" = "This wallet is based on your recovery phrase and a BIP39 Passphrase";
 "id_this_wallet_operates_on_a_test" = "이 지갑은 테스트 네트워크에서 작동합니다. 여기에서 주고 받는 것은 무엇이든 가치가 없습니다.";
 "id_this_will_disable_pin_login_for" = "이렇게 하면 모든 기기에서 이 지갑에 대한 PIN 로그인이 비활성화됩니다. 지갑에 액세스하려면 복구 문구가 필요합니다.";
 "id_this_will_log_you_out_and" = "이렇게 하면 로그아웃되고 앱과 Blockstream 서버 데이터베이스에서 이 지갑이 삭제됩니다.";
@@ -1070,11 +1087,13 @@
 "id_you_have_no_coins_to_send" = "보낼 코인이 없습니다. 비트코인을 받을 주소를 생성하세요.";
 "id_you_have_received_s" = "%@를 받았습니다";
 "id_you_have_successfully_changed" = "PIN을 성공적으로 변경했습니다.";
+"id_you_have_successfully_sent_a" = "You have successfully sent a transaction. Please give us your feedback to improve Green.";
 "id_you_have_to_authenticate_using" = "생체 인식을 사용하여 인증하셔야 합니다.";
 "id_you_have_tor_enabled_are_you" = "Tor가 활성화되어 있습니다. 이 웹페이지를 여시겠습니까?";
 "id_you_must_first_log_out_before" = "로그인 전에 먼저 로그아웃해야 합니다.";
 "id_you_must_save_this_mnemonic_now" = "지금 이 니모닉을 반드시 저장하세요";
 "id_you_only_have_one_twofactor" = "활성화된 이중 인증 방법이 하나밖에 없습니다";
+"id_you_will_be_asked_to_enter_your" = "You will be asked to enter your passphrase at every login.";
 "id_you_will_need_to_reenter_your" = "PIN을 설정하지 않으면 재로그인 시 니모닉을 다시 입력해야 합니다. 계속 하시려면 \"OK\"를누르세요.";
 "id_you_will_see_your_coins_here" = "여기에서 코인을 볼 수 있습니다.";
 "id_youll_need_to_back_up_your" = "자금을 주고 받기 전에 복구 문구를 백업해야 하지만, 현재는 지갑을 확인하실 수 있습니다.";

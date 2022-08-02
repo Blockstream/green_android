@@ -84,7 +84,7 @@ class LoginViewController: UIViewController {
         btnWalletLock.setTitle(NSLocalizedString("id_restore_with_recovery_phrase", comment: ""), for: .normal)
         connectionSettingsButton.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
         cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
-        lblPassphrase.text = "BIP39 Passphrase login"
+        lblPassphrase.text = NSLocalizedString("id_bip39_passphrase_login", comment: "")
     }
 
     func setStyle() {
