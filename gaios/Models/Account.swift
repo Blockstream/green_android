@@ -15,6 +15,7 @@ struct Account: Codable, Equatable {
         case network
         case isSingleSig
         case walletHashId = "wallet_hash_id"
+        case askEphemeral = "ask_ephemeral"
     }
 
     var name: String
@@ -29,7 +30,7 @@ struct Account: Codable, Equatable {
     var walletHashId: String?
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
     var isEphemeral: Bool = false
-    var askEphemeral: Bool = false
+    var askEphemeral: Bool?
 
     init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool, isEphemeral: Bool = false, askEphemeral: Bool = false) {
         // Software / Hardware wallet account
