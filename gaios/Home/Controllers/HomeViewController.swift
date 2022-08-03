@@ -47,7 +47,7 @@ class HomeViewController: UIViewController {
     func enterWallet(_ account: Account) {
         if let session = SessionsManager.shared[account.id],
            session.connected && session.logged {
-            session.subaccount().done { wallet in
+            session.subaccount(account.activeWallet).done { wallet in
                 AccountsManager.shared.current = account
                 let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
                 let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController

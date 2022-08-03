@@ -126,9 +126,8 @@ class SessionManager {
             }
     }
 
-    func subaccount(_ pointer: UInt32? = nil) -> Promise<WalletItem> {
+    func subaccount(_ pointer: UInt32) -> Promise<WalletItem> {
         let bgq = DispatchQueue.global(qos: .background)
-        let pointer = pointer ?? 0
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.getSubaccount(subaccount: pointer) }
             .then(on: bgq) { $0.resolve(session: self) }

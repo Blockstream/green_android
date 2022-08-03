@@ -363,7 +363,7 @@ class OverviewViewController: UIViewController {
 
     func loadWallet() -> Promise<Void> {
         guard let session = SessionsManager.current else { return Promise().asVoid() }
-        return session.subaccount().then { wallet in
+        return session.subaccount(activeWallet).then { wallet in
             wallet.getBalance().compactMap { _ in wallet }
         }.map { wallet in
             self.presentingWallet = wallet
@@ -403,7 +403,7 @@ class OverviewViewController: UIViewController {
     func onNewTransaction(_ notification: Notification) {
         if let dict = notification.userInfo as NSDictionary?,
            let subaccounts = dict["subaccounts"] as? [UInt32],
-           subaccounts.contains(activeWallet ?? 0) {
+           subaccounts.contains(activeWallet) {
             reloadData()
         }
     }
@@ -528,7 +528,7 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         // switch on selected active session
         if let session = SessionsManager.shared[account.id],
            session.connected && session.logged {
-            session.subaccount().done { wallet in
+            session.subaccount(account.activeWallet).done { wallet in
                 AccountsManager.shared.current = account
                 SessionsManager.shared[account.id] = session
                 let storyboard = UIStoryboard(name: "Wallet", bundle: nil)

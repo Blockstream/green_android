@@ -207,7 +207,7 @@ class LoginViewController: UIViewController {
         }.then { (firstLogin: Bool) in
             session!.load(refreshSubaccounts: firstLogin)
         }.then(on: bgq) { _ in
-            session!.subaccount()
+            session!.subaccount(self.account.activeWallet)
         }.done { wallet in
             if withPIN != nil {
                 self.account.attempts = 0
