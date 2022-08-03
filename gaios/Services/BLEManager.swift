@@ -33,7 +33,7 @@ protocol BLEManagerScanDelegate: AnyObject {
 
 protocol BLEManagerDelegate: AnyObject {
     func onPrepare(_: Peripheral, reset: Bool)
-    func onAuthenticate(_: Peripheral, network: String, firstInitialization: Bool)
+    func onAuthenticate(_: Peripheral, network: GdkNetwork, firstInitialization: Bool)
     func onLogin(_: Peripheral, account: Account)
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
@@ -166,7 +166,7 @@ class BLEManager {
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onAuthenticate(p, network: network.network, firstInitialization: false)
+                self.delegate?.onAuthenticate(p, network: network, firstInitialization: false)
             }, onError: { err in
                 // session.destroy()
                 self.onError(err, network: network.name)
@@ -193,22 +193,21 @@ class BLEManager {
                 hasPin = version.jadeHasPin
                 self.fmwVersion = version.jadeVersion
                 self.boardType = version.boardType
-                let testnet = ["testnet", "testnet-liquid"].contains(network.network)
+                let testnet = ["testnet", "testnet-liquid"].contains(network.chain)
                 if version.jadeNetworks == "TEST" && !testnet {
-                    throw JadeError.Abort("\(network) not supported in Jade \(version.jadeNetworks) mode")
+                    throw JadeError.Abort("\(network.name) not supported in Jade \(version.jadeNetworks) mode")
                 } else if version.jadeNetworks == "MAIN" && testnet {
-                    throw JadeError.Abort("\(network) not supported in Jade \(version.jadeNetworks) mode")
+                    throw JadeError.Abort("\(network.name) not supported in Jade \(version.jadeNetworks) mode")
                 }
                 if version.jadeState == "READY" {
                     return Observable.just(true)
                 }
-                let network = network.network.replacingOccurrences(of: Constants.electrumPrefix, with: "")
-                return Jade.shared.auth(network: network)
+                return Jade.shared.auth(network: network.chain)
                     .retry(3)
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onAuthenticate(p, network: network.network, firstInitialization: !hasPin)
+                self.delegate?.onAuthenticate(p, network: network, firstInitialization: !hasPin)
             }, onError: { err in
                 self.onError(err, network: network.name)
             })
@@ -316,7 +315,7 @@ class BLEManager {
                 }.first
                 var account = storedAccount ??
                     Account(name: p.name ?? "HW",
-                            network: network.network.replacingOccurrences(of: "electrum-", with: ""),
+                            network: network.chain,
                             isJade: BLEManager.shared.isJade(p),
                             isLedger: BLEManager.shared.isLedger(p),
                             isSingleSig: network.network.contains("electrum"))

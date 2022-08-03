@@ -393,12 +393,11 @@ extension HWWConnectViewController: BLEManagerDelegate {
         }
     }
 
-    func onAuthenticate(_ peripheral: Peripheral, network: String, firstInitialization: Bool) {
+    func onAuthenticate(_ peripheral: Peripheral, network: GdkNetwork, firstInitialization: Bool) {
         DispatchQueue.main.async {
             if firstInitialization {
                 self.hwwState = .initialized
             }
-            let network = getGdkNetwork(network)
             self.hwwState = .connected
             BLEManager.shared.login(peripheral, network: network)
         }
