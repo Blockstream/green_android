@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Display firmware hash during Jade OTA
+- Login with BIP39 Passphrase
 
 ### Changed
 - Display the receive address in Transaction Details
