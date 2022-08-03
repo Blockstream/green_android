@@ -314,7 +314,9 @@ public class JadeAPI {
     // Involves pinserver handshake
     public boolean authUser(final String network) throws IOException {
         //testConnection(); - // FIXME: if/when have better connection-test message that does not rely on dashboard responding
-        final JsonNode params = makeParams("network", network);
+        final long epochInSecs = System.currentTimeMillis() / 1000;
+        final JsonNode params = makeParams("network", network)
+                .put("epoch", epochInSecs);
         final JsonNode result = this.jadeRpc("auth_user", params, TIMEOUT_NONE);
         return result.asBoolean();
     }
