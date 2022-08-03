@@ -11,6 +11,7 @@ enum OverviewSection: Int, CaseIterable {
 
 class OverviewViewController: UIViewController {
 
+    // UI outlets
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var actionsView: UIStackView!
     @IBOutlet weak var sendView: UIView!
@@ -20,10 +21,12 @@ class OverviewViewController: UIViewController {
     @IBOutlet weak var receiveLabel: UILabel!
     @IBOutlet weak var receiveImage: UIImageView!
 
-    private var transactions: [Transaction] = []
-    private var fetchTxs: Promise<Void>?
-    var callPage: UInt32 = 0
+    // UI dimensions
+    var headerH: CGFloat = 44.0
+    var footerH: CGFloat = 54.0
+    var footerHandleAccountH: CGFloat = 118.0
 
+    // token for notifications
     private var blockToken: NSObjectProtocol?
     private var transactionToken: NSObjectProtocol?
     private var assetsUpdatedToken: NSObjectProtocol?
@@ -32,91 +35,72 @@ class OverviewViewController: UIViewController {
     private var networkToken: NSObjectProtocol?
     private var reset2faToken: NSObjectProtocol?
 
-    var headerH: CGFloat = 44.0
-    var footerH: CGFloat = 54.0
-    var footerHandleAccountH: CGFloat = 118.0
+    // alerts data for tableviews
+    private var alertCards: [AlertCardType] = []
 
-    private var subAccounts = [WalletItem]()
+    // subaccount balance for tableviews
+    private var assets = [(key: String, value: UInt64)]()
 
-    var showAccounts = false
-    var assets = [(key: String, value: UInt64)]()
-    var isLoading = false
-    var accounts: [WalletItem] {
+    // transactions data for tableviews
+    private var transactions: [Transaction] = []
+    private var fetchTxs: Promise<Void>?
+    private var callPage: UInt32 = 0
+
+    // subaccounts data for tableviews
+    private var allSubaccounts = [WalletItem]()
+    private var showSubaccounts = false
+    private var activeWallet: UInt32 = 0
+    private var archivedSubaccount: Int { allSubaccounts.filter { $0.hidden == true }.count }
+    private var subaccounts: [WalletItem] {
         get {
-            if subAccounts.count == 0 {
+            if allSubaccounts.count == 0 {
                 return []
             }
-            if showAccounts {
-                return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet && $0.hidden == false}
-            } else {
-                return subAccounts.filter { $0.pointer == activeWallet}
-            }
+            return allSubaccounts
+                .filter { $0.pointer == activeWallet} +
+            allSubaccounts
+                .filter { $0.pointer != activeWallet && $0.hidden == false}
         }
     }
+
+    // current wallet
     var presentingWallet: WalletItem? {
         didSet {
+            // update into subaccount on updating
             guard let presentingWallet = presentingWallet else {
                 return
             }
-            if let index = subAccounts.firstIndex(where: {$0.pointer == presentingWallet.pointer}) {
-                subAccounts[index] = presentingWallet
+            if let index = allSubaccounts.firstIndex(where: {$0.pointer == presentingWallet.pointer}) {
+                allSubaccounts[index] = presentingWallet
             } else {
-                subAccounts += [presentingWallet]
+                allSubaccounts += [presentingWallet]
             }
         }
     }
+
+    // global variables
     private var account = AccountsManager.shared.current
-    private var activeWallet: UInt32 = 0
+    private var session: SessionManager? { SessionsManager.shared[account?.id ?? ""] }
     private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
-    private var isAmp: Bool {
-        guard let wallet = presentingWallet else { return false }
-        return AccountType(rawValue: wallet.type) == AccountType.amp
-    }
-    private var btc: String {
-        return account?.gdkNetwork?.getFeeAsset() ?? ""
-    }
-
-    var color: UIColor = .clear
-    var alertCards: [AlertCardType] = []
-    var userWillLogout = false
-
-    var archivedAccount: Int {
-        return (subAccounts.filter { $0.hidden == true }).count
-    }
-
+    private var isAmp: Bool { presentingWallet?.accountType() == AccountType.amp }
+    private var btc: String { return account?.gdkNetwork?.getFeeAsset() ?? "" }
+    private var color: UIColor = .clear
+    private var userWillLogout = false
     private var analyticsDone = false
+    private var isLoading = false
 
+    // first load
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        tableView.prefetchDataSource = self
 
         setContent()
         setStyle()
 
-        let networkSelector = ((Bundle.main.loadNibNamed("NetworkSelectorBarItem", owner: self, options: nil)![0] as? NetworkSelectorBarItem)!)
-        networkSelector.configure(isEphemeral: account?.isEphemeral ?? false, {[weak self] () in
-            self?.switchNetwork()
-        })
-        let leftItem: UIBarButtonItem = UIBarButtonItem(customView: networkSelector)
-        navigationItem.leftBarButtonItem = leftItem
-
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.setImage(UIImage(named: "settings"), for: .normal)
-        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
-
-        tableView.refreshControl = UIRefreshControl()
-        tableView.refreshControl!.tintColor = UIColor.white
-        tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
-
         tableView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.view
-        settingsBtn.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.settingsBtn
         sendView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.sendView
         receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
 
         startAnimating()
-
         AnalyticsManager.shared.recordView(.overview, sgmt: AnalyticsManager.shared.sessSgmt(account))
     }
 
@@ -131,10 +115,32 @@ class OverviewViewController: UIViewController {
     }
 
     func setContent() {
+        // setup left menu bar: wallet selector
+        let networkSelector = ((Bundle.main.loadNibNamed("NetworkSelectorBarItem", owner: self, options: nil)![0] as? NetworkSelectorBarItem)!)
+        networkSelector.configure(isEphemeral: account?.isEphemeral ?? false, {[weak self] () in
+            self?.switchNetwork()
+        })
+        let leftItem: UIBarButtonItem = UIBarButtonItem(customView: networkSelector)
+        navigationItem.leftBarButtonItem = leftItem
+
+        // setup right menu bar: settings
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.setImage(UIImage(named: "settings"), for: .normal)
+        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        settingsBtn.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.settingsBtn
+
+        // setup labels and gestures
         sendLabel.text = NSLocalizedString("id_send", comment: "").capitalized
         receiveLabel.text = NSLocalizedString("id_receive", comment: "").capitalized
         sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sendfromWallet)))
         receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.receiveToWallet)))
+
+        // setup tableview
+        tableView.prefetchDataSource = self
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl!.tintColor = UIColor.white
+        tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
     }
 
     func setStyle() {
@@ -148,6 +154,7 @@ class OverviewViewController: UIViewController {
         if account?.network == AvailableNetworks.testnetLiquid.rawValue { color = AvailableNetworks.testnetLiquid.color() }
     }
 
+    // open wallet selector drawer
     @objc func switchNetwork() {
         let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
@@ -158,6 +165,7 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    // open settings
     @objc func settingsBtnTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
         let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
@@ -171,6 +179,7 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    // open send flow
     @objc func sendfromWallet(_ sender: UIButton) {
         if account?.isWatchonly ?? false {
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""),
@@ -205,10 +214,12 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    // open receive flow
     @objc func receiveToWallet(_ sender: UIButton) {
         receiveScreen()
     }
 
+    // open receive screen
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
@@ -217,6 +228,7 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    // open system message view
     func systemMessageScreen(text: String) {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SystemMessageViewController") as? SystemMessageViewController {
@@ -225,119 +237,94 @@ class OverviewViewController: UIViewController {
         }
     }
 
-    func loadAlertCards() {
-
+    // refresh and reload alert cards
+    func reloadAlertCards() {
         var cards: [AlertCardType] = []
-        guard let session = SessionsManager.current else {
-            self.alertCards = cards
-            self.reloadSections([OverviewSection.card], animated: false)
-            return
-        }
-        if session.isResetActive ?? false {
-            if session.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
+        if session?.isResetActive ?? false {
+            // Wallet in reset status
+            if session?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
                 cards.append(AlertCardType.dispute)
             } else {
-                let resetDaysRemaining = session.twoFactorConfig?.twofactorReset.daysRemaining
+                let resetDaysRemaining = session?.twoFactorConfig?.twofactorReset.daysRemaining
                 cards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
             }
         }
         if account?.isEphemeral == true {
+            // Bip39 ephemeral wallet
             cards.append(AlertCardType.ephemeralWallet)
         }
         if let network = account?.gdkNetwork, !network.mainnet {
+            // Testnet wallet
             cards.append(AlertCardType.testnetNoValue)
         }
+        if Balance.fromSatoshi(0)?.toFiat().0 == "n/a" {
+            // Price provider not available
+            cards.append(AlertCardType.fiatMissing)
+        }
+        self.alertCards = cards
+        self.reloadSections([OverviewSection.card], animated: false)
+
+        // load system messages
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = session else {
+            return
+        }
         Guarantee().then(on: bgq) {
             session.loadSystemMessage()
-        }.map { text in
+        }.done { text in
             if let text = text, !text.isEmpty {
                 cards.append(AlertCardType.systemMessage(text))
             }
-        }.map(on: bgq) { () -> (String?, String) in
-            Balance.fromSatoshi(0)?.toFiat() ?? ("n/a", "")
-        }.done { (amount, _) in
-            if amount == nil {
-                cards.append(AlertCardType.fiatMissing)
-            }
-        }.ensure {
             self.alertCards = cards
             self.reloadSections([OverviewSection.card], animated: false)
-        }
-        .catch { err in
-            print(err.localizedDescription)
-        }
-    }
-
-    @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
-        Promise().asVoid().then { _ -> Promise<Void> in
-            if self.showAccounts {
-                return self.discoverySubaccounts(singlesig: self.account?.isSingleSig ?? false).asVoid()
-            }
-            return Promise().asVoid()
-        }.then { _ -> Promise<Void> in
-            if let session = SessionsManager.current {
-                session.registry?.loadAsync(session: session)
-            }
-            return Promise().asVoid()
-        }.done { _ in
-            self.reloadData()
-        }.catch { e in
-            DropAlert().error(message: e.localizedDescription)
-            print(e.localizedDescription)
-        }
-    }
-
-    func reloadData() {
-        if isLoading == true {
-            return
-        }
-        isLoading = true
-        transactions.removeAll()
-        assets = [(key: String, value: UInt64)]()
-        activeWallet = account?.activeWallet ?? 0
-        tableView.reloadData {
-            self.loadSubaccounts()
-            .ensure {
-                self.stopAnimating()
-            }.done {
-                self.reloadWallet()
-            }.catch { err in
-                self.isLoading = false
-                print(err.localizedDescription)
-            }
-        }
-    }
-
-    func reloadWallet() {
-        firstly {
-            self.isLoading = true
-            return Guarantee()
-        }.then {
-            self.loadWallet()
-        }.compactMap {
-            self.loadAssets()
-        }.then {
-            self.loadTransactions()
-        }.ensure {
-            self.isLoading = false
-            self.stopAnimating()
-        }.done { _ in
-            self.showTransactions()
-            self.callAnalytics()
         }.catch { err in
             print(err.localizedDescription)
         }
-        loadAlertCards()
     }
 
+    // tableview refresh gesture
+    @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
+        reloadData(discovery: showSubaccounts, refreshBalance: true, scrollTop: true)
+    }
+
+    // reload all tableview data
+    func reloadData(discovery: Bool = false, refreshBalance: Bool = false, scrollTop: Bool = false) {
+        if isLoading == true {
+            // avoid too many reloading events
+            return
+        }
+        isLoading = true
+        activeWallet = account?.activeWallet ?? 0
+        let contentOffset = tableView.contentOffset
+        firstly { Guarantee() }
+            .compactMap { self.reloadAlertCards() }
+            .then { self.reloadSubaccounts(refresh: refreshBalance, discovery: discovery) }
+            .then { self.reloadWallet() }
+            .compactMap { _ in self.reloadAssets() }
+            .then { _ in self.reloadTransactions() }
+            .ensure {
+                if self.tableView.refreshControl?.isRefreshing ?? false {
+                    self.tableView.refreshControl?.endRefreshing()
+                }
+                self.isLoading = false
+                self.stopAnimating()
+            }.done {
+                self.tableView.reloadData()
+                self.tableView.layoutIfNeeded()
+                self.tableView.setContentOffset(contentOffset, animated: false)
+                self.callAnalytics() }
+            .catch { err in
+                print(err.localizedDescription) }
+    }
+
+    // send analytics
     func callAnalytics() {
 
         if analyticsDone == true { return }
         analyticsDone = true
 
         var accountsFunded: Int = 0
-        subAccounts.forEach { item in
+        allSubaccounts.forEach { item in
             let assets = item.satoshi ?? [:]
             for (_, value) in assets where value > 0 {
                     accountsFunded += 1
@@ -345,8 +332,8 @@ class OverviewViewController: UIViewController {
             }
         }
         let walletFunded: Bool = accountsFunded > 0
-        let accounts: Int = subAccounts.count
-        let accountsTypes: String = Array(Set(subAccounts.map { $0.type })).sorted().joined(separator: ",")
+        let accounts: Int = allSubaccounts.count
+        let accountsTypes: String = Array(Set(allSubaccounts.map { $0.type })).sorted().joined(separator: ",")
 
         AnalyticsManager.shared.activeWallet(account: account, walletData: AnalyticsManager.WalletData(walletFunded: walletFunded, accountsFunded: accountsFunded, accounts: accounts, accountsTypes: accountsTypes))
 
@@ -361,33 +348,31 @@ class OverviewViewController: UIViewController {
         }
     }
 
-    func loadWallet() -> Promise<Void> {
+    // refresh and reload the current wallet
+    func reloadWallet() -> Promise<Void> {
         guard let session = SessionsManager.current else { return Promise().asVoid() }
         return session.subaccount(activeWallet).then { wallet in
             wallet.getBalance().compactMap { _ in wallet }
-        }.map { wallet in
+        }.compactMap { wallet in
             self.presentingWallet = wallet
             self.reloadSections([OverviewSection.account, OverviewSection.accountId], animated: true)
-        }
+        }.asVoid()
     }
 
-    func loadTransactions(_ pageId: Int = 0) -> Promise<Void> {
+    // reset and reload the transaction list
+    func reloadTransactions() -> Promise<Void> {
         guard let session = SessionsManager.current else { return Promise().asVoid() }
-        return session.transactions(subaccount: activeWallet, first: UInt32(pageId))
+        return session.transactions(subaccount: activeWallet, first: 0)
         .map { page in
             self.transactions.removeAll()
             self.transactions += page.list
-            self.callPage = UInt32(pageId) + 1
-        }
+            self.callPage = 1
+        }.map {
+            self.reloadSections([OverviewSection.transaction], animated: false)
+        }.asVoid()
     }
 
-    func showTransactions() {
-        if tableView.refreshControl?.isRefreshing ?? false {
-            tableView.refreshControl?.endRefreshing()
-        }
-        reloadSections([OverviewSection.transaction], animated: false)
-    }
-
+    // received notification new block
     func onNewBlock(_ notification: Notification) {
         // update txs only if pending txs > 0
         if transactions.filter({ $0.blockHeight == 0 }).first != nil {
@@ -395,57 +380,53 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    // received notification assets update
     func onAssetsUpdated(_ notification: Notification) {
-        self.reloadSections([OverviewSection.asset], animated: true)
-        self.showTransactions()
+        reloadSections([OverviewSection.asset], animated: true)
+        reloadSections([OverviewSection.transaction], animated: false)
     }
 
+    // received notification new transaction
     func onNewTransaction(_ notification: Notification) {
-        if let dict = notification.userInfo as NSDictionary?,
-           let subaccounts = dict["subaccounts"] as? [UInt32],
-           subaccounts.contains(activeWallet) {
-            reloadData()
-        }
+        reloadData(refreshBalance: true)
     }
 
+    // received notification reconnection
     @objc func onNetworkEvent(_ notification: Notification) {
         guard let dict = notification.userInfo as NSDictionary? else { return }
         guard let connected = dict["connected"] as? Bool else { return }
         guard let loginRequired = dict["login_required"] as? Bool else { return }
         if connected == true && loginRequired == false {
             DispatchQueue.main.async { [weak self] in
-                self?.reloadData()
+                self?.reloadData(refreshBalance: true)
             }
         }
     }
 
+    // reload tableview
     func refresh(_ notification: Notification) {
         reloadSections([OverviewSection.account, OverviewSection.asset, OverviewSection.transaction], animated: true)
-        loadAlertCards()
+        reloadAlertCards()
     }
 
-    func discoverySubaccounts(singlesig: Bool) -> Promise<Void> {
-        if let session = SessionsManager.current, singlesig {
-            return session.subaccounts(true).asVoid()
-        }
-        return Promise().asVoid()
-    }
-
-    func loadSubaccounts() -> Promise<Void> {
+    // reload in tableview all subaccounts with balance
+    func reloadSubaccounts(refresh: Bool, discovery: Bool) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return Promise().asVoid() }
-        return Guarantee().then(on: bgq) {
-                session.subaccounts()
-            }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
-                let balances = wallets.map { wallet in { wallet.getBalance() } }
+        return Guarantee()
+            .then(on: bgq) { session.subaccounts(refresh) }
+            .then(on: bgq) { wallets -> Promise<[WalletItem]> in
+                // load balance for each wallet
+                let balances = wallets.filter { refresh || $0.satoshi == nil }.map { wallet in { wallet.getBalance() } }
                 return Promise.chain(balances).compactMap { _ in wallets }
-            }.map { wallets in
-                self.subAccounts = wallets
+            }.compactMap { wallets in
+                self.allSubaccounts = wallets
                 self.reloadSections([OverviewSection.account], animated: false)
-            }
+            }.asVoid()
     }
 
-    func loadAssets() {
+    // reload in tableview assets of current wallet
+    func reloadAssets() {
         assets = [(key: String, value: UInt64)]()
         if let wallet = presentingWallet {
             assets = Transaction.sort(wallet.satoshi ?? [:])
@@ -453,6 +434,7 @@ class OverviewViewController: UIViewController {
         self.reloadSections([OverviewSection.asset], animated: false)
     }
 
+    // open add account flow
     @objc func addAccount() {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSelectTypeViewController") as? AccountCreateSelectTypeViewController {
@@ -460,6 +442,7 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    // open view archived accounts page
     @objc func viewArchivedAccounts() {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
@@ -467,10 +450,12 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    // TODO: fix this delegate
     func onAccountChange() {
-        reloadWallet()
+        reloadData(refreshBalance: true)
     }
 
+    // show account id when required
     func showAccountId() {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAccountIdViewController") as? DialogAccountIdViewController {
@@ -510,6 +495,7 @@ extension OverviewViewController: UIViewControllerTransitioningDelegate {
 
 extension OverviewViewController: DrawerNetworkSelectionDelegate {
 
+    // accounts drawer: add new waller
     func didSelectAddWallet() {
         let homeS = UIStoryboard(name: "Home", bundle: nil)
         let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
@@ -520,6 +506,7 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         }
     }
 
+    // accounts drawer: select another account
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
         if account.id == self.account?.id ?? "" {
@@ -562,18 +549,19 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         }
     }
 
+    // accounts drawer: select hw account
     func didSelectHW(account: Account) {
-        let storyboard = UIStoryboard(name: "Home", bundle: nil)
-        let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-
-        let storyboard2 = UIStoryboard(name: "HWW", bundle: nil)
-        if let vc = storyboard2.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
+        let storyboardHome = UIStoryboard(name: "Home", bundle: nil)
+        let storyboardHW = UIStoryboard(name: "HWW", bundle: nil)
+        let nav = storyboardHome.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
+        if let vc = storyboardHW.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
             vc.jade = account.isJade
             nav?.pushViewController(vc, animated: false)
             UIApplication.shared.keyWindow?.rootViewController = nav
         }
     }
 
+    // accounts drawer: select app settings
     func didSelectSettings() {
         self.presentedViewController?.dismiss(animated: true, completion: {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
@@ -581,52 +569,6 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
                 self.present(vc, animated: true) {}
             }
         })
-    }
-
-    func presentAccountMenu(frame: CGRect, index: Int) {
-        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
-        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuAccountViewController") as? PopoverMenuAccountViewController {
-            popover.delegate = self
-            popover.index = index
-            popover.canArchive = (subAccounts.filter { $0.hidden == false }).count > 1
-            popover.modalPresentationStyle = .popover
-            let popoverPresentationController = popover.popoverPresentationController
-            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
-            popoverPresentationController?.delegate = self
-            popoverPresentationController?.sourceView = self.tableView
-            popoverPresentationController?.sourceRect = CGRect(x: self.tableView.frame.width - 80.0, y: frame.origin.y, width: 60.0, height: 60.0)
-            popoverPresentationController?.permittedArrowDirections = .up
-            self.present(popover, animated: true)
-        }
-    }
-
-    func archiveAccount(_ index: Int) {
-        let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            session.updateSubaccount(subaccount: self.accounts[index].pointer, hidden: true)
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            let present = (index == 0 ? self.accounts[1] : self.accounts[0])
-            self.activeWallet = present.pointer
-            self.account?.activeWallet = self.activeWallet
-            self.presentingWallet = present
-            self.reloadData()
-        }.catch { e in
-            DropAlert().error(message: e.localizedDescription)
-            print(e.localizedDescription)
-        }
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nv = segue.destination as? Learn2faViewController {
-            nv.delegate = self
-            nv.wallet = presentingWallet
-        }
     }
 }
 
@@ -638,16 +580,16 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        switch section {
-        case OverviewSection.account.rawValue:
-            return accounts.count
-        case OverviewSection.accountId.rawValue:
+        switch OverviewSection(rawValue: section) {
+        case .account:
+            return showSubaccounts ? subaccounts.count : 1
+        case .accountId:
             return 1
-        case OverviewSection.card.rawValue:
+        case .card:
             return alertCards.count
-        case OverviewSection.asset.rawValue:
+        case .asset:
             return assets.count
-        case OverviewSection.transaction.rawValue:
+        case .transaction:
             return transactions.count
         default:
             return 0
@@ -656,20 +598,22 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        switch indexPath.section {
-        case OverviewSection.account.rawValue:
+        switch OverviewSection(rawValue: indexPath.section) {
+        case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAccountCell") as? OverviewAccountCell {
                 var action: VoidToVoid?
-                if showAccounts && account?.isWatchonly == false {
+                if showSubaccounts && account?.isWatchonly == false {
                     action = { [weak self] in
                         self?.presentAccountMenu(frame: cell.frame, index: indexPath.row)
                     }
                 }
-                cell.configure(account: accounts[indexPath.row], action: action, color: color, showAccounts: showAccounts, isLiquid: isLiquid)
+                if let subaccount = showSubaccounts ? subaccounts[indexPath.row] : presentingWallet {
+                    cell.configure(account: subaccount, action: action, color: color, showAccounts: showSubaccounts, isLiquid: isLiquid)
+                }
                 cell.selectionStyle = .none
                 return cell
             }
-        case OverviewSection.accountId.rawValue:
+        case .accountId:
             if isLiquid && isAmp {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAccountIdCell") as? OverviewAccountIdCell {
                     cell.configure(onAction: {
@@ -680,7 +624,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                     return cell
                 }
             }
-        case OverviewSection.card.rawValue:
+        case .card:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAlertCardCell", for: indexPath) as? OverviewAlertCardCell {
                 let alertCard = alertCards[indexPath.row]
                 switch alertCard {
@@ -714,7 +658,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case OverviewSection.asset.rawValue:
+        case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAssetCell", for: indexPath) as? OverviewAssetCell {
                 let tag = assets[indexPath.row].key
                 let info = SessionsManager.current?.registry?.info(for: tag)
@@ -723,7 +667,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi, isLiquid: isLiquid)
                 return cell
             }
-        case OverviewSection.transaction.rawValue:
+        case .transaction:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewTransactionCell", for: indexPath) as? OverviewTransactionCell {
                 let transaction = transactions[indexPath.row]
                 cell.setup(transaction: transaction, network: account?.network)
@@ -738,10 +682,10 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch section {
-        case OverviewSection.transaction.rawValue:
+        switch OverviewSection(rawValue: section) {
+        case .transaction:
             return headerH
-        case OverviewSection.asset.rawValue:
+        case .asset:
             if isLiquid {
                 return headerH
             } else {
@@ -753,10 +697,10 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch section {
-        case OverviewSection.account.rawValue:
-            return showAccounts ? footerHandleAccountH : 1.0
-        case OverviewSection.transaction.rawValue:
+        switch OverviewSection(rawValue: section) {
+        case .account:
+            return showSubaccounts ? footerHandleAccountH : 1.0
+        case .transaction:
             return transactions.count == 0 ? footerH : 1.0
         default:
             return 1.0
@@ -765,8 +709,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 
-        switch indexPath.section {
-        case OverviewSection.accountId.rawValue:
+        switch OverviewSection(rawValue: indexPath.section) {
+        case .accountId:
             return isLiquid && isAmp ? UITableView.automaticDimension : 0.0
         default:
             return UITableView.automaticDimension
@@ -775,10 +719,10 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
-        switch section {
-        case OverviewSection.transaction.rawValue:
+        switch OverviewSection(rawValue: section) {
+        case .transaction:
             return headerView(NSLocalizedString("id_transactions", comment: ""))
-        case OverviewSection.asset.rawValue:
+        case .asset:
             if isLiquid {
                 return headerView(NSLocalizedString("id_assets", comment: ""))
             } else {
@@ -791,12 +735,12 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        switch section {
-        case OverviewSection.account.rawValue:
+        switch OverviewSection(rawValue: section) {
+        case .account:
             let isWatchonly = account?.isWatchonly ?? false
             let isResetActive = SessionsManager.current?.isResetActive ?? false
-            return showAccounts && !isWatchonly && !isResetActive ? footerView(.handleAccount) : footerView(.none)
-        case OverviewSection.transaction.rawValue:
+            return showSubaccounts && !isWatchonly && !isResetActive ? footerView(.handleAccount) : footerView(.none)
+        case .transaction:
             return transactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
         default:
             return footerView(.none)
@@ -805,21 +749,21 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        switch indexPath.section {
-        case OverviewSection.account.rawValue:
+        switch OverviewSection(rawValue: indexPath.section) {
+        case .account:
             UIView.setAnimationsEnabled(true)
-            if indexPath.row == 0 {
-                showAccounts = !showAccounts
-                reloadSections([OverviewSection.account], animated: true)
-                return
-            } else {
-                presentingWallet = accounts[indexPath.row]
+            showSubaccounts = !showSubaccounts
+            reloadSections([OverviewSection.account], animated: true)
+            if indexPath.row > 0 {
+                presentingWallet = subaccounts[indexPath.row]
                 activeWallet = presentingWallet?.pointer ?? 0
                 account?.activeWallet = activeWallet
-                showAccounts = !showAccounts
+                assets.removeAll()
+                transactions.removeAll()
+                reloadSections([.asset, .transaction], animated: false)
                 reloadData()
             }
-        case OverviewSection.asset.rawValue:
+        case .asset:
             if !isLiquid { return }
             let storyboard = UIStoryboard(name: "Shared", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
@@ -830,7 +774,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: false, completion: nil)
             }
-        case OverviewSection.transaction.rawValue:
+        case .transaction:
             let transaction = transactions[indexPath.row]
             let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
@@ -924,13 +868,13 @@ extension OverviewViewController {
             addBtn.addTarget(self, action: #selector(addAccount), for: .touchUpInside)
 
             let archiveBtn = UIButton(frame: .zero)
-            let btnTitle = archivedAccount > 0 ? String(format: NSLocalizedString("id_view_archived_accounts_d", comment: ""), archivedAccount) : NSLocalizedString("id_no_archived_accounts", comment: "")
+            let btnTitle = archivedSubaccount > 0 ? String(format: NSLocalizedString("id_view_archived_accounts_d", comment: ""), archivedSubaccount) : NSLocalizedString("id_no_archived_accounts", comment: "")
             archiveBtn.setTitle(btnTitle, for: .normal)
             archiveBtn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
             archiveBtn.setStyle(.outlinedGray)
             archiveBtn.addTarget(self, action: #selector(viewArchivedAccounts), for: .touchUpInside)
-            archiveBtn.isEnabled = archivedAccount > 0
-            archiveBtn.alpha = archivedAccount > 0 ? 1.0 : 0.5
+            archiveBtn.isEnabled = archivedSubaccount > 0
+            archiveBtn.alpha = archivedSubaccount > 0 ? 1.0 : 0.5
 
             let stackView   = UIStackView()
             stackView.axis  = NSLayoutConstraint.Axis.vertical
@@ -1066,7 +1010,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            session.renameSubaccount(subaccount: self.accounts[index].pointer, newName: name)
+            session.renameSubaccount(subaccount: self.subaccounts[index].pointer, newName: name)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -1109,6 +1053,7 @@ extension OverviewViewController: UIPopoverPresentationControllerDelegate {
 }
 
 extension OverviewViewController: PopoverMenuAccountDelegate {
+    // subaccounts section: select menu options
     func didSelectionMenuOption(option: MenuAccountOption, index: Int) {
         switch option {
         case .rename:
@@ -1121,7 +1066,48 @@ extension OverviewViewController: PopoverMenuAccountDelegate {
                 present(vc, animated: false, completion: nil)
             }
         case .archive:
-            archiveAccount(index)
+            archiveSubaccount(index)
+        }
+    }
+
+    // subaccounts section: popup on subaccounts
+    func presentAccountMenu(frame: CGRect, index: Int) {
+        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
+        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuAccountViewController") as? PopoverMenuAccountViewController {
+            popover.delegate = self
+            popover.index = index
+            popover.canArchive = (subaccounts.filter { $0.hidden == false }).count > 1
+            popover.modalPresentationStyle = .popover
+            let popoverPresentationController = popover.popoverPresentationController
+            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
+            popoverPresentationController?.delegate = self
+            popoverPresentationController?.sourceView = self.tableView
+            popoverPresentationController?.sourceRect = CGRect(x: self.tableView.frame.width - 80.0, y: frame.origin.y, width: 60.0, height: 60.0)
+            popoverPresentationController?.permittedArrowDirections = .up
+            self.present(popover, animated: true)
+        }
+    }
+
+    // subaccounts section: archive a subaccount
+    func archiveSubaccount(_ index: Int) {
+        let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current else { return }
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then(on: bgq) {
+            session.updateSubaccount(subaccount: self.subaccounts[index].pointer, hidden: true)
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            let present = (index == 0 ? self.subaccounts[1] : self.subaccounts[0])
+            self.activeWallet = present.pointer
+            self.account?.activeWallet = self.activeWallet
+            self.presentingWallet = present
+            self.reloadData()
+        }.catch { e in
+            DropAlert().error(message: e.localizedDescription)
+            print(e.localizedDescription)
         }
     }
 }

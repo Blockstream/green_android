@@ -85,4 +85,8 @@ class WalletItem: Codable, Equatable {
             lhs.recoveryChainCode == rhs.recoveryChainCode &&
             lhs.recoveryPubKey == rhs.recoveryPubKey
     }
+
+    func accountType() -> AccountType? {
+        AccountType(rawValue: type)
+    }
 }
