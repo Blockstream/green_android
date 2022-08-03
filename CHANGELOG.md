@@ -3,18 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.8.6] - 2022-08-03
 
 ### Added
-- Display firmware hash during Jade OTA
+- Display firmware hash during Jade firmware update
 - Login with BIP39 Passphrase
 
 ### Changed
-- Display the receive address in Transaction Details
-- Display the amount without the fee in Transaction Details
+- Display the receive address in transaction details
+- Display the net amount without fees in transaction details
 
 ### Fixed
-- Check connectivity on restoring wallet
+- Handle connection failure during wallet discovery
 
 ## [3.8.5] - 2022-07-15
 
