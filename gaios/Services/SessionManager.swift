@@ -301,9 +301,8 @@ class SessionManager {
         return Guarantee()
             .map(on: bgq) { try self.connect() }
             .then(on: bgq) { self.loginUser(details: details ?? [:]) }
-            
     }
-    
+
     func load(refreshSubaccounts: Bool = true) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()

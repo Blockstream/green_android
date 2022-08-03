@@ -226,7 +226,6 @@ class LoginViewController: UIViewController {
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
-
             var prettyError = "id_login_failed"
             self.stopLoader()
             switch error {
@@ -253,6 +252,8 @@ class LoginViewController: UIViewController {
             default:
                 DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             }
+            self.pinCode = ""
+            self.reload()
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
         }
     }
