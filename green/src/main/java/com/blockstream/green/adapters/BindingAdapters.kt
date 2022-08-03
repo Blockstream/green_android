@@ -13,8 +13,10 @@ import androidx.databinding.InverseBindingListener
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.data.Banner
 import com.blockstream.green.gdk.getIcon
-import com.blockstream.green.utils.errorFromResourcesAndGDK
+import com.blockstream.green.extensions.errorFromResourcesAndGDK
+import com.blockstream.green.extensions.fromHtml
 import com.blockstream.green.views.GreenAlertView
+import com.blockstream.green.views.GreenContentCardView
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
@@ -78,6 +80,24 @@ fun setTextResource(textView: TextView, @StringRes resource: Int) {
         textView.text = ""
     }else{
         textView.setText(resource)
+    }
+}
+
+@BindingAdapter("fromHtml")
+fun setFromHtml(textView: TextView, @StringRes resource: Int) {
+    if(resource == 0) {
+        textView.text = ""
+    }else{
+        textView.text = textView.context.getString(resource).fromHtml()
+    }
+}
+
+@BindingAdapter("fromHtml")
+fun setFromHtml(textView: TextView, text: String?) {
+    if(text == null) {
+        textView.text = ""
+    }else{
+        textView.text = text.fromHtml()
     }
 }
 
@@ -179,6 +199,16 @@ fun setGdkError(textView: TextView, error: String?) {
     }
 }
 
+@BindingAdapter("gdkErrorOrInvisible")
+fun setGdkErrorOrInvisible(textView: TextView, error: String?) {
+    if(error.isNullOrBlank()){
+        textView.isInvisible = true
+    }else{
+        textView.text = textView.context.errorFromResourcesAndGDK(error)
+        textView.isInvisible = false
+    }
+}
+
 @InverseBindingAdapter(attribute = "android:value")
 fun getSliderValue(slider: Slider) = slider.value
 
@@ -187,4 +217,9 @@ fun setSliderListeners(slider: Slider, attrChange: InverseBindingListener) {
     slider.addOnChangeListener { _, _, _ ->
         attrChange.onChange()
     }
+}
+
+@BindingAdapter("captionText")
+fun captionText(view: GreenContentCardView, caption: String?) {
+    view.setCaption(caption)
 }

@@ -11,226 +11,216 @@
 
     </data>
 
-    <FrameLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/coordinator"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/appBarLayout"
+            <com.blockstream.green.views.GreenToolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="?attr/actionBarSize" />
 
-                <com.blockstream.green.views.GreenToolbar
-                    android:id="@+id/toolbar"
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/buttonBack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.blockstream.green.views.GappedLinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:gap="4dp">
 
-            </com.google.android.material.appbar.AppBarLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fillViewport="true"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-                <ScrollView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:paddingBottom="16dp"
-                    app:layout_constraintBottom_toTopOf="@+id/buttonBack"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.blockstream.green.views.GappedLinearLayout
+                    <com.blockstream.green.views.GreenSwitch
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:gap="4dp">
+                        android:checked="@={qaTester.corruptedHardwareMessageSign}"
+                        app:captionText="Corrupt message singing commitments"
+                        app:icon="@drawable/ic_proxy_60"
+                        app:titleText="Corrupt Hardware (Message)" />
 
-                        <com.blockstream.green.views.GreenSwitch
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="@={qaTester.corruptedHardwareMessageSign}"
-                            app:captionText="Corrupt message singing commitments"
-                            app:icon="@drawable/ic_proxy_60"
-                            app:titleText="Corrupt Hardware (Message)" />
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:dividerInsetStart="54dp"
+                        />
 
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
+                    <com.blockstream.green.views.GreenSwitch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="@={qaTester.corruptedHardwareTxSign}"
+                        app:captionText="Corrupt transaction singing commitments"
+                        app:icon="@drawable/ic_transaction_verification_18"
+                        app:titleText="Corrupt Hardware (Transaction)" />
 
-                        <com.blockstream.green.views.GreenSwitch
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="@={qaTester.corruptedHardwareTxSign}"
-                            app:captionText="Corrupt transaction singing commitments"
-                            app:icon="@drawable/ic_transaction_verification_18"
-                            app:titleText="Corrupt Hardware (Transaction)" />
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/settings_element_margin" />
 
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
+                    <com.blockstream.green.views.GreenSwitch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="@={qaTester.corruptedJadeFirmwareHash}"
+                        app:captionText="Corrupt firmware hash"
+                        app:icon="@drawable/blockstream_jade_device"
+                        app:titleText="Corrupt Jade Firmware" />
 
-                        <com.blockstream.green.views.GreenSwitch
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="@={qaTester.corruptedJadeFirmwareHash}"
-                            app:captionText="Corrupt firmware hash"
-                            app:icon="@drawable/blockstream_jade_device"
-                            app:titleText="Corrupt Jade Firmware" />
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/settings_element_margin" />
 
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
+                    <com.blockstream.green.views.GreenSwitch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="@={qaTester.assetsFetchDisabled}"
+                        app:captionText="Disable Assets metadata &amp; icons fetching"
+                        app:icon="@drawable/ic_unknown"
+                        app:titleText="Disable Assets fetching" />
 
-                        <com.blockstream.green.views.GreenSwitch
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="@={qaTester.assetsFetchDisabled}"
-                            app:captionText="Disable Assets metadata &amp; icons fetching"
-                            app:icon="@drawable/ic_unknown_asset_60"
-                            app:titleText="Disable Assets fetching" />
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/settings_element_margin" />
 
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
+                    <TextView
+                        android:id="@+id/errorCounter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Errors" />
 
-                        <TextView
-                            android:id="@+id/errorCounter"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="Errors" />
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/settings_element_margin" />
 
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Clear local settings (device_id, consent dialog, app review)" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="Clear local settings (device_id, consent dialog, app review)" />
+                    <Button
+                        android:id="@+id/buttonClearLocalSettings"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Clear local settings" />
 
-                        <Button
-                            android:id="@+id/buttonClearLocalSettings"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:text="Clear local settings" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Custom Network" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="Custom Network" />
+                    <Button
+                        android:id="@+id/buttonCreateCustomNetwork"
+                        style="?attr/materialButtonOutlinedStyle"                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Create Custom Network" />
 
-                        <Button
-                            android:id="@+id/buttonCreateCustomNetwork"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:text="Create Custom Network" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="GDK" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="GDK" />
+                    <Button
+                        android:id="@+id/buttonClearGdk"
+                        style="?attr/materialButtonOutlinedStyle"                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Clear GDK cache folder" />
 
-                        <Button
-                            android:id="@+id/buttonClearGdk"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:text="Clear GDK cache folder" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="GDK Sessions" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="GDK Sessions" />
+                    <Button
+                        android:id="@+id/buttonDisconnectAll"
+                        style="?attr/materialButtonOutlinedStyle"                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Disconnect all sessions" />
 
-                        <Button
-                            android:id="@+id/buttonDisconnectAll"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:text="Disconnect all sessions" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Emulate GDK Events (w/ 5 secs delay)" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="Emulate GDK Events (w/ 7 secs delay)" />
+                    <Button
+                        android:id="@+id/buttonDisconnectNotification"
+                        style="?attr/materialButtonOutlinedStyle"                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Send Disconnect Notification" />
 
-                        <Button
-                            android:id="@+id/buttonDisconnectNotification"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:text="Send Disconnect Notification" />
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/settings_element_margin" />
 
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
+                </com.blockstream.green.views.GappedLinearLayout>
+            </ScrollView>
 
-                    </com.blockstream.green.views.GappedLinearLayout>
-                </ScrollView>
+            <Button
+                android:id="@+id/buttonKill"
+                style="?attr/materialButtonOutlinedStyle"                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:text="Kill App"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/buttonBack"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                <Button
-                    android:id="@+id/buttonKill"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:text="Kill App"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonBack"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent" />
+            <Button
+                android:id="@+id/buttonBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:text="Go Back"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/buttonContinue"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/buttonKill" />
 
-                <Button
-                    android:id="@+id/buttonBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:text="Go Back"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/buttonContinue"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/buttonKill" />
-
-                <Button
-                    android:id="@+id/buttonContinue"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:text="Open Green"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/buttonBack" />
+            <Button
+                android:id="@+id/buttonContinue"
+                style="?attr/materialButtonOutlinedStyle"                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:text="Open Green"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/buttonBack" />
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    </FrameLayout>
 </layout>

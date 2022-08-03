@@ -6,33 +6,34 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "31.0.0"
+    compileSdkVersion 33
+    buildToolsVersion "33.0.0"
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
 
         consumerProguardFiles "consumer-rules.pro"
     }
-
+    compileOptions {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
     task fetchGdk (type: Exec) {
         workingDir '.'
         commandLine './fetch_gdk_binaries.sh'
     }
+    namespace 'com.blockstream.crypto'
+}
+
+kotlin {
+    jvmToolchain(11)
 }
 
 afterEvaluate {
@@ -48,18 +49,19 @@ dependencies {
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     /** ----------------------------------------------------------------------------------------- */
     
     /**  --- AndroidX --------------------------------------------------------------------------- */
-    implementation 'androidx.annotation:annotation:1.4.0'
+    implementation 'androidx.annotation:annotation:1.5.0'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava  ---------------------------------------------------------------------------- */
-    implementation "io.reactivex.rxjava3:rxjava:3.0.12"
+    implementation "io.reactivex.rxjava3:rxjava:3.1.2"
     implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
     /** ----------------------------------------------------------------------------------------- */
 

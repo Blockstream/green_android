@@ -3,11 +3,10 @@ package com.blockstream.green.settings
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
-import androidx.preference.PreferenceManager
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.base.Preferences
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.PinData
 import com.blockstream.green.ApplicationScope
-import com.blockstream.green.Preferences
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -20,8 +19,9 @@ import java.security.UnrecoverableKeyException
 
 class Migrator constructor(
     val context: Context,
+    val sharedPreferences: SharedPreferences,
     val walletRepository: WalletRepository,
-    val greenWallet: GreenWallet,
+    val gdkBridge: GdkBridge,
     val settingsManager: SettingsManager,
     val applicationScope: ApplicationScope
 ) {
@@ -35,11 +35,11 @@ class Migrator constructor(
 
         migratePreferencesFromV3()
         fixV4Migration()
+
+        migrateAppDataV2()
     }
 
     private suspend fun migratePreferencesFromV3(){
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
         if(sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4_1, false) || sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4_2, false)){
             return
         }
@@ -74,18 +74,19 @@ class Migrator constructor(
 
             enableTOR = networkPreferences.getBoolean(TOR_ENABLED, false) || enableTOR
 
-            val network = greenWallet.networks.getNetworkById(networkId)
+            val network = gdkBridge.networks.getNetworkById(networkId)
 
             val wallet = Wallet(
                 walletHashId = "",
                 name = network.name,
-                network = network.id,
+                activeNetwork = network.id,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = false,
+                isTestnet = network.isTestnet,
                 activeAccount = networkPreferences.getInt(ACTIVE_SUBACCOUNT, 0).toLong()
             )
 
-            wallet.id = walletRepository.addWalletSuspend(wallet)
+            wallet.id = walletRepository.insertWallet(wallet)
 
             for(pinPreference in pinPreferences){
                 if(pinPreference.contains("ident")){
@@ -111,9 +112,10 @@ class Migrator constructor(
                         encryptedData = EncryptedData(nativePIN, nativeIV ?: "")
                     }
 
-                    walletRepository.addLoginCredentialsSuspend(
+                    walletRepository.insertOrReplaceLoginCredentials(
                         LoginCredentials(
                             walletId = wallet.id,
+                            network = network.id,
                             credentialType = credentialType,
                             pinData = pinData,
                             keystore = keystore,
@@ -136,10 +138,7 @@ class Migrator constructor(
         sharedPreferences.edit().putBoolean(Preferences.MIGRATED_V3_V4_2, true).apply()
     }
 
-
     private suspend fun fixV4Migration(){
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
         if(sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4_2, false)){
             return
         }
@@ -184,7 +183,7 @@ class Migrator constructor(
                         encryptedData = EncryptedData(nativePIN, nativeIV ?: "")
                     }
 
-                    for(wallet in walletRepository.getWalletsSuspend()){
+                    for(wallet in walletRepository.getAllWallets()){
                         for (loginCredentials in walletRepository.getLoginCredentialsSuspend(wallet.id)){
 
                             if(pinData == loginCredentials.pinData){
@@ -204,16 +203,39 @@ class Migrator constructor(
 
             // As we change the primary key, we have to first delete the old record
             for(deleteLoginCredentials in batchDelete){
-                walletRepository.deleteLoginCredentialsSuspend(deleteLoginCredentials)
+                walletRepository.deleteLoginCredentials(deleteLoginCredentials)
             }
 
             // and insert the new login credentials
             for(inserLoginCredentials in batchUpdate){
-                walletRepository.addLoginCredentialsSuspend(inserLoginCredentials)
+                walletRepository.insertOrReplaceLoginCredentials(inserLoginCredentials)
             }
         }
 
         sharedPreferences.edit().putBoolean(Preferences.MIGRATED_V3_V4_2, true).apply()
+    }
+
+    private suspend fun migrateAppDataV2() {
+        if (sharedPreferences.getLong(Preferences.APP_DATA_VERSION, 0) < 2) {
+
+            logger.info { "Migrating AppData to v2" }
+
+            walletRepository.getAllWallets().forEach { wallet ->
+
+                val network = wallet.activeNetwork
+
+                wallet.isTestnet = wallet.activeNetwork.contains("testnet")
+
+                walletRepository.updateWallet(wallet)
+
+                walletRepository.getLoginCredentialsSuspend(wallet.id).forEach {
+                    it.network = network
+                    walletRepository.updateLoginCredentials(it)
+                }
+            }
+
+            sharedPreferences.edit().putLong(Preferences.APP_DATA_VERSION, 2).apply()
+        }
     }
 
     private fun fromV3PreferenceValues(pin: SharedPreferences): PinData? {

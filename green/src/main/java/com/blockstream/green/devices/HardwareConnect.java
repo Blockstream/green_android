@@ -12,6 +12,7 @@ import com.blockstream.gdk.data.DeviceSupportsAntiExfilProtocol;
 import com.blockstream.gdk.data.DeviceSupportsLiquid;
 import com.blockstream.green.BuildConfig;
 import com.blockstream.green.R;
+import com.blockstream.green.gdk.GdkSession;
 import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
@@ -150,10 +151,10 @@ public class HardwareConnect {
         );
     }
 
-    private void reconnectSession(final HardwareConnectInteraction interaction) {
+    private void connectSession(final HardwareConnectInteraction interaction) {
         Log.d(TAG, "(re-)connecting gdk session)");
-        interaction.getGreenSession().disconnect();
-        interaction.getGreenSession().connect(interaction.getGreenSession().getNetworks().getBitcoinGreen());
+        GdkSession session = interaction.getGreenSession();
+        session.connect(session.networkBy(session.getEphemeralWallet().getActiveNetwork()), Collections.emptyList(), true);
     }
 
     private void onJadeConnected(final HardwareConnectInteraction interaction, final VersionInfo verInfo, final JadeAPI jade) {
@@ -170,7 +171,7 @@ public class HardwareConnect {
                 // Jade login (to access firmware server and to interact with the pinserver).
                 // This also acts as a handy check that we have network connectivity before we start.
                 .map(session -> {
-                    reconnectSession(interaction);
+                    connectSession(interaction);
                     return session;
                 })
                 .doOnError(throwable -> Log.e(TAG, "Exception connecting GDK - " + throwable))
@@ -189,6 +190,9 @@ public class HardwareConnect {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         jadeWallet -> {
+                            if(jadeWallet.wasInitialized()){
+                                interaction.onJadeInitialization(interaction.getGreenSession());
+                            }
                             doLogin(jadeWallet, interaction);
                         },
                         throwable -> {
@@ -257,8 +261,6 @@ public class HardwareConnect {
             });
             return;
         }
-
-
 
         // All good
         onTrezorConnected(interaction, t, firmware);
@@ -357,7 +359,7 @@ public class HardwareConnect {
                 .map(session -> {
                     String pin = null;
                     if (this.device.isUsb() && !BTChipTransportAndroid.isLedgerWithScreen(this.device.getUsbDevice())) {
-                        pin = interaction.requestPin(DeviceBrand.Ledger).blockingGet();
+                        pin = interaction.requestPinBlocking(DeviceBrand.Ledger);
                     }
 
                     Log.d(TAG, "Creating Ledger HW wallet" + (pin != null ? " with PIN" : ""));

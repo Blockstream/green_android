@@ -1,12 +1,9 @@
 package com.blockstream.green.database
 
 import androidx.room.*
-import androidx.room.ForeignKey.CASCADE
-import com.blockstream.green.utils.EncryptedData
-import com.blockstream.gdk.GreenWallet
+import androidx.room.ForeignKey.Companion.CASCADE
 import com.blockstream.gdk.data.PinData
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
+import com.blockstream.green.utils.EncryptedData
 
 
 @Entity(
@@ -20,9 +17,12 @@ import kotlinx.serialization.encodeToString
     )]
 )
 @TypeConverters(Converters::class)
-data class LoginCredentials(
+data class LoginCredentials constructor(
     @ColumnInfo(name = "wallet_id")
     var walletId: Long,
+
+    @ColumnInfo(name = "network", defaultValue = "")
+    var network: String,
 
     @ColumnInfo(name = "credential_type")
     var credentialType: CredentialType,
@@ -48,29 +48,4 @@ enum class CredentialType(val value: Int) {
     // It's a variable length PIN, based on greenbits v2
     // in the future can be used as an alphanumeric input as a password
     PASSWORD(3)
-}
-
-class Converters {
-    @TypeConverter
-    fun toType(value: Int) = enumValues<CredentialType>()[value]
-
-    @TypeConverter
-    fun fromType(value: CredentialType) = value.ordinal
-
-    @TypeConverter
-    fun toPinData(value: String?): PinData? = value?.let {
-        GreenWallet.JsonDeserializer.decodeFromString(it)
-    }
-
-    @TypeConverter
-    fun fromPinData(value: PinData?): String? = value?.let { GreenWallet.JsonDeserializer.encodeToString(it)}
-
-    @TypeConverter
-    fun toEncryptedData(value: String?): EncryptedData? = value?.let {
-        GreenWallet.JsonDeserializer.decodeFromString(it)
-    }
-
-    @TypeConverter
-    fun fromEncryptedData(value: EncryptedData?): String? = value?.let {
-        GreenWallet.JsonDeserializer.encodeToString(it)}
 }

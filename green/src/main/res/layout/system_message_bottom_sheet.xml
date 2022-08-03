@@ -43,7 +43,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:text="@string/id_system_message"
-                android:textAppearance="?attr/textAppearanceHeadline5"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 app:layout_constraintEnd_toStartOf="@+id/buttonClose"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -85,7 +85,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
                     android:text="@{message}"
-                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
                     tools:text="fdfad \nsd\ndn\n\nsdndn\n\nsd\ndn\n\nsd\ndn\n\nsd\ndn\n" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
@@ -121,7 +121,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:text="@string/id_success"
-                        android:textAppearance="?attr/textAppearanceHeadline5"
+                        android:textAppearance="?attr/textAppearanceHeadlineLarge"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

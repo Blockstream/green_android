@@ -8,4 +8,9 @@
         android:title="@string/id_share"
         app:showAsAction="always"/>
 
+    <item
+        android:id="@+id/account"
+        android:title="@string/id_go_to_account"
+        app:showAsAction="never"/>
+
 </menu>

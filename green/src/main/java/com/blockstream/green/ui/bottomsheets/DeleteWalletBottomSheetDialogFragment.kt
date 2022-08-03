@@ -6,8 +6,8 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeleteWalletBottomSheetBinding
-import com.blockstream.green.ui.IntroFragment
-import com.blockstream.green.ui.wallet.LoginFragment
+import com.blockstream.green.ui.intro.IntroFragment
+import com.blockstream.green.ui.login.LoginFragment
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
@@ -19,7 +19,6 @@ class DeleteWalletBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<
     private lateinit var wallet: Wallet
 
     override fun inflate(layoutInflater: LayoutInflater) = DeleteWalletBottomSheetBinding.inflate(layoutInflater)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

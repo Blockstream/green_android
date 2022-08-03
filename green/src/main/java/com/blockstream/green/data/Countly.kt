@@ -7,21 +7,21 @@ import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.core.content.edit
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.MutableLiveData
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
-import com.blockstream.gdk.GreenWallet
-import com.blockstream.gdk.WalletBalances
+import com.blockstream.gdk.GdkBridge
+import com.blockstream.gdk.data.Account
+import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.devices.Device
+import com.blockstream.green.gdk.*
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.settings.ApplicationSettings
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppActivity
@@ -30,9 +30,10 @@ import com.blockstream.green.ui.dialogs.CountlySurveyDialogFragment
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
-import com.blockstream.green.utils.toList
 import com.blockstream.green.views.GreenAlertView
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -64,7 +65,8 @@ class Countly constructor(
     val analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics)
     val rateGooglePlayEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play)
 
-    val remoteConfigUpdateEvent = MutableLiveData(0)
+    private val _remoteConfigUpdateEvent = MutableSharedFlow<Unit>(replay = 1)
+    val remoteConfigUpdateEvent = _remoteConfigUpdateEvent.asSharedFlow()
 
     private val countly = Countly.sharedInstance().also { countly ->
         val config = CountlyConfig(
@@ -76,7 +78,7 @@ class Countly constructor(
             if (isDevelopmentOrDebug) {
                 it.setEventQueueSizeToSend(1)
             }
-            it.setLoggingEnabled(isDevelopmentOrDebug)
+            // it.setLoggingEnabled(isDevelopmentOrDebug)
             // Disable automatic view tracking
             it.setViewTracking(false)
             // Enable crash reporting
@@ -94,7 +96,7 @@ class Countly constructor(
                 logger.info { if (error.isNullOrBlank()) "Remote Config Completed" else "Remote Config error: $error" }
 
                 if(error.isNullOrBlank()){
-                    remoteConfigUpdateEvent.postValue(remoteConfigUpdateEvent.value?.plus(1))
+                    _remoteConfigUpdateEvent.tryEmit(Unit)
                 }
             })
             // Add initial enabled features
@@ -174,7 +176,7 @@ class Countly constructor(
         }.launchIn(applicationScope)
 
         // Set number of user software wallets
-        walletRepository.getWalletsLiveData().observeForever {
+        walletRepository.getSoftwareWalletsLiveData().observeForever {
             updateUserProfile(it)
         }
 
@@ -204,7 +206,7 @@ class Countly constructor(
     fun getFeedbackWidgetData(widget: CountlyFeedbackWidget, callback: (CountlyWidget?) -> Unit){
         countly.feedback().getFeedbackWidgetData(widget) { data, _ ->
             try{
-                callback.invoke(GreenWallet.JsonDeserializer.decodeFromString<CountlyWidget>(data.toString()).also{
+                callback.invoke(GdkBridge.JsonDeserializer.decodeFromString<CountlyWidget>(data.toString()).also{
                     it.widget = widget
                 })
 
@@ -224,7 +226,17 @@ class Countly constructor(
         }
     }
 
-    fun handleReferrer(onComplete: (referrer: String) -> Unit) {
+    fun showFeedbackWidget(supportFragmentManager: FragmentManager) {
+        feedbackWidget?.type.also { type ->
+            if(type == ModuleFeedback.FeedbackWidgetType.nps){
+                CountlyNpsDialogFragment.show(supportFragmentManager)
+            }else if(type == ModuleFeedback.FeedbackWidgetType.survey){
+                CountlySurveyDialogFragment.show(supportFragmentManager)
+            }
+        }
+    }
+
+    private fun handleReferrer(onComplete: (referrer: String) -> Unit) {
         InstallReferrerClient.newBuilder(context).build().also { referrerClient ->
             referrerClient.startConnection(object : InstallReferrerStateListener {
                 override fun onInstallReferrerSetupFinished(responseCode: Int) {
@@ -331,9 +343,11 @@ class Countly constructor(
             consent.setConsentFeatureGroup(ANALYTICS_GROUP, true)
         }
 
-        walletRepository.getWalletsLiveData().value?.let {
+        walletRepository.getSoftwareWalletsLiveData().value?.let {
             updateUserProfile(it)
         }
+
+        updateFeedbackWidget()
     }
 
     fun recordException(throwable: Throwable) {
@@ -363,30 +377,30 @@ class Countly constructor(
     }
 
     fun activeWallet(
-        session: GreenSession,
-        walletBalances: WalletBalances,
-        subAccounts: List<SubAccount>
+        session: GdkSession,
+        walletAssets: Map<String, Long>,
+        accountAssets: Map<AccountId, Assets>,
+        accounts: List<Account>
     ) {
         events.recordEvent(
             Events.WALLET_ACTIVE.toString(),
             sessionSegmentation(session).also { segmentation ->
-
                 // Total account balance
                 // Note: Balance amount is not tracked, only used to identify a funded wallet
-                val accountsTotalBalance = walletBalances.toList().map { it.values.sum() }
+                val walletTotalBalance = walletAssets.values.sum()
 
-                segmentation[PARAM_WALLET_FUNDED] = (accountsTotalBalance.sum() > 0) // Boolean if wallet is funded with any asset
-                segmentation[PARAM_ACCOUNTS_FUNDED] = accountsTotalBalance.filter { it > 0 }.count() // number of funded accounts
+                segmentation[PARAM_WALLET_FUNDED] = (walletTotalBalance > 0) // Boolean if wallet is funded with any asset
+                segmentation[PARAM_ACCOUNTS_FUNDED] = accountAssets.filter { it.value.values.sum() > 0 }.count() // number of funded accounts
 
-                segmentation[PARAM_ACCOUNTS] = subAccounts.size
-                segmentation[PARAM_ACCOUNTS_TYPES] = subAccounts.map { it.type.gdkType }.toSet().sorted().joinToString(",")
+                segmentation[PARAM_ACCOUNTS] = accounts.size
+                segmentation[PARAM_ACCOUNTS_TYPES] = accounts.map { it.type.gdkType }.toSet().sorted().joinToString(",")
             }
         )
     }
 
     fun loginWallet(
         wallet: Wallet,
-        session: GreenSession,
+        session: GdkSession,
         loginCredentials: LoginCredentials? = null
     ) {
         events
@@ -414,49 +428,40 @@ class Countly constructor(
             )
     }
 
-    fun startCreateWallet() {
-        // Cancel any previous event
-        events.cancelEvent(Events.WALLET_CREATE.toString())
-        events.startEvent(Events.WALLET_CREATE.toString())
+    fun hardwareConnect(device: Device) {
+        events.recordEvent(Events.HWW_CONNECT.toString(), deviceSegmentation(device))
     }
 
-    fun createWallet(session: GreenSession) {
-        events
-            .endEvent(
-                Events.WALLET_CREATE.toString(),
-                sessionSegmentation(session), 1, 0.0
-            )
+    fun jadeInitialize(session: GdkSession) {
+        events.recordEvent(Events.JADE_INITIALIZE.toString(), sessionSegmentation(session))
     }
 
-    fun startRestoreWatchOnlyWallet() {
-        // Cancel any previous event
-        events.cancelEvent(Events.WALLET_RESTORE_WATCH_ONLY.toString())
-        events.startEvent(Events.WALLET_RESTORE_WATCH_ONLY.toString())
+    fun addWallet() {
+        events.recordEvent(Events.WALLET_ADD.toString())
     }
 
-    fun restoreWatchOnlyWallet(session: GreenSession) {
-        events
-            .endEvent(
-                Events.WALLET_RESTORE_WATCH_ONLY.toString(),
-                sessionSegmentation(session), 1, 0.0
-            )
+    fun hardwareWallet() {
+        events.recordEvent(Events.WALLET_HWW.toString())
     }
 
-    fun startRestoreWallet() {
-        // Cancel any previous event
-        events.cancelEvent(Events.WALLET_RESTORE.toString())
-        events
-            .startEvent(
-                Events.WALLET_RESTORE.toString()
-            )
+    fun newWallet() {
+        events.recordEvent(Events.WALLET_NEW.toString())
     }
 
-    fun restoreWallet(session: GreenSession) {
-        events
-            .endEvent(
-                Events.WALLET_RESTORE.toString(),
-                sessionSegmentation(session), 1, 0.0
-            )
+    fun restoreWallet() {
+        events.recordEvent(Events.WALLET_RESTORE.toString())
+    }
+
+    fun watchOnlyWallet() {
+        events.recordEvent(Events.WALLET_WATCH_ONLY.toString())
+    }
+
+    fun createWallet(session: GdkSession) {
+        events.recordEvent(Events.WALLET_CREATE.toString(), sessionSegmentation(session))
+    }
+
+    fun importWallet(session: GdkSession) {
+        events.recordEvent(Events.WALLET_IMPORT.toString(), sessionSegmentation(session))
     }
 
     fun renameWallet() {
@@ -467,15 +472,45 @@ class Countly constructor(
         events.recordEvent(Events.WALLET_DELETE.toString())
     }
 
-    fun renameAccount(session: GreenSession, subAccount: SubAccount?) {
-        events.recordEvent(Events.ACCOUNT_RENAME.toString(), subAccountSegmentation(session, subAccount))
+    fun renameAccount(session: GdkSession, account: Account?) {
+        events.recordEvent(Events.ACCOUNT_RENAME.toString(), accountSegmentation(session, account))
     }
 
-    fun createAccount(session: GreenSession, subAccount: SubAccount) {
+    fun firstAccount(session: GdkSession) {
+        events.recordEvent(Events.ACCOUNT_FIRST.toString(), sessionSegmentation(session = session))
+    }
+
+    fun accountNew(session: GdkSession) {
+        events.recordEvent(Events.ACCOUNT_NEW.toString(), sessionSegmentation(session = session))
+    }
+
+    fun accountSelect(session: GdkSession, accountAsset: AccountAsset) {
+        events.recordEvent(
+            Events.ACCOUNT_SELECT.toString(),
+            accountSegmentation(session = session, account = accountAsset.account)
+        )
+    }
+
+    fun assetChange(session: GdkSession) {
+        events.recordEvent(Events.ASSET_CHANGE.toString(),
+            sessionSegmentation(session = session))
+    }
+
+    fun assetSelect(session: GdkSession) {
+        events.recordEvent(Events.ASSET_SELECT.toString(),
+            sessionSegmentation(session = session))
+    }
+
+    fun createAccount(session: GdkSession, account: Account) {
         events.recordEvent(
             Events.ACCOUNT_CREATE.toString(),
-            subAccountSegmentation(session, subAccount = subAccount)
+            accountSegmentation(session, account = account)
         )
+    }
+
+    fun balanceConvert(session: GdkSession) {
+        events.recordEvent(Events.BALANCE_CONVERT.toString(),
+            sessionSegmentation(session = session))
     }
 
     fun startSendTransaction(){
@@ -484,16 +519,16 @@ class Countly constructor(
         events.startEvent(Events.SEND_TRANSACTION.toString())
     }
 
-    fun sendTransaction(
-        session: GreenSession,
-        subAccount: SubAccount?,
+    fun endSendTransaction(
+        session: GdkSession,
+        account: Account?,
         transactionSegmentation: TransactionSegmentation,
         withMemo: Boolean
     ) {
         events
             .endEvent(
                 Events.SEND_TRANSACTION.toString(),
-                subAccountSegmentation(session, subAccount).also {
+                accountSegmentation(session, account).also {
                     it[PARAM_TRANSACTION_TYPE] = transactionSegmentation.transactionType.toString()
                     it[PARAM_ADDRESS_INPUT] = transactionSegmentation.addressInputType.toString()
                     it[PARAM_WITH_MEMO] = withMemo
@@ -505,12 +540,12 @@ class Countly constructor(
         addressType: AddressType,
         mediaType: MediaType,
         isShare: Boolean = false,
-        subAccount: SubAccount?,
-        session: GreenSession
+        account: Account,
+        session: GdkSession
     ) {
         events.recordEvent(
             Events.RECEIVE_ADDRESS.toString(),
-            subAccountSegmentation(session, subAccount).also {
+            accountSegmentation(session, account).also {
                 it[PARAM_TYPE] = addressType.toString()
                 it[PARAM_MEDIA] = mediaType.toString()
                 it[PARAM_METHOD] = SHARE.takeIf { isShare } ?: COPY
@@ -518,21 +553,25 @@ class Countly constructor(
         )
     }
 
-    fun shareTransaction(session: GreenSession, isShare: Boolean = false) {
+    fun shareTransaction(session: GdkSession, account: Account?, isShare: Boolean = false) {
         events.recordEvent(
             Events.SHARE_TRANSACTION.toString(),
-            sessionSegmentation(session).also {
+            accountSegmentation(session, account).also {
                 it[PARAM_METHOD] = SHARE.takeIf { isShare } ?: COPY
             }
         )
     }
 
-    fun appReview(session: GreenSession, subAccount: SubAccount?) {
+    fun appReview(session: GdkSession, account: Account?) {
         events.recordEvent(Events.APP_REVIEW.toString(),
-            subAccountSegmentation(session, subAccount))
+            accountSegmentation(session, account))
     }
 
-    fun failedWalletLogin(session: GreenSession, error: Throwable) {
+    fun verifyAddress(session: GdkSession, account: Account?) {
+        events.recordEvent(Events.VERIFY_ADDRESS.toString(), accountSegmentation(session, account))
+    }
+
+    fun failedWalletLogin(session: GdkSession, error: Throwable) {
         events
             .recordEvent(
                 Events.FAILED_WALLET_LOGIN.toString(),
@@ -543,17 +582,17 @@ class Countly constructor(
             )
     }
 
-    fun recoveryPhraseCheckFailed(networkId: String, page: Int) {
+    fun recoveryPhraseCheckFailed(page: Int) {
         events
             .recordEvent(
                 Events.FAILED_RECOVERY_PHRASE_CHECK.toString(),
-                networkSegmentation(networkId).also {
-                    it[PARAM_PAGE] = page
-                }
+                mapOf(
+                    PARAM_PAGE to page
+                )
             )
     }
 
-    fun failedTransaction(session: GreenSession, error: Throwable) {
+    fun failedTransaction(session: GdkSession, error: Throwable) {
         events
             .recordEvent(
                 Events.FAILED_TRANSACTION.toString(),
@@ -563,12 +602,44 @@ class Countly constructor(
             )
     }
 
-    fun networkSegmentation(networkId: String): HashMap<String, Any> =
-        hashMapOf(
-            PARAM_NETWORK to Network.canonicalNetworkId(networkId),
-            PARAM_SECURITY to if (Network.isSinglesig(networkId)) SINGLESIG else MULTISIG
-        )
 
+    private fun networkSegmentation(session: GdkSession): HashMap<String, Any> {
+        if(!session.isNetworkInitialized){
+            return hashMapOf()
+        }
+
+        val isMainnet = session.isMainnet
+
+        val hasBitcoin = session.accounts.any { it.isBitcoin } // check for unarchived bitcoin accounts
+        val hasLiquid = session.accounts.any { it.isLiquid } // check for unarchived liquid accounts
+
+        val network = when{
+            hasBitcoin && !hasLiquid -> "mainnet".takeIf { isMainnet } ?: "testnet"
+            !hasBitcoin && hasLiquid -> "liquid".takeIf { isMainnet } ?: "testnet-liquid"
+            hasBitcoin && hasLiquid -> "mainnet-mixed".takeIf { isMainnet } ?: "testnet-mixed"
+            else -> "none"
+        }
+
+        val hasSinglesig = session.accounts.any { it.isSinglesig } // check for unarchived singlesig accounts
+        val hasMultisig = session.accounts.any { it.isMultisig } // check for unarchived multisig accounts
+
+        // TODO add lightning
+        // singlesig / multisig / lightning / single-multi / single-light / multi-light / single-multi-light
+        val security = when{
+            hasSinglesig && !hasMultisig -> "singlesig"
+            !hasSinglesig && hasMultisig -> "multisig"
+            hasSinglesig && hasMultisig -> "single-multi"
+            else -> "none"
+        }
+
+        return hashMapOf(
+            PARAM_NETWORKS to network,
+            PARAM_SECURITY to security,
+        )
+    }
+
+
+    @Suppress("UNCHECKED_CAST")
     fun onBoardingSegmentation(onboardingOptions: OnboardingOptions): HashMap<String, Any> {
         return hashMapOf(
             PARAM_FLOW to when {
@@ -577,24 +648,24 @@ class Countly constructor(
                 else -> CREATE
             },
         ).also {
-            onboardingOptions.isSinglesig?.let { isSinglesig ->
-                it[PARAM_SECURITY] = if(isSinglesig) SINGLESIG else MULTISIG
-            }
-
-            onboardingOptions.networkType?.let { networkType ->
-                it[PARAM_NETWORK] = networkType
-            }
+            it[PARAM_MAINNET] = (onboardingOptions.isTestnet == true).toString()
         } as HashMap<String, Any>
     }
 
-    fun sessionSegmentation(session: GreenSession): HashMap<String, Any> =
-        networkSegmentation(session.network.network)
+    fun deviceSegmentation(device: Device, segmentation: HashMap<String, Any> = hashMapOf()): HashMap<String, Any> {
+        device.deviceBrand.brand.let { segmentation[PARAM_BRAND] = it }
+        device.hwWallet?.firmwareVersion?.let { segmentation[PARAM_FIRMWARE] = it }
+        device.hwWallet?.model?.let { segmentation[PARAM_MODEL] = it }
+        segmentation[PARAM_CONNECTION] = if (device.isUsb) USB else BLE
+
+        return segmentation
+    }
+
+    fun sessionSegmentation(session: GdkSession): HashMap<String, Any> =
+        networkSegmentation(session)
             .also { segmentation ->
                 session.device?.let { device ->
-                    device.deviceBrand.brand.let { segmentation[PARAM_BRAND] = it }
-                    device.hwWallet?.firmwareVersion?.let { segmentation[PARAM_FIRMWARE] = it }
-                    device.hwWallet?.model?.let { segmentation[PARAM_MODEL] = it }
-                    segmentation[PARAM_CONNECTION] = if (device.isUsb) USB else BLE
+                    deviceSegmentation(device, segmentation)
                 }
 
                 session.ephemeralWallet?.also {
@@ -608,18 +679,20 @@ class Countly constructor(
                 }
             }
 
-    fun subAccountSegmentation(session: GreenSession, subAccount: SubAccount?): HashMap<String, Any> =
+    fun accountSegmentation(session: GdkSession, account: Account?): HashMap<String, Any> =
         sessionSegmentation(session)
             .also { segmentation ->
-                subAccount?.let { subAccount ->
-                    segmentation[PARAM_ACCOUNT_TYPE] = subAccount.type.gdkType
+                account?.also { account ->
+                    segmentation[PARAM_ACCOUNT_TYPE] = account.type.gdkType
+                    segmentation[PARAM_NETWORK] = account.networkId
                 }
             }
 
-    fun twoFactorSegmentation(session: GreenSession, subAccount: SubAccount?, twoFactorMethod: TwoFactorMethod): HashMap<String, Any> =
-        subAccountSegmentation(session, subAccount)
+    fun twoFactorSegmentation(session: GdkSession, network: Network, twoFactorMethod: TwoFactorMethod): HashMap<String, Any> =
+        networkSegmentation(session)
             .also { segmentation ->
                 segmentation[PARAM_2FA] = twoFactorMethod.gdkType
+                segmentation[PARAM_NETWORK] = network.id
             }
 
     fun recordRating(rating: Int, comment :String){
@@ -630,10 +703,8 @@ class Countly constructor(
         countly.ratings().recordRatingWidgetWithID(RATING_WIDGET_ID, rating, email.takeIf { !it.isNullOrBlank() }, comment, !email.isNullOrBlank())
     }
 
-//    fun getRemoteConfigValue(key: String): Any? = remoteConfig.getValueForKey(key)
-
     fun getRemoteConfigValueAsString(key: String): String? {
-        return remoteConfig.getValueForKey(key) as? String
+        return remoteConfig.getValueForKey(key)?.toString()
     }
 
     fun getRemoteConfigValueAsInt(key: String): Int? {
@@ -656,8 +727,21 @@ class Countly constructor(
 
     fun getRemoteConfigValueForBanners(key: String): List<Banner>? {
         return try {
-            remoteConfig.getValueForKey(key)?.let {
-                GreenWallet.JsonDeserializer.decodeFromString<List<Banner>>(it.toString())
+            getRemoteConfigValueAsString(key)?.let {
+                GdkBridge.JsonDeserializer.decodeFromString<List<Banner>>(it)
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun getRemoteConfigValueForAssets(key: String): Map<String, EnrichedAsset>? {
+        return try {
+            getRemoteConfigValueAsString(key)?.let {
+                GdkBridge.JsonDeserializer.decodeFromString<List<EnrichedAsset>>(it)
+            }?.associate {
+                it.assetId to it
             }
         }catch (e: Exception){
             e.printStackTrace()
@@ -679,10 +763,20 @@ class Countly constructor(
     }
 
     enum class Events(val event: String) {
-        WALLET_LOGIN("wallet_login"),
+        HWW_CONNECT("hww_connect"),
+        JADE_INITIALIZE("jade_initialize"),
+
+        WALLET_ADD("wallet_add"),
+        WALLET_HWW("wallet_hww"),
+
+        WALLET_NEW("wallet_new"),
         WALLET_RESTORE("wallet_restore"),
+        WALLET_WATCH_ONLY("wallet_wo"),
+
+        WALLET_LOGIN("wallet_login"),
+
         WALLET_CREATE("wallet_create"),
-        WALLET_RESTORE_WATCH_ONLY("wallet_restore_watch_only"),
+        WALLET_IMPORT("wallet_import"),
 
         WALLET_RENAME("wallet_rename"),
         WALLET_DELETE("wallet_delete"),
@@ -691,14 +785,23 @@ class Countly constructor(
 
         FAILED_WALLET_LOGIN("failed_wallet_login"),
 
+        ACCOUNT_FIRST("account_first"),
+        ACCOUNT_NEW("account_new"),
+        ACCOUNT_SELECT("account_select"),
         ACCOUNT_CREATE("account_create"),
         ACCOUNT_RENAME("account_rename"),
+
+        BALANCE_CONVERT("balance_convert"),
+        ASSET_CHANGE("asset_change"),
+        ASSET_SELECT("asset_select"),
 
         RECEIVE_ADDRESS("receive_address"),
 
         SHARE_TRANSACTION("share_transaction"),
 
         APP_REVIEW("app_review"),
+
+        VERIFY_ADDRESS("verify_address"),
 
         SEND_TRANSACTION("send_transaction"),
         FAILED_TRANSACTION("failed_transaction"),
@@ -725,6 +828,7 @@ class Countly constructor(
 
         const val RATING_WIDGET_ID = "5f15c01425f83c169c33cb65"
 
+        const val PARAM_NETWORKS = "networks"
         const val PARAM_NETWORK = "network"
         const val PARAM_SECURITY = "security"
         const val PARAM_ACCOUNT_TYPE = "account_type"
@@ -740,6 +844,7 @@ class Countly constructor(
         const val PARAM_ERROR = "error"
         const val PARAM_FLOW = "flow"
         const val PARAM_EPHEMERAL_BIP39 = "ephemeral_bip39"
+        const val PARAM_MAINNET = "mainnet"
 
         const val PARAM_TRANSACTION_TYPE = "transaction_type"
         const val PARAM_ADDRESS_INPUT = "address_input"
@@ -775,9 +880,6 @@ class Countly constructor(
 
         const val SHARE = "share"
         const val COPY = "copy"
-
-        const val SINGLESIG = "singlesig"
-        const val MULTISIG = "multisig"
 
         const val ANALYTICS_GROUP = "analytics"
 
@@ -833,7 +935,8 @@ enum class MediaType(val string: String) {
 enum class TransactionType(val string: String) {
     SEND("send"),
     SWEEP("sweep"),
-    BUMP("bump");
+    BUMP("bump"),
+    SWAP("swap");
 
     override fun toString(): String = string
 }

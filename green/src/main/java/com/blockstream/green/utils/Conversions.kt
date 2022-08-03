@@ -2,8 +2,13 @@ package com.blockstream.green.utils
 
 import com.blockstream.gdk.data.Balance
 import com.blockstream.gdk.data.CreateTransaction
+import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.params.Convert
-import com.blockstream.green.gdk.GreenSession
+import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.gdk.getAssetTicker
+import com.blockstream.green.gdk.isPolicyAsset
+import com.blockstream.green.gdk.networkForAsset
+import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -13,25 +18,30 @@ const val BTC_UNIT = "BTC"
 
 // Use it for GDK purposes
 // Lowercase & replace μbtc -> ubtc
-fun getUnit(session: GreenSession) = session.getSettings()?.unit?.lowercase()
+fun getUnit(network: Network, session: GdkSession) = session.getSettings(network)?.unit?.lowercase()
     ?.replace("\u00B5btc", "ubtc")
     ?: "btc"
 
 // Use it for UI purposes
-fun getFiatCurrency(session: GreenSession): String{
-    return session.getSettings()?.pricing?.currency?.getFiatUnit(session) ?: "n/a"
+fun getFiatCurrency(network: Network, session: GdkSession): String{
+    return session.getSettings(network)?.pricing?.currency?.getFiatUnit(network) ?: "n/a"
 }
 
 // Use it for UI purposes
-fun String.getFiatUnit(session: GreenSession ): String {
+fun String.getFiatUnit(network: Network): String {
+    return if(network.isTestnet) "FIAT" else this
+}
+
+fun String.getFiatUnit(session: GdkSession): String {
     return if(session.isTestnet) "FIAT" else this
 }
 
 // Use it for UI purposes
-fun getBitcoinOrLiquidUnit(session: GreenSession, overrideDenomination: String? = null): String {
-    var unit = overrideDenomination ?: session.getSettings()?.unit ?: "n/a"
+@Deprecated("Use the AssetId")
+fun getBitcoinOrLiquidUnit(network: Network, session: GdkSession, overrideDenomination: String? = null): String {
+    var unit = overrideDenomination ?: session.getSettings(network)?.unit ?: "n/a"
 
-    if (session.isTestnet) {
+    if (network.isTestnet) {
         unit = when (unit.lowercase()) {
             "btc" -> "TEST"
             "mbtc" -> "mTEST"
@@ -42,14 +52,36 @@ fun getBitcoinOrLiquidUnit(session: GreenSession, overrideDenomination: String? 
         }
     }
 
-    return if (session.isLiquid) {
+    return if (network.isLiquid) {
         "L-$unit"
     } else {
         unit
     }
 }
 
-fun getBitcoinOrLiquidSymbol(session: GreenSession): String = if(session.network.isLiquid) "L-$BTC_UNIT" else BTC_UNIT
+fun getBitcoinOrLiquidUnit(assetId: String? = null, session: GdkSession, overrideDenomination: String? = null): String {
+    val network = assetId.networkForAsset(session)
+    var unit = overrideDenomination ?: session.getSettings(network)?.unit ?: "n/a"
+
+    if (network.isTestnet) {
+        unit = when (unit.lowercase()) {
+            "btc" -> "TEST"
+            "mbtc" -> "mTEST"
+            "\u00B5btc" -> "\u00B5TEST"
+            "bits" -> "bTEST"
+            "sats" -> "sTEST"
+            else -> unit
+        }
+    }
+
+    return if (network.isLiquid) {
+        "L-$unit"
+    } else {
+        unit
+    }
+}
+
+fun getBitcoinOrLiquidSymbol(network: Network): String = if(network.isLiquid) "L-$BTC_UNIT" else BTC_UNIT
 
 fun getDecimals(unit: String): Int {
     return when (unit.lowercase()) {
@@ -92,19 +124,8 @@ fun Long.feeRateWithUnit(): String {
     }
 }
 
-fun Double.feeRateWithUnit(): String {
-    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(this).let {
-        "$it satoshi / vbyte"
-    }
-}
-
-fun Balance?.toAmountLookOrNa(session: GreenSession, assetId: String? = null, isFiat: Boolean? = null, withUnit: Boolean = true, withGrouping: Boolean = true, withMinimumDigits: Boolean = false): String {
-    if(this == null) return "n/a"
-    return toAmountLook(session, assetId, isFiat, withUnit, withGrouping, withMinimumDigits) ?: "n/a"
-}
-
 fun Balance?.toAmountLook(
-    session: GreenSession,
+    session: GdkSession,
     assetId: String? = null,
     isFiat: Boolean? = null,
     withUnit: Boolean = true,
@@ -113,7 +134,7 @@ fun Balance?.toAmountLook(
     overrideDenomination: Boolean = false,
 ): String? {
     if(this == null) return null
-    return if(assetId == null || assetId == session.policyAsset){
+    return if(assetId.isPolicyAsset(session)){
         if(isFiat == true) {
              try {
                  userNumberFormat(
@@ -129,7 +150,7 @@ fun Balance?.toAmountLook(
 
         }else{
             try {
-                val unit = if (overrideDenomination) BTC_UNIT else session.getSettings()?.unit ?: BTC_UNIT
+                val unit = if (overrideDenomination) BTC_UNIT else session.getSettings(assetId.networkForAsset(session))?.unit ?: BTC_UNIT
                 val value = getValue(unit).toDouble()
                 userNumberFormat(
                     decimals = getDecimals(unit),
@@ -137,7 +158,7 @@ fun Balance?.toAmountLook(
                     withGrouping = withGrouping,
                     withMinimumDigits = withMinimumDigits,
                 ).format(value).let {
-                    if (withUnit) "$it ${getBitcoinOrLiquidUnit(session = session, overrideDenomination = unit)}" else it
+                    if (withUnit) "$it ${getBitcoinOrLiquidUnit(assetId = assetId, session = session, overrideDenomination = unit)}" else it
                 }
             } catch (e: Exception) {
                 null
@@ -152,7 +173,7 @@ fun Balance?.toAmountLook(
                 withGrouping = withGrouping,
                 withMinimumDigits = withMinimumDigits
             ).format(assetValue?.toDouble() ?: satoshi).let {
-                if (withUnit) "$it ${assetInfo?.ticker ?: ""}" else it
+                if (withUnit) "$it ${assetInfo?.ticker ?: assetId?.substring(0 until 10) ?: ""}" else it
             }
         } catch (e: Exception) {
             null
@@ -161,7 +182,7 @@ fun Balance?.toAmountLook(
 }
 
 fun Long?.toAmountLookOrNa(
-    session: GreenSession,
+    session: GdkSession,
     assetId: String? = null,
     isFiat: Boolean? = null,
     withUnit: Boolean = true,
@@ -175,7 +196,7 @@ fun Long?.toAmountLookOrNa(
 }
 
 fun Long?.toAmountLook(
-    session: GreenSession,
+    session: GdkSession,
     assetId: String? = null,
     isFiat: Boolean? = null,
     withUnit: Boolean = true,
@@ -185,18 +206,20 @@ fun Long?.toAmountLook(
     overrideDenomination: Boolean = false,
 ): String? {
     if(this == null) return null
-    return if(assetId == null || assetId == session.policyAsset){
+    return if(assetId == null || assetId.isPolicyAsset(session)){
         if(isFiat == true) {
-            session.convertAmount(Convert(satoshi = this))?.toAmountLook(
+            session.convertAmount(assetId, Convert(satoshi = this))?.toAmountLook(
                 session,
+                assetId = assetId,
                 isFiat = true,
                 withUnit = withUnit,
                 withGrouping = withGrouping,
                 overrideDenomination = overrideDenomination
             )
         }else{
-            session.convertAmount(Convert(satoshi = this))?.toAmountLook(
+            session.convertAmount(assetId, Convert(satoshi = this))?.toAmountLook(
                 session,
+                assetId = assetId,
                 withUnit = withUnit,
                 withGrouping = withGrouping,
                 withMinimumDigits = withMinimumDigits,
@@ -204,27 +227,46 @@ fun Long?.toAmountLook(
             )
         }
     }else{
-        // withMinimumDigits is not used on asset amounts
-        session.convertAmount(Convert(satoshi = this, session.getAsset(assetId)), isAsset = true)?.toAmountLook(
-            session = session,
-            assetId = assetId,
-            withUnit = withUnit,
-            withGrouping = withGrouping,
-            withMinimumDigits = withMinimumDigits,
-            overrideDenomination = overrideDenomination
-        )
+        if (isFiat == true) {
+            null
+        } else {
+            // withMinimumDigits is not used on asset amounts
+            session.convertAmount(
+                assetId,
+                Convert(satoshi = this, session.getAsset(assetId)),
+                isAsset = true
+            )?.toAmountLook(
+                session = session,
+                assetId = assetId,
+                withUnit = withUnit,
+                withGrouping = withGrouping,
+                withMinimumDigits = withMinimumDigits,
+                overrideDenomination = overrideDenomination
+            )
+        }
     }?.let { amount ->
         if(withDirection && this > 0L){
-            "+$amount"
+            "$amount"
         }else{
             amount
         }
     }
 }
 
-fun Date.formatOnlyDate(): String = DateFormat.getDateInstance(DateFormat.LONG).format(this)
+fun exchangeRate(session:GdkSession, assetId1: String, amount1: String, assetId2: String, amount2: String): String {
+    val amount1Parsed = UserInput.parseUserInput(session = session, input = amount1, assetId = assetId1, isFiat = false)
+    val amount2Parsed = UserInput.parseUserInput(session = session, input = amount2, assetId = assetId2, isFiat = false)
 
-fun Date.formatWithTime(): String = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT).format(this)
+    val rate = amount2Parsed.amountAsDouble.toBigDecimal().divide(amount1Parsed.amountAsDouble.toBigDecimal(),8, RoundingMode.HALF_EVEN)
+
+    val asset1Ticker = assetId1.getAssetTicker(session)
+    val asset2Ticker = assetId2.getAssetTicker(session)
+
+    return "1 $asset1Ticker = ${rate.toPlainString()} $asset2Ticker"
+}
+fun Date.formatOnlyDate(): String = DateFormat.getDateInstance(DateFormat.MEDIUM).format(this)
+
+fun Date.formatWithTime(): String = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(this)
 
 fun Date.formatAuto(): String =
     if ((this.time + 24 * 60 * 60 * 1000) > (System.currentTimeMillis())) {

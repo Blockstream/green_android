@@ -17,47 +17,51 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:max="@{vm.progressMax}"
+            android:progress="@{vm.progress}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread"
+            app:layout_constraintWidth_percent="0.5"
+            app:showAnimationBehavior="none"
+            app:trackCornerRadius="6dp"
+            app:trackThickness="12dp" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/id_back_up_recovery_phrase"
-            android:textAppearance="?attr/textAppearanceHeadline1"
+            android:layout_marginTop="24dp"
+            app:layout_constraintWidth_percent="0.75"
+            android:text="@string/id_write_down_your_recovery_phrase"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceDisplaySmall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/progress" />
 
 
         <TextView
             android:id="@+id/subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/id_the_recovery_phrase_can_be_used"
-            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginTop="24dp"
+            android:text="@string/id_store_it_somewhere_safe"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/color_on_surface_emphasis_medium"
             app:layout_constraintEnd_toEndOf="@+id/title"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/title"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="24dp"
-            android:max="@{vm.progressMax}"
-            android:progress="@{vm.progress}"
-            app:showAnimationBehavior="none"
-            app:trackThickness="12dp"
-            app:trackCornerRadius="6dp"
-            app:layout_constraintBottom_toTopOf="@+id/word1"
-            app:layout_constraintEnd_toEndOf="@+id/subtitle"
-            app:layout_constraintStart_toStartOf="@+id/subtitle"
-            app:layout_constraintTop_toBottomOf="@+id/subtitle"
-            app:layout_constraintVertical_chainStyle="spread" />
 
         <TextView
             android:id="@+id/counter1"
@@ -67,7 +71,7 @@
             android:layout_marginEnd="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="@color/brand_green"
-            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@+id/word1"
             app:layout_constraintEnd_toStartOf="@+id/word1"
             tools:text="19" />
@@ -77,14 +81,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{vm.words[0]}"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="24sp"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintBottom_toTopOf="@+id/word2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progress"
+            app:layout_constraintTop_toBottomOf="@+id/subtitle"
             app:layout_constraintVertical_chainStyle="spread"
             tools:text="word" />
 
@@ -96,7 +98,7 @@
             android:layout_marginEnd="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="@color/brand_green"
-            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@+id/word2"
             app:layout_constraintEnd_toStartOf="@+id/word2"
             tools:text="20" />
@@ -106,9 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{vm.words[1]}"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="24sp"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintBottom_toTopOf="@+id/word3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -125,7 +125,7 @@
             android:layout_marginEnd="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="@color/brand_green"
-            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@+id/word3"
             app:layout_constraintEnd_toStartOf="@+id/word3"
             tools:text="21" />
@@ -135,9 +135,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{vm.words[2]}"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="24sp"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintBottom_toTopOf="@+id/word4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -154,7 +152,7 @@
             android:layout_marginEnd="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="@color/brand_green"
-            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@+id/word4"
             app:layout_constraintEnd_toStartOf="@+id/word4"
             tools:text="22" />
@@ -164,9 +162,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{vm.words[3]}"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="24sp"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintBottom_toTopOf="@+id/word5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -183,7 +179,7 @@
             android:layout_marginEnd="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="@color/brand_green"
-            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@+id/word5"
             app:layout_constraintEnd_toStartOf="@+id/word5"
             tools:text="23" />
@@ -193,9 +189,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{vm.words[4]}"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="24sp"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintBottom_toTopOf="@+id/word6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -212,7 +206,7 @@
             android:layout_marginEnd="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="@color/brand_green"
-            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@+id/word6"
             app:layout_constraintEnd_toStartOf="@+id/word6"
             tools:text="23" />
@@ -223,9 +217,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
             android:text="@{vm.words[5]}"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="24sp"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintBottom_toTopOf="@+id/buttonNext"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -241,11 +233,27 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/id_next"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/messageTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/messageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/id_make_sure_to_be_in_a_private"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:drawableTopCompat="@drawable/ic_house"
+            app:drawableTint="@color/color_on_surface_emphasis_medium" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,18 +2,15 @@ package com.blockstream.green.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WalletDao {
     @Insert
-    fun insert(wallet: Wallet) : Long
-
-    @Insert
-    suspend fun insertSuspend(wallet: Wallet) : Long
+    suspend fun insertWallet(wallet: Wallet) : Long
 
     @Delete
-    suspend fun deleteSuspend(wallet: Wallet)
+    suspend fun deleteWallet(wallet: Wallet)
 
     @Delete
     fun deleteSync(wallet: Wallet)
@@ -22,72 +19,48 @@ interface WalletDao {
     fun deleteWallets()
 
     @Update
-    fun updateSync(vararg wallet: Wallet)
+    suspend fun updateWallet(vararg wallet: Wallet)
 
-    @Update
-    suspend fun updateSuspend(vararg wallet: Wallet)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSync(loginCredentials: LoginCredentials)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSuspend(loginCredentials: LoginCredentials)
+    suspend fun insertOrReplaceLoginCredentials(loginCredentials: LoginCredentials)
 
     @Update
-    fun updateLoginCredentialsSync(vararg loginCredentials: LoginCredentials)
+    suspend fun updateLoginCredentials(vararg loginCredentials: LoginCredentials)
 
     @Delete
-    fun deleteLoginCredentialsSync(loginCredentials: LoginCredentials)
-
-    @Delete
-    suspend fun deleteLoginCredentialsSuspend(loginCredentials: LoginCredentials)
+    suspend fun deleteLoginCredentials(loginCredentials: LoginCredentials)
 
     @Query("SELECT * FROM wallets WHERE id = :id")
-    fun getWalletLiveData(id: WalletId): LiveData<Wallet>
+    fun getWalletFlow(id: WalletId): Flow<Wallet>
 
     @Query("SELECT * FROM wallets WHERE id = :id")
-    fun getWalletSync(id: WalletId): Wallet?
-
-    @Query("SELECT * FROM wallets WHERE id = :id")
-    fun getWalletObservable(id: WalletId): Observable<Wallet>
-
-    @Query("SELECT * FROM wallets WHERE id = :id")
-    suspend fun getWalletSuspend(id: WalletId): Wallet?
+    suspend fun getWallet(id: WalletId): Wallet?
 
     @Query("SELECT * FROM wallets WHERE wallet_hash_id = :walletHashId AND is_hardware = :isHardware LIMIT 1")
-    fun getWalletWithHashIdSync(walletHashId: String, isHardware: Boolean): Wallet?
-
-    @Query("SELECT * FROM wallets")
-    fun getWalletsLiveData(): LiveData<List<Wallet>>
-
-    @Query("SELECT * FROM wallets")
-    suspend fun getWalletsSuspend(): List<Wallet>
-
-    @Query("SELECT * FROM wallets")
-    fun getWalletsSync(): List<Wallet>
+    suspend fun getWalletWithHashId(walletHashId: String, isHardware: Boolean): Wallet?
 
     @Query("SELECT * FROM wallets WHERE is_hardware = 0")
-    fun getSoftwareWallets(): LiveData<List<Wallet>>
+    fun getSoftwareWalletsLiveData(): LiveData<List<Wallet>>
+
+    @Query("SELECT * FROM wallets WHERE is_hardware = 0")
+    fun getSoftwareWalletsFlow(): Flow<List<Wallet>>
+
 
     @Query("SELECT * FROM wallets WHERE is_hardware = 1")
-    fun getHardwareWallets(): LiveData<List<Wallet>>
+    fun getHardwareWalletsFlow(): Flow<List<Wallet>>
 
-    // Note: This query is not indexed
-    @Query("SELECT * FROM wallets WHERE network = :network")
-    suspend fun getWalletsForNetworkSuspend(network: String): List<Wallet>
+    @Query("SELECT * FROM wallets")
+    suspend fun getAllWallets(): List<Wallet>
 
-    // Note: This query is not indexed
-    @Query("SELECT * FROM wallets WHERE network = :network")
-    fun getWalletsForNetworkSync(network: String): List<Wallet>
-
-    @Query("SELECT EXISTS(SELECT id FROM wallets LIMIT 1)")
-    fun walletsExists(): LiveData<Boolean>
+    @Query("SELECT * FROM wallets WHERE is_hardware = 0")
+    suspend fun getSoftwareWallets(): List<Wallet>
 
     @Query("SELECT EXISTS(SELECT id FROM wallets WHERE wallet_hash_id = :walletHashId AND is_hardware = :isHardware LIMIT 1)")
-    fun walletsExistsSync(walletHashId: String, isHardware: Boolean): Boolean
+    suspend fun walletsExists(walletHashId: String, isHardware: Boolean): Boolean
 
     @Query("SELECT EXISTS(SELECT id FROM wallets LIMIT 1)")
-    suspend fun walletsExistsSuspend(): Boolean
+    suspend fun walletsExists(): Boolean
 
     @Transaction
     @Query("SELECT * FROM wallets WHERE id = :id")
@@ -99,21 +72,14 @@ interface WalletDao {
 
     @Transaction
     @Query("SELECT * FROM wallets WHERE id = :id")
-    fun getWalletLoginCredentialsObservable(id: WalletId): Observable<WalletAndLoginCredentials>
+    fun getWalletLoginCredentialsFlow(id: WalletId): Flow<WalletAndLoginCredentials>
 
     @Query("SELECT * FROM login_credentials WHERE wallet_id = :id")
     suspend fun getLoginCredentialsSuspend(id: WalletId): List<LoginCredentials>
 
-    @Query("SELECT * FROM login_credentials WHERE wallet_id = :id AND credential_type = :type")
-    suspend fun getLoginCredentialsSuspend(id: WalletId, type: CredentialType): LoginCredentials
-
     @Query("DELETE FROM login_credentials WHERE wallet_id = :id AND credential_type = :type")
-    fun deleteLoginCredentialsSync(id: WalletId, type: Int)
-
-    @Query("DELETE FROM login_credentials WHERE wallet_id = :id AND credential_type = :type")
-    suspend fun deleteLoginCredentialsSuspend(id: WalletId, type: Int)
+    suspend fun deleteLoginCredentials(id: WalletId, type: Int)
 
     @Query("DELETE FROM login_credentials")
     fun deleteLoginCredentials()
-
 }

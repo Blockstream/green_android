@@ -5,6 +5,10 @@
     <data>
 
         <variable
+            name="confirmStyle"
+            type="Boolean" />
+
+        <variable
             name="fee"
             type="String" />
 
@@ -16,68 +20,209 @@
             name="feeFiat"
             type="String" />
 
+        <variable
+            name="total"
+            type="String" />
+
+        <variable
+            name="totalFiat"
+            type="String" />
+
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="24dp"
-        android:gravity="top
-"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/style1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/id_fee"
-            android:textAppearance="@style/TextAppearance.Green.Body1" />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            isVisible="@{!confirmStyle}">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="0dp"
+            <TextView
+                style="@style/TextAppearance.Green.Overline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="2dp"
+                android:text="@string/id_network_fee" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@{`(`+feeRate+`)`}"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        tools:text="(fee / rate)" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@{fee}"
+                            android:textAlignment="viewEnd"
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
+                            android:textIsSelectable="true"
+                            tools:text="0.000001123 BTC" />
+
+                        <TextView
+                            isVisible="@{feeFiat != null}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:includeFontPadding="false"
+                            android:singleLine="true"
+                            android:text="@{feeFiat}"
+                            android:textAlignment="textEnd"
+                            android:textAppearance="?attr/textAppearanceLabelMedium"
+                            android:textIsSelectable="true"
+                            tools:text="~ 3434.34 USD" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/style2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginTop="32dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            isVisible="@{confirmStyle}">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@{fee}"
-                android:textAlignment="viewEnd"
-                android:textAppearance="@style/TextAppearance.Green.Body1"
-                android:textIsSelectable="true"
-                tools:text="0.000001123 BTC" />
+                android:orientation="horizontal">
 
-            <TextView
-                isVisible="@{feeFiat != null}"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/id_network_fee"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/color_on_surface_emphasis_medium" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{fee}"
+                    android:textAlignment="viewEnd"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/color_on_surface_emphasis_medium"
+                    android:textIsSelectable="true"
+                    tools:text="0.000001123 BTC" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:ellipsize="end"
-                android:includeFontPadding="false"
-                android:singleLine="true"
-                android:text="@{feeFiat}"
-                android:textAlignment="textEnd"
-                android:textAppearance="?attr/textAppearanceBody1"
-                android:textIsSelectable="true"
-                android:textSize="11sp"
-                tools:text="~ 3434.34 USD" />
+                android:orientation="horizontal">
 
-            <TextView
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{`(`+feeRate+`)`}"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/color_on_surface_emphasis_medium"
+                    tools:text="(fee / rate)"/>
+
+                <TextView
+                    isVisible="@{feeFiat != null}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@{feeFiat}"
+                    android:textAlignment="textEnd"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/color_on_surface_emphasis_medium"
+                    android:textIsSelectable="true"
+                    tools:text="~ 3434.34 USD" />
+
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:includeFontPadding="false"
-                android:text="@{`(`+feeRate+`)`}"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/color_on_surface_emphasis_medium"
-                android:textSize="11sp"
-                tools:text="(fee / rate)" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"/>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/id_total"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/color_on_surface_emphasis_medium" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{total}"
+                        android:textAlignment="viewEnd"
+                        android:textAppearance="?attr/textAppearanceTitleSmall"
+                        android:textColor="@color/color_on_surface_emphasis_high"
+                        android:textIsSelectable="true"
+                        tools:text="0.000001123 BTC" />
+
+                    <TextView
+                        isVisible="@{totalFiat != null}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="@{totalFiat}"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:textColor="@color/color_on_surface_emphasis_medium"
+                        android:textIsSelectable="true"
+                        tools:text="~ 3434.34 USD" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </layout>

@@ -7,28 +7,22 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.WalletListCommonViewModel" />
-
-        <variable
-            name="activityVm"
-            type="com.blockstream.green.ui.MainActivityViewModel" />
+            type="com.blockstream.green.ui.wallet.WalletsViewModel" />
     </data>
 
     <!--  Make it clickable to consume all the click events, not allowing the to pass behind the fragment  -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/brand_surface"
+        android:background="@color/md_theme_dark_background"
         android:clickable="true"
         android:fitsSystemWindows="true"
         android:focusable="true"
         android:orientation="vertical">
 
-
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="84dp"
-            android:background="@color/brand_background"
             android:paddingLeft="16dp">
 
             <ImageView
@@ -53,7 +47,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
+                app:layout_constraintBottom_toTopOf="@+id/helpCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -66,75 +60,96 @@
 
                     <include
                         android:id="@+id/common"
-                        layout="@layout/wallet_list_common" />
-
-                    <LinearLayout
-                        android:id="@+id/helpCenter"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginStart="16dp"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_baseline_help_outline_18"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:tint="@color/color_on_surface_emphasis_low" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginEnd="24dp"
-                            android:layout_marginBottom="16dp"
-                            android:layout_weight="1"
-                            android:drawablePadding="8dp"
-                            android:gravity="center_vertical"
-                            android:text="@string/id_help"
-                            android:textAppearance="?attr/textAppearanceBody1"
-                            android:textColor="@color/color_on_surface_emphasis_low"
-                            app:drawableEndCompat="@drawable/ic_baseline_link_18"
-                            app:drawableTint="@color/color_on_surface_emphasis_very_low" />
-
-                    </LinearLayout>
+                        layout="@layout/abstract_wallets_fragment" />
 
                 </LinearLayout>
 
             </androidx.core.widget.NestedScrollView>
+
+            <LinearLayout
+                android:id="@+id/helpCenter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/about"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="16dp"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_baseline_help_outline_18"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/id_help"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    app:drawableEndCompat="@drawable/ic_baseline_link_18"
+                    app:drawableTint="@color/color_on_surface_emphasis_medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/about"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/buttonAppSettings"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="16dp"
+                    android:padding="4dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_shield_white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/id_about"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonAppSettings"
                 style="@style/Widget.Green.Button.Text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="4dp"
                 android:text="@string/id_app_settings"
-                android:textColor="@color/color_on_surface_emphasis_low"
+                android:textColor="@color/color_on_surface_emphasis_medium"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonAbout"
-                style="@style/Widget.Green.Button.Text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/id_about"
-                android:textColor="@color/color_on_surface_emphasis_low"
-                android:textSize="12sp"
-                app:icon="@drawable/ic_shield_white"
-                app:iconSize="24dp"
-                app:iconTint="@color/color_on_surface_emphasis_medium"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

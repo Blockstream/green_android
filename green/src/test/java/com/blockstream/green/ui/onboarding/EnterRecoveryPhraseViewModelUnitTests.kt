@@ -1,7 +1,7 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.green.TestData
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
@@ -22,17 +22,17 @@ class EnterRecoveryPhraseViewModelUnitTests : TestViewModel<EnterRecoveryPhraseV
     @Mock
     private lateinit var isValidObserver: Observer<Boolean>
     @Mock
-    private lateinit var greenWallet: GreenWallet
+    private lateinit var gdkBridge: GdkBridge
 
     @Before
     override fun setup(){
         super.setup()
 
         TestData.recoveryPhrases.forEach {
-            whenever(greenWallet.isMnemonicValid(it)).thenReturn(true)
+            whenever(gdkBridge.isMnemonicValid(it)).thenReturn(true)
         }
 
-        viewModel = EnterRecoveryPhraseViewModel(greenWallet, null)
+        viewModel = EnterRecoveryPhraseViewModel(mock(), gdkBridge, null)
 
         viewModel.showPasteButton.observeForever(showPasteButtonObserver)
         viewModel.showHelpButton.observeForever(showHelpButtonObserver)
@@ -60,7 +60,7 @@ class EnterRecoveryPhraseViewModelUnitTests : TestViewModel<EnterRecoveryPhraseV
         }
 
         // isBip39MnemonicValid called
-        verify(greenWallet, times(TestData.recoveryPhrases.size)).isMnemonicValid(any())
+        verify(gdkBridge, times(TestData.recoveryPhrases.size)).isMnemonicValid(any())
 
         verify(isValidObserver, times(TestData.recoveryPhrases.size)).onChanged(eq(true))
     }

@@ -17,7 +17,10 @@ data class Balance constructor(
     @SerialName("satoshi") val satoshi: Long,
     @SerialName("sats") val sats: String,
     @SerialName("ubtc") val ubtc: String,
+    @SerialName("is_current") val isCurrent: Boolean? = null
 ) {
+    val valueInMainUnit: String get() = assetValue ?: btc
+
     var assetValue: String? = null
     var assetInfo: Asset? = null
 

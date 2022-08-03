@@ -11,17 +11,17 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
+import com.blockstream.green.extensions.AuthenticationCallback
 import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.WalletViewModel
-import com.blockstream.green.utils.AuthenticationCallback
-import com.blockstream.green.utils.errorDialog
+import com.blockstream.green.extensions.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
+class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBinding>(
     layout = R.layout.recovery_intro_fragment,
     menuRes = 0
 ) {
@@ -29,17 +29,21 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
 
     private val args: RecoveryIntroFragmentArgs by navArgs()
 
-    // Warning: Be careful when you call wallet as it maybe null
     override val walletOrNull by lazy { args.wallet }
+    private val networkOrNull by lazy { args.network }
 
     override val screenName = "RecoveryIntro"
-
-    override val segmentation by lazy { super.segmentation ?: (args.wallet?.network ?: args.onboardingOptions?.network?.id)?.let { countly.networkSegmentation(it) }  }
 
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory
     val viewModel: WalletViewModel by viewModels {
-        WalletViewModel.provideFactory(viewModelFactory, wallet)
+        WalletViewModel.provideFactory(viewModelFactory, args.wallet!!)
+    }
+
+    @Inject
+    lateinit var introViewModelFactory: RecoveryIntroViewModel.AssistedFactory
+    val introViewModel: RecoveryIntroViewModel by viewModels {
+        RecoveryIntroViewModel.provideFactory(introViewModelFactory, this, arguments, !args.isAuthenticateUser)
     }
 
     // Recovery screens are reused in onboarding
@@ -51,13 +55,15 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
     override fun isLoggedInRequired(): Boolean = isSessionAndWalletRequired()
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+        binding.showRecoveryLength = !args.isAuthenticateUser
+
         binding.buttonNext.setOnClickListener {
 
             // Onboarding
             if(args.wallet == null){
                 navigateToWords()
             }else{
-                if(args.mnemonic == null) {
+                if(args.isAuthenticateUser) {
                     // If recovery is confirmed, ask for user presence
                     if (wallet.isRecoveryPhraseConfirmed) {
                         launchUserPresencePrompt()
@@ -69,16 +75,26 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
                 }
             }
         }
+
+        binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if(isChecked){
+                introViewModel.recoverySize.value = checkedId
+            }
+        }
+
+        binding.toggleRecoverySize.check(introViewModel.recoverySize.value ?: R.id.button12)
     }
 
     private fun navigateToWords() {
         // Onboarding
-        if (args.wallet == null || args.mnemonic != null) {
+        if (args.wallet == null || !args.isAuthenticateUser) {
             navigate(
                 RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
                     wallet = args.wallet,
+                    assetId = args.assetId,
                     onboardingOptions = args.onboardingOptions,
-                    mnemonic = args.mnemonic ?: ""
+                    mnemonic = introViewModel.mnemonic,
+                    network = args.network
                 )
             )
         } else {

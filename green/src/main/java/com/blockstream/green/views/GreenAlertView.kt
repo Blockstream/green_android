@@ -16,8 +16,7 @@ class GreenAlertView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.materialCardViewStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    var binding: GreenAlertViewBinding =
-        GreenAlertViewBinding.inflate(LayoutInflater.from(context), this, true)
+    val binding: GreenAlertViewBinding by lazy { GreenAlertViewBinding.inflate(LayoutInflater.from(context), this, true) }
 
     init {
         backgroundTintList = ContextCompat.getColorStateList(context, R.color.brand_surface)
@@ -46,9 +45,10 @@ class GreenAlertView @JvmOverloads constructor(
     fun primaryButton(text: String?, listener: OnClickListener?) {
         binding.buttonPrimary.text = text
         binding.buttonPrimary.setOnClickListener(listener)
-        binding.buttonPrimary.isVisible = listener != null
+        binding.buttonPrimary.isVisible = !text.isNullOrBlank()
         // add bottom padding if the button is hidden
-        binding.container.updatePadding(bottom = binding.root.resources.getDimension(if(listener == null) R.dimen.dp16 else R.dimen.dp0).toInt())
+        binding.container.updatePadding(bottom = binding.root.resources.getDimension(if(text.isNullOrBlank()) R.dimen.dp16 else R.dimen.dp0).toInt())
+        binding.buttonPrimary.isClickable = listener != null
     }
 
     fun closeButton(listener: OnClickListener?) {

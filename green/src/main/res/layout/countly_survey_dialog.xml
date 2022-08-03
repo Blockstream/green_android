@@ -45,15 +45,14 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/titleTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
             android:text="@{title}"
-            android:textSize="16dp"
-            android:textColor="@color/white"
-            android:textAppearance="?attr/textAppearanceBody1"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
             app:layout_constraintEnd_toStartOf="@+id/buttonClose"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -87,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{rating}"
-                android:textAppearance="?attr/textAppearanceBody1"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 tools:text="@string/id_rate_your_experience" />
 
             <com.google.android.material.button.MaterialButtonToggleGroup
@@ -103,7 +102,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1" />
+                    android:text="1"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button2"
@@ -111,7 +111,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="2" />
+                    android:text="2"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button3"
@@ -119,8 +120,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-
-                    android:text="3" />
+                    android:text="3"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button4"
@@ -128,7 +129,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="4" />
+                    android:text="4"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button5"
@@ -136,7 +138,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="5" />
+                    android:text="5"
+                    tools:ignore="HardcodedText" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -150,7 +153,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@{notLikely}"
-                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
                     tools:text="Not Likely" />
 
                 <TextView
@@ -159,7 +162,7 @@
                     android:layout_weight="1"
                     android:text="@{likely}"
                     android:textAlignment="viewEnd"
-                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
                     tools:text="Likely" />
             </LinearLayout>
 
@@ -182,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{text}"
-                android:textAppearance="?attr/textAppearanceBody1"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 tools:text="@string/id_rate_your_experience" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -208,8 +211,8 @@
 
         <Button
             android:id="@+id/buttonNotNow"
-            isVisible="@{!isLoading}"
             style="@style/Widget.Green.Button.Text"
+            isVisible="@{!isLoading}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -225,8 +228,8 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:text="@string/id_submit"
             android:enabled="@{isSubmitEnabled}"
+            android:text="@string/id_submit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/barrierElements" />
@@ -252,7 +255,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="buttonClose" />
+            app:constraint_referenced_ids="buttonClose,titleTextView" />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrierElements"

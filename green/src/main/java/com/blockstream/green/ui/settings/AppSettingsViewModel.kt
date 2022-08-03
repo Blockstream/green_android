@@ -15,7 +15,7 @@ import javax.inject.Inject
 class AppSettingsViewModel @Inject constructor(
     private val settingsManager: SettingsManager,
     countly: Countly
-) : AppViewModel() {
+) : AppViewModel(countly) {
     private var appSettings: ApplicationSettings = settingsManager.getApplicationSettings()
 
     val analyticsFeatureEnabled = countly.analyticsFeatureEnabled

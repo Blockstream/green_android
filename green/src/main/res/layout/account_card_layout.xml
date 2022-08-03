@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.blockstream.green.gdk.ExtensionsKt" />
+
+        <variable
+            name="account"
+            type="com.blockstream.gdk.data.Account" />
+
+        <variable
+            name="showArrow"
+            type="Boolean" />
+
+        <variable
+            name="showCopy"
+            type="Boolean" />
+
+        <variable
+            name="primaryValue"
+            type="String" />
+
+        <variable
+            name="secondaryValue"
+            type="String" />
+
+        <variable
+            name="needs2faActivation"
+            type="Boolean" />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:elevation="24dp"
+            app:cardBackgroundColor="@{ExtensionsKt.getAccountColor(account, context)}"
+            app:cardElevation="24dp"
+            app:strokeColor="@color/brand_surface"
+            app:strokeWidth="1dp"
+            tools:cardBackgroundColor="@color/bitcoin">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp">
+
+                <ImageView
+                    isVisible="@{account.bitcoin}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="-20dp"
+                    android:layout_marginEnd="-24dp"
+                    android:layout_marginBottom="-6dp"
+                    android:adjustViewBounds="true"
+                    android:alpha="0.1"
+                    android:cropToPadding="false"
+                    android:src="@drawable/bitcoin_letter"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <FrameLayout
+                    android:id="@+id/assetsIcons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/compactGuideline"/>
+
+                <ImageView
+                    android:id="@+id/policyIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:src="@{account.network.multisig ? @drawable/ic_multisig : @drawable/ic_singlesig}"
+                    app:layout_constraintDimensionRatio="w,1:1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/ic_multisig" />
+
+                <TextView
+                    android:id="@+id/nameTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="@{account.name}"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="@color/color_on_surface_emphasis_high"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/assetsIcons"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/accountType"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    tools:text="Bitcoin" />
+
+                <TextView
+                    android:id="@+id/accountType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:lines="1"
+                    android:text="@{ExtensionsKt.withPolicy(account.type, context)}"
+                    android:textAllCaps="true"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/color_on_surface_emphasis_medium"
+                    app:layout_constraintBottom_toBottomOf="@+id/policyIcon"
+                    app:layout_constraintEnd_toStartOf="@+id/assetsIcons"
+                    app:layout_constraintStart_toEndOf="@+id/policyIcon"
+                    app:layout_constraintTop_toTopOf="@+id/policyIcon"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    tools:text="Singlesig / SegWit" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/balanceLoader"
+                    isVisible="@{primaryValue == null}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:indeterminate="true"
+                    app:indicatorColor="@color/color_on_surface_emphasis_high"
+                    app:indicatorSize="24dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:trackColor="@color/color_on_surface_emphasis_very_low" />
+
+                <TextView
+                    android:id="@+id/primaryValueTextView"
+                    isVisible="@{primaryValue != null}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@{primaryValue}"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="@color/color_on_surface_emphasis_high"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonCopy"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:text="1230.234124" />
+
+                <TextView
+                    android:id="@+id/secondaryValueTextView"
+                    isInvisible="@{!(secondaryValue != null)}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{secondaryValue}"
+                    android:textAlignment="textEnd"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/color_on_surface_emphasis_medium"
+                    app:layout_constraintBottom_toTopOf="@+id/primaryValueTextView"
+                    app:layout_constraintStart_toStartOf="@+id/primaryValueTextView"
+                    tools:text="$1,200.02" />
+
+                <FrameLayout
+                    android:id="@+id/arrow"
+                    isVisible="@{showArrow}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:elevation="0dp"
+                        android:padding="12dp"
+                        app:cardBackgroundColor="@android:color/transparent"
+                        app:cardElevation="0dp"
+                        app:cardForegroundColor="@android:color/transparent"
+                        app:strokeColor="@color/white"
+                        app:strokeWidth="1dp">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/ic_baseline_arrow_forward_24"
+                            app:tint="@color/white" />
+
+                    </com.google.android.material.card.MaterialCardView>
+                </FrameLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonCopy"
+                    style="@style/Widget.Green.Button.Outlined.Tiny"
+                    isVisible="@{!showArrow &amp;&amp; showCopy}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/id_copy_id"
+                    android:textColor="@color/material_on_surface_emphasis_high_type"
+                    app:icon="@drawable/ic_copy"
+                    app:iconTint="@color/material_on_surface_emphasis_high_type"
+                    app:layout_constraintBottom_toBottomOf="@+id/primaryValueTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/primaryValueTextView"
+                    app:strokeColor="@color/material_on_surface_emphasis_high_type" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/compactGuideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="70dp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/warningIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="16dp"
+            android:background="@{ExtensionsKt.getAccountColor(account, context)}"
+            android:elevation="24dp"
+            android:padding="1dp"
+            app:contentPadding="7dp"
+            isVisible="@{needs2faActivation}"
+            android:src="@drawable/ic_shield_warning"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedImageView"
+            app:strokeColor="@color/black"
+            app:strokeWidth="1dp"
+            tools:background="@color/bitcoin"/>
+
+    </FrameLayout>
+</layout>

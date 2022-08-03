@@ -15,10 +15,13 @@ data class PreferenceListItem constructor(
     val withSwitch : Boolean = false,
     var withButton: StringHolder = StringHolder(null),
     val withRadio : Boolean = false,
-    val withSubtitleRed: Boolean = false,
+    val titleColor: Int = 0,
+    val subtitleColor: Int = 0,
     val isInnerMenu: Boolean = false,
     val iconRes: Int = 0
 ) : AbstractBindingItem<ListItemPreferenceBinding>() {
+    // Decided to add those flags here to avoid animating the whole cell, on the down side,
+    // dev should notify the adapter for ui update
     var switchChecked: Boolean = false
     var radioChecked: Boolean = false
     var buttonText : String? = null
@@ -40,11 +43,8 @@ data class PreferenceListItem constructor(
         binding.radionMaterial.isChecked = radioChecked
         withButton.applyToOrHide(binding.button)
 
-        if(withSubtitleRed){
-            binding.subtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.red))
-        }else{
-            binding.subtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.color_on_surface_emphasis_medium))
-        }
+        binding.title.setTextColor(ContextCompat.getColor(binding.root.context, if(titleColor > 0) titleColor else  R.color.color_on_surface_emphasis_high))
+        binding.subtitle.setTextColor(ContextCompat.getColor(binding.root.context, if(subtitleColor > 0) subtitleColor else  R.color.color_on_surface_emphasis_medium))
 
         when {
             isInnerMenu -> {

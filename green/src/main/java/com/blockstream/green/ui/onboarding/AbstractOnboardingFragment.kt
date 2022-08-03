@@ -13,5 +13,5 @@ abstract class AbstractOnboardingFragment<T : ViewDataBinding>(
 
     var options: OnboardingOptions? = null
 
-    override val segmentation by lazy { options?.let { countly.onBoardingSegmentation(it) } }
+    override val segmentation get() = options?.let { countly.onBoardingSegmentation(it) }
 }

@@ -1,9 +1,7 @@
 package com.blockstream.green.ui.settings
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.blockstream.gdk.GreenWallet
+import androidx.lifecycle.*
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.EncryptWithPinParams
 import com.blockstream.gdk.params.Limits
@@ -15,18 +13,18 @@ import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.async
-import com.blockstream.green.gdk.observable
+import com.blockstream.green.extensions.logException
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.logException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.kotlin.addTo
-import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
 
@@ -35,337 +33,327 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     countly: Countly,
     val appKeystore: AppKeystore,
-    val greenWallet: GreenWallet,
+    val gdkBridge: GdkBridge,
     val applicationScope: ApplicationScope,
     @Assisted wallet: Wallet
 ) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
-    val settingsLiveData = MutableLiveData<Settings>()
-    val twoFactorConfigLiveData = MutableLiveData<TwoFactorConfig>()
-    val watchOnlyUsernameLiveData = MutableLiveData("")
+    private var _networkSettingsLiveData = mutableMapOf<Network, MutableLiveData<Settings>>()
+    val networkSettingsLiveData
+        get() = _networkSettingsLiveData
+
+    fun networkSettingsLiveData(network: Network) =
+        _networkSettingsLiveData.getOrPut(network) { MutableLiveData<Settings>() }
+
+    fun networkSettings(network: Network) = networkSettingsLiveData(network).value
+
+    val prominentNetworkSettings get() = networkSettingsLiveData(session.defaultNetwork)
+
+    private var _networkTwoFactorConfigLiveData =
+        mutableMapOf<Network, MutableLiveData<TwoFactorConfig>>()
+
+    fun networkTwoFactorConfigLiveData(network: Network) =
+        _networkTwoFactorConfigLiveData.getOrPut(network) { MutableLiveData<TwoFactorConfig>() }
+
+    fun networkTwoFactorConfig(network: Network) = networkTwoFactorConfigLiveData(network).value
+
+    private var _watchOnlyUsernameLiveData = mutableMapOf<Network, MutableLiveData<String>>()
+    fun watchOnlyUsernameLiveData(network: Network) =
+        _watchOnlyUsernameLiveData.getOrPut(network) { MutableLiveData<String>() }
+
     val biometricsLiveData = MutableLiveData<LoginCredentials>()
 
-    var zeroSubaccount : SubAccount? = null
+    private val _archivedAccountsLiveData: MutableLiveData<Int> = MutableLiveData(0)
+    val archivedAccountsLiveData: LiveData<Int> get() = _archivedAccountsLiveData
+    val archivedAccounts: Int get() = _archivedAccountsLiveData.value ?: 0
+
+    var supportId: String? = null
 
     init {
-        session
-            .getSettingsObservable()
-            .async()
-            .subscribe(settingsLiveData::postValue)
-            .addTo(disposables)
+        session.activeSessions.forEach { network ->
+            session
+                .settingsFlow(network)
+                .onEach {
+                    networkSettingsLiveData(network).value = it
+                }.launchIn(viewModelScope)
+        }
 
-        session
-            .getSubAccountsObservable()
-            .async()
-            .subscribe{
-                zeroSubaccount = it.firstOrNull()
-            }
-            .addTo(disposables)
+        session.accountsFlow.value.find {
+            it.isMultisig
+        }
+
+        session.accountsFlow.onEach { accounts ->
+            supportId = accounts.filter { it.isMultisig && it.pointer == 0L }
+                .joinToString(",") { "${it.network.bip21Prefix}:${it.receivingId}" }
+        }.launchIn(viewModelScope)
 
         walletRepository
-            .getWalletLoginCredentialsObservable(wallet.id)
-            .async()
-            .subscribe {
+            .getWalletLoginCredentialsFlow(wallet.id).filterNotNull()
+            .onEach {
                 biometricsLiveData.postValue(it.biometrics)
             }
-            .addTo(disposables)
+            .launchIn(viewModelScope)
+
+        session
+            .allAccountsFlow
+            .onEach { accounts ->
+                _archivedAccountsLiveData.value = accounts.count { it.hidden }
+            }.launchIn(lifecycleScope)
 
         updateTwoFactorConfig()
         updateWatchOnlyUsername()
     }
 
-    fun updateTwoFactorConfig(){
-        if(!session.isElectrum && !session.isWatchOnly){
-            session.observable {
-                it.getTwoFactorConfig()
-            }.subscribeBy(
-                onSuccess = {
-                    twoFactorConfigLiveData.value = it
-                },
-                onError = {
-                    it.printStackTrace()
+    fun updateTwoFactorConfig() {
+        if (!session.isWatchOnly) {
+            viewModelScope.launch(context = Dispatchers.IO + logException(countly)) {
+                session.activeSessions.filter { !it.isElectrum }.forEach {
+                    networkTwoFactorConfigLiveData(it).postValue(session.getTwoFactorConfig(it))
                 }
-            )
+            }
         }
     }
 
-    fun updateWatchOnlyUsername(){
-        if(!session.isWatchOnly) {
-            session.observable {
-                it.getWatchOnlyUsername()
-            }.subscribeBy(
-                onError = {
-                    onError.postValue(ConsumableEvent(Exception("id_username_not_available")))
-                },
-                onSuccess = {
-                    watchOnlyUsernameLiveData.value = it
-                }
-            )
+    fun updateTwoFactorConfig(network: Network) {
+        if (!session.isWatchOnly) {
+            viewModelScope.launch(context = Dispatchers.IO + logException(countly)) {
+                networkTwoFactorConfigLiveData(network).postValue(session.getTwoFactorConfig(network))
+            }
         }
     }
 
-    fun setWatchOnly(username: String, password: String){
-        session.observable {
-            it.setWatchOnly(
+    fun updateWatchOnlyUsername() {
+        if (!session.isWatchOnly) {
+            doUserAction({
+                session.activeSessions.filter { !it.isElectrum }.toList().map { network ->
+                    network to session.getWatchOnlyUsername(network)
+                }.toMap()
+            }, onError = {
+                onError.postValue(ConsumableEvent(Exception("id_username_not_available")))
+            }, onSuccess = {
+                it.forEach {
+                    watchOnlyUsernameLiveData(it.key).postValue(it.value)
+                }
+            })
+        }
+    }
+
+    fun setWatchOnly(network: Network, username: String, password: String) {
+        doUserAction({
+            session.setWatchOnly(
+                network,
                 username,
                 password
             )
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                updateWatchOnlyUsername()
-            }
-        )
+        }, onSuccess = {
+            updateWatchOnlyUsername()
+        })
     }
 
-    fun setLimits(limits: Limits, twoFactorResolver: DialogTwoFactorResolver){
-        session.observable {
-            session.twofactorChangeLimits(limits).result<Limits>(twoFactorResolver = twoFactorResolver)
-        }.subscribeBy(
-            onError = {
-                it.printStackTrace()
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                updateTwoFactorConfig()
-            }
-        )
+    fun setLimits(network: Network, limits: Limits, twoFactorResolver: DialogTwoFactorResolver) {
+        doUserAction({
+            session.twofactorChangeLimits(network, limits)
+                .result<Limits>(twoFactorResolver = twoFactorResolver)
+        }, onSuccess = {
+            updateTwoFactorConfig()
+        })
     }
 
-    fun sendNlocktimes(){
-        session.observable {
-            session.sendNlocktimes()
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
+    fun sendNlocktimes(network: Network) {
+        doUserAction({
+            session.sendNlocktimes(network)
+        }, onSuccess = {
 
-            }
-        )
+        })
     }
 
-    fun enable2FA(method: TwoFactorMethod, data: String, action: TwoFactorSetupAction, twoFactorResolver: DialogTwoFactorResolver){
-        session.observable {
+    fun enable2FA(
+        network: Network,
+        method: TwoFactorMethod,
+        data: String,
+        action: TwoFactorSetupAction,
+        twoFactorResolver: DialogTwoFactorResolver
+    ) {
+        doUserAction({
             session
-                .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(confirmed = true, enabled = action != TwoFactorSetupAction.SETUP_EMAIL, data = data))
+                .changeSettingsTwoFactor(
+                    network,
+                    method.gdkType,
+                    TwoFactorMethodConfig(
+                        confirmed = true,
+                        enabled = action != TwoFactorSetupAction.SETUP_EMAIL,
+                        data = data
+                    )
+                )
                 .resolve(twoFactorResolver = twoFactorResolver)
 
             // Enable legacy recovery emails
-            if(action == TwoFactorSetupAction.SETUP_EMAIL){
-                settingsLiveData.value?.copy(
+            if (action == TwoFactorSetupAction.SETUP_EMAIL) {
+                networkSettingsLiveData(network).value?.copy(
                     notifications = SettingsNotification(
                         emailIncoming = true,
                         emailOutgoing = true
                     )
                 )?.also { newSettings ->
-                    it.changeSettings(newSettings).resolve()
-                    it.updateSettings()
+                    session.changeSettings(network, newSettings)
+                    session.updateSettings(network)
                 }
             }
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                updateTwoFactorConfig()
-                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
-            }
-        )
+        }, onSuccess = {
+            updateTwoFactorConfig()
+            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+        })
     }
 
-    fun disable2FA(method: TwoFactorMethod, twoFactorResolver: DialogTwoFactorResolver){
-        session.observable {
+    fun disable2FA(
+        network: Network,
+        method: TwoFactorMethod,
+        twoFactorResolver: DialogTwoFactorResolver
+    ) {
+        doUserAction({
             session
-                .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(enabled = false))
+                .changeSettingsTwoFactor(
+                    network,
+                    method.gdkType,
+                    TwoFactorMethodConfig(enabled = false)
+                )
                 .resolve(twoFactorResolver = twoFactorResolver)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                updateTwoFactorConfig()
-                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
-            }
-        )
+        }, onSuccess = {
+            updateTwoFactorConfig()
+            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+        })
     }
 
-    fun reset2FA(email: String, isDispute: Boolean, twoFactorResolver: DialogTwoFactorResolver){
-        session.observable {
+    fun reset2FA(
+        network: Network,
+        email: String,
+        isDispute: Boolean,
+        twoFactorResolver: DialogTwoFactorResolver
+    ) {
+        doUserAction({
             session
-                .twofactorReset(email, isDispute)
+                .twofactorReset(network, email, isDispute)
                 .result<TwoFactorReset>(twoFactorResolver = twoFactorResolver)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                logout(LogoutReason.USER_ACTION)
-            }
-        )
+        }, onSuccess = {
+            logout(LogoutReason.USER_ACTION)
+        })
     }
 
-    fun undoReset2FA(email: String, twoFactorResolver: DialogTwoFactorResolver){
-        session.observable {
+    fun undoReset2FA(network: Network, email: String, twoFactorResolver: DialogTwoFactorResolver) {
+        doUserAction({
             session
-                .twofactorUndoReset(email)
+                .twofactorUndoReset(network, email)
                 .resolve(twoFactorResolver = twoFactorResolver)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                logout(LogoutReason.USER_ACTION)
-            }
-        )
+        }, onSuccess = {
+            logout(LogoutReason.USER_ACTION)
+        })
     }
 
-    fun cancel2FA(twoFactorResolver: DialogTwoFactorResolver){
-        session.observable {
+    fun cancel2FA(network: Network, twoFactorResolver: DialogTwoFactorResolver) {
+        doUserAction({
             session
-                .twofactorCancelReset()
+                .twofactorCancelReset(network)
                 .resolve(twoFactorResolver = twoFactorResolver)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                logout(LogoutReason.USER_ACTION)
-            }
-        )
+        }, onSuccess = {
+            logout(LogoutReason.USER_ACTION)
+        })
     }
 
-    fun changePin(newPin: String){
-        session.observable {
-            val credentials = it.getCredentials()
-            val pinData = it.encryptWithPin(EncryptWithPinParams(newPin, credentials)).pinData
+    fun changePin(newPin: String) {
+        doUserAction({
+            val credentials = session.getCredentials()
+            val encryptWithPin =
+                session.encryptWithPin(null, EncryptWithPinParams(newPin, credentials))
 
             // Replace PinData
-            walletRepository.addLoginCredentialsSync(
+            walletRepository.insertOrReplaceLoginCredentials(
                 LoginCredentials(
                     walletId = wallet.id,
+                    network = encryptWithPin.network.id,
                     credentialType = CredentialType.PIN,
-                    pinData = pinData
+                    pinData = encryptWithPin.pinData
                 )
             )
 
             // We only allow one credential type PIN / Password
             // Password comes from v2 and should be deleted when a user tries to change his
             // password to a pin
-            walletRepository.deleteLoginCredentialsSync(wallet.id, CredentialType.PASSWORD)
-
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
-            }
-        )
+            walletRepository.deleteLoginCredentials(wallet.id, CredentialType.PASSWORD)
+        }, onSuccess = {
+            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+        })
     }
 
-    fun saveSettings(newSettings: Settings){
-        session.observable {
-            it.changeSettings(newSettings).resolve()
-            it.updateSettings()
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                updateWatchOnlyUsername()
-                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
-            }
-        )
+    fun saveGlobalSettings(newSettings: Settings) {
+        doUserAction({
+            session.changeGlobalSettings(newSettings)
+            session.updateSettings()
+        }, onSuccess = {
+            updateWatchOnlyUsername()
+            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+        })
     }
 
-    fun setCsvTime(csvTime: Int, twoFactorResolver: DialogTwoFactorResolver){
-        session.observable {
-            it.setCsvTime(csvTime).resolve(twoFactorResolver = twoFactorResolver)
+    fun saveNetworkSettings(network: Network, newSettings: Settings) {
+        doUserAction({
+            session.changeSettings(network, newSettings)
+            session.updateSettings(network)
+        }, onSuccess = {
+            updateWatchOnlyUsername()
+            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+        })
+    }
 
-            it.updateSettings()
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+    fun savePGP(pgp: String?) {
+        doUserAction({
+            pgp?.trim().also { pgpTrimmed ->
+                session.activeMultisig.forEach {
+                    networkSettingsLiveData(it).value?.also { settings ->
+                        session.changeSettings(it, settings.copy(pgp = pgpTrimmed))
+                        session.updateSettings(it)
+                    }
+                }
             }
-        )
+        }, onSuccess = {
+            updateWatchOnlyUsername()
+            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+        })
+    }
+
+    fun setCsvTime(network: Network, csvTime: Int, twoFactorResolver: DialogTwoFactorResolver) {
+        doUserAction({
+            session.setCsvTime(network, csvTime).resolve(twoFactorResolver = twoFactorResolver)
+            session.updateSettings(network)
+        }, onSuccess = {
+            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+        })
     }
 
     fun enableBiometrics(cipher: Cipher) {
-        session.observable {
-            val pin = greenWallet.randomChars(15)
-            val credentials = it.getCredentials()
-            val pinData = it.encryptWithPin(EncryptWithPinParams(pin, credentials)).pinData
+        doUserAction({
+            val pin = gdkBridge.randomChars(15)
+            val credentials = session.getCredentials()
+            val encryptWithPin =
+                session.encryptWithPin(null, EncryptWithPinParams(pin, credentials))
 
             val encryptedData = appKeystore.encryptData(cipher, pin.toByteArray())
 
-            walletRepository.addLoginCredentialsSync(
+            walletRepository.insertOrReplaceLoginCredentials(
                 LoginCredentials(
                     walletId = wallet.id,
+                    network = encryptWithPin.network.id,
                     credentialType = CredentialType.BIOMETRICS,
-                    pinData = pinData,
+                    pinData = encryptWithPin.pinData,
                     encryptedData = encryptedData
                 )
             )
+        }, onSuccess = {
 
-            true
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-
-            }
-        )
+        })
     }
 
-    fun removeBiometrics(){
+    fun removeBiometrics() {
         applicationScope.launch(context = logException(countly)) {
-            walletRepository.deleteLoginCredentialsSuspend(wallet.id, CredentialType.BIOMETRICS)
+            walletRepository.deleteLoginCredentials(wallet.id, CredentialType.BIOMETRICS)
         }
     }
 

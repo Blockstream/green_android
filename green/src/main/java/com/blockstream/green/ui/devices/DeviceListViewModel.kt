@@ -1,9 +1,11 @@
 package com.blockstream.green.ui.devices
 
+import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.DeviceBrand
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
@@ -14,15 +16,18 @@ import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
 
 class DeviceListViewModel @AssistedInject constructor(
+    countly: Countly,
     val deviceManager: DeviceManager,
     @Assisted deviceBrand: DeviceBrand?
-) : AppViewModel() {
+) : AppViewModel(countly) {
 
     val devices = MutableLiveData(listOf<Device>())
     val bleAdapterState = deviceManager.bleAdapterState
     val hasBleConnectivity = deviceBrand == null || deviceBrand.hasBleConnectivity
 
     var onSuccess: (() -> Unit)? = null
+
+    val canEnableBluetooth = MutableLiveData(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
 
     init {
         deviceManager

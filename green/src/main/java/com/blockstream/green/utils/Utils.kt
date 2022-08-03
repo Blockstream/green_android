@@ -3,16 +3,21 @@ package com.blockstream.green.utils
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.text.Spannable
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
+import androidx.core.text.buildSpannedString
+import androidx.core.text.color
+import androidx.core.text.toSpanned
 import androidx.fragment.app.Fragment
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
@@ -91,10 +96,10 @@ fun copyToClipboard(label: String, content: String, context: Context, animateVie
     }
 }
 
-fun getVersionName(context: Context): String {
-    val manager = context.packageManager
-    val info = manager.getPackageInfo(context.packageName, PackageManager.GET_ACTIVITIES)
-    return info.versionName
+fun clearClipboard(context: Context) {
+    (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
+        it.clearPrimaryClip()
+    }
 }
 
 fun notImpementedYet(context: Context) {
@@ -103,9 +108,9 @@ fun notImpementedYet(context: Context) {
     }
 }
 
-fun createQrBitmap(content: String): Bitmap? {
+fun createQrBitmap(content: String, errorCorrectionLevel: ErrorCorrectionLevel = ErrorCorrectionLevel.M): Bitmap? {
     try {
-        val matrix = Encoder.encode(content, ErrorCorrectionLevel.M).matrix
+        val matrix = Encoder.encode(content, errorCorrectionLevel).matrix
 
         val height: Int = matrix.height
         val width: Int = matrix.width
@@ -161,5 +166,38 @@ fun Fragment.notifyDevelopmentFeature(message: String) {
 fun Context.notifyDevelopmentFeature(message: String) {
     if (isDevelopmentFlavor) {
         Toast.makeText(this, "Development Flavor: $message", Toast.LENGTH_SHORT).show()
+    }
+}
+
+fun Fragment.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
+    return requireContext().greenText(whiteText, *greenTexts)
+}
+
+fun Context.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
+    val whiteString = getString(whiteText)
+
+    return try{
+        buildSpannedString {
+            color(ContextCompat.getColor(this@greenText, R.color.white)) {
+                append(whiteString)
+            }
+
+            greenTexts.map { getString(it).lowercase() }.forEach {
+                val start = whiteString.lowercase().indexOf(it)
+                setSpan(
+                    ForegroundColorSpan(
+                        ContextCompat.getColor(
+                            this@greenText,
+                            R.color.brand_green
+                        )
+                    ),
+                    start,
+                    start + it.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+        }.toSpanned()
+    }catch (e: Exception){
+        whiteString.toSpanned()
     }
 }

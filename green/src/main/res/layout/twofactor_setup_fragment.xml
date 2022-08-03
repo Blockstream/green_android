@@ -55,7 +55,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/countryTextInputLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/id_country"
@@ -78,10 +78,10 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/phoneNumberTextInputLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="8dp"
                     android:hint="@string/id_phone_number"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/countryTextInputLayout"
@@ -92,8 +92,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:imeOptions="actionDone"
-                        android:text="@={vm.phoneNumber}"
-                        android:inputType="phone" />
+                        android:inputType="phone"
+                        android:text="@={vm.phoneNumber}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -101,11 +101,12 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/emailTextInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 isVisible="@{vm.method == TwoFactorMethod.EMAIL &amp;&amp; vm.action != TwoFactorSetupAction.CANCEL}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_email"
+                app:endIconMode="clear_text"
                 app:expandedHintEnabled="true"
                 app:placeholderText="jane@example.com">
 
@@ -161,7 +162,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/id_the_recovery_key_below_will_not"
                         android:gravity="center"
-                        android:textAppearance="?attr/textAppearanceSubtitle1"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="24dp"
                         />
@@ -179,7 +180,7 @@
                         android:text="@{vm.authenticatorCode}"
                         android:layout_marginTop="16dp"
                         android:textStyle="bold"
-                        app:drawableEndCompat="@drawable/ic_baseline_content_copy_18"
+                        app:drawableEndCompat="@drawable/ic_copy"
                         app:drawableTint="@color/color_on_surface_emphasis_low"
                         tools:text="fafadfafasdfaiiiiii" />
 

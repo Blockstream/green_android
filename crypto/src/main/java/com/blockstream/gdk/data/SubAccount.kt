@@ -12,18 +12,21 @@ import kotlinx.serialization.Serializable
 @Parcelize
 @Serializable
 data class SubAccount(
+    var networkInjected: Network? = null,
     @SerialName("name") private val gdkName: String,
     @SerialName("pointer") val pointer: Long,
     @SerialName("hidden") val hidden: Boolean = false,
-    @SerialName("receiving_id") val receivingId: String,
+    @SerialName("receiving_id") val receivingId: String = "",
     @SerialName("recovery_pub_key") val recoveryPubKey: String = "",
     @SerialName("recovery_chain_code") val recoveryChainCode: String = "",
     @SerialName("recovery_xpub") val recoveryXpub: String? = null,
     @Serializable(with = AccountTypeSerializer::class)
     @SerialName("type") val type: AccountType,
     @SerialName("bip44_discovered") val bip44Discovered: Boolean? = null,
+    @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
+    @SerialName("slip132_extended_pubkey") val extendedPubkey: String? = null,
+    @SerialName("user_path") val derivationPath: List<Long>? = null,
 ) : GAJson<SubAccount>(), Parcelable {
-
     override fun kSerializer() = serializer()
 
     @IgnoredOnParcel
@@ -45,6 +48,30 @@ data class SubAccount(
             else -> false
         }
     }
+
+    val network
+        get() = networkInjected!!
+
+    val networkId
+        get() = network.id
+
+    val isBitcoin
+        get() =  network.isBitcoin
+
+    val isBitcoinMainnet
+        get() =  network.isBitcoinMainnet
+
+    val isLiquidMainnet
+        get() = network.isLiquidMainnet
+
+    val isBitcoinTestnet
+        get() = network.isBitcoinTestnet
+
+    val isLiquidTestnet
+        get() = network.isLiquidTestnet
+
+    val isLiquid
+        get() = network.isLiquid
 
     private val name: String
         get() = gdkName.ifBlank {
@@ -82,18 +109,21 @@ data class SubAccount(
 
     fun nameOrDefault(default: String): String = name.ifBlank { default }
 
-    val accountNumber: Long
+    val bip32Pointer: Long
         get() = when (type) {
             AccountType.BIP44_LEGACY,
             AccountType.BIP49_SEGWIT_WRAPPED,
             AccountType.BIP84_SEGWIT,
             AccountType.BIP86_TAPROOT -> {
-                (pointer / 16) + 1
+                (pointer / 16)
             }
             else -> {
-                pointer + 1
+                pointer
             }
         }
+
+    val accountNumber: Long
+        get() = bip32Pointer + 1
 
     fun getRecoveryChainCodeAsBytes(): ByteArray? {
         return Wally.hex_to_bytes(recoveryChainCode)

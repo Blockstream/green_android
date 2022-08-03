@@ -16,7 +16,9 @@ data class DeviceBrandListItem(val deviceBrand: DeviceBrand) : AbstractBindingIt
     }
 
     override fun bindView(binding: ListItemDeviceBrandBinding, payloads: List<Any>) {
-        binding.name = deviceBrand.brand
+        binding.name = if (deviceBrand == DeviceBrand.Blockstream) "Blockstream Jade" else {
+            deviceBrand.brand
+        }
         binding.icon.setImageResource(deviceBrand.icon)
     }
 

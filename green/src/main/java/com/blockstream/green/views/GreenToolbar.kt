@@ -16,13 +16,14 @@ class GreenToolbar @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.toolbarStyle
 ) : MaterialToolbar(context, attrs, defStyleAttr) {
 
-    private var binding: GreenToolbarBinding =
-        GreenToolbarBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding : GreenToolbarBinding by lazy { GreenToolbarBinding.inflate(LayoutInflater.from(context), this, true) }
 
     init {
-        // Re apply the title after our custom binding was initiated
-        if (!TextUtils.isEmpty(title)) {
-            title = title
+        if(!isInEditMode) {
+            // Re apply the title after our custom binding was initiated
+            if (!TextUtils.isEmpty(title)) {
+                title = title
+            }
         }
     }
 

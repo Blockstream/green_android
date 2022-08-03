@@ -4,6 +4,10 @@
 
     <data>
 
+        <variable
+            name="progress"
+            type="Integer" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +23,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:text="@string/id_scan_qr_code"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             app:layout_constraintEnd_toStartOf="@+id/buttonClose"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -35,7 +39,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/title" />
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            isVisible="@{progress != null}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:progress="@{progress}"
+            app:layout_constraintBottom_toTopOf="@+id/materialCardView4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView4"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="24dp"

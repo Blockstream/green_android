@@ -70,58 +70,62 @@
                     android:layout_height="wrap_content"
                     android:text="@string/id_add_recipient" />
 
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="@color/brand_surface_variant"
-                    app:strokeColor="@color/color_on_surface_divider"
-                    app:strokeWidth="1dp">
+                    android:orientation="vertical">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="2dp">
 
                         <TextView
                             android:id="@+id/feeLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="16dp"
                             android:text="@string/id_fee"
-                            android:includeFontPadding="false"
-                            android:textAppearance="?attr/textAppearanceBody1"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            android:layout_marginStart="4dp"
+                            style="@style/TextAppearance.Green.Overline"
+                            android:layout_gravity="center_vertical"/>
 
                         <ImageButton
                             android:id="@+id/buttonFeeHelp"
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_gravity="end"
-                            android:layout_marginStart="3dp"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="1dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
                             android:background="@android:color/transparent"
                             android:scaleType="fitCenter"
+                            android:layout_marginStart="4dp"
                             android:src="@drawable/ic_baseline_help_outline_18"
-                            app:layout_constraintBottom_toBottomOf="@+id/feeLabel"
-                            app:layout_constraintDimensionRatio="w,1:1"
-                            app:layout_constraintStart_toEndOf="@+id/feeLabel"
-                            app:layout_constraintTop_toTopOf="@+id/feeLabel"
+                            android:layout_gravity="center_vertical"
                             app:tint="@color/color_on_surface_emphasis_low" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
 
                         <TextView
                             android:id="@+id/feeRate"
                             isInvisible="@{vm.feeAmountRate.empty}"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
                             android:text="@{`(`+vm.feeAmountRate+`)`}"
-                            android:textAppearance="?attr/textAppearanceCaption"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="@color/color_on_surface_emphasis_medium"
                             android:textSize="11sp"
-                            android:includeFontPadding="false"
-                            app:layout_constraintStart_toStartOf="@+id/feeLabel"
-                            app:layout_constraintTop_toBottomOf="@+id/feeLabel"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
                             tools:text="(1.00 satoshi / vbyte)" />
 
                         <TextView
@@ -133,9 +137,9 @@
                             android:includeFontPadding="false"
                             android:text="@{vm.feeAmount}"
                             android:textAlignment="textEnd"
-                            android:textAppearance="?attr/textAppearanceBody1"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
                             app:layout_constraintEnd_toStartOf="@+id/buttonEditFee"
-                            app:layout_constraintStart_toEndOf="@+id/buttonFeeHelp"
+                            app:layout_constraintStart_toEndOf="@+id/feeRate"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="0.00000001 BTC" />
 
@@ -147,7 +151,7 @@
                             android:text="@{vm.feeAmountFiat}"
                             android:textAlignment="textEnd"
                             android:includeFontPadding="false"
-                            android:textAppearance="?attr/textAppearanceCaption"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
                             app:layout_constraintEnd_toEndOf="@+id/feeAmount"
                             app:layout_constraintStart_toEndOf="@+id/feeRate"
                             app:layout_constraintTop_toBottomOf="@+id/feeAmount"
@@ -163,11 +167,10 @@
                             android:paddingTop="4dp"
                             android:paddingBottom="4dp"
                             android:scaleType="centerInside"
-                            android:src="@drawable/ic_baseline_edit_24"
+                            android:src="@drawable/ic_pencil_simple_line"
                             app:layout_constraintBottom_toBottomOf="@+id/feeAmountFiat"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/feeAmount"
-                            app:tint="@color/brand_green" />
+                            app:layout_constraintTop_toTopOf="@+id/feeAmount" />
 
                         <TextView
                             android:id="@+id/confirmationTimeLabel"
@@ -176,10 +179,10 @@
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
                             android:text="@string/id_confirmation_time"
-                            android:textAppearance="?attr/textAppearanceSubtitle2"
+                            android:textAppearance="?attr/textAppearanceLabelMedium"
                             app:layout_constraintBottom_toTopOf="@+id/feeSlider"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/feeRate" />
+                            app:layout_constraintTop_toBottomOf="@+id/buttonEditFee" />
 
                         <TextView
                             android:id="@+id/confirmationTime"
@@ -188,7 +191,7 @@
                             android:layout_marginEnd="16dp"
                             android:includeFontPadding="false"
                             android:text="@{expectedConfirmationTime}"
-                            android:textAppearance="?attr/textAppearanceCaption"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
                             app:layout_constraintBaseline_toBaselineOf="@+id/confirmationTimeLabel"
                             app:layout_constraintEnd_toEndOf="@+id/feeSlider"
                             tools:text="30 minutes" />
@@ -230,24 +233,25 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="6dp"
-                            android:layout_marginBottom="-4dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.8"
                             android:src="@drawable/ic_baseline_keyboard_double_arrow_right_18"
-                            app:layout_constraintBottom_toBottomOf="@+id/feeSlider"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageView6"
                             app:layout_constraintEnd_toEndOf="@+id/feeSlider"
+                            app:layout_constraintTop_toTopOf="@+id/imageView6"
                             app:tint="@color/brand_green" />
 
                         <ImageView
+                            android:id="@+id/imageView6"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="-1dp"
-                            android:layout_marginBottom="-4dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.7"
                             android:src="@drawable/ic_baseline_keyboard_arrow_right_18"
-                            app:layout_constraintBottom_toBottomOf="@+id/feeSlider"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageView5"
                             app:layout_constraintEnd_toStartOf="@+id/guidelineMedium"
+                            app:layout_constraintTop_toTopOf="@+id/imageView5"
                             app:tint="@color/brand_green" />
 
                         <ImageView
@@ -255,7 +259,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="4dp"
-                            android:layout_marginBottom="-4dp"
+                            android:layout_marginBottom="-5dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.6"
                             android:src="@drawable/ic_baseline_keyboard_arrow_right_18"
@@ -264,12 +268,12 @@
                             app:tint="@color/brand_green" />
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_marginStart="7dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.5"
-                            android:src="@drawable/ic_baseline_edit_12"
+                            android:src="@drawable/ic_pencil_simple_line"
                             app:layout_constraintBottom_toBottomOf="@+id/imageView5"
                             app:layout_constraintStart_toStartOf="@+id/feeSlider"
                             app:layout_constraintTop_toTopOf="@+id/imageView5"
@@ -287,6 +291,8 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
+                </LinearLayout>
+
             </com.blockstream.green.views.GappedLinearLayout>
 
         </ScrollView>
@@ -299,7 +305,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="Error: "
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="@color/error"
             app:layout_constraintBottom_toTopOf="@+id/buttonContinue"
             app:layout_constraintEnd_toEndOf="parent"

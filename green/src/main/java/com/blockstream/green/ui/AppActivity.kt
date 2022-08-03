@@ -51,7 +51,7 @@ abstract class AppActivity : AppCompatActivity() {
                 }
             }
 
-            if(destination.id == R.id.deviceListFragment || destination.id == R.id.deviceInfoFragment){
+            if(destination.id == R.id.deviceListFragment || destination.id == R.id.deviceInfoFragment || destination.id == R.id.deviceScanFragment){
                 deviceManager.startBluetoothScanning()
             }else{
                 deviceManager.pauseBluetoothScanning()

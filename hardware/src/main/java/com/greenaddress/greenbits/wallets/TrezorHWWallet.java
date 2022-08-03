@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 
 import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.ExtensionsKt;
+import com.blockstream.gdk.data.Account;
 import com.blockstream.gdk.data.AccountType;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
@@ -50,12 +51,12 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public void disconnect() {
+    public synchronized void disconnect() {
         // No-op
     }
 
     @Override
-    public List<String> getXpubs(final Network network, @Nullable final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public synchronized List<String> getXpubs(final Network network, @Nullable final HWWalletBridge parent, final List<List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
 
         for (List<Integer> path : paths) {
@@ -72,7 +73,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
+    public synchronized SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
                                      final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
         if (useAeProtocol) {
             throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
@@ -99,7 +100,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
@@ -121,7 +122,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String, String> transactions,
@@ -129,7 +130,7 @@ public class TrezorHWWallet extends HWWallet {
         return null;
     }
 
-    private SignTxResult signTransactionImpl(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    private synchronized SignTxResult signTransactionImpl(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                              final List<InputOutput> inputs,
                                              final List<InputOutput> outputs,
                                              final Map<String, String> transactions)
@@ -253,17 +254,17 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String getMasterBlindingKey(HWWalletBridge parent) {
+    public synchronized String getMasterBlindingKey(HWWalletBridge parent) {
         return null;
     }
 
     @Override
-    public String getBlindingKey(HWWalletBridge parent, String scriptHex) {
+    public synchronized String getBlindingKey(HWWalletBridge parent, String scriptHex) {
         return null;
     }
 
     @Override
-    public String getBlindingNonce(HWWalletBridge parent, String pubkey, String scriptHex) {
+    public synchronized String getBlindingNonce(HWWalletBridge parent, String pubkey, String scriptHex) {
         return null;
     }
 
@@ -384,7 +385,7 @@ public class TrezorHWWallet extends HWWallet {
             return handleCommon(parent, io);
 
         case "PinMatrixRequest":
-            final String pin = parent.requestPinMatrix(DeviceBrand.Trezor).blockingGet();
+            final String pin = parent.requestPinMatrix(DeviceBrand.Trezor);
             return handleCommon(parent, mTrezor.io(TrezorMessage.PinMatrixAck.newBuilder().setPin(pin)));
 
         case "PassphraseStateRequest":
@@ -398,7 +399,7 @@ public class TrezorHWWallet extends HWWallet {
             // on the Trezor T hasOnDevice is true, so we check what it is explicitly asking with getOnDevice
             if (!passphraseRequest.hasOnDevice() || !passphraseRequest.getOnDevice()) {
                 // Passphrase set to "HOST", ask the user here on the app
-                final String passphrase = parent.requestPassphrase(DeviceBrand.Trezor).blockingGet();
+                final String passphrase = parent.requestPassphrase(DeviceBrand.Trezor);
                 ackBuilder.setPassphrase(passphrase);
             }
 
@@ -445,7 +446,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final Network network, HWWalletBridge parent, final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
+    public synchronized String getGreenAddress(final Network network, HWWalletBridge parent, final Account account, final List<Long> path, final long csvBlocks) {
 
         if (network.isMultisig()) {
             throw new RuntimeException("Hardware Wallet does not support displaying Green Multisig Shield addresses");
@@ -458,7 +459,7 @@ public class TrezorHWWallet extends HWWallet {
         Message m = mTrezor.io(TrezorMessage.GetAddress.newBuilder()
                         .setShowDisplay(true)
                         .setCoinName(network.isTestnet() ? "Testnet" : "Bitcoin")
-                        .setScriptType(mapAccountType(subaccount.getType()))
+                        .setScriptType(mapAccountType(account.getType()))
                         .addAllAddressN(getIntegerPath(path)));
 
         m = handleCommon(parent, m);

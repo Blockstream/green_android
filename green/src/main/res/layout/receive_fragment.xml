@@ -25,17 +25,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
                 android:orientation="vertical">
 
                 <com.blockstream.green.views.GreenAlertView
                     android:id="@+id/banner"
-                    isVisible="@{vm.banner != null}"
                     banner="@{vm.banner}"
+                    isVisible="@{vm.banner != null}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="16dp" />
 
                 <com.google.android.material.card.MaterialCardView
                     isVisible="@{vm.showAssetWhitelistWarning}"
@@ -43,6 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:padding="24dp"
+                    android:visibility="gone"
                     app:cardBackgroundColor="@color/surface_light">
 
                     <TextView
@@ -52,177 +53,193 @@
                         android:layout_margin="8dp"
                         android:drawablePadding="8dp"
                         android:text="@string/id_ledger_supports_a_limited_set"
-                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
                         android:textColor="@color/color_on_light_surface_emphasis_high"
                         app:drawableStartCompat="@drawable/ic_baseline_warning_18"
                         app:drawableTint="@color/color_on_light_surface_emphasis_high" />
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/materialCardView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ImageButton
-                            android:id="@+id/buttonNewAddress"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="?android:attr/selectableItemBackgroundBorderless"
-                            android:src="@drawable/ic_baseline_refresh_24"
-                            android:tooltipText="@string/id_generate_new_address"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <com.google.android.material.progressindicator.CircularProgressIndicator
-                            android:id="@+id/loader"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:indeterminate="true"
-                            isVisible="@{vm.onProgress &amp;&amp; vm.address == null}"
-                            app:layout_constraintBottom_toBottomOf="@+id/addressQrWrap"
-                            app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
-                            app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
-                            app:layout_constraintTop_toTopOf="@+id/addressQrWrap" />
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/addressQrWrap"
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_marginStart="42dp"
-                            android:layout_marginEnd="42dp"
-                            android:background="@color/white"
-                            android:backgroundTint="@color/white"
-                            android:scaleType="fitCenter"
-                            isInvisible="@{vm.address == null}"
-                            app:layout_constraintDimensionRatio="1:1"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHeight_max="350dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/buttonNewAddress"
-                            app:layout_constraintWidth_max="350dp"
-                            app:layout_optimizationLevel="ratio">
-
-                            <ImageView
-                                android:id="@+id/addressQR"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_margin="10dp"
-                                android:scaleType="fitCenter"
-                                tools:src="@mipmap/ic_launcher" />
-
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <TextView
-                            android:id="@+id/address"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:layout_marginBottom="24dp"
-                            android:breakStrategy="balanced"
-                            android:text="@{vm.addressUri}"
-                            android:textAlignment="center"
-                            android:textColor="@color/color_on_surface_emphasis_high"
-                            android:textSize="13sp"
-                            android:drawablePadding="8dp"
-                            app:drawableEndCompat="@drawable/ic_baseline_content_copy_18"
-                            app:drawableTint="@color/color_on_surface_emphasis_low"
-                            app:layout_constraintBottom_toTopOf="@+id/wrap"
-                            app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
-                            app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
-                            app:layout_constraintTop_toBottomOf="@+id/addressQrWrap"
-                            tools:text="bitcoin:VJLAD343588Ub82r23tnFfadsfafadfafasdfaiiiiii?amopas=234" />
-
-                        <LinearLayout
-                            android:id="@+id/wrap"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="32dp"
-                            android:clipChildren="false"
-                            android:clipToPadding="false"
-                            android:orientation="vertical"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
-                            app:layout_constraintStart_toStartOf="@+id/addressQrWrap">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/buttonEdit"
-                                style="@style/Widget.Green.Button.Outlined"
-                                isVisible="@{vm.isAddressUri}"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="6dp"
-                                android:text="@string/id_edit"
-                                app:icon="@drawable/ic_baseline_edit_24"
-                                app:iconGravity="textStart"
-                                app:layout_constraintBottom_toTopOf="@id/buttonShare"
-                                app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
-                                app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
-                                app:layout_constraintTop_toBottomOf="@+id/address" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/buttonShare"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/id_share"
-                                app:icon="@drawable/ic_baseline_share_18"
-                                app:iconGravity="textStart"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
-                                app:layout_constraintStart_toStartOf="@+id/addressQrWrap" />
-
-                        </LinearLayout>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginBottom="2dp"
+                    isGone="@{vm.accountAssetLocked}"
+                    android:text="@string/id_account__asset"
+                    style="@style/TextAppearance.Green.Overline" />
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/accountAssetMaterialCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="@color/brand_surface_light"
-                    isVisible="@{vm.canValidateAddressInDevice}">
+                    android:layout_marginBottom="16dp"
+                    isGone="@{vm.accountAssetLocked}">
 
-                    <androidx.appcompat.widget.LinearLayoutCompat
+                    <include
+                        android:id="@+id/accountAsset"
+                        layout="@layout/account_asset_layout"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginBottom="2dp"
+                        android:text="@string/id_account_address"
+                        style="@style/TextAppearance.Green.Overline" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/materialCardView2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:paddingStart="42dp"
-                        android:paddingEnd="42dp">
+                        android:layout_marginBottom="16dp">
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/buttonVerify"
-                            style="@style/Widget.Green.Button.Light"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/id_verify_on_device" />
+                            android:layout_height="wrap_content">
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:drawablePadding="8dp"
-                            android:text="@string/id_please_verify_that_the_address"
-                            android:textAppearance="?attr/textAppearanceCaption" />
+                            <ImageButton
+                                android:id="@+id/buttonNewAddress"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginEnd="4dp"
+                                android:background="?android:attr/selectableItemBackgroundBorderless"
+                                android:src="@drawable/ic_arrows_counter_clockwise"
+                                android:tooltipText="@string/id_generate_new_address"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-                </com.google.android.material.card.MaterialCardView>
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/loader"
+                                isVisible="@{vm.onProgress &amp;&amp; vm.addressLiveData == null}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:indeterminate="true"
+                                app:layout_constraintBottom_toBottomOf="@+id/addressQrWrap"
+                                app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                                app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
+                                app:layout_constraintTop_toTopOf="@+id/addressQrWrap" />
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/addressQrWrap"
+                                isInvisible="@{vm.addressLiveData == null}"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_marginStart="52dp"
+                                android:layout_marginTop="52dp"
+                                android:layout_marginEnd="52dp"
+                                android:background="@color/white"
+                                android:backgroundTint="@color/white"
+                                android:scaleType="fitCenter"
+                                app:layout_constraintDimensionRatio="1:1"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHeight_max="350dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_max="350dp"
+                                app:layout_optimizationLevel="ratio">
+
+                                <ImageView
+                                    android:id="@+id/addressQR"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_margin="10dp"
+                                    android:scaleType="fitCenter"
+                                    tools:src="@mipmap/ic_launcher" />
+
+                            </com.google.android.material.card.MaterialCardView>
+
+
+                            <LinearLayout
+                                android:id="@+id/wrap"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:clipChildren="false"
+                                android:clipToPadding="false"
+                                android:orientation="vertical"
+                                android:padding="24dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/addressQrWrap">
+
+                                <TextView
+                                    android:id="@+id/address"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginBottom="8dp"
+                                    android:breakStrategy="high_quality"
+                                    android:drawablePadding="8dp"
+                                    android:fontFamily="monospace"
+                                    android:text="@{vm.addressUri}"
+                                    android:textAlignment="center"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                                    android:textColor="@color/color_on_surface_emphasis_high"
+                                    app:drawableEndCompat="@drawable/ic_copy"
+                                    tools:text="bitcoin:VJLAD343588Ub82r23tnFfadsfafadfafasdfaiiiiii?amopas=234" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/buttonEdit"
+                                    style="@style/Widget.Green.Button.Outlined.Big"
+                                    isVisible="@{vm.isAddressUri}"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/id_edit"
+                                    app:icon="@drawable/ic_pencil_simple_line"
+                                    app:iconGravity="textStart" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/buttonVerify"
+                                    style="@style/Widget.Green.Button.Light"
+                                    isVisible="@{vm.canValidateAddressInDevice}"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/id_verify_on_device" />
+
+                                <TextView
+                                    isVisible="@{vm.canValidateAddressInDevice}"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawablePadding="8dp"
+                                    android:text="@string/id_please_verify_that_the_address"
+                                    android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonShare"
+                    style="@style/Widget.Green.Button.Big"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_share"
+                    app:icon="@drawable/ic_baseline_share_18"
+                    app:iconGravity="textStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                    app:layout_constraintStart_toStartOf="@+id/addressQrWrap" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonMore"
-                    style="@style/Widget.Green.Button.Outlined"
+                    style="@style/Widget.Green.Button.Outlined.Big"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:text="@string/id_more_options"
                     android:textColor="@color/color_on_surface_emphasis_high"
                     app:icon="@drawable/ic_baseline_arrow_drop_down_24"

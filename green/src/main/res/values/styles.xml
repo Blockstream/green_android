@@ -1,65 +1,122 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Widget.Green.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense" />
+    <style name="Widget.Green.TextInputLayout.OutlinedBox" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxBackgroundColor">@color/md_theme_dark_surfaceVariant</item>
+    </style>
 
-    <style name="Widget.Green.Button.Big" parent="Widget.MaterialComponents.Button">
+    <style name="Widget.Green.TextInputLayout.FilledBox" parent="Widget.Material3.TextInputLayout.FilledBox.Dense">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Green.TextInputLayout.FilledBox</item>
+    </style>
+
+    <style name="ThemeOverlay.Green.TextInputLayout.FilledBox" parent="">
+        <item name="editTextStyle">@style/Widget.Material3.TextInputEditText.FilledBox.Dense</item>
+    </style>
+
+    <style name="Widget.Green.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Green.Switch</item>
+    </style>
+
+    <style name="ThemeOverlay.Green.Switch" parent="">
+        <item name="colorOutline">@color/md_theme_dark_outline_variant</item>
+    </style>
+
+    <style name="Widget.Green.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Green.TabLayout</item>
+    </style>
+
+    <style name="ThemeOverlay.Green.TabLayout" parent="">
+        <item name="colorSurface">@color/md_theme_dark_surfaceVariant</item>
+    </style>
+
+    <!--    Buttons -->
+    <style name="Widget.Green.Button" parent="Widget.Material3.Button">
+        <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
+    </style>
+
+    <style name="Widget.Green.Button.Big" parent="Widget.Green.Button">
         <item name="android:height">60dp</item>
     </style>
 
-    <style name="Widget.Green.Button.Big.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:height">60dp</item>
-    </style>
-
-    <style name="Widget.Green.Button.Small" parent="Widget.MaterialComponents.Button">
+    <style name="Widget.Green.Button.Small" parent="Widget.Green.Button">
         <item name="android:minHeight">48dip</item>
         <item name="android:minWidth">56dip</item>
     </style>
 
-    <style name="Widget.Green.Button.Outlined.Small" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:minHeight">48dip</item>
-        <item name="android:minWidth">56dip</item>
-    </style>
-
-    <style name="Widget.Green.Button.Outlined.Tiny" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="Widget.Green.Button.Tiny" parent="Widget.Green.Button">
         <item name="android:textSize">12sp</item>
         <item name="android:minHeight">0dip</item>
         <item name="android:minWidth">0dip</item>
     </style>
 
-    <style name="Widget.Green.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" />
+    <style name="Widget.Green.Button.Red" parent="Widget.Green.Button">
+        <item name="rippleColor">@color/red</item>
+        <item name="backgroundTint">@color/red</item>
+    </style>
 
-    <style name="Widget.Green.Button.Outlined.Red">
+    <style name="Widget.Green.Button.Light" parent="Widget.Green.Button">
+        <item name="rippleColor">@color/brand_surface_light_variant</item>
+        <item name="backgroundTint">@color/brand_surface_light_variant</item>
+    </style>
+
+    <style name="Widget.Green.Button.Light.Big" parent="Widget.Green.Button.Light">
+        <item name="android:height">60dp</item>
+    </style>
+
+    <style name="Widget.Green.Button.Elevated" parent="Widget.Material3.Button.ElevatedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
+    </style>
+
+    <style name="Widget.Green.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
+    </style>
+
+    <style name="Widget.Green.Button.Outlined.Big" parent="Widget.Green.Button.Outlined">
+        <item name="android:height">60dp</item>
+    </style>
+
+    <style name="Widget.Green.Button.Outlined.Small" parent="Widget.Green.Button.Outlined">
+        <item name="android:minHeight">48dip</item>
+        <item name="android:minWidth">56dip</item>
+    </style>
+
+    <style name="Widget.Green.Button.Outlined.Tiny" parent="Widget.Green.Button.Outlined">
+        <item name="android:textSize">12sp</item>
+        <item name="android:minHeight">0dip</item>
+        <item name="android:minWidth">0dip</item>
+    </style>
+
+    <style name="Widget.Green.Button.Rate" parent="Widget.Green.Button.Outlined">
+        <item name="android:minWidth">0dip</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <style name="Widget.Green.Button.Outlined.Red" parent="Widget.Green.Button.Outlined">
         <item name="android:textColor">@color/red</item>
         <item name="rippleColor">@color/red</item>
         <item name="strokeColor">@color/red</item>
     </style>
 
-    <style name="Widget.Green.Button.Text" parent="Widget.MaterialComponents.Button.TextButton" />
+    <style name="Widget.Green.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
+    </style>
 
-    <style name="Widget.Green.Button.Text.Small" parent="Widget.MaterialComponents.Button.TextButton">
+    <style name="Widget.Green.Button.Text.Big" parent="Widget.Green.Button.Text">
+        <item name="android:height">60dp</item>
+    </style>
+
+    <style name="Widget.Green.Button.Text.Small" parent="Widget.Green.Button.Text">
         <item name="android:minHeight">48dip</item>
         <item name="android:minWidth">56dip</item>
     </style>
 
-    <style name="Widget.Green.Button.Text.Tiny" parent="Widget.MaterialComponents.Button.TextButton">
+    <style name="Widget.Green.Button.Text.Tiny" parent="Widget.Green.Button.Text">
         <item name="android:textSize">12sp</item>
         <item name="android:minHeight">0dip</item>
         <item name="android:minWidth">0dip</item>
     </style>
 
-    <style name="Widget.Green.Button" parent="Widget.MaterialComponents.Button"/>
-
-    <style name="Widget.Green.Button.Red">
-        <item name="rippleColor">@color/red</item>
-        <item name="backgroundTint">@color/red</item>
-    </style>
-
-    <style name="Widget.Green.Button.Light">
-        <item name="rippleColor">@color/brand_surface_light_variant</item>
-        <item name="backgroundTint">@color/brand_surface_light_variant</item>
-    </style>
-
-    <style name="Widget.Green.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+    <style name="Widget.Green.Toolbar" parent="Widget.Material3.Toolbar">
         <item name="android:elevation">0dp</item>
         <item name="elevation" ignore="NewApi">0dp</item>
         <item name="android:background">@color/brand_background</item>
@@ -76,22 +133,15 @@
         <item name="colorControlNormal">@color/brand_green</item>
     </style>
 
-    <style name="Widget.Green.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
-        <item name="android:elevation" ignore="NewApi">0dp</item>
-        <item name="elevation" ignore="NewApi">0dp</item>
-    </style>
-
-    <style name="Widget.Green.MaterialCardView" parent="Widget.MaterialComponents.CardView">
-        <item name="android:elevation" ignore="NewApi">0dp</item>
-        <item name="elevation" ignore="NewApi">0dp</item>
+    <style name="Widget.Green.MaterialCardView" parent="Widget.Material3.CardView.Filled">
         <item name="cardCornerRadius">6dp</item>
     </style>
 
-    <style name="Widget.Green.ImportantDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="Widget.Green.ImportantDialogButton" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Green.ImportantDialogButton</item>
     </style>
 
-    <style name="Widget.Green.CircularProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+    <style name="Widget.Green.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
         <item name="indicatorSize">120dp</item>
         <item name="trackThickness">2dp</item>
         <item name="trackCornerRadius">@dimen/progress_radius</item>
@@ -100,23 +150,23 @@
 <!--        <item name="showAnimationBehavior">outward</item>-->
     </style>
 
-    <style name="Widget.Green.LinearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
+    <style name="Widget.Green.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
         <item name="trackThickness">1dp</item>
 <!--        // Workaround for bug https://github.com/material-components/material-components-android/issues/1972-->
 <!--        <item name="hideAnimationBehavior">inward</item>-->
 <!--        <item name="showAnimationBehavior">outward</item>-->
     </style>
 
-    <style name="Widget.Green.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+    <style name="Widget.Green.Snackbar" parent="Widget.Material3.Snackbar">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Green.Snackbar</item>
         <item name="actionTextColorAlpha">1</item>
     </style>
 
-    <style name="Widget.Green.SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
+    <style name="Widget.Green.SnackbarButton" parent="Widget.Material3.Button.TextButton.Snackbar">
         <item name="android:textColor">@color/brand_green</item>
     </style>
 
-    <style name="Widget.Green.SnackbarTextView" parent="Widget.MaterialComponents.Snackbar.TextView">
+    <style name="Widget.Green.SnackbarTextView" parent="Widget.Material3.Snackbar.TextView">
         <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
     </style>
 
@@ -128,40 +178,44 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Green.BottomSheetDialogTheme" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/Green.BottomSheetStyle</item>
+    <style name="ThemeOverlay.Green.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Green.ModalBottomSheetDialog</item>
+        <item name="android:navigationBarColor">@color/md_theme_dark_background</item>
     </style>
 
-    <style name="Green.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/rounded_bottom_sheet</item>
+    <style name="Green.ModalBottomSheetDialog" parent="Widget.Design.BottomSheet.Modal">
+        <item name="backgroundTint">@color/md_theme_dark_background</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Green.BottomSheet</item>
+        <item name="shouldRemoveExpandedCorners">false</item>
     </style>
 
-    <style name="Green.BottomSheetDialogTheme.Wallet">
+    <!--    Deprecated used in WalletBottomSheetDialogFragment-->
+    <style name="Green.ModalBottomSheetDialog.Wallet">
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="MaterialImportantAlertDialog.Green.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+    <style name="MaterialImportantAlertDialog.Green.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="MaterialImportantAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+    <style name="MaterialImportantAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="MaterialAlertDialog.Green.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+    <style name="MaterialAlertDialog.Green.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
     </style>
 
-    <style name="MaterialAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+    <style name="MaterialAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
         <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="RecoveryPhraseKeyboardButton" parent="Widget.MaterialComponents.Button">
+    <style name="RecoveryPhraseKeyboardButton" parent="Widget.Material3.Button">
         <item name="android:padding">0dp</item>
         <item name="android:layout_margin">3dp</item>
         <item name="android:includeFontPadding">false</item>
@@ -206,11 +260,9 @@
         <item name="android:insetBottom">4dp</item>
     </style>
 
-    <style name="Widget.Green.Button.Rate" parent="Widget.Green.Button.Outlined">
-        <item name="android:minWidth">0dip</item>
-        <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingRight">0dp</item>
+    <style name="RoundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
-
 
 </resources>

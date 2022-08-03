@@ -7,9 +7,12 @@ import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
@@ -19,11 +22,16 @@ import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.ScreenView
-import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.extensions.clearNavigationResult
+import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.isBlank
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
-import com.blockstream.green.ui.devices.DeviceInteractionRequestBottomSheetDialogFragment
+import com.blockstream.green.ui.drawer.DrawerFragment
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenToolbar
@@ -48,7 +56,7 @@ import javax.inject.Inject
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
-) : Fragment(), ScreenView, BannerView {
+) : Fragment(), MenuProvider, ScreenView, BannerView {
 
     sealed class DeviceRequestEvent : AppEvent {
         object RequestPinMatrix: DeviceRequestEvent()
@@ -71,6 +79,7 @@ abstract class AppFragment<T : ViewDataBinding>(
     open fun getAppViewModel(): AppViewModel? = null
 
     open val title : String? = null
+    open val subtitle : String? = null
 
     override var screenIsRecorded = false
     override val segmentation: HashMap<String, Any>? = null
@@ -82,7 +91,7 @@ abstract class AppFragment<T : ViewDataBinding>(
         title?.let {
             toolbar.title = it
         }
-        toolbar.subtitle = null
+        toolbar.subtitle = subtitle
         toolbar.logo = null
         toolbar.setBubble(null)
         toolbar.setButton(null)
@@ -96,15 +105,20 @@ abstract class AppFragment<T : ViewDataBinding>(
         binding = DataBindingUtil.inflate(layoutInflater, layout, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
 
-        if (menuRes > 0) {
-            setHasOptionsMenu(true)
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Add MenuProvider if required
+        if (menuRes > 0) {
+            (requireActivity() as? MenuHost)?.addMenuProvider(
+                this,
+                viewLifecycleOwner,
+                Lifecycle.State.RESUMED
+            )
+        }
 
         getAppViewModel()?.let { viewModel ->
             viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
@@ -124,7 +138,7 @@ abstract class AppFragment<T : ViewDataBinding>(
             getNavigationResult<String>(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)?.observe(viewLifecycleOwner) { result ->
                 result?.let {
                     clearNavigationResult(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)
-                    getAppViewModel()?.requestPinPassphraseEmitter?.onSuccess(result)
+                    getAppViewModel()?.requestPinPassphraseEmitter?.complete(result)
                 }
             }
 
@@ -132,7 +146,7 @@ abstract class AppFragment<T : ViewDataBinding>(
             getNavigationResult<Boolean>(PassphraseBottomSheetDialogFragment.PASSPHRASE_CANCEL_RESULT)?.observe(viewLifecycleOwner) { result ->
                 result?.let {
                     clearNavigationResult(PassphraseBottomSheetDialogFragment.PASSPHRASE_CANCEL_RESULT)
-                    getAppViewModel()?.requestPinPassphraseEmitter?.onError(Exception("id_action_canceled"))
+                    getAppViewModel()?.requestPinPassphraseEmitter?.completeExceptionally(Exception("id_action_canceled"))
                 }
             }
 
@@ -141,9 +155,9 @@ abstract class AppFragment<T : ViewDataBinding>(
                 result?.let {
                     clearNavigationResult(PinMatrixBottomSheetDialogFragment.PIN_RESULT)
                     if(result.isBlank()){
-                        getAppViewModel()?.requestPinMatrixEmitter?.onError(Exception("id_action_canceled"))
+                        getAppViewModel()?.requestPinMatrixEmitter?.completeExceptionally(Exception("id_action_canceled"))
                     }else{
-                        getAppViewModel()?.requestPinMatrixEmitter?.onSuccess(result)
+                        getAppViewModel()?.requestPinMatrixEmitter?.complete(result)
                     }
                 }
             }
@@ -160,14 +174,24 @@ abstract class AppFragment<T : ViewDataBinding>(
             countly.screenView(this)
         }
 
-        BannersHelper.handle(this, if(this is WalletFragment<*>) this.walletOrNull else null)
+        BannersHelper.handle(this, if(this is AbstractWalletFragment<*>) sessionOrNull else null)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        if (menuRes > 0) {
-            inflater.inflate(menuRes, menu)
-        }
+    override fun onPrepareMenu(menu: Menu) {
+        // Handle for example visibility of menu items
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(menuRes, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        // Validate and handle the selected menu item
+        return true
+    }
+
+    protected fun invalidateMenu(){
+        (requireActivity() as? MenuHost)?.invalidateMenu()
     }
 
     protected fun closeDrawer() {
@@ -190,7 +214,13 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     @SuppressLint("RestrictedApi")
     fun navigate(@IdRes resId: Int, args: Bundle?, isLogout: Boolean = false, optionsBuilder: NavOptions.Builder? = null) {
-        navigate(findNavController(), resId, args, isLogout, optionsBuilder)
+        com.blockstream.green.extensions.navigate(
+            findNavController(),
+            resId,
+            args,
+            isLogout,
+            optionsBuilder
+        )
     }
 
     internal open fun popBackStack(){

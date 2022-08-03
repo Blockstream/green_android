@@ -28,7 +28,7 @@
                 android:layout_weight="1"
                 android:text="Select UTXOs"
                 android:includeFontPadding="false"
-                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 app:layout_constraintEnd_toStartOf="@+id/buttonClear"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -67,14 +67,14 @@
                 android:layout_height="wrap_content"
                 android:text="Amount you can spend"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceCaption" />
+                android:textAppearance="?attr/textAppearanceBodySmall" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="50.00 BTC"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceHeadline5" />
+                android:textAppearance="?attr/textAppearanceTitleLarge" />
 
 
             <Button

@@ -16,6 +16,7 @@ data class TextListItem constructor(
     val textColor: Int = R.color.color_on_surface_emphasis_high,
     val textAlignment: Int = View.TEXT_ALIGNMENT_TEXT_START,
     val textTypeface: Int = Typeface.NORMAL,
+    val textAppearance: Int = 0,
     val paddingTop: Int = R.dimen.dp16,
     val paddingBottom: Int = R.dimen.dp16,
     val paddingLeft: Int = R.dimen.dp16,
@@ -32,6 +33,9 @@ data class TextListItem constructor(
         val res = binding.root.resources
 
         text.applyTo(binding.text)
+        if(textAppearance > 0) {
+            binding.text.setTextAppearance(textAppearance)
+        }
         binding.text.setTextColor(ContextCompat.getColor(binding.root.context, textColor))
         binding.text.textAlignment = textAlignment
         binding.text.setTypeface(binding.text.typeface, textTypeface)

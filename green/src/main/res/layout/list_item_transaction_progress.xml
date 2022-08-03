@@ -53,13 +53,18 @@
             android:drawableEnd="@drawable/ic_baseline_double_arrow_24"
             android:text="@string/id_increase_fee" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="2dp"
+            android:text="@string/id_transaction_status"
+            style="@style/TextAppearance.Green.Overline" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/brand_surface_variant"
-            app:strokeColor="@color/color_on_surface_divider"
-            app:strokeWidth="1dp">
+            android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -76,7 +81,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="10dp"
                     android:max="@{confirmationsRequired}"
-                    app:indicatorSize="50dp"
+                    app:indicatorSize="45dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -92,12 +97,13 @@
                     app:layout_constraintEnd_toEndOf="@+id/progress"
                     app:layout_constraintStart_toStartOf="@+id/progress"
                     app:layout_constraintTop_toTopOf="@+id/progress"
-                    tools:visibility="gone" />
+                    tools:visibility="gone"
+                    />
 
                 <ImageView
                     android:id="@+id/spv"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/ic_spv_in_progress"
                     isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled}"
                     app:layout_constraintBottom_toBottomOf="@+id/progress"
@@ -126,7 +132,7 @@
                     android:layout_marginStart="16dp"
                     android:includeFontPadding="false"
                     android:text="@{date}"
-                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
                     app:layout_constraintBottom_toTopOf="@+id/status"
                     app:layout_constraintEnd_toStartOf="@+id/progress"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -141,8 +147,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:includeFontPadding="false"
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    android:textSize="18dp"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
                     app:layout_constraintBottom_toBottomOf="@+id/progress"
                     app:layout_constraintEnd_toStartOf="@+id/progress"
                     app:layout_constraintHorizontal_bias="0.5"

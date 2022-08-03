@@ -7,38 +7,42 @@
 
     </data>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button"
-            android:layout_width="match_parent"
+            android:id="@+id/buttonAddNewAccount"
+            style="@style/Widget.Green.Button.Text.Tiny"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/Widget.Green.Button.Outlined"
-            tools:text="Button"/>
+            android:paddingStart="0dp"
+            android:text="@string/id_add_new_account"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textAlignment="viewStart"
+            app:layout_constraintEnd_toStartOf="@+id/buttonArchivedAccounts"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card"
-            android:layout_width="match_parent"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonArchivedAccounts"
+            style="@style/Widget.Green.Button.Text.Tiny"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/brand_surface_variant"
-            app:strokeColor="@color/color_on_surface_divider"
-            app:strokeWidth="1dp">
+            android:paddingEnd="0dp"
+            android:textAlignment="textEnd"
+            android:text="@string/id_no_archived_accounts"
+            android:textColor="@color/color_on_surface_emphasis_very_low"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/buttonAddNewAccount"
+            app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_add_new_account"
-                    android:textAlignment="center"
-                    android:textAppearance="?attr/textAppearanceBody2"
-                    android:layout_gravity="center"
-                    android:padding="16dp" />
-
-        </com.google.android.material.card.MaterialCardView>
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

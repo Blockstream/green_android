@@ -30,7 +30,7 @@
                 android:layout_marginBottom="16dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_bitcoin_network_60"
+                android:src="@drawable/ic_bitcoin"
                 app:layout_constraintBottom_toTopOf="@id/barrier"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -46,7 +46,7 @@
                     android:id="@+id/network"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Green.Body1"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
                     android:textStyle="bold"
                     tools:text="Transactions " />
 
@@ -54,7 +54,7 @@
                     android:id="@+id/height"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Green.Body1"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
                     tools:text="Transactions " />
             </LinearLayout>
         </LinearLayout>

@@ -67,14 +67,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_app_settings"
-                android:textAppearance="?attr/textAppearanceHeadline5" />
+                android:textAppearance="?attr/textAppearanceTitleLarge" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="@string/id_these_settings_apply_for_every"
-                android:textAppearance="?attr/textAppearanceBody2" />
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <com.blockstream.green.views.GreenSwitch
                 android:id="@+id/switchEnhancedPrivacy"
@@ -86,7 +86,7 @@
                 app:titleText="@string/id_enhanced_privacy" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <com.blockstream.green.views.DividerView
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_element_margin" />
@@ -118,7 +118,7 @@
                 app:icon="@drawable/ic_tor_60"
                 app:titleText="@string/id_connect_with_tor" />
 
-            <com.blockstream.green.views.DividerView
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_element_margin" />
@@ -133,7 +133,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/proxyURLInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 error="@{vm.proxyURLInvalid ? @string/id_host_ip : null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.blockstream.green.views.DividerView
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_element_margin" />
@@ -160,10 +160,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableTestnet}"
-                app:icon="@drawable/ic_bitcoin_testnet_network_60"
+                app:icon="@drawable/ic_bitcoin_testnet"
                 app:titleText="@string/id_enable_testnet" />
 
-            <com.blockstream.green.views.DividerView
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_element_margin" />
@@ -188,7 +188,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_element_margin"/>
 
-            <com.blockstream.green.views.DividerView
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 isVisible="@{vm.analyticsFeatureEnabled}"
@@ -197,7 +197,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/id_custom_servers_and_validation" />
@@ -214,7 +214,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/personalBitcoinElectrumServerInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
@@ -234,7 +234,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/personalLiquidElectrumServerInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 app:placeholderText="@{liquidElectrumServerPlaceholder}"
                 app:expandedHintEnabled="true"
                 android:layout_width="match_parent"
@@ -255,7 +255,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/personalTestnetElectrumServerInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
@@ -276,7 +276,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/personalTestnetLiquidElectrumServerInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
@@ -318,7 +318,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/spvBitcoinElectrumServerInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
@@ -338,7 +338,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/spvLiquidElectrumServerInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
@@ -358,7 +358,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/spvTestnetElectrumServerInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
@@ -378,7 +378,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/spvTestnetLiquidElectrumServerInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"

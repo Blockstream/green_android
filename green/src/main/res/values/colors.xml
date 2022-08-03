@@ -1,14 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- M3 -->
+    <color name="seed">#00b45a</color>
+    <color name="md_theme_dark_primary">#00b45a</color>
+    <color name="md_theme_dark_onPrimary">#ffffff</color>
+    <color name="md_theme_dark_primaryContainer">#00b45a</color>
+    <color name="md_theme_dark_onPrimaryContainer">#ffffff</color>
+
+    <color name="md_theme_dark_secondary">#00b45a</color>
+    <color name="md_theme_dark_onSecondary">#ffffff</color>
+    <color name="md_theme_dark_secondaryContainer">#00b45a</color>
+    <color name="md_theme_dark_onSecondaryContainer">#ffffff</color>
+
+    <color name="md_theme_dark_tertiary">#BBC3FF</color>
+    <color name="md_theme_dark_onTertiary">#182778</color>
+    <color name="md_theme_dark_tertiaryContainer">#EA5262</color>
+    <color name="md_theme_dark_onTertiaryContainer">#DEE0FF</color>
+
+    <color name="md_theme_dark_error">#EA5262</color>
+    <color name="md_theme_dark_errorContainer">#93000A</color>
+    <color name="md_theme_dark_onError">#690005</color>
+    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+
+    <color name="md_theme_dark_background">#14161c</color>
+    <color name="md_theme_dark_background_variant">#0E1016</color>
+    <color name="md_theme_dark_onBackground">#ffffff</color>
+
+    <color name="md_theme_dark_surface">#222226</color>
+    <color name="md_theme_dark_onSurface">#ffffff</color>
+    <color name="md_theme_dark_surfaceVariant">#222226</color> <!--  card, text fields  -->
+    <color name="md_theme_dark_onSurfaceVariant">#C1C9BE</color>
+
+    <color name="md_theme_dark_outline">#2d2d31</color>
+    <color name="md_theme_dark_inverseOnSurface">#001945</color>
+    <color name="md_theme_dark_inverseSurface">#273545</color>
+    <color name="md_theme_dark_inversePrimary">#006D34</color>
+    <color name="md_theme_dark_shadow">#000000</color>
+    <color name="md_theme_dark_surfaceTint">#4FE080</color>
+    <color name="md_theme_dark_outlineVariant">#414941</color>
+    <color name="md_theme_dark_scrim">#000000</color>
+    <!-- End M3   -->
+
+    <color name="bottom_nav_bg">#2E3033</color>
+    <color name="md_theme_dark_outline_variant">#8B938A</color>
+
+
     <!--  Main Brand colors  -->
-    <color name="brand_green">#ff00b45a</color>
-    <color name="brand_green_dark">#ff00832e</color>
+    <color name="brand_green">#00b45a</color>
+<!--    <color name="brand_green_dark">#00832e</color>-->
+
+    <color name="brand_green_20">#2000b45a</color>
 
     <color name="brand_surface">#19222c</color>
     <color name="brand_surface_light">#273545</color>
     <color name="brand_surface_light_variant">#475361</color>
-    <color name="brand_background">#12161f</color>
+    <color name="brand_background">#14161c</color>
+
 
     <color name="brand_surface_variant">#14161D</color>
 
@@ -17,14 +65,25 @@
     <color name="black">#ff000000</color>
     <color name="white">#ffffffff</color>
 
+    <color name="redValue">#ff0000</color>
+
     <color name="red">#EA5262</color>
 
     <color name="error">#b74747</color>
     <color name="warning">#d2934a</color>
 
     <color name="bitcoin">#fe8e02</color>
+    <color name="bitcoin_variant">#ffa62a</color>
     <color name="liquid">#46BEAE</color>
-    <color name="testnet">#8C8C8C</color>
+    <color name="liquid_variant">#62d8c6</color>
+    <color name="amp">#51AAB0</color>
+    <color name="amp_variant">#73cad1</color>
+    <color name="amp_testnet">#7fadb0</color>
+    <color name="amp_testnet_variant">#9ac8cb</color>
+    <color name="bitcoin_testnet">#8C8C8C</color>
+    <color name="bitcoin_testnet_variant">#b4b4b4</color>
+    <color name="liquid_testnet">#9ab8b4</color>
+    <color name="liquid_testnet_variant">#b5d3d0</color>
 
     <color name="transparent_dark">#22000000</color>
     <color name="transparent_darker">#33000000</color>
@@ -34,8 +93,8 @@
     <color name="switch_thumb_disabled">#c1c1c1</color>
 
     <color name="color_on_surface_divider">#22ffffff</color>
+    <color name="color_on_surface_emphasis_disabled">#20ffffff</color>
     <color name="color_on_surface_emphasis_very_low">#41ffffff</color>
-    <color name="color_on_surface_emphasis_disabled">#61ffffff</color>
     <color name="color_on_surface_emphasis_low">#8affffff</color>
     <color name="color_on_surface_emphasis_medium">#bdffffff</color>
     <color name="color_on_surface_emphasis_high">#ffffffff</color>

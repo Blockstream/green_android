@@ -13,7 +13,7 @@ import mu.KLogging
 @Serializable
 @Parcelize
 data class Network(
-    @SerialName("id") val id: String, // this is a synthetic property by us
+    @SerialName("id") val id: String, // this is a synthetic property app side
     @SerialName("name") val name: String,
     @SerialName("network") val network: String,
     @SerialName("mainnet") val isMainnet: Boolean,
@@ -38,6 +38,21 @@ data class Network(
 
     val isTestnet
         get() = !isMainnet
+
+    val isBitcoin
+        get() = !isLiquid
+
+    val isBitcoinMainnet
+        get() = isBitcoinMainnet(id)
+
+    val isLiquidMainnet
+        get() = isLiquidMainnet(id)
+
+    val isBitcoinTestnet
+        get() = isBitcoinTestnet(id)
+
+    val isLiquidTestnet
+        get() = isLiquidTestnet(id)
 
     val canonicalName: String
         get() = when(network){
@@ -92,14 +107,17 @@ data class Network(
 
         fun canonicalNetworkId(id: String) = id.removePrefix("electrum-")
 
-        fun isElectrum(id: String) = id.contains("electrum")
+        fun isSinglesig(id: String) = id.contains("electrum")
+        fun isMultisig(id: String) = !isSinglesig(id)
 
-        fun isSinglesig(id: String) = isElectrum(id)
-        fun isMultisig(id: String) = !isElectrum(id)
+        fun isBitcoinMainnet(id: String) = (id == GreenMainnet || id == ElectrumMainnet)
+        fun isLiquidMainnet(id: String) = (id == GreenLiquid || id == ElectrumLiquid)
 
-        fun isMainnet(id: String) = (id == GreenMainnet || id == ElectrumMainnet)
-        fun isLiquid(id: String) = (id == GreenLiquid || id == ElectrumLiquid)
-        fun isTestnet(id: String) = (id == GreenTestnet || id == ElectrumTestnet)
-        fun isTestnetLiquid(id: String) = (id == GreenTestnetLiquid || id == ElectrumTestnetLiquid)
+        fun isBitcoinTestnet(id: String) = (id == GreenTestnet || id == ElectrumTestnet)
+        fun isLiquidTestnet(id: String) = (id == GreenTestnetLiquid || id == ElectrumTestnetLiquid)
+
+        fun isLiquid(id: String) = isLiquidMainnet(id) || isLiquidTestnet(id)
+        fun isBitcoin(id: String) = isBitcoinMainnet(id) || isBitcoinTestnet(id)
+        fun isTestnet(id: String) = isBitcoinTestnet(id) || isLiquidTestnet(id)
     }
 }

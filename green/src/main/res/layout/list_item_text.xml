@@ -18,6 +18,6 @@
             android:layout_gravity="center"
             android:textColor="@color/color_on_surface_emphasis_low"
             tools:text="@string/id_transactions"
-            android:textAppearance="@style/TextAppearance.Green.Subtitle1" />
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
     </FrameLayout>
 </layout>

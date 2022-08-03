@@ -5,10 +5,21 @@ import android.view.ViewGroup
 import com.blockstream.gdk.data.Utxo
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemUtxoBinding
+import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.extensions.bind
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import kotlinx.coroutines.CoroutineScope
 
 
-data class UtxoListItem constructor(val utxo : Utxo) : AbstractBindingItem<ListItemUtxoBinding>() {
+data class UtxoListItem constructor(
+    val scope: CoroutineScope,
+    val utxo: Utxo,
+    val session: GdkSession,
+    val showHash: Boolean = false,
+    val showName: Boolean = true,
+    val isMultiselection: Boolean = false
+) :
+    AbstractBindingItem<ListItemUtxoBinding>() {
     override val type: Int
         get() = R.id.fastadapter_utxo_item_id
 
@@ -18,14 +29,13 @@ data class UtxoListItem constructor(val utxo : Utxo) : AbstractBindingItem<ListI
 
     override fun bindView(binding: ListItemUtxoBinding, payloads: List<Any>) {
 
-        binding.materiaCard.isChecked = false
+        binding.utxo.bind(scope = scope, utxo = utxo, session = session, showHash = showHash, showName = showName)
 
-        binding.address = utxo.txHash
-        binding.ticker = "BTC"
-        binding.amount = utxo.satoshi.toString()
-
-        binding.root.setOnClickListener {
-            binding.materiaCard.isChecked = !binding.materiaCard.isChecked
+        if (isMultiselection) {
+            binding.materiaCard.isChecked = false
+            binding.root.setOnClickListener {
+                binding.materiaCard.isChecked = !binding.materiaCard.isChecked
+            }
         }
     }
 

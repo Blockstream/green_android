@@ -19,6 +19,10 @@ data class Convert constructor(
     @SerialName("sats") val sats: String? = null,
 
     @SerialName("fiat") val fiat: String? = null,
+
+    // Fallback to avoid blocking convert_amount call
+    @SerialName("fiat_currency") val fiatCurrency: String? = "USD",
+    @SerialName("fiat_rate") val fiatRate: String? = "0",
 ) : GAJson<Convert>() {
 
     override val encodeDefaultsValues: Boolean

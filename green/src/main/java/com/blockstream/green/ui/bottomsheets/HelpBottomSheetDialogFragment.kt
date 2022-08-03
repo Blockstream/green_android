@@ -2,7 +2,7 @@ package com.blockstream.green.ui.bottomsheets
 
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
-import com.blockstream.green.Urls
+import com.blockstream.base.Urls
 import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.items.HelpListItem

@@ -7,18 +7,19 @@ import androidx.lifecycle.viewModelScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.utils.logException
+import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.extensions.logException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 
 class AddWalletViewModel @AssistedInject constructor(
     val deviceManager: DeviceManager,
-    val walletRepository: WalletRepository,
-    val countly: Countly,
+    sessionManager: SessionManager,
+    walletRepository: WalletRepository,
+    countly: Countly,
     @Assisted deviceId: String?
-) : AppViewModel() {
+) : OnboardingViewModel(sessionManager, walletRepository, countly, null) {
     val termsChecked = MutableLiveData(false)
     val device = MutableLiveData(deviceManager.getDevice(deviceId))
     val isDeviceOnboarding = MutableLiveData(deviceId != null)
@@ -26,7 +27,7 @@ class AddWalletViewModel @AssistedInject constructor(
     init {
         // If you have already agreed, check by default
         viewModelScope.launch(context = logException(countly)) {
-            termsChecked.postValue(walletRepository.walletsExistsSuspend())
+            termsChecked.postValue(walletRepository.walletsExists())
         }
     }
 

@@ -2,34 +2,44 @@ package com.blockstream.green.ui.receive
 
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import android.os.Bundle
+import androidx.lifecycle.*
+import androidx.savedstate.SavedStateRegistryOwner
+import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.gdk.data.Address
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.createQrBitmap
+
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.kotlin.addTo
-import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class ReceiveViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     countly: Countly,
+    @Assisted private val savedStateHandle: SavedStateHandle,
     @Assisted wallet: Wallet,
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet){
-    var address = MutableLiveData<Address>()
+    @Assisted initAccountAsset: AccountAsset,
+) : AbstractAssetWalletViewModel(
+    sessionManager,
+    walletRepository,
+    countly,
+    wallet,
+    initAccountAsset
+) {
+    var addressLiveData = MutableLiveData<Address>()
+    val addressAsString: String get() = addressLiveData.value?.address ?: ""
     var addressUri = MutableLiveData<String>()
 
     val requestAmount = MutableLiveData<String?>()
-    var label = MutableLiveData<String?>()
 
     var addressQRBitmap = MutableLiveData<Bitmap?>()
 
@@ -38,61 +48,64 @@ class ReceiveViewModel @AssistedInject constructor(
     val deviceAddressValidationEvent = MutableLiveData<ConsumableEvent<Boolean?>>()
 
     // only show if we are on Liquid and we are using Ledger
-    val showAssetWhitelistWarning = session.network.isLiquid && session.hwWallet?.device?.isLedger == true
+    val showAssetWhitelistWarning = MutableLiveData(false)
+    val canValidateAddressInDevice = MutableLiveData(false)
 
-    val canValidateAddressInDevice : Boolean by lazy {
-        session.hwWallet?.device?.let { device ->
-            device.isJade ||
-                    (device.isLedger && session.isLiquid && !session.isSinglesig) ||
-                    (device.isLedger && !session.isLiquid && session.isSinglesig) ||
-                    (device.isTrezor && !session.isLiquid && session.isSinglesig)
-        } ?: false
-    }
+    val accountAssetLocked = MutableLiveData(false)
 
     init {
-        generateAddress()
+        accountAssetLiveData.asFlow()
+            .distinctUntilChanged()
+            .onEach {
+                clearRequestAmount()
+            }.launchIn(lifecycleScope)
+
+        // Generate address when account & account type changes
+        accountLiveData.asFlow().onEach {
+            generateAddress()
+        }.launchIn(lifecycleScope)
     }
 
     fun generateAddress() {
+        logger.info { "Generating address for ${account.name}" }
+        showAssetWhitelistWarning.value = account.isLiquid && session.device?.isLedger == true
+        canValidateAddressInDevice.value = session.device?.let { device ->
+            device.isJade ||
+                    (device.isLedger && network.isLiquid && !network.isSinglesig) ||
+                    (device.isLedger && !network.isLiquid && network.isSinglesig) ||
+                    (device.isTrezor && !network.isLiquid && network.isSinglesig)
+        } ?: false
 
-        session.observable {
-            it.getReceiveAddress(session.activeAccount)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }
-        .doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                address.value = it
-                update()
-            }
-        ).addTo(disposables)
+        doUserAction({
+            session.getReceiveAddress(account)
+        }, onSuccess = {
+            addressLiveData.value = it
+            update()
+        })
     }
 
     fun validateAddressInDevice() {
-        address.value?.let { address ->
+        countly.verifyAddress(session, account)
+
+        addressLiveData.value?.let { address ->
             deviceAddressValidationEvent.value = ConsumableEvent(null)
 
             session.hwWallet?.let { hwWallet ->
-                session.observable(timeout = 30) {
-                    val subAccount = session.getActiveSubAccount()
-                    hwWallet.getGreenAddress(session.network, null, subAccount, address.userPath, address.subType ?: 0)
-                }.subscribeBy(
-                    onError = {
-                        onError.value = ConsumableEvent(it)
-                    },
-                    onSuccess = {
-                        if(it == address.address){
-                            deviceAddressValidationEvent.value = ConsumableEvent(true)
-                        }else{
-                            deviceAddressValidationEvent.value = ConsumableEvent(false)
-                        }
+                doUserAction({
+                    hwWallet.getGreenAddress(
+                        network,
+                        null,
+                        account,
+                        address.userPath,
+                        address.subType ?: 0
+                    )
+                }, preAction = null, postAction = null, timeout = 30, onSuccess = {
+                    if (it == address.address) {
+                        deviceAddressValidationEvent.value = ConsumableEvent(true)
+                    } else {
+                        deviceAddressValidationEvent.value = ConsumableEvent(false)
                     }
-                ).addTo(disposables)
+                })
             }
         }
     }
@@ -103,15 +116,15 @@ class ReceiveViewModel @AssistedInject constructor(
     }
 
     private fun updateAddressUri() {
-        if (requestAmount.value != null || label.value != null) {
+        if (requestAmount.value != null) {
             isAddressUri.value = true
 
             // Use 2 different builders, we are restricted by spec
             // https://stackoverflow.com/questions/8534899/is-it-possible-to-use-uri-builder-and-not-have-the-part
 
             val scheme = Uri.Builder().also {
-                it.scheme(session.network.bip21Prefix)
-                it.opaquePart(address.value?.address)
+                it.scheme(account.network.bip21Prefix)
+                it.opaquePart(addressLiveData.value?.address)
             }.toString()
 
             val query = Uri.Builder().also {
@@ -119,12 +132,8 @@ class ReceiveViewModel @AssistedInject constructor(
                     it.appendQueryParameter("amount", requestAmount.value)
                 }
 
-                if (!label.value.isNullOrBlank()) {
-                    it.appendQueryParameter("label", label.value)
-                }
-
-                if(session.isLiquid){
-                    it.appendQueryParameter("assetid", session.network.policyAsset)
+                if (network.isLiquid) {
+                    it.appendQueryParameter("assetid", accountAsset.assetId)
                 }
 
             }.toString()
@@ -132,7 +141,7 @@ class ReceiveViewModel @AssistedInject constructor(
             addressUri.value = scheme + query
         } else {
             isAddressUri.value = false
-            addressUri.value = address.value?.address
+            addressUri.value = addressLiveData.value?.address
         }
     }
 
@@ -140,32 +149,47 @@ class ReceiveViewModel @AssistedInject constructor(
         addressQRBitmap.postValue(createQrBitmap(addressUri.value ?: ""))
     }
 
-    fun setRequestAmountAndLabel(amount: String?, lbl: String?) {
+    fun setRequestAmount(amount: String?) {
         requestAmount.value = amount
-        label.value = lbl
         update()
     }
 
-    fun clearRequestAmountAndLabel() {
-        setRequestAmountAndLabel(null, null)
+    fun clearRequestAmount() {
+        setRequestAmount(null)
     }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            wallet: Wallet
+            savedStateHandle: SavedStateHandle,
+            wallet: Wallet,
+            initAccountAsset: AccountAsset
         ): ReceiveViewModel
     }
 
     companion object {
+        const val ADDRESS_TYPE = "ADDRESS_TYPE"
+
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            wallet: Wallet
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet) as T
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+            wallet: Wallet,
+            initAccountAsset: AccountAsset
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return assistedFactory.create(
+                        handle,
+                        wallet,
+                        initAccountAsset,
+                    ) as T
+                }
             }
-        }
     }
 }

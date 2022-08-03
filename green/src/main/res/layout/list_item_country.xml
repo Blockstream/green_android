@@ -20,15 +20,14 @@
             android:id="@+id/country"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             tools:text="Greece" />
 
         <TextView
             android:id="@+id/country_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="@color/color_on_surface_emphasis_medium"
             tools:text="+30" />
 

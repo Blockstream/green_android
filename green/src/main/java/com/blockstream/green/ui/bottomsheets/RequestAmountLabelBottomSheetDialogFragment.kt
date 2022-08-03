@@ -6,11 +6,11 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
+import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.ui.receive.ReceiveViewModel
 import com.blockstream.green.ui.receive.RequestAmountLabelViewModel
 import com.blockstream.green.utils.AmountTextWatcher
 import com.blockstream.green.utils.UserInput
-import com.blockstream.green.utils.endIconCopyMode
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 import javax.inject.Inject
@@ -22,12 +22,8 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding, ReceiveViewModel>() {
-    val session by lazy {
-        viewModel.session
-    }
-
     override val screenName = "RequestAmount"
-    override val segmentation by lazy { countly.subAccountSegmentation(session, viewModel.getSubAccountLiveData().value) }
+    override val segmentation get() = countly.accountSegmentation(session, viewModel.account)
 
     override fun inflate(layoutInflater: LayoutInflater) = RequestAmountLabelBottomSheetBinding.inflate(layoutInflater)
 
@@ -36,9 +32,9 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
     private val requestViewModel: RequestAmountLabelViewModel by viewModels {
         RequestAmountLabelViewModel.provideFactory(
             viewModelFactory,
-            session,
-            viewModel.requestAmount.value,
-            viewModel.label.value
+            viewModel.wallet,
+            viewModel.accountAsset,
+            viewModel.requestAmount.value
         )
     }
 
@@ -46,8 +42,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = requestViewModel
-        binding.amountTextInputLayout.endIconCopyMode()
-        binding.labelInputLayout.endIconCopyMode()
+        binding.amountTextInputLayout.endIconCustomMode()
 
         AmountTextWatcher.watch(binding.amountEditText)
 
@@ -55,12 +50,12 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
             var amount : String? = null
 
             try{
-                val input = UserInput.parseUserInput(session, requestViewModel.requestAmount.value, isFiat = requestViewModel.isFiat.value ?: false)
+                val input = UserInput.parseUserInput(session = session, input = requestViewModel.requestAmount.value, assetId = viewModel.accountAsset.assetId, isFiat = requestViewModel.isFiat.value ?: false)
 
                 // Convert it to BTC as per BIP21 spec
                 amount = input.getBalance(session).let { balance ->
                     if(balance != null && balance.satoshi > 0){
-                        balance.btc.let {
+                        balance.valueInMainUnit.let {
                             // Remove trailing zeros if needed
                             if(it.contains(".")) it.replace("0*$".toRegex(), "").replace("\\.$".toRegex(), "") else it
                         }
@@ -72,7 +67,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
                 e.printStackTrace()
             }
 
-            viewModel.setRequestAmountAndLabel(amount, requestViewModel.label.value)
+            viewModel.setRequestAmount(amount)
 
             dismiss()
         }
@@ -83,7 +78,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
         binding.buttonClear.setOnClickListener {
             requestViewModel.requestAmount.value = ""
-            viewModel.clearRequestAmountAndLabel()
+            viewModel.clearRequestAmount()
         }
 
         binding.buttonClose.setOnClickListener {

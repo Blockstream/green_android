@@ -1,7 +1,6 @@
 package com.blockstream.green.views
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -12,7 +11,7 @@ import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import com.blockstream.green.R
 import com.blockstream.green.databinding.GreenSwitchBinding
-import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.materialswitch.MaterialSwitch
 
 
 class GreenSwitch @JvmOverloads constructor(
@@ -24,8 +23,8 @@ class GreenSwitch @JvmOverloads constructor(
     private var binding: GreenSwitchBinding =
         GreenSwitchBinding.inflate(LayoutInflater.from(context), this, true)
 
-    val switch: SwitchMaterial
-        get() = binding.switchmaterial
+    val switch: MaterialSwitch
+        get() = binding.materialSwitch
 
     init {
 
@@ -47,7 +46,7 @@ class GreenSwitch @JvmOverloads constructor(
 
         // Disabling GreenSwitch only works when initiated as a attribute
         // that is the only use-case at the time
-        binding.switchmaterial.isEnabled = attributes.getBoolean(
+        binding.materialSwitch.isEnabled = attributes.getBoolean(
             R.styleable.GreenSwitch_android_enabled,
             true
         ).also {
@@ -58,14 +57,14 @@ class GreenSwitch @JvmOverloads constructor(
             }
         }
 
-        binding.switchmaterial.isChecked = attributes.getBoolean(
+        binding.materialSwitch.isChecked = attributes.getBoolean(
             R.styleable.GreenSwitch_android_checked,
             false
         )
 
         setOnClickListener {
-            if(binding.switchmaterial.isEnabled) {
-                binding.switchmaterial.toggle()
+            if(binding.materialSwitch.isEnabled) {
+                binding.materialSwitch.toggle()
             }
         }
 
@@ -73,15 +72,15 @@ class GreenSwitch @JvmOverloads constructor(
     }
 
     fun setOnCheckedChangeListener(listener: CompoundButton.OnCheckedChangeListener?) {
-        binding.switchmaterial.setOnCheckedChangeListener(listener)
+        binding.materialSwitch.setOnCheckedChangeListener(listener)
     }
 
     override fun setChecked(checked: Boolean) {
-        binding.switchmaterial.isChecked = checked
+        binding.materialSwitch.isChecked = checked
     }
 
     override fun isChecked(): Boolean {
-        return binding.switchmaterial.isChecked
+        return binding.materialSwitch.isChecked
     }
 
     fun setCaption(text: String?){
@@ -91,7 +90,7 @@ class GreenSwitch @JvmOverloads constructor(
 
     fun setInvalid(invalid: Boolean) {
         switchInvalid = invalid
-        binding.switchmaterial.thumbTintList = ContextCompat.getColorStateList(
+        binding.materialSwitch.thumbTintList = ContextCompat.getColorStateList(
             context,
             if (invalid) R.color.switch_thumb_invalid else R.color.switch_thumb
         )
@@ -102,6 +101,6 @@ class GreenSwitch @JvmOverloads constructor(
     }
 
     override fun toggle() {
-        binding.switchmaterial.toggle()
+        binding.materialSwitch.toggle()
     }
 }

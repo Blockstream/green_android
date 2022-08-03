@@ -1,7 +1,6 @@
 package com.blockstream.green.ui.onboarding
 
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.PinData
+import com.blockstream.gdk.data.EncryptWithPin
 import com.blockstream.gdk.params.EncryptWithPinParams
 import com.blockstream.gdk.params.LoginCredentialsParams
 import com.blockstream.green.data.AppEvent
@@ -12,56 +11,77 @@ import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
+import com.blockstream.green.gdk.title
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
-import io.reactivex.rxjava3.kotlin.addTo
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import mu.KLogging
-
 
 open class OnboardingViewModel constructor(
     val sessionManager: SessionManager,
     val walletRepository: WalletRepository,
-    val countly: Countly,
+    countly: Countly,
     private val restoreWallet: Wallet?
-) : AppViewModel() {
+) : AppViewModel(countly) {
     val session = sessionManager.getOnBoardingSession(restoreWallet)
 
-    private fun withPinData(options: OnboardingOptions) = options.walletName?.contains(SkipPinData) != true
+    private fun withPinData(options: OnboardingOptions) =
+        options.walletName?.contains(SkipPinData) != true
 
-    fun createNewWallet(options: OnboardingOptions, pin: String, mnemonic: String) {
+    fun createNewWallet(
+        options: OnboardingOptions,
+        pin: String,
+        mnemonic: String
+    ) {
 
-        session.observable {
-            val network = options.network!!
-            val loginData = it.createNewWallet(network = network, mnemonic = mnemonic)
+        doUserAction({
+            val loginData = session.loginWithMnemonic(
+                isTestnet = options.isTestnet == true,
+                loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic),
+                initializeSession = true,
+                isSmartDiscovery = false,
+                isCreate = true,
+                isRestore = false
+            )
 
-            var pinData : PinData? = null
+            var encryptWithPin: EncryptWithPin? = null
 
-            if(withPinData(options)){
-                val credentials = it.getCredentials()
-                pinData = it.encryptWithPin(EncryptWithPinParams(pin, credentials)).pinData
+            if (withPinData(options)) {
+                val credentials = session.getCredentials()
+                encryptWithPin =
+                    session.encryptWithPin(null, EncryptWithPinParams(pin, credentials))
+            }
+
+            // Archive all accounts on the newly created wallet
+            session.accounts.forEach { account ->
+                session.updateAccount(
+                    account = account,
+                    isHidden = true,
+                    resetAccountName = account.type.title()
+                )
             }
 
             val wallet = Wallet(
                 walletHashId = loginData.walletHashId,
-                name = generateWalletNameSync(network = network, userInputName = options.walletName),
-                network = network.id,
+                name = generateWalletName(userInputName = options.walletName),
+                activeNetwork = session.activeAccountOrNull?.networkId
+                    ?: session.defaultNetwork.network,
+                activeAccount = session.activeAccountOrNull?.pointer ?: 0,
                 isRecoveryPhraseConfirmed = true, // options.isRestoreFlow || !mnemonic.isNullOrBlank(),
                 isHardware = false,
-                activeAccount = session.activeAccount
+                isTestnet = session.defaultNetwork.isTestnet
             )
 
-            wallet.id = walletRepository.addWallet(wallet)
+            wallet.id = walletRepository.insertWallet(wallet)
 
-            pinData?.let {
-                walletRepository.addLoginCredentialsSync(
+            encryptWithPin?.let {
+                walletRepository.insertOrReplaceLoginCredentials(
                     LoginCredentials(
                         walletId = wallet.id,
+                        network = it.network.id,
                         credentialType = CredentialType.PIN,
-                        pinData = pinData
+                        pinData = it.pinData
                     )
                 )
             }
@@ -71,39 +91,44 @@ open class OnboardingViewModel constructor(
             countly.createWallet(session)
 
             wallet
-        }.doOnSubscribe {
-            onProgress.value = true
-        }.subscribe({
+        }, postAction = {
+            onProgress.value = it == null
+        }, onSuccess = {
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
-        }, {
-            it.printStackTrace()
-            onProgress.value = false
-            onError.value = ConsumableEvent(it)
         })
     }
 
-    fun createNewWatchOnlyWallet(appKeystore: AppKeystore, options: OnboardingOptions, username: String, password: String, savePassword: Boolean) {
-        session.observable {
+    fun createNewWatchOnlyWallet(
+        appKeystore: AppKeystore,
+        options: OnboardingOptions,
+        username: String,
+        password: String,
+        savePassword: Boolean
+    ) {
+
+        doUserAction({
             val network = options.network!!
 
-            val loginData =
-                it.loginWatchOnly(network, username, password)
+            val loginData = session.loginWatchOnly(network, username, password)
 
             val wallet = Wallet(
-                walletHashId = loginData.walletHashId,
-                name = generateWalletNameSync(network = network, userInputName = null),
-                network = session.network.id,
+                walletHashId = loginData.networkHashId, // Use networkHashId as the watch-only is linked to a specific network
+                name = generateWalletName(userInputName = null),
+                activeNetwork = session.activeAccountOrNull?.networkId ?: session.defaultNetwork.id,
+                activeAccount = session.activeAccountOrNull?.pointer ?: 0,
                 isRecoveryPhraseConfirmed = true,
-                watchOnlyUsername = username
+                watchOnlyUsername = username,
+                isTestnet = network.isTestnet
             )
 
-            wallet.id = walletRepository.addWallet(wallet)
+            wallet.id = walletRepository.insertWallet(wallet)
 
             if (savePassword) {
                 val encryptedData = appKeystore.encryptData(password.toByteArray())
-                walletRepository.addLoginCredentialsSync(
+                walletRepository.insertOrReplaceLoginCredentials(
                     LoginCredentials(
                         walletId = wallet.id,
+                        network = network.id,
                         credentialType = CredentialType.KEYSTORE,
                         encryptedData = encryptedData
                     )
@@ -111,143 +136,147 @@ open class OnboardingViewModel constructor(
             }
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
-            countly.restoreWatchOnlyWallet(session)
+            countly.importWallet(session)
+
             wallet
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onError = {
-                onError.value = ConsumableEvent(it)
-            },
-            onSuccess = {
-                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
-            }
-        ).addTo(disposables)
+        }, postAction = {
+            onProgress.value = it == null
+        }, onSuccess = {
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
+        })
     }
 
-    fun generateWalletNameSync(network: Network, userInputName: String?): String {
+    private suspend fun generateWalletName(userInputName: String?): String {
         return generateWalletName(
-            wallets = walletRepository.getWalletsForNetworkSync(network),
-            network = network,
-            userInputName = userInputName
-        )
-    }
-
-    suspend fun generateWalletNameSuspend(network: Network, userInputName: String?): String {
-        return generateWalletName(
-            wallets = walletRepository.getWalletsForNetworkSuspend(network),
-            network = network,
+            wallets = walletRepository.getSoftwareWallets(),
             userInputName = userInputName
         )
     }
 
     private fun generateWalletName(
         wallets: List<Wallet>,
-        network: Network,
         userInputName: String?
     ): String {
         return userInputName?.replace(SkipPinData, "")?.trim() ?: run {
-
-            return@run (if(wallets.isNotEmpty()){
-                "${network.productName} #${wallets.size + 1}"
-            }else{
-                network.productName
-            })
+            return@run "My Wallet ${((wallets.lastOrNull()?.id ?: 0) + 1).takeIf { it > 1 } ?: ""}".trim()
         }
     }
 
-    fun checkRecoveryPhrase(network: Network , mnemonic: String, mnemonicPassword: String, successEvent: AppEvent) {
-        session.observable {
-            it.loginWithMnemonic(network, LoginCredentialsParams(mnemonic = mnemonic, password = mnemonicPassword))
-
-            if(restoreWallet == null) {
-                // Check if wallet already exists
-                it.walletHashId?.let { walletHashId ->
-                    if (walletRepository.walletsExistsSync(walletHashId, false)) {
-                        throw Exception("id_wallet_already_restored")
+    fun checkRecoveryPhrase(
+        isTestnet: Boolean,
+        mnemonic: String,
+        password: String?,
+        successEvent: AppEvent
+    ) {
+        doUserAction({
+            session.loginWithMnemonic(
+                isTestnet = isTestnet,
+                loginCredentialsParams = LoginCredentialsParams(
+                    mnemonic = mnemonic,
+                    password = password
+                ),
+                initNetworks = listOf(session.prominentNetwork(isTestnet)),
+                initializeSession = false,
+                isSmartDiscovery = false,
+                isCreate = true,
+                isRestore = false
+            ).also {
+                if (restoreWallet == null) {
+                    // Check if wallet already exists
+                    it.walletHashId.let { walletHashId ->
+                        walletRepository.getWalletWithHashId(walletHashId, false)
+                            ?.let { wallet ->
+                                throw Exception("id_wallet_already_restored:${wallet.name}")
+                            }
+                    }
+                } else {
+                    // check if walletHashId is the same (also use networkHashId for backwards compatibility)
+                    if (restoreWallet.walletHashId.isNotBlank() && (restoreWallet.walletHashId != it.walletHashId && restoreWallet.walletHashId != it.networkHashId)) {
+                        throw Exception("id_the_recovery_phrase_doesnt")
                     }
                 }
-            }else{
-                // check if walletHashId is the same
-                if(restoreWallet.walletHashId.isNotBlank() && restoreWallet.walletHashId != it.walletHashId){
-                    throw Exception("id_the_recovery_phrase_doesnt")
-                }
             }
-
-            it
-        }.doOnSubscribe {
-            onProgress.value = true
-        }.doOnTerminate {
-            onProgress.value = false
-        }.subscribe({
+        }, onSuccess = {
             onEvent.postValue(ConsumableEvent(successEvent))
-        }, {
-            onError.value = ConsumableEvent(it)
         })
     }
 
-    fun restoreWithPin(options: OnboardingOptions, pin: String) {
-        session.observable {
-            val network = options.network!!
+    fun restoreWallet(
+        options: OnboardingOptions,
+        pin: String,
+        mnemonic: String,
+        password: String?
+    ) {
 
-            var pinData : PinData? = null
+        doUserAction({
+            session.loginWithMnemonic(
+                isTestnet = options.isTestnet == true,
+                loginCredentialsParams = LoginCredentialsParams(
+                    mnemonic = mnemonic,
+                    password = password
+                ),
+                initializeSession = true,
+                isSmartDiscovery = false,
+                isCreate = false,
+                isRestore = true
+            )
 
-            if(withPinData(options)){
-                val credentials = it.getCredentials()
-                pinData = it.encryptWithPin(EncryptWithPinParams(pin, credentials)).pinData
+            var encryptWithPin: EncryptWithPin? = null
+
+            if (withPinData(options)) {
+                val credentials = session.getCredentials()
+                encryptWithPin =
+                    session.encryptWithPin(null, EncryptWithPinParams(pin, credentials))
             }
 
-            val wallet : Wallet
+            val wallet: Wallet
 
-            if(restoreWallet == null){
+            if (restoreWallet == null) {
                 wallet = Wallet(
-                    walletHashId = it.walletHashId ?: "",
-                    name = generateWalletNameSync(
-                        network = network,
+                    walletHashId = session.walletHashId ?: "",
+                    name = generateWalletName(
                         userInputName = options.walletName
                     ),
-                    network = network.id,
+                    activeNetwork = session.activeAccountOrNull?.networkId
+                        ?: session.defaultNetwork.id,
+                    activeAccount = session.activeAccountOrNull?.pointer ?: 0,
                     isRecoveryPhraseConfirmed = options.isRestoreFlow,
                     isHardware = false,
-                    activeAccount = session.activeAccount
+                    isTestnet = options.isTestnet == true,
                 )
 
-                wallet.id = walletRepository.addWallet(wallet)
-            }else{
+                wallet.id = walletRepository.insertWallet(wallet)
+            } else {
                 wallet = restoreWallet
 
                 wallet.name = options.walletName ?: restoreWallet.name
-                walletRepository.updateWalletSync(wallet)
+                walletRepository.updateWallet(wallet)
             }
 
-            pinData?.let {
-                walletRepository.addLoginCredentialsSync(
+            encryptWithPin?.also {
+                walletRepository.insertOrReplaceLoginCredentials(
                     LoginCredentials(
                         walletId = wallet.id,
+                        network = it.network.id,
                         credentialType = CredentialType.PIN,
-                        pinData = pinData
+                        pinData = it.pinData
                     )
                 )
             }
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
 
-            countly.restoreWallet(session)
+            countly.importWallet(session)
 
             wallet
-        }.doOnSubscribe {
-            onProgress.value = true
-        }.subscribe({
+        }, postAction = {
+            onProgress.value = it == null
+        }, onSuccess = {
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
-        }, {
-            onProgress.value = false
-            onError.value = ConsumableEvent(it)
         })
     }
 
-    companion object: KLogging(){
+    companion object : KLogging() {
         const val SkipPinData = "_skip_pin_data_"
     }
 }

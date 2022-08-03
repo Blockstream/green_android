@@ -1,7 +1,7 @@
 package com.blockstream.green.data
 
 import androidx.core.text.TextUtilsCompat
-import com.blockstream.green.utils.fromHtml
+import com.blockstream.green.extensions.fromHtml
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

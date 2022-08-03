@@ -25,7 +25,7 @@ class ComingSoonBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
         val list = mutableListOf<HelpListItem>()
 
         list += HelpListItem(
-            StringHolder(R.string.id_this_feature_is_coming_soon),
+            message = StringHolder(R.string.id_this_feature_is_coming_soon),
         )
 
         itemAdapter.add(list)

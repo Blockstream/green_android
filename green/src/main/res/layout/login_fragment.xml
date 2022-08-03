@@ -6,10 +6,10 @@
     <data>
         <import type="com.blockstream.green.devices.Device" />
         <import type="com.blockstream.green.devices.Device.DeviceState" />
-        <import type="com.blockstream.green.utils.ExtensionsKt"/>
+        <import type="com.blockstream.green.extensions.ExtensionsKt"/>
         <variable
             name="vm"
-            type="com.blockstream.green.ui.wallet.LoginViewModel" />
+            type="com.blockstream.green.ui.login.LoginViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,7 +40,7 @@
                 android:layout_marginBottom="24dp"
                 android:text="@string/id_too_many_pin_attempts"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 app:layout_constraintBottom_toTopOf="@+id/imageView4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -96,7 +96,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/passwordLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                style="?attr/textInputFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_pin"
@@ -129,14 +129,41 @@
             isVisible="@{vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
             android:text="@{(vm.torEvent == null || vm.torEvent.progress == 100) ? @string/id_logging_in : @string/id_connecting_through_tor}"
-            tools:text="@string/id_logging_in"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:layout_constraintBottom_toTopOf="@+id/progress"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="gone"/>
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/id_logging_in" />
+
+        <ImageView
+            android:id="@+id/tor"
+            isVisible="@{vm.onProgress &amp;&amp; vm.applicationSettingsLiveData.tor}"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginTop="8dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_tor_60"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+        <TextView
+            android:id="@+id/textView18"
+            isVisible="@{vm.onProgress &amp;&amp; ExtensionsKt.isNotBlank(vm.applicationSettingsLiveData.proxyUrl)}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:textColor="@color/color_on_surface_emphasis_low"
+            android:text="@{vm.applicationSettingsLiveData.proxyUrl}"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Proxy" />
 
         <Button
             android:id="@+id/buttonLoginWithDevice"
@@ -151,7 +178,6 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="gone"/>
 
-
         <TextView
             android:id="@+id/mainTitleTextView"
             isVisible="@{(vm.pinCredentials != null || vm.passwordCredentials != null) &amp;&amp; !vm.onProgress }"
@@ -161,7 +187,7 @@
             android:layout_marginEnd="32dp"
             android:text="@string/id_enter_your_pin"
             android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -176,7 +202,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="32dp"
-            android:text="@string/id_emergency_recovery_phrase_restore"
+            android:text="@string/id_emergency_recovery_phrase"
             app:icon="@drawable/ic_baseline_close_24"
             android:textColor="@color/color_on_surface_emphasis_medium"
             app:iconGravity="end"
@@ -235,10 +261,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:text="@string/id_log_in_via_watchonly_to_receive"
-                android:textAppearance="?attr/textAppearanceHeadline1" />
+                android:textAppearance="?attr/textAppearanceTitleLarge" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                style="?attr/textInputFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_username">
@@ -256,7 +282,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                style="?attr/textInputFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -274,7 +300,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonWatchOnlyLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -318,27 +344,25 @@
             progress="@{vm.torEvent.progress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:progress="75"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView7"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone" />
+            tools:progress="75" />
 
         <ImageView
             android:id="@+id/deviceLogo"
             greenDevice="@{vm.device}"
+            isVisible="@{vm.device != null}"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:cropToPadding="false"
             android:scaleType="fitCenter"
             android:src="@drawable/ledger_device"
-            isVisible="@{vm.device != null}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/progress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone"/>
+            app:layout_constraintTop_toTopOf="@+id/progress" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="0dp"
@@ -359,7 +383,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{vm.device.name}"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="@color/material_on_background_emphasis_medium"
                 tools:text="Jade" />
 

@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.green.Urls
+import com.blockstream.base.Urls
 import com.blockstream.green.databinding.Bip39PassphraseBottomSheetBinding
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.wallet.LoginViewModel
+import com.blockstream.green.ui.login.LoginViewModel
 import com.blockstream.green.utils.openBrowser
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
@@ -17,6 +17,8 @@ import javax.inject.Inject
 class Bip39PassphraseBottomSheetDialogFragment: WalletBottomSheetDialogFragment<Bip39PassphraseBottomSheetBinding, LoginViewModel>(){
     @Inject
     lateinit var settingsManager: SettingsManager
+
+    override val segmentation: HashMap<String, Any>? = null
 
     override val screenName = "BIP39Passphrase"
 

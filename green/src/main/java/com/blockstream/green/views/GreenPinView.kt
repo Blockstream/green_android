@@ -1,18 +1,16 @@
 package com.blockstream.green.views
 
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.View.OnClickListener
+import android.view.View.OnLongClickListener
 import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.text.isDigitsOnly
 import androidx.core.view.isVisible
 import com.blockstream.green.R
 import com.blockstream.green.databinding.GreenPinViewBinding
-import com.blockstream.green.utils.copyToClipboard
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.shake
 import com.google.android.material.snackbar.Snackbar
@@ -23,76 +21,80 @@ class GreenPinView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    private var binding: GreenPinViewBinding =
-        GreenPinViewBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding: GreenPinViewBinding by lazy { GreenPinViewBinding.inflate(LayoutInflater.from(context), this, true) }
 
     private var pin = ""
     private var pinToBeVerified = ""
 
-    val showDigits : Boolean
+    var showDigits : Boolean = false
     var isVerifyMode = false
     var listener: GreenPinViewListener? = null
 
     init {
-        binding.keysEnabled = true
-        binding.deleteEnabled = false
 
-        binding.clickListener = OnClickListener { view ->
-            if (view.id == R.id.buttonDelete) {
-                deletePinDigit(false)
-            } else if (view.id == R.id.buttonPaste) {
-                paste()
-            } else {
-                setPinDigit((view as Button).text.toString())
+        if(!isInEditMode()) {
+
+            binding.keysEnabled = true
+            binding.deleteEnabled = false
+
+            binding.clickListener = OnClickListener { view ->
+                if (view.id == R.id.buttonDelete) {
+                    deletePinDigit(false)
+                } else if (view.id == R.id.buttonPaste) {
+                    paste()
+                } else {
+                    setPinDigit((view as Button).text.toString())
+                }
             }
-        }
 
-        binding.buttonDelete.setOnLongClickListener {
-            deletePinDigit(true)
-            true
-        }
-
-        val attributes =
-            context.obtainStyledAttributes(attrs, R.styleable.GreenPinView)
-
-        binding.withPaste = attributes.getBoolean(R.styleable.GreenPinView_withPaste, false)
-        binding.withShuffle = attributes.getBoolean(R.styleable.GreenPinView_withShuffle, false)
-        showDigits = attributes.getBoolean(R.styleable.GreenPinView_showDigits, false).also {
-            binding.showDigits = it
-        }
-
-        attributes.recycle()
-
-        pinUpdated()
-
-        val digitButtons = listOf(
-            binding.button0,
-            binding.button1,
-            binding.button2,
-            binding.button3,
-            binding.button4,
-            binding.button5,
-            binding.button6,
-            binding.button7,
-            binding.button8,
-            binding.button9
-        )
-
-        binding.shuffleListener = OnClickListener {
-            // shuffle digits values array
-            val digitsValues: List<String> = digitButtons.mapIndexed { index, _ -> "$index" }.shuffled()
-            // set new buttons values
-            digitButtons.forEachIndexed { index, button ->
-                button.text = digitsValues[index]
+            binding.buttonDelete.setOnLongClickListener {
+                deletePinDigit(true)
+                true
             }
-        }
 
-        binding.shuffleLongClickListener = OnLongClickListener {
-            // reset values
-            digitButtons.forEachIndexed { index, button ->
-                button.text = "$index"
+            val attributes =
+                context.obtainStyledAttributes(attrs, R.styleable.GreenPinView)
+
+            binding.withPaste = attributes.getBoolean(R.styleable.GreenPinView_withPaste, false)
+            binding.withShuffle = attributes.getBoolean(R.styleable.GreenPinView_withShuffle, false)
+            showDigits = attributes.getBoolean(R.styleable.GreenPinView_showDigits, false).also {
+                binding.showDigits = it
             }
-            true
+
+            attributes.recycle()
+
+            pinUpdated()
+
+            val digitButtons = listOf(
+                binding.button0,
+                binding.button1,
+                binding.button2,
+                binding.button3,
+                binding.button4,
+                binding.button5,
+                binding.button6,
+                binding.button7,
+                binding.button8,
+                binding.button9
+            )
+
+            binding.shuffleListener = OnClickListener {
+                // shuffle digits values array
+                val digitsValues: List<String> =
+                    digitButtons.mapIndexed { index, _ -> "$index" }.shuffled()
+                // set new buttons values
+                digitButtons.forEachIndexed { index, button ->
+                    button.text = digitsValues[index]
+                }
+            }
+
+            binding.shuffleLongClickListener = OnLongClickListener {
+                // reset values
+                digitButtons.forEachIndexed { index, button ->
+                    button.text = "$index"
+                }
+                true
+            }
         }
     }
 

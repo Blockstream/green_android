@@ -4,13 +4,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import androidx.lifecycle.MutableLiveData
 import com.blockstream.crypto.R
 import com.blockstream.gdk.data.Asset
 import com.blockstream.gdk.params.AssetsParams
 import com.blockstream.gdk.params.GetAssetsParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import mu.KLogging
 
@@ -35,18 +37,29 @@ class NetworkAssetManager constructor(
     private var metadata = mutableMapOf<String, Asset?>()
     private var icons = mutableMapOf<String, Bitmap?>()
 
-    // Internal representation of the Status
-    private val status = AssetStatus()
+    private val _statusStateFlow = MutableStateFlow(AssetStatus())
+    private val _status get() = _statusStateFlow.value
 
-    private val statusLiveData = MutableLiveData(status)
-    private val assetsUpdatedEvent = MutableLiveData(0)
+    private val _assetsUpdateSharedFlow = MutableSharedFlow<Unit>(replay = 0)
+    val assetsUpdateFlow = _assetsUpdateSharedFlow.asSharedFlow()
 
-    fun getAssetsUpdated() = assetsUpdatedEvent
+    fun cacheAssets(assetIds: Collection<String>, assetsProvider: AssetsProvider) {
+        assetIds.filter { !metadata.containsKey(it) && !icons.containsKey(it) }.takeIf { it.isNotEmpty() }?.also { unCachedIds ->
+            assetsProvider.getAssets(GetAssetsParams(unCachedIds)).also { assets ->
+                // get_assets only returns non null assets, so we need to add nulls for the missing assets
+                unCachedIds.forEach { assetId ->
+                    metadata[assetId] = assets.assets?.get(assetId)
+                    icons[assetId] = assets.icons?.get(assetId)
+                }
+            }
+        }
+    }
 
     fun getAsset(assetId: String, assetsProvider: AssetsProvider): Asset? {
         // Asset from GDK (cache or up2date)
         if (!metadata.containsKey(assetId)) {
             try {
+                logger.info { "Cache Asset Metadata Missed: $assetId" }
                 // If null save it in cache either way
                 assetsProvider.getAssets(GetAssetsParams(listOf(assetId))).assets?.get(assetId).let {
                     metadata[assetId] = it
@@ -62,6 +75,7 @@ class NetworkAssetManager constructor(
     fun getAssetIcon(assetId: String, assetsProvider: AssetsProvider): Bitmap? {
         if (!icons.containsKey(assetId)) {
             try {
+                logger.info { "Cache Asset Icon Missed: $assetId" }
                 // If null save it in cache either way
                 assetsProvider.getAssets(GetAssetsParams(listOf(assetId))).icons?.get(assetId).let {
                     icons[assetId] = it
@@ -86,16 +100,16 @@ class NetworkAssetManager constructor(
 
     fun getAssetDrawableOrDefault(assetId: String, assetsProvider: AssetsProvider): Drawable {
         return getAssetDrawableOrNull(assetId, assetsProvider)
-            ?: context.getDrawable(R.drawable.ic_unknown_asset_60)!!
+            ?: context.getDrawable(R.drawable.ic_unknown)!!
     }
 
     fun updateAssetsIfNeeded(provider: AssetsProvider, forceUpdate: Boolean = false) {
-        if (status.cacheStatus != CacheStatus.Latest || forceUpdate) {
+        if (_status.cacheStatus != CacheStatus.Latest || forceUpdate) {
 
             coroutineScope.launch(context = Dispatchers.IO) {
 
                 try {
-                    statusLiveData.postValue(status.apply { onProgress = true })
+                    _statusStateFlow.value = _status.apply { onProgress = true }
 
                     // Allow forceUpdate to override QATester settings
                     if (!qaTester.isAssetFetchDisabled() || forceUpdate) {
@@ -111,18 +125,22 @@ class NetworkAssetManager constructor(
                         // Clear our local cache
                         metadata.clear()
 
-                        status.cacheStatus = CacheStatus.Latest
+                        _status.cacheStatus = CacheStatus.Latest
                     }
 
                 } catch (e: Exception) {
                     e.printStackTrace()
                 } finally {
-                    statusLiveData.postValue(status.apply { onProgress = false })
-                    assetsUpdatedEvent.postValue((assetsUpdatedEvent.value ?: 0) + 1)
+                    _statusStateFlow.value = _status.apply { onProgress = false }
+                    _assetsUpdateSharedFlow.tryEmit(Unit)
                 }
             }
         }
     }
 
-    companion object : KLogging()
+
+    companion object : KLogging(){
+        const val REMOTE_CONFIG_ASSETS_MAINNET = "liquid_assets"
+        const val REMOTE_CONFIG_ASSETS_TESTNET = "liquid_assets_testnet"
+    }
 }

@@ -5,9 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import com.blockstream.gdk.AssetQATester
 import com.blockstream.gdk.data.Notification
 import com.greenaddress.greenapi.HardwareQATester
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /*
  * Emulate different scenarios, useful for QA
@@ -19,7 +23,7 @@ class QATester(val context: Context) : HardwareQATester, AssetQATester {
 
     val assetsFetchDisabled = MutableLiveData(false)
 
-    val notificationsEvents = PublishSubject.create<QTNotificationDelay>()
+    val notificationsEvents = MutableSharedFlow<QTNotificationDelay>(extraBufferCapacity = 10)
 
     override fun getAntiExfilCorruptionForMessageSign(): Boolean {
         return corruptedHardwareMessageSign.value ?: false
@@ -37,21 +41,17 @@ class QATester(val context: Context) : HardwareQATester, AssetQATester {
         return assetsFetchDisabled.value ?: false
     }
 
-    fun getSessionNotificationInjectorObservable() : Observable<Notification> {
-
+    fun getSessionNotificationInjectorFlow() : Flow<Notification> {
         // Disable it completely
         if(isProductionFlavor){
-            return Observable.empty()
+            return emptyFlow()
         }
 
         // Delay 5 + i seconds between events
-        return notificationsEvents.delay { item ->
-            Observable.timer(
-                7 + item.delay,
-                TimeUnit.SECONDS
-            )
-        }.map { it.notification }
-
+        return notificationsEvents.map {
+            delay((5 + it.delay).toDuration(DurationUnit.SECONDS))
+            it.notification
+        }
     }
 }
 

@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:text="Transactions"
-                    android:textAppearance="@style/TextAppearance.Green.Body1"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
                     android:textStyle="bold"
                     android:layout_marginEnd="18dp"
                     android:layout_marginStart="18dp"
@@ -45,8 +45,7 @@
                     android:layout_height="wrap_content"
                     tools:text="Subtitle"
                     android:layout_marginEnd="18dp"
-                    android:layout_marginStart="18dp"
-                    />
+                    android:layout_marginStart="18dp" />
 
 
             </LinearLayout>
@@ -69,7 +68,7 @@
                 android:gravity="end|center"
                 android:orientation="vertical">
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/switchMaterial"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

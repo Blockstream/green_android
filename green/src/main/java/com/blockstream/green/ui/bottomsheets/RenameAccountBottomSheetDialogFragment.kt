@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.gdk.data.SubAccount
-import com.blockstream.green.R
+import com.blockstream.gdk.data.Account
 import com.blockstream.green.databinding.RenameAccountBottomSheetBinding
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.nameCleanup
+import com.blockstream.green.extensions.openKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
@@ -18,33 +18,45 @@ class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<R
 
     override fun inflate(layoutInflater: LayoutInflater) = RenameAccountBottomSheetBinding.inflate(layoutInflater)
 
+    override val isAdjustResize: Boolean = true
+
+    override val accountOrNull: Account?
+        get() = arguments?.getParcelable<Account>(ACCOUNT)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val subAccount = arguments?.getParcelable<SubAccount>(SUBACCOUNT) ?: run {
+        val account = accountOrNull ?: run {
             dismiss()
             return
         }
 
-        binding.name = subAccount.nameOrDefault(getString(R.string.id_main_account))
+        binding.name = account.name
 
         binding.buttonClose.setOnClickListener {
             dismiss()
         }
 
         binding.buttonSave.setOnClickListener {
-            viewModel.renameSubAccount(subAccount.pointer, binding.name.nameCleanup() ?: "")
+            viewModel.renameAccount(account, binding.name.nameCleanup() ?: "")
             dismiss()
         }
     }
 
-    companion object : KLogging() {
-        private const val SUBACCOUNT = "SUBACCOUNT"
+    override fun onResume() {
+        super.onResume()
+        binding.accountName.requestFocus()
+        openKeyboard()
+    }
 
-        fun show(subAccount: SubAccount, fragmentManager: FragmentManager) {
+
+    companion object : KLogging() {
+        private const val ACCOUNT = "ACCOUNT"
+
+        fun show(account: Account, fragmentManager: FragmentManager) {
             show(RenameAccountBottomSheetDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
-                    bundle.putParcelable(Companion.SUBACCOUNT, subAccount)
+                    bundle.putParcelable(ACCOUNT, account)
                 }
             }, fragmentManager)
         }

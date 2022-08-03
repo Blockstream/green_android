@@ -54,7 +54,7 @@
             android:layout_marginBottom="24dp"
             android:text="@{text}"
             android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceBodySmall"
             isVisible="@{text != null}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/icon"

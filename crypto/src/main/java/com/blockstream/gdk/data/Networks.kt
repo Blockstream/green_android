@@ -16,16 +16,19 @@ data class Networks(
 
     val bitcoinGreen by lazy { getNetworkById(Network.GreenMainnet) }
     val liquidGreen by lazy { getNetworkById(Network.GreenLiquid) }
-    val testnetGreen by lazy { getNetworkById(Network.GreenTestnet) }
+    val testnetBitcoinGreen by lazy { getNetworkById(Network.GreenTestnet) }
     val testnetLiquidGreen by lazy { getNetworkById(Network.GreenTestnetLiquid) }
 
     val bitcoinElectrum by lazy { getNetworkById(Network.ElectrumMainnet) }
     val liquidElectrum by lazy { getNetworkById(Network.ElectrumLiquid) }
-    val testnetElectrum by lazy { getNetworkById(Network.ElectrumTestnet) }
+    val testnetBitcoinElectrum by lazy { getNetworkById(Network.ElectrumTestnet) }
     val testnetLiquidElectrum by lazy { getNetworkById(Network.ElectrumTestnetLiquid) }
 
     val customNetwork: Network?
         get() = getNetworkByIdOrNull(CustomNetworkId)
+
+    fun bitcoinElectrum(isTestnet: Boolean) = if(isTestnet) testnetBitcoinElectrum else bitcoinElectrum
+    fun liquidElectrum(isTestnet: Boolean) = if(isTestnet) testnetLiquidElectrum else liquidElectrum
 
     fun getNetworkById(id: String): Network {
         return getNetworkByIdOrNull(id) ?: throw Exception("Network '$id' is not available in the current build of GDK")
@@ -57,7 +60,31 @@ data class Networks(
                 if (isElectrum) testnetLiquidElectrum else testnetLiquidGreen
             }
             else -> { // Network.GreenTestnet, Network.ElectrumTestnet
-                if (isElectrum) testnetElectrum else testnetGreen
+                if (isElectrum) testnetBitcoinElectrum else testnetBitcoinGreen
+            }
+        }
+    }
+
+    fun getNetworkByAccountType(networkTypeOrId: String, accountType: AccountType): Network {
+        if(networkTypeOrId == CustomNetworkId){
+            return customNetwork!!
+        }
+
+        return when(accountType){
+            // Multisig
+            AccountType.STANDARD, AccountType.AMP_ACCOUNT, AccountType.TWO_OF_THREE -> {
+                if(Network.isBitcoin(networkTypeOrId)){
+                    if(Network.isBitcoinMainnet(networkTypeOrId)) bitcoinGreen else testnetBitcoinGreen
+                }else{
+                    if(Network.isLiquidMainnet(networkTypeOrId)) liquidGreen else testnetLiquidGreen
+                }
+            }else -> {
+                // Singlesig
+                if(Network.isBitcoin(networkTypeOrId)){
+                    if(Network.isBitcoinMainnet(networkTypeOrId)) bitcoinElectrum else testnetBitcoinElectrum
+                }else{
+                    if(Network.isLiquidMainnet(networkTypeOrId)) liquidElectrum else testnetLiquidElectrum
+                }
             }
         }
     }

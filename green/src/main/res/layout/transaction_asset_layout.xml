@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="com.blockstream.gdk.data.Transaction.Type" />
+        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+
+        <variable
+            name="type"
+            type="Type" />
+
+        <variable
+            name="index"
+            type="Integer" />
+
+        <variable
+            name="confirmations"
+            type="Long" />
+
+        <variable
+            name="amount"
+            type="String" />
+
+        <variable
+            name="fiat"
+            type="String" />
+
+        <variable
+            name="directionColor"
+            type="Integer" />
+
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/directionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="@{type == Type.IN ? (confirmations > 0 ? @string/id_received : @string/id_receiving) : (type == Type.OUT ? @string/id_sent : (type == Type.REDEPOSIT ? @string/id_redeposited : type == Type.MIXED ? @string/id_swapped : @string/id_unknown ))}"
+            android:textAppearance="?attr/textAppearanceLabelLarge"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            isGone="@{ index > 0}"
+            tools:text="@string/id_received" />
+
+        <ImageView
+            android:id="@+id/spv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_spv_error"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="BTC" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/amountTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:text="@{amount}"
+                android:textAlignment="textEnd"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="@{directionColor}"
+                tools:text="1532.12345678 BTC" />
+
+            <TextView
+                android:id="@+id/fiatTextView"
+                isVisible="@{ExtensionsKt.isNotBlank(fiat)}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:text="@{fiat}"
+                android:textAlignment="textEnd"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@{directionColor}"
+                tools:text="~ 3434.34 USD" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

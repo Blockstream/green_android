@@ -6,7 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Banner(
+    @Serializable(with = StringHtmlSerializer::class)
     @SerialName("title") val title: String? = null,
+    @Serializable(with = StringHtmlSerializer::class)
     @SerialName("message") val message: String? = null,
     @SerialName("dismissable") val dismissable: Boolean? = null,
     @SerialName("is_warning") val isWarning: Boolean = false,

@@ -24,7 +24,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:text="@string/id_login_with_bip39_passphrase"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             app:layout_constraintEnd_toStartOf="@+id/buttonClose"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -42,16 +42,16 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            style="?attr/textInputFilledStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:hint="@string/id_passphrase"
-            app:endIconMode="clear_text"
             app:counterEnabled="true"
             app:counterMaxLength="100"
+            app:endIconMode="password_toggle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title">
@@ -60,9 +60,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
-                android:inputType="textNoSuggestions|textVisiblePassword"
-                android:singleLine="true"
+                android:inputType="textNoSuggestions|textPassword"
                 android:maxLength="100"
+                android:singleLine="true"
                 android:text="@={passphrase}" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -75,7 +75,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_different_passphrases_generate"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
@@ -102,13 +102,13 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_always_ask"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonLearnMore" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/alwaysAskSwitch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

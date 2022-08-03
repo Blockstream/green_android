@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.blockstream.green.gdk.ExtensionsKt" />
+
+        <variable
+            name="account"
+            type="com.blockstream.gdk.data.Account" />
+
+        <variable
+            name="style"
+            type="Integer" />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            isVisible="@{style == 0}">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:background="@{ExtensionsKt.getAccountColor(account, context)}"
+                android:elevation="24dp"
+                android:src="@drawable/ic_shield_warning"
+                app:contentPadding="6dp"
+                app:shapeAppearanceOverlay="@style/RoundedImageView"
+                tools:background="@color/bitcoin" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="@color/color_on_surface_emphasis_high"
+                tools:text="@string/id_increase_the_security_of_your" />
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/brand_green_20"
+            isVisible="@{style != 0}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_shield_warning"
+                    android:tint="@color/brand_green" />
+
+                <TextView
+                    android:text="@{account.singlesig ? @string/id_you_have_a_significant_amount : @string/id_increase_the_security_of_your}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/brand_green"
+                    tools:text="@string/id_increase_the_security_of_your" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </FrameLayout>
+</layout>

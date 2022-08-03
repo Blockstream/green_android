@@ -5,7 +5,7 @@
     tools:context="com.blockstream.green.views.GreenContentCardView">
 
     <data>
-        <import type="com.blockstream.green.utils.ExtensionsKt"/>
+        <import type="com.blockstream.green.extensions.ExtensionsKt"/>
         <variable
             name="title"
             type="String" />
@@ -18,17 +18,18 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/gappedLinearLayout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:gap="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/arrow"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -40,7 +41,7 @@
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_bitcoin_network_60"
+                app:srcCompat="@drawable/ic_bitcoin"
                 tools:visibility="visible" />
 
             <TextView
@@ -49,23 +50,55 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@{title}"
-                android:textAppearance="?attr/textAppearanceHeadline3"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 tools:text="Bitcoin" />
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/captionTextView"
+            isVisible="@{ExtensionsKt.isNotBlank(caption)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
             android:text="@{caption}"
-            isVisible="@{ExtensionsKt.isNotBlank(caption)}"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/gappedLinearLayout"
-            app:layout_constraintStart_toStartOf="@+id/gappedLinearLayout"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/gappedLinearLayout"
             tools:text="@string/id_import_a_wallet_created_with" />
+
+        <FrameLayout
+            android:id="@+id/arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:elevation="0dp"
+                android:padding="12dp"
+                app:cardBackgroundColor="@color/brand_green"
+                app:cardElevation="0dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_baseline_arrow_forward_24"
+                    app:tint="@color/white" />
+
+            </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

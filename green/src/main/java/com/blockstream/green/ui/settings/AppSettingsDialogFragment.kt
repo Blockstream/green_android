@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
 import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
-import com.blockstream.green.utils.endIconCopyMode
+import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -63,15 +63,15 @@ class AppSettingsDialogFragment : AbstractBottomSheetDialogFragment<DialogAppSet
             ConsentBottomSheetDialogFragment.show(childFragmentManager, hideButtons = true)
         }
 
-        binding.personalBitcoinElectrumServerInputLayout.endIconCopyMode()
-        binding.personalLiquidElectrumServerInputLayout.endIconCopyMode()
-        binding.personalTestnetElectrumServerInputLayout.endIconCopyMode()
-        binding.personalTestnetLiquidElectrumServerInputLayout.endIconCopyMode()
-        binding.proxyURLInputLayout.endIconCopyMode()
-        binding.spvBitcoinElectrumServerInputLayout.endIconCopyMode()
-        binding.spvLiquidElectrumServerInputLayout.endIconCopyMode()
-        binding.spvTestnetElectrumServerInputLayout.endIconCopyMode()
-        binding.spvTestnetLiquidElectrumServerInputLayout.endIconCopyMode()
+        binding.personalBitcoinElectrumServerInputLayout.endIconCustomMode()
+        binding.personalLiquidElectrumServerInputLayout.endIconCustomMode()
+        binding.personalTestnetElectrumServerInputLayout.endIconCustomMode()
+        binding.personalTestnetLiquidElectrumServerInputLayout.endIconCustomMode()
+        binding.proxyURLInputLayout.endIconCustomMode()
+        binding.spvBitcoinElectrumServerInputLayout.endIconCustomMode()
+        binding.spvLiquidElectrumServerInputLayout.endIconCustomMode()
+        binding.spvTestnetElectrumServerInputLayout.endIconCustomMode()
+        binding.spvTestnetLiquidElectrumServerInputLayout.endIconCustomMode()
 
         binding.buttonSave.setOnClickListener {
             viewModel.saveSettings()

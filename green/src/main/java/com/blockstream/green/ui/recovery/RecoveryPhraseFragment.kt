@@ -6,12 +6,12 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.blockstream.base.Urls
 import com.blockstream.gdk.data.Credentials
 import com.blockstream.green.R
-import com.blockstream.green.Urls
 import com.blockstream.green.databinding.RecoveryPhraseFragmentBinding
 import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.items.RecoveryWordListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
+class RecoveryPhraseFragment : AbstractWalletFragment<RecoveryPhraseFragmentBinding>(
     layout = R.layout.recovery_phrase_fragment,
     menuRes = 0
 ) {
@@ -41,11 +41,16 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory
     val viewModel: WalletViewModel by viewModels {
-        WalletViewModel.provideFactory(viewModelFactory, wallet)
+        WalletViewModel.provideFactory(viewModelFactory, args.wallet!!)
     }
 
+    // Recovery screens are reused in onboarding
+    // where we don't have a session yet.
     override fun isSessionAndWalletRequired(): Boolean = walletOrNull != null
 
+    override fun isLoggedInRequired(): Boolean = isSessionAndWalletRequired()
+
+    // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
     override fun getAppViewModel(): AppViewModel? = if(walletOrNull != null) super.getAppViewModel() else null
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel

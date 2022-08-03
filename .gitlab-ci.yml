@@ -9,11 +9,11 @@ stages:
 # Build Signed APKs
 
 production:
-  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  image: greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 14 days
+    expire_in: 10 days
     when: on_success
     paths:
       - green/build/outputs/apk/productionGoogle/release/*.apk
@@ -27,12 +27,12 @@ production:
     - ./gradlew assembleProductionGoogleRelease
 
 production_fdroid:
-  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  image: greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05
   stage: build
   when: manual
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 14 days
+    expire_in: 10 days
     when: on_success
     paths:
       - green/build/outputs/apk/production/release/*.apk
@@ -47,12 +47,12 @@ production_fdroid:
 
 
 development:
-  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  image: greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05
   stage: build
   when: manual
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 14 days
+    expire_in: 7 days
     when: on_success
     paths:
       - green/build/outputs/apk/development/release/*.apk
@@ -66,12 +66,12 @@ development:
     - ./gradlew assembleDevelopmentRelease
 
 production_debug:
-  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  image: greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05
   stage: build
   when: manual
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 14 days
+    expire_in: 7 days
     when: on_success
     paths:
       - green/build/outputs/apk/productionGoogle/debug/*.apk
@@ -85,11 +85,11 @@ production_debug:
     - ./gradlew assembleProductionGoogleDebug
 
 gdk_commit:
-  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  image: greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA-gdk-$GDK_COMMIT"
-    expire_in: 14 days
+    expire_in: 7 days
     when: on_success
     paths:
       - green/build/outputs/apk/productionGoogle/release/*.apk
@@ -109,7 +109,7 @@ gdk_commit:
 # Build Unsigned APK
 
 build_google_play:
-  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  image: greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05
   stage: build
   when: manual
   artifacts:
@@ -143,7 +143,7 @@ build_osx:
 # Test
 
 unit_tests:
-  image: greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0
+  image: greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05
   stage: test
   needs: []
   tags:
@@ -164,7 +164,7 @@ sign_google_play:
   stage: deploy
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 14 days
+    expire_in: 30 days
     paths:
       - green/build/outputs/*
     when: on_success
@@ -221,7 +221,7 @@ gcp_push_development:
   needs: ["gcp_auth", "development"]
   variables:
     GCS_BUCKET: green-android-builds
-    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA
+    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-development
   before_script:
     - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:
@@ -236,7 +236,7 @@ gcp_push_gdk_commit:
   needs: ["gcp_auth", "gdk_commit"]
   variables:
     GCS_BUCKET: green-android-builds
-    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA
+    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-gdk
   before_script:
     - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:

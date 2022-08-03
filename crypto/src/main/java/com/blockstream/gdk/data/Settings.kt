@@ -8,6 +8,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import mu.KLogging
 
 @Serializable
 data class Settings(
@@ -25,12 +26,23 @@ data class Settings(
 
     override fun kSerializer() = serializer()
 
+    companion object: KLogging(){
+        fun normalizeFromProminent(network: Network, networkSettings: Settings, prominentSettings: Settings, pgpFromProminent: Boolean = false): Settings{
+            return Settings(
+                // Prominent Settings
+                altimeout = prominentSettings.altimeout,
+                pricing = prominentSettings.pricing,
+                unit = prominentSettings.unit,
+                pgp = prominentSettings.pgp.takeIf { pgpFromProminent } ?: networkSettings.pgp.takeIf { !pgpFromProminent },
 
-    val unitKey : String
-        get() {
-            return unit.lowercase().replace("\u00B5", "u")
+                // Network Settings
+                csvTime = networkSettings.csvTime,
+                nlocktime = networkSettings.nlocktime,
+                notifications = networkSettings.notifications,
+                requiredNumBlocks = networkSettings.requiredNumBlocks
+            )
         }
-
+    }
 }
 
 @Serializable

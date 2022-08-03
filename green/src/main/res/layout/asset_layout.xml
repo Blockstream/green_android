@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.blockstream.green.gdk.ExtensionsKt" />
+
+        <variable
+            name="name"
+            type="String" />
+
+        <variable
+            name="primaryValue"
+            type="String" />
+
+        <variable
+            name="secondaryValue"
+            type="String" />
+
+        <variable
+            name="showBalance"
+            type="Boolean" />
+
+        <variable
+            name="showEditIcon"
+            type="Boolean" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/asset_size"
+            android:layout_height="@dimen/asset_size"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_bitcoin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:ellipsize="middle"
+            android:lines="1"
+            android:text="@{name}"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+            app:layout_constraintStart_toEndOf="@+id/icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Bitcoin" />
+
+        <ImageView
+            android:id="@+id/editIconImageView"
+            isVisible="@{showEditIcon}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_pencil_simple_line"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            isVisible="@{showBalance}"
+            android:gravity="end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/primaryValueTextView"
+                isVisible="@{showBalance &amp;&amp; primaryValue != null}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{primaryValue}"
+                android:textAlignment="textEnd"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                tools:text="1230.234124" />
+
+<!--            visibility="@{ showBalance == false ? 2 : secondaryValue == null ? 1 : 0}"-->
+            <TextView
+                android:id="@+id/secondaryValueTextView"
+                isVisible="@{showBalance &amp;&amp; secondaryValue != null}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{secondaryValue}"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                tools:text="$1,200.02" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

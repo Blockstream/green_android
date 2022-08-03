@@ -6,17 +6,18 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.TwoFactorReset
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.ui.items.HelpListItem
-import com.blockstream.green.ui.overview.OverviewFragmentDirections
 import com.blockstream.green.ui.settings.TwoFactorSetupAction
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.utils.navigate
+import com.blockstream.green.extensions.navigate
 import com.blockstream.green.utils.toPixels
 import com.blockstream.green.views.SpaceItemDecoration
 import com.mikepenz.fastadapter.FastAdapter
@@ -33,6 +34,8 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
     var disputeItem : HelpListItem? = null
 
     override val screenName = "TwoFactorReset"
+
+    override val network by lazy { arguments?.getParcelable<Network>(NETWORK)!! }
 
     override fun inflate(layoutInflater: LayoutInflater) = RecyclerBottomSheetBinding.inflate(layoutInflater)
 
@@ -128,10 +131,11 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
                 }
             }
 
-            val directions = OverviewFragmentDirections.actionGlobalTwoFactorSetupFragment(
+            val directions = NavGraphDirections.actionGlobalTwoFactorSetupFragment(
                 wallet = viewModel.wallet,
                 method = TwoFactorMethod.EMAIL,
-                action = twoFactorSetupAction
+                action = twoFactorSetupAction,
+                network = network
             )
 
             navigate(findNavController(), directions.actionId, directions.arguments, false)
@@ -143,11 +147,13 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
     }
 
     companion object{
+        private const val NETWORK = "NETWORK"
         private const val TWO_FACTOR_RESET = "TWO_FACTOR_RESET"
 
-        fun show(twoFactorReset: TwoFactorReset, fragmentManager: FragmentManager) {
+        fun show(network: Network, twoFactorReset: TwoFactorReset, fragmentManager: FragmentManager) {
             show(TwoFactorResetBottomSheetDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
+                    bundle.putParcelable(NETWORK, network)
                     bundle.putParcelable(TWO_FACTOR_RESET, twoFactorReset)
                 }
             }, fragmentManager)

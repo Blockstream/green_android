@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
+            name="showFiat"
+            type="Boolean" />
+
+        <variable
             name="amount"
+            type="String" />
+
+        <variable
+            name="currency"
             type="String" />
 
     </data>
@@ -19,26 +26,29 @@
         android:padding="24dp">
 
         <TextView
+            isVisible="@{showFiat}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/id_currency"
-            android:textAppearance="@style/TextAppearance.Green.Overline" />
+            android:textAppearance="?attr/textAppearanceOverline" />
 
         <Spinner
-            android:id="@+id/currency"
-            android:layout_marginTop="6dp"
+            android:id="@+id/currencySpinner"
+            isVisible="@{showFiat}"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/amountInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:hint="@string/id_amount"
+            app:suffixText="@{currency}"
             app:expandedHintEnabled="true"
-            app:placeholderText="0.00"
-            android:hint="@string/id_amount">
+            app:placeholderText="0.00">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/amountEditText"

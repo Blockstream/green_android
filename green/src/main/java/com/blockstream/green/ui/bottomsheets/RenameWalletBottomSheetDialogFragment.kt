@@ -4,15 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.RenameWalletBottomSheetBinding
-import com.blockstream.green.utils.logException
+import com.blockstream.green.extensions.isNotBlank
+import com.blockstream.green.extensions.openKeyboard
+import com.blockstream.green.ui.intro.IntroFragment
+import com.blockstream.green.ui.login.LoginFragment
 import com.blockstream.green.utils.nameCleanup
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import mu.KLogging
 import javax.inject.Inject
 
@@ -33,9 +34,10 @@ class RenameWalletBottomSheetDialogFragment :
     override fun inflate(layoutInflater: LayoutInflater) =
         RenameWalletBottomSheetBinding.inflate(layoutInflater)
 
+    override val isAdjustResize: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         arguments?.getParcelable<Wallet>(WALLET)?.let {
             wallet = it
         } ?: run {
@@ -49,16 +51,8 @@ class RenameWalletBottomSheetDialogFragment :
         binding.name = wallet.name
 
         binding.buttonSave.setOnClickListener {
-            lifecycleScope.launch(context = logException(countly)) {
-                val name = binding.name.nameCleanup() ?: ""
-
-                if (name.isBlank()) return@launch
-
-                wallet.name = name
-                walletRepository.updateWalletSuspend(wallet)
-
-                countly.renameWallet()
-
+            binding.name.nameCleanup().takeIf { it.isNotBlank() }?.also {
+                renameWallet(it)
                 dismiss()
             }
         }
@@ -66,6 +60,22 @@ class RenameWalletBottomSheetDialogFragment :
         binding.buttonClose.setOnClickListener {
             dismiss()
         }
+    }
+
+    private fun renameWallet(name: String){
+        requireParentFragment().let { fragment ->
+            if(fragment is IntroFragment){
+                fragment.viewModel.renameWallet(name, wallet)
+            }else if(fragment is LoginFragment){
+                fragment.viewModel.renameWallet(name)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.walletNameTextView.requestFocus()
+        openKeyboard()
     }
 
     companion object : KLogging() {

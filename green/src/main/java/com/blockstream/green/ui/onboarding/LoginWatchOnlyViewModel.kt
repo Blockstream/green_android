@@ -4,10 +4,10 @@ import androidx.lifecycle.*
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.boolean
-import com.blockstream.green.utils.string
+import com.blockstream.green.extensions.boolean
+import com.blockstream.green.extensions.string
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 

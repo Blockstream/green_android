@@ -1,44 +1,45 @@
 package com.blockstream.green.ui.send;
 
-import android.content.SharedPreferences
 import androidx.lifecycle.*
-import com.blockstream.gdk.Balances
-import com.blockstream.gdk.GreenWallet
-import com.blockstream.gdk.GreenWallet.Companion.FeeBlockTarget
+import com.blockstream.gdk.GdkBridge
+import com.blockstream.gdk.GdkBridge.Companion.FeeBlockTarget
+import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.gdk.data.CreateTransaction
+import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.params.AddressParams
-import com.blockstream.gdk.params.BalanceParams
 import com.blockstream.gdk.params.CreateTransactionParams
-import com.blockstream.green.Preferences
 import com.blockstream.green.data.*
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.gdk.*
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.blockstream.green.utils.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.kotlin.addTo
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import mu.KLogging
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 class SendViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
-    sharedPreferences: SharedPreferences,
     countly: Countly,
     @Assisted wallet: Wallet,
+    @Assisted accountAsset: AccountAsset,
     @Assisted val isSweep: Boolean,
-    @Assisted address: String?,
+    @Assisted("address") address: String?,
     @Assisted val bumpTransaction: JsonElement?,
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
+) : AbstractAssetWalletViewModel(sessionManager, walletRepository, countly, wallet, accountAsset) {
+    override val filterSubAccountsWithBalance = true
+
     val isBump = bumpTransaction != null
     val isBumpOrSweep = isBump || isSweep
 
@@ -47,25 +48,21 @@ class SendViewModel @AssistedInject constructor(
     private val recipients = MutableLiveData(mutableListOf(
         AddressParamsLiveData.create(
             index = 0,
-            address = address
+            address = address,
+            accountAsset = _accountAssetLiveData
         )
     ))
     fun getRecipientsLiveData() = recipients
 
     fun getRecipientLiveData(index: Int) = recipients.value?.getOrNull(index)
 
-    private val assets: MutableLiveData<Balances> = MutableLiveData()
-    fun getAssetsLiveData(): LiveData<Balances> = assets
-
-    val feeSlider = MutableLiveData<Float>(SliderHighIndex.toFloat()) // fee slider selection, 0 for custom
+    val feeSlider = MutableLiveData<Float>() // SliderHighIndex.toFloat() // fee slider selection, 0 for custom
     val feeAmount = MutableLiveData("") // total tx fee
     val feeAmountFiat = MutableLiveData("") // total tx fee in fiat
     val feeAmountRate = MutableLiveData("") // fee rate
 
     // fee rate from sharedPreferences only for bitcoin
-    var customFee =
-        (if (!session.isLiquid) sharedPreferences.getString(Preferences.DEFAULT_FEE_RATE, null)
-            ?.toDoubleOrNull()?.times(1000)?.toLong() else null) ?: session.network.defaultFee
+    var customFee: Long? = null
 
     var feeRate : Long? =  null
     var feeEstimation: List<Long>? = null
@@ -75,49 +72,47 @@ class SendViewModel @AssistedInject constructor(
 
     val handledGdkErrors = listOf("id_insufficient_funds", "id_invalid_private_key", "id_invalid_address", "id_invalid_amount", "id_invalid_asset_id",)
 
+    private val checkTransactionMutex = Mutex()
+
     init {
         countly.startSendTransaction()
 
-        updateFeeEstimation()
+        // Update fee estimation on network change
+        accountAssetLiveData.asFlow().map {
+            it.account.network
+        }.distinctUntilChanged().onEach {
+            updateFeeEstimation()
 
-        session
-            .getBalancesObservable()
-            .async()
-            .subscribe { balances ->
-                assets.value = balances
+            // Set initial fee slider value
+            if(feeSlider.value == null){
+                feeSlider.value = SliderHighIndex.toFloat()
+            }
 
-                if (balances.size == 1) {
-                    val assetId = balances.keys.first()
-                    for (recipient in recipients.value!!) {
-                        if (recipient.assetId.value.isNullOrBlank()) {
-                            recipient.assetId.value = assetId
-                        }
+            session.getSettings(network)?.let {
+                FeeBlockTarget
+                    .indexOf(it.requiredNumBlocks)
+                    .takeIf { it > -1 }?.let {
+                        feeSlider.value = 3 - it.toFloat()
                     }
-                }
+            }
 
-            }.addTo(disposables)
+        }.launchIn(viewModelScope)
+
+        _accountAssetLiveData.asFlow().distinctUntilChanged().onEach {
+            setAccountAsset(0, it)
+        }.launchIn(viewModelScope)
 
         // Check transaction if we get a network event
         // we may have gotten an error "session is required"
+        // TODO CHANGE THIS TO SUPPORT MULTI NETWORKS
         session
-            .getNetworkEventObservable()
-            .async()
-            .subscribeBy(
-                onNext = { event ->
-                    if (event.isConnected) {
-                        checkTransaction()
-                    }
+            .networkEventsFlow(session.defaultNetwork).filterNotNull()
+            .onEach {  event ->
+                if (event.isConnected) {
+                    checkTransaction()
                 }
-            )
-            .addTo(disposables)
 
-        session.getSettings()?.let {
-            FeeBlockTarget
-                .indexOf(it.requiredNumBlocks)
-                .takeIf { it > -1 }?.let {
-                feeSlider.value = 3 - it.toFloat()
-            }
-        }
+            }.launchIn(viewModelScope)
 
         // Fee Slider
         feeSlider
@@ -126,7 +121,7 @@ class SendViewModel @AssistedInject constructor(
             .distinctUntilChanged()
             .onEach {
                 if(it.toInt() != SliderCustomIndex){
-                    feeRate = feeEstimation?.getOrNull(GreenWallet.FeeBlockTarget[3 - (it.toInt())])
+                    feeRate = feeEstimation?.getOrNull(GdkBridge.FeeBlockTarget[3 - (it.toInt())])
                 }
 
                 checkTransaction()
@@ -155,54 +150,48 @@ class SendViewModel @AssistedInject constructor(
     }
 
     private fun updateFeeEstimation() {
-        session.observable {
-            it.getFeeEstimates()
-        }
-        .retry(1)
-        .subscribeBy(
-            onSuccess = {
-                feeEstimation = if(isBump){
+        feeRate = null // reset fee rate
 
-                    // Old fee rate + minimum relay
-                    val bumpFeeAndRelay = (getBumpTransactionFeeRate() ?: it.fees[0]) + (it.minimumRelayFee ?: session.network.defaultFee)
-                    it.fees.mapIndexed { index, fee ->
-                        if(index == 0) {
-                            fee
-                        } else {
-                            fee.coerceAtLeast(bumpFeeAndRelay)
-                        }
+        doUserAction({
+            logger.info { "updateFeeEstimation for ${network.id}" }
+            session.getFeeEstimates(network)
+        }, preAction = null, postAction = null, onSuccess = {
+            feeEstimation = if(isBump){
+
+                // Old fee rate + minimum relay
+                val bumpFeeAndRelay = (getBumpTransactionFeeRate() ?: it.fees[0]) + (it.minimumRelayFee ?: network.defaultFee)
+                it.fees.mapIndexed { index, fee ->
+                    if(index == 0) {
+                        fee
+                    } else {
+                        fee.coerceAtLeast(bumpFeeAndRelay)
                     }
-                }else{
-                    it.fees
                 }
-
-                // skip if custom fee is selected
-                if (feeRate == null && feeSlider.value?.toInt() != SliderCustomIndex) {
-                    // update based on current slider selection
-                    feeRate = feeEstimation?.getOrNull(FeeBlockTarget[3 - (feeSlider.value ?: SliderHighIndex).toInt()])
-
-
-                    // Update fee
-                    checkTransaction()
-                }
-            },
-            onError = {
-                onError.postValue(ConsumableEvent(it))
+            }else{
+                it.fees
             }
-        )
-        .addTo(disposables)
+
+            // skip if custom fee is selected
+            if (feeSlider.value?.toInt() != SliderCustomIndex) {
+                // update based on current slider selection
+                feeRate = feeEstimation?.getOrNull(FeeBlockTarget[3 - (feeSlider.value ?: SliderHighIndex).toInt()])
+
+                // Update fee
+                checkTransaction()
+            }
+        })
     }
 
     private fun setupChangeObserve(addressParamsLiveData: AddressParamsLiveData) {
 
         // Pre select asset
-        assets.value?.let { balances ->
-            if (balances.size == 1) {
-                if (addressParamsLiveData.assetId.value.isNullOrBlank()) {
-                    addressParamsLiveData.assetId.value = balances.keys.first()
-                }
-            }
-        }
+//        assetsLiveData.value?.let { balances ->
+//            if (balances.size == 1) {
+//                if (addressParamsLiveData.accountAsset.value.isNullOrBlank()) {
+//                    addressParamsLiveData.assetId.value = balances.keys.first()
+//                }
+//            }
+//        }
 
         // Address
         addressParamsLiveData.address
@@ -216,14 +205,10 @@ class SendViewModel @AssistedInject constructor(
             }
             .launchIn(viewModelScope)
 
-        // Asset Id
-        addressParamsLiveData.assetId
+        // Account
+        addressParamsLiveData.accountAsset
             .asFlow()
             .drop(1)// drop initial value
-            .filter {
-                // Skip if is a bip21 field
-                addressParamsLiveData.assetBip21.value == false && isBump
-            }
             .distinctUntilChanged()
             .onEach {
                 checkTransaction()
@@ -268,42 +253,40 @@ class SendViewModel @AssistedInject constructor(
     private fun updateExchange(addressParamsLiveData: AddressParamsLiveData) {
         addressParamsLiveData.amount.value?.let { amount ->
             // Convert between BTC / Fiat
-            session.observable {
-                if (addressParamsLiveData.assetId.value.isPolicyAsset(session)) {
-                    val isFiat = addressParamsLiveData.isFiat.value ?: false
+            doUserAction({
+                addressParamsLiveData.accountAsset.value?.assetId?.let { assetId ->
+                    if (assetId.isPolicyAsset(network)) {
+                        val isFiat = addressParamsLiveData.isFiat.value ?: false
 
-                    // TODO calculate exchange from string input or from satoshi ?
-
-                    UserInput.parseUserInputSafe(
+                        // TODO calculate exchange from string input or from satoshi ?
+                        UserInput.parseUserInputSafe(
                             session,
                             amount,
                             isFiat = isFiat
                         ).getBalance(session)?.let {
-                        "≈ " + it.toAmountLook(
-                            session = session,
-                            isFiat = !isFiat,
-                            withUnit = true,
-                            withGrouping = true,
-                            withMinimumDigits = false
-                        )
-                    } ?: ""
-                } else {
-                    ""
+                            "≈ " + it.toAmountLook(
+                                session = session,
+                                assetId = assetId,
+                                isFiat = !isFiat,
+                                withUnit = true,
+                                withGrouping = true,
+                                withMinimumDigits = false
+                            )
+                        } ?: ""
+                    } else {
+                        ""
+                    }
                 }
-            }.subscribeBy(
-                onSuccess = {
-                    addressParamsLiveData.exchange.value = it
-                },
-                onError = {
-                    it.printStackTrace()
-                    addressParamsLiveData.exchange.value = ""
-                }
-            )
+            }, preAction = null, postAction = null, onSuccess = {
+                addressParamsLiveData.exchange.value = it
+            }, onError = {
+                addressParamsLiveData.exchange.value = ""
+            })
         }
     }
 
     fun addRecipient() {
-        recipients.value = recipients.value?.apply { add(AddressParamsLiveData.create(size)) }
+        recipients.value = recipients.value?.apply { add(AddressParamsLiveData.create(size, accountAsset = _accountAssetLiveData)) }
         recipients.value?.lastOrNull()?.let { setupChangeObserve(it) }
     }
 
@@ -316,25 +299,20 @@ class SendViewModel @AssistedInject constructor(
         }
     }
 
-    private fun getFeeRate(): Long = if(feeSlider.value?.toInt() == SliderCustomIndex){
+    fun getFeeRate(): Long = if(feeSlider.value?.toInt() == SliderCustomIndex){
             // prevent custom fee lower than relay or default fee
-            customFee.coerceAtLeast(feeEstimation?.firstOrNull() ?: session.network.defaultFee)
+            customFee?.coerceAtLeast(feeEstimation?.firstOrNull() ?: network.defaultFee) ?: network.defaultFee
         }else{
-            feeRate ?: session.network.defaultFee.coerceAtLeast(feeEstimation?.getOrNull(0) ?: 0)
+            feeRate ?: network.defaultFee.coerceAtLeast(feeEstimation?.getOrNull(0) ?: 0)
         }
 
     private fun createTransactionParams(): CreateTransactionParams {
-        val unspentOutputs = session.getUnspentOutputs(
-            BalanceParams(
-                subaccount = wallet.activeAccount,
-                confirmations = if(isBump) 1 else 0
-            )
-        )
+        val unspentOutputs = session.getUnspentOutputs(account, isBump)
 
         return when{
             isBump -> {
                 CreateTransactionParams(
-                    subaccount = wallet.activeAccount,
+                    subaccount = account.pointer,
                     feeRate = getFeeRate(),
                     utxos = unspentOutputs.unspentOutputsAsJsonElement,
                     previousTransaction = bumpTransaction,
@@ -343,17 +321,18 @@ class SendViewModel @AssistedInject constructor(
             }
             isSweep -> {
                 CreateTransactionParams(
-                    subaccount = wallet.activeAccount,
-                    addressees = listOf(AddressParams(address = session.getReceiveAddress(wallet.activeAccount).address)),
                     feeRate = getFeeRate(),
                     privateKey = recipients.value?.get(0)?.address?.value?.trim() ?: "", // private key
                     passphrase = "",
+                    addressees = listOf(AddressParams(
+                        address = session.getReceiveAddress(account).address
+                    ))
                 )
             }
             else -> {
                 val isSendAll = isSendAll()
                 CreateTransactionParams(
-                    subaccount = wallet.activeAccount,
+                    subaccount = account.pointer,
                     addressees = recipients.value!!.map {
                         it.toAddressParams(session = session, isSendAll = isSendAll)
                     },
@@ -366,139 +345,126 @@ class SendViewModel @AssistedInject constructor(
     }
 
     // This method helps between differences between multisig/singlesig returned values
-    private fun getSendAmountCompat(index: Int, assetId: String, tx: CreateTransaction) = if (session.isElectrum) tx.addressees[index].satoshi else tx.satoshi[assetId]
+    private fun getSendAmountCompat(index: Int, assetId: String, tx: CreateTransaction) = if (network.isSinglesig) tx.addressees[index].satoshi else tx.satoshi[assetId]
 
-    var pendingCheck = false
-    var isCheckingTransaction = AtomicBoolean(false)
+
     private fun checkTransaction(userInitiated: Boolean = false, finalCheckBeforeContinue: Boolean = false) {
-        // Prevent race condition
-        if (!isCheckingTransaction.compareAndSet(false, true)){
-            pendingCheck = true
-            return
-        }
-
-        pendingCheck = false
-
         logger.info { "checkTransaction" }
 
         var params: CreateTransactionParams? = null
-        session.observable {
-            params = createTransactionParams()
 
-            val tx = it.createTransaction(params!!)
-            var balance: Balances? = null
+        doUserAction({
+            // Prevent race condition
+            checkTransactionMutex.withLock {
+
+                params = createTransactionParams()
+
+                val tx = session.createTransaction(network, params!!)
+                var balance: Assets? = null
+
+                if(finalCheckBeforeContinue){
+                    balance = session.getBalance(account)
+                }
+
+                // Change UI based on the transaction
+                recipients.value?.let { recipients ->
+                    for(recipient in recipients){
+
+                        // If we have BIP21/sweep/bump, update the amounts from GDK side, and disable text input editing
+                        recipient.assetBip21.postValue(tx.addressees.getOrNull(recipient.index)?.bip21Params?.hasAssetId == true)
+                        recipient.amountBip21.postValue(tx.addressees.getOrNull(recipient.index)?.bip21Params?.hasAmount == true)
+
+                        tx.addressees.getOrNull(recipient.index)?.let { addressee ->
+
+                            if (network.isLiquid) {
+                                addressee.bip21Params?.assetId?.let { assetId ->
+                                    recipient.accountAsset.postValue(AccountAsset(recipient.accountAsset.value!!.account, assetId))
+                                }
+                            }
+
+                            if(isBump){
+                                recipient.address.postValue(addressee.address)
+                            }
+
+                            // Get amount from GDK if is a BIP21 or isSendAll or Sweep or Bump
+                            if(addressee.bip21Params?.hasAmount == true || recipient.isSendAll.value == true || isBumpOrSweep){
+                                val assetId = addressee.assetId ?: network.policyAsset
+                                if(!assetId.isPolicyAsset(network)){
+                                    recipient.isFiat.postValue(false)
+                                }
+
+                                recipient.amount.postValue(getSendAmountCompat(recipient.index, assetId, tx)?.let {sendAmount ->
+                                    // Avoid UI glitches if isSweep and amount is zero (probably error)
+                                    if(isSweep && sendAmount == 0L){
+                                        ""
+                                    }else{
+                                        sendAmount.toAmountLook(
+                                            session = session,
+                                            assetId = assetId,
+                                            isFiat = recipient.isFiat.value,
+                                            withUnit = false,
+                                            withGrouping = false,
+                                        )
+                                    }
+                                })
+                            }
+                        }
+                    }
+                }
+
+                // Check if the specified asset in the uri exists in the wallet, we do this check only if it's final
+                if(balance != null){
+                    for (addressee in tx.addressees) {
+                        addressee.assetId?.let { assetId ->
+                            if (!balance.containsKey(assetId)) {
+                                throw Exception("id_no_asset_in_this_account")
+                            }
+                        }
+                    }
+                }
+
+                checkedTransaction = tx
+
+                feeAmount.postValue(tx.fee?.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
+                feeAmountRate.postValue(tx.feeRateWithUnit() ?: "")
+                feeAmountFiat.postValue(tx.fee?.toAmountLook(session = session, isFiat = true, withUnit = true, withGrouping = true) ?: "")
+
+                if(tx.error.isNotBlank()){
+                    throw Exception(tx.error)
+                }
+
+                tx
+            }
+        }, onSuccess = { tx ->
+            transactionError.value = null
 
             if(finalCheckBeforeContinue){
-                balance = it.getBalance(
-                    BalanceParams(
-                        subaccount = wallet.activeAccount,
-                        confirmations = 0
-                    )
-                )
+                session.pendingTransaction = params!! to tx
+                onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
+            }
+        }, onError = {
+            transactionError.value = (it.cause?.message ?: it.message).let { error ->
+                if(recipients.value?.get(0)?.address?.value.isNullOrBlank() && (error == "id_invalid_address" || error == "id_invalid_private_key")){
+                    "" // empty error to avoid ui glitches
+                }else if(recipients.value?.get(0)?.amount?.value.isNullOrBlank() && (error == "id_invalid_amount" || error == "id_insufficient_funds")){
+                    "" // empty error to avoid ui glitches
+                }else{
+                    error
+                }
             }
 
-            // Change UI based on the transaction
-            recipients.value?.let { recipients ->
-                for(recipient in recipients){
-
-                    // If we have BIP21/sweep/bump, update the amounts from GDK side, and disable text input editing
-                    recipient.assetBip21.postValue(tx.addressees.getOrNull(recipient.index)?.bip21Params?.hasAssetId == true)
-                    recipient.amountBip21.postValue(tx.addressees.getOrNull(recipient.index)?.bip21Params?.hasAmount == true)
-
-                    tx.addressees.getOrNull(recipient.index)?.let { addressee ->
-
-                        if (session.isLiquid) {
-                            addressee.bip21Params?.assetId?.let { assetId ->
-                                recipient.assetId.postValue(assetId)
-                            }
-                        }
-
-                        if(isBump){
-                            recipient.address.postValue(addressee.address)
-                        }
-
-                        // Get amount from GDK if is a BIP21 or isSendAll or Sweep or Bump
-                        if(addressee.bip21Params?.hasAmount == true || recipient.isSendAll.value == true || isBumpOrSweep){
-                            val assetId = addressee.assetId ?: session.policyAsset
-                            if(!assetId.isPolicyAsset(session)){
-                                recipient.isFiat.postValue(false)
-                            }
-
-                            recipient.amount.postValue(
-                                getSendAmountCompat(recipient.index, assetId, tx)
-                                    ?.toAmountLook(
-                                        session = session,
-                                        assetId = assetId,
-                                        isFiat = recipient.isFiat.value,
-                                        withUnit = false,
-                                        withGrouping = false,
-                                    )
-                            )
-
-                        }
+            if (isSweep) {
+                recipients.value?.let { recipients ->
+                    for (recipient in recipients) {
+                        recipient.amount.value = ""
                     }
                 }
             }
 
-            // Check if the specified asset in the uri exists in the wallet, we do this check only if it's final
-            if(balance != null){
-                for (addressee in tx.addressees) {
-                    addressee.assetId?.let { assetId ->
-                        if (!balance.containsKey(assetId)) {
-                            throw Exception("id_no_asset_in_this_account")
-                        }
-                    }
-                }
+            if(isBumpOrSweep && userInitiated){
+                onError.postValue(ConsumableEvent(it))
             }
-
-            checkedTransaction = tx
-
-            feeAmount.postValue(tx.fee?.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
-            feeAmountRate.postValue(tx.feeRateWithUnit() ?: "")
-            feeAmountFiat.postValue(tx.fee?.toAmountLook(session = session, isFiat = true, withUnit = true, withGrouping = true) ?: "")
-
-            if(tx.error.isNotBlank()){
-                throw Exception(tx.error)
-            }
-
-            tx
-
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-            isCheckingTransaction.set(false)
-        }
-        .doAfterTerminate {
-            if(pendingCheck){
-                checkTransaction(userInitiated = userInitiated, finalCheckBeforeContinue = finalCheckBeforeContinue)
-            }
-        }.subscribeBy(
-            onSuccess = { tx ->
-                transactionError.value = null
-
-                if(!pendingCheck && finalCheckBeforeContinue){
-                    session.pendingTransaction = params!! to tx
-                    onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
-                }
-            },
-            onError = {
-                it.printStackTrace()
-                transactionError.value = it.cause?.message ?: it.message
-
-                if (isSweep) {
-                    recipients.value?.let { recipients ->
-                        for (recipient in recipients) {
-                            recipient.amount.value = ""
-                        }
-                    }
-                }
-
-                if(isBumpOrSweep && userInitiated){
-                    onError.postValue(ConsumableEvent(it))
-                }
-            }
-        )
+        })
     }
 
     fun confirmTransaction() {
@@ -516,20 +482,20 @@ class SendViewModel @AssistedInject constructor(
         }
     }
 
-    fun setAsset(index: Int, assetId: String) {
+    fun setAccountAsset(index: Int, accountAsset: AccountAsset) {
         getRecipientLiveData(index)?.let {
             // Clear amount if is new asset
-            if (it.assetId.value != assetId) {
+            if (it.accountAsset.value?.assetId != accountAsset.assetId) {
                 it.amount.value = ""
             }
             it.isSendAll.value = false
             it.isFiat.value = false // reset isFiat as we don't want to have inconsistencies between btc / assets
-            it.assetId.value = assetId
+            it.accountAsset.value = accountAsset
         }
     }
 
     fun setCustomFeeRate(feeRate : Long?){
-        customFee = feeRate ?: session.network.defaultFee
+        customFee = feeRate ?: network.defaultFee
         feeSlider.value = SliderCustomIndex.toFloat()
         checkTransaction()
     }
@@ -561,11 +527,11 @@ class SendViewModel @AssistedInject constructor(
 
             // Get value from the transaction object to get the actual send all amount
             val amountToConvert = if(checkedTransaction?.isSendAll == true){
-                addressParams.assetId.value?.let { assetId ->
+                addressParams.accountAsset.value?.assetId?.let { assetId ->
                     checkedTransaction?.let {
                         getSendAmountCompat(addressParams.index, assetId, it)
                     }
-                    ?.toAmountLook(session, assetId = assetId , withUnit = false, withMinimumDigits = false, withGrouping = false)
+                    ?.toAmountLook(session = session, assetId = assetId , withUnit = false, withMinimumDigits = false, withGrouping = false)
                 }
             }else{
                 addressParams.amount.value ?: ""
@@ -600,7 +566,9 @@ class SendViewModel @AssistedInject constructor(
     interface AssistedFactory {
         fun create(
             wallet: Wallet,
+            accountAsset: AccountAsset,
             isSweep: Boolean,
+            @Assisted("address")
             address: String?,
             bumpTransaction: JsonElement?
         ): SendViewModel
@@ -613,13 +581,14 @@ class SendViewModel @AssistedInject constructor(
         fun provideFactory(
             assistedFactory: AssistedFactory,
             wallet: Wallet,
+            accountAsset: AccountAsset,
             isSweep: Boolean,
             address: String?,
             bumpTransaction: JsonElement?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, isSweep, address, bumpTransaction) as T
+                return assistedFactory.create(wallet, accountAsset, isSweep, address, bumpTransaction) as T
             }
         }
     }
@@ -629,7 +598,7 @@ data class AddressParamsLiveData constructor(
     val index: Int,
     val address: MutableLiveData<String>,
     var addressInputType: AddressInputType?,
-    val assetId: MutableLiveData<String>,
+    val accountAsset: MutableLiveData<AccountAsset>,
     val amount: MutableLiveData<String>,
     val isSendAll: MutableLiveData<Boolean> = MutableLiveData(false),
     val exchange: MutableLiveData<String> = MutableLiveData(""),
@@ -638,33 +607,36 @@ data class AddressParamsLiveData constructor(
     val amountBip21: MutableLiveData<Boolean> = MutableLiveData(false)
 ) {
 
-    fun toAddressParams(session: GreenSession, isSendAll: Boolean): AddressParams {
+    val network: Network
+        get() = accountAsset.value!!.account.network
+
+    fun toAddressParams(session: GdkSession, isSendAll: Boolean): AddressParams {
 
         val satoshi = when {
             isSendAll -> 0
-            assetId.value == session.network.policyAsset -> {
+            accountAsset.value?.assetId.isPolicyAsset(session) -> {
                 UserInput.parseUserInputSafe(session, amount.value, isFiat = isFiat.value ?: false)
                     .getBalance(session)?.satoshi ?: 0
             }
             else -> {
-                UserInput.parseUserInputSafe(session, amount.value, assetId = assetId.value)
+                UserInput.parseUserInputSafe(session, amount.value, assetId = accountAsset.value!!.assetId)
                     .getBalance(session)?.satoshi ?: 0
             }
         }
 
         return AddressParams(
             address = address.value ?: "",
-            assetId = if (session.isLiquid) assetId.value else null,
+            assetId = if (accountAsset.value?.account?.network?.isLiquid == true) accountAsset.value?.assetId else null,
             satoshi = satoshi
         )
     }
 
     companion object : KLogging() {
-        fun create(index: Int, address: String? = null) = AddressParamsLiveData(
+        fun create(index: Int, address: String? = null, accountAsset: MutableLiveData<AccountAsset>) = AddressParamsLiveData(
             index = index,
             address = MutableLiveData(address ?: ""),
             addressInputType = if(address.isNullOrBlank()) null else AddressInputType.BIP21,
-            assetId = MutableLiveData(""),
+            accountAsset = accountAsset,
             amount = MutableLiveData("")
         )
     }

@@ -24,86 +24,88 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:max="@{vm.progressMax}"
+            android:progress="@{vm.progress}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread"
+            app:layout_constraintWidth_percent="0.5"
+            app:showAnimationBehavior="none"
+            app:trackCornerRadius="6dp"
+            app:trackThickness="12dp" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/id_check_your_backup"
-            android:textAppearance="?attr/textAppearanceHeadline1"
+            android:layout_marginTop="24dp"
+            android:text="@string/id_recovery_phrase_check"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceDisplaySmall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/progress"
+            app:layout_constraintWidth_percent="0.75" />
 
 
         <TextView
             android:id="@+id/subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/id_the_recovery_phrase_can_be_used"
-            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginTop="24dp"
+            android:text="@{String.format(@string/id_what_is_word_number_s, vm.pointer)}"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/color_on_surface_emphasis_medium"
             app:layout_constraintEnd_toEndOf="@+id/title"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/title"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            tools:text="@string/id_what_is_word_number_s" />
 
-
-        <com.blockstream.green.views.GappedLinearLayout
-            android:id="@+id/gappedLinearLayout3"
+        <TextView
+            android:id="@+id/pointer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:orientation="horizontal"
-            app:gap="4sp"
-            app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subtitle"
-            app:layout_constraintVertical_chainStyle="packed">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/id_word"
-                android:textAppearance="?attr/textAppearanceBody1"
-                android:textColor="@color/color_on_surface_emphasis_high"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/wordPointer"
-                textAsNumber="@{vm.pointer}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody1"
-                android:textColor="@color/brand_green"
-                android:textSize="20sp"
-                tools:text="2" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{String.format(@string/id_of_s, vm.numberOfWords)}"
-                android:textAppearance="?attr/textAppearanceBody1"
-                android:textColor="@color/color_on_surface_emphasis_high"
-                android:textSize="20sp"
-                tools:text="@string/id_of_s"/>
-
-        </com.blockstream.green.views.GappedLinearLayout>
+            android:layout_marginBottom="2dp"
+            android:text="@{vm.pointer + `.`}"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="@color/brand_green"
+            app:layout_constraintBottom_toBottomOf="@+id/wordLeft"
+            app:layout_constraintStart_toStartOf="@+id/gappedLinearLayout2"
+            tools:text="3." />
 
         <FrameLayout
             android:id="@+id/gappedLinearLayout2"
             android:layout_width="84dp"
-            android:layout_height="32dp"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/rectangle_green"
-            app:layout_constraintBottom_toTopOf="@+id/button1"
+            android:layout_height="2dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/brand_green"
+            app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/gappedLinearLayout3" />
+            app:layout_constraintTop_toBottomOf="@+id/subtitle" />
+
+        <TextView
+            android:id="@+id/pointerLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="2dp"
+            android:text="@{vm.pointer - 1 + `.`}"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="@color/brand_green"
+            app:layout_constraintBottom_toBottomOf="@+id/wordLeft"
+            app:layout_constraintEnd_toStartOf="@+id/wordLeft"
+            tools:text="2." />
 
         <TextView
             android:id="@+id/wordLeft"
@@ -111,112 +113,132 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="@{vm.wordLeft}"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="24sp"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             app:layout_constraintBottom_toBottomOf="@+id/gappedLinearLayout2"
             app:layout_constraintEnd_toStartOf="@+id/gappedLinearLayout2"
-            app:layout_constraintTop_toTopOf="@+id/gappedLinearLayout2"
             tools:text="sleep" />
+
+        <TextView
+            android:id="@+id/pointerRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@{vm.pointer + 1 + `.`}"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="@color/brand_green"
+            app:layout_constraintBottom_toBottomOf="@+id/gappedLinearLayout2"
+            app:layout_constraintStart_toEndOf="@+id/gappedLinearLayout2"
+            tools:text="4." />
 
         <TextView
             android:id="@+id/wordRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="-1dp"
             android:text="@{vm.wordRight}"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/gappedLinearLayout2"
-            app:layout_constraintStart_toEndOf="@+id/gappedLinearLayout2"
-            app:layout_constraintTop_toTopOf="@+id/gappedLinearLayout2"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            app:layout_constraintBottom_toBottomOf="@+id/pointerRight"
+            app:layout_constraintStart_toEndOf="@+id/pointerRight"
             tools:text="zebra" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button1"
-            style="@style/Widget.Green.Button.Outlined"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:onClick="@{clickListener}"
-            android:paddingStart="32dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="32dp"
-            android:paddingBottom="8dp"
-            android:text="@{vm.words[0]}"
-            android:textColor="@{isDevelopmentFlavor &amp;&amp; vm.correctWordIndex == 0 ? @color/brand_green : @color/color_on_surface_emphasis_high}"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/button2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/gappedLinearLayout2"
-            tools:text="banner" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button2"
-            style="@style/Widget.Green.Button.Outlined"
-            android:layout_width="wrap_content"
+        <com.blockstream.green.views.GappedLinearLayout
+            android:id="@+id/gappedLinearLayout3"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:onClick="@{clickListener}"
-            android:paddingStart="32dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="32dp"
-            android:paddingBottom="8dp"
-            android:text="@{vm.words[1]}"
-            android:textColor="@{isDevelopmentFlavor &amp;&amp; vm.correctWordIndex == 1 ? @color/brand_green : @color/color_on_surface_emphasis_high}"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/button3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button1"
-            tools:text="banner" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button3"
-            style="@style/Widget.Green.Button.Outlined"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:onClick="@{clickListener}"
-            android:paddingStart="32dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="32dp"
-            android:paddingBottom="8dp"
-            android:text="@{vm.words[2]}"
-            android:textColor="@{isDevelopmentFlavor &amp;&amp; vm.correctWordIndex == 2 ? @color/brand_green : @color/color_on_surface_emphasis_high}"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/button4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button2"
-            tools:text="banner" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button4"
-            style="@style/Widget.Green.Button.Outlined"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{clickListener}"
-            android:paddingStart="32dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="32dp"
-            android:paddingBottom="8dp"
-            android:text="@{vm.words[3]}"
-            android:textColor="@{isDevelopmentFlavor &amp;&amp; vm.correctWordIndex == 3 ? @color/brand_green : @color/color_on_surface_emphasis_high}"
-            android:textSize="16sp"
+            android:orientation="vertical"
+            app:gap="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/messageTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/gappedLinearLayout2">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button1"
+                style="@style/Widget.Green.Button.Outlined.Big"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickListener}"
+                android:paddingStart="32dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="8dp"
+                android:text="@{vm.words[0]}"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="@{isDevelopmentFlavor &amp;&amp; vm.correctWordIndex == 0 ? @color/brand_green : @color/color_on_surface_emphasis_high}"
+                app:strokeColor="@color/color_on_surface_emphasis_high"
+                tools:text="banner" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button2"
+                style="@style/Widget.Green.Button.Outlined.Big"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickListener}"
+                android:paddingStart="32dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="8dp"
+                android:text="@{vm.words[1]}"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="@{isDevelopmentFlavor &amp;&amp; vm.correctWordIndex == 1 ? @color/brand_green : @color/color_on_surface_emphasis_high}"
+                app:strokeColor="@color/color_on_surface_emphasis_high"
+                tools:text="banner" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button3"
+                style="@style/Widget.Green.Button.Outlined.Big"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickListener}"
+                android:paddingStart="32dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="8dp"
+                android:text="@{vm.words[2]}"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="@{isDevelopmentFlavor &amp;&amp; vm.correctWordIndex == 2 ? @color/brand_green : @color/color_on_surface_emphasis_high}"
+                app:strokeColor="@color/color_on_surface_emphasis_high"
+                tools:text="banner" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button4"
+                style="@style/Widget.Green.Button.Outlined.Big"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickListener}"
+                android:paddingStart="32dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="8dp"
+                android:text="@{vm.words[3]}"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="@{isDevelopmentFlavor &amp;&amp; vm.correctWordIndex == 3 ? @color/brand_green : @color/color_on_surface_emphasis_high}"
+                app:strokeColor="@color/color_on_surface_emphasis_high"
+                tools:text="banner" />
+
+        </com.blockstream.green.views.GappedLinearLayout>
+
+        <TextView
+            android:id="@+id/messageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/id_make_sure_to_be_in_a_private"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            app:drawableTint="@color/color_on_surface_emphasis_medium"
+            app:drawableTopCompat="@drawable/ic_house"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button3"
-            tools:text="banner" />
+            app:layout_constraintStart_toStartOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

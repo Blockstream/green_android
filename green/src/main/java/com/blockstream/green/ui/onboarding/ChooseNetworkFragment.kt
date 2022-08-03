@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
@@ -27,7 +27,7 @@ class ChooseNetworkFragment :
     ) {
 
     @Inject
-    lateinit var greenWallet: GreenWallet
+    lateinit var gdkBridge: GdkBridge
 
     private val args: ChooseNetworkFragmentArgs by navArgs()
 
@@ -45,7 +45,7 @@ class ChooseNetworkFragment :
                 is NetworkListItem -> {
                     options?.apply {
                         if(isRestoreFlow){
-                            navigate(createCopyForNetwork(greenWallet, item.network, isSinglesig == true))
+                            navigate(createCopyForNetwork(gdkBridge, item.network, isSinglesig == true))
                         }else{
                             navigate(copy(networkType = item.network))
                         }
@@ -88,7 +88,7 @@ class ChooseNetworkFragment :
                 )
             )
 
-            greenWallet.networks.customNetwork?.let {
+            gdkBridge.networks.customNetwork?.let {
                 expandable.subItems.add(
                     NetworkListItem(
                         it.id,
@@ -113,26 +113,10 @@ class ChooseNetworkFragment :
     }
 
     private fun navigate(options: OnboardingOptions) {
-        if(options.isRestoreFlow){
-            if(options.isWatchOnly){
-                navigate(
-                    ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToLoginWatchOnlyFragment(
-                        options
-                    )
-                )
-            }else{
-                navigate(
-                    ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToChooseRecoveryPhraseFragment(
-                        options
-                    )
-                )
-            }
-        }else {
-            navigate(
-                ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToChooseSecurityFragment(
-                    options
-                )
+        navigate(
+            ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToLoginWatchOnlyFragment(
+                options
             )
-        }
+        )
     }
 }

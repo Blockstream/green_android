@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.blockstream.green.gdk.ExtensionsKt" />
+
+        <variable
+            name="account"
+            type="com.blockstream.gdk.data.Account" />
+
+        <variable
+            name="isWatchOnly"
+            type="Boolean" />
+
+        <variable
+            name="showSwap"
+            type="Boolean" />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSend"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:backgroundTint="@color/bottom_nav_bg"
+                android:ellipsize="end"
+                android:lines="1"
+                android:paddingLeft="-2dp"
+                android:text="@{isWatchOnly ? @string/id_sweep : @string/id_send}"
+                app:icon="@{isWatchOnly ? @drawable/ic_sweep : @drawable/ic_send}"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="20dp"
+                app:iconTint="@color/brand_green"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/buttonSwap"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Green.Button.Left"
+                tools:icon="@drawable/ic_send"
+                tools:text="@string/id_send" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSwap"
+                isVisible="@{!isWatchOnly &amp;&amp; showSwap}"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:backgroundTint="@color/bottom_nav_bg"
+                android:ellipsize="end"
+                android:lines="1"
+                android:paddingTop="0dp"
+                android:text="@string/id_swap"
+                android:textSize="12dp"
+                android:includeFontPadding="false"
+                app:icon="@drawable/ic_baseline_swap_horiz_24"
+                app:iconGravity="textTop"
+                app:iconPadding="-2dp"
+                app:iconSize="18dp"
+                app:iconTint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1.2:1"
+                app:layout_constraintEnd_toStartOf="@+id/buttonReceive"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/buttonSend"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Green.Button.Center" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonReceive"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:backgroundTint="@color/bottom_nav_bg"
+                android:ellipsize="end"
+                android:lines="1"
+                android:paddingLeft="-2dp"
+                android:text="@string/id_receive"
+                app:icon="@drawable/ic_receive"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="20dp"
+                app:iconTint="@color/brand_green"
+                app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/buttonSwap"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Green.Button.Right" />
+
+
+            <FrameLayout
+                android:id="@+id/divider1"
+                android:layout_width="1dp"
+                android:layout_height="30dp"
+                android:background="@color/color_on_surface_divider"
+                android:translationZ="10dp"
+                app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
+                app:layout_constraintEnd_toEndOf="@+id/buttonSend"
+                app:layout_constraintTop_toTopOf="@+id/buttonSend" />
+
+            <FrameLayout
+                android:id="@+id/divider2"
+                isVisible="@{!isWatchOnly &amp;&amp; showSwap}"
+                android:layout_width="1dp"
+                android:layout_height="30dp"
+                android:background="@color/color_on_surface_divider"
+                android:translationZ="10dp"
+                app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
+                app:layout_constraintEnd_toEndOf="@+id/buttonSwap"
+                app:layout_constraintTop_toTopOf="@+id/buttonSend" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</layout>

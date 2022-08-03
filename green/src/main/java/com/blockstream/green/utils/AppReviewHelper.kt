@@ -2,13 +2,13 @@ package com.blockstream.green.utils
 
 import android.view.LayoutInflater
 import com.blockstream.green.R
-import com.blockstream.green.Urls
 import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.DialogFeedbackBinding
+import com.blockstream.green.extensions.isEmailValid
+import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.play.core.review.ReviewManager
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.monthsUntil
@@ -75,46 +75,12 @@ object AppReviewHelper {
             }
             .show()
 
-        dialogBinding.emailText.setOnFocusChangeListener { v, hasFocus ->
+        dialogBinding.emailText.setOnFocusChangeListener { _, hasFocus ->
             val email = dialogBinding.emailText.text?.trim()
             dialogBinding.emailLayout.error = if(hasFocus || email.isNullOrBlank() || email.isEmailValid()){
                 null
             }else{
                 fragment.getString(R.string.id_not_a_valid_email_address)
-            }
-        }
-    }
-
-    fun showGooglePlayInAppReviewDialog(
-        fragment: AppFragment<*>,
-        reviewManager: ReviewManager
-    ) {
-        val startTime = System.currentTimeMillis()
-
-        // In some circumstances the review flow will not be shown to the user, e.g. they have already seen it recently,
-        // so do not assume that calling this method will always display the review dialog.
-        reviewManager.requestReviewFlow().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                reviewManager.launchReviewFlow(fragment.requireActivity(), task.result!!)
-                    .addOnCompleteListener { _ ->
-                        val endTime = System.currentTimeMillis()
-
-                        // The flow has finished. The API does not indicate whether the user
-                        // reviewed or not, or even whether the review dialog was shown. Thus, no
-                        // matter the result, we continue our app flow.
-
-                        // As the task is always successful, we can identify if the dialog was shown if the callback is fired very quickly
-                        if(endTime - startTime < 500){
-                            fragment.openBrowser(
-                                Urls.BLOCKSTREAM_GOOGLE_PLAY
-                            )
-                        }
-                    }
-            } else {
-                // There was some problem, log or handle the error code.
-                fragment.openBrowser(
-                    Urls.BLOCKSTREAM_GOOGLE_PLAY
-                )
             }
         }
     }

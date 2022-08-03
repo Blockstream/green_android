@@ -14,19 +14,33 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.blockstream.base.Urls
+import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.green.R
-import com.blockstream.green.Urls
 import com.blockstream.green.data.AddressType
 import com.blockstream.green.data.MediaType
+import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.ReceiveFragmentBinding
-import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.extensions.clearNavigationResult
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.share
+import com.blockstream.green.extensions.shareJPEG
+import com.blockstream.green.extensions.snackbar
+import com.blockstream.green.extensions.toast
+import com.blockstream.green.ui.add.AbstractAddAccountFragment
+import com.blockstream.green.ui.bottomsheets.ChooseAssetAccountListener
 import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuDataProvider
 import com.blockstream.green.ui.bottomsheets.RequestAmountLabelBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.VerifyAddressBottomSheetDialogFragment
 import com.blockstream.green.ui.items.MenuListItem
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.*
+import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
+import com.blockstream.green.utils.StringHolder
+import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.openBrowser
+import com.blockstream.green.utils.pulse
+import com.blockstream.green.utils.rotate
 import com.blockstream.green.views.GreenAlertView
 import com.mikepenz.fastadapter.GenericItem
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,28 +49,39 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
+class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     layout = R.layout.receive_fragment,
     menuRes = R.menu.menu_help
-) {
+), MenuDataProvider, ChooseAssetAccountListener {
     val args: ReceiveFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "Receive"
-    override val segmentation by lazy { if(isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) else null }
+
+    override val showBalance: Boolean = false
+    override val showChooseAssetAccount: Boolean = true
+
+    override val accountAssetLayoutBinding: AccountAssetLayoutBinding
+        get() = binding.accountAsset
+
+    override val subtitle: String?
+        get() = if (isSessionNetworkInitialized) wallet.name else null
 
     @Inject
     lateinit var viewModelFactory: ReceiveViewModel.AssistedFactory
     val viewModel: ReceiveViewModel by viewModels {
         ReceiveViewModel.provideFactory(
             viewModelFactory,
-            wallet
+            this,
+            arguments,
+            wallet = args.wallet,
+            initAccountAsset = args.accountAsset ?: AccountAsset.fromAccount(session.activeAccount)
         )
     }
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
-    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
+    override fun getAccountWalletViewModel() = viewModel
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -66,81 +91,67 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreatedGuarded(view, savedInstanceState)
+
+        getNavigationResult<AccountAsset>(AbstractAddAccountFragment.SET_ACCOUNT)?.observe(viewLifecycleOwner) {
+            it?.let {
+                viewModel.accountAsset = it
+                clearNavigationResult(AbstractAddAccountFragment.SET_ACCOUNT)
+            }
+        }
+
         binding.vm = viewModel
 
         binding.address.setOnClickListener {
-            copyToClipboard("Address", binding.address.text.toString(), requireContext(), animateView = binding.address)
+            copyToClipboard(
+                "Address",
+                binding.address.text.toString(),
+                requireContext(),
+                animateView = binding.address
+            )
             snackbar(R.string.id_address_copied_to_clipboard)
             countly.receiveAddress(
                 addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
                 mediaType = MediaType.TEXT,
-                subAccount = viewModel.getSubAccountLiveData().value,
+                account = account,
                 session = session
             )
         }
 
         binding.buttonShare.setOnClickListener {
-            MenuBottomSheetDialogFragment.show(object : MenuDataProvider {
-                override fun getTitle() = getString(R.string.id_share)
-                override fun getSubtitle() = null
-
-                override fun getMenuListItems() = listOf(
-                    MenuListItem(icon = R.drawable.ic_baseline_text_fields_24, title = StringHolder(R.string.id_address)),
-                    MenuListItem(icon = R.drawable.ic_qr_60 , title = StringHolder(R.string.id_qr_code))
-                )
-
-                override fun menuItemClicked(item: GenericItem, position: Int) {
-
-                    countly.receiveAddress(
-                        addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
-                        mediaType = if (position == 0) MediaType.TEXT else MediaType.IMAGE,
-                        isShare = true,
-                        subAccount = viewModel.getSubAccountLiveData().value,
-                        session = session
+            MenuBottomSheetDialogFragment.show(
+                requestCode = 1, title = getString(R.string.id_share), menuItems = listOf(
+                    MenuListItem(
+                        icon = R.drawable.ic_baseline_text_fields_24,
+                        title = StringHolder(R.string.id_address)
+                    ),
+                    MenuListItem(
+                        icon = R.drawable.ic_qr_code,
+                        title = StringHolder(R.string.id_qr_code)
                     )
-
-                    if(position == 0){
-                        share(binding.address.text.toString())
-                    }else{
-                        createQRImageAndShare()
-                    }
-                }
-            }, childFragmentManager)
+                ), fragmentManager = childFragmentManager
+            )
         }
 
         binding.buttonMore.setOnClickListener {
-            MenuBottomSheetDialogFragment.show(object : MenuDataProvider {
-                override fun getTitle() = getString(R.string.id_more_options)
-                override fun getSubtitle() = null
-
-                override fun getMenuListItems() = buildList {
+            MenuBottomSheetDialogFragment.show(
+                requestCode = 2,
+                title = getString(R.string.id_more_options),
+                menuItems = buildList {
                     add(MenuListItem(title = StringHolder(R.string.id_request_amount)))
-                    if(!session.isLiquid && !session.isElectrum) {
+                    if (!network.isLiquid && !network.isElectrum) {
                         add(MenuListItem(title = StringHolder(R.string.id_sweep_from_paper_wallet)))
                     }
-                }
-
-                override fun menuItemClicked(item: GenericItem, position: Int) {
-                    if(position == 0){
-                        RequestAmountLabelBottomSheetDialogFragment.show(childFragmentManager)
-                    }else{
-                        navigate(
-                            ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
-                                wallet = wallet,
-                                isSweep =  true
-                            )
-                        )
-                    }
-                }
-            }, childFragmentManager)
-
+                },
+                fragmentManager = childFragmentManager
+            )
         }
 
         binding.buttonNewAddress.setOnClickListener {
-            if(viewModel.onProgress.value == false){
+            if (viewModel.onProgress.value == false) {
                 viewModel.generateAddress()
                 binding.buttonNewAddress.rotate()
-            }else{
+            } else {
                 showWaitingToast()
             }
         }
@@ -157,7 +168,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
             countly.receiveAddress(
                 addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
                 mediaType = MediaType.TEXT,
-                subAccount = viewModel.getSubAccountLiveData().value,
+                account = account,
                 session = session
             )
         }
@@ -167,9 +178,9 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonVerify.setOnClickListener {
-            VerifyAddressBottomSheetDialogFragment.show(childFragmentManager)
+            VerifyAddressBottomSheetDialogFragment.show(address = viewModel.addressAsString , fragmentManager = childFragmentManager)
 
-            if(viewModel.onProgress.value == false) {
+            if (viewModel.onProgress.value == false) {
                 viewModel.validateAddressInDevice()
             }
         }
@@ -188,17 +199,17 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
 
         viewModel.onProgress.observe(viewLifecycleOwner) {
             // On HWWallet Block going back until address is generated
-            onBackCallback.isEnabled = session.hasDevice && it
+            onBackCallback.isEnabled = session.isHardwareWallet && it
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
     }
 
     private fun showWaitingToast() {
-        session.hwWallet?.device?.let { device ->
-            if(session.isLiquid && device.isLedger){
+        session.device?.let { device ->
+            if (network.isLiquid && device.isLedger) {
                 toast(R.string.id_please_wait_until_your_ledger)
-            }else{
+            } else {
                 toast(R.string.id_please_hold_on_while_your)
             }
         }
@@ -276,13 +287,52 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
             R.id.help -> {
-                openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_RECEIVE_ASSETS)
+                openBrowser(if (account.isAmp) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS)
             }
         }
-        return super.onOptionsItemSelected(item)
+        return super.onMenuItemSelected(menuItem)
+    }
+
+    override fun menuItemClicked(requestCode: Int, item: GenericItem, position: Int) {
+
+        if (requestCode == 1) {
+            countly.receiveAddress(
+                addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
+                mediaType = if (position == 0) MediaType.TEXT else MediaType.IMAGE,
+                isShare = true,
+                account = account,
+                session = session
+            )
+
+            if (position == 0) {
+                share(binding.address.text.toString())
+            } else {
+                createQRImageAndShare()
+            }
+        } else if (requestCode == 2) {
+            if (position == 0) {
+                RequestAmountLabelBottomSheetDialogFragment.show(childFragmentManager)
+            } else {
+                navigate(
+                    ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
+                        wallet = wallet,
+                        accountAsset = viewModel.accountAsset,
+                        isSweep = true
+                    )
+                )
+            }
+        }
+    }
+
+    override fun createNewAccountClicked(assetId: String) {
+        navigate(
+            ReceiveFragmentDirections.actionGlobalChooseAccountTypeFragment(
+                wallet = wallet,
+                assetId = assetId
+            )
+        )
     }
 }

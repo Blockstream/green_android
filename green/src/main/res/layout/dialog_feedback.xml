@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/id_rate_your_experience"
-            android:textAppearance="?attr/textAppearanceCaption" />
+            android:textAppearance="?attr/textAppearanceBodySmall" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/toggleRate"

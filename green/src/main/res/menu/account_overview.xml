@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/help"
+        android:title="@string/id_help"
+        android:icon="@drawable/ic_baseline_help_outline_24"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/addresses"
+        android:visible="false"
+        android:title="@string/id_addresses" />
+
+    <item
+        android:id="@+id/rename"
+        android:icon="@drawable/ic_pencil_simple_line"
+        android:title="@string/id_rename_account" />
+
+    <item
+        android:id="@+id/archive"
+        android:icon="@drawable/ic_eye_closed"
+        android:title="@string/id_archive_account" />
+
+    <item
+        android:id="@+id/enhance_security"
+        android:title="@string/id_enhance_security" />
+
+</menu>

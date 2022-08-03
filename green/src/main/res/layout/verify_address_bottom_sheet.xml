@@ -12,6 +12,10 @@
         <variable
             name="confirmed"
             type="Boolean" />
+
+        <variable
+            name="address"
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -67,10 +71,29 @@
             android:text="@string/id_verify_on_device"
             isInvisible="@{confirmed}"
             android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceLabelLarge"
             app:layout_constraintEnd_toEndOf="@+id/icon"
             app:layout_constraintStart_toStartOf="@+id/icon"
             app:layout_constraintTop_toBottomOf="@+id/icon" />
+
+        <TextView
+            android:id="@+id/addressTextView"
+            isInvisible="@{confirmed}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:breakStrategy="balanced"
+            android:fontFamily="monospace"
+            android:text="@{address}"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView5"
+            tools:text="bitcoin:VJLAD343588Ub82r23tnFfadsfafadfafasdfaiiiiii?amopas=234" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
@@ -103,7 +126,7 @@
             android:layout_height="wrap_content"
             android:text="@string/id_success"
             isInvisible="@{!confirmed}"
-            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:textAppearance="?attr/textAppearanceLabelLarge"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

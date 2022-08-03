@@ -5,10 +5,10 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.blockstream.gdk.ExtensionsKt;
+import com.blockstream.gdk.data.Account;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
-import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
@@ -47,6 +47,7 @@ public class JadeHWWallet extends HWWallet {
 
     private final JadeAPI jade;
 
+    private int stateInitialize = 0;
 
     public JadeHWWallet(final JadeAPI jade, final Device device, final VersionInfo verInfo, final HardwareQATester hardwareQATester) {
         super.mDevice = device;
@@ -56,8 +57,12 @@ public class JadeHWWallet extends HWWallet {
         this.mModel = verInfo.getBoardType();
     }
 
+    public boolean wasInitialized(){
+        return stateInitialize == 1;
+    }
+
     @Override
-    public void disconnect() {
+    public synchronized void disconnect() {
         this.jade.disconnect();
     }
 
@@ -80,9 +85,17 @@ public class JadeHWWallet extends HWWallet {
         VersionInfo info = jade.getVersionInfo();
         String state = info.getJadeState();
 
+        // First call to get the state
+        if("UNINIT".equals(state) || "UNSAVED".equals(state)) {
+            // Mark it as uninitialized
+            stateInitialize = -1;
+        }else if(stateInitialize == -1 && "READY".equals(state)){
+            // Second call can identify a initialized device
+            stateInitialize = 1;
+        }
+
         // JADE_STATE => READY  (device unlocked / ready to use)
         // anything else ( LOCKED | UNSAVED | UNINIT | TEMP) will need an authUser first to unlock
-
         if (!"READY".equals(state)) {
             CompletableSubject completable = CompletableSubject.create();
 
@@ -170,10 +183,10 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> getXpubs(final Network network, final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public synchronized List<String> getXpubs(final Network network, final HWWalletBridge parent, final List<List<Integer>> paths) {
         Log.d(TAG, "getXpubs() for " + paths.size() + " paths.");
 
-         final String canonicalNetworkId = network.getCanonicalNetworkId();
+        final String canonicalNetworkId = network.getCanonicalNetworkId();
         try {
             // paths.stream.map(jade::get_xpub).collect(Collectors.toList());
             final List<String> xpubs = new ArrayList<>(paths.size());
@@ -193,7 +206,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
+    public synchronized SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
                                      final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
         Log.d(TAG, "signMessage() for message of length " + message.length() + " using path " + path);
 
@@ -251,7 +264,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signTransaction(final Network network, final HWWalletBridge parent,
+    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent,
                                         final ObjectNode tx,
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
@@ -390,7 +403,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String,String> transactions,
@@ -486,7 +499,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getMasterBlindingKey(HWWalletBridge parent) {
+    public synchronized String getMasterBlindingKey(HWWalletBridge parent) {
         Log.d(TAG, "getMasterBlindingKey() called");
 
         try {
@@ -506,7 +519,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
+    public synchronized String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
         Log.d(TAG, "getBlindingKey() for script of length " + scriptHex.length());
 
         try {
@@ -521,7 +534,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getBlindingNonce(final HWWalletBridge parent, final String pubkey, final String scriptHex) {
+    public synchronized String getBlindingNonce(final HWWalletBridge parent, final String pubkey, final String scriptHex) {
         Log.d(TAG, "getBlindingNonce() for script of length " + scriptHex.length() + " and pubkey " + pubkey);
 
         try {
@@ -537,7 +550,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final Network network, HWWalletBridge parent, final SubAccount subaccount, final List<Long> path, final long csvBlocks) {
+    public synchronized String getGreenAddress(final Network network, HWWalletBridge parent, final Account account, final List<Long> path, final long csvBlocks) {
         try {
             final String canonicalNetworkId = network.getCanonicalNetworkId();
             if (network.isMultisig()) {
@@ -548,15 +561,15 @@ public class JadeHWWallet extends HWWallet {
                 final long pointer = path.get(pathlen - 1);
                 String recoveryxpub = null;
 
-                Log.d(TAG,"getGreenAddress() (multisig shield) for subaccount: " + subaccount.getPointer() + ", branch: "
+                Log.d(TAG,"getGreenAddress() (multisig shield) for subaccount: " + account.getPointer() + ", branch: "
                         + branch + ", pointer " + pointer);
 
                 // Jade expects any 'recoveryxpub' to be at the subact/branch level, consistent with tx outputs - but gdk
                 // subaccount data has the base subaccount chain code and pubkey - so we apply the branch derivation here.
-                if (subaccount.getRecoveryChainCode() != null && subaccount.getRecoveryChainCode().length() > 0) {
+                if (account.getRecoveryChainCode() != null && account.getRecoveryChainCode().length() > 0) {
                     final Object subactkey = Wally.bip32_pub_key_init(
                             network.getVerPublic(), 0, 0,
-                            subaccount.getRecoveryChainCodeAsBytes(), subaccount.getRecoveryPubKeyAsBytes());
+                            account.getRecoveryChainCodeAsBytes(), account.getRecoveryPubKeyAsBytes());
                     final Object branchkey = Wally.bip32_key_from_parent(subactkey, branch,
                             Wally.BIP32_FLAG_KEY_PUBLIC |
                                     Wally.BIP32_FLAG_SKIP_HASH);
@@ -567,14 +580,14 @@ public class JadeHWWallet extends HWWallet {
 
                 // Get receive address from Jade for the path elements given
                 final String address = this.jade.getReceiveAddress(canonicalNetworkId,
-                        subaccount.getPointer(), branch, pointer,
+                        account.getPointer(), branch, pointer,
                         recoveryxpub, csvBlocks);
                 Log.d(TAG, "Got green address for branch: " + branch + ", pointer: " + pointer + ": " + address);
                 return address;
             } else {
                 // Green Electrum Singlesig
                 Log.d(TAG,"getGreenAddress() (singlesig) for path: " + path);
-                final String variant = mapAddressType(subaccount.getType().getGdkType());
+                final String variant = mapAddressType(account.getType().getGdkType());
                 final String address = this.jade.getReceiveAddress(canonicalNetworkId, variant, path);
                 Log.d(TAG, "Got green address for path: " + path + ", type: " + variant + ": " + address);
                 return address;
@@ -592,12 +605,12 @@ public class JadeHWWallet extends HWWallet {
 
     @Nullable
     @Override
-    public PublishSubject<Boolean> getBleDisconnectEvent() {
+    public synchronized PublishSubject<Boolean> getBleDisconnectEvent() {
         return jade.getBleDisconnectEvent();
     }
 
     @Override
-    public int getIconResourceId() {
+    public synchronized int getIconResourceId() {
         return R.drawable.blockstream_jade_device;
     }
 }

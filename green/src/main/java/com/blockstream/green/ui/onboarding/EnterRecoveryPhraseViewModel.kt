@@ -4,8 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
@@ -13,9 +14,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 class EnterRecoveryPhraseViewModel @AssistedInject constructor(
-    private val greenWallet: GreenWallet,
+    countly: Countly,
+    private val gdkBridge: GdkBridge,
     @Assisted private val recoveryPhrase: String?,
-) : AppViewModel() {
+) : AppViewModel(countly) {
 
     val showPasteButton = MutableLiveData(true)
     val showHelpButton = MutableLiveData(false)
@@ -79,7 +81,7 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
         len -= if (isEditMode && len % 3 == 0) 1 else 0
 
         val valid = if (len > 11 && len % 3 == 0 && !isEditMode) {
-            greenWallet.isMnemonicValid(recoveryPhrase.joinToString(" "))
+            gdkBridge.isMnemonicValid(recoveryPhrase.joinToString(" "))
         } else {
             false
         }

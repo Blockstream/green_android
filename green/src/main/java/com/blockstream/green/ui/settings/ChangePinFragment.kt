@@ -9,16 +9,16 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.databinding.ChangePinFragmentBinding
-import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.views.GreenPinViewListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ChangePinFragment : WalletFragment<ChangePinFragmentBinding>(R.layout.change_pin_fragment, menuRes = 0) {
+class ChangePinFragment : AbstractWalletFragment<ChangePinFragmentBinding>(R.layout.change_pin_fragment, menuRes = 0) {
 
     val args : WalletSettingsFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }

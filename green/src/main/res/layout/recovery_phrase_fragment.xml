@@ -5,7 +5,7 @@
     tools:context=".ui.onboarding.EnterRecoveryPhraseFragment">
 
     <data>
-        <import type="com.blockstream.green.utils.ExtensionsKt" />
+        <import type="com.blockstream.green.extensions.ExtensionsKt" />
         <variable
             name="passphrase"
             type="String" />
@@ -22,27 +22,17 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/id_back_up_recovery_phrase"
-            android:textAppearance="?attr/textAppearanceHeadline1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
             android:id="@+id/subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
             android:text="@string/id_the_recovery_phrase_can_be_used"
             android:textAppearance="?attr/textAppearanceBody2"
-            app:layout_constraintEnd_toEndOf="@+id/title"
-            app:layout_constraintStart_toStartOf="@+id/title"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
@@ -93,7 +83,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/id_bip39_passphrase"
-                        android:textAppearance="?attr/textAppearanceCaption" />
+                        android:textAppearance="?attr/textAppearanceBodySmall" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/passphraseTextView"
@@ -102,9 +92,7 @@
                         android:layout_marginTop="6dp"
                         android:drawablePadding="8dp"
                         android:text="@{passphrase}"
-                        android:textAppearance="?attr/textAppearanceHeadline6"
-                        android:textColor="@color/color_on_surface_emphasis_high"
-                        android:textSize="17sp"
+                        android:textAppearance="?attr/textAppearanceTitleSmall"
                         app:drawableStartCompat="@drawable/ic_bip39_passphrase_24"
                         app:drawableTint="@color/brand_green"
                         tools:text="AVE" />
@@ -162,9 +150,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_margin="16dp"
-                        android:src="@drawable/ic_baseline_visibility_off_24"
                         android:text="@string/id_show_qr_code"
-                        app:icon="@drawable/ic_baseline_visibility_24" />
+                        app:icon="@drawable/ic_regular_eye_24" />
 
                 </com.google.android.material.card.MaterialCardView>
 
@@ -177,7 +164,7 @@
                     isVisible="@{ExtensionsKt.isNotBlank(passphrase) &amp;&amp; showQR}"
                     android:text="@string/id_the_qr_code_does_not_include"
                     android:textAlignment="center"
-                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textSize="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

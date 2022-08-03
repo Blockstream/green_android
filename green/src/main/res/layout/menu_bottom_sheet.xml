@@ -28,7 +28,7 @@
             android:layout_marginEnd="16dp"
             android:text="@{title}"
             tools:text="Title"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             app:layout_constraintEnd_toStartOf="@+id/buttonClose"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -52,7 +52,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginEnd="24dp"
             android:text="@{subtitle}"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             isVisible="@{subtitle != null}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

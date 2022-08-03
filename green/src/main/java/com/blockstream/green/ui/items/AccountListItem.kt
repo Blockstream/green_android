@@ -2,99 +2,47 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageView
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.view.updateMargins
-import com.blockstream.gdk.data.SubAccount
+import com.blockstream.gdk.data.Account
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAccountBinding
-import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.utils.getBitcoinOrLiquidUnit
+import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.gdk.getNetworkIcon
+import com.blockstream.green.gdk.policyAsset
 import com.blockstream.green.utils.toAmountLook
-import com.blockstream.green.utils.toPixels
-import com.blockstream.green.utils.updateAssetPadding
-import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import mu.KLogging
 
 
 data class AccountListItem constructor(
-    val session: GreenSession,
-    val subAccount: SubAccount,
-    val isTopAccount: Boolean = false,
-    var showFakeCard: Boolean = false,
-    var isAccountListOpen: Boolean = false
+    val account: Account,
+    val session: GdkSession,
 ) : AbstractBindingItem<ListItemAccountBinding>() {
     override val type: Int
         get() = R.id.fastadapter_account_item_id
 
     init {
-        identifier = "AccountListItem".hashCode() + subAccount.pointer
+        identifier = "AccountListItem".hashCode() + account.id.hashCode().toLong()
     }
 
+    override fun createScope(): CoroutineScope = session.createScope(Dispatchers.Main)
+
     override fun bindView(binding: ListItemAccountBinding, payloads: List<Any>) {
-        val context = binding.root.context
+        binding.account = account
+        binding.showBalance = true
 
-        binding.isTopAccount = isTopAccount
-        binding.isAccountListOpen = isAccountListOpen
-        binding.isMainnet = session.isMainnet
-        binding.isLiquid = session.isLiquid
-        binding.isSinglesig = session.isSinglesig
-        binding.isWatchOnly = session.isWatchOnly
-        binding.subAccount = subAccount
+        val policyAsset = session.accountAssets(account).policyAsset()
 
-        if(isTopAccount){
-            binding.fakeAccountCard.isInvisible = !showFakeCard || isAccountListOpen
-        }else{
-            binding.fakeAccountCard.isVisible = false
+        binding.primaryValue = ""
+        binding.secondaryValue = ""
+        scope.launch {
+            binding.primaryValue = withContext(context = Dispatchers.IO) { policyAsset.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) }
+            binding.secondaryValue = withContext(context = Dispatchers.IO) { policyAsset.toAmountLook(session, withUnit = true, isFiat = true, withGrouping = true, withMinimumDigits = false) }
         }
 
-        val policyAsset = session.walletBalances.get(subAccount.pointer.toInt())?.entries?.firstOrNull()
-
-        binding.balance = policyAsset?.value?.toAmountLook(session, withUnit = false, withGrouping = true, withMinimumDigits = false)
-        binding.ticker = getBitcoinOrLiquidUnit(session)
-
-        if(session.isLiquid){
-            // Clear all icons
-            binding.assetsIcons.removeAllViews()
-
-            var assetWithoutIconShown = false
-            session.walletBalances.get(subAccount.pointer.toInt())?.let { balances ->
-                balances.onEachIndexed { index, balance ->
-
-                    val isAssetWithoutIcon = if (balance.key == session.network.policyAsset) {
-                        false
-                    } else {
-                        session.getAssetDrawableOrNull(balance.key) == null
-                    }
-
-                    if(isAssetWithoutIcon){
-                        if(assetWithoutIconShown){
-                            return@onEachIndexed
-                        }else{
-                            assetWithoutIconShown = true
-                        }
-                    }
-
-                    ImageView(context).also { imageView ->
-                        imageView.setImageDrawable(balance.key.getAssetIcon(context, session))
-                        imageView.layoutParams = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                            FrameLayout.LayoutParams.MATCH_PARENT
-                        ).also {
-                            it.updateMargins(left = context.toPixels(12 * index))
-                        }
-                        imageView.adjustViewBounds = true
-                        imageView.scaleType = ImageView.ScaleType.FIT_CENTER
-                        imageView.elevation = (balances.size - index).toFloat()
-                        imageView.updateAssetPadding(session, balance.key, 2)
-
-                        binding.assetsIcons.addView(imageView)
-                    }
-                }
-            }
-        }
+        binding.icon.setImageResource(account.network.getNetworkIcon())
     }
 
     override fun createBinding(
@@ -103,4 +51,6 @@ data class AccountListItem constructor(
     ): ListItemAccountBinding {
         return ListItemAccountBinding.inflate(inflater, parent, false)
     }
+
+    companion object: KLogging()
 }

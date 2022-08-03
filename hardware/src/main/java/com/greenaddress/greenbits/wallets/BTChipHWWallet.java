@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.wallets;
 import androidx.annotation.Nullable;
 
 import com.blockstream.gdk.ExtensionsKt;
+import com.blockstream.gdk.data.Account;
 import com.blockstream.gdk.data.AccountType;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
@@ -95,7 +96,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public void disconnect() {
+    public synchronized void disconnect() {
         // No-op
     }
 
@@ -121,13 +122,13 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public String getMasterBlindingKey(HWWalletBridge parent) {
+    public synchronized String getMasterBlindingKey(HWWalletBridge parent) {
         // FIXME: when ledger implement
         return null;
     }
 
     @Override
-    public String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
+    public synchronized String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
         try {
             final BTChipDongle.BTChipPublicKey blindingKey = mDongle.getBlindingKey(Wally.hex_to_bytes(scriptHex));
             final byte[] compressed = KeyUtils.compressPublicKey(blindingKey.getPublicKey());
@@ -139,7 +140,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public String getBlindingNonce(HWWalletBridge parent, String pubkey, String scriptHex) {
+    public synchronized String getBlindingNonce(HWWalletBridge parent, String pubkey, String scriptHex) {
         try {
             final byte[] fullPk = Wally.ec_public_key_decompress(Wally.hex_to_bytes(pubkey), null);
             final BTChipDongle.BTChipPublicKey nonce = mDongle.getBlindingNonce(fullPk, Wally.hex_to_bytes(scriptHex));
@@ -159,12 +160,12 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final Network network, HWWalletBridge parent, final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws BTChipException {
+    public synchronized String getGreenAddress(final Network network, HWWalletBridge parent, final Account account, final List<Long> path, final long csvBlocks) throws BTChipException {
         try {
             // Only supported for liquid multisig shield and singlesig btc
             final String address;
             if (network.isSinglesig() && !network.isLiquid()) {
-                final BTChipDongle.BTChipPublicKey pubKey = mDongle.getWalletPublicKey(getIntegerPath(path), true, subaccount.getType() == AccountType.BIP84_SEGWIT);
+                final BTChipDongle.BTChipPublicKey pubKey = mDongle.getWalletPublicKey(getIntegerPath(path), true, account.getType() == AccountType.BIP84_SEGWIT);
                 address = pubKey.getAddress();
             } else if (!network.isSinglesig() && network.isLiquid()) {
                 // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
@@ -172,7 +173,7 @@ public class BTChipHWWallet extends HWWallet {
                 final int pathlen = path.size();
                 final long branch = path.get(pathlen - 2);
                 final long pointer = path.get(pathlen - 1);
-                address = mDongle.getGreenAddress(csvBlocks > 0, subaccount.getPointer(), branch, pointer, csvBlocks);
+                address = mDongle.getGreenAddress(csvBlocks > 0, account.getPointer(), branch, pointer, csvBlocks);
             } else {
                 // Unsupported
                 address = null;
@@ -189,12 +190,12 @@ public class BTChipHWWallet extends HWWallet {
 
     @Nullable
     @Override
-    public PublishSubject<Boolean> getBleDisconnectEvent() {
+    public synchronized PublishSubject<Boolean> getBleDisconnectEvent() {
         return mBleDisconnectEvent;
     }
 
     @Override
-    public SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
+    public synchronized SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
                                      final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
         if (useAeProtocol) {
             throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
@@ -210,7 +211,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
@@ -251,7 +252,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String, String> transactions,

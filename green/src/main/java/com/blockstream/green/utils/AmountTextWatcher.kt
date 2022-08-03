@@ -3,11 +3,11 @@ package com.blockstream.green.utils
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
-import com.google.android.material.textfield.TextInputEditText
+import android.widget.EditText
 import java.text.DecimalFormat
-import java.util.*
+import java.util.Locale
 
-class AmountTextWatcher private constructor(val editText: TextInputEditText) : TextWatcher {
+class AmountTextWatcher private constructor(val editText: EditText) : TextWatcher {
     private val decFormat = DecimalFormat.getInstance(Locale.getDefault()) as DecimalFormat
     private val symbols = decFormat.decimalFormatSymbols
     private val defaultSeparator = symbols.decimalSeparator.toString()
@@ -42,6 +42,6 @@ class AmountTextWatcher private constructor(val editText: TextInputEditText) : T
     }
 
     companion object{
-        fun watch(editText: TextInputEditText) = AmountTextWatcher(editText)
+        fun watch(editText: EditText) = AmountTextWatcher(editText)
     }
 }

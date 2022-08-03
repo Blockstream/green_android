@@ -21,12 +21,11 @@ import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.extensions.logException
+import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getNetworkColor
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.MainActivity
-import com.blockstream.green.utils.logException
 import kotlinx.coroutines.launch
 import mu.KLogging
 
@@ -69,31 +68,31 @@ class NotificationManager constructor(
 
     override fun onResume(owner: LifecycleOwner) {
         isOnForeground = true
-        updateNotifications(true)
+        updateNotifications(isOnForeground)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         isOnForeground = false
-        updateNotifications(false)
+        updateNotifications(isOnForeground)
+    }
+
+    fun notificationPermissionGiven(){
+        updateNotifications(isOnForeground)
     }
 
     private fun updateNotifications(isForeground: Boolean) {
 
         // do a for list to avoid Concurrent modification exception
         // TODO fix
-        sessionManager.getSessions().toList().forEach {
+        sessionManager.getSessions().toList().forEach { session ->
 
             applicationScope.launch(context = logException(countly)) {
 
-                (it.ephemeralWallet ?: sessionManager.getWalletIdFromSession(it)
-                    ?.let { walletId -> walletRepository.getWalletSuspend(walletId) })?.let { wallet ->
-                    if (it.isConnected) {
+                (session.ephemeralWallet ?: sessionManager.getWalletIdFromSession(session)?.let { walletId -> walletRepository.getWallet(walletId) })?.let { wallet ->
+                    if (session.isConnected) {
                         val sessionTimeout =
-                            if (isForeground) 0 else (it.getSettings()?.altimeout
-                                ?: 1) * 60 * 1000L
-
-                        val notification =
-                            createNotification(context, it, wallet, sessionTimeout)
+                            if (isForeground) 0 else (session.getSettings(null)?.altimeout ?: 1) * 60 * 1000L
+                        val notification = createNotification(context, session, wallet, sessionTimeout)
                         androidNotificationManager.notify(notificationId(wallet), notification)
                     } else {
                         androidNotificationManager.cancel(notificationId(wallet))
@@ -119,7 +118,7 @@ class NotificationManager constructor(
 
     private fun createNotification(
         context: Context,
-        session: GreenSession,
+        session: GdkSession,
         wallet: Wallet,
         timeout: Long
     ): Notification {
@@ -149,7 +148,7 @@ class NotificationManager constructor(
             .setColorized(true)
             .setSmallIcon(R.drawable.ic_stat_green)
             .setContentIntent(pendingIntent)
-            .setColor(ContextCompat.getColor(context, wallet.network.getNetworkColor()))
+            .setColor(ContextCompat.getColor(context, if(session.gdkSessions.size == 1) session.mainAssetNetwork.id.getNetworkColor() else R.color.brand_green))
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(

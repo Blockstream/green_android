@@ -8,6 +8,7 @@
     <attr name="enabled" format="boolean" />
     <attr name="withPaste" format="boolean" />
     <attr name="showDigits" format="boolean" />
+    <attr name="gap" format="dimension" />
 
     <declare-styleable name="GreenContentCardView">
         <attr name="icon"/>
@@ -31,7 +32,12 @@
     </declare-styleable>
 
     <declare-styleable name="GappedLinearLayout">
-        <attr name="gap" format="dimension" />
+        <attr name="gap" />
+    </declare-styleable>
+
+    <declare-styleable name="AccordionLayout">
+        <attr name="compact_size" format="dimension" />
+        <attr name="expanded_size" format="dimension" />
     </declare-styleable>
 
     <!--Emphasis values are used in combination with each "on" color to create three available -->

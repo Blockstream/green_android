@@ -1,38 +1,56 @@
 package com.blockstream.green.ui.devices
 
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.DeviceBrand
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.base.Urls
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.Urls
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceInfoFragmentBinding
 import com.blockstream.green.databinding.PinTextDialogBinding
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.extensions.clearNavigationResult
+import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.navigate
+import com.blockstream.green.extensions.snackbar
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.MenuDataProvider
+import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.items.NetworkSmallListItem
+import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.StringHolder
+import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import com.greenaddress.jade.entities.JadeVersion
 import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.FastItemAdapter
+import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -41,7 +59,7 @@ import javax.inject.Inject
 class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     layout = R.layout.device_info_fragment,
     menuRes = R.menu.menu_device_jade
-), DeviceInfoCommon {
+), MenuDataProvider {
     val args: DeviceInfoFragmentArgs by navArgs()
 
     val device by lazy { deviceManager.getDevice(args.deviceId) }
@@ -52,14 +70,14 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     lateinit var viewModelFactory: DeviceInfoViewModel.AssistedFactory
 
     val viewModel: DeviceInfoViewModel by viewModels {
-        DeviceInfoViewModel.provideFactory(viewModelFactory, requireContext().applicationContext, device!!)
+        DeviceInfoViewModel.provideFactory(viewModelFactory, requireContext().applicationContext, device!!, args.wallet)
     }
 
     @Inject
     lateinit var deviceManager: DeviceManager
 
     @Inject
-    lateinit var greenWallet: GreenWallet
+    lateinit var gdkBridge: GdkBridge
 
     override val title: String?
         get() = if(device?.deviceBrand == DeviceBrand.Blockstream) "" else device?.deviceBrand?.name
@@ -151,24 +169,33 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
             context = requireContext(),
             viewLifecycleOwner = viewLifecycleOwner,
             device = device,
-            greenWallet = greenWallet,
+            gdkBridge = gdkBridge,
             settingsManager = settingsManager
         )
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
             when (item) {
                 is NetworkSmallListItem -> {
-
-                    if (settingsManager.isDeviceTermsAccepted()){
-                        connect(item.network)
-                    } else {
-                        navigate(DeviceInfoFragmentDirections.actionGlobalAddWalletFragment(network = item.network, deviceId = device?.id))
-                    }
-
+                    connect(item.network)
                     true
                 }
                 else -> false
             }
+        }
+
+        binding.buttonLoginWithDevice.setOnClickListener {
+            MenuBottomSheetDialogFragment.show(
+                title = getString(R.string.id_select_network), menuItems = listOf(
+                    MenuListItem(
+                        icon = R.drawable.ic_regular_currency_btc_24,
+                        title = StringHolder("Mainnet")
+                    ),
+                    MenuListItem(
+                        icon = R.drawable.ic_regular_flask_24,
+                        title = StringHolder("Testnet")
+                    )
+                ), fragmentManager = childFragmentManager
+            )
         }
 
         binding.recycler.apply {
@@ -182,16 +209,16 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater).also {
-            menu.findItem(R.id.updateFirmware).isVisible = isDevelopmentFlavor && device?.isJade == true
-        }
+    override fun menuItemClicked(requestCode: Int, item: GenericItem, position: Int) {
+        connect((if (position == 0) gdkBridge.networks.bitcoinElectrum else gdkBridge.networks.testnetBitcoinElectrum).id)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+    override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.updateFirmware).isVisible = isDevelopmentFlavor && device?.isJade == true
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
             R.id.updateFirmware -> {
 
                 val channels = listOf(
@@ -218,7 +245,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
             }
         }
-        return super.onOptionsItemSelected(item)
+        return super.onMenuItemSelected(menuItem)
     }
 
     override fun updateToolbar() {
@@ -240,12 +267,13 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     }
 
     private fun connect(network: String){
+        if (settingsManager.isDeviceTermsAccepted()){
 
-        // Pause BLE scanning as can make unstable the connection to a ble device
-        deviceManager.pauseBluetoothScanning()
-
-        device?.let {
-            viewModel.connectDeviceToNetwork(network)
+            device?.let {
+                viewModel.connectDeviceToNetwork(network)
+            }
+        } else {
+            navigate(DeviceInfoFragmentDirections.actionGlobalAddWalletFragment(network = network, deviceId = device?.id))
         }
     }
 
@@ -259,11 +287,11 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
             .setTitle(R.string.id_pin)
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                viewModel.requestPinEmitter?.onSuccess(dialogBinding.pin ?: "")
+                viewModel.requestPinEmitter?.complete(dialogBinding.pin ?: "")
             }
             .setNegativeButton(android.R.string.cancel, null)
             .setOnDismissListener {
-                viewModel.requestPinEmitter?.tryOnError(Exception("id_action_canceled"))
+                viewModel.requestPinEmitter?.completeExceptionally(Exception("id_action_canceled"))
             }
             .show()
     }
@@ -326,5 +354,60 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
             // Send error?
         }
+    }
+
+    private fun createNetworkAdapter(
+        context: Context,
+        viewLifecycleOwner: LifecycleOwner,
+        device: Device?,
+        gdkBridge: GdkBridge,
+        settingsManager: SettingsManager
+    ): FastItemAdapter<GenericItem> {
+        val fastItemAdapter = FastItemAdapter<GenericItem>()
+        fastItemAdapter.getExpandableExtension()
+
+        // Listen for app settings changes to enable/disable testnet networks
+        settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner) { applicationSettings ->
+            fastItemAdapter.clear()
+
+            fastItemAdapter.add(NetworkSmallListItem(Network.ElectrumMainnet, gdkBridge.networks.bitcoinElectrum.canonicalName))
+
+            if(device?.supportsLiquid == true){
+                fastItemAdapter.add(NetworkSmallListItem(Network.GreenLiquid, gdkBridge.networks.liquidGreen.canonicalName))
+            }
+
+            if(applicationSettings.testnet) {
+                val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
+
+                expandable.subItems.add(
+                    NetworkSmallListItem(
+                        Network.ElectrumTestnet,
+                        gdkBridge.networks.testnetBitcoinElectrum.canonicalName
+                    )
+                )
+
+                if(device?.supportsLiquid == true){
+                    expandable.subItems.add(
+                        NetworkSmallListItem(
+                            Network.GreenTestnetLiquid,
+                            gdkBridge.networks.testnetLiquidGreen.canonicalName
+                        )
+                    )
+                }
+
+                gdkBridge.networks.customNetwork?.let {
+                    expandable.subItems.add(
+                        NetworkSmallListItem(
+                            it.id,
+                            it.name
+                        )
+                    )
+                }
+
+                fastItemAdapter.add(expandable)
+            }
+        }
+
+        return fastItemAdapter
     }
 }

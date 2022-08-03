@@ -10,7 +10,9 @@ typealias GASession = Any
 typealias GAAuthHandler = Any
 
 class KotlinGDK {
-    fun init(converter: GDK.JSONConverter, config: InitConfig) = GDK.init(converter, config)
+    fun init(converter: GDK.JSONConverter, config: InitConfig) = GDK.init(converter, config).also {
+
+    }
 
     fun setNotificationHandler(notificationHandler: GDK.NotificationHandler) {
         GDK.setNotificationHandler(notificationHandler)
@@ -39,6 +41,8 @@ class KotlinGDK {
         loginCredentialsParams: LoginCredentialsParams
     ): GAAuthHandler = GDK.login_user(session, deviceParams, loginCredentialsParams)
 
+    fun getWalletIdentifier(connectionParams: ConnectionParams, params: LoginCredentialsParams) = GDK.get_wallet_identifier(connectionParams, params)
+
     fun validate(session: GASession, params: JsonElement): GAAuthHandler = GDK.validate(session, params)
 
     fun encryptWithPin(session: GASession, params: EncryptWithPinParams): GAAuthHandler = GDK.encrypt_with_pin(session, params)
@@ -50,6 +54,9 @@ class KotlinGDK {
     fun getReceiveAddress(session: GASession, params: ReceiveAddressParams): GAAuthHandler =
         GDK.get_receive_address(session, params)
 
+    fun getPreviousAddresses(session: GASession, params: PreviousAddressParams): GAAuthHandler =
+        GDK.get_previous_addresses(session, params)
+
     fun refreshAssets(session: GASession, params: AssetsParams) =
         GDK.refresh_assets(session, params)
 
@@ -60,8 +67,7 @@ class KotlinGDK {
         GDK.create_subaccount(session, params)
 
     fun getSubAccounts(session: GASession, params: SubAccountsParams): GAAuthHandler = GDK.get_subaccounts(session, params)
-    fun getSubAccount(session: GASession, index: Long): GASession =
-        GDK.get_subaccount(session, index)
+    fun getSubAccount(session: GASession, index: Long) = GDK.get_subaccount(session, index)
 
     fun updateSubAccount(session: GASession, params: UpdateSubAccountParams) = GDK.update_subaccount(session, params)
 
@@ -73,6 +79,12 @@ class KotlinGDK {
 
     fun createTransaction(session: GASession, params: GAJson<*>): GAAuthHandler =
         GDK.create_transaction(session, params)
+
+    fun createSwapTransaction(session: GASession, params: GAJson<*>): GAAuthHandler =
+        GDK.create_swap_transaction(session, params)
+
+    fun completeSwapTransaction(session: GASession, params: GAJson<*>): GAAuthHandler =
+        GDK.complete_swap_transaction(session, params)
 
     fun updateTransaction(session: GASession, createTransaction: JsonElement): GAAuthHandler =
         GDK.create_transaction(session, createTransaction)

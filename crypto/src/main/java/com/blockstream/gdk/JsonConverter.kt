@@ -15,8 +15,24 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
 
     private val jsonSerializer by lazy { Json {  } }
 
+    private fun shouldLog(jsonString: String?): Boolean{
+        if(jsonString == null || jsonString.length > 50_000){
+            return false
+        }
+
+        if(!log){
+            return false
+        }
+
+        if(SkipLogAmountConversions && (jsonString.startsWith("{\"satoshi\":") || jsonString.startsWith("{\"bits\":"))){
+            return false
+        }
+
+        return log
+    }
+
     override fun toJSONObject(jsonString: String?): Any? {
-        if (log && jsonString != null && jsonString.length < 50_000) {
+        if (shouldLog(jsonString)) {
             "▲ ${mask(jsonString)}".let{
                 logger.info { it }
                 extraLogger?.log(it)
@@ -24,7 +40,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
         }
 
         if (jsonString != null && jsonString != "null") {
-            return GreenWallet.JsonDeserializer.parseToJsonElement(jsonString)
+            return GdkBridge.JsonDeserializer.parseToJsonElement(jsonString)
         }
         return null
     }
@@ -35,7 +51,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
         }else{
             any.toString()
         }.also {
-            if (log) {
+            if (shouldLog(it)) {
                 "▼ ${mask(it)}".let {
                     logger.info { it }
                     extraLogger?.log(it)
@@ -55,5 +71,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
         return processed
     }
 
-    companion object : KLogging()
+    companion object : KLogging(){
+        const val SkipLogAmountConversions = true
+    }
 }

@@ -16,10 +16,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/watchOnlyDetailsFragment"
-        android:name="com.blockstream.green.ui.settings.WatchOnlyDetailsFragment"
-        android:label="@string/id_watchonly_details"
-        tools:layout="@layout/watch_only_details_fragment">
+        android:id="@+id/watchOnlyFragment"
+        android:name="com.blockstream.green.ui.settings.WatchOnlyFragment"
+        android:label="@string/id_watchonly"
+        tools:layout="@layout/base_recycler_view">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
@@ -27,12 +27,18 @@
 
     <fragment
         android:id="@+id/archivedAccountsFragment"
-        android:name="com.blockstream.green.ui.wallet.ArchivedAccountsFragment"
+        android:name="com.blockstream.green.ui.archived.ArchivedAccountsFragment"
         android:label="@string/id_archived_accounts"
         tools:layout="@layout/base_recycler_view">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+
+        <argument
+            android:name="layer"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.NetworkLayer"
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -56,6 +62,11 @@
             android:name="showRecoveryTransactions"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="network"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.Network"
+            app:nullable="true" />
         <action
             android:id="@+id/action_walletSettingsFragment_self"
             app:destination="@id/walletSettingsFragment" />
@@ -63,8 +74,8 @@
             android:id="@+id/action_walletSettingsFragment_to_recoveryIntroFragment"
             app:destination="@id/recoveryIntroFragment" />
         <action
-            android:id="@+id/action_walletSettingsFragment_to_watchOnlyDetailsFragment"
-            app:destination="@id/watchOnlyDetailsFragment" />
+            android:id="@+id/action_walletSettingsFragment_to_watchOnlyFragment"
+            app:destination="@id/watchOnlyFragment" />
     </fragment>
 
     <fragment
@@ -75,7 +86,11 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
-
+        <argument
+            android:name="network"
+            app:argType="com.blockstream.gdk.data.Network"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorSetupFragment"
             app:destination="@id/twoFactorSetupFragment" />
@@ -87,6 +102,9 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="network"
+            app:argType="com.blockstream.gdk.data.Network" />
         <argument
             android:name="method"
             android:defaultValue="EMAIL"
@@ -100,9 +118,9 @@
 
     <fragment
         android:id="@+id/introFragment"
-        android:name="com.blockstream.green.ui.IntroFragment"
+        android:name="com.blockstream.green.ui.intro.IntroFragment"
         android:label=""
-        tools:layout="@layout/intro_fragment"/>
+        tools:layout="@layout/intro_fragment" />
 
     <fragment
         android:id="@+id/addWalletFragment"
@@ -110,21 +128,45 @@
         android:label=""
         tools:layout="@layout/add_wallet_fragment">
         <action
-            android:id="@+id/action_addWalletFragment_to_chooseNetworkFragment"
-            app:destination="@id/chooseNetworkFragment" />
-        <action
             android:id="@+id/action_addWalletFragment_to_chooseWatchOnlyFragment"
             app:destination="@id/chooseWatchOnlyFragment" />
         <argument
             android:name="deviceId"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <argument
             android:name="network"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_addWalletFragment_to_recoveryIntroFragment"
+            app:destination="@id/recoveryIntroFragment" />
+        <action
+            android:id="@+id/action_addWalletFragment_to_chooseNetworkFragment"
+            app:destination="@id/chooseNetworkFragment" />
+        <action
+            android:id="@+id/action_addWalletFragment_to_chooseMainnetFragment"
+            app:destination="@id/chooseMainnetFragment" />
+        <action
+            android:id="@+id/action_addWalletFragment_to_enterRecoveryPhraseFragment"
+            app:destination="@id/enterRecoveryPhraseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseMainnetFragment"
+        android:name="com.blockstream.green.ui.onboarding.ChooseMainnetFragment"
+        android:label=""
+        tools:layout="@layout/choose_network_fragment">
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <action
+            android:id="@+id/action_chooseNetworkFragment_to_recoveryIntroFragment"
+            app:destination="@id/recoveryIntroFragment" />
+        <action
+            android:id="@+id/action_chooseMainnetFragment_to_enterRecoveryPhraseFragment"
+            app:destination="@id/enterRecoveryPhraseFragment" />
     </fragment>
     <fragment
         android:id="@+id/chooseNetworkFragment"
@@ -135,118 +177,12 @@
             android:name="onboardingOptions"
             app:argType="com.blockstream.green.data.OnboardingOptions" />
         <action
-            android:id="@+id/action_chooseNetworkFragment_to_chooseSecurityFragment"
-            app:destination="@id/chooseSecurityFragment" />
-        <action
-            android:id="@+id/action_chooseNetworkFragment_to_chooseRecoveryPhraseFragment"
-            app:destination="@id/chooseRecoveryPhraseFragment" />
-        <action
             android:id="@+id/action_chooseNetworkFragment_to_loginWatchOnlyFragment"
             app:destination="@id/loginWatchOnlyFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/chooseSecurityFragment"
-        android:name="com.blockstream.green.ui.onboarding.ChooseSecurityFragment"
-        android:label=""
-        tools:layout="@layout/choose_security_fragment">
-        <argument
-            android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions" />
-        <argument
-            android:name="mnemonic"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
-        <argument
-            android:name="mnemonicPassword"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
-        <action
-            android:id="@+id/action_chooseSecurityFragment_to_recoveryIntroFragment"
-            app:destination="@id/recoveryIntroFragment" />
-        <action
-            android:id="@+id/action_chooseSecurityFragment_to_walletNameFragment"
-            app:destination="@id/walletNameFragment" />
-        <argument
-            android:name="isManualRestore"
-            app:argType="boolean"
-            android:defaultValue="false" />
-    </fragment>
-    <fragment
-        android:id="@+id/chooseRecoveryPhraseFragment"
-        android:name="com.blockstream.green.ui.onboarding.ChooseRecoveryPhraseFragment"
-        android:label=""
-        tools:layout="@layout/choose_recovery_phrase_fragment">
-        <argument
-            android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions"
-            app:nullable="true"
-            android:defaultValue="@null" />
-        <action
-            android:id="@+id/action_chooseRecoveryPhraseFragment_to_enterRecoveryPhraseFragment"
-            app:destination="@id/enterRecoveryPhraseFragment" />
-        <argument
-            android:name="restoreWallet"
-            android:defaultValue="@null"
-            app:argType="com.blockstream.green.database.Wallet"
-            app:nullable="true" />
-    </fragment>
-
     <argument
         android:name="onboardingOptions"
         app:argType="com.blockstream.green.data.OnboardingOptions" />
-    <fragment
-        android:id="@+id/walletNameFragment"
-        android:name="com.blockstream.green.ui.onboarding.WalletNameFragment"
-        android:label=""
-        tools:layout="@layout/wallet_name_fragment">
-        <argument
-            android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions" />
-        <action
-            android:id="@+id/action_walletNameFragment_to_setPinFragment"
-            app:destination="@id/setPinFragment" />
-        <argument
-            android:name="mnemonic"
-            app:argType="string" />
-        <argument
-            android:name="mnemonicPassword"
-            app:argType="string" />
-        <argument
-            android:name="restoreWallet"
-            android:defaultValue="@null"
-            app:argType="com.blockstream.green.database.Wallet"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_walletNameFragment_to_onBoardingCompleteFragment"
-            app:destination="@id/onBoardingCompleteFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/scanWalletFragment"
-        android:name="com.blockstream.green.ui.onboarding.ScanWalletFragment"
-        tools:layout="@layout/scan_wallet_fragment">
-        <argument
-            android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions" />
-        <argument
-            android:name="mnemonic"
-            app:argType="string" />
-        <argument
-            android:name="mnemonicPassword"
-            app:argType="string" />
-        <argument
-            android:name="restoreWallet"
-            android:defaultValue="@null"
-            app:argType="com.blockstream.green.database.Wallet"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_scanWalletFragment_to_walletNameFragment"
-            app:destination="@id/walletNameFragment" />
-        <action
-            android:id="@+id/action_scanWalletFragment_to_chooseSecurityFragment"
-            app:destination="@id/chooseSecurityFragment" />
-    </fragment>
     <fragment
         android:id="@+id/setPinFragment"
         android:name="com.blockstream.green.ui.onboarding.SetPinFragment"
@@ -259,12 +195,13 @@
         <argument
             android:name="onboardingOptions"
             app:argType="com.blockstream.green.data.OnboardingOptions" />
-        <action
-            android:id="@+id/action_setPinFragment_to_onBoardingCompleteFragment"
-            app:destination="@id/onBoardingCompleteFragment" />
         <argument
             android:name="mnemonic"
             app:argType="string" />
+        <argument
+            android:name="password"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/enterRecoveryPhraseFragment"
@@ -273,38 +210,42 @@
         tools:layout="@layout/enter_recovery_phrase_fragment">
         <argument
             android:name="onboardingOptions"
+            android:defaultValue="@null"
             app:argType="com.blockstream.green.data.OnboardingOptions"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <argument
             android:name="scannedInput"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_enterRecoveryPhraseFragment_to_scanWalletFragment"
-            app:destination="@id/scanWalletFragment" />
-        <action
-            android:id="@+id/action_enterRecoveryPhraseFragment_to_walletNameFragment"
-            app:destination="@id/walletNameFragment" />
-        <action
-            android:id="@+id/action_enterRecoveryPhraseFragment_to_addAccountFragment"
-            app:destination="@id/addAccountFragment" />
         <argument
             android:name="wallet"
+            android:defaultValue="@null"
             app:argType="com.blockstream.green.database.Wallet"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
+        <argument
+            android:name="network"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.Network"
+            app:nullable="true" />
         <argument
             android:name="isAddAccount"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="assetId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_enterRecoveryPhraseFragment_to_setPinFragment"
+            app:destination="@id/setPinFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/recoveryPhraseFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryPhraseFragment"
-        android:label=""
+        android:label="@string/id_backup_recovery_phrase"
         tools:layout="@layout/recovery_phrase_fragment">
         <argument
             android:name="wallet"
@@ -321,14 +262,25 @@
     <fragment
         android:id="@+id/recoveryIntroFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryIntroFragment"
-        android:label=""
+        android:label="@string/id_before_you_backup"
         tools:layout="@layout/recovery_intro_fragment">
         <action
             android:id="@+id/action_recoveryIntroFragment_to_recoveryWordsFragment"
             app:destination="@id/recoveryWordsFragment" />
         <argument
             android:name="wallet"
+            android:defaultValue="@null"
             app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
+            android:name="network"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.Network"
+            app:nullable="true" />
+        <argument
+            android:name="assetId"
+            android:defaultValue="@null"
+            app:argType="string"
             app:nullable="true" />
         <argument
             android:name="onboardingOptions"
@@ -336,10 +288,9 @@
             app:argType="com.blockstream.green.data.OnboardingOptions"
             app:nullable="true" />
         <argument
-            android:name="mnemonic"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
+            android:name="isAuthenticateUser"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_recoveryIntroFragment_to_recoveryPhraseFragment"
             app:destination="@id/recoveryPhraseFragment" />
@@ -347,7 +298,6 @@
     <fragment
         android:id="@+id/recoveryWordsFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryWordsFragment"
-        android:label=""
         tools:layout="@layout/recovery_setup_words_fragment">
         <action
             android:id="@+id/action_recoveryWordsFragment_self"
@@ -358,6 +308,15 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
+            android:name="network"
+            app:argType="com.blockstream.gdk.data.Network"
+            app:nullable="true" />
+        <argument
+            android:name="assetId"
+            android:defaultValue="@null"
+            app:argType="string"
             app:nullable="true" />
         <argument
             android:name="onboardingOptions"
@@ -375,7 +334,6 @@
     <fragment
         android:id="@+id/recoveryCheckFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryCheckFragment"
-        android:label=""
         tools:layout="@layout/recovery_check_fragment">
 
         <action
@@ -384,6 +342,15 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
+            android:name="network"
+            app:argType="com.blockstream.gdk.data.Network"
+            app:nullable="true" />
+        <argument
+            android:name="assetId"
+            android:defaultValue="@null"
+            app:argType="string"
             app:nullable="true" />
         <argument
             android:name="onboardingOptions"
@@ -398,44 +365,65 @@
             android:name="mnemonic"
             app:argType="string" />
         <action
-            android:id="@+id/action_recoveryCheckFragment_to_walletNameFragment"
-            app:destination="@id/walletNameFragment" />
-        <action
-            android:id="@+id/action_recoveryCheckFragment_to_addAccountFragment"
-            app:destination="@id/addAccountFragment" />
+            android:id="@+id/action_recoveryCheckFragment_to_setPinFragment"
+            app:destination="@id/setPinFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_addWalletFragment"
         app:destination="@id/addWalletFragment" />
+
     <fragment
         android:id="@+id/overviewFragment"
-        android:name="com.blockstream.green.ui.overview.OverviewFragment"
-        tools:layout="@layout/overview_fragment">
-        <action
-            android:id="@+id/action_overviewFragment_to_chooseAccountTypeFragment"
-            app:destination="@id/chooseAccountTypeFragment" />
+        android:name="com.blockstream.green.ui.overview.AccountOverviewFragment"
+        tools:layout="@layout/account_overview_fragment">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
         <action
-            android:id="@+id/action_overviewFragment_to_receiveFragment"
+            android:id="@+id/action_accountOverviewFragment_to_receiveFragment"
             app:destination="@id/receiveFragment" />
         <action
-            android:id="@+id/action_overviewFragment_to_walletSettingsFragment"
+            android:id="@+id/action_accountOverviewFragment_to_walletSettingsFragment"
             app:destination="@id/walletSettingsFragment" />
         <action
-            android:id="@+id/action_overviewFragment_to_transactionDetailsFragment"
+            android:id="@+id/action_accountOverviewFragment_to_transactionDetailsFragment"
             app:destination="@id/transactionDetailsFragment" />
         <action
-            android:id="@+id/action_overviewFragment_to_sendFragment"
+            android:id="@+id/action_accountOverviewFragment_to_sendFragment"
+            app:destination="@id/sendFragment" />
+        <argument
+            android:name="account"
+            app:argType="com.blockstream.gdk.data.Account" />
+        <action
+            android:id="@+id/action_accountOverviewFragment_to_addressesFragment"
+            app:destination="@id/previousAddressesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/walletOverviewFragment"
+        android:name="com.blockstream.green.ui.overview.WalletOverviewFragment"
+        tools:layout="@layout/wallet_overview_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <action
+            android:id="@+id/action_walletOverviewFragment_to_walletSettingsFragment"
+            app:destination="@id/walletSettingsFragment" />
+        <action
+            android:id="@+id/action_walletOverviewFragment_to_transactionDetailsFragment"
+            app:destination="@id/transactionDetailsFragment" />
+        <action
+            android:id="@+id/action_walletOverviewFragment_to_accountOverviewFragment"
+            app:destination="@id/overviewFragment" />
+        <action
+            android:id="@+id/action_walletOverviewFragment_to_receiveFragment"
+            app:destination="@id/receiveFragment" />
+        <action
+            android:id="@+id/action_walletOverviewFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
         <action
-            android:id="@+id/action_overviewFragment_to_archivedAccountsFragment"
-            app:destination="@id/archivedAccountsFragment" />
+            android:id="@+id/action_walletOverviewFragment_to_assetsFragment"
+            app:destination="@id/assetsFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_overviewFragment"
-        app:destination="@id/overviewFragment" />
 
     <fragment
         android:id="@+id/chooseWatchOnlyFragment"
@@ -465,94 +453,103 @@
         tools:layout="@layout/dialog_app_settings_bottom_sheet" />
     <dialog
         android:id="@+id/helpBottomSheetDialogFragment"
-        android:name="com.blockstream.green.ui.HelpBottomSheetDialogFragment"
+        android:name="com.blockstream.green.ui.bottomsheets.HelpBottomSheetDialogFragment"
         android:label=""
         tools:layout="@layout/recycler_bottom_sheet" />
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.blockstream.green.ui.wallet.LoginFragment"
+        android:name="com.blockstream.green.ui.login.LoginFragment"
         tools:layout="@layout/login_fragment">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
-        <action
-            android:id="@+id/action_loginFragment_to_chooseRecoveryPhraseFragment"
-            app:destination="@id/chooseRecoveryPhraseFragment" />
         <argument
             android:name="deviceId"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
         <argument
             android:name="autoLogin"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_loginFragment_to_enterRecoveryPhraseFragment"
+            app:destination="@id/enterRecoveryPhraseFragment" />
     </fragment>
     <fragment
         android:id="@+id/chooseAccountTypeFragment"
-        android:name="com.blockstream.green.ui.wallet.ChooseAccountTypeFragment"
-        android:label=""
+        android:name="com.blockstream.green.ui.add.ChooseAccountTypeFragment"
+        android:label="@string/id_add_new_account"
         tools:layout="@layout/choose_account_type_fragment">
-        <action
-            android:id="@+id/action_chooseAccountTypeFragment_to_addAccountFragment"
-            app:destination="@id/addAccountFragment" />
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="accountType"
-            app:argType="com.blockstream.gdk.data.AccountType"
-            android:defaultValue="UNKNOWN" />
+            android:defaultValue="UNKNOWN"
+            app:argType="com.blockstream.gdk.data.AccountType" />
+        <argument
+            android:name="assetId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <action
-            android:id="@+id/action_chooseAccountTypeFragment_to_recoveryIntroFragment"
-            app:destination="@id/recoveryIntroFragment" />
-        <action
-            android:id="@+id/action_chooseAccountTypeFragment_self"
-            app:destination="@id/chooseAccountTypeFragment" />
-        <action
-            android:id="@+id/action_chooseAccountTypeFragment_to_enterRecoveryPhraseFragment"
-            app:destination="@id/enterRecoveryPhraseFragment" />
-        <action
-            android:id="@+id/action_chooseAccountTypeFragment_to_enterXpubFragment"
-            app:destination="@id/enterXpubFragment" />
+            android:id="@+id/action_chooseAccountTypeFragment_to_account2of3Fragment"
+            app:destination="@id/account2of3Fragment" />
     </fragment>
     <fragment
-        android:id="@+id/addAccountFragment"
-        android:name="com.blockstream.green.ui.wallet.AddAccountFragment"
-        android:label=""
-        tools:layout="@layout/add_account_fragment">
+        android:id="@+id/account2of3Fragment"
+        android:name="com.blockstream.green.ui.add.Account2of3Fragment"
+        tools:layout="@layout/account_2of3_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="assetId"
+            app:argType="string" />
+        <argument
+            android:name="layer"
+            app:argType="com.blockstream.gdk.data.NetworkLayer" />
+        <action
+            android:id="@+id/action_account2of3Fragment_to_enterXpubFragment"
+            app:destination="@id/enterXpubFragment" />
+        <action
+            android:id="@+id/action_account2of3Fragment_to_enterRecoveryPhraseFragment"
+            app:destination="@id/enterRecoveryPhraseFragment" />
+        <action
+            android:id="@+id/action_account2of3Fragment_to_recoveryIntroFragment"
+            app:destination="@id/recoveryIntroFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reviewAddAccountFragment"
+        android:name="com.blockstream.green.ui.add.ReviewAddAccountFragment"
+        tools:layout="@layout/review_add_account_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="network"
+            app:argType="com.blockstream.gdk.data.Network" />
         <argument
             android:name="accountType"
             app:argType="com.blockstream.gdk.data.AccountType" />
         <argument
-            android:name="wallet"
-            app:argType="com.blockstream.green.database.Wallet" />
+            android:name="assetId"
+            app:argType="string" />
         <argument
             android:name="mnemonic"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <argument
             android:name="xpub"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
     </fragment>
     <action
         android:id="@+id/action_global_loginFragment"
         app:destination="@id/loginFragment" />
-    <fragment
-        android:id="@+id/onBoardingCompleteFragment"
-        android:name="com.blockstream.green.ui.onboarding.OnBoardingCompleteFragment"
-        android:label=""
-        tools:layout="@layout/onboarding_complete_fragment">
-        <argument
-            android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions" />
-        <argument
-            android:name="wallet"
-            app:argType="com.blockstream.green.database.Wallet" />
-    </fragment>
 
     <fragment
         android:id="@+id/receiveFragment"
@@ -562,6 +559,11 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="accountAsset"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.AccountAsset"
+            app:nullable="true" />
         <action
             android:id="@+id/action_receiveFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
@@ -585,49 +587,87 @@
         <argument
             android:name="deviceId"
             app:argType="string" />
+        <argument
+            android:name="wallet"
+            android:defaultValue="@null"
+            app:nullable="true"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="autoLogin"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
 
     <action
         android:id="@+id/action_global_deviceListFragment"
         app:destination="@id/deviceListFragment" />
-    <action android:id="@+id/action_global_twoFractorAuthenticationFragment" app:destination="@id/twoFractorAuthenticationFragment" />
-    <action android:id="@+id/action_global_twoFactorSetupFragment" app:destination="@id/twoFactorSetupFragment" /><action android:id="@+id/action_global_introFragment" app:destination="@id/introFragment"/>
+    <action
+        android:id="@+id/action_global_twoFractorAuthenticationFragment"
+        app:destination="@id/twoFractorAuthenticationFragment" />
+    <action
+        android:id="@+id/action_global_twoFactorSetupFragment"
+        app:destination="@id/twoFactorSetupFragment" />
+    <action
+        android:id="@+id/action_global_introFragment"
+        app:destination="@id/introFragment" />
     <fragment
         android:id="@+id/transactionDetailsFragment"
-        android:name="com.blockstream.green.ui.wallet.TransactionDetailsFragment"
+        android:name="com.blockstream.green.ui.transaction.details.TransactionDetailsFragment"
         tools:layout="@layout/base_recycler_view">
-
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="account"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.Account"
+            app:nullable="true" />
         <argument
             android:name="transaction"
             app:argType="com.blockstream.gdk.data.Transaction" />
         <action
             android:id="@+id/action_transactionDetailsFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_accountOverviewFragment"
+            app:destination="@id/overviewFragment" />
     </fragment>
     <fragment
         android:id="@+id/sendFragment"
         android:name="com.blockstream.green.ui.send.SendFragment"
-        tools:layout="@layout/send_fragment" >
+        tools:layout="@layout/send_fragment">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
-            android:name="address"
+            android:name="accountAsset"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.AccountAsset"
+            app:nullable="true" />
+        <argument
+            android:name="network"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.Network"
+            app:nullable="true" />
+        <argument
+            android:name="assetId"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
+        <argument
+            android:name="address"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="isSweep"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
         <argument
             android:name="bumpTransaction"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <action
             android:id="@+id/action_sendFragment_to_sendConfirmFragment"
             app:destination="@id/sendConfirmFragment" />
@@ -637,36 +677,122 @@
         android:id="@+id/sendConfirmFragment"
         android:name="com.blockstream.green.ui.send.SendConfirmFragment"
         android:label="@string/id_review"
-        tools:layout="@layout/send_confirm_fragment" >
+        tools:layout="@layout/send_confirm_fragment">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="account"
+            app:argType="com.blockstream.gdk.data.Account" />
         <argument
             android:name="transactionSegmentation"
             app:argType="com.blockstream.green.data.TransactionSegmentation" />
     </fragment>
     <fragment
         android:id="@+id/enterXpubFragment"
-        android:name="com.blockstream.green.ui.wallet.EnterXpubFragment"
+        android:name="com.blockstream.green.ui.add.EnterXpubFragment"
         tools:layout="@layout/enter_xpub_fragment">
-        <action
-            android:id="@+id/action_enterXpubFragment_to_addAccountFragment"
-            app:destination="@id/addAccountFragment" />
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
+            android:name="network"
+            app:argType="com.blockstream.gdk.data.Network" />
+        <argument
             android:name="accountType"
             app:argType="com.blockstream.gdk.data.AccountType" />
+        <argument
+            android:name="assetId"
+            app:argType="string" />
     </fragment>
+
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="com.blockstream.green.ui.AboutFragment"
+        android:name="com.blockstream.green.ui.about.AboutFragment"
         android:label=""
         tools:layout="@layout/about_fragment" />
     <action
         android:id="@+id/action_global_aboutFragment"
         app:destination="@id/aboutFragment" />
+    <action
+        android:id="@+id/action_global_walletOverviewFragment"
+        app:destination="@id/walletOverviewFragment" />
+    <fragment
+        android:id="@+id/assetsFragment"
+        android:name="com.blockstream.green.ui.overview.AssetsFragment"
+        android:label="@string/id_my_assets"
+        tools:layout="@layout/base_recycler_view">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_archivedAccountsFragment"
+        app:destination="@id/archivedAccountsFragment" />
+    <fragment
+        android:id="@+id/swapFragment"
+        android:name="com.blockstream.green.ui.swap.SwapFragment"
+        android:label="@string/id_create_a_new_swap"
+        tools:layout="@layout/swap_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <action
+            android:id="@+id/action_swapFragment_to_swapProposalFragment"
+            app:destination="@id/swapProposalFragment" />
+        <argument
+            android:name="proposal"
+            android:defaultValue="@null"
+            app:argType="com.blockstream.gdk.data.SwapProposal"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_swapFragment_to_sendConfirmFragment"
+            app:destination="@id/sendConfirmFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_swapFragment"
+        app:destination="@id/swapFragment" />
+    <fragment
+        android:id="@+id/swapProposalFragment"
+        android:name="com.blockstream.green.ui.swap.SwapProposalFragment"
+        android:label="@string/id_swap_proposal"
+        tools:layout="@layout/swap_proposal_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="proposal"
+            app:argType="com.blockstream.gdk.data.SwapProposal" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_reviewAddAccountFragment"
+        app:destination="@id/reviewAddAccountFragment" />
+    <fragment
+        android:id="@+id/previousAddressesFragment"
+        android:name="com.blockstream.green.ui.addresses.AddressesFragment"
+        android:label="@string/id_addresses"
+        tools:layout="@layout/base_recycler_view">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="account"
+            app:argType="com.blockstream.gdk.data.Account" />
+    </fragment><action android:id="@+id/action_global_chooseAccountTypeFragment" app:destination="@id/chooseAccountTypeFragment"/>
     <action android:id="@+id/action_global_recoveryPhraseFragment" app:destination="@id/recoveryPhraseFragment" />
+
+    <fragment
+        android:id="@+id/deviceScanFragment"
+        android:name="com.blockstream.green.ui.devices.DeviceScanFragment"
+        android:label="DeviceScanFragment"
+        tools:layout="@layout/device_scan_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <action
+            android:id="@+id/action_deviceScanFragment_to_deviceInfoFragment"
+            app:destination="@id/deviceInfoFragment" />
+    </fragment>
+    <action android:id="@+id/action_global_deviceScanFragment" app:destination="@id/deviceScanFragment"/>
 
 </navigation>

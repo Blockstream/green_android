@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.databinding.SystemMessageBottomSheetBinding
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.dismissIn
-import com.blockstream.green.utils.errorDialog
+import com.blockstream.green.extensions.dismissIn
+import com.blockstream.green.extensions.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -21,20 +22,22 @@ class SystemMessageBottomSheetDialogFragment :
 
     override val screenName = "SystemMessage"
 
+    override val expanded = true
+
     override fun inflate(layoutInflater: LayoutInflater) =
         SystemMessageBottomSheetBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val message = arguments?.getString(SYSTEM_MESSAGE) ?: ""
+        val message = requireArguments().getString(MESSAGE) ?: ""
 
         binding.vm = viewModel
 
         binding.message = message
 
         binding.buttonAccept.setOnClickListener {
-            viewModel.ackSystemMessage(message)
+            viewModel.ackSystemMessage(requireArguments().getParcelable<Network>(NETWORK)!!, message)
         }
 
         binding.buttonClose.setOnClickListener {
@@ -57,12 +60,14 @@ class SystemMessageBottomSheetDialogFragment :
     }
 
     companion object {
-        private const val SYSTEM_MESSAGE = "SYSTEM_MESSAGE"
+        private const val NETWORK = "NETWORK"
+        private const val MESSAGE = "MESSAGE"
 
-        fun show(message: String, fragmentManager: FragmentManager) {
+        fun show(network: Network, message: String, fragmentManager: FragmentManager) {
             show(SystemMessageBottomSheetDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
-                    bundle.putString(SYSTEM_MESSAGE, message)
+                    bundle.putParcelable(NETWORK, network)
+                    bundle.putString(MESSAGE, message)
                 }
             }, fragmentManager)
         }

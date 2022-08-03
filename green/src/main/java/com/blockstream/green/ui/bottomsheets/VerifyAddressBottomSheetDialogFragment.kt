@@ -8,8 +8,8 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.VerifyAddressBottomSheetBinding
 import com.blockstream.green.ui.receive.ReceiveViewModel
 import com.blockstream.green.utils.bounceDown
-import com.blockstream.green.utils.dismissIn
-import com.blockstream.green.utils.errorDialog
+import com.blockstream.green.extensions.dismissIn
+import com.blockstream.green.extensions.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
@@ -36,15 +36,11 @@ class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<V
 
         binding.arrow.bounceDown()
 
+        binding.address = requireArguments().getString(ADDRESS) ?: ""
+
         binding.buttonClose.setOnClickListener {
              dismiss()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Remove dim so that the address behind to be clearly visible
-        dialog?.window?.setDimAmount(0F)
     }
 
     private fun responseFromDevice(addressMatch: Boolean){
@@ -58,8 +54,14 @@ class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<V
     }
 
     companion object : KLogging() {
-        fun show(fragmentManager: FragmentManager) {
-            show(VerifyAddressBottomSheetDialogFragment(), fragmentManager)
+        private const val ADDRESS = "ADDRESS"
+
+        fun show(address: String, fragmentManager: FragmentManager) {
+            show(VerifyAddressBottomSheetDialogFragment().also {
+                it.arguments = Bundle().also { bundle ->
+                    bundle.putString(ADDRESS, address)
+                }
+            }, fragmentManager)
         }
     }
 }

@@ -47,7 +47,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_help_green_improve"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +61,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_if_you_agree_green_will_collect"
-            android:textAppearance="?attr/textAppearanceBody1"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title" />
@@ -98,7 +98,7 @@
                         android:gravity="center_vertical"
                         android:padding="16dp"
                         android:text="@{detailsAreVisible ? @string/id_hide_details : @string/id_show_details}"
-                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="@color/material_on_background_emphasis_high_type"
                         tools:text="@string/id_show_details" />
 
@@ -110,7 +110,7 @@
 
                 </LinearLayout>
 
-                <com.blockstream.green.views.DividerView
+                <com.google.android.material.divider.MaterialDivider
                     isVisible="@{detailsAreVisible}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -131,7 +131,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/id_whats_collected"
-                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="@color/material_on_background_emphasis_high_type" />
 
                     <TextView
@@ -139,7 +139,7 @@
                         android:layout_height="wrap_content"
                         android:drawablePadding="8dp"
                         android:text="@string/id_page_visits_button_presses"
-                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="@color/material_on_background_emphasis_high_type"
                         app:drawableStartCompat="@drawable/ic_baseline_circle_4"
                         app:drawableTint="@color/material_on_background_emphasis_high_type" />
@@ -149,7 +149,7 @@
                         android:layout_height="wrap_content"
                         android:drawablePadding="8dp"
                         android:text="@string/id_os__app_version_loading_times"
-                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="@color/material_on_background_emphasis_high_type"
                         app:drawableStartCompat="@drawable/ic_baseline_circle_4"
                         app:drawableTint="@color/material_on_background_emphasis_high_type" />
@@ -159,7 +159,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/id_whats_not_collected"
-                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="@color/material_on_background_emphasis_high_type" />
 
                     <TextView
@@ -167,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:drawablePadding="8dp"
                         android:text="@string/id_recovery_phrases_key_material"
-                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="@color/material_on_background_emphasis_high_type"
                         app:drawableStartCompat="@drawable/ic_baseline_circle_4"
                         app:drawableTint="@color/material_on_background_emphasis_high_type" />
@@ -177,7 +177,7 @@
                         android:layout_height="wrap_content"
                         android:drawablePadding="8dp"
                         android:text="@string/id_user_contact_info_ip_address"
-                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="@color/material_on_background_emphasis_high_type"
                         app:drawableStartCompat="@drawable/ic_baseline_circle_4"
                         app:drawableTint="@color/material_on_background_emphasis_high_type" />

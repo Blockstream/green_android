@@ -10,7 +10,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/toolbar_height"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         tools:layout_height="@dimen/toolbar_height"
@@ -19,28 +19,29 @@
         <ImageView
             android:id="@+id/icon"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_marginEnd="4dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
             android:adjustViewBounds="true"
-            android:maxWidth="90dp"
-            tools:src="@drawable/ic_liquid_network_60"
+            android:maxWidth="72dp"
+            android:scaleType="fitCenter"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_min="24dp"
+            tools:src="@drawable/blockstream_jade_logo"
             tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/bubbleIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:visibility="gone"
-            android:layout_marginBottom="-2dp"
             android:layout_marginEnd="-1dp"
-            tools:src="@drawable/blockstream_jade_device"
-            app:layout_constraintBottom_toBottomOf="@+id/icon"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/icon"
+            tools:src="@drawable/ic_singlesig"
             tools:visibility="visible" />
 
         <TextView
@@ -50,13 +51,12 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
-            android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.Green.Headline6"
-            app:layout_constraintBottom_toTopOf="@+id/subtitle"
+            android:lines="1"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/buttonBarrier"
             app:layout_constraintStart_toEndOf="@+id/icon"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
             tools:text="My Bitcoin Wallet" />
 
         <TextView
@@ -66,11 +66,10 @@
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.Green.Body1"
+            android:lines="1"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
             android:textColor="@color/color_on_surface_emphasis_medium"
-            android:textSize="10sp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/title"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/title"
@@ -80,7 +79,7 @@
 
         <Button
             android:id="@+id/button"
-            style="@style/Widget.Green.Button.Small"
+            style="@style/Widget.Green.Button.Tiny"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"

@@ -1,13 +1,10 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.blockstream.green
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.ViewModel
 import com.blockstream.green.data.Countly
-import com.blockstream.green.gdk.GreenSession
+import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.ui.AppViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -16,9 +13,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.mockito.Mock
 
-open class TestViewModel<VM : ViewModel> {
+open class TestViewModel<VM : AppViewModel> {
     internal lateinit var viewModel : VM
-
 
     @get:Rule
     val taskExecutorRule = InstantTaskExecutorRule()
@@ -27,17 +23,16 @@ open class TestViewModel<VM : ViewModel> {
     val schedulersRule = ImmediateSchedulersRule()
 
     @Mock
-    protected lateinit var greenSession: GreenSession
+    protected lateinit var gdkSession: GdkSession
 
     @Mock
     protected lateinit var countly: Countly
 
-    private val testDispatcher = UnconfinedTestDispatcher()
-
-
+    protected val testDispatcher = UnconfinedTestDispatcher()
     @Before
     open fun setup() {
         Dispatchers.setMain(testDispatcher)
+        AppViewModel.ioDispatcher = testDispatcher
     }
 
     @After

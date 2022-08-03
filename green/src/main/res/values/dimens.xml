@@ -2,6 +2,7 @@
 <resources>
     <dimen name="toolbar_height">56dp</dimen>
 
+    <dimen name="asset_size">32dp</dimen>
 
     <dimen name="dp0">0dp</dimen>
     <dimen name="dp8">8dp</dimen>
@@ -14,5 +15,7 @@
     <dimen name="circle_progress_size">150dp</dimen>
 
     <dimen name="progress_radius">4dp</dimen>
+
+    <dimen name="corner_radius">50%</dimen>
 
 </resources>

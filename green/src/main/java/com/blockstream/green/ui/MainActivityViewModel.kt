@@ -5,12 +5,13 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.AppKeystore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.*
+import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.schedule
 
@@ -19,8 +20,9 @@ class MainActivityViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     val walletRepository: WalletRepository,
     val settingsManager: SettingsManager,
-    val appKeystore: AppKeystore
-) : AppViewModel(), DefaultLifecycleObserver {
+    val appKeystore: AppKeystore,
+    countly: Countly
+) : AppViewModel(countly), DefaultLifecycleObserver {
     private var lockTimer: Timer? = null
     val lockScreen = MutableLiveData(canLock())
     val buildVersion = MutableLiveData("")

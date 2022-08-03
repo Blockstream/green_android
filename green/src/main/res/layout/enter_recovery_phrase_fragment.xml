@@ -23,7 +23,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_enter_your_recovery_phrase"
-            android:textAppearance="?attr/textAppearanceHeadline1"
+            android:textAppearance="?attr/textAppearanceDisplayMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -33,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:clipToPadding="false"
-            android:paddingTop="24dp"
+            android:paddingTop="16dp"
             android:paddingBottom="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/toggleRecoverySize"
@@ -87,7 +87,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
                 android:textColor="@color/color_on_surface_emphasis_low"
                 android:textSize="12sp"
                 android:textStyle="italic"
-                app:drawableEndCompat="@drawable/ic_baseline_info_16"
+                app:drawableEndCompat="@drawable/ic_info_16"
                 app:drawableTint="@color/color_on_surface_emphasis_low"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -137,20 +137,64 @@
                 tools:visibility="gone" />
 
             <ImageButton
-                android:id="@+id/buttonPaste"
-                isVisible="@{vm.showPasteButton}"
+                android:id="@+id/buttonPasteIcon"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:backgroundTint="@android:color/transparent"
+                android:src="@drawable/ic_clipboard"
+                app:tint="@color/brand_green"
+                app:layout_constraintBottom_toBottomOf="@+id/recoveryPhraseKeyboardView"
+                app:layout_constraintEnd_toStartOf="@id/buttonScanIcon" />
+
+            <ImageButton
+                android:id="@+id/buttonScanIcon"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="6dp"
                 android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/ic_baseline_content_paste_24"
+                android:src="@drawable/ic_qr_code"
+                android:scaleType="fitCenter"
                 app:tint="@color/brand_green"
-                tools:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/recoveryPhraseKeyboardView"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPaste"
+                style="@style/Widget.Green.Button.Text.Tiny"
+                isVisible="@{vm.showPasteButton}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="6dp"
+                android:text="@string/id_paste"
+                app:icon="@drawable/ic_clipboard"
+                app:iconGravity="start"
+                app:iconSize="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/buttonScan"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonScan"
+                style="@style/Widget.Green.Button.Text.Tiny"
+                isVisible="@{vm.showPasteButton}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="6dp"
+                android:text="@string/id_scan_qr_code"
+                app:icon="@drawable/ic_qr_code"
+                app:iconGravity="start"
+                app:iconSize="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonHelp"
                 style="@style/Widget.Green.Button.Outlined"
                 isVisible="@{vm.showHelpButton}"
@@ -162,8 +206,7 @@
                 app:icon="@drawable/ic_baseline_help_outline_18"
                 app:iconGravity="start"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                 />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 isVisible="@{vm.showInvalidMnemonicError}"

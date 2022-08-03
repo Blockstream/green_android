@@ -1,10 +1,12 @@
 package com.blockstream.green.di
 
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.blockstream.gdk.AssetManager
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.Logger
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
@@ -12,15 +14,13 @@ import com.blockstream.green.GreenApplication
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.managers.NotificationManager
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.*
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
-import com.google.android.play.core.review.ReviewManager
-import com.google.android.play.core.review.ReviewManagerFactory
 import com.pandulapeter.beagle.Beagle
 import com.pandulapeter.beagle.common.configuration.Behavior
 import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
@@ -63,7 +63,7 @@ class GreenModules {
         wally: KotlinWally,
         sharedPreferences: SharedPreferences,
         beagle: Beagle
-    ): GreenWallet {
+    ): GdkBridge {
         var logger : Logger? = null
 
         if(isDevelopmentOrDebug){
@@ -73,12 +73,12 @@ class GreenModules {
                 }
             }
         }
-        return GreenWallet(
+        return GdkBridge(
             gdk = gdk,
             wally = wally,
             sharedPreferences = sharedPreferences,
             dataDir = context.filesDir,
-            developmentFlavor = isDevelopmentFlavor,
+            isDevelopment = isDevelopmentFlavor,
             extraLogger = logger
         )
     }
@@ -90,10 +90,10 @@ class GreenModules {
         settingsManager: SettingsManager,
         assetManager: AssetManager,
         countlyProvider: Provider<Countly>,
-        greenWallet: GreenWallet,
+        gdkBridge: GdkBridge,
         qaTester: QATester
     ): SessionManager {
-        return SessionManager(applicationScope, settingsManager, assetManager, countlyProvider, greenWallet, qaTester)
+        return SessionManager(applicationScope, settingsManager, assetManager, countlyProvider, gdkBridge, qaTester)
     }
 
     @Singleton
@@ -122,8 +122,8 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideMigrator(@ApplicationContext context: Context, walletRepository: WalletRepository, greenWallet: GreenWallet, settingsManager: SettingsManager, applicationScope: ApplicationScope): Migrator {
-        return Migrator(context, walletRepository, greenWallet, settingsManager, applicationScope)
+    fun provideMigrator(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, walletRepository: WalletRepository, gdkBridge: GdkBridge, settingsManager: SettingsManager, applicationScope: ApplicationScope): Migrator {
+        return Migrator(context, sharedPreferences, walletRepository, gdkBridge, settingsManager, applicationScope)
     }
 
     @Singleton
@@ -146,8 +146,8 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideReviewManager(@ApplicationContext context: Context): ReviewManager {
-        return ReviewManagerFactory.create(context)
+    fun provideBluetoothManager(@ApplicationContext context: Context): BluetoothAdapter? {
+        return (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
     }
 
     @Singleton

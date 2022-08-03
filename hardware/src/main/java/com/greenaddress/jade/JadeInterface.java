@@ -67,7 +67,7 @@ class JadeInterface {
         this.connection.disconnect();
     }
 
-    public void writeRequest(final JsonNode request) throws IOException {
+    public synchronized void writeRequest(final JsonNode request) throws IOException {
         if (!isConnected()) {
             throw new IOException("JadeInterface not connected");
         }
@@ -83,7 +83,7 @@ class JadeInterface {
         return this.connection.drain();
     }
 
-    public JsonNode readResponse(final int timeout) throws IOException {
+    public synchronized JsonNode readResponse(final int timeout) throws IOException {
         if (!isConnected()) {
             throw new IOException("JadeInterface not connected");
         }
@@ -200,7 +200,7 @@ class JadeInterface {
         }
     }
 */
-    public final JsonNode makeRpcCall(final JsonNode request, final int timeout, final boolean drain) throws IOException {
+    public synchronized final JsonNode makeRpcCall(final JsonNode request, final int timeout, final boolean drain) throws IOException {
         if (JadeAPI.isDebug) {
             // Sanity check json-rpc request
             final JsonNode id = request.get("id");

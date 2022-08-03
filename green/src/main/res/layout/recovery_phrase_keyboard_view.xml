@@ -232,7 +232,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:src="@drawable/ic_outline_backspace_24" />
+            android:src="@drawable/ic_backspace" />
 
     </LinearLayout>
 

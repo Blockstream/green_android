@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="isSelected"
+            type="Boolean" />
+
+        <variable
+            name="isPolicy"
+            type="Boolean" />
+
+        <variable
+            name="isWatchOnly"
+            type="Boolean" />
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="@dimen/dp8">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/asset"
+                layout="@layout/asset_layout" />
+
+            <LinearLayout
+                isVisible="@{isSelected &amp;&amp; !isPolicy}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/brand_green_20"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_shield_warning"
+                    app:tint="@color/brand_green" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/messageTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/brand_green"
+                    tools:text="ACE is a Liquid asset. You can receive it directly on a Liquid account." />
+
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                isVisible="@{isSelected}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerColor="@color/brand_green"
+                app:dividerThickness="2dp" />
+
+            <LinearLayout
+                android:id="@+id/accounts"
+                isVisible="@{isSelected}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <include
+                android:id="@+id/createNewAccount"
+                isVisible="@{isSelected}"
+                layout="@layout/select_account_layout" />
+
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                isVisible="@{isSelected}"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:clipToPadding="false">-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/createAccountTextView"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="16dp"-->
+<!--                    android:layout_marginEnd="8dp"-->
+<!--                    android:ellipsize="end"-->
+<!--                    android:lines="1"-->
+<!--                    android:text="@string/id_create_new_account"-->
+<!--                    android:textAppearance="?attr/textAppearanceLabelLarge"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/arrow"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--                <FrameLayout-->
+<!--                    android:id="@+id/arrow"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:layout_marginEnd="8dp"-->
+<!--                    android:layout_marginBottom="8dp"-->
+<!--                    android:padding="8dp"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent">-->
+
+<!--                    <com.google.android.material.card.MaterialCardView-->
+<!--                        android:layout_width="42dp"-->
+<!--                        android:layout_height="42dp"-->
+<!--                        android:elevation="0dp"-->
+<!--                        android:padding="12dp"-->
+<!--                        app:cardBackgroundColor="@color/brand_green"-->
+<!--                        app:cardElevation="0dp">-->
+
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:layout_width="20dp"-->
+<!--                            android:layout_height="20dp"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:adjustViewBounds="true"-->
+<!--                            android:src="@drawable/ic_baseline_arrow_forward_24"-->
+<!--                            app:tint="@color/white" />-->
+
+<!--                    </com.google.android.material.card.MaterialCardView>-->
+<!--                </FrameLayout>-->
+
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

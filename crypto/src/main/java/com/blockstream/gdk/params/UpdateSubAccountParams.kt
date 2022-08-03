@@ -12,7 +12,6 @@ data class UpdateSubAccountParams constructor(
     @SerialName("name") val name: String? = null,
     @SerialName("hidden") val hidden: Boolean? = null,
 ) : GAJson<UpdateSubAccountParams>() {
-
     override val encodeDefaultsValues: Boolean
         get() = false
 

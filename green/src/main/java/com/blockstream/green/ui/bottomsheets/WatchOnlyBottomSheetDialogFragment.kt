@@ -7,12 +7,12 @@ import androidx.core.text.trimmedLength
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.databinding.WatchOnlyBottomSheetBinding
-import com.blockstream.green.ui.settings.WalletSettingsFragment
 import com.blockstream.green.ui.settings.WalletSettingsViewModel
-import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.logException
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.logException
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,22 +21,24 @@ import mu.KLogging
 
 @AndroidEntryPoint
 class WatchOnlyBottomSheetDialogFragment :
-    AbstractBottomSheetDialogFragment<WatchOnlyBottomSheetBinding>() {
+    WalletBottomSheetDialogFragment<WatchOnlyBottomSheetBinding, WalletSettingsViewModel>() {
     override val screenName = "WatchOnlyCredentials"
-
-    val viewModel: WalletSettingsViewModel by lazy {
-        (parentFragment as WalletSettingsFragment).viewModel
-    }
 
     override fun inflate(layoutInflater: LayoutInflater) =
         WatchOnlyBottomSheetBinding.inflate(layoutInflater)
 
+    override val network: Network
+        get() = requireArguments().getParcelable(NETWORK)!!
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.hasWatchOnlyCredentials = !viewModel.watchOnlyUsernameLiveData.value.isNullOrBlank()
+        val watchOnlyUsernameLiveData = viewModel.watchOnlyUsernameLiveData(network)
 
-        binding.username = viewModel.watchOnlyUsernameLiveData.value
+        watchOnlyUsernameLiveData.value.let {
+            binding.username = it
+            binding.hasWatchOnlyCredentials = !it.isNullOrBlank()
+        }
 
         binding.usernameTextInputEditText.doOnTextChanged { text, _, _, _ ->
             binding.usernameTextInputLayout.error =
@@ -53,7 +55,7 @@ class WatchOnlyBottomSheetDialogFragment :
         }
 
         binding.buttonDeleteConfirm.setOnClickListener {
-            viewModel.setWatchOnly(username = "", password = "")
+            viewModel.setWatchOnly(network = network, username = "", password = "")
             dismiss()
         }
 
@@ -73,15 +75,16 @@ class WatchOnlyBottomSheetDialogFragment :
 
                 withContext(Dispatchers.IO) {
                     viewModel.session.setWatchOnly(
+                        network,
                         username = binding.username?.trim() ?: "",
                         password = binding.password?.trim() ?: ""
                     )
                     viewModel.updateWatchOnlyUsername()
                 }
-
-                dismiss()
             } catch (e: Exception) {
                 errorDialog(e)
+            }finally {
+                dismiss()
             }
 
             binding.onProgress = false
@@ -90,8 +93,14 @@ class WatchOnlyBottomSheetDialogFragment :
 
     companion object : KLogging() {
 
-        fun show(fragmentManager: FragmentManager) {
-            show(WatchOnlyBottomSheetDialogFragment(), fragmentManager)
+        private const val NETWORK = "NETWORK"
+
+        fun show(network: Network, fragmentManager: FragmentManager) {
+            show(WatchOnlyBottomSheetDialogFragment().also {
+                it.arguments = Bundle().also { bundle ->
+                    bundle.putParcelable(NETWORK, network)
+                }
+            }, fragmentManager)
         }
     }
 }

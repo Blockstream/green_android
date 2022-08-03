@@ -6,7 +6,7 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.databinding.PassphraseBottomSheetBinding
-import com.blockstream.green.utils.setNavigationResult
+import com.blockstream.green.extensions.setNavigationResult
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 

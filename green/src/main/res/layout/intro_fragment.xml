@@ -6,11 +6,8 @@
     <data>
         <variable
             name="vm"
-            type="com.blockstream.green.ui.WalletListCommonViewModel" />
+            type="com.blockstream.green.ui.wallet.WalletsViewModel" />
 
-        <variable
-            name="activityVm"
-            type="com.blockstream.green.ui.MainActivityViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -55,13 +52,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:fillViewport="true">
 
                 <include
                     android:id="@+id/common"
-                    layout="@layout/wallet_list_common" />
+                    layout="@layout/abstract_wallets_fragment" />
 
             </androidx.core.widget.NestedScrollView>
         </LinearLayout>
@@ -71,9 +66,9 @@
             style="@style/Widget.Green.Button.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="9dp"
             android:text="@string/id_about"
-            android:textColor="@color/color_on_surface_emphasis_low"
+            android:textColor="@color/color_on_surface_emphasis_medium"
             android:textSize="12sp"
             app:icon="@drawable/ic_shield_white"
             app:iconSize="24dp"
@@ -93,10 +88,10 @@
             style="@style/Widget.Green.Button.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
+            android:layout_marginEnd="16dp"
             android:enabled="@{!vm.onProgress}"
             android:text="@string/id_app_settings"
-            android:textColor="@color/color_on_surface_emphasis_low"
+            android:textColor="@color/color_on_surface_emphasis_medium"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

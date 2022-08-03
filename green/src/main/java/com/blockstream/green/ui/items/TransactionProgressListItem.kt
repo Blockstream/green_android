@@ -19,7 +19,7 @@ data class TransactionProgressListItem constructor(
         get() = R.id.fastadapter_transaction_progress_item_id
 
     init {
-        identifier = (if(transaction.txHash.isBlank()) "TransactionProgressListItem" else transaction.txHash).hashCode().toLong()
+        identifier = "TransactionProgressListItem".hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemTransactionProgressBinding, payloads: List<Any>) {

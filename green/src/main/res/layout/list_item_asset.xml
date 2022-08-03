@@ -10,7 +10,7 @@
             type="Boolean" />
 
         <variable
-            name="secondPart"
+            name="withBottomMargin"
             type="Boolean" />
 
     </data>
@@ -20,153 +20,24 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        layoutMarginBottom="@{withBottomMargin ? @dimen/dp8 : @dimen/dp0}">
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:indeterminate="true"
             isVisible="@{isLoading}"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            isVisible="@{!isLoading}">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/icon"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_bitcoin_network_60"
-                    app:layout_constraintBottom_toTopOf="@id/barrier"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-                <TextView
-                    android:id="@+id/ticker"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="@color/color_on_surface_emphasis_high"
-                    android:textSize="14sp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/primaryValue"
-                    app:layout_constraintStart_toEndOf="@+id/icon"
-                    app:layout_constraintVertical_chainStyle="packed"
-                    tools:text="USDT" />
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginEnd="8dp"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="@color/color_on_surface_emphasis_low"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toStartOf="@+id/secondaryValue"
-                    app:layout_constraintStart_toStartOf="@+id/ticker"
-                    app:layout_constraintTop_toBottomOf="@+id/ticker"
-                    tools:text="Tether" />
-
-                <TextView
-                    android:id="@+id/primaryValue"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:textAlignment="textEnd"
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="@color/color_on_surface_emphasis_high"
-                    android:textSize="18sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ticker"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed"
-                    tools:text="1230.234124" />
-
-                <TextView
-                    android:id="@+id/secondaryValue"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="textEnd"
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    android:textSize="15sp"
-                    android:textColor="@color/color_on_surface_emphasis_medium"
-                    app:layout_constraintEnd_toEndOf="@+id/primaryValue"
-                    app:layout_constraintTop_toBottomOf="@+id/primaryValue"
-                    tools:text="$1,200.02" />
-
-                <androidx.constraintlayout.widget.Barrier
-                    android:id="@+id/barrier"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:barrierDirection="bottom"
-                    app:constraint_referenced_ids="icon,secondaryValue,ticker" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
+            android:indeterminate="true" />
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card"
+            isVisible="@{!isLoading}"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="16dp"
-            isVisible="@{!isLoading &amp;&amp; secondPart}"
-            app:cardBackgroundColor="@color/brand_background"
-            app:strokeColor="@color/color_on_surface_divider"
-            app:strokeWidth="1dp"
-            tools:visibility="visible">
+            android:layout_height="wrap_content">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/barrier">
-
-                <TextView
-                    android:id="@+id/domain"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:singleLine="true"
-                    android:textColor="@color/color_on_surface_emphasis_high"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="www.liquid.net" />
-
-                <TextView
-                    android:id="@+id/content"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:textSize="12sp"
-                    android:textAppearance="?attr/textAppearanceCaption"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/domain"
-                    tools:text="1230.234124" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <include
+                android:id="@+id/asset"
+                layout="@layout/asset_layout"/>
 
         </com.google.android.material.card.MaterialCardView>
 

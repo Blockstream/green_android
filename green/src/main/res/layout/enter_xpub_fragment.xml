@@ -5,11 +5,11 @@
 
     <data>
 
-        <import type="com.blockstream.green.utils.ExtensionsKt" />
+        <import type="com.blockstream.green.extensions.ExtensionsKt" />
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.wallet.EnterXpubViewModel" />
+            type="com.blockstream.green.ui.add.EnterXpubViewModel" />
 
     </data>
 
@@ -24,7 +24,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_enter_your_xpub"
-            android:textAppearance="?attr/textAppearanceHeadline1"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -86,7 +86,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="10dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_qr_60" />
+                android:src="@drawable/ic_qr_code" />
 
         </LinearLayout>
 

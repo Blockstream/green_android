@@ -1,20 +1,37 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!--Base theme, all common styling here-->
-    <style name="Base.Green" parent="@style/Theme.MaterialComponents.NoActionBar">
+    <style name="Base.Green" parent="@style/Theme.Material3.Dark.NoActionBar">
         <!--Material type attributes-->
-        <item name="textAppearanceHeadline1">@style/TextAppearance.Green.Headline1</item>
-        <item name="textAppearanceHeadline2">@style/TextAppearance.Green.Headline2</item>
-        <item name="textAppearanceHeadline3">@style/TextAppearance.Green.Headline3</item>
-        <item name="textAppearanceHeadline4">@style/TextAppearance.Green.Headline4</item>
-        <item name="textAppearanceHeadline5">@style/TextAppearance.Green.Headline5</item>
-        <item name="textAppearanceHeadline6">@style/TextAppearance.Green.Headline6</item>
-        <item name="textAppearanceSubtitle1">@style/TextAppearance.Green.Subtitle1</item>
-        <item name="textAppearanceSubtitle2">@style/TextAppearance.Green.Subtitle2</item>
-        <item name="textAppearanceBody1">@style/TextAppearance.Green.Body1</item>
-        <item name="textAppearanceBody2">@style/TextAppearance.Green.Body2</item>
-        <item name="textAppearanceButton">@style/TextAppearance.Green.Button</item>
-        <item name="textAppearanceCaption">@style/TextAppearance.Green.Caption</item>
+
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.Green.DisplayLarge</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.Green.DisplayMedium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.Green.DisplaySmall</item>
+
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Green.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.Green.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Green.HeadlineSmall</item>
+
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Green.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Green.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Green.TitleSmall</item>
+
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Green.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Green.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Green.BodySmall</item>
+
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Green.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Green.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Green.LabelSmall</item>
+
         <item name="textAppearanceOverline">@style/TextAppearance.Green.Overline</item>
+
+        <!--        Deprecated -->
+<!--        <item name="textAppearanceButton">@style/TextAppearance.Green.Button</item>-->
+        <!--   Deprecated End-->
+
+        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
+        <item name="android:textColorPrimary">@color/color_on_surface_emphasis_high</item>
+
         <!--Material shape attributes-->
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Green.SmallComponent</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Green.MediumComponent</item>
@@ -34,6 +51,7 @@
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item> <!-- Make the status bar aware of our dark theme  -->
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">@null</item><!-- Remove the divider   -->
+        <item name="popupMenuBackground">@color/md_theme_dark_surface</item>
 
         <!-- <item name="android:windowTranslucentStatus">true</item>-->
         <!-- <item name="android:windowTranslucentNavigation">true</item>-->
@@ -43,66 +61,59 @@
 
         <!--Component styles-->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Green.MaterialAlertDialog</item>
-        <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
+        <item name="navigationViewStyle">@style/Widget.Material3.NavigationView</item>
         <item name="toolbarStyle">@style/Widget.Green.Toolbar</item>
-        <item name="appBarLayoutStyle">@style/Widget.Green.AppBarLayout</item>
         <item name="materialCardViewStyle">@style/Widget.Green.MaterialCardView</item>
         <item name="cardViewStyle">@style/Widget.Green.MaterialCardView</item>
-        <item name="textInputStyle">@style/Widget.Green.TextInputLayout</item>
-        <item name="bottomSheetDialogTheme">@style/Green.BottomSheetDialogTheme</item>
+        <item name="textInputStyle">@style/Widget.Green.TextInputLayout.OutlinedBox</item>
+        <item name="textInputFilledStyle">@style/Widget.Green.TextInputLayout.FilledBox</item>
+        <item name="textInputFilledDenseStyle">@style/Widget.Green.TextInputLayout.FilledBox</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Green.BottomSheetDialog</item>
         <item name="circularProgressIndicatorStyle">@style/Widget.Green.CircularProgressIndicator</item>
         <item name="linearProgressIndicatorStyle">@style/Widget.Green.LinearProgressIndicator</item>
         <item name="snackbarStyle">@style/Widget.Green.Snackbar</item>
         <item name="snackbarTextViewStyle">@style/Widget.Green.SnackbarTextView</item>
         <item name="snackbarButtonStyle">@style/Widget.Green.SnackbarButton</item>
+        <item name="materialSwitchStyle">@style/Widget.Green.Switch</item>
+        <item name="borderlessButtonStyle">@style/Widget.Green.Button.Text</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.Green.Button.Outlined</item>
+        <item name="materialButtonStyle">@style/Widget.Green.Button</item>
+        <item name="tabStyle">@style/Widget.Green.TabLayout</item>
     </style>
 
     <style name="Theme.Green" parent="Base.Green">
 
-        <!--colorPrimary colors map to components and elements, such as app bars and buttons. -->
-        <!--colorSecondary colors are most often used as accents on components, such as FABs and -->
-        <!--selection controls.-->
-        <item name="colorPrimary">@color/brand_green</item>
-        <item name="colorPrimaryVariant">@color/brand_green_dark</item>
-        <item name="colorSecondary">@color/brand_green</item>
-        <item name="colorSecondaryVariant">@color/brand_green_dark</item>
-
-        <!--colorBackground appears behind scrollable content and is used for the default window-->
-        <!--background. colorSurface is mapped to the surface of components such as cards, sheets-->
-        <!--and menus. colorError is used to indicate an error state for components such as-->
-        <!--text fields.-->
-        <item name="android:colorBackground">@color/brand_background</item>
-        <item name="colorSurface">@color/brand_surface</item>
-        <item name="colorError">@color/red</item>
-
-        <!--"On" colors define how text, icons and strokes are colored in relation to the surface-->
-        <!--on which they appear.-->
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <item name="colorOnBackground">@color/white</item>
-        <item name="colorOnSurface">@color/white</item>
-        <item name="colorOnError">@color/red</item>
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_dark_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_dark_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_dark_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_dark_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_dark_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_dark_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_dark_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_dark_error</item>
+        <item name="colorErrorContainer">@color/md_theme_dark_errorContainer</item>
+        <item name="colorOnError">@color/md_theme_dark_onError</item>
+        <item name="colorOnErrorContainer">@color/md_theme_dark_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_theme_dark_background</item>
+        <item name="colorOnBackground">@color/md_theme_dark_onBackground</item>
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_dark_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_dark_outline</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
     </style>
 
-
-    <style name="ThemeOverlay.Green.MaterialImportantAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="colorSurface">@color/white</item>
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorOnSurface">@color/black</item>
-        <item name="android:textColor">@color/brand_green</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/MaterialImportantAlertDialog.Green.Title.Text</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/MaterialImportantAlertDialog.Green.Body.Text</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.Green.ImportantDialogButton</item>
-    </style>
-
-    <style name="ThemeOverlay.Green.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="ThemeOverlay.Green.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Green.Title.Text</item>
         <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Green.Body.Text</item>
-    </style>
-
-    <style name="Theme.Green.FullScreenDialog">
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
 </resources>

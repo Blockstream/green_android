@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.managers.SessionManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -19,7 +19,6 @@ class WalletViewModel @AssistedInject constructor(
     countly: Countly,
     @Assisted wallet: Wallet,
 ) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
-
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(

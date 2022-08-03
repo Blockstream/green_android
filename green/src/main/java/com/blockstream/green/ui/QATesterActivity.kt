@@ -3,10 +3,9 @@ package com.blockstream.green.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.Notification
@@ -14,7 +13,7 @@ import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.QaTesterActivityBinding
-import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
@@ -25,6 +24,7 @@ import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -45,7 +45,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
     lateinit var sessionManager: SessionManager
 
     @Inject
-    lateinit var greenWallet: GreenWallet
+    lateinit var gdkBridge: GdkBridge
 
     @Inject
     lateinit var applicationScope: ApplicationScope
@@ -104,13 +104,12 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
         }
 
         binding.buttonDisconnectNotification.setOnClickListener {
-            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent.DisconnectedEvent)))
-            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent.ConnectedEvent), delay = 10))
-
+            qaTester.notificationsEvents.tryEmit(QTNotificationDelay(Notification(event = "network", network = NetworkEvent.DisconnectedEvent)))
+            qaTester.notificationsEvents.tryEmit(QTNotificationDelay(Notification(event = "network", network = NetworkEvent.ConnectedEvent), delay = 10))
         }
 
         binding.buttonCreateCustomNetwork.setOnClickListener {
-            FilterBottomSheetDialogFragment.show(supportFragmentManager)
+            FilterBottomSheetDialogFragment.show(fragmentManager = supportFragmentManager)
         }
 
         binding.buttonClearGdk.setOnClickListener {
@@ -131,20 +130,10 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
         binding.errorCounter.text = "Exception Counter: ${countly.exceptionCounter}"
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
-            android.R.id.home -> finish()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun getModelAdapter(): ModelAdapter<*, *> {
+    override fun getFilterAdapter(requestCode: Int): ModelAdapter<*, *> {
         val adapter = ModelAdapter<Network, NetworkListItem>() {
             NetworkListItem(it.id, it.name, "")
-        }.set(greenWallet.networks.networks.values.toList())
+        }.set(gdkBridge.networks.networks.values.toList())
 
         adapter.itemFilter.filterPredicate = { item: NetworkListItem, constraint: CharSequence? ->
             item.networkName.lowercase().contains(
@@ -154,8 +143,10 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
 
         return adapter
     }
+    override fun getFilterHeaderAdapter(requestCode: Int): GenericFastItemAdapter? = null
+    override fun getFilterFooterAdapter(requestCode: Int): GenericFastItemAdapter? = null
 
-    override fun filteredItemClicked(item: GenericItem, position: Int) {
+    override fun filteredItemClicked(requestCode: Int, item: GenericItem, position: Int) {
         val network = (item as NetworkListItem).network
 
         val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(this))
@@ -166,7 +157,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
             .setTitle("Network hostname")
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                greenWallet.registerCustomNetwork(network, dialogBinding.text.toString())
+                gdkBridge.registerCustomNetwork(network, dialogBinding.text.toString())
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

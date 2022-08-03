@@ -6,10 +6,6 @@
     <data>
 
         <variable
-            name="rateGooglePlay"
-            type="Boolean" />
-
-        <variable
             name="buildVersion"
             type="String" />
 
@@ -142,7 +138,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@{buildVersion}"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="@color/color_on_surface_emphasis_high"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="@+id/logo"
@@ -155,7 +151,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@{`© ` + year + ` Blockstream Corporation Inc.`}"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="@color/color_on_surface_emphasis_low"
             android:textSize="11dp"
             app:layout_constraintBottom_toBottomOf="parent"

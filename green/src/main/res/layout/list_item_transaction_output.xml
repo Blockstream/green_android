@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.blockstream.gdk.data.Transaction.Type"/>
+
+        <variable
+            name="isChange"
+            type="Boolean" />
+
+        <variable
+            name="address"
+            type="String" />
+
+        <variable
+            name="amount"
+            type="Long" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="2dp"
+        android:text="@{isChange ? @string/id_change : amount &lt; 0L ? (address != null ? @string/id_sent_to : @string/id_sent) : (address != null ? @string/id_received_on: @string/id_received)}"
+        tools:text="@string/id_sent_to"
+        style="@style/TextAppearance.Green.Overline" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.blockstream.green.views.GappedLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:clipToPadding="false"
+            app:gap="8dp">
+
+            <TextView
+                android:id="@+id/addressTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:text="@{address}"
+                android:includeFontPadding="false"
+                isVisible="@{address != null}"
+                android:fontFamily="monospace"
+                tools:text="33ttwPQbgNkKvQbW8KaVp3tDNaxa3f1MAA" />
+
+            <include
+                android:id="@+id/amountView"
+                layout="@layout/transaction_utxo_layout" />
+
+        </com.blockstream.green.views.GappedLinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</layout>

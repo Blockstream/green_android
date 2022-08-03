@@ -8,17 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import com.blockstream.DeviceBrand
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.green.data.AppEvent
+import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.devices.HardwareConnect
 import com.blockstream.green.devices.HardwareConnectInteraction
-import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
+import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
@@ -27,21 +27,21 @@ import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
-import javax.inject.Inject
 
 class DeviceInfoViewModel @AssistedInject constructor(
     val sessionManager: SessionManager,
     val deviceManager: DeviceManager,
     val qaTester: QATester,
+    val gdkBridge: GdkBridge,
+    countly: Countly,
     @SuppressLint("StaticFieldLeak")
     @Assisted val applicationContext: Context,
-    @Assisted val device: Device
-) : AppViewModel(), HardwareConnectInteraction {
+    @Assisted val device: Device,
+    @Assisted val wallet: Wallet?
+) : AppViewModel(countly), HardwareConnectInteraction {
 
     sealed class DeviceInfoEvent : AppEvent {
         data class RequestPin(val deviceBrand: DeviceBrand) : DeviceInfoEvent()
@@ -51,12 +51,11 @@ class DeviceInfoViewModel @AssistedInject constructor(
         ) : DeviceInfoEvent()
     }
 
-    var requestPinEmitter: SingleEmitter<String>? = null
+    val rememberDevice = MutableLiveData(false)
+
+    var requestPinEmitter: CompletableDeferred<String>? = null
 
     private val hardwareConnect = HardwareConnect(qaTester, isDevelopmentFlavor)
-
-    @Inject
-    lateinit var greenWallet: GreenWallet
 
     val error = MutableLiveData<ConsumableEvent<String>>()
     val instructions = MutableLiveData<ConsumableEvent<Int>>()
@@ -65,12 +64,27 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
     val deviceState = device.deviceState.asLiveData()
 
-    fun connectDeviceToNetwork(network: String){
+    init {
+        if(wallet != null){
+            connectDeviceToNetwork(wallet.activeNetwork)
+        }
+    }
+
+    fun connectDeviceToNetwork(network: String) {
+        // Pause BLE scanning as can make unstable the connection to a ble device
+        deviceManager.pauseBluetoothScanning()
+
         // Device is unlocked
         if (device.hwWallet != null) {
-            sessionManager.getDeviceSessionForNetwork(device, network)?.also {
+            if (device.isLedger) {
+                // Ledger only operates on a single network
+                sessionManager.getDeviceSessionForNetworkAllPolicies(device, gdkBridge.networks.getNetworkById(network))
+            } else {
+                sessionManager.getDeviceSessionForEnviroment(device, gdkBridge.networks.getNetworkById(network).isTestnet)
+            }?.also {
                 switchSessions(it)
             } ?: run {
+                // This is needed only if the device can operate on mainnet/testnet simultaneously
                 connectOnNetwork(network)
             }
 
@@ -79,45 +93,44 @@ class DeviceInfoViewModel @AssistedInject constructor(
         }
     }
 
-    private fun switchSessions(session: GreenSession){
+    private fun switchSessions(session: GdkSession){
         onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(session.ephemeralWallet)))
     }
 
     private fun connectOnNetwork(network: String){
         session = sessionManager.getOnBoardingSession()
 
-        session.observable { session ->
+        doUserAction({
             session.disconnect()
-            session.ephemeralWallet = Wallet.createEphemeralWallet(ephemeralId = 0, greenWallet.networks.getNetworkById(network), isHardware = true)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onSuccess = {
-                onDeviceReady()
-            },
-            onError = {
-                it.printStackTrace()
-            }
-        )
+            session.ephemeralWallet = wallet ?: Wallet.createEphemeralWallet(
+                ephemeralId = 0,
+                networkId = network,
+                name = device.name,
+                isHardware = true,
+                isTestnet = session.networks.getNetworkById(network).isTestnet
+            )
+        }, onSuccess = {
+            onDeviceReady()
+        })
     }
 
     private fun unlockDeviceAndConnect(network: String){
         session = sessionManager.getOnBoardingSession()
 
-        session.observable { session ->
+        doUserAction({
             // Disconnect any previous hww connection
             session.disconnect()
-            session.ephemeralWallet = Wallet.createEphemeralWallet(ephemeralId = 0, greenWallet.networks.getNetworkById(network), isHardware = true)
+            session.ephemeralWallet = wallet ?: Wallet.createEphemeralWallet(
+                ephemeralId = 0,
+                networkId = network,
+                name = device.name,
+                isHardware = true,
+                isTestnet = session.networks.getNetworkById(network).isTestnet
+            )
             hardwareConnect.connectDevice(this, session, device)
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.subscribeBy(
-            onError = {
-                it.printStackTrace()
-            }
-        )
+        }, postAction = null, onSuccess = {
+
+        })
     }
 
     override fun onCleared() {
@@ -132,11 +145,15 @@ class DeviceInfoViewModel @AssistedInject constructor(
         instructions.postValue(ConsumableEvent(resId))
     }
 
-    override fun getGreenSession(): GreenSession {
+    override fun getGreenSession(): GdkSession {
         return session
     }
 
-    override fun getConnectionNetwork() = getGreenSession().networkFromWallet(getGreenSession().ephemeralWallet!!)
+    override fun onJadeInitialization(session: GdkSession) {
+        countly.jadeInitialize(session)
+    }
+
+    override fun getConnectionNetwork() = getGreenSession().prominentNetwork(getGreenSession().ephemeralWallet!!)
 
     override fun showError(err: String) {
         logger.info { "Shown error $err" }
@@ -150,6 +167,8 @@ class DeviceInfoViewModel @AssistedInject constructor(
             sessionManager.upgradeOnBoardingSessionToWallet(it)
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
         }
+
+        countly.hardwareConnect(device)
     }
 
     override fun onDeviceFailed() {
@@ -172,12 +191,17 @@ class DeviceInfoViewModel @AssistedInject constructor(
         }
     }
 
-    override fun requestPin(deviceBrand: DeviceBrand): Single<String> {
+    override fun requestPin(deviceBrand: DeviceBrand): CompletableDeferred<String> {
         onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPin(deviceBrand)))
+        return CompletableDeferred<String>().also {
+            requestPinEmitter = it
+        }
+    }
 
-        return Single.create<String> { emitter ->
-            requestPinEmitter = emitter
-        }.subscribeOn(AndroidSchedulers.mainThread())
+    override fun requestPinBlocking(deviceBrand: DeviceBrand): String {
+        return requestPin(deviceBrand).let {
+            runBlocking { it.await() }
+        }
     }
 
     override fun getAntiExfilCorruptionForMessageSign() = qaTester.getAntiExfilCorruptionForMessageSign()
@@ -192,7 +216,8 @@ class DeviceInfoViewModel @AssistedInject constructor(
     interface AssistedFactory {
         fun create(
             applicationContext: Context,
-            device: Device
+            device: Device,
+            wallet: Wallet?
         ): DeviceInfoViewModel
     }
 
@@ -202,11 +227,12 @@ class DeviceInfoViewModel @AssistedInject constructor(
         fun provideFactory(
             assistedFactory: AssistedFactory,
             applicationContext: Context,
-            device: Device
+            device: Device,
+            wallet: Wallet?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(applicationContext, device) as T
+                return assistedFactory.create(applicationContext, device, wallet) as T
             }
         }
     }

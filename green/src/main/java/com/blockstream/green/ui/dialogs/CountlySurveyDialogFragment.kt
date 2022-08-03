@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
 import com.blockstream.green.data.CountlyWidget
 import com.blockstream.green.databinding.CountlySurveyDialogBinding
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.extensions.snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ly.count.android.sdk.ModuleFeedback
 import mu.KLogging

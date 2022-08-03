@@ -1,6 +1,7 @@
 package com.blockstream.gdk.params
 
 import com.blockstream.gdk.GAJson
+import com.blockstream.gdk.data.Credentials
 import com.blockstream.gdk.data.PinData
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -14,7 +15,8 @@ data class LoginCredentialsParams(
     @SerialName("pin") val pin: String? = null,
     @SerialName("pin_data") val pinData: PinData? = null,
     @SerialName("username") val username: String? = null,
-    @SerialName("password") val password: String? = null
+    @SerialName("password") val password: String? = null,
+    @SerialName("master_xpub") val masterXpub: String? = null
 ) : GAJson<LoginCredentialsParams>() {
     override val encodeDefaultsValues = false
 
@@ -24,5 +26,12 @@ data class LoginCredentialsParams(
 
     companion object{
         val empty = LoginCredentialsParams()
+
+        fun fromCredentials(credentials: Credentials) : LoginCredentialsParams{
+            return LoginCredentialsParams(
+                mnemonic = credentials.mnemonic,
+                bip39Passphrase = credentials.bip39Passphrase,
+            )
+        }
     }
 }

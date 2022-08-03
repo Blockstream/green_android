@@ -3,10 +3,12 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAlertBinding
-import com.blockstream.green.utils.setDrawable
+import com.blockstream.green.extensions.context
+import com.blockstream.green.extensions.setDrawable
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 data class AlertListItem constructor(val alertType: AlertType) : AbstractBindingItem<ListItemAlertBinding>() {
@@ -22,10 +24,6 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
     override fun bindView(binding: ListItemAlertBinding, payloads: List<Any>) {
         val res = binding.root.resources
 
-        binding.alertView.primaryButton(res.getString(R.string.id_learn_more)){
-            action?.invoke(false)
-        }
-
         when(alertType){
             is AlertType.SystemMessage -> {
                 binding.alertView.title = res.getString(R.string.id_system_message)
@@ -34,18 +32,27 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
                 binding.alertView.closeButton {
                     action?.invoke(true)
                 }
+                binding.alertView.primaryButton(res.getString(R.string.id_learn_more)){
+                    action?.invoke(false)
+                }
             }
             is AlertType.Dispute2FA -> {
                 binding.alertView.title = res.getString(R.string.id_2fa_dispute_in_progress)
                 binding.alertView.message = res.getString(R.string.id_warning_wallet_locked_by)
                 binding.alertView.setMaxLines(0)
                 binding.alertView.closeButton(null)
+                binding.alertView.primaryButton(res.getString(R.string.id_learn_more)){
+                    action?.invoke(false)
+                }
             }
             is AlertType.Reset2FA -> {
                 binding.alertView.title = res.getString(R.string.id_2fa_reset_in_progress)
                 binding.alertView.message = res.getString(R.string.id_your_wallet_is_locked_for_a, alertType.twoFactorReset.daysRemaining)
                 binding.alertView.setMaxLines(0)
                 binding.alertView.closeButton(null)
+                binding.alertView.primaryButton(res.getString(R.string.id_learn_more)){
+                    action?.invoke(false)
+                }
             }
             is AlertType.TestnetWarning -> {
                 binding.alertView.title = res.getString(R.string.id_warning)
@@ -53,6 +60,7 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
                 binding.alertView.setMaxLines(0)
                 binding.alertView.closeButton(null)
                 binding.alertView.primaryButton("", null)
+                binding.alertView.setIconVisibility(true)
             }
             is AlertType.EphemeralBip39 -> {
                 binding.alertView.title = res.getString(R.string.id_passphrase_protected)
@@ -68,7 +76,7 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
                     it.setTint(
                         ContextCompat.getColor(
                             binding.root.context,
-                            R.color.black
+                            R.color.white
                         )
                     )
                 }?.let {
@@ -83,12 +91,23 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
 
                 if(alertType.banner.link.isNullOrBlank()){
                     binding.alertView.primaryButton("", null)
+                }else{
+                    binding.alertView.primaryButton(binding.context().getString(R.string.id_learn_more), null)
                 }
 
                 if(alertType.banner.dismissable == true) {
                     binding.alertView.closeButton {
                         action?.invoke(true)
                     }
+                }
+            }
+            is AlertType.FailedNetworkLogin -> {
+                binding.alertView.title = res.getString(R.string.id_warning)
+                binding.alertView.message = "Some accounts can not be logged in due to network issues. Please try again later."
+                binding.alertView.setMaxLines(0)
+                binding.alertView.closeButton(null)
+                binding.alertView.primaryButton(res.getString(R.string.id_try_again)){
+                    action?.invoke(false)
                 }
             }
             is AlertType.AppReview -> {
@@ -104,11 +123,12 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
 }
 
 sealed class AlertType{
-    data class SystemMessage(val message: String) : AlertType()
-    data class Dispute2FA(val twoFactorReset: TwoFactorReset) : AlertType()
-    data class Reset2FA(val twoFactorReset: TwoFactorReset): AlertType()
+    data class SystemMessage(val network: Network, val message: String) : AlertType()
+    data class Dispute2FA(val network: Network, val twoFactorReset: TwoFactorReset) : AlertType()
+    data class Reset2FA(val network: Network, val twoFactorReset: TwoFactorReset): AlertType()
     object TestnetWarning : AlertType()
     object EphemeralBip39 : AlertType()
     object AppReview : AlertType()
     data class Banner(val banner: com.blockstream.green.data.Banner) : AlertType()
+    object FailedNetworkLogin : AlertType()
 }

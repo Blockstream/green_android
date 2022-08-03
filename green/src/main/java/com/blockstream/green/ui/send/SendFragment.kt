@@ -1,60 +1,61 @@
 package com.blockstream.green.ui.send
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.BalancePair
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.base.Urls
+import com.blockstream.gdk.GdkBridge
+import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.green.R
-import com.blockstream.green.Urls
 import com.blockstream.green.data.AddressInputType
 import com.blockstream.green.data.NavigateEvent
+import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.ListItemTransactionRecipientBinding
 import com.blockstream.green.databinding.SendFragmentBinding
+import com.blockstream.green.extensions.clearNavigationResult
+import com.blockstream.green.extensions.endIconCustomMode
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.extensions.setOnClickListener
+import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.filters.NumberValueFilter
-import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.gdk.assetTicker
+import com.blockstream.green.gdk.isPolicyAsset
+import com.blockstream.green.looks.AssetLook
+import com.blockstream.green.ui.bottomsheets.AccountAssetBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
-import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
-import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.bottomsheets.SelectUtxosBottomSheetDialogFragment
-import com.blockstream.green.ui.items.AssetListItem
-import com.blockstream.green.ui.looks.AssetLook
-import com.blockstream.green.utils.*
+import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
+import com.blockstream.green.utils.AmountTextWatcher
+import com.blockstream.green.utils.getClipboard
+import com.blockstream.green.utils.getFiatCurrency
+import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenAlertView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SendFragment : WalletFragment<SendFragmentBinding>(
+class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
     layout = R.layout.send_fragment,
     menuRes = 0
-), FilterableDataProvider {
-
+) {
     override val isAdjustResize = false
 
     val args: SendFragmentArgs by navArgs()
@@ -68,14 +69,19 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     val bindings = mutableListOf<WeakReference<ListItemTransactionRecipientBinding>>()
     
     override val screenName = "Send"
-    override val segmentation by lazy { if(isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.subAccountSegmentation(session, subAccount = viewModel.getSubAccountLiveData().value) else null }
+
+    override val showBalance: Boolean = false
+
+    override val showEditIcon: Boolean
+        get() = !(isBump || isSweep)
 
     @Inject
     lateinit var viewModelFactory: SendViewModel.AssistedFactory
     val viewModel: SendViewModel by viewModels {
         SendViewModel.provideFactory(
             viewModelFactory,
-            wallet,
+            args.wallet,
+            args.accountAsset ?: AccountAsset.fromAccount(session.activeAccount),
             isSweep,
             args.address,
             bumpTransaction
@@ -84,7 +90,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
-    override fun getWalletViewModel() = viewModel
+    override fun getAccountWalletViewModel() = viewModel
 
     override val title: String
         get() = getString(
@@ -95,26 +101,11 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             }
         )
 
-    private val assetAdapter by lazy {
-        ModelAdapter<BalancePair, AssetListItem> {
-            AssetListItem(session = session, balancePair = it, showInfo = false, isLoading = false)
-        }.observeMap(
-            viewLifecycleOwner,
-            viewModel.getAssetsLiveData() as LiveData<Map<*, *>>,
-            toModel = {
-                BalancePair(it.key as String, it.value as Long)
-            })
-            .also {
-                it.itemFilter.filterPredicate = { item: AssetListItem, constraint: CharSequence? ->
-                    item.name.lowercase().contains(
-                        constraint.toString().lowercase()
-                    )
-                }
-            }
-    }
+
+    override val accountAssetLayoutBinding: AccountAssetLayoutBinding?
+        get() = bindings.getOrNull(0)?.get()?.accountAsset
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-
         // Clear previous references as we need to re-create everything
         bindings.clear()
 
@@ -142,6 +133,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
                 navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
                     wallet = wallet,
+                    account = account,
                     transactionSegmentation = viewModel.createTransactionSegmentation()
                 ))
             }
@@ -206,13 +198,15 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             binding.expectedConfirmationTime = if(slider.toInt() == SendViewModel.SliderCustomIndex){
                 getString(R.string.id_custom)
             }else{
-                getExpectedConfirmationTime(requireContext(), GreenWallet.FeeBlockTarget[3 - (slider.toInt())])
+                getExpectedConfirmationTime(requireContext(), GdkBridge.FeeBlockTarget[3 - (slider.toInt())])
             }
         }
+
+        super.onViewCreatedGuarded(view, savedInstanceState)
     }
 
     private fun getExpectedConfirmationTime(context: Context, blocks: Int): String {
-        val blocksPerHour = session.network.blocksPerHour
+        val blocksPerHour = account.network.blocksPerHour
         val n = if (blocks % blocksPerHour == 0) blocks / blocksPerHour else blocks * (60 / blocksPerHour)
         val s = context.getString(if (blocks % blocksPerHour == 0) if (blocks == blocksPerHour) R.string.id_hour else R.string.id_hours else R.string.id_minutes)
         return String.format(Locale.getDefault(), " ~ %d %s", n, s)
@@ -237,43 +231,60 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     }
 
     private fun initRecipientBinging(recipientBinding: ListItemTransactionRecipientBinding) {
-        recipientBinding.addressInputLayout.endIconCopyMode {
-            viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
-                it.addressInputType = AddressInputType.PASTE
-            }
-        }
-        if(!isBump && !isSweep) {
-            recipientBinding.amountTextInputLayout.endIconCopyMode()
-        }
-
-        AmountTextWatcher.watch(recipientBinding.amountInputEditText)
-
-        recipientBinding.buttonScan.setOnClickListener {
-            viewModel.activeRecipient = recipientBinding.index ?: 0
-            CameraBottomSheetDialogFragment.showSingle(childFragmentManager)
-        }
-
-        recipientBinding.assetInputEditText.setOnClickListener {
-            if(session.isLiquid) {
-                val liveData = viewModel.getRecipientLiveData(recipientBinding.index ?: 0)
-
-                // Skip if we have a bip21 asset / bump / sweep
-                if(liveData?.assetBip21?.value == true || isBump || isSweep){
-                    return@setOnClickListener
+        if(!isBump){
+            recipientBinding.buttonAddressPaste.setOnClickListener{
+                viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
+                    it.address.value = getClipboard(requireContext())
+                    it.addressInputType = AddressInputType.PASTE
                 }
-
-                viewModel.activeRecipient = recipientBinding.index ?: 0
-
-                FilterBottomSheetDialogFragment.show(childFragmentManager)
             }
+
+            recipientBinding.buttonAddressClear.setOnClickListener{
+                viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
+                    it.address.value = ""
+                }
+            }
+        }
+
+        AmountTextWatcher.watch(recipientBinding.amountEditText)
+
+        recipientBinding.buttonAddressScan.setOnClickListener {
+            viewModel.activeRecipient = recipientBinding.index ?: 0
+            CameraBottomSheetDialogFragment.showSingle(fragmentManager = childFragmentManager)
+        }
+
+        recipientBinding.accountAsset.root.setOnClickListener {
+            val liveData = viewModel.getRecipientLiveData(recipientBinding.index ?: 0)
+
+            // Skip if we have a bip21 asset / bump / sweep
+            if(liveData?.assetBip21?.value == true || isBump || isSweep){
+                return@setOnClickListener
+            }
+
+            viewModel.activeRecipient = recipientBinding.index ?: 0
+
+            AccountAssetBottomSheetDialogFragment.show(childFragmentManager, showBalance = true)
         }
 
         recipientBinding.toggleGroupSendAll.addOnButtonCheckedListener { _, _, isChecked ->
             viewModel.sendAll(index = recipientBinding.index ?: 0, isSendAll = isChecked)
         }
 
-        recipientBinding.buttonCurrency.setOnClickListener {
+        recipientBinding.buttonAmountCurrency.setOnClickListener {
             viewModel.toggleCurrency(index = recipientBinding.index ?: 0)
+        }
+
+        recipientBinding.buttonAmountPaste.setOnClickListener {
+            viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
+                it.amount.value = getClipboard(requireContext())
+            }
+        }
+
+        recipientBinding.buttonAmountClear.setOnClickListener {
+            viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
+                it.amount.value = ""
+                it.isSendAll.value = false
+            }
         }
 
         recipientBinding.buttonRemove.setOnClickListener {
@@ -293,7 +304,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
             viewModel.activeRecipient = recipientBinding.index ?: 0
 
             // WIP
-            SelectUtxosBottomSheetDialogFragment.show(childFragmentManager)
+            SelectUtxosBottomSheetDialogFragment.show(fragmentManager =  childFragmentManager)
         }
     }
 
@@ -307,48 +318,41 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         recipientBinding.index = index
 
         viewModel.getRecipientLiveData(index)?.let { addressParamsLiveData ->
-            listOf(
+            combine(
                 addressParamsLiveData.isFiat.asFlow(),
-                addressParamsLiveData.assetId.asFlow()
-            ).merge()
-                .map { addressParamsLiveData }
-                .onEach {
-                    val assetId = addressParamsLiveData.assetId.value
+                addressParamsLiveData.accountAsset.asFlow(),
+            ) { _,  ->
+                addressParamsLiveData
+            }.onEach {
+                val assetId = addressParamsLiveData.accountAsset.value!!.assetId
+                val account = addressParamsLiveData.accountAsset.value!!.account
 
-                    val balance = viewModel.getAssetsLiveData().value?.firstNotNullOfOrNull { if (it.key == assetId) it.value else null }
-                    var look: AssetLook? = null
+                val balance = session.accountAssets(account).firstNotNullOfOrNull { if (it.key == assetId) it.value else null }
+                var look: AssetLook? = null
 
-                    if (!assetId.isNullOrBlank()) {
-                        look = AssetLook(
-                            id = assetId,
-                            amount = balance ?: 0,
-                            session = session
-                        )
-                    }
+                if (!assetId.isNullOrBlank()) {
+                    look = AssetLook(
+                        assetId = assetId,
+                        amount = balance ?: 0,
+                        session = session
+                    )
+                }
 
-                    recipientBinding.assetName = look?.name
-                    recipientBinding.assetBalance = if (look != null) getString(
-                        R.string.id_available_funds_s,
-                        look.balance(isFiat = it.isFiat.value, withUnit = true)
-                    ) else ""
-                    recipientBinding.assetSatoshi = balance ?: 0
-                    setAssetIcon(recipientBinding, assetId)
+                recipientBinding.assetName = look?.name
+                recipientBinding.assetBalance = look?.balance(isFiat = it.isFiat.value, withUnit = true) ?: ""
+                recipientBinding.assetSatoshi = balance ?: 0
 
-                    recipientBinding.canConvert = assetId == session.network.policyAsset
 
-                    recipientBinding.amountCurrency = it.assetId.value?.let { assetId ->
-                        if (it.isFiat.value == true) {
-                            getFiatCurrency(session)
-                        } else {
-                            if (session.policyAsset == assetId) {
-                                getBitcoinOrLiquidUnit(session)
-                            } else {
-                                session.getAsset(assetId)?.ticker ?: ""
-                            }
-                        }
+                recipientBinding.canConvert = assetId.isPolicyAsset(session)
+
+                recipientBinding.amountCurrency = assetId.let { assetId ->
+                    if (it.isFiat.value == true) {
+                        getFiatCurrency(account.network, session)
+                    } else {
+                        assetId.assetTicker(session)
                     }
                 }
-                .launchIn(lifecycleScope)
+            }.launchIn(lifecycleScope)
 
             // When changing asset and send all is enabled, listen for the event resetting the send all flag
             addressParamsLiveData.isSendAll.observe(viewLifecycleOwner) { isSendAll ->
@@ -359,37 +363,14 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         }
     }
 
-    private fun setAssetIcon(binding: ListItemTransactionRecipientBinding, assetId: String?) {
-
-        if(assetId.isNullOrBlank()){
-            ContextCompat.getDrawable(requireContext(),R.drawable.ic_pending_asset)
-        }else{
-            assetId.getAssetIcon(requireContext(), session)
-        }?.let { drawable ->
-            val size = requireContext().toPixels(28)
-            val resizedBitmap = drawable.toBitmap(width = size, height = size)
-            val resizedDrawable = BitmapDrawable(
-                resources,
-                Bitmap.createScaledBitmap(resizedBitmap, size, size, true)
-            );
-            binding.assetInputEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                resizedDrawable,
-                null,
-                null,
-                null
-            )
-        }
-
-    }
-
     private fun setCustomFeeRate(){
         val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
-        dialogBinding.textInputLayout.endIconCopyMode()
+        dialogBinding.textInputLayout.endIconCustomMode()
 
         // TODO add locale
         dialogBinding.textInputLayout.placeholderText = "0.00"
         dialogBinding.editText.keyListener = NumberValueFilter(2)
-        dialogBinding.text = (viewModel.customFee.toDouble() / 1000).toString()
+        dialogBinding.text = (viewModel.getFeeRate().toDouble() / 1000).toString()
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.id_default_custom_fee_rate)
@@ -401,7 +382,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
                         if (input.isNullOrBlank()) {
                             viewModel.setCustomFeeRate(null)
                         } else {
-                            val minFeeRateKB: Long = viewModel.feeEstimation?.firstOrNull() ?: session.network.defaultFee
+                            val minFeeRateKB: Long = viewModel.feeEstimation?.firstOrNull() ?: account.network.defaultFee
                             val enteredFeeRate = dialogBinding.text?.toDouble() ?: 0.0
                             if (enteredFeeRate * 1000 < minFeeRateKB) {
                                 snackbar(
@@ -430,13 +411,5 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     override fun onPause() {
         super.onPause()
         hideKeyboard()
-    }
-
-    override fun getModelAdapter(): ModelAdapter<*, *> {
-        return assetAdapter
-    }
-
-    override fun filteredItemClicked(item: GenericItem, position: Int) {
-        viewModel.setAsset(viewModel.activeRecipient, (item as AssetListItem).balancePair.first)
     }
 }

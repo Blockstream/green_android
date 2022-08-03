@@ -2,7 +2,6 @@ package com.blockstream.gdk
 
 import android.content.Context
 import com.blockstream.gdk.data.Assets
-import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.params.AssetsParams
 import com.blockstream.gdk.params.GetAssetsParams
 import kotlinx.coroutines.CoroutineScope
@@ -31,8 +30,8 @@ class AssetManager constructor(
     private val liquidAssetManager by lazy { NetworkAssetManager(context, coroutineScope, qaTester)}
     private val liquidTestnetAssetManager by lazy { NetworkAssetManager(context, coroutineScope, qaTester)}
 
-    fun getNetworkAssetManager(network: Network): NetworkAssetManager {
-        return if (network.isMainnet) {
+    fun getNetworkAssetManager(isMainnet: Boolean): NetworkAssetManager {
+        return if (isMainnet) {
             liquidAssetManager
         } else {
             liquidTestnetAssetManager

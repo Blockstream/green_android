@@ -29,6 +29,7 @@
                 android:id="@+id/icon"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_multisig" />
@@ -54,7 +55,7 @@
             android:layout_marginBottom="-16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_bitcoin_network_60"
+            app:srcCompat="@drawable/ic_bitcoin"
             tools:visibility="visible" />
 
     </com.google.android.material.card.MaterialCardView>

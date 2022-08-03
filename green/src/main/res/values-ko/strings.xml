@@ -200,7 +200,6 @@
   <string name="id_connecting_to_tor_onion_nodes">Tor (.onion)에 연결하면 최고의 보안과 프라이버시를 가능케 합니다. 계속하시려면 "확인"을 눌러주세요.</string>
   <string name="id_connecting_to_your_device">Connecting to your device</string>
   <string name="id_connection">Connection</string>
-  <string name="id_connection_amp_validation">Connection &amp;amp; Validation Settings</string>
   <string name="id_connection_failed">Connection failed</string>
   <string name="id_connection_to_device_failed">Connection to device failed! Move closer to the device and try again.</string>
   <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>

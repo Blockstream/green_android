@@ -13,6 +13,7 @@ help_message() {
     -l, --local Run in local environment
     -a, --add   Add new checksums
     -b, --build Run build task to get more dependencies (takes longer)
+    -t, --test  Run test task to get more dependencies (takes longer)
     -al         Run in local environment, only adding checksums
 
 _EOF_
@@ -40,6 +41,9 @@ case $key in
     -b | --build)
       TASK="verifyDependencies"
       shift ;;
+    -t | --test)
+      TASK="test"
+      shift ;;
     -a | --add | --only-add)
       OVERWRITE=false
       shift ;;
@@ -66,5 +70,5 @@ fi
 if [[ $GRADLE == "local" ]]; then
     ./gradlew --write-verification-metadata sha256 "${TASK}"
 else
-  docker run --rm --name green_dependency_verification -v $PWD:/ga greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0 /bin/sh -c "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
+  docker run --rm --name green_dependency_verification -v $PWD:/ga greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05 /bin/sh -c "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
 fi

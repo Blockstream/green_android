@@ -2,33 +2,33 @@ package com.blockstream.green.ui.settings
 
 import android.graphics.Bitmap
 import androidx.lifecycle.*
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.createQrBitmap
-import com.blockstream.green.utils.isEmailValid
+
+import com.blockstream.green.extensions.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.kotlin.subscribeBy
 
 class TwoFactorSetupViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     countly: Countly,
     appKeystore: AppKeystore,
-    greenWallet: GreenWallet,
+    gdkBridge: GdkBridge,
     applicationScope: ApplicationScope,
     @Assisted wallet: Wallet,
+    @Assisted val network: Network,
     @Assisted val method: TwoFactorMethod,
     @Assisted val action: TwoFactorSetupAction
-) : WalletSettingsViewModel(sessionManager, walletRepository, countly, appKeystore, greenWallet, applicationScope, wallet) {
+) : WalletSettingsViewModel(sessionManager, walletRepository, countly, appKeystore, gdkBridge, applicationScope, wallet) {
 
     var authenticatorUrl: String? = null
     val country = MutableLiveData("")
@@ -57,19 +57,13 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
 
     init {
         if(method == TwoFactorMethod.AUTHENTICATOR){
-            session.observable {
-                it.getTwoFactorConfig()
-            }.subscribeBy(
-                onSuccess = {
-                    authenticatorUrl = it.gauth.data
-                    authenticatorQRBitmap.postValue(createQrBitmap(it.gauth.data))
-                    authenticatorCode.value = it.gauth.data.split("=").getOrNull(1)
-                },
-                onError = {
-                    it.printStackTrace()
-                    onError.postValue(ConsumableEvent(it))
-                }
-            )
+            doUserAction({
+                session.getTwoFactorConfig(network)
+            }, preAction = null, postAction = null, onSuccess = {
+                authenticatorUrl = it.gauth.data
+                authenticatorQRBitmap.postValue(createQrBitmap(it.gauth.data))
+                authenticatorCode.value = it.gauth.data.split("=").getOrNull(1)
+            })
         }
     }
 
@@ -80,6 +74,7 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
     interface AssistedFactory {
         fun create(
             wallet: Wallet,
+            network: Network,
             method: TwoFactorMethod,
             action: TwoFactorSetupAction
         ): TwoFactorSetupViewModel
@@ -89,12 +84,13 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
         fun provideFactory(
             assistedFactory: AssistedFactory,
             wallet: Wallet,
+            network: Network,
             method: TwoFactorMethod,
             action: TwoFactorSetupAction
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, method, action) as T
+                return assistedFactory.create(wallet, network, method, action) as T
             }
         }
     }

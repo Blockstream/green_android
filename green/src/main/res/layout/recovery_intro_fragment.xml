@@ -9,6 +9,10 @@
         <variable
             name="securityChecked"
             type="boolean" />
+
+        <variable
+            name="showRecoveryLength"
+            type="boolean" />
     </data>
 
 
@@ -17,98 +21,199 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/title"
+        <com.blockstream.green.views.GappedLinearLayout
+            android:id="@+id/gappedLinearLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/id_back_up_recovery_phrase"
-            android:textAppearance="?attr/textAppearanceHeadline1"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="32dp"
+            android:orientation="vertical"
+            app:gap="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/id_the_recovery_phrase_can_be_used"
-            android:textAppearance="?attr/textAppearanceBody2"
-            app:layout_constraintEnd_toEndOf="@+id/title"
-            app:layout_constraintStart_toStartOf="@+id/title"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <com.blockstream.green.views.GappedLinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.blockstream.green.views.GappedLinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:gap="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="4dp"
+                        android:text="@string/id_safe_environment"
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        app:drawableTopCompat="@drawable/ic_house"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_make_sure_you_are_alone_and_no"
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="@color/color_on_surface_emphasis_medium" />
+                </com.blockstream.green.views.GappedLinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.blockstream.green.views.GappedLinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:gap="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="4dp"
+                        android:text="@string/id_sensitive_information"
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        app:drawableTopCompat="@drawable/ic_warning"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_whomever_can_access_your"
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="@color/color_on_surface_emphasis_medium" />
+                </com.blockstream.green.views.GappedLinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.blockstream.green.views.GappedLinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:gap="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="4dp"
+                        android:text="@string/id_safely_stored"
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        app:drawableTopCompat="@drawable/ic_shield_check"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_if_you_forget_it_or_lose_it"
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="@color/color_on_surface_emphasis_medium" />
+                </com.blockstream.green.views.GappedLinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+        </com.blockstream.green.views.GappedLinearLayout>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView3"
+            isVisible="@{showRecoveryLength}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:orientation="vertical"
-            app:gap="32dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/brand_surface_variant"
             app:layout_constraintBottom_toTopOf="@+id/buttonNext"
-            app:layout_constraintEnd_toEndOf="@+id/subtitle"
-            app:layout_constraintStart_toStartOf="@+id/subtitle"
-            app:layout_constraintTop_toBottomOf="@+id/subtitle"
-            app:layout_constraintVertical_bias="0.3">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeColor="@color/color_on_surface_divider"
+            app:strokeWidth="1dp">
 
-            <com.blockstream.green.views.GappedLinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:gap="24dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_recovery_write" />
+                android:layout_margin="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/id_write_down_your_recovery_phrase"
-                    android:textAppearance="?attr/textAppearanceBody2" />
-            </com.blockstream.green.views.GappedLinearLayout>
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/id_recovery_phrase_length"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/toggleRecoverySize"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-
-            <com.blockstream.green.views.GappedLinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:gap="24dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/toggleRecoverySize"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_recovery_world" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_dont_store_your_recovery_phrase"
-                    android:textAppearance="?attr/textAppearanceBody2" />
-            </com.blockstream.green.views.GappedLinearLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button12"
+                        style="@style/Widget.Green.Button.Outlined.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12"
+                        tools:ignore="HardcodedText" />
 
-            <com.blockstream.green.views.GappedLinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:gap="24dp">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button24"
+                        style="@style/Widget.Green.Button.Outlined.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="24"
+                        tools:ignore="HardcodedText" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_recovery_screenshot" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_dont_take_screenshots_of_your"
-                    android:textAppearance="?attr/textAppearanceBody2" />
-            </com.blockstream.green.views.GappedLinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </com.blockstream.green.views.GappedLinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
 
         <Button
@@ -119,7 +224,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:text="@string/id_next"
+            android:text="@string/id_show_recovery_phrase"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

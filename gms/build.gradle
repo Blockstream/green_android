@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-kapt'
+}
+
+android {
+    namespace 'com.blockstream.gms'
+
+    compileSdkVersion 33
+    buildToolsVersion "33.0.0"
+
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 33
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    compileOptions {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(11)
+}
+
+dependencies {
+    /**  --- Modules ---------------------------------------------------------------------------- */
+    implementation project(':base')
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Google Mobile Services ------------------------------------------------------------- */
+    implementation "com.google.android.play:review-ktx:2.0.1"
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    /** ----------------------------------------------------------------------------------------- */
+
+}

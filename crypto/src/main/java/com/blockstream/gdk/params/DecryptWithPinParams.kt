@@ -4,6 +4,7 @@ import com.blockstream.gdk.GAJson
 import com.blockstream.gdk.data.PinData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import mu.KLogging
 
 @Serializable
 data class DecryptWithPinParams constructor(
@@ -13,4 +14,13 @@ data class DecryptWithPinParams constructor(
     override val encodeDefaultsValues = false
 
     override fun kSerializer() = serializer()
+
+    companion object: KLogging(){
+        fun fromLoginCredentials(loginCredentialsParams: LoginCredentialsParams) : DecryptWithPinParams{
+            return DecryptWithPinParams(
+                pin = loginCredentialsParams.pin,
+                pinData = loginCredentialsParams.pinData,
+            )
+        }
+    }
 }

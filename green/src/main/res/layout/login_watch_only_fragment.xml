@@ -29,7 +29,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_login"
-            android:textAppearance="?attr/textAppearanceHeadline1"
+            android:textAppearance="?attr/textAppearanceDisplayMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginTop="8dp"
             android:text="@{isSinglesig ? @string/id_scan_or_paste_your_extended : @string/id_log_in_via_watchonly_to_receive}"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
             app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -69,7 +69,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView4">
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                style="?attr/textInputFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_username"
@@ -87,7 +87,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                style="?attr/textInputFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -116,7 +116,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/extendedPublicKeyTextInputLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    style="?attr/textInputFilledStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -149,14 +149,14 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="10dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_qr_60"
+                    android:src="@drawable/ic_qr_code"
                     app:layout_constraintBottom_toBottomOf="@+id/extendedPublicKeyTextInputLayout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/extendedPublicKeyTextInputLayout" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="@={vm.isRememberMe}"
@@ -171,7 +171,7 @@
                 android:text="@string/id_log_in" />
 
             <TextView
-                style="@style/TextAppearance.AppCompat.Caption"
+                style="?attr/textAppearanceBodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/id_watchonly_mode_can_be_activated" />

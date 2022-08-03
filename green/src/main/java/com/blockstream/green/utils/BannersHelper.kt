@@ -1,23 +1,28 @@
 package com.blockstream.green.utils
 
+import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.R
 import com.blockstream.green.data.Banner
-import com.blockstream.green.database.Wallet
+import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.ui.AppFragment
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 
 object BannersHelper {
 
-    fun handle(appFragment: AppFragment<*>, wallet: Wallet?) {
-        appFragment.countly.remoteConfigUpdateEvent.observe(appFragment.viewLifecycleOwner) {
-
+    fun handle(appFragment: AppFragment<*>, session: GdkSession?) {
+        appFragment.countly.remoteConfigUpdateEvent.onEach {
             val oldBanner = appFragment.getAppViewModel()?.banner?.value
 
             appFragment.countly.getRemoteConfigValueForBanners("banners")
                 // Filter
                 ?.filter {
-                    // Filter closed banners & networks
-                    appFragment.getAppViewModel()?.closedBanners?.contains(it) == false && (it.networks == null || it.networks.contains(wallet?.network)) &&
+                    // Filter closed banners
+                    appFragment.getAppViewModel()?.closedBanners?.contains(it) == false &&
+
+                    // Filter networks
+                    (it.networks == null || (it.networks.intersect((session?.activeSessions?.map { it.network } ?: setOf()).toSet()).isNotEmpty()))  &&
 
                     // Filter based on screen name
                     (it.screens?.contains(appFragment.screenName) == true || it.screens?.contains("*") == true)
@@ -47,7 +52,7 @@ object BannersHelper {
                         }
                     }
                 }
-        }
+        }.launchIn(appFragment.lifecycleScope)
     }
 
     fun dismiss(appFragment: AppFragment<*>, banner: Banner) {

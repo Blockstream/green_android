@@ -6,12 +6,14 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.SetPinFragmentBinding
-import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.hideKeyboard
+import com.blockstream.green.extensions.dialog
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.views.GreenPinViewListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -26,7 +28,7 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
     @Inject
     lateinit var viewModelFactory: SetPinViewModel.AssistedFactory
     val viewModel: SetPinViewModel by viewModels {
-        SetPinViewModel.provideFactory(viewModelFactory, args.onboardingOptions, args.restoreWallet)
+        SetPinViewModel.provideFactory(viewModelFactory, args.onboardingOptions, args.mnemonic, args.password, args.restoreWallet)
     }
 
     private var pin: String = ""
@@ -68,9 +70,38 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
         binding.buttonNext.setOnClickListener {
             options?.let {
                 if(it.isRestoreFlow){
-                    viewModel.restoreWithPin(it, pin)
+                    viewModel.restoreWallet(options = it, pin = pin, mnemonic = args.mnemonic, password = args.password)
                 }else{
-                    viewModel.createNewWallet(it, pin, args.mnemonic)
+                    viewModel.createNewWallet(options = it, pin = pin, mnemonic = args.mnemonic)
+                }
+            }
+        }
+
+        viewModel.onError.observe(viewLifecycleOwner){
+            it?.getContentIfNotHandledOrReturnNull()?.let { error ->
+                // Keep the spinner rolling
+                viewModel.onProgress.value = true
+                if(error.message?.startsWith("id_wallet_already_restored:") == true){
+
+                    getString(R.string.id_wallet_already_restored).let { str ->
+                        "$str: ${error.message!!.removePrefix("id_wallet_already_restored:")}"
+                    }.also { message ->
+                        errorDialog(message) {
+                            popBackStack()
+                        }
+                    }
+                } else if(error.message == "id_login_failed"){
+                    dialog(title = getString(R.string.id_wallet_not_found), message = getString(R.string.id_no_multisig_shield_wallet)) {
+                        popBackStack()
+                    }
+                }else if(error.message?.contains("decrypt_mnemonic") == true){
+                    dialog(title = getString(R.string.id_error), message = getString(R.string.id_error_passphrases_do_not_match)) {
+                        popBackStack()
+                    }
+                }else {
+                    errorDialog(error) {
+                        viewModel.onProgress.value = false
+                    }
                 }
             }
         }
@@ -88,7 +119,7 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
 
         viewModel.onEvent.observe(viewLifecycleOwner) {
             it.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let { navigate ->
-                navigate(SetPinFragmentDirections.actionSetPinFragmentToOnBoardingCompleteFragment(options!!, navigate.data as Wallet))
+                navigate(NavGraphDirections.actionGlobalWalletOverviewFragment(navigate.data as Wallet))
             }
         }
 

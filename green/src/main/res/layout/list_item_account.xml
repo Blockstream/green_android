@@ -8,199 +8,174 @@
         <import type="com.blockstream.green.gdk.ExtensionsKt" />
 
         <variable
-            name="isTopAccount"
-            type="Boolean" />
+            name="account"
+            type="com.blockstream.gdk.data.Account" />
 
         <variable
-            name="isAccountListOpen"
-            type="Boolean" />
-
-        <variable
-            name="isLiquid"
-            type="Boolean" />
-
-        <variable
-            name="isSinglesig"
-            type="Boolean" />
-
-        <variable
-            name="isMainnet"
-            type="Boolean" />
-
-        <variable
-            name="isWatchOnly"
-            type="Boolean" />
-
-        <variable
-            name="subAccount"
-            type="com.blockstream.gdk.data.SubAccount" />
-
-        <variable
-            name="balance"
+            name="primaryValue"
             type="String" />
 
         <variable
-            name="ticker"
+            name="secondaryValue"
             type="String" />
+
+        <variable
+            name="showBalance"
+            type="Boolean" />
+
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        layoutMarginBottom="@{isTopAccount &amp;&amp; !isAccountListOpen ? @dimen/dp16 : @dimen/dp0}"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="16dp">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/fakeAccountCard"
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:layout_gravity="bottom|center"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:alpha="0.6"
-            android:translationY="8dp"
-            app:cardBackgroundColor="@{isLiquid ? @color/liquid : isMainnet ? @color/bitcoin : @color/testnet }"
-            app:layout_constraintBottom_toBottomOf="@+id/account"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:cardBackgroundColor="@color/liquid">
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/account"
-            layoutMarginLeft="@{isTopAccount ? @dimen/dp0 : @dimen/dp8}"
-            layoutMarginRight="@{isTopAccount ? @dimen/dp0 : @dimen/dp8}"
+            android:id="@+id/accountCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@{isLiquid ? @color/liquid : isMainnet ? @color/bitcoin : @color/testnet }"
-            tools:cardBackgroundColor="@color/liquid"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="16dp">
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/icon"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_bitcoin"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <ImageView
+                    android:id="@+id/policyIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@{account.network.multisig ? @drawable/ic_multisig : @drawable/ic_singlesig}"
+                    app:layout_constraintBottom_toBottomOf="@+id/icon"
+                    app:layout_constraintDimensionRatio="w,1:1"
+                    app:layout_constraintEnd_toEndOf="@+id/icon"
+                    tools:src="@drawable/ic_multisig" />
 
                 <TextView
-                    android:id="@+id/accountName"
-                    style="@style/TextShadow"
+                    android:id="@+id/nameTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="@{account.name}"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="@color/color_on_surface_emphasis_high"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/accountType"
+                    app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/icon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    tools:text="Bitcoin" />
+
+                <TextView
+                    android:id="@+id/accountType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:ellipsize="end"
                     android:includeFontPadding="false"
-                    android:singleLine="true"
-                    android:text="@{subAccount.nameOrDefault(@string/id_main_account)}"
-                    android:textAppearance="?attr/textAppearanceHeadline5"
-                    app:layout_constraintBottom_toTopOf="@+id/type"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonAccountMenu"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="AccountName" />
-
-                <ImageButton
-                    android:id="@+id/buttonAccountMenu"
-                    isVisible="@{isAccountListOpen &amp;&amp; !isWatchOnly}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="16dp"
-                    android:src="@drawable/ic_baseline_more_vert_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/color_on_surface_emphasis_medium" />
+                    android:lines="1"
+                    android:text="@{ExtensionsKt.titleRes(account.type)}"
+                    android:textAllCaps="true"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/color_on_surface_emphasis_low"
+                    android:textSize="11sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/nameTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/nameTextView"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    tools:text="Bitcoin" />
 
                 <TextView
                     android:id="@+id/type"
-                    style="@style/TextShadow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:background="@drawable/transparent_dark_round"
-                    android:padding="4dp"
-                    android:text="@{ExtensionsKt.typeWithAccountNumber(subAccount, context)}"
-                    android:textAllCaps="true"
-                    android:textColor="@color/color_on_surface_emphasis_medium"
-                    android:textSize="10sp"
-                    app:layout_constraintStart_toStartOf="@+id/accountName"
-                    app:layout_constraintTop_toBottomOf="@+id/accountName"
-                    tools:text="2of2" />
-
-                <FrameLayout
-                    android:id="@+id/assetsIcons"
-                    isVisible="@{isAccountListOpen &amp;&amp; balance != null &amp;&amp; isLiquid}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/transparent_dark_round"
-                    android:orientation="horizontal"
-                    android:padding="2dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/type"
-                    app:layout_constraintStart_toEndOf="@+id/type"
-                    app:layout_constraintTop_toTopOf="@+id/type">
-
-                </FrameLayout>
-
-                <LinearLayout
-                    isVisible="@{isAccountListOpen &amp;&amp; balance != null}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="-8dp"
+                    android:layout_marginBottom="8dp"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="2"
+                    android:padding="4dp"
+                    android:text="@{ExtensionsKt.titleRes(account.type)}"
+                    android:textAlignment="center"
+                    android:textColor="@color/color_on_surface_emphasis_low"
+                    android:textSize="9sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/icon"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/icon"
+                    tools:text="2of2" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:gravity="bottom"
-                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="vertical"
+                    isVisible="@{showBalance}"
+                    android:gravity="end"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/type"
-                    app:layout_constraintTop_toBottomOf="@+id/type">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/symbol"
-                        style="@style/TextShadow"
-                        isVisible="@{balance != null}"
+                        android:id="@+id/primaryValueTextView"
+                        isVisible="@{showBalance &amp;&amp; primaryValue != null}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:text="@{primaryValue}"
                         android:includeFontPadding="false"
-                        android:paddingRight="4dp"
-                        android:singleLine="true"
-                        android:text="@{ticker}"
                         android:textAlignment="textEnd"
-                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textAppearance="?attr/textAppearanceBody2"
                         android:textColor="@color/color_on_surface_emphasis_high"
-                        android:textSize="14sp"
-                        tools:text="BTC" />
-
-                    <TextView
-                        android:id="@+id/balanceTextView"
-                        style="@style/TextShadow"
-                        isVisible="@{balance != null}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:includeFontPadding="false"
-                        android:singleLine="true"
-                        android:text="@{balance}"
-                        android:textAlignment="textEnd"
-                        android:textAppearance="?attr/textAppearanceBody1"
-                        android:textColor="@color/color_on_surface_emphasis_high"
-                        android:textSize="16sp"
                         android:textStyle="bold"
                         tools:text="1230.234124" />
 
+                    <!--            visibility="@{ showBalance == false ? 2 : secondaryValue == null ? 1 : 0}"-->
+                    <TextView
+                        android:id="@+id/secondaryValueTextView"
+                        isVisible="@{showBalance &amp;&amp; secondaryValue != null}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{secondaryValue}"
+                        android:includeFontPadding="false"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="@color/color_on_surface_emphasis_medium"
+                        tools:text="$1,200.02" />
                 </LinearLayout>
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
 </layout>

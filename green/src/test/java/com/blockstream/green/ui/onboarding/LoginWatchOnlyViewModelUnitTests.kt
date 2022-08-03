@@ -6,8 +6,11 @@ import com.blockstream.gdk.data.Network
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.OnboardingOptions
-import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.ConsumableEvent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,11 +18,15 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.*
 
+@ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>() {
 
     @Mock
     private lateinit var sessionManager: SessionManager
+
+    @Mock
+    private lateinit var walletRepository: WalletRepository
 
     @Mock
     private lateinit var isLoginEnabledObserver: Observer<Boolean>
@@ -43,12 +50,11 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
             true
         )
 
-        whenever(greenSession.countly).thenReturn(countly)
-        whenever(greenSession.network).thenReturn(network)
-        whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(greenSession)
+        whenever(gdkSession.defaultNetwork).thenReturn(network)
+        whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(gdkSession)
 
         viewModel = LoginWatchOnlyViewModel(
-            walletRepository = mock(),
+            walletRepository = walletRepository,
             sessionManager = sessionManager,
             appKeystore = mock(),
             countly = countly,
@@ -105,25 +111,30 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
     }
 
     @Test
-    fun test_successful_login() {
+    fun test_successful_login() = runTest {
         mockSession(true)
+
+        whenever(walletRepository.getSoftwareWallets()).thenReturn(listOf())
+        whenever(walletRepository.insertWallet(any())).thenReturn(1)
 
         viewModel.username.value = "username"
         viewModel.password.value = "password"
 
         viewModel.createNewWatchOnlyWallet()
 
+        verify(walletRepository).insertWallet(any())
         verify(newWalletObserver).onChanged(notNull())
         verify(errorObserver, never()).onChanged(any())
     }
 
     private fun mockSession(isSuccess: Boolean) {
         if (isSuccess) {
-            whenever(greenSession.loginWatchOnly(any<Network>(), any(), any())).then {
+            whenever(gdkSession.loginWatchOnly(any<Network>(), any(), any())).then {
                 LoginData("", "")
             }
+
         }else{
-            whenever(greenSession.loginWatchOnly(any<Network>(), any(), any())).then {
+            whenever(gdkSession.loginWatchOnly(any<Network>(), any(), any())).then {
                 throw Exception("-1")
             }
         }

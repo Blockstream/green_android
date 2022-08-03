@@ -5,20 +5,30 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.Countries.COUNTRIES
 import com.blockstream.green.data.Country
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorSetupFragmentBinding
-import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.extensions.localized2faMethod
+import com.blockstream.green.extensions.openKeyboard
+import com.blockstream.green.extensions.setNavigationResult
+import com.blockstream.green.extensions.snackbar
+import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.pulse
 import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,7 +38,7 @@ enum class TwoFactorSetupAction {
 }
 
 @AndroidEntryPoint
-class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.layout.twofactor_setup_fragment, 0),
+class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBinding>(R.layout.twofactor_setup_fragment, 0),
     FilterableDataProvider {
     val args: TwoFactorSetupFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
@@ -54,14 +64,27 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
             "WalletSettings2FA$it"
         }
     }
-    override val segmentation by lazy { if(isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.twoFactorSegmentation(session, viewModel.getSubAccountLiveData().value, args.method) else null }
+    override val segmentation
+        get() = if (isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.twoFactorSegmentation(
+            session = session,
+            network = network,
+            twoFactorMethod = args.method
+        ) else null
 
     override val isAdjustResize: Boolean = true
+
+    val network: Network by lazy { args.network }
+
+    override val subtitle: String
+        get() = getString(R.string.id_multisig)
+
+    override val toolbarIcon: Int
+        get() = network.getNetworkIcon()
 
     @Inject
     lateinit var viewModelFactory: TwoFactorSetupViewModel.AssistedFactory
     val viewModel: TwoFactorSetupViewModel by viewModels {
-        TwoFactorSetupViewModel.provideFactory(viewModelFactory, args.wallet, args.method, args.action)
+        TwoFactorSetupViewModel.provideFactory(viewModelFactory, args.wallet, args.network, args.method, args.action)
     }
 
     override val title: String
@@ -94,7 +117,11 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         
         when(action){
             TwoFactorSetupAction.SETUP -> {
-                binding.message = getString(R.string.id_insert_your_email_to_receive)
+                binding.message =  if(args.method == TwoFactorMethod.EMAIL){
+                    getString(R.string.id_insert_your_email_to_receive)
+                }else{
+                    getString(R.string.id_insert_your_phone_number_to)
+                }
                 binding.button = getString(R.string.id_continue)
             }
             TwoFactorSetupAction.SETUP_EMAIL -> {
@@ -107,7 +134,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
             }
             TwoFactorSetupAction.CANCEL -> {
                 // Cancel action
-                viewModel.cancel2FA(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+                viewModel.cancel2FA(network, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
             }
             TwoFactorSetupAction.DISPUTE -> {
                 binding.message = getString(R.string.id_if_you_did_not_request_the)
@@ -135,12 +162,13 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                     }
                 }
                 // setupEmail is used only to setup the email address for recovery transactions legacy option
-                viewModel.enable2FA(args.method, data = data, action = args.action, twoFactorResolver = DialogTwoFactorResolver(this))
+                viewModel.enable2FA(network = network, args.method, data = data, action = args.action, twoFactorResolver = DialogTwoFactorResolver(this))
             }else{
                 val email = binding.emailEditText.text.toString()
                 when(action){
                     TwoFactorSetupAction.RESET -> {
                         viewModel.reset2FA(
+                            network = network,
                             email = email,
                             isDispute = false,
                             twoFactorResolver = DialogTwoFactorResolver(requireContext())
@@ -148,6 +176,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                     }
                     TwoFactorSetupAction.DISPUTE -> {
                         viewModel.reset2FA(
+                            network = network,
                             email = email,
                             isDispute = true,
                             twoFactorResolver = DialogTwoFactorResolver(requireContext())
@@ -155,6 +184,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                     }
                     TwoFactorSetupAction.UNDO_DISPUTE -> {
                         viewModel.undoReset2FA(
+                            network = network,
                             email = email,
                             twoFactorResolver = DialogTwoFactorResolver(requireContext())
                         )
@@ -198,18 +228,19 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
             event?.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
                 // Hint TwoFactorAuthenticationFragment / WalletSettingsFragment to update TwoFactorConfig
                 setNavigationResult(result = true)
+                setNavigationResult(key = network.id, result = true)
                 popBackStack()
             }
         }
     }
 
     private fun openCountryFilter(){
-        FilterBottomSheetDialogFragment.show(childFragmentManager)
+        FilterBottomSheetDialogFragment.show(fragmentManager = childFragmentManager)
     }
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 
-    override fun getModelAdapter(): ModelAdapter<*, *> {
+    override fun getFilterAdapter(requestCode: Int): ModelAdapter<*, *> {
         val adapter = ModelAdapter<Country, CountryListItem>() {
             CountryListItem(it)
         }.set(COUNTRIES)
@@ -223,9 +254,12 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         return adapter
     }
 
-    override fun filteredItemClicked(item: GenericItem, position: Int) {
+    override fun filteredItemClicked(requestCode: Int, item: GenericItem, position: Int) {
         binding.countryEditText.setText((item as CountryListItem).country.dialCodeString)
         binding.phoneNumberEditText.requestFocus()
         openKeyboard()
     }
+
+    override fun getFilterHeaderAdapter(requestCode: Int): GenericFastItemAdapter? = null
+    override fun getFilterFooterAdapter(requestCode: Int): GenericFastItemAdapter? = null
 }

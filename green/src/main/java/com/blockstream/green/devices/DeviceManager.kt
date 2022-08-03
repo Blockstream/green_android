@@ -11,8 +11,7 @@ import android.hardware.usb.UsbManager
 import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.async
+import com.blockstream.green.managers.SessionManager
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.jade.JadeBleImpl
 import com.polidea.rxandroidble2.RxBleClient
@@ -20,10 +19,12 @@ import com.polidea.rxandroidble2.scan.ScanCallbackType
 import com.polidea.rxandroidble2.scan.ScanFilter
 import com.polidea.rxandroidble2.scan.ScanSettings
 import hu.akarnokd.rxjava3.bridge.RxJavaBridge
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import mu.KLogging
 import java.lang.ref.WeakReference
@@ -132,7 +133,7 @@ class DeviceManager constructor(
             .subscribe{ ts ->
                 bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value?.filter {
                     !it.isOffline && (it.timeout == 0L || it.timeout > ts)
-                })
+                } ?: listOf())
 
             }.addTo(bleScanDisposable)
 
@@ -141,7 +142,8 @@ class DeviceManager constructor(
             .`as`(RxJavaBridge.toV3Observable())
             .startWithItem(rxBleClient.state)
             .distinctUntilChanged()
-            .async()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .switchMap { state: RxBleClient.State? ->
 
                 bleAdapterState.value = state
@@ -196,7 +198,7 @@ class DeviceManager constructor(
                     } else if (it.callbackType == ScanCallbackType.CALLBACK_TYPE_MATCH_LOST) {
                         bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value?.filter { dev ->
                             dev.id != device.id
-                        })
+                        } ?: listOf())
                     }
                 }
             ).addTo(bleScanDisposable)

@@ -3,24 +3,23 @@ package com.blockstream.green.ui.recovery
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import mu.KLogging
 import java.security.SecureRandom
 import kotlin.random.asKotlinRandom
 
 class RecoveryCheckViewModel @AssistedInject constructor(
-    greenWallet: GreenWallet,
-    val countly: Countly,
+    gdkBridge: GdkBridge,
+    countly: Countly,
     @Assisted val mnemonic: List<String>,
-    @Assisted val page: Int,
-    @Assisted val networkId: String?,
-    @Assisted val isDevelopmentFlavor: Boolean,
-) : AppViewModel() {
+    @Assisted val page: Int
+) : AppViewModel(countly) {
     val wordLeft = MutableLiveData<String>()
     val wordRight = MutableLiveData<String>()
 
@@ -32,9 +31,11 @@ class RecoveryCheckViewModel @AssistedInject constructor(
     private val correctWord: String
     var isLastPage = false
 
+    val progress = MutableLiveData(0)
+    val progressMax = MutableLiveData(0)
     init {
 
-        val totalChecks = 4
+        val totalChecks = RecoveryPhraseChecks
         val wordsPerPage = mnemonic.size / totalChecks
 
         isLastPage = (page + 1) >= totalChecks
@@ -46,7 +47,7 @@ class RecoveryCheckViewModel @AssistedInject constructor(
         val wordIndex = SecureRandom().asKotlinRandom().nextInt(if(isLastOrFirstPage) 1 else 0 , wordsPerPage - if(isLastOrFirstPage) 1 else 0)
         correctWord = mnemonic[offset + wordIndex]
 
-        val wordList = greenWallet.getMnemonicWordList().shuffled()
+        val wordList = gdkBridge.getMnemonicWordList().shuffled()
         val randomChoices = (wordList.subList(0, 3).toMutableList() + correctWord).shuffled()
 
         correctWordIndex = randomChoices.indexOf(correctWord)
@@ -56,6 +57,10 @@ class RecoveryCheckViewModel @AssistedInject constructor(
 
         words.value = randomChoices
         pointer.value = (wordsPerPage * page) + wordIndex + 1
+
+        val pagesFromWords = (mnemonic.size / RecoveryWordsViewModel.WORDS_PER_PAGE)
+        progress.value = pagesFromWords + page + 1
+        progressMax.value = pagesFromWords + RecoveryPhraseChecks
     }
 
     fun selectWord(selectedWord: String) {
@@ -64,7 +69,7 @@ class RecoveryCheckViewModel @AssistedInject constructor(
                 if (correctWord == selectedWord) {
                     NavigateEvent.Navigate
                 } else {
-                    networkId?.let { countly.recoveryPhraseCheckFailed(networkId = networkId, page = page + 1) }
+                    countly.recoveryPhraseCheckFailed(page = page + 1)
                     NavigateEvent.NavigateBack()
                 }
             )
@@ -75,23 +80,21 @@ class RecoveryCheckViewModel @AssistedInject constructor(
     interface AssistedFactory {
         fun create(
             mnemonic: List<String>,
-            page: Int,
-            networkId: String?,
-            isDevelopmentFlavor: Boolean
+            page: Int
         ): RecoveryCheckViewModel
     }
 
-    companion object {
+    companion object: KLogging(){
+        const val RecoveryPhraseChecks = 4
+
         fun provideFactory(
             assistedFactory: AssistedFactory,
             mnemonic: List<String>,
-            page: Int,
-            networkId: String?,
-            isDevelopmentFlavor: Boolean
+            page: Int
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(mnemonic, page, networkId, isDevelopmentFlavor) as T
+                return assistedFactory.create(mnemonic, page) as T
             }
         }
     }

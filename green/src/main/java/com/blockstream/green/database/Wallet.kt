@@ -2,7 +2,6 @@ package com.blockstream.green.database
 
 import android.os.Parcelable
 import androidx.room.*
-import com.blockstream.gdk.data.Network
 import kotlinx.parcelize.Parcelize
 import mu.KLogging
 
@@ -10,6 +9,7 @@ typealias WalletId = Long
 
 @Entity(tableName = "wallets", indices = [Index(value = ["order"]), Index(value = ["is_hardware"]), Index(value = ["wallet_hash_id"])])
 @Parcelize
+@TypeConverters(Converters::class)
 data class Wallet constructor(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
@@ -23,9 +23,6 @@ data class Wallet constructor(
     @ColumnInfo(name = "name")
     var name: String,
 
-    @ColumnInfo(name = "network")
-    val network: String,
-
     @ColumnInfo(name = "is_recovery_confirmed")
     val isRecoveryPhraseConfirmed: Boolean = true,
 
@@ -37,6 +34,12 @@ data class Wallet constructor(
 
     @ColumnInfo(name = "is_hardware")
     val isHardware: Boolean = false,
+
+    @ColumnInfo(name = "is_testnet")
+    var isTestnet: Boolean,
+
+    @ColumnInfo(name = "network") // kept it as network for backward compatibility
+    var activeNetwork: String,
 
     @ColumnInfo(name = "active_account")
     var activeAccount: Long = 0,
@@ -56,33 +59,32 @@ data class Wallet constructor(
         id: WalletId,
         walletHashId: String,
         name: String,
-        network: String,
         isRecoveryPhraseConfirmed: Boolean,
         askForBip39Passphrase: Boolean,
         watchOnlyUsername: String?,
         isHardware: Boolean,
+        isTestnet: Boolean,
+        activeNetwork: String,
         activeAccount: Long,
-        order: Int
+        order: Int,
     ) : this(
         id,
         walletHashId,
         name,
-        network,
         isRecoveryPhraseConfirmed,
         askForBip39Passphrase,
         watchOnlyUsername,
         isHardware,
+        isTestnet,
+        activeNetwork,
         activeAccount,
         order,
         false,
         0L
     )
 
-    val isLiquid
-        get() = network.contains("liquid")
-
-    val isElectrum
-        get() = network.contains("electrum")
+    val isMainnet
+        get() = !isTestnet
 
     val isWatchOnly
         get() = watchOnlyUsername != null
@@ -96,15 +98,16 @@ data class Wallet constructor(
     companion object : KLogging() {
         private var ephemeralWalletIdCounter = -1L
 
-        fun createEphemeralWallet(ephemeralId: Long, network: Network, name: String? = null, isHardware: Boolean = false): Wallet {
+        fun createEphemeralWallet(ephemeralId: Long, networkId: String, name: String? = null, isHardware: Boolean = false, isTestnet: Boolean = false): Wallet {
             return Wallet(
                 id = ephemeralWalletIdCounter--,
-                walletHashId = network.id,
-                name = name ?: network.productName,
-                network = network.network,
+                walletHashId = networkId,
+                name = name ?: networkId.replaceFirstChar { n -> n.titlecase() },
                 isRecoveryPhraseConfirmed = true,
                 isHardware = isHardware,
-                activeAccount = 0
+                isTestnet = isTestnet,
+                activeNetwork = networkId,
+                activeAccount = 0,
             ).also {
                 it.isEphemeral = true
                 it.ephemeralId = ephemeralId

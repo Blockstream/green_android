@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi;
 
+import com.blockstream.gdk.data.Account;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
@@ -118,7 +119,7 @@ public abstract class HWWallet {
 
     public abstract int getIconResourceId();
 
-    public abstract String getGreenAddress(final Network network, HWWalletBridge parent, final SubAccount subaccount, final List<Long> path, final long csvBlocks) throws Exception;
+    public abstract String getGreenAddress(final Network network, HWWalletBridge parent, final Account account, final List<Long> path, final long csvBlocks) throws Exception;
 
     public Device getDevice() {
         return mDevice;

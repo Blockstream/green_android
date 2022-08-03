@@ -1,11 +1,12 @@
 package com.blockstream.green.devices
 
-import com.blockstream.gdk.HardwareWalletResolver
 import com.blockstream.gdk.data.DeviceRequiredData
 import com.blockstream.gdk.data.DeviceResolvedData
-import com.blockstream.green.gdk.GreenSession
+import com.blockstream.gdk.data.Network
+import com.blockstream.green.gdk.HardwareWalletResolver
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWallet.SignTxResult
 import com.greenaddress.greenapi.HWWalletBridge
 import io.reactivex.rxjava3.core.Single
@@ -13,14 +14,17 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-class DeviceResolver constructor(private val session: GreenSession, private val hwWalletBridge: HWWalletBridge? = null) :
-    HardwareWalletResolver {
+class DeviceResolver constructor(
+    private val hwWallet: HWWallet?,
+    private val hwWalletBridge: HWWalletBridge? = null
+) : HardwareWalletResolver {
+
     private val objectMapper by lazy { ObjectMapper() }
 
-    override fun requestDataFromDevice(requiredData: DeviceRequiredData): Single<String> {
+    override fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): Single<String> {
         return Single.create { emitter ->
             try {
-                val data = requestDataFromHardware(requiredData)
+                val data = requestDataFromHardware(network, requiredData)
                 if (data != null) {
                     emitter.onSuccess(data)
                 } else {
@@ -38,13 +42,18 @@ class DeviceResolver constructor(private val session: GreenSession, private val 
     }
 
     @Synchronized
-    fun requestDataFromHardware(requiredData: DeviceRequiredData): String? {
+    private fun requestDataFromHardware(network: Network, requiredData: DeviceRequiredData): String? {
 
-        val hwWallet = session.hwWallet ?: return null
+        if (hwWallet == null) {
+            return null
+        }
 
         return when (requiredData.action) {
             "get_xpubs" -> {
-                hwWallet.getXpubs(session.network, hwWalletBridge, requiredData.paths?.map { it.map { it.toInt() } }).let {
+                hwWallet.getXpubs(
+                    network,
+                    hwWalletBridge,
+                    requiredData.paths?.map { it.map { it.toInt() } }).let {
                     DeviceResolvedData(
                         xpubs = it
                     )
@@ -81,9 +90,9 @@ class DeviceResolver constructor(private val session: GreenSession, private val 
 
             "sign_tx" -> {
                 val result: SignTxResult
-                if (session.network.isLiquid) {
+                if (network.isLiquid) {
                     result = hwWallet.signLiquidTransaction(
-                        session.network,
+                        network,
                         hwWalletBridge,
                         toObjectNode(requiredData.transaction),
                         requiredData.signingInputs,
@@ -93,7 +102,7 @@ class DeviceResolver constructor(private val session: GreenSession, private val 
                     )
                 } else {
                     result = hwWallet.signTransaction(
-                        session.network,
+                        network,
                         hwWalletBridge,
                         toObjectNode(requiredData.transaction),
                         requiredData.signingInputs,
@@ -115,7 +124,7 @@ class DeviceResolver constructor(private val session: GreenSession, private val 
                 }
 
 
-                if (session.network.isLiquid) {
+                if (network.isLiquid) {
                     DeviceResolvedData(
                         signatures = signatures,
                         signerCommitments = result.signerCommitments,
@@ -145,7 +154,7 @@ class DeviceResolver constructor(private val session: GreenSession, private val 
                 val scripts = requiredData.scripts
                 val publicKeys = requiredData.publicKeys
 
-                if(scripts != null && publicKeys != null && scripts.size == publicKeys.size){
+                if (scripts != null && publicKeys != null && scripts.size == publicKeys.size) {
                     for (i in 0 until (scripts.size)) {
                         nonces.add(
                             hwWallet.getBlindingNonce(
@@ -155,8 +164,13 @@ class DeviceResolver constructor(private val session: GreenSession, private val 
                             )
                         )
 
-                        if(requiredData.blindingKeysRequired == true){
-                            blindingPublicKeys.add(hwWallet.getBlindingKey(hwWalletBridge, scripts[i]));
+                        if (requiredData.blindingKeysRequired == true) {
+                            blindingPublicKeys.add(
+                                hwWallet.getBlindingKey(
+                                    hwWalletBridge,
+                                    scripts[i]
+                                )
+                            );
                         }
                     }
                 }

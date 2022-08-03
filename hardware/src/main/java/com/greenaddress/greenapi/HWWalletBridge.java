@@ -10,6 +10,6 @@ import io.reactivex.rxjava3.core.Single;
 public interface HWWalletBridge {
     void interactionRequest(final HWWallet hw, @Nullable final Completable completable, @Nullable final String text);
 
-    Single<String> requestPinMatrix(DeviceBrand deviceBrand);
-    Single<String> requestPassphrase(DeviceBrand deviceBrand);
+    String requestPinMatrix(DeviceBrand deviceBrand);
+    String requestPassphrase(DeviceBrand deviceBrand);
 }

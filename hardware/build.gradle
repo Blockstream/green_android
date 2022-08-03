@@ -2,37 +2,33 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlinx-serialization'
-    id 'com.adarshr.test-logger' version '2.1.1'
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "31.0.0"
+    compileSdkVersion 33
+    buildToolsVersion "33.0.0"
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
 
         consumerProguardFiles "consumer-rules.pro"
     }
-
+    compileOptions {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+    namespace 'com.blockstream.hardware'
 }
 
-testlogger {
-    theme 'mocha'
+kotlin {
+    jvmToolchain(11)
 }
 
 dependencies {
@@ -57,7 +53,7 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava ----------------------------------------------------------------------------- */
-    implementation "io.reactivex.rxjava3:rxjava:3.0.12"
+    implementation "io.reactivex.rxjava3:rxjava:3.1.2"
     implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'com.jakewharton.rx2:replaying-share:2.2.0'

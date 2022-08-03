@@ -16,6 +16,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import mu.KLogging
+import java.lang.Exception
 import kotlin.properties.Delegates
 
 /*
@@ -107,9 +108,17 @@ class Device constructor(
         usbDevice?.deviceId?.toString(10) ?: (if(isJade) name else bleDevice?.bluetoothDevice?.address) ?: hashCode().toString(10)
     }
 
+    val uniqueIdentifier: String
+        get() = try {
+            (if(isBle) name else usbDevice?.serialNumber) ?: hashCode().toString(10)
+        }catch (e: Exception){
+            e.printStackTrace()
+            hashCode().toString(10)
+        }
+
     val name
-        get() = if (isJade && isUsb) "Jade" else usbDevice?.productName
-            ?: bleDevice?.bluetoothDevice?.name
+        get() = (if (isJade && isUsb) "Jade" else usbDevice?.productName
+            ?: bleDevice?.bluetoothDevice?.name) ?: deviceBrand.name
 
     // Jade v1 has the controller manufacturer as a productName
     val manufacturer
@@ -164,8 +173,9 @@ class Device constructor(
         hwWallet?.disconnect()
         hwWallet = null
 
-        // Mark it as offline
-        offline()
+        if(isBle) {
+            offline()
+        }
     }
 
     fun updateFromScan(newBleDevice: RxBleDevice) {

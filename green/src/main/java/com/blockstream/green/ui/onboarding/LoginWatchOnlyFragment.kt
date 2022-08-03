@@ -9,9 +9,13 @@ import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.LoginWatchOnlyFragmentBinding
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
+import com.blockstream.green.ui.login.LoginFragmentDirections
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
-import com.blockstream.green.ui.wallet.LoginFragmentDirections
-import com.blockstream.green.utils.*
+import com.blockstream.green.extensions.clearNavigationResult
+import com.blockstream.green.extensions.endIconCustomMode
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -51,14 +55,14 @@ class LoginWatchOnlyFragment :
             }
         }
 
-        binding.extendedPublicKeyTextInputLayout.endIconCopyMode()
+        binding.extendedPublicKeyTextInputLayout.endIconCustomMode()
 
         binding.buttonAppSettings.setOnClickListener {
             AppSettingsDialogFragment.show(childFragmentManager)
         }
 
         binding.buttonScan.setOnClickListener {
-            CameraBottomSheetDialogFragment.showSingle(childFragmentManager)
+            CameraBottomSheetDialogFragment.showSingle(fragmentManager = childFragmentManager)
         }
 
         binding.buttonLogin.setOnClickListener {
@@ -74,7 +78,7 @@ class LoginWatchOnlyFragment :
         viewModel.onEvent.observe(viewLifecycleOwner) {
             it.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let { navigate ->
                 hideKeyboard()
-                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(navigate.data as Wallet))
+                navigate(LoginFragmentDirections.actionGlobalWalletOverviewFragment(navigate.data as Wallet))
             }
         }
     }

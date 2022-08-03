@@ -11,9 +11,6 @@
             name="vm"
             type="com.blockstream.green.ui.devices.DeviceInfoViewModel" />
 
-        <variable
-            name="isBottomSheet"
-            type="Boolean" />
     </data>
 
 
@@ -63,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{vm.device.name}"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
                 tools:text="Jade" />
 
             <TextView
@@ -71,15 +68,42 @@
                 android:layout_height="wrap_content"
                 android:text="@{vm.device.manufacturer}"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceBody1"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 tools:text="Blockstream" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <Button
+            android:id="@+id/buttonLoginWithDevice"
+            isVisible="@{!vm.onProgress &amp;&amp; (vm.device.isJade || vm.device.isTrezor)}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_log_in"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat2" />
+
+<!--        isVisible="@{!vm.onProgress}"-->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/rememberDevice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_remember_device"
+            android:visibility="gone"
+            android:checked="@={vm.rememberDevice}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonLoginWithDevice" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
-            isVisible="@{!vm.onProgress &amp;&amp; !isBottomSheet}"
+            isVisible="@{!vm.onProgress &amp;&amp; vm.device.isLedger}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="40dp"
@@ -103,7 +127,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonAppSettings"
             style="@style/Widget.Green.Button.Text"
-            isGone="@{vm.onProgress || isBottomSheet}"
+            isGone="@{vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"

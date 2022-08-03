@@ -3,37 +3,38 @@ package com.blockstream.green.ui.wallet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.blockstream.gdk.data.SubAccount
-import com.blockstream.gdk.params.UpdateSubAccountParams
+import com.blockstream.gdk.data.Account
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.devices.DeviceResolver
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.async
-import com.blockstream.green.gdk.observable
+import com.blockstream.green.extensions.logException
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.logException
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.kotlin.addTo
-import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import mu.KLogging
-import java.util.concurrent.TimeUnit
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 
 abstract class AbstractWalletViewModel constructor(
     val sessionManager: SessionManager,
     val walletRepository: WalletRepository,
-    val countly: Countly,
-    var wallet: Wallet,
-) : AppViewModel() {
+    countly: Countly,
+    wallet: Wallet
+) : AppViewModel(countly) {
 
-    sealed class WalletEvent: AppEvent {
+    public sealed class WalletEvent: AppEvent {
         object RenameWallet : WalletEvent()
         object DeleteWallet : WalletEvent()
         object RenameAccount : WalletEvent()
@@ -48,173 +49,110 @@ abstract class AbstractWalletViewModel constructor(
 
     val session = sessionManager.getWalletSession(wallet)
 
-    private val walletLiveData: MutableLiveData<Wallet> = MutableLiveData(wallet)
-    fun getWalletLiveData(): LiveData<Wallet> = walletLiveData
+    protected val _walletLiveData: MutableLiveData<Wallet> = MutableLiveData(wallet)
+    val walletLiveData: LiveData<Wallet> get()  = _walletLiveData
+    val wallet get() = _walletLiveData.value!!
 
-    private val subAccountLiveData: MutableLiveData<SubAccount> = MutableLiveData()
-    fun getSubAccountLiveData(): LiveData<SubAccount> = subAccountLiveData
-
-    private val subAccountsLiveData: MutableLiveData<List<SubAccount>> = MutableLiveData()
-    fun getSubAccountsLiveData(): LiveData<List<SubAccount>> = subAccountsLiveData
+    val accountsFlow: StateFlow<List<Account>> get() = session.accountsFlow
+    val accounts: List<Account> get() = accountsFlow.value
 
     // Logout events, can be expanded in the future
     val onReconnectEvent = MutableLiveData<ConsumableEvent<Long>>()
 
-    private var reconnectTimer: Disposable? = null
+    private var reconnectTimerJob: Job? = null
 
     init {
-        // Listen wallet updates from Database
-        walletRepository
-            .getWalletObservable(wallet.id)
-            .async()
-            .subscribe {
-                wallet = it
-                walletLiveData.value = wallet
-                walletUpdated()
-            }.addTo(disposables)
-
-        session
-            .getSubAccountsObservable()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                subAccountsLiveData.value = it
-            }.addTo(disposables)
+        // Listen to wallet updates from Database
+        if(!wallet.isEphemeral) {
+            walletRepository
+                .getWalletFlow(wallet.id)
+                .onEach {
+                    _walletLiveData.value = wallet
+                }.launchIn(viewModelScope)
+        }
 
         // Only on Login Screen
         if (session.isConnected) {
 
-            session.activeAccountData?.let {
-                subAccountLiveData.value = session.activeAccountData
-            } ?: run {
-                session.observable {
-                    it.getActiveSubAccount()
-                }.subscribe({
-                    subAccountLiveData.value = it
-                }, {
-                    it.printStackTrace()
-                }).addTo(disposables)
-            }
-
+            // TODO SUPPORT MULTIPLE NETWORKS
             session
-                .getNetworkEventObservable()
-                .async()
-                .subscribeBy(
-                    onNext = { event ->
-                        // Dispose previous timer
-                        reconnectTimer?.dispose()
+                .networkEventsFlow(session.defaultNetwork).filterNotNull()
+                .onEach { event ->
+                    // Cancel previous timer
+                    reconnectTimerJob?.cancel()
 
-                        if(event.isConnected){
-                            onReconnectEvent.value = ConsumableEvent(-1)
-                        } else {
-                            reconnectTimer = Observable.interval(1, TimeUnit.SECONDS)
-                                .take(event.waitInSeconds+ 1)
-                                .map {
-                                    event.waitInSeconds - it
-                                }
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeBy(
-                                    onNext = {
-                                        onReconnectEvent.value = ConsumableEvent(it)
-                                    }
-                                ).addTo(disposables)
-                        }
+                    if(event.isConnected){
+                        onReconnectEvent.value = ConsumableEvent(-1)
+                    } else {
+                        reconnectTimerJob = (0..event.waitInSeconds).asFlow().map {
+                            event.waitInSeconds - it
+                        }.onEach {
+                            onReconnectEvent.value = ConsumableEvent(it)
+                            // Delay 1 sec
+                            delay(1.toDuration(DurationUnit.SECONDS))
+                        }.launchIn(viewModelScope)
                     }
-                )
-                .addTo(disposables)
+                }
+                .launchIn(viewModelScope)
         }
     }
 
-    open fun walletUpdated() {
+    fun setActiveAccount(account: Account) {
+        session.setActiveAccount(account)
 
-    }
-
-    open fun selectSubAccount(account: SubAccount) {
-        subAccountLiveData.value = account
-
+        wallet.activeNetwork = account.networkId
         wallet.activeAccount = account.pointer
 
         if(!wallet.isHardware) {
             viewModelScope.launch(context = logException(countly)){
-                walletRepository.updateWalletSuspend(wallet)
+                walletRepository.updateWallet(wallet)
             }
         }
-
-        session.setActiveAccount(account.pointer)
     }
 
     fun deleteWallet() {
         deleteWallet(wallet, sessionManager, walletRepository, countly)
     }
 
-    fun renameSubAccount(index: Long, name: String) {
+    fun renameWallet(name: String) {
+        renameWallet(name, wallet, walletRepository, countly)
+    }
+
+    open fun renameAccount(account: Account, name: String, callback: ((Account) -> Unit)? = null) {
         if (name.isBlank()) return
 
-        session.observable {
-            it.updateSubAccount(UpdateSubAccountParams(
-                name = name,
-                subaccount = index
-            ))
-            it.getSubAccount(index)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                if(subAccountLiveData.value?.pointer == it.pointer) {
-                    subAccountLiveData.value = it
-                }
-                onEvent.postValue(ConsumableEvent(WalletEvent.RenameAccount))
-
-                // Update the subaccounts list
-                session.updateSubAccountsAndBalances()
-
-                countly.renameAccount(session, it)
-            }
-        )
+        doUserAction({
+            session.updateAccount(account, name)
+        }, onSuccess = {
+            onEvent.postValue(ConsumableEvent(WalletEvent.RenameAccount))
+            countly.renameAccount(session, it)
+            callback?.invoke(it)
+        })
     }
 
-    fun updateSubAccountVisibility(subAccount: SubAccount, isHidden: Boolean, callback: (() -> Unit)? = null) {
-        session.observable {
-            it.updateSubAccount(UpdateSubAccountParams(
-                subaccount = subAccount.pointer,
-                hidden = isHidden
-            ))
-            it.getSubAccount(subAccount.pointer)
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-                callback?.invoke()
-            },
-            onSuccess = {
-                if(subAccountLiveData.value?.pointer == it.pointer) {
-                    subAccountLiveData.value = it
-                }
+    open fun updateAccountVisibility(account: Account, isHidden: Boolean, callback: ((Account) -> Unit)? = null) {
+        doUserAction({
+            session.updateAccount(account = account, isHidden = isHidden)
+        }, onSuccess = {
+            callback?.invoke(it)
 
-                // Update the subaccounts list
-                session.updateSubAccounts()
-
-                callback?.invoke()
+            if(isHidden){
+                // Update active account from Session if it was archived
+                setActiveAccount(session.activeAccount)
+            }else{
+                // Make it active
+                setActiveAccount(account)
             }
-        )
+        })
     }
 
-    fun ackSystemMessage(message : String){
-        session.observable {
-            session.ackSystemMessage(message)
-                .resolve(hardwareWalletResolver = DeviceResolver(session))
+    fun ackSystemMessage(network: Network, message : String){
+        doUserAction({
+            session.ackSystemMessage(network, message)
             session.updateSystemMessage()
-        }.doOnSubscribe {
-            onProgress.postValue(true)
-        }.doOnTerminate {
-            onProgress.postValue(false)
-        }.subscribeBy(
-            onSuccess = {
-                onEvent.postValue(ConsumableEvent(WalletEvent.AckMessage))
-            },
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            }
-        )
+        }, onSuccess = {
+            onEvent.postValue(ConsumableEvent(WalletEvent.AckMessage))
+        })
     }
 
     fun logout(reason: LogoutReason) {

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="assets"
+            type="Integer" />
+
+        <variable
+            name="assetsVisibility"
+            type="Integer" />
+
+        <variable
+            name="hideAmounts"
+            type="Boolean" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:id="@+id/totalBalanceTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_weight="1"
+            android:includeFontPadding="false"
+            android:text="@string/id_total_balance"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/color_on_surface_emphasis_low"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/eye"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/eye" />
+
+        <ImageView
+            android:id="@+id/eye"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:src="@{hideAmounts ? @drawable/ic_eye_closed : @drawable/ic_eye}"
+            app:layout_constraintStart_toEndOf="@+id/totalBalanceTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_eye_closed"/>
+
+        <TextView
+            android:id="@+id/balanceTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_weight="1"
+            android:includeFontPadding="false"
+            android:lines="1"
+            android:textAppearance="?attr/textAppearanceHeadlineLarge"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/totalBalanceTextView"
+            app:layout_constraintTop_toBottomOf="@+id/eye"
+            tools:text="0.0003445 BTC" />
+
+        <TextView
+            android:id="@+id/fiatTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_weight="1"
+            android:includeFontPadding="false"
+            android:lines="1"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/totalBalanceTextView"
+            app:layout_constraintTop_toBottomOf="@+id/balanceTextView"
+            tools:text="69.000 USD" />
+
+        <FrameLayout
+            android:id="@+id/assetsIcons"
+            visibility="@{assetsVisibility}"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fiatTextView" />
+
+        <TextView
+            android:id="@+id/assetsTextView"
+            visibility="@{assetsVisibility}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/brand_green"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/assetsIcons"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/assetsIcons"
+            app:layout_constraintTop_toTopOf="@+id/assetsIcons"
+            tools:text="2 assets in total" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:layout_constraintBottom_toBottomOf="@+id/balanceTextView"
+            app:layout_constraintEnd_toEndOf="@+id/balanceTextView"
+            app:layout_constraintStart_toStartOf="@+id/balanceTextView"
+            app:layout_constraintTop_toTopOf="@+id/balanceTextView" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

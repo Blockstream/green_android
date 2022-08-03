@@ -10,11 +10,15 @@ import kotlinx.serialization.Serializable
 data class TransactionParams(
     @SerialName("subaccount") val subaccount: Long,
     @SerialName("first") val offset: Int = 0,
-    @SerialName("count") val limit: Int = 30,
+    @SerialName("count") val limit: Int = TRANSACTIONS_PER_PAGE,
     @SerialName("num_confs") val confirmations: Int = 0,
 ) : GAJson<TransactionParams>() {
 
     override fun kSerializer(): KSerializer<TransactionParams> {
         return serializer()
+    }
+
+    companion object{
+        const val TRANSACTIONS_PER_PAGE: Int = 30
     }
 }

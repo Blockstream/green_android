@@ -11,15 +11,19 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.EnterRecoveryPhraseFragmentBinding
+import com.blockstream.green.extensions.clearClipboard
+import com.blockstream.green.extensions.clearNavigationResult
+import com.blockstream.green.extensions.endIconCustomMode
+import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.HelpBottomSheetDialogFragment
 import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
-import com.blockstream.green.utils.endIconCopyMode
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -45,7 +49,7 @@ class EnterRecoveryPhraseFragment :
     override val segmentation: HashMap<String, Any>? = null
 
     @Inject
-    lateinit var greenWallet: GreenWallet
+    lateinit var gdkBridge: GdkBridge
 
     @Inject
     lateinit var assistedFactory: EnterRecoveryPhraseViewModel.AssistedFactory
@@ -61,6 +65,15 @@ class EnterRecoveryPhraseFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
+            if (result != null) {
+                clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
+                binding.recoveryPhraseKeyboardView.setRecoveryPhraseState(
+                    RecoveryPhraseKeyboardView.RecoveryPhraseState.fromString(result.trim())
+                )
+            }
+        }
+
         options = args.onboardingOptions
 
         binding.vm = viewModel
@@ -70,7 +83,7 @@ class EnterRecoveryPhraseFragment :
             if(viewModel.isEncryptionPasswordRequired){
 
                 val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
-                dialogBinding.textInputLayout.endIconCopyMode()
+                dialogBinding.textInputLayout.endIconCustomMode()
 
                 dialogBinding.hint = getString(R.string.id_password)
 
@@ -92,11 +105,7 @@ class EnterRecoveryPhraseFragment :
                         // A 27-word mnemonic is a multisig network
                         options?.apply {
                             navigate(
-                                options = createCopyForNetwork(
-                                    greenWallet = greenWallet,
-                                    networkType = networkType!!,
-                                    isElectrum = false,
-                                ),
+                                options = this,
                                 mnemonic = viewModel.recoveryPhraseState.value!!.toMnemonic(),
                                 mnemonicPassword = dialogBinding.text ?: ""
                             )
@@ -129,7 +138,7 @@ class EnterRecoveryPhraseFragment :
             adapter = fastAdapter
         }
 
-        binding.recoveryPhraseKeyboardView.setWordList(greenWallet.getMnemonicWordList())
+        binding.recoveryPhraseKeyboardView.setWordList(gdkBridge.getMnemonicWordList())
 
         binding.recoveryPhraseKeyboardView.setOnRecoveryPhraseKeyboardListener(object :
             RecoveryPhraseKeyboardView.OnRecoveryPhraseKeyboardListener {
@@ -146,6 +155,11 @@ class EnterRecoveryPhraseFragment :
                     )
                 }
             }
+            clearClipboard()
+        }
+
+        binding.buttonScan.setOnClickListener {
+            CameraBottomSheetDialogFragment.showSingle(fragmentManager = childFragmentManager)
         }
 
         binding.message.setOnClickListener {
@@ -181,61 +195,40 @@ class EnterRecoveryPhraseFragment :
 
         viewModel.recoveryWords.observe(viewLifecycleOwner) {
             FastAdapterDiffUtil.set(itemAdapter.itemAdapter, it, false)
-            binding.recycler.scrollToPosition(viewModel.recoveryPhraseState.value?.let { it -> if(it.activeIndex >= 0) it.activeIndex else it.phrase.size }?: 0)
+            binding.recycler.scrollToPosition(viewModel.recoveryPhraseState.value?.let { value -> if(value.activeIndex >= 0) value.activeIndex else value.phrase.size }?: 0)
         }
     }
 
     fun navigate(options: OnboardingOptions? , mnemonic: String, mnemonicPassword: String){
         if(options != null){
-            if(args.wallet == null) {
-                // Scan is required
-                if (mnemonicPassword.isBlank()) {
-                    navigate(
-                        EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToScanWalletFragment(
-                            onboardingOptions = options,
-                            mnemonic = mnemonic,
-                            mnemonicPassword = mnemonicPassword
-                        )
-                    )
-                } else {
-                    // Multisig network based on 27-words mnemonic & password
-                    navigate(
-                        EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToWalletNameFragment(
-                            onboardingOptions = options,
-                            mnemonic = mnemonic,
-                            mnemonicPassword = mnemonicPassword
-                        )
-                    )
-                }
-            } else {
-                navigate(
-                    EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToWalletNameFragment(
-                        onboardingOptions = options,
-                        mnemonic = mnemonic,
-                        mnemonicPassword = mnemonicPassword,
-                        restoreWallet = args.wallet
-                    )
-                )
-            }
-        } else if (args.wallet != null){
             navigate(
-                EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToAddAccountFragment(
-                    accountType = AccountType.TWO_OF_THREE,
-                    wallet = args.wallet!!,
+                EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToSetPinFragment(
+                    restoreWallet = args.wallet,
+                    onboardingOptions = options,
                     mnemonic = mnemonic,
+                    password = mnemonicPassword
+                )
+            )
+        } else if (args.wallet != null && args.network != null){
+            navigate(
+                EnterRecoveryPhraseFragmentDirections.actionGlobalReviewAddAccountFragment(
+                    wallet = args.wallet!!,
+                    assetId = args.assetId!!,
+                    network = args.network!!,
+                    accountType = AccountType.TWO_OF_THREE,
+                    mnemonic = mnemonic
                 )
             )
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
             R.id.help -> {
                 HelpBottomSheetDialogFragment.show(childFragmentManager)
                 return true
             }
         }
-        return super.onOptionsItemSelected(item)
+        return super.onMenuItemSelected(menuItem)
     }
 }

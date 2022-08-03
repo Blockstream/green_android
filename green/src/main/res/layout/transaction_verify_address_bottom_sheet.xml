@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="24dp"
             android:text="@string/id_confirm_on_your_device"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

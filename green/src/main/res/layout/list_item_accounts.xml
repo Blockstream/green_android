@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <com.blockstream.green.views.AccordionLayout
+        android:id="@+id/stack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:compact_size="70dp"
+        app:expanded_size="160dp"
+        android:layout_marginBottom="8dp">
+
+    </com.blockstream.green.views.AccordionLayout>
+
+</layout>

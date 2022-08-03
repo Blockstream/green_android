@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.blockstream.green.Preferences;
+import com.blockstream.base.Preferences;
 
 import java.util.Map;
 import java.util.Set;

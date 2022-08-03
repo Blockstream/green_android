@@ -5,7 +5,8 @@
 
     <data>
 
-        <import type="com.blockstream.green.utils.ExtensionsKt" />
+        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+
         <import type="android.view.View" />
 
 
@@ -43,244 +44,457 @@
 
     </data>
 
-    <com.google.android.material.card.MaterialCardView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="16dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/textViewIndex"
+            isVisible="@{vm.recipientsLiveData.size() != 1}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:includeFontPadding="false"
+            android:text="@{`#` + (index + 1)}"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="#1" />
+
+        <ImageView
+            android:id="@+id/buttonRemove"
+            isVisible="@{vm.recipientsLiveData.size() != 1 &amp;&amp; !vm.isBump}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="4dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_close"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewIndex"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textViewIndex"
+            app:tint="@color/color_on_surface_emphasis_medium" />
+
+        <LinearLayout
+            android:id="@+id/accountAssetLinearLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingTop="@{vm.recipientsLiveData.size() != 1 ? @dimen/dp0 : @dimen/dp16}"
-            android:paddingBottom="16dp">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrierIndex">
 
             <TextView
-                android:id="@+id/textViewIndex"
-                isVisible="@{vm.recipientsLiveData.size() != 1}"
+                style="@style/TextAppearance.Green.Overline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:includeFontPadding="false"
-                android:text="@{`#` + (index + 1)}"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textColor="@color/color_on_surface_emphasis_medium"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="#1" />
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="2dp"
+                android:text="@string/id_account__asset" />
 
-            <ImageView
-                android:id="@+id/buttonRemove"
-                isVisible="@{vm.recipientsLiveData.size() != 1 &amp;&amp; !vm.isBump}"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/accountAssetMaterialCardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <include
+                    android:id="@+id/accountAsset"
+                    layout="@layout/account_asset_layout" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/addressLinearLayout"
+            isVisible="@{!vm.isBump}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/accountAssetLinearLayout">
+
+            <TextView
+                style="@style/TextAppearance.Green.Overline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginEnd="4dp"
-                android:padding="8dp"
-                android:src="@drawable/ic_close"
-                app:layout_constraintBottom_toBottomOf="@+id/textViewIndex"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textViewIndex"
-                app:tint="@color/color_on_surface_emphasis_medium" />
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="2dp"
+                android:text="@{vm.isSweep ? @string/id_private_key : @string/id_recipient_address}"
+                tools:text="@string/id_recipient_address" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/addressInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:fontFamily="monospace"
+                        android:inputType="textMultiLine|textNoSuggestions"
+                        android:text="@={liveData.address}"
+                        tools:text="address\nmultiline" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAddressClear"
+                        isVisible="@{!liveData.address.empty}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_x_circle"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="6dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="12dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAddressPaste"
+                        isVisible="@{liveData.address.empty}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_clipboard"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="6dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="12dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAddressScan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_qr_code"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="6dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textview.MaterialTextView
                 gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) ? vm.transactionError : null}"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="@integer/material_motion_duration_long_1"
-                android:enabled="@{!vm.isBump}"
-                android:hint="@{vm.isSweep ? @string/id_private_key : @string/id_recipient_address}"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toStartOf="@+id/barrier"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/barrierIndex">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/addressInputEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine|textNoSuggestions"
-                    android:text="@={liveData.address}" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <ImageButton
-                android:id="@+id/buttonScan"
-                isVisible="@{!vm.isBump}"
-                android:layout_width="54dp"
-                android:layout_height="54dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
-                android:adjustViewBounds="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="10dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_qr_60"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="@color/error" />
+
+        </LinearLayout>
+
+        <!--            <com.google.android.material.textfield.TextInputLayout-->
+        <!--                android:id="@+id/addressInputLayout"-->
+        <!--                gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) ? vm.transactionError : null}"-->
+        <!--                android:layout_width="0dp"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginTop="16dp"-->
+        <!--                android:layout_weight="@integer/material_motion_duration_long_1"-->
+        <!--                android:enabled="@{!vm.isBump}"-->
+        <!--                android:hint="@{vm.isSweep ? @string/id_private_key : @string/id_recipient_address}"-->
+        <!--                app:layout_constraintEnd_toStartOf="@+id/buttonScan"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                app:layout_constraintTop_toBottomOf="@+id/accountAssetMaterialCardView">-->
+
+        <!--                <com.google.android.material.textfield.TextInputEditText-->
+        <!--                    android:id="@+id/addressInputEditText"-->
+        <!--                    android:layout_width="match_parent"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:inputType="textMultiLine|textNoSuggestions"-->
+        <!--                    android:text="@={liveData.address}"-->
+        <!--                    tools:text="bc1addressqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm" />-->
+
+        <!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+        <!--            <ImageButton-->
+        <!--                android:id="@+id/buttonScan"-->
+        <!--                isVisible="@{!vm.isBump}"-->
+        <!--                android:layout_width="54dp"-->
+        <!--                android:layout_height="54dp"-->
+        <!--                android:layout_marginTop="2dp"-->
+        <!--                android:adjustViewBounds="true"-->
+        <!--                android:background="?attr/selectableItemBackgroundBorderless"-->
+        <!--                android:padding="10dp"-->
+        <!--                android:scaleType="centerInside"-->
+        <!--                android:src="@drawable/ic_qr_code"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />-->
 
 
-            <com.blockstream.green.views.RightTextInputLayout
-                android:id="@+id/assetTextInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                isVisible="@{!vm.isSweep}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:enabled="@{!vm.isBumpOrSweep &amp;&amp; liveData.assetBip21 == false}"
-                android:hint="@{vm.session.network.isLiquid ? @string/id_asset : @string/id_coin}"
-                app:endIconDrawable="@drawable/ic_baseline_arrow_drop_down_24"
-                app:endIconMode="custom"
-                app:helperText="@{vm.isSweep ? null : assetBalance}"
-                app:helperTextTextColor="@color/color_on_surface_emphasis_medium"
-                app:layout_constraintEnd_toStartOf="@+id/barrier"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addressInputLayout"
-                tools:hint="@string/id_asset">
+        <LinearLayout
+            android:id="@+id/amountLinearLayout"
+            isVisible="@{!vm.isBump}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/addressLinearLayout">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/assetInputEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:cursorVisible="false"
-                    android:drawablePadding="8dp"
-                    android:focusable="false"
-                    android:inputType="none|textNoSuggestions"
-                    android:text="@{assetName}" />
-
-            </com.blockstream.green.views.RightTextInputLayout>
-
-            <ImageButton
-                android:id="@+id/buttonCoinControl"
-                isVisible="@{!vm.isSweep &amp;&amp; !vm.isBump &amp;&amp;  false}"
-                android:layout_width="54dp"
-                android:layout_height="54dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="4dp"
-                android:adjustViewBounds="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="10dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_more_settings"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/assetTextInputLayout" />
-
-            <ImageView
-                android:id="@+id/utxoSelectionIcon"
-                isVisible="@{!vm.isSweep &amp;&amp; false}"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/indicator_dot_filled"
-                app:layout_constraintBottom_toBottomOf="@+id/buttonCoinControl"
-                app:layout_constraintEnd_toEndOf="@+id/buttonCoinControl"
-                app:layout_constraintStart_toStartOf="@+id/buttonCoinControl"
-                app:layout_constraintTop_toTopOf="@+id/buttonCoinControl" />
-
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggleGroupSendAll"
-                isVisible="@{!vm.isBumpOrSweep}"
+            <TextView
+                style="@style/TextAppearance.Green.Overline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="@+id/assetTextInputLayout"
-                app:layout_constraintTop_toBottomOf="@+id/assetTextInputLayout">
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="2dp"
+                android:text="@string/id_amount" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSendAll"
-                    style="@style/Widget.Green.Button.Outlined.Tiny"
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/amountEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:enabled="@{liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:fontFamily="monospace"
+                        android:inputType="numberDecimal"
+                        android:singleLine="true"
+                        android:text="@={liveData.amount}"
+                        android:textAlignment="textEnd"
+                        tools:text="1234" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="monospace"
+                        android:text="@{amountCurrency}"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textStyle="bold"
+                        tools:text="BTC" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAmountClear"
+                        isVisible="@{!liveData.amount.empty}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:enabled="@{liveData.amountBip21 == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="6dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="12dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_x_circle"
+                        app:tint="@color/selector_image_button"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAmountPaste"
+                        isVisible="@{liveData.amount.empty}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:enabled="@{liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="6dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="12dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_clipboard"
+                        app:tint="@color/selector_image_button"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAmountCurrency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:enabled="@{liveData.amountBip21 == false  &amp;&amp; !vm.isBumpOrSweep &amp;&amp; canConvert}"
+                        android:scaleType="centerInside"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="6dp"
+                        android:src="@drawable/ic_arrows_counter_clockwise"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                        app:tint="@color/selector_image_button" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    gdkError="@{`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) ? vm.transactionError : null}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/error" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{liveData.exchange}"
+                    android:textAlignment="textEnd"
+                    android:textAppearance="?attr/textAppearanceLabelMedium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:text="@string/id_available"
+                        android:layout_gravity="center_vertical"
+                        android:textColor="@color/color_on_surface_emphasis_medium"
+                        android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:text="@{assetBalance}"
+                        android:textColor="@color/color_on_surface_emphasis_medium"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        tools:text="0.00034BTC"/>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/toggleGroupSendAll"
+                    isVisible="@{!vm.isBumpOrSweep}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:enabled="@{!ExtensionsKt.isBlank(liveData.assetId) &amp;&amp; assetSatoshi != 0 &amp;&amp; liveData.amountBip21 == false}"
-                    android:paddingEnd="16dp"
-                    android:text="@string/id_send_all_funds" />
+                    android:layout_gravity="end">
 
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonSendAll"
+                        style="@style/Widget.Green.Button.Outlined.Tiny"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:enabled="@{assetSatoshi != 0 &amp;&amp; liveData.amountBip21 == false}"
+                        android:text="@string/id_send_all_funds" />
 
-            <com.blockstream.green.views.RightTextInputLayout
-                android:id="@+id/amountTextInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                gdkError="@{`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) ? vm.transactionError : null}"
-                helperTextWithError="@{liveData.exchange}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="8dp"
-                android:layout_weight="1"
-                android:enabled="@{ExtensionsKt.isNotBlank(liveData.assetId) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
-                android:gravity="end"
-                android:hint="@string/id_amount"
-                app:errorEnabled="true"
-                app:helperTextEnabled="true"
-                app:helperTextTextColor="@color/color_on_surface_emphasis_medium"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/barrier"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toggleGroupSendAll"
-                app:suffixText="@{` ` + amountCurrency}">
+                </com.google.android.material.button.MaterialButtonToggleGroup>
 
-                <com.blockstream.green.views.TextInputWithGdkErrorEditText
-                    android:id="@+id/amountInputEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:singleLine="true"
-                    android:text="@={liveData.amount}"
-                    android:textAlignment="textEnd" />
+            </LinearLayout>
 
-            </com.blockstream.green.views.RightTextInputLayout>
+        </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/buttonCurrency"
-                isVisible="@{!vm.isBumpOrSweep &amp;&amp; canConvert}"
-                android:layout_width="54dp"
-                android:layout_height="54dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="4dp"
-                android:adjustViewBounds="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:enabled="@{liveData.amountBip21 == false}"
-                android:padding="10dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_change"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/amountTextInputLayout"
-                app:tint="@color/selector_image_button" />
+        <ImageButton
+            android:id="@+id/buttonCoinControl"
+            isVisible="@{!vm.isSweep &amp;&amp; !vm.isBump &amp;&amp; false}"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_marginEnd="4dp"
+            android:adjustViewBounds="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_more_settings"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/amountLinearLayout" />
 
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrier"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierAllowsGoneWidgets="false"
-                app:barrierDirection="left"
-                app:constraint_referenced_ids="buttonCoinControl,buttonCurrency,buttonScan,guidelineRightMargin" />
+        <ImageView
+            android:id="@+id/utxoSelectionIcon"
+            isVisible="@{!vm.isSweep &amp;&amp; false}"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/indicator_dot_filled"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonCoinControl"
+            app:layout_constraintEnd_toEndOf="@+id/buttonCoinControl"
+            app:layout_constraintStart_toStartOf="@+id/buttonCoinControl"
+            app:layout_constraintTop_toTopOf="@+id/buttonCoinControl" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineRightMargin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_end="16dp" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierIndex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="textViewIndex,buttonRemove" />
 
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrierIndex"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="textViewIndex,buttonRemove"
-                tools:layout_editor_absoluteX="251dp"
-                tools:layout_editor_absoluteY="24dp" />
+        <TextView
+            android:id="@+id/debug"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{`accountAsset: ` + liveData.accountAsset + `\nassetBalance: ` + assetBalance + `\nassetSatoshi: ` + assetSatoshi}"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/amountLinearLayout" />
 
-
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

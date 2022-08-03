@@ -1,12 +1,14 @@
 package com.blockstream.green.utils
 
+import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.Settings
-import com.blockstream.green.gdk.GreenSession
+import com.blockstream.green.gdk.GdkSession
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.*
@@ -15,7 +17,10 @@ import java.util.*
 class JsonConverterUnitTest {
 
     @Mock
-    private lateinit var session: GreenSession
+    private lateinit var network: Network
+
+    @Mock
+    private lateinit var session: GdkSession
 
     private val dotLocale = Locale.US
     private val commaLocale = Locale.ITALIAN
@@ -24,7 +29,7 @@ class JsonConverterUnitTest {
         val settings: Settings = mock()
 
         whenever(settings.unit).thenReturn(unit)
-        whenever(session.getSettings()).thenReturn(settings)
+        whenever(session.getSettings(any())).thenReturn(settings)
     }
 
     @Test
@@ -47,7 +52,8 @@ class JsonConverterUnitTest {
                     session,
                     test.value.replace(' ', ','),
                     isFiat = false,
-                    locale = dotLocale
+                    locale = dotLocale,
+                    networkForTest = network,
                 ).amount
             )
         }
@@ -60,7 +66,8 @@ class JsonConverterUnitTest {
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
                     isFiat = false,
-                    locale = commaLocale
+                    locale = commaLocale,
+                    networkForTest = network,
                 ).amount
             )
         }
@@ -82,7 +89,7 @@ class JsonConverterUnitTest {
         for (test in tests) {
             Assert.assertEquals(
                 test.key,
-                UserInput.parseUserInput(session, test.value.replace(' ', ','), isFiat = false, locale = dotLocale).amount
+                UserInput.parseUserInput(session, test.value.replace(' ', ','), isFiat = false, locale = dotLocale, networkForTest = network).amount
             )
         }
 
@@ -94,7 +101,8 @@ class JsonConverterUnitTest {
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
                     isFiat = false,
-                    locale = commaLocale
+                    locale = commaLocale,
+                    networkForTest = network
                 ).amount
             )
         }
@@ -118,7 +126,7 @@ class JsonConverterUnitTest {
         for (test in tests) {
             Assert.assertEquals(
                 test.key,
-                UserInput.parseUserInput(session, test.value.replace(' ', ','), isFiat = true, locale = dotLocale).amount
+                UserInput.parseUserInput(session, test.value.replace(' ', ','), isFiat = true, locale = dotLocale, networkForTest = network).amount
             )
         }
 
@@ -130,7 +138,8 @@ class JsonConverterUnitTest {
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
                     isFiat = true,
-                    locale = commaLocale
+                    locale = commaLocale,
+                    networkForTest = network
                 ).amount
             )
         }
@@ -140,9 +149,9 @@ class JsonConverterUnitTest {
     fun test_invalid_inputs() {
         initMock("BTC")
 
-        Assert.assertEquals("", UserInput.parseUserInputSafe(session, null).amount)
-        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "abc").amount)
-        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "123abc").amount)
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, null, networkForTest = network).amount)
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "abc", networkForTest = network).amount)
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "123abc", networkForTest = network).amount)
     }
 
     @Test
@@ -150,20 +159,20 @@ class JsonConverterUnitTest {
         initMock("BTC")
 
         Assert.assertThrows(Exception::class.java) {
-            UserInput.parseUserInput(session, null)
+            UserInput.parseUserInput(session, null, networkForTest = network)
         }
         Assert.assertThrows(Exception::class.java) {
-            UserInput.parseUserInput(session, "abc")
+            UserInput.parseUserInput(session, "abc", networkForTest = network)
         }
         Assert.assertThrows(Exception::class.java) {
-            UserInput.parseUserInput(session, "123abc")
+            UserInput.parseUserInput(session, "123abc", networkForTest = network)
         }
     }
 
 
     @Test
     fun test_grouping() {
-        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale =  Locale.US).amount)
-        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale =  Locale.ITALIAN).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale =  Locale.US, networkForTest = network).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale =  Locale.ITALIAN, networkForTest = network).amount)
     }
 }

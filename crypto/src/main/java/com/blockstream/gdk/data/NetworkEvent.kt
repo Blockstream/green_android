@@ -21,6 +21,6 @@ data class NetworkEvent constructor(
         private const val KEY_DISCONNECTED = "disconnected"
 
         val ConnectedEvent = NetworkEvent(currentState = KEY_CONNECTED, wait = 0)
-        val DisconnectedEvent = NetworkEvent(currentState = KEY_DISCONNECTED, wait = 100)
+        val DisconnectedEvent = NetworkEvent(currentState = KEY_DISCONNECTED, wait = 10000)
     }
 }
