@@ -45,60 +45,16 @@ class HomeViewController: UIViewController {
     }
 
     func enterWallet(_ account: Account) {
-        if let session = SessionsManager.shared[account.id],
-           session.connected && session.logged {
-            session.subaccount(account.activeWallet).done { wallet in
-                AccountsManager.shared.current = account
-                let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-                let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
-                if let vc = nav?.topViewController as? ContainerViewController {
-                    vc.presentingWallet = wallet
-                }
-                UIApplication.shared.keyWindow?.rootViewController = nav
-            }.catch { err in
-                print("subaccount error: \(err.localizedDescription)")
-            }
-            return
-        }
-        let homeS = UIStoryboard(name: "Home", bundle: nil)
-        let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
-        if account.isWatchonly {
-            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
-                    vc.account = account
-                    nav.pushViewController(vc, animated: false)
-                    UIApplication.shared.keyWindow?.rootViewController = nav
-            }
-            return
-        }
-        if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-            let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
-                vc.account = account
-                nav.pushViewController(vc, animated: false)
-                UIApplication.shared.keyWindow?.rootViewController = nav
-        }
+        AccountNavigator.goLogin(account: account)
     }
 
     func showHardwareWallet(_ index: Int) {
-        let storyboard = UIStoryboard(name: "HWW", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-            vc.jade = AccountsManager.shared.devices[index].isJade
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        let account = AccountsManager.shared.devices[index]
+        AccountNavigator.goHWLogin(isJade: account.isJade)
     }
 
     @objc func didPressAddWallet() {
-
-//        let stb = UIStoryboard(name: "Shared", bundle: nil)
-//        if let vc = stb.instantiateViewController(withIdentifier: "DialogCountlyConsentViewController") as? DialogCountlyConsentViewController {
-//            vc.modalPresentationStyle = .overFullScreen
-//            present(vc, animated: false, completion: nil)
-//        }
-//        return
-
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "LandingViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        AccountNavigator.goCreateRestore()
     }
 
     @IBAction func btnSettings(_ sender: Any) {
