@@ -2,7 +2,7 @@ stages:
   - build
   - test
   - deploy
-  - gcp_upload
+  - upload
 
 
 #####################################
@@ -177,7 +177,7 @@ sign_google_play:
 #####################################
 # Upload to GCS bucket
 .gcp_prep:
-  stage: gcp_upload
+  stage: upload
   image: blockstream/gcloud-docker-tf:1.1.9
   tags:
     - ga
@@ -201,9 +201,39 @@ gcp_auth:
       - .ci_job_jwt_file
     expire_in: 1h
 
-gcp_push_files:
+gcp_push_production:
   extends: .gcp_prep
   needs: ["gcp_auth", "production"]
+  variables:
+    GCS_BUCKET: green-android-builds
+    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA
+  before_script:
+    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
+  script:
+    - apk add libqrencode
+    - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
+    - gsutil -m cp -r $CI_PROJECT_DIR/green/build/outputs/apk/productionGoogle/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
+    - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
+    - qrencode -t UTF8 "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
+
+gcp_push_development:
+  extends: .gcp_prep
+  needs: ["gcp_auth", "development"]
+  variables:
+    GCS_BUCKET: green-android-builds
+    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA
+  before_script:
+    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
+  script:
+    - apk add libqrencode
+    - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
+    - gsutil -m cp -r $CI_PROJECT_DIR/green/build/outputs/apk/development/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
+    - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
+    - qrencode -t UTF8 "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
+
+gcp_push_gdk_commit:
+  extends: .gcp_prep
+  needs: ["gcp_auth", "gdk_commit"]
   variables:
     GCS_BUCKET: green-android-builds
     APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA

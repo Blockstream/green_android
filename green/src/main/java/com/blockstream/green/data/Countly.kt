@@ -182,7 +182,9 @@ class Countly constructor(
     }
 
     fun recordException(throwable: Throwable) {
-        crashes.recordHandledException(throwable)
+        if(!skipExceptionRecording.contains(throwable.message)) {
+            crashes.recordHandledException(throwable)
+        }
     }
 
     fun onStart(activity: AppActivity) {
@@ -565,6 +567,15 @@ class Countly constructor(
         const val MULTISIG = "multisig"
 
         const val ANALYTICS_GROUP = "analytics"
+
+        val skipExceptionRecording = listOf(
+            "id_invalid_amount",
+            "id_invalid_address",
+            "id_insufficient_funds",
+            "id_invalid_private_key",
+            "id_action_canceled",
+            "id_login_failed"
+        )
 
         val consentRequiredGroup = arrayOf(
             Countly.CountlyFeatureNames.sessions,
