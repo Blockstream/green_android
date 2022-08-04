@@ -301,7 +301,7 @@ class OverviewViewController: UIViewController {
             .then { self.reloadSubaccounts(refresh: refreshBalance, discovery: discovery) }
             .then { self.reloadWallet() }
             .compactMap { _ in self.reloadAssets() }
-            .then { _ in self.reloadTransactions() }
+            .then { _ in self.reloadTransactions(untilPage: scrollTop ? 0 : self.callPage) }
             .ensure {
                 if self.tableView.refreshControl?.isRefreshing ?? false {
                     self.tableView.refreshControl?.endRefreshing()
@@ -309,11 +309,13 @@ class OverviewViewController: UIViewController {
                 self.isLoading = false
                 self.stopAnimating()
             }.done {
-                self.tableView.reloadData()
                 self.tableView.layoutIfNeeded()
-                self.tableView.setContentOffset(contentOffset, animated: false)
+                if !scrollTop {
+                    self.tableView.setContentOffset(contentOffset, animated: false)
+                }
                 self.callAnalytics() }
             .catch { err in
+                self.tableView.reloadData()
                 print(err.localizedDescription) }
     }
 
@@ -359,17 +361,25 @@ class OverviewViewController: UIViewController {
         }.asVoid()
     }
 
-    // reset and reload the transaction list
-    func reloadTransactions() -> Promise<Void> {
+    // reset and reload the transaction list until selected page
+    func reloadTransactions(untilPage: UInt32) -> Promise<Void> {
         guard let session = SessionsManager.current else { return Promise().asVoid() }
-        return session.transactions(subaccount: activeWallet, first: 0)
-        .map { page in
-            self.transactions.removeAll()
-            self.transactions += page.list
-            self.callPage = 1
-        }.map {
-            self.reloadSections([OverviewSection.transaction], animated: false)
-        }.asVoid()
+        self.transactions.removeAll()
+        self.callPage = 0
+        func step() -> Promise<Void> {
+            return session
+                .transactions(subaccount: activeWallet, first: UInt32(self.transactions.count))
+                .then { txs -> Promise<Void> in
+                    self.transactions += txs.list
+                    self.callPage += 1
+                    if self.callPage <= untilPage {
+                        return step()
+                    }
+                    self.reloadSections([OverviewSection.transaction], animated: false)
+                    return Promise().asVoid()
+                }
+        }
+        return step()
     }
 
     // received notification new block
@@ -714,7 +724,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 assets.removeAll()
                 transactions.removeAll()
                 reloadSections([.asset, .transaction], animated: false)
-                reloadData()
+                reloadData(scrollTop: true)
             }
         case .asset:
             if !isLiquid { return }
@@ -742,30 +752,29 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension OverviewViewController: UITableViewDataSourcePrefetching {
+    // incremental transactions fetching from gdk
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-
+        if fetchTxs != nil && fetchTxs!.isPending {
+            // null or pending
+            return
+        }
         let filteredIndexPaths = indexPaths.filter { $0.section == OverviewSection.transaction.rawValue }
-
-        if let row = filteredIndexPaths.last?.row {
-            if self.callPage > 0 && row > ((self.callPage - 1 ) * Constants.trxPerPage) {
-                if fetchTxs != nil && fetchTxs!.isPending {
-                    print("----> null or pending")
-                    return
-                }
-                let session = SessionsManager.shared[account?.id ?? ""]
-                self.fetchTxs = session?.transactions(subaccount: activeWallet, first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
-                    let c = self.transactions.count
+        let row = filteredIndexPaths.last?.row ?? 0
+        if self.callPage > 0 && row > (self.callPage - 1) * Constants.trxPerPage {
+            let session = SessionsManager.shared[account?.id ?? ""]
+            let offset = self.transactions.count
+            self.fetchTxs = session?.transactions(subaccount: activeWallet, first: UInt32(offset))
+                .map { page in
                     self.transactions += page.list
                     self.callPage += 1
                     var paths: [IndexPath] = []
-                    for i in c..<(c+page.list.count) {
+                    for i in offset..<(offset + page.list.count) {
                         paths.append(IndexPath(row: i, section: OverviewSection.transaction.rawValue))
                     }
                     self.tableView.performBatchUpdates({
                         self.tableView.insertRows(at: paths, with: .none)
                     }, completion: nil)
                 }
-            }
         }
     }
 }
