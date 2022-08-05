@@ -25,7 +25,6 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var btnsStack: UIStackView!
-    @IBOutlet weak var lblError: UILabel!
     @IBOutlet weak var lblUsernameError: UILabel!
     @IBOutlet weak var lblPasswordError: UILabel!
     @IBOutlet weak var btnSecure: UIButton!
@@ -53,7 +52,6 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
             btnDelete.isHidden = true
         }
         validate()
-        lblError.isHidden = true
         passwordField.isSecureTextEntry = true
         updateSecureBtn()
 
@@ -102,8 +100,6 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
     func updateWatchOnly(username: String, password: String, action: WatchOnlySetUpAction) {
 
-        self.lblError.isHidden = true
-        self.lblError.text = ""
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return }
         firstly {
@@ -117,11 +113,16 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
             self.stopAnimating()
         }.done { _ in
             self.dismiss(action)
-        }.catch { error in
-
-            print(error.localizedDescription)
-            self.lblError.isHidden = false
-            self.lblError.text = NSLocalizedString("id_error", comment: "")
+        }.catch { err in
+            switch err {
+            case GaError.ReconnectError(let msg),
+                GaError.TimeoutError(let msg),
+                GaError.SessionLost(let msg),
+                GaError.GenericError(let msg):
+                self.showError(msg ?? "id_error")
+            default:
+                self.showError(err.localizedDescription)
+            }
         }
     }
 
