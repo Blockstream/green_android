@@ -54,7 +54,7 @@ class ContainerViewController: UIViewController {
         let currentState = notification.userInfo?["current_state"] as? String
         let waitMs = notification.userInfo?["wait_ms"] as? Int
         let connected = currentState == "connected"
-        self.seconds = waitMs ?? 0
+        self.seconds = (waitMs ?? 0) / 1000
         DispatchQueue.main.async {
             if self.timer.isValid { self.timer.invalidate() }
             if connected {
@@ -73,7 +73,7 @@ class ContainerViewController: UIViewController {
     }
 
     @objc private func update(_ timer: Timer) {
-        Guarantee().done {
+        DispatchQueue.main.async {
             if self.seconds > 0 {
                 self.seconds -= 1
                 self.networkText.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ds_", comment: ""), self.seconds)
