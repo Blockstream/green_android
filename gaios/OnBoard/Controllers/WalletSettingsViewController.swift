@@ -36,7 +36,6 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var switchTestnet: UISwitch!
     @IBOutlet weak var cardSPV: UIView!
     @IBOutlet weak var lblSPVTitle: UILabel!
-    @IBOutlet weak var lblSPVHint: UILabel!
 
     @IBOutlet weak var cardSPVPersonalNode: UIView!
     @IBOutlet weak var lblSPVPersonalNodeTitle: UILabel!
@@ -128,7 +127,6 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldProxyIp.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
 
         lblSPVTitle.text = NSLocalizedString("id_custom_servers_and_validation", comment: "")
-        lblSPVHint.text = NSLocalizedString("id_spv_mode_is_currently_available", comment: "")
         lblSPVPersonalNodeTitle.text = NSLocalizedString("id_personal_electrum_server", comment: "")
         lblSPVPersonalNodeHint.text = NSLocalizedString("id_choose_the_electrum_servers_you", comment: "")
         lblSPVbtcServer.text = NSLocalizedString("id_bitcoin_electrum_server", comment: "")
