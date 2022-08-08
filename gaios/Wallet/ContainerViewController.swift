@@ -36,6 +36,7 @@ class ContainerViewController: UIViewController {
         if self.timer.isValid { self.timer.invalidate() }
     }
 
+    // tor notification handler
     func updateTor(_ notification: Notification) {
         Guarantee().map { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
@@ -50,30 +51,38 @@ class ContainerViewController: UIViewController {
         }
     }
 
+    // network notification handler
     func updateConnection(_ notification: Notification) {
         let currentState = notification.userInfo?["current_state"] as? String
         let waitMs = notification.userInfo?["wait_ms"] as? Int
         let connected = currentState == "connected"
         self.seconds = (waitMs ?? 0) / 1000
-        DispatchQueue.main.async {
-            if self.timer.isValid { self.timer.invalidate() }
-            if connected {
-                self.connected()
-            } else {
-                self.networkText.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ds_", comment: ""), self.seconds)
-                self.networkView.backgroundColor = UIColor.errorRed()
-                self.networkView.isHidden = false
-                self.timer = Timer.scheduledTimer(timeInterval: 1.0,
-                                                          target: self,
-                                                          selector: #selector(self.update(_:)),
-                                                          userInfo: nil,
-                                                          repeats: true)
-            }
+
+        // Show connection bar, if a disconnection task is runned
+        if connected && self.timer.isValid {
+            self.connected()
         }
+        if self.timer.isValid {
+            self.timer.invalidate()
+        }
+
+        // Avoid show network bar for short downtime
+        if connected || self.seconds == 0 {
+            return
+        }
+        self.offline(nil)
+        self.timer = Timer.scheduledTimer(timeInterval: 1.0,
+                                          target: self,
+                                          selector: #selector(self.offline(_:)),
+                                          userInfo: nil,
+                                          repeats: true)
     }
 
-    @objc private func update(_ timer: Timer) {
+    // show network bar on offline mode
+    @objc private func offline(_ timer: Timer?) {
         DispatchQueue.main.async {
+            self.networkView.backgroundColor = UIColor.errorRed()
+            self.networkView.isHidden = false
             if self.seconds > 0 {
                 self.seconds -= 1
                 self.networkText.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ds_", comment: ""), self.seconds)
@@ -81,14 +90,19 @@ class ContainerViewController: UIViewController {
         }
     }
 
+    // show network bar on connected mode
     func connected() {
-        self.networkText.text = NSLocalizedString("id_you_are_now_connected", comment: "")
-        self.networkView.backgroundColor = UIColor.customMatrixGreen()
-        self.networkView.isHidden = false
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.milliseconds(2000)) {
-            self.networkView.isHidden = true
+        DispatchQueue.main.async {
+            self.networkText.text = NSLocalizedString("id_you_are_now_connected", comment: "")
+            self.networkView.backgroundColor = UIColor.customMatrixGreen()
+            self.networkView.isHidden = false
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.milliseconds(2000)) {
+                self.networkView.isHidden = true
+            }
         }
     }
+
+    // open overview screen
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nv = segue.destination as? UINavigationController,
            let vc = nv.topViewController as? OverviewViewController {
