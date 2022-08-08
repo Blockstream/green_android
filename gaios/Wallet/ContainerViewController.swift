@@ -45,7 +45,7 @@ class ContainerViewController: UIViewController {
         }.done { progress in
             self.networkText.text = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
             self.networkView.backgroundColor = UIColor.errorRed()
-            self.networkView.isHidden = false
+            self.networkView.isHidden = progress == 100
         }.catch { err in
             print(err.localizedDescription)
         }
