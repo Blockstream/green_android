@@ -45,6 +45,7 @@ class OverviewViewController: UIViewController {
     private var transactions: [Transaction] = []
     private var fetchTxs: Promise<Void>?
     private var callPage: UInt32 = 0
+    private var isTxLoading = false
 
     // subaccounts data for tableviews
     private var allSubaccounts = [WalletItem]()
@@ -300,15 +301,16 @@ class OverviewViewController: UIViewController {
             .compactMap { self.reloadAlertCards() }
             .then { self.reloadSubaccounts(refresh: refreshBalance, discovery: discovery) }
             .then { self.reloadWallet() }
-            .compactMap { _ in self.reloadAssets() }
-            .then { _ in self.reloadTransactions(untilPage: scrollTop ? 0 : self.callPage) }
-            .ensure {
+            .compactMap {
                 if self.tableView.refreshControl?.isRefreshing ?? false {
                     self.tableView.refreshControl?.endRefreshing()
                 }
-                self.isLoading = false
                 self.stopAnimating()
-            }.done {
+            }
+            .compactMap { _ in self.reloadAssets() }
+            .then { _ in self.reloadTransactions(untilPage: scrollTop ? 0 : self.callPage) }
+            .ensure { self.isLoading = false }
+            .done {
                 self.tableView.layoutIfNeeded()
                 if !scrollTop {
                     self.tableView.setContentOffset(contentOffset, animated: false)
@@ -366,6 +368,7 @@ class OverviewViewController: UIViewController {
         guard let session = SessionsManager.current else { return Promise().asVoid() }
         self.transactions.removeAll()
         self.callPage = 0
+        self.isTxLoading = true
         func step() -> Promise<Void> {
             return session
                 .transactions(subaccount: activeWallet, first: UInt32(self.transactions.count))
@@ -375,6 +378,7 @@ class OverviewViewController: UIViewController {
                     if self.callPage <= untilPage {
                         return step()
                     }
+                    self.isTxLoading = false
                     self.reloadSections([OverviewSection.transaction], animated: false)
                     return Promise().asVoid()
                 }
@@ -424,7 +428,7 @@ class OverviewViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = SessionsManager.current else { return Promise().asVoid() }
         return Guarantee()
-            .then(on: bgq) { session.subaccounts(refresh) }
+            .then(on: bgq) { session.subaccounts(discovery) }
             .then(on: bgq) { wallets -> Promise<[WalletItem]> in
                 // load balance for each wallet
                 let balances = wallets.filter { refresh || $0.satoshi == nil }.map { wallet in { wallet.getBalance() } }
@@ -882,7 +886,7 @@ extension OverviewViewController {
                 lblNoTransactions.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -40.0)
             ])
 
-            if isLoading {
+            if isTxLoading {
                 let loader = UIActivityIndicatorView(style: .white)
                 section.addSubview(loader)
                 loader.startAnimating()
