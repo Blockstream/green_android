@@ -13,7 +13,7 @@ extension UIViewController {
 
     func showError(_ message: String) {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
             self.present(alert, animated: true, completion: nil)
         }
