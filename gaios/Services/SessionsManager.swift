@@ -3,6 +3,7 @@ import Foundation
 class SessionsManager {
 
     static var shared = [String: SessionManager]()
+    private static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
 
     static var current: SessionManager? {
         guard let account = AccountsManager.shared.current else {
@@ -38,22 +39,30 @@ class SessionsManager {
     static func pause() {
         shared.forEach { (_, session) in
             if session.connected {
-                try? session.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
+                reconnectionQueue.async {
+                    try? session.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
+                }
             }
         }
         if useTor() {
-            TorSessionManager.shared.pause()
+            reconnectionQueue.async {
+                TorSessionManager.shared.pause()
+            }
         }
     }
 
     static func resume() {
         shared.forEach { (_, session) in
             if session.connected {
-                try? session.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
+                reconnectionQueue.async {
+                    try? session.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
+                }
             }
         }
         if useTor() {
-            TorSessionManager.shared.resume()
+            reconnectionQueue.async {
+                TorSessionManager.shared.resume()
+            }
         }
     }
 
