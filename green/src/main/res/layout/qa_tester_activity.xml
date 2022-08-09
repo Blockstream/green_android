@@ -97,19 +97,6 @@
                         <com.blockstream.green.views.GreenSwitch
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:checked="@={qaTester.assetsGdkCacheDisabled}"
-                            app:captionText="Disable Assets GDK Cache"
-                            app:icon="@drawable/ic_unknown_asset_60"
-                            app:titleText="Disable Assets GDK Cache" />
-
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
-
-                        <com.blockstream.green.views.GreenSwitch
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
                             android:checked="@={qaTester.assetsFetchDisabled}"
                             app:captionText="Disable Assets metadata &amp; icons fetching"
                             app:icon="@drawable/ic_unknown_asset_60"

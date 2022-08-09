@@ -79,10 +79,15 @@ rm -rf gdk-android-jni* ${CRYPTO_MODULE_ROOT}/src/main/jniLibs \
   ${GDK_JAVA_DIR}/libgreenaddress/GDK.java \
   ${GDK_JAVA_DIR}/libwally/Wally.java
 
+# Remove gdk_commit file if exists
+if [ -f gdk_commit ] ; then
+    rm gdk_commit
+fi
 
 if [[ $COMMIT != false ]]; then
   URL="${GCLOUD_URL}${COMMIT}/${TARBALL}"
   VALIDATE_CHECKSUM=false
+  echo $COMMIT > gdk_commit
 fi
 
 
@@ -104,4 +109,3 @@ mv ${NAME}/java/com/blockstream/libwally/Wally.java ${GDK_JAVA_DIR}/libwally/Wal
 
 # Cleanup
 rm -fr $NAME
-

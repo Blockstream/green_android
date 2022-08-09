@@ -6,10 +6,8 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class AssetsParams(
-    @SerialName("assets") val assets: Boolean,
-    @SerialName("icons") val icons: Boolean,
-    @SerialName("refresh") val refresh: Boolean,
-) : GAJson<AssetsParams>() {
+data class GetAssetsParams constructor(
+    @SerialName("assets_id") val assets: List<String>,
+) : GAJson<GetAssetsParams>() {
     override fun kSerializer() = serializer()
 }

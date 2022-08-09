@@ -148,9 +148,16 @@ class GreenWallet constructor(
         params: ReceiveAddressParams
     ) = gdk.getReceiveAddress(session, params)
 
-    fun refreshAssets(session: GASession, params: AssetsParams): Assets =
+    fun refreshAssets(session: GASession, params: AssetsParams) {
+        gdk.refreshAssets(
+            session,
+            params
+        )
+    }
+
+    fun getAssets(session: GASession, params: GetAssetsParams): Assets =
         JsonDeserializer.decodeFromJsonElement(
-            gdk.refreshAssets(
+            gdk.getAssets(
                 session,
                 params
             ) as JsonElement

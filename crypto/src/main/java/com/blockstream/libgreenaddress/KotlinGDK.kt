@@ -53,6 +53,9 @@ class KotlinGDK {
     fun refreshAssets(session: GASession, params: AssetsParams) =
         GDK.refresh_assets(session, params)
 
+    fun getAssets(session: GASession, params: GetAssetsParams) =
+        GDK.get_assets(session, params)
+
     fun createSubAccount(session: GASession, params: SubAccountParams): GAAuthHandler =
         GDK.create_subaccount(session, params)
 

@@ -588,6 +588,7 @@ class GreenSession constructor(
     ).result<Address>(hardwareWalletResolver = DeviceResolver(this))
 
     override fun refreshAssets(params: AssetsParams) = greenWallet.refreshAssets(gaSession, params)
+    override fun getAssets(params: GetAssetsParams): Assets = greenWallet.getAssets(gaSession, params)
 
     fun createSubAccount(params: SubAccountParams, hardwareWalletResolver : HardwareWalletResolver? = null) = AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
             .result<SubAccount>(hardwareWalletResolver = hardwareWalletResolver ?: DeviceResolver(this))
@@ -714,11 +715,11 @@ class GreenSession constructor(
                             o1 == policyAsset -> -1
                             o2 == policyAsset -> 1
                             else -> {
-                                val asset1 = networkAssetManager.getAsset(o1)
-                                val icon1 = networkAssetManager.getAssetIcon(o1)
+                                val asset1 = networkAssetManager.getAsset(o1, this)
+                                val icon1 = networkAssetManager.getAssetIcon(o1, this)
 
-                                val asset2 = networkAssetManager.getAsset(o2)
-                                val icon2 = networkAssetManager.getAssetIcon(o2)
+                                val asset2 = networkAssetManager.getAsset(o2, this)
+                                val icon2 = networkAssetManager.getAssetIcon(o2, this)
 
                                 if ((icon1 == null) xor (icon2 == null)) {
                                     if (icon1 != null) -1 else 1
@@ -982,9 +983,9 @@ class GreenSession constructor(
     }
 
     fun hasAssetIcon(assetId : String) = networkAssetManager.hasAssetIcon(assetId)
-    fun getAsset(assetId : String): Asset? = networkAssetManager.getAsset(assetId)
-    fun getAssetDrawableOrNull(assetId : String): Drawable? = networkAssetManager.getAssetDrawableOrNull(assetId)
-    fun getAssetDrawableOrDefault(assetId : String): Drawable = networkAssetManager.getAssetDrawableOrDefault(assetId)
+    fun getAsset(assetId : String): Asset? = networkAssetManager.getAsset(assetId, this)
+    fun getAssetDrawableOrNull(assetId : String): Drawable? = networkAssetManager.getAssetDrawableOrNull(assetId, this)
+    fun getAssetDrawableOrDefault(assetId : String): Drawable = networkAssetManager.getAssetDrawableOrDefault(assetId, this)
 
     internal fun destroy() {
         disconnect()

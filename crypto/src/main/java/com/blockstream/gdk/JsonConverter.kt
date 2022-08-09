@@ -16,7 +16,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
     private val jsonSerializer by lazy { Json {  } }
 
     override fun toJSONObject(jsonString: String?): Any? {
-        if (log) {
+        if (log && jsonString != null && jsonString.length < 50_000) {
             "▲ ${mask(jsonString)}".let{
                 logger.info { it }
                 extraLogger?.log(it)

@@ -4,17 +4,18 @@ import android.content.Context
 import com.blockstream.gdk.data.Assets
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.params.AssetsParams
+import com.blockstream.gdk.params.GetAssetsParams
 import kotlinx.coroutines.CoroutineScope
 import mu.KLogging
 
 interface AssetQATester {
-    fun isAssetGdkCacheDisabled(): Boolean
     fun isAssetFetchDisabled(): Boolean
     fun isAssetIconsFetchDisabled(): Boolean
 }
 
 interface AssetsProvider {
-    fun refreshAssets(params: AssetsParams): Assets
+    fun refreshAssets(params: AssetsParams)
+    fun getAssets(params: GetAssetsParams): Assets
 }
 
 /*

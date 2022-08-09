@@ -7,15 +7,15 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.crypto.R
 import com.blockstream.gdk.data.Asset
-import com.blockstream.gdk.data.Assets
 import com.blockstream.gdk.params.AssetsParams
+import com.blockstream.gdk.params.GetAssetsParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import mu.KLogging
 
 enum class CacheStatus {
-    Empty, Gdk, Latest
+    Empty, Latest
 }
 
 data class AssetStatus(
@@ -27,100 +27,75 @@ data class AssetStatus(
 /*
  * NetworkAssetManager is responsible of updating Assets and handle different caches
  * App Cache: cached data from apk
- * GDK Cache: cached data from a previous successful fetch
  */
 class NetworkAssetManager constructor(
     private val context: Context,
     val coroutineScope: CoroutineScope,
     val qaTester: AssetQATester,
 ) {
-    private var metadata: Map<String, Asset> = mapOf()
-    private var icons: Map<String, Bitmap?> = mapOf()
+    private var metadata = mutableMapOf<String, Asset?>()
+    private var icons = mutableMapOf<String, Bitmap?>()
 
     // Internal representation of the Status
     private val status = AssetStatus()
 
-    private val statusLiveData =  MutableLiveData(status)
-    private val assetsUpdatedEvent =  MutableLiveData(0)
+    private val statusLiveData = MutableLiveData(status)
+    private val assetsUpdatedEvent = MutableLiveData(0)
 
     fun getAssetsUpdated() = assetsUpdatedEvent
 
-    private fun setGdkCache(assets: Assets) {
-        logger.info { "Liquid Assets update from GDK" }
-        this.metadata = assets.assets
-        this.icons = assets.icons ?: mapOf()
-
-        // Status: Gdk
-        status.metadataStatus = CacheStatus.Gdk
-        status.iconStatus = CacheStatus.Gdk
-    }
-
-    private fun updateMetadata(assets: Assets) {
-        logger.info { "Liquid Assets metadata update from session" }
-        this.metadata = assets.assets
-        // Status: Metadata Latest
-        status.metadataStatus = CacheStatus.Latest
-    }
-
-    // Currently unused as the assets are integrated in the build
-    private fun updateIcons(assets: Assets) {
-        logger.info { "Liquid Assets icon update from session" }
-        this.icons = assets.icons ?: mapOf()
-        // Status: Icons Latest
-        status.iconStatus = CacheStatus.Latest
-    }
-
-    fun getAsset(assetId: String): Asset? {
+    fun getAsset(assetId: String, assetsProvider: AssetsProvider): Asset? {
         // Asset from GDK (cache or up2date)
+        if (!metadata.containsKey(assetId)) {
+            try {
+                // If null save it in cache either way
+                assetsProvider.getAssets(GetAssetsParams(listOf(assetId))).assets?.get(assetId).let {
+                    metadata[assetId] = it
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
         return metadata[assetId]
     }
 
-    fun hasAssetIcon(assetId: String): Boolean = getAssetIcon(assetId) != null
+    fun getAssetIcon(assetId: String, assetsProvider: AssetsProvider): Bitmap? {
+        if (!icons.containsKey(assetId)) {
+            try {
+                // If null save it in cache either way
+                assetsProvider.getAssets(GetAssetsParams(listOf(assetId))).icons?.get(assetId).let {
+                    icons[assetId] = it
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
 
-    fun getAssetDrawableOrNull(assetId: String): Drawable? {
-        getAssetIcon(assetId)?.let {
+        return icons[assetId]
+    }
+
+    fun hasAssetIcon(assetId: String): Boolean = icons.containsKey(assetId)
+
+    fun getAssetDrawableOrNull(assetId: String, assetsProvider: AssetsProvider): Drawable? {
+        getAssetIcon(assetId, assetsProvider)?.let {
             return BitmapDrawable(context.resources, it)
         }
 
         return null
     }
 
-    fun getAssetDrawableOrDefault(assetId: String): Drawable {
-        return getAssetDrawableOrNull(assetId) ?: context.getDrawable(R.drawable.ic_unknown_asset_60)!!
+    fun getAssetDrawableOrDefault(assetId: String, assetsProvider: AssetsProvider): Drawable {
+        return getAssetDrawableOrNull(assetId, assetsProvider)
+            ?: context.getDrawable(R.drawable.ic_unknown_asset_60)!!
     }
 
-    fun updateAssetsIfNeeded(provider: AssetsProvider) {
-        // Init from GDK if required
-        if (status.metadataStatus == CacheStatus.Empty && !qaTester.isAssetGdkCacheDisabled()) {
-            try {
-                statusLiveData.postValue(status.apply { onProgress = true })
-
-                setGdkCache(
-                    provider.refreshAssets(
-                        AssetsParams(
-                            assets = true,
-                            icons = true,
-                            refresh = false
-                        )
-                    )
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }finally {
-                statusLiveData.postValue(status.apply { onProgress = false })
-            }
-        }
-
-        updateMetadataFromSession(provider, false)
-    }
-
-    private fun updateMetadataFromSession(provider: AssetsProvider, forceUpdate: Boolean) {
+    fun updateAssetsIfNeeded(provider: AssetsProvider, forceUpdate: Boolean = false) {
         if (status.metadataStatus != CacheStatus.Latest || status.iconStatus != CacheStatus.Latest || forceUpdate) {
 
             coroutineScope.launch(context = Dispatchers.IO) {
 
                 try {
-
                     statusLiveData.postValue(status.apply { onProgress = true })
 
                     if (status.metadataStatus != CacheStatus.Latest || forceUpdate) {
@@ -129,15 +104,18 @@ class NetworkAssetManager constructor(
                         if (!qaTester.isAssetFetchDisabled() || forceUpdate) {
                             // Try to update the registry - only metadata
                             // Fetch assets without icons as we have better chances to complete the network call
-                            updateMetadata(
-                                provider.refreshAssets(
-                                    AssetsParams(
-                                        assets = true,
-                                        icons = false,
-                                        refresh = true
-                                    )
+                            provider.refreshAssets(
+                                AssetsParams(
+                                    assets = true,
+                                    icons = false,
+                                    refresh = true
                                 )
                             )
+
+                            // Clear our local cache
+                            metadata.clear()
+
+                            status.metadataStatus = CacheStatus.Latest
                         }
                     }
 
@@ -146,15 +124,18 @@ class NetworkAssetManager constructor(
                         // Allow forceUpdate to override QATester settings
                         if (!qaTester.isAssetIconsFetchDisabled() || forceUpdate) {
                             // Try to update the registry - only icons
-                            updateIcons(
-                                provider.refreshAssets(
-                                    AssetsParams(
-                                        assets = false,
-                                        icons = true,
-                                        refresh = true
-                                    )
+                            provider.refreshAssets(
+                                AssetsParams(
+                                    assets = false,
+                                    icons = true,
+                                    refresh = true
                                 )
                             )
+
+                            // Clear our local cache
+                            icons.clear()
+
+                            status.iconStatus = CacheStatus.Latest
                         }
                     }
 
@@ -168,9 +149,5 @@ class NetworkAssetManager constructor(
         }
     }
 
-    fun getAssetIcon(assetId: String): Bitmap? {
-        return icons[assetId]
-    }
-
-    companion object: KLogging()
+    companion object : KLogging()
 }
