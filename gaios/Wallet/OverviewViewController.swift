@@ -412,8 +412,8 @@ class OverviewViewController: UIViewController {
 
     // received notification assets update
     func onAssetsUpdated(_ notification: Notification) {
-        reloadSections([OverviewSection.asset], animated: true)
-        reloadSections([OverviewSection.transaction], animated: false)
+        // reload tableview with current data
+        reloadSections([.account, .asset, .transaction], animated: false)
     }
 
     // received notification new transaction

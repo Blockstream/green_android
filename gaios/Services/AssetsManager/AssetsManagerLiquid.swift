@@ -15,57 +15,54 @@ class AssetsManagerLiquid: Codable, AssetsManagerProtocol {
     }
 
     func info(for key: String) -> AssetInfo {
-        if var info = infos[key] {
-            if key == AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() {
-                info.name = "Liquid Bitcoin"
-            }
-            return info
+        if infos[key] == nil {
+            let session = SessionsManager.current
+            let infos = fetchAssets(session: session!, assetsId: [key])
+            self.infos.merge(infos, uniquingKeysWith: {_, new in new})
+        }
+        if let asset = infos[key] {
+            return asset
         }
         return AssetInfo(assetId: key, name: nil, precision: 0, ticker: nil)
     }
 
     func image(for key: String) -> UIImage {
-        UIImage(base64: icons[key]) ?? UIImage(named: "default_asset_icon") ?? UIImage()
+        if icons[key] == nil {
+            let session = SessionsManager.current
+            let icons = fetchIcons(session: session!, assetsId: [key])
+            self.icons.merge(icons, uniquingKeysWith: {_, new in new})
+        }
+        if let icon = icons[key] {
+            return UIImage(base64: icon) ?? UIImage()
+        }
+        return UIImage(named: "default_asset_icon") ?? UIImage()
     }
 
     func hasImage(for key: String?) -> Bool {
         return icons.filter({ $0.key == key }).first != nil
     }
 
-    @discardableResult
-    func fetchIcons(session: SessionManager, refresh: Bool) -> Bool {
-        let data = try? session.refreshAssets(icons: true, assets: false, refresh: refresh)
-        let iconsData = data?["icons"] as? [String: String]
-        self.icons = iconsData ?? [:]
-        return iconsData != nil
+    func fetchAssets(session: SessionManager, assetsId: [String]) -> [String: AssetInfo] {
+        let assets = try? session.session?.getAssets(params: ["assets_id": assetsId])
+        let infosAsset = assets?["assets"] as? [String: Any]
+        let infosData = try? JSONSerialization.data(withJSONObject: infosAsset ?? [:])
+        let infos = try? JSONDecoder().decode([String: AssetInfo].self, from: infosData ?? Data())
+        return infos ?? [:]
     }
 
-    @discardableResult
-    func fetchAssets(session: SessionManager, refresh: Bool) -> Bool {
-        let data = try? session.refreshAssets(icons: false, assets: true, refresh: refresh)
-        let infosData = data?["assets"] as? [String: Any]
-        let infosSer = try? JSONSerialization.data(withJSONObject: infosData ?? [:])
-        let infos = try? JSONDecoder().decode([String: AssetInfo].self, from: infosSer ?? Data())
-        self.infos = infos ?? [:]
-        return infos != nil
-    }
-
-    func cache(session: SessionManager) {
-        fetchAssets(session: session, refresh: false)
-        fetchIcons(session: session, refresh: false)
-    }
-
-    func refresh(session: SessionManager) {
-        if !assetsTask {
-            assetsTask = fetchAssets(session: session, refresh: true)
-            iconsTask = fetchIcons(session: session, refresh: true)
-        }
+    func fetchIcons(session: SessionManager, assetsId: [String]) -> [String: String] {
+        let assets = try? session.session?.getAssets(params: ["assets_id": assetsId])
+        let iconsAsset = assets?["icons"] as? [String: Any]
+        let iconsData = try? JSONSerialization.data(withJSONObject: iconsAsset ?? [:])
+        let icons = try? JSONDecoder().decode([String: String].self, from: iconsData ?? Data())
+        return icons ?? [:]
     }
 
     func loadAsync(session: SessionManager) {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap(on: bgq) {
-            self.refresh(session: session)
+            _ = try session.refreshAssets(icons: false, assets: true, refresh: true)
+            _ = try session.refreshAssets(icons: true, assets: false, refresh: true)
         }.done { _ in
             let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
