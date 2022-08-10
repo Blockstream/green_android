@@ -21,15 +21,13 @@ class ACTransactionCellModel {
 
         let assetId = tx.defaultAsset
         let satoshi = tx.amounts[assetId]
-        let session = WalletManager.current?.sessions[assetId == "btc" ? "electrum-mainnet" : "electrum-liquid"]
-        let asset = session?.registry?.info(for: assetId)
+        let asset = WalletManager.current?.registry.info(for: assetId)
         let pending = OVTransactionCellModel.isPending(tx: tx, blockHeight: blockHeight)
 
         switch tx.type {
         case .redeposit:
             // For redeposits we show fees paid in btc
             if let balance = Balance.fromSatoshi(tx.fee)?.toDenom() {
-                // For redeposits we show fees paid in btc
                 self.value = "\(balance.0) \(balance.1)"
             }
             self.status = pending ? "Redepositing" : "Redeposited"
@@ -37,13 +35,13 @@ class ACTransactionCellModel {
             if multipleAssets {
                 self.value = NSLocalizedString("id_multiple_assets", comment: "")
             }
-            if let balance = Balance.fromSatoshi(satoshi ?? 0, asset: asset)?.toAssetValue() {
-                self.value = "+\(balance.0) \(balance.1)"
+            if let balance = Balance.fromSatoshi(satoshi ?? 0, asset: asset)?.toValue() {
+                self.value = "\(balance.0) \(balance.1)"
             }
             self.status = pending ? "Receiving" : "Received"
         case .outgoing:
-            if let balance = Balance.fromSatoshi(satoshi ?? 0, asset: asset)?.toAssetValue() {
-                self.value = "-\(balance.0) \(balance.1)"
+            if let balance = Balance.fromSatoshi(satoshi ?? 0, asset: asset)?.toValue() {
+                self.value = "\(balance.0) \(balance.1)"
             }
             self.status = pending ? "Sending" : "Sent"
         }

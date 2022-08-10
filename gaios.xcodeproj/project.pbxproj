@@ -282,10 +282,6 @@
 		6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DF2DEE623F382F7005F16E9 /* Help.storyboard */; };
 		6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DF2DEE823F38314005F16E9 /* HelpViewController.swift */; };
 		81073D7821E8B27700E08F86 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81073D7A21E8B27700E08F86 /* Localizable.strings */; };
-		81097AD42889923200E48A2B /* AssetsManagerBitcoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81097AD32889923200E48A2B /* AssetsManagerBitcoin.swift */; };
-		81097AD62889925600E48A2B /* AssetsManagerLiquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81097AD52889925600E48A2B /* AssetsManagerLiquid.swift */; };
-		81097AD82889926300E48A2B /* AssetsManagerTestnet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81097AD72889926300E48A2B /* AssetsManagerTestnet.swift */; };
-		81097ADA288992A400E48A2B /* AssetsManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81097AD9288992A400E48A2B /* AssetsManagerProtocol.swift */; };
 		811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811006E02199C5BF00D14414 /* UIErrorLabel.swift */; };
 		8111485F287891F500C6F030 /* JadeOTA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8111485E287891F500C6F030 /* JadeOTA.swift */; };
 		811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
@@ -677,10 +673,6 @@
 		7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gaiosUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81073D7921E8B27700E08F86 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		81073D7B21E8B61400E08F86 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
-		81097AD32889923200E48A2B /* AssetsManagerBitcoin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerBitcoin.swift; sourceTree = "<group>"; };
-		81097AD52889925600E48A2B /* AssetsManagerLiquid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerLiquid.swift; sourceTree = "<group>"; };
-		81097AD72889926300E48A2B /* AssetsManagerTestnet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerTestnet.swift; sourceTree = "<group>"; };
-		81097AD9288992A400E48A2B /* AssetsManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerProtocol.swift; sourceTree = "<group>"; };
 		810E052827B45AA700F917E2 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
 		810E052927B45AA800F917E2 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
@@ -1295,7 +1287,7 @@
 		34AB8BAC26036742009C930A /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				81097AD22889920500E48A2B /* AssetsManager */,
+				345C70872836254600EF3971 /* AssetsManager.swift */,
 				3469A2452887D23700B2F640 /* StoreReviewManager.swift */,
 				34EB66FF28212E9C0036D615 /* AnalyticsManager */,
 				81D671EA26C8007600682508 /* SessionManager.swift */,
@@ -1681,18 +1673,6 @@
 				6D0983C523FC848C00289ACA /* HelpCell.swift */,
 			);
 			path = TableViewCells;
-			sourceTree = "<group>";
-		};
-		81097AD22889920500E48A2B /* AssetsManager */ = {
-			isa = PBXGroup;
-			children = (
-				345C70872836254600EF3971 /* AssetsManager.swift */,
-				81097AD32889923200E48A2B /* AssetsManagerBitcoin.swift */,
-				81097AD52889925600E48A2B /* AssetsManagerLiquid.swift */,
-				81097AD72889926300E48A2B /* AssetsManagerTestnet.swift */,
-				81097AD9288992A400E48A2B /* AssetsManagerProtocol.swift */,
-			);
-			path = AssetsManager;
 			sourceTree = "<group>";
 		};
 		81387E5D2452066500A63C1D /* Ledger */ = {
@@ -2163,7 +2143,6 @@
 				3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */,
 				3418BABC2743984400F9B2D0 /* TransactionDetailCell.swift in Sources */,
 				341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */,
-				81097AD82889926300E48A2B /* AssetsManagerTestnet.swift in Sources */,
 				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,
 				344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */,
 				34C3020426E7531E00A3F910 /* OverviewViewController.swift in Sources */,
@@ -2208,7 +2187,6 @@
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
 				34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */,
 				34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */,
-				81097AD62889925600E48A2B /* AssetsManagerLiquid.swift in Sources */,
 				6D2A613623302694008C518A /* UIImage.swift in Sources */,
 				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
 				347942A527561AAC0020D60F /* ExistingWalletCell.swift in Sources */,
@@ -2216,12 +2194,10 @@
 				3451017827EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift in Sources */,
 				340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
-				81097ADA288992A400E48A2B /* AssetsManagerProtocol.swift in Sources */,
 				3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
 				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
-				81097AD42889923200E48A2B /* AssetsManagerBitcoin.swift in Sources */,
 				3497936825F8B18C0029ECB1 /* WalletNameViewController.swift in Sources */,
 				81A6116828D4890A00FC372A /* OVAssetCellModel.swift in Sources */,
 				34477D322771D2600021698B /* RecipientCell.swift in Sources */,

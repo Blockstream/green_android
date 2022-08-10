@@ -15,7 +15,11 @@ class TransactionViewController: UIViewController {
     var wallet: WalletItem!
     var transaction: Transaction!
 
-    private var account = AccountsManager.shared.current
+    var account = AccountsManager.shared.current
+    var session: SessionManager? {
+        let subaccount = WalletManager.current?.subaccounts.filter { $0.hashValue == transaction.subaccount }.first
+        return WalletManager.current?.sessions[subaccount?.network ?? ""]
+    }
 
     var viewInExplorerPreference: Bool {
         get {
@@ -31,6 +35,18 @@ class TransactionViewController: UIViewController {
     private var cantBumpFees: Bool {
             return WalletManager.current?.currentSession?.isResetActive ?? false ||
             !transaction.canRBF || account?.isWatchonly ?? false
+    }
+    private var amounts: [(key: String, value: UInt64)] {
+        if transaction?.type == .some(.redeposit) {
+            return []
+        }
+        var amounts = Array(transaction.amounts)
+        // OUT transactions in BTC/L-BTC have fee included
+        if transaction.type == .some(.outgoing) {
+            let feeAsset = session?.gdkNetwork.getFeeAsset()
+            amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value - transaction.fee) : $0 }
+        }
+        return amounts.filter({ $0.value != 0 })
     }
 
     var headerH: CGFloat = 44.0
@@ -321,7 +337,8 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case .status:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionStatusCell") as? TransactionStatusCell {
-                cell.configure(transaction: transaction, isLiquid: transaction.isLiquid)
+                let blockHeight = session?.notificationManager?.blockHeight
+                cell.configure(transaction: transaction, isLiquid: transaction.isLiquid, blockHeight: blockHeight ?? 0)
                 cell.selectionStyle = .none
                 return cell
             }

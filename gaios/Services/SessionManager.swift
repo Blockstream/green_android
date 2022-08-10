@@ -56,10 +56,7 @@ class SessionManager {
     var settings: Settings?
     var session: GDKSession?
     var gdkNetwork: GdkNetwork
-
-    var registry: AssetsManagerProtocol? {
-        return AssetsManager.get(for: gdkNetwork)
-    }
+    var registry: AssetsManager?
 
     var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
@@ -76,6 +73,7 @@ class SessionManager {
     init(_ gdkNetwork: GdkNetwork) {
         self.gdkNetwork = gdkNetwork
         session = GDKSession()
+        registry = AssetsManager(testnet: !gdkNetwork.mainnet)
     }
 
     deinit {

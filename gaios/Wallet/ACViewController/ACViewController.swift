@@ -66,7 +66,7 @@ class ACViewController: UIViewController {
 
     func initViewModel() {
         viewModel.getSubaccounts(assetId: assetId ?? "btc")
-        viewModel.getTransactions(max: 10)
+        viewModel.getTransactions(assetId: assetId ?? "btc", max: 10)
         viewModel.reloadTableView = { [weak self] in
             DispatchQueue.main.async {
                 if self?.tableView.refreshControl?.isRefreshing ?? false {
@@ -238,9 +238,9 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
             reloadSections([ACSection.account], animated: true)
             if indexPath.row > 0 {
                 let subaccount = viewModel.cachedSubaccounts[indexPath.row]
-                viewModel.getTransactions(subaccounts: [subaccount], page: 0)
+                viewModel.getTransactions(assetId: assetId ?? "btc", subaccounts: [subaccount], page: 0)
             } else {
-                viewModel.getTransactions(page: 0, max: 10)
+                viewModel.getTransactions(assetId: assetId ?? "btc", page: 0, max: 10)
             }
         case .edit:
             break
@@ -251,7 +251,6 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
                 vc.transaction = transaction
                 navigationController?.pushViewController(vc, animated: true)
             }
-            break
         case .more:
             break
         default:

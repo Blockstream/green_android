@@ -38,14 +38,13 @@ class TransactionStatusCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(transaction: Transaction, isLiquid: Bool) {
+    func configure(transaction: Transaction, isLiquid: Bool, blockHeight: UInt32) {
         lblDate.text = transaction.date(dateStyle: .long, timeStyle: .short)
 
         var step: UInt32 = 0
         var steps: UInt32 = 0
         steps = isLiquid ? 2 : 6
 
-        let blockHeight = WalletManager.current?.currentSession?.notificationManager?.blockHeight ?? 0
         var status: TransactionStatus = .unconfirmed
         if transaction.blockHeight == 0 {
             lblStatus.text = NSLocalizedString("id_unconfirmed", comment: "")

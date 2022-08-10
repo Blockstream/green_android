@@ -16,6 +16,9 @@ class WalletManager {
     // Cached subaccounts list
     var subaccounts = [WalletItem]()
 
+    // Cached subaccounts list
+    var registry: AssetsManager
+
     // Store active subaccount
     private var activeWalletHash: Int?
     var currentSubaccount: WalletItem? {
@@ -45,8 +48,10 @@ class WalletManager {
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
 
     init(prominentNetwork: NetworkSecurityCase?) {
+        let mainnet = prominentNetwork?.gdkNetwork?.mainnet ?? true
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
-        if prominentNetwork?.gdkNetwork?.mainnet ?? true {
+        self.registry = AssetsManager(testnet: !mainnet)
+        if mainnet {
             addSession(for: .bitcoinSS)
             addSession(for: .liquidSS)
             addSession(for: .bitcoinMS)
@@ -128,10 +133,10 @@ class WalletManager {
 
     func loadRegistry() {
         self.sessions.values
-            .filter { $0.logged }
-            .forEach {
-                $0.registry?.cache(session: $0)
-                $0.registry?.loadAsync(session: $0)
+            .filter { $0.logged && $0.gdkNetwork.liquid }
+            .first
+            .map {
+                self.registry.loadAsync(session: $0)
             }
     }
 

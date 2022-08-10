@@ -56,19 +56,19 @@ struct Balance: Codable {
     }
 
     static func fromValue(_ value: String, asset: AssetInfo? = nil) -> Balance? {
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
-        let assetId = asset?.assetId ?? feeAsset ?? "btc"
+        let lbtc = getGdkNetwork("liquid").getFeeAsset()
+        let assetId = asset?.assetId ?? "btc"
         var details: [String: Any] = [assetId: value]
-        if let asset = asset, assetId != feeAsset {
+        if let asset = asset, !["btc", lbtc].contains(asset.assetId) {
             details["asset_info"] = asset.encode()
         }
         return Balance.from(details: details)
     }
 
     static func fromSatoshi(_ satoshi: Any, asset: AssetInfo? = nil) -> Balance? {
-        let feeAsset = AccountDao.shared.current?.gdkNetwork?.getFeeAsset()
+        let lbtc = getGdkNetwork("liquid").getFeeAsset()
         var details: [String: Any] = ["satoshi": satoshi]
-        if let asset = asset, asset.assetId != feeAsset {
+        if let asset = asset, !["btc", lbtc].contains(asset.assetId) {
             details["asset_info"] = asset.encode()
         }
         return Balance.from(details: details)
@@ -80,7 +80,12 @@ struct Balance: Codable {
 
     func toFiat() -> (String, String) {
         let mainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet
-        return (fiat?.localeFormattedString(2) ?? "n/a", mainnet ?? true ? fiatCurrency : "FIAT")
+        let lbtc = getGdkNetwork("liquid").getFeeAsset()
+        if let asset = assetInfo, !["btc", lbtc].contains(asset.assetId) {
+            return ("", "")
+        } else {
+            return (fiat?.localeFormattedString(2) ?? "n/a", mainnet ?? true ? fiatCurrency : "FIAT")
+        }
     }
 
     func toDenom() -> (String, String) {
@@ -95,8 +100,8 @@ struct Balance: Codable {
     }
 
     func toValue() -> (String, String) {
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
-        if let asset = assetInfo, asset.assetId != feeAsset {
+        let lbtc = getGdkNetwork("liquid").getFeeAsset()
+        if let asset = assetInfo, !["btc", lbtc].contains(asset.assetId) {
             return toAssetValue()
         } else {
             return toDenom()

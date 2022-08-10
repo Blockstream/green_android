@@ -7,7 +7,7 @@ class OVViewModel {
 
     var subaccounts: [WalletItem] { wm.subaccounts }
 
-    var cachedBalance = [String: UInt64]()
+    var cachedBalance = [(String, UInt64)]()
 
     var assetCellModels = [OVAssetCellModel]() {
         didSet {
@@ -30,10 +30,21 @@ class OVViewModel {
     func getAssets() {
         wm.balances(subaccounts: self.subaccounts)
             .done { amounts in
-                self.cachedBalance = amounts
+                self.cachedBalance = amounts.map { ($0.key, $0.value) }.sorted(by: { (rhs, lhs) in
+                    let lbtc = getGdkNetwork("liquid").getFeeAsset()
+                    if rhs.0 == "btc" { return true
+                    } else if lhs.0 == "btc" { return false
+                    } else if rhs.0 == lbtc { return true
+                    } else if lhs.0 == lbtc { return false
+                    } else if self.wm.registry.hasImage(for: rhs.0) == true { return true
+                    } else if self.wm.registry.hasImage(for: lhs.0) == true { return false
+                    } else if self.wm.registry.info(for: rhs.0).ticker != nil { return true
+                    } else if self.wm.registry.info(for: lhs.0).ticker != nil { return false
+                    } else { return true}
+                })
                 let total = amounts.filter({$0.0 == "btc"}).map {$0.1}.reduce(0, +)
                 self.balanceCellModel = OVBalanceCellModel(satoshi: total, numAssets: amounts.count - 2)
-                self.assetCellModels = amounts.map { OVAssetCellModel(assetId: $0.0, satoshi: $0.1) }
+                self.assetCellModels = self.cachedBalance.map { OVAssetCellModel(assetId: $0.0, satoshi: $0.1) }
             }.catch { err in
                 print(err)
             }

@@ -13,15 +13,11 @@ class ACAccountCellModel {
         name = subaccount.localizedName()
         type = subaccount.type.typeStringId
         security = getGdkNetwork(subaccount.network ?? "mainnet").electrum ? "Singlesig" : "Multisig"
-
-        let session = WalletManager.current?.sessions[assetId == "btc" ? "electrum-mainnet" : "electrum-liquid"]
-        let asset = session?.registry?.info(for: assetId)
-
-        if let balance = Balance.fromSatoshi(satoshi, asset: asset)?.toAssetValue() {
+        let asset = WalletManager.current?.registry.info(for: assetId)
+        if let balance = Balance.fromSatoshi(satoshi, asset: asset)?.toValue() {
             self.value = "\(balance.0) \(balance.1)"
         }
-        if session?.gdkNetwork.getFeeAsset() == assetId,
-            let balance = Balance.fromSatoshi(satoshi, asset: asset)?.toFiat() {
+        if let balance = Balance.fromSatoshi(satoshi, asset: asset)?.toFiat() {
             self.fiat = "\(balance.0) \(balance.1)"
         }
     }

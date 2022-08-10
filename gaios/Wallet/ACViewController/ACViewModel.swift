@@ -42,14 +42,14 @@ class ACViewModel {
     }
 
     func getSubaccounts(assetId: String) {
-        let subaccounts = self.subaccounts.filter {
+        let allSubaccounts = self.subaccounts.filter {
             (assetId == "btc" && !$0.gdkNetwork.liquid) ||
             (assetId != "btc" && $0.gdkNetwork.liquid)
         }
-        cachedSubaccounts = subaccounts
-        wm.balances(subaccounts: subaccounts)
+        cachedSubaccounts = allSubaccounts
+        wm.balances(subaccounts: allSubaccounts)
             .done { _ in
-                self.accountCellModels = subaccounts.map {
+                self.accountCellModels = allSubaccounts.map {
                         ACAccountCellModel(subaccount: $0,
                                            assetId: assetId,
                                            satoshi: $0.satoshi?[assetId] ?? 0)
@@ -59,8 +59,13 @@ class ACViewModel {
             }
     }
 
-    func getTransactions(subaccounts: [WalletItem]? = nil, page: Int = 0, max: Int? = nil) {
-        wm.transactions(subaccounts: subaccounts ?? self.subaccounts)
+    func getTransactions(assetId: String, subaccounts: [WalletItem]? = nil, page: Int = 0, max: Int? = nil) {
+        let allSubaccounts = self.subaccounts.filter {
+            (assetId == "btc" && !$0.gdkNetwork.liquid) ||
+            (assetId != "btc" && $0.gdkNetwork.liquid)
+        }
+        cachedSubaccounts = allSubaccounts
+        wm.transactions(subaccounts: subaccounts ?? allSubaccounts)
             .done { txs in
                 self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
                 self.txCellModels = self.cachedTransactions
