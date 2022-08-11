@@ -384,6 +384,7 @@ class OverviewViewController: UIViewController {
         self.transactions.removeAll()
         self.callPage = 0
         self.isTxLoading = true
+        self.reloadSections([OverviewSection.transaction], animated: false)
         func step() -> Promise<Void> {
             return session
                 .transactions(subaccount: activeWallet, first: UInt32(self.transactions.count))
