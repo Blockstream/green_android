@@ -4,23 +4,19 @@ import PromiseKit
 
 class AssetsManagerLiquid: Codable, AssetsManagerProtocol {
 
-    var infos: [String: AssetInfo]
-    var icons: [String: String]
-    var iconsTask: Bool = false
-    var assetsTask: Bool = false
-
-    init(infos: [String: AssetInfo] = [:], icons: [String: String] = [:]) {
-        self.infos = infos
-        self.icons = icons
-    }
+    var infos = [String: AssetInfo]()
+    var icons = [String: String]()
 
     func info(for key: String) -> AssetInfo {
+        let session = SessionsManager.current
         if infos[key] == nil {
-            let session = SessionsManager.current
             let infos = fetchAssets(session: session!, assetsId: [key])
             self.infos.merge(infos, uniquingKeysWith: {_, new in new})
         }
-        if let asset = infos[key] {
+        if var asset = infos[key] {
+            if key == session?.gdkNetwork.getFeeAsset() ?? "" {
+                asset.name = session?.gdkNetwork.mainnet ?? true ? "Liquid Bitcoin" : "Liquid Testnet Bitcoin"
+            }
             return asset
         }
         return AssetInfo(assetId: key, name: nil, precision: 0, ticker: nil)

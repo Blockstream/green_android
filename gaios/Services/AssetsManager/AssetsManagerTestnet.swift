@@ -12,7 +12,5 @@ class AssetsManagerTestnet: Codable, AssetsManagerProtocol {
         return UIImage(named: "ntw_testnet") ?? UIImage()
     }
     func hasImage(for key: String?) -> Bool { true }
-    func cache(session: SessionManager) { }
-    func refresh(session: SessionManager) { }
     func loadAsync(session: SessionManager) { }
 }
