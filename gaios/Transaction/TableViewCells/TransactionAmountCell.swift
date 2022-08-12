@@ -44,9 +44,9 @@ class TransactionAmountCell: UITableViewCell {
         copyRecipientIcon.image = copyRecipientIcon.image?.maskWithColor(color: .white)
         let color: UIColor = tx.type == .outgoing ? UIColor.white : UIColor.customMatrixGreen()
         copyAmountIcon.image = copyAmountIcon.image?.maskWithColor(color: color)
-        lblTitle.text = NSLocalizedString("id_recipient", comment: "")
+        lblTitle.text = NSLocalizedString("id_sent_to", comment: "")
         if tx.type == .incoming {
-            lblTitle.text = NSLocalizedString("id_received", comment: "")
+            lblTitle.text = NSLocalizedString("id_received_on", comment: "")
         }
         lblRecipient.text = address(tx)
         lblRecipient.isHidden = tx.isLiquid
