@@ -136,8 +136,10 @@ struct JadeOta: Codable {
 struct JadeAuthRequest: Codable {
     enum CodingKeys: String, CodingKey {
         case network
+        case epoch
     }
     let network: String
+    let epoch: UInt32
 }
 
 struct JadeHandshakeCompleteReply: Codable {

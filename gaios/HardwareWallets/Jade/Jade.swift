@@ -42,7 +42,8 @@ final class Jade: JadeOTA, HWProtocol {
 
     func auth(network: String) -> Observable<Bool> {
         // Send initial auth user request
-        let cmd = JadeAuthRequest(network: network)
+        let epoch = Date().timeIntervalSince1970
+        let cmd = JadeAuthRequest(network: network, epoch: UInt32(epoch))
         return exchange(JadeRequest<JadeAuthRequest>(method: "auth_user", params: cmd))
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { (res: JadeResponse<JadeAuthResponse<String>>) -> Observable<JadeResponse<JadeAuthResponse<JadeHandshakeComplete>>> in
