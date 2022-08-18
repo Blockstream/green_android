@@ -47,7 +47,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = NSLocalizedString("id_what_type_of_account_would_you", comment: "")
-        lblLegacyTitle.text = NSLocalizedString("id_legacy_account", comment: "")
+        lblLegacyTitle.text = NSLocalizedString("id_legacy_segwit_account", comment: "")
         lblLegacyHint.text = NSLocalizedString("id_bip49_accounts_allow_you_to", comment: "")
         lblSegWitTitle.text = NSLocalizedString("id_segwit_account", comment: "")
         lblSegWitHint.text = NSLocalizedString("id_bip84_accounts_allow_you_to", comment: "")
@@ -94,7 +94,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
     }
 
     @objc func didPressCardLegacy() {
-        next(.legacy)
+        next(.segwitWrapped)
     }
 
     @objc func didPressCardSegWit() {

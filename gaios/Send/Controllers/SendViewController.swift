@@ -275,7 +275,7 @@ class SendViewController: KeyboardViewController {
             value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
         let assetInfo = SessionsManager.current?.registry?.info(for: asset)
-        if let balance = Balance.fromSatoshi(value, asset: assetInfo)  {
+        if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
             let (amount, _) = value == 0 ? ("", "") : balance.toValue()
             recipients.first?.amount = amount
         }

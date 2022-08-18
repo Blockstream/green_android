@@ -44,7 +44,8 @@ class AccountCreateSetNameViewController: UIViewController {
         lblTitle.text = NSLocalizedString("id_review_account_information", comment: "")
         lblHint.text = NSLocalizedString("id_account_name", comment: "")
         lblAccountTypeTitle.text = NSLocalizedString("id_account_type", comment: "").uppercased()
-        lblAccountTypeHint.text = accountType.name
+        lblAccountTypeHint.text = NSLocalizedString(accountType.nameStringId, comment: "")
+        fieldName.text = NSLocalizedString(accountType.nameStringId, comment: "")
         lblRecoveryKeyTypeTitle.text = NSLocalizedString("id_recovery_key_type", comment: "").uppercased()
         btnNext.setTitle(NSLocalizedString("id_add_new_account", comment: ""), for: .normal)
         containerViewRecoveryKeyType.isHidden = true

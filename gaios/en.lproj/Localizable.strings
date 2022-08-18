@@ -1118,3 +1118,17 @@
 "id_your_wallet_is_not_yet_fully" = "Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.";
 "id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";
 "id_youve_entered_an_invalid_pin" = "You've entered an invalid PIN too many times.";
+
+"id_legacy_segwit_account" = "Legacy SegWit Account";
+"id_legacy_bip44" = "Legacy (BIP44)";
+"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
+"id_segwit_bip84" = "SegWit (BIP84)";
+"id_taproot_account" = "Taproot account";
+"id_taproot_bip86" = "Taproot (BIP86)";
+"id_standard" = "Standard";
+"id_amp" = "AMP";
+"id_2of3" = "2of3";
+"Legacy SegWit" = "Legacy SegWit";
+"SegWit" = "SegWit";
+"Taproot" = "Taproot";
+"Legacy" = "Legacy";

@@ -46,8 +46,7 @@ class AccountArchiveCell: UITableViewCell {
             lblBalance.isHidden = false
         }
 
-        let accountType: AccountType? = AccountType(rawValue: account.type)
-        self.lblAccountHint.text = accountType?.name ?? ""
+        self.lblAccountHint.text = account.localizedHint()
         self.action = action
         self.actionBtn.isHidden = false
 

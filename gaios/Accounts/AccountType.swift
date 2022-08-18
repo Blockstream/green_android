@@ -1,25 +1,74 @@
-import UIKit
-
 enum AccountType: String, CaseIterable {
+    /// multiSig
     case standard = "2of2"
     case amp = "2of2_no_recovery"
     case twoOfThree = "2of3"
-    case legacy = "p2sh-p2wpkh"
-    case segWit = "p2wpkh"
 
-    var name: String {
+    /// singleSig
+    case legacy = "p2pkh"
+    case segwitWrapped = "p2sh-p2wpkh" // former legacy
+    case segWit = "p2wpkh"
+    case taproot = "p2tr"
+
+    var typeStringId: String {
         get {
             switch self {
             case .standard:
-                return NSLocalizedString("id_standard_account", comment: "")
+                return "id_standard"
             case .amp:
-                return NSLocalizedString("id_amp_account", comment: "")
+                return "id_amp"
             case .twoOfThree:
-                return NSLocalizedString("id_2of3_account", comment: "")
+                return "id_2of3"
+            case .legacy:
+                return "id_legacy_bip44"
+            case .segwitWrapped:
+                return "id_legacy_segwit_bip49"
+            case .segWit:
+                return "id_segwit_bip84"
+            case .taproot:
+                return "id_taproot_bip86"
+            }
+        }
+    }
+
+    var nameStringId: String {
+        get {
+            switch self {
+            case .standard:
+                return "id_standard_account"
+            case .amp:
+                return "id_amp_account"
+            case .twoOfThree:
+                return "id_2of3_account"
+            case .legacy:
+                return "id_legacy_segwit_account"
+            case .segwitWrapped:
+                return "id_legacy_segwit_account"
+            case .segWit:
+                return "id_segwit_account"
+            case .taproot:
+                return "id_taproot_account"
+            }
+        }
+    }
+
+    var shortNameStringId: String {
+        get {
+            switch self {
+            case .standard:
+                return "id_standard"
+            case .amp:
+                return "id_amp"
+            case .twoOfThree:
+                return "id_2of3"
             case .legacy:
                 return "Legacy"
+            case .segwitWrapped:
+                return "Legacy SegWit"
             case .segWit:
                 return "SegWit"
+            case .taproot:
+                return "Taproot"
             }
         }
     }

@@ -54,8 +54,7 @@ class OverviewAccountCell: UITableViewCell {
             lblBalance.isHidden = !showAccounts
         }
 
-        let accountType = AccountType(rawValue: account.type)
-        self.lblAccountHint.text = accountType?.name ?? ""
+        self.lblAccountHint.text = account.localizedHint()
         self.action = action
         self.actionBtn.isHidden = action == nil
 

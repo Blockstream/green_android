@@ -33,10 +33,35 @@ class WalletItem: Codable, Equatable {
         if !name.isEmpty {
             return name
         }
-        if pointer == 0 {
-            return NSLocalizedString("id_main_account", comment: "")
+        let accountType = AccountType(rawValue: self.type)
+        switch accountType {
+        case .legacy, .segwitWrapped, .segWit, .taproot:
+            if accountNumber() == 1 {
+                return "\(NSLocalizedString(accountType?.shortNameStringId ?? "", comment: "")) Account \(accountNumber())"
+            } else {
+                return "\(NSLocalizedString(accountType?.shortNameStringId ?? "", comment: "")) \(accountNumber())"
+            }
+        default:
+            if pointer == 0 {
+                return NSLocalizedString("id_main_account", comment: "")
+            }
+            return NSLocalizedString("id_account", comment: "") + " \(pointer)"
         }
-        return NSLocalizedString("id_account", comment: "") + " \(pointer)"
+    }
+
+    func localizedHint() -> String {
+        let accountType = AccountType(rawValue: self.type)
+        return "\((NSLocalizedString(accountType?.typeStringId ?? "", comment: "")).uppercased()) #\(self.accountNumber())"
+    }
+
+    func accountNumber() -> UInt32 {
+        let accountType = AccountType(rawValue: self.type)
+        switch accountType {
+        case .legacy, .segwitWrapped, .segWit, .taproot:
+            return (self.pointer / 16) + 1
+        default:
+            return self.pointer + 1
+        }
     }
 
     func generateNewAddress() -> Promise<Address> {

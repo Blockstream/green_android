@@ -230,7 +230,7 @@ class SessionManager {
         let notFound = !wallets.contains(where: {$0.type == AccountType.segWit.rawValue })
         if gdkNetwork.electrum && notFound {
             return Guarantee()
-                .compactMap(on: bgq) { try self.session?.createSubaccount(details: ["name": "Segwit Account",
+                .compactMap(on: bgq) { try self.session?.createSubaccount(details: ["name": "",
                                                              "type": AccountType.segWit.rawValue]) }
                 .then(on: bgq) { $0.resolve(session: self) }.asVoid()
         }

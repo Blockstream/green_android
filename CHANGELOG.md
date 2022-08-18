@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Update visibility of network notification bar
 - Change Transaction address wording 
 - Improved ephemeral wallets identification
+- Updated accounts naming
 
 ### Fixed
 - Improved reload transactions
