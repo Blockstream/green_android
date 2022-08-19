@@ -71,8 +71,9 @@ class UserSettingsViewController: UIViewController {
             }
             if let account = account, !(account.isSingleSig ?? false) {
                 // watchonly available on multisig
-                session.getWatchOnlyUsername().done {
+                _ = session.getWatchOnlyUsername().done {
                     self.username = $0
+                    self.reloadData()
                 }
             }
         }

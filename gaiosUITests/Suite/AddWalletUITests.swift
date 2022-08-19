@@ -269,6 +269,8 @@ class AddWalletUITests: XCTestBase {
             DialogWatchOnlySetUp()
                 .deleteCredentials()
                 .pause(1)
+                .deleteCredentials()
+                .pause(1)
         } else {
             DialogWatchOnlySetUp()
                 .dismiss()
@@ -354,6 +356,8 @@ class AddWalletUITests: XCTestBase {
 
         if DialogWatchOnlySetUp().hasCredentials(Constants.cryptoLiquidUser) {
             DialogWatchOnlySetUp()
+                .deleteCredentials()
+                .pause(1)
                 .deleteCredentials()
                 .pause(1)
         } else {

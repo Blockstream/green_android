@@ -9,14 +9,14 @@ class PopoverMenuWallet: Screen {
     @discardableResult
     func tapRenameWallet(connectionTimeout: TimeInterval = 25) -> Self {
 
-        rootElement.tables.cells.element(boundBy: 0).tap()
+        rootElement.tables.cells.element(boundBy: 1).tap()
         return self
     }
 
     @discardableResult
     func tapRemoveWallet(connectionTimeout: TimeInterval = 25) -> Self {
 
-        rootElement.tables.cells.element(boundBy: 1).tap()
+        rootElement.tables.cells.element(boundBy: 2).tap()
         return self
     }
     
