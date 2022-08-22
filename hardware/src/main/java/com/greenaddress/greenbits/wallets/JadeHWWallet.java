@@ -80,14 +80,14 @@ public class JadeHWWallet extends HWWallet {
         VersionInfo info = jade.getVersionInfo();
         String state = info.getJadeState();
 
-        // JADE_STATE => READY | TEMP (these mean unlocked / ready to use)
-        // anything else ( LOCKED | UNSAVED | UNINIT) will need an authUser first to unlock
+        // JADE_STATE => READY  (device unlocked / ready to use)
+        // anything else ( LOCKED | UNSAVED | UNINIT | TEMP) will need an authUser first to unlock
 
-        if (!"READY".equals(state) && !"TEMP".equals(state)) {
-
+        if (!"READY".equals(state)) {
             CompletableSubject completable = CompletableSubject.create();
 
-            if (hwWalletBridge != null) {
+            // JADE_STATE => TEMP no need for PIN entry
+            if (hwWalletBridge != null && !"TEMP".equals(state)) {
                 hwWalletBridge.interactionRequest(this, completable, "id_enter_pin_on_jade");
             }
 
@@ -102,8 +102,8 @@ public class JadeHWWallet extends HWWallet {
                 completable.onError(e);
                 throw e;
             }
-
         }
+
         return true;
     }
 
