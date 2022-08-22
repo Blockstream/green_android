@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Update labels on app settings
 - Update visibility of network notification bar
 - Change Transaction address wording 
+- Improved ephemeral wallets identification
 
 ### Fixed
 - Improved reload transactions

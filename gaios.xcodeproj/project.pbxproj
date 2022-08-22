@@ -197,7 +197,6 @@
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
 		34D330442863485E009CDBB3 /* DialogWatchOnlySetUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
-		34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */; };
 		34DEF5212729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */; };
@@ -539,7 +538,6 @@
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWatchOnlySetUp.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
-		34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDrawerHDCell.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletNameViewController.swift; sourceTree = "<group>"; };
 		34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveMoreOptionsViewController.swift; sourceTree = "<group>"; };
@@ -952,7 +950,6 @@
 			isa = PBXGroup;
 			children = (
 				345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */,
-				34D678AD261F05F700DBC0BB /* Cells */,
 				345E1A8F261EEB9000A1D934 /* Controllers */,
 				345E1A94261EEBF500A1D934 /* TranstionAnimator */,
 			);
@@ -1231,14 +1228,6 @@
 				34C978A7268DC14D0061264D /* Extensions.swift */,
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		34D678AD261F05F700DBC0BB /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */,
-			);
-			path = Cells;
 			sourceTree = "<group>";
 		};
 		34DDD0A7260A484E00020380 /* Shared */ = {
@@ -1910,7 +1899,6 @@
 				3497936625F8B18C0029ECB1 /* ChooseNetworkViewController.swift in Sources */,
 				3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */,
 				3418BABC2743984400F9B2D0 /* TransactionDetailCell.swift in Sources */,
-				34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */,
 				341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */,
 				81097AD82889926300E48A2B /* AssetsManagerTestnet.swift in Sources */,
 				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,

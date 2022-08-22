@@ -31,6 +31,7 @@ struct Account: Codable, Equatable {
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
     var isEphemeral: Bool = false
     var askEphemeral: Bool?
+    var ephemeralId: Int?
 
     init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool, isEphemeral: Bool = false, askEphemeral: Bool = false) {
         // Software / Hardware wallet account
@@ -45,6 +46,16 @@ struct Account: Codable, Equatable {
         self.isSingleSig = isSingleSig
         self.isEphemeral = isEphemeral
         self.askEphemeral = askEphemeral
+        if isEphemeral {
+            let ephAccounts = AccountsManager.shared.ephAccounts
+            if ephAccounts.count == 0 {
+                self.ephemeralId = 1
+            } else {
+                if let last = ephAccounts.sorted(by: { ($0.ephemeralId ?? 0) > ($1.ephemeralId ?? 0) }).first, let id = last.ephemeralId {
+                    self.ephemeralId = id + 1
+                }
+            }
+        }
     }
 
     init(name: String, network: String, username: String, password: String? = nil, isSingleSig: Bool) {
