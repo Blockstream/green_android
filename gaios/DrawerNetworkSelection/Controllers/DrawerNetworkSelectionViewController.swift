@@ -31,6 +31,9 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
         setContent()
 
+        tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
+        tableView.register(UINib(nibName: "WalletListHDCell", bundle: nil), forCellReuseIdentifier: "WalletListHDCell")
+
         view.accessibilityIdentifier = AccessibilityIdentifiers.DrawerMenuScreen.view
     }
 
@@ -74,7 +77,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         switch indexPath.section {
         case 0:
             let account = AccountsManager.shared.swAccounts[indexPath.row]
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     if let session = SessionsManager.get(for: account) {
                         return session.connected && session.logged
@@ -87,20 +90,20 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             }
         case 1: /// EPHEMERAL
             let account = ephAccounts[indexPath.row]
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     if let session = SessionsManager.get(for: account) {
                         return session.connected && session.logged
                     }
                     return false
                 }
-                cell.configure(item: account, isSelected: selected(), isEphemeral: true)
+                cell.configure(item: account, isSelected: selected() /* , isEphemeral: true */ )
                 cell.selectionStyle = .none
                 return cell
             }
         case 2:
             let account = AccountsManager.shared.hwAccounts[indexPath.row]
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     if let session = SessionsManager.get(for: account) {
                         return session.connected && session.logged
@@ -112,7 +115,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case 3:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerHDCell") as? WalletDrawerHDCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListHDCell") as? WalletListHDCell {
                 let hw = AccountsManager.shared.devices[indexPath.row]
                 let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
                 cell.configure(hw.name, icon ?? UIImage())

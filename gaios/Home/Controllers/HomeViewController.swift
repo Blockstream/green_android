@@ -24,6 +24,10 @@ class HomeViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.view
         btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.appSettingsBtn
 
+        tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
+        tableView.register(UINib(nibName: "WalletListHDCell", bundle: nil), forCellReuseIdentifier: "WalletListHDCell")
+        tableView.register(UINib(nibName: "WalletListEmptyCell", bundle: nil), forCellReuseIdentifier: "WalletListEmptyCell")
+
         AnalyticsManager.shared.recordView(.home)
         AnalyticsManager.shared.appLoadingFinished()
     }
@@ -92,53 +96,53 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.section {
         case 0:
             if AccountsManager.shared.swAccounts.count == 0 {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletEmptyCell") as? WalletEmptyCell {
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListEmptyCell") as? WalletListEmptyCell {
                     cell.configure(NSLocalizedString("id_it_looks_like_you_have_no", comment: ""), UIImage(named: "ic_logo_green")!)
                     cell.selectionStyle = .none
                     return cell
                 }
             } else {
                 let account = AccountsManager.shared.swAccounts[indexPath.row]
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                     let selected = { () -> Bool in
                         if let session = SessionsManager.get(for: account) {
                             return session.connected && session.logged
                         }
                         return false
                     }
-                    cell.configure(account, selected())
+                    cell.configure(item: account, isSelected: selected())
                     cell.selectionStyle = .none
                     return cell
                 }
             }
         case 1: /// EPHEMERAL
             let account = ephAccounts[indexPath.row]
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     if let session = SessionsManager.get(for: account) {
                         return session.connected && session.logged
                     }
                     return false
                 }
-                cell.configure(account, selected())
+                cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none
                 return cell
             }
         case 2:
             let account = AccountsManager.shared.hwAccounts[indexPath.row]
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     if let session = SessionsManager.get(for: account) {
                         return session.connected && session.logged
                     }
                     return false
                 }
-                cell.configure(account, selected())
+                cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none
                 return cell
             }
         case 3:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletHDCell") as? WalletHDCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListHDCell") as? WalletListHDCell {
                 let hw = AccountsManager.shared.devices[indexPath.row]
                 let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
                 cell.configure(hw.name, icon ?? UIImage())

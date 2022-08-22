@@ -27,122 +27,6 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="qcp-QV-GxT">
                                 <rect key="frame" x="0.0" y="169" width="414" height="610"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletDrawerCell" rowHeight="64" id="RjD-F7-Jtw" customClass="WalletDrawerCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="49.5" width="414" height="64"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="RjD-F7-Jtw" id="QAo-qg-VqM">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S96-UH-SYs">
-                                                    <rect key="frame" x="7" y="7" width="400" height="54"/>
-                                                    <subviews>
-                                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Jyz-wy-gEI">
-                                                            <rect key="frame" x="3" y="20.5" width="10" height="9"/>
-                                                            <color key="tintColor" name="customMatrixGreen"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="height" constant="10" id="SuD-KM-Y7g"/>
-                                                                <constraint firstAttribute="width" constant="10" id="yBB-c3-5Fb"/>
-                                                            </constraints>
-                                                        </imageView>
-                                                    </subviews>
-                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </view>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="nzY-t4-noi">
-                                                    <rect key="frame" x="24" y="17" width="30" height="30"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="30" id="7Da-Mu-kj6"/>
-                                                        <constraint firstAttribute="height" constant="30" id="ALH-DF-SFS"/>
-                                                    </constraints>
-                                                </imageView>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_keys_invert" translatesAutoresizingMaskIntoConstraints="NO" id="V6Z-ZR-MH6">
-                                                    <rect key="frame" x="44" y="37" width="20" height="20"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="20" id="5xu-zV-m70"/>
-                                                        <constraint firstAttribute="height" constant="20" id="Zs2-CK-B4x"/>
-                                                    </constraints>
-                                                </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Bitcoin Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LRs-x1-rId">
-                                                    <rect key="frame" x="77" y="21" width="292" height="22"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_passphrase" translatesAutoresizingMaskIntoConstraints="NO" id="Dxa-vQ-bh2">
-                                                    <rect key="frame" x="382" y="24" width="16" height="16"/>
-                                                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="16" id="4Ch-Ax-etK"/>
-                                                        <constraint firstAttribute="width" constant="16" id="5I3-8I-KLf"/>
-                                                    </constraints>
-                                                </imageView>
-                                            </subviews>
-                                            <color key="backgroundColor" name="customTitaniumDark"/>
-                                            <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="S96-UH-SYs" secondAttribute="trailing" constant="7" id="0JV-fF-PHR"/>
-                                                <constraint firstItem="Jyz-wy-gEI" firstAttribute="centerY" secondItem="nzY-t4-noi" secondAttribute="centerY" id="7Iv-8y-tQm"/>
-                                                <constraint firstItem="LRs-x1-rId" firstAttribute="leading" secondItem="nzY-t4-noi" secondAttribute="trailing" constant="23" id="9f9-uX-yno"/>
-                                                <constraint firstAttribute="trailing" secondItem="LRs-x1-rId" secondAttribute="trailing" constant="45" id="C8q-JE-egO"/>
-                                                <constraint firstItem="Dxa-vQ-bh2" firstAttribute="centerY" secondItem="QAo-qg-VqM" secondAttribute="centerY" id="CbB-O5-kgN"/>
-                                                <constraint firstItem="LRs-x1-rId" firstAttribute="top" secondItem="QAo-qg-VqM" secondAttribute="top" constant="21" id="KxS-9j-XNT"/>
-                                                <constraint firstItem="V6Z-ZR-MH6" firstAttribute="centerY" secondItem="nzY-t4-noi" secondAttribute="centerY" constant="15" id="LOr-X6-TRL"/>
-                                                <constraint firstItem="S96-UH-SYs" firstAttribute="leading" secondItem="QAo-qg-VqM" secondAttribute="leading" constant="7" id="NTj-8F-k6f"/>
-                                                <constraint firstItem="S96-UH-SYs" firstAttribute="top" secondItem="QAo-qg-VqM" secondAttribute="top" constant="7" id="SXS-pg-fXy"/>
-                                                <constraint firstItem="V6Z-ZR-MH6" firstAttribute="centerX" secondItem="nzY-t4-noi" secondAttribute="centerX" constant="15" id="bDs-Iq-xsF"/>
-                                                <constraint firstItem="nzY-t4-noi" firstAttribute="centerY" secondItem="LRs-x1-rId" secondAttribute="centerY" id="mv4-Nf-09n"/>
-                                                <constraint firstAttribute="bottom" secondItem="S96-UH-SYs" secondAttribute="bottom" constant="3" id="q5C-ls-YnA"/>
-                                                <constraint firstItem="Jyz-wy-gEI" firstAttribute="leading" secondItem="QAo-qg-VqM" secondAttribute="leading" constant="10" id="qAX-2J-A5a"/>
-                                                <constraint firstAttribute="bottom" secondItem="LRs-x1-rId" secondAttribute="bottom" constant="21" id="x21-Ke-vW0"/>
-                                                <constraint firstAttribute="trailing" secondItem="Dxa-vQ-bh2" secondAttribute="trailing" constant="16" id="yJB-Ge-YYe"/>
-                                                <constraint firstItem="nzY-t4-noi" firstAttribute="leading" secondItem="Jyz-wy-gEI" secondAttribute="trailing" constant="4" id="ymF-X7-NtY"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="circleImageView" destination="Jyz-wy-gEI" id="dCW-GZ-aUM"/>
-                                            <outlet property="icon" destination="nzY-t4-noi" id="bdJ-D1-ejd"/>
-                                            <outlet property="iconPassphrase" destination="Dxa-vQ-bh2" id="CYD-k3-cRA"/>
-                                            <outlet property="iconSecurityType" destination="V6Z-ZR-MH6" id="Y88-QI-x7V"/>
-                                            <outlet property="lblTitle" destination="LRs-x1-rId" id="S6k-i0-ihZ"/>
-                                        </connections>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletDrawerHDCell" rowHeight="64" id="9hn-T1-Isa" customClass="WalletDrawerHDCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="113.5" width="414" height="64"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9hn-T1-Isa" id="mBc-kl-QMb">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_blockstream" translatesAutoresizingMaskIntoConstraints="NO" id="Kvz-KJ-HfY">
-                                                    <rect key="frame" x="20" y="8" width="42" height="48"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="42" id="FbJ-zs-DBv"/>
-                                                        <constraint firstAttribute="height" constant="42" id="a46-Ns-YI7"/>
-                                                    </constraints>
-                                                </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Bitcoin Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ytH-qv-RL8">
-                                                    <rect key="frame" x="78" y="21.5" width="320" height="21"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <color key="backgroundColor" name="customTitaniumDark"/>
-                                            <constraints>
-                                                <constraint firstItem="Kvz-KJ-HfY" firstAttribute="leading" secondItem="mBc-kl-QMb" secondAttribute="leading" constant="20" id="5fF-aP-05Y"/>
-                                                <constraint firstItem="ytH-qv-RL8" firstAttribute="leading" secondItem="Kvz-KJ-HfY" secondAttribute="trailing" constant="16" id="V4T-d0-Yrf"/>
-                                                <constraint firstAttribute="trailing" secondItem="ytH-qv-RL8" secondAttribute="trailing" constant="16" id="bFO-pB-PbW"/>
-                                                <constraint firstItem="ytH-qv-RL8" firstAttribute="centerY" secondItem="mBc-kl-QMb" secondAttribute="centerY" id="ejo-3x-FH9"/>
-                                                <constraint firstItem="Kvz-KJ-HfY" firstAttribute="top" secondItem="mBc-kl-QMb" secondAttribute="top" constant="8" id="p1l-wC-N4g"/>
-                                                <constraint firstAttribute="bottom" secondItem="Kvz-KJ-HfY" secondAttribute="bottom" constant="8" id="zCD-DP-iE8"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="icon" destination="Kvz-KJ-HfY" id="pTG-NJ-mdu"/>
-                                            <outlet property="lblTitle" destination="ytH-qv-RL8" id="zZA-Ah-C1Y"/>
-                                        </connections>
-                                    </tableViewCell>
-                                </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="gdl-iy-vFF" id="ttr-5C-Ype"/>
                                     <outlet property="delegate" destination="gdl-iy-vFF" id="Waj-wC-7h1"/>
@@ -211,16 +95,8 @@
     </scenes>
     <resources>
         <image name="blockstreamGreen" width="280" height="114.5"/>
-        <image name="circle.fill" catalog="system" width="128" height="121"/>
-        <image name="ic_blockstream" width="60" height="60"/>
-        <image name="ic_keys_invert" width="60" height="60"/>
-        <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>
-        <image name="ntw_btc" width="60" height="61"/>
         <namedColor name="customGrayLight">
             <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

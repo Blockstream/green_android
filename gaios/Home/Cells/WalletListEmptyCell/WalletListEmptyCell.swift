@@ -1,6 +1,6 @@
 import UIKit
 
-class WalletEmptyCell: UITableViewCell {
+class WalletListEmptyCell: UITableViewCell {
 
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
@@ -13,7 +13,6 @@ class WalletEmptyCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
     }
 
     func configure(_ text: String, _ icon: UIImage) {

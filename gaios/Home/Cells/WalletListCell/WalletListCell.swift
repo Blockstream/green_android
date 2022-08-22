@@ -1,6 +1,6 @@
 import UIKit
 
-class WalletDrawerCell: UITableViewCell {
+class WalletListCell: UITableViewCell {
 
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
@@ -15,10 +15,17 @@ class WalletDrawerCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+
         // Configure the view for the selected state
     }
 
-    func configure(item: Account, isSelected: Bool = false, isEphemeral: Bool = false) {
+    override func prepareForReuse() {
+        icon.image = UIImage()
+        lblTitle.text = ""
+        iconSecurityType.image = UIImage()
+    }
+
+    func configure(item: Account, isSelected: Bool = false) {
         self.lblTitle.text = item.name
         self.icon.image = item.icon
         self.circleImageView.isHidden = !isSelected
@@ -33,7 +40,6 @@ class WalletDrawerCell: UITableViewCell {
             self.iconSecurityType.image = UIImage(named: "ic_eye")!
         }
 
-        iconPassphrase.isHidden = !isEphemeral
+        iconPassphrase.isHidden = !item.isEphemeral
     }
-
 }
