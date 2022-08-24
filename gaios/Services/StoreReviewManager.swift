@@ -5,18 +5,9 @@ class StoreReviewHelper {
 
     static let shared = StoreReviewHelper()
 
-    private var interval: Double {
-        return 122 * 86400 // days * seconds
-    }
+    var months = 4
 
-    func request(isSendAll: Bool) {
-
-        if isSendAll { return }
-
-        if !isReviewDateValid() { return }
-
-        requestReview()
-    }
+    var appReview: Int?
 
     private func isReviewDateValid() -> Bool {
 
@@ -24,7 +15,11 @@ class StoreReviewHelper {
 
         if let storeReviewDate = UserDefaults.standard.object(forKey: AppStorage.storeReviewDate) as? Date {
 
-            if now - storeReviewDate > interval {
+            if let appReview = appReview, appReview > months {
+                months = appReview
+            }
+
+            if now - storeReviewDate > Double( months * 30 * 86400 ) {
                 UserDefaults.standard.set(now, forKey: AppStorage.storeReviewDate)
                 return true
             } else {
@@ -40,5 +35,18 @@ class StoreReviewHelper {
     private func requestReview() {
 
         SKStoreReviewController.requestReview()
+    }
+}
+
+extension StoreReviewHelper {
+    func request(isSendAll: Bool) {
+
+        appReview = AnalyticsManager.shared.getRemoteConfigValue(key: Constants.countlyRemoteConfigAppReview) as? Int
+
+        if isSendAll { return }
+        if appReview == 0 { return }
+
+        if !isReviewDateValid() { return }
+        requestReview()
     }
 }
