@@ -58,8 +58,9 @@ class AnalyticsManager {
                            CLYConsent.crashReporting,
                            CLYConsent.viewTracking,
                            CLYConsent.userDetails,
-                           CLYConsent.location]
-    let deniedGroup = [CLYConsent.crashReporting]
+                           CLYConsent.location,
+                           CLYConsent.remoteConfig]
+    let deniedGroup = [CLYConsent.crashReporting, CLYConsent.remoteConfig]
 
     // list of ignorable common error messages
     let skipExceptionRecording = [
@@ -120,10 +121,12 @@ class AnalyticsManager {
         config.enablePerformanceMonitoring = true
         config.enableDebug = true
         config.requiresConsent = true
+        config.enableRemoteConfig = true
         if isProduction == false {
             config.eventSendThreshold = 1
         }
         config.urlSessionConfiguration = getSessionConfiguration()
+
         Countly.sharedInstance().start(with: config)
 
         giveConsent(previous: consent)
@@ -271,5 +274,12 @@ class AnalyticsManager {
         guard consent == .authorized else { return }
         guard let s = sgmt else { return }
         Countly.sharedInstance().recordView(name.rawValue, segmentation: s)
+    }
+
+    func getRemoteConfigValue(key: String) -> Any? {
+
+        let value = Countly.sharedInstance().remoteConfigValue(forKey: key)
+        print("Remote config value: \(value)")
+        return value
     }
 }

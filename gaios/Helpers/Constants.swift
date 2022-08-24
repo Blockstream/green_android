@@ -19,6 +19,7 @@ enum Constants {
     static let liquidElectrumSrvDefaultEndPoint = "blockstream.info:995"
     static let testnetElectrumSrvDefaultEndPoint = "blockstream.info:993"
     static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
+    static let countlyRemoteConfigAppReview = "app_review"
 }
 
 enum AppStorage {
