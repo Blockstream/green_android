@@ -162,7 +162,7 @@ class BLEManager {
                     throw DeviceError.outdated_app
                 }
             }.compactMap { _ in
-                try session.connect()
+                try? session.connect().wait()
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
@@ -184,7 +184,7 @@ class BLEManager {
         enstablishDispose = connection
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { Jade.shared.open($0) }
-            .compactMap { _ in try session.connect()}
+            .compactMap { _ in try session.connect().wait() }
             .timeoutIfNoEvent(RxTimeInterval.seconds(3))
             .flatMap { Jade.shared.addEntropy() }
             .flatMap { _ -> Observable<JadeVersionInfo> in
@@ -337,7 +337,7 @@ class BLEManager {
                         AccountsManager.shared.current = account
                         self.delegate?.onLogin(p, account: account)
                     }.catch { _ in
-                        self.onError(LoginError.connectionFailed, network: nil)
+                        self.onError(LoginError.connectionFailed(), network: nil)
                     }
             }, onError: { err in
                 switch err {

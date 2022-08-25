@@ -61,6 +61,18 @@ class AnalyticsManager {
                            CLYConsent.location]
     let deniedGroup = [CLYConsent.crashReporting]
 
+    // list of ignorable common error messages
+    let skipExceptionRecording = [
+        "id_invalid_amount",
+        "id_invalid_address",
+        "id_insufficient_funds",
+        "id_invalid_private_key",
+        "id_action_canceled",
+        "id_login_failed"
+    ]
+    // not ignorable exception counter
+    var exceptionCounter = 0
+
     func invalidateAnalyticsUUID() {
         UserDefaults.standard.removeObject(forKey: AppStorage.analyticsUUID)
     }
@@ -214,6 +226,15 @@ class AnalyticsManager {
     func userPropertiesDidChange() {
         guard consent != .notDetermined else { return }
         updateUserProperties()
+    }
+
+    func recordException(_ msg: String) {
+        if !msg.isEmpty && !skipExceptionRecording.contains(msg) {
+            exceptionCounter += 1
+            let exception = NSException(name: NSExceptionName(rawValue: msg), reason: "")
+            guard consent == .authorized else { return }
+            Countly.sharedInstance().recordHandledException(exception)
+        }
     }
 
     func recordEvent(_ key: AnalyticsEventName) {

@@ -2,10 +2,32 @@ import Foundation
 import PromiseKit
 
 public enum LoginError: Error, Equatable {
-    case walletsJustRestored
-    case walletNotFound
-    case invalidMnemonic
-    case connectionFailed
+    case walletsJustRestored(_ localizedDescription: String? = nil)
+    case walletNotFound(_ localizedDescription: String? = nil)
+    case invalidMnemonic(_ localizedDescription: String? = nil)
+    case connectionFailed(_ localizedDescription: String? = nil)
+}
+
+extension Thenable {
+
+    // extend PromiseKit::Thenable to handle exceptions
+    func tapLogger(on: DispatchQueue? = conf.Q.return, flags: DispatchWorkItemFlags? = nil) -> Promise<T> {
+       return tap(on: on, flags: flags) {
+           switch $0 {
+           case .rejected(let error):
+               switch error {
+               case TwoFactorCallError.failure(let txt), TwoFactorCallError.cancel(let txt):
+                   AnalyticsManager.shared.recordException(txt)
+               case GaError.GenericError(let txt), GaError.TimeoutError(let txt), GaError.SessionLost(let txt), GaError.NotAuthorizedError(let txt):
+                   AnalyticsManager.shared.recordException(txt ?? "")
+               default:
+                   break
+               }
+           default:
+               break
+           }
+       }
+   }
 }
 
 class GDKSession: Session {
@@ -60,10 +82,12 @@ class SessionManager {
         session = nil
     }
 
-    public func connect() throws {
-        if session?.connected == false {
-            try connect(network: gdkNetwork.network)
+    public func connect() -> Promise<Void> {
+        if session?.connected ?? false {
+            return Promise().asVoid()
         }
+        return Guarantee()
+            .compactMap { try self.connect(network: self.gdkNetwork.network) }
     }
 
     private func connect(network: String, params: [String: Any]? = nil) throws {
@@ -107,7 +131,12 @@ class SessionManager {
             }
             try session?.connect(netParams: netParams)
         } catch {
-            throw LoginError.connectionFailed
+            switch error {
+            case GaError.GenericError(let txt), GaError.SessionLost(let txt), GaError.TimeoutError(let txt):
+                throw LoginError.connectionFailed(txt ?? "")
+            default:
+                throw LoginError.connectionFailed()
+            }
         }
     }
 
@@ -123,7 +152,7 @@ class SessionManager {
                 let dict = result?["transactions"] as? [[String: Any]]
                 let list = dict?.map { Transaction($0) }
                 return Transactions(list: list ?? [])
-            }
+            }.tapLogger()
     }
 
     func subaccount(_ pointer: UInt32) -> Promise<WalletItem> {
@@ -139,7 +168,7 @@ class SessionManager {
                 let result = data["result"] as? [String: Any]
                 let jsonData = try JSONSerialization.data(withJSONObject: result ?? [:])
                 return try JSONDecoder().decode(WalletItem.self, from: jsonData)
-            }
+            }.tapLogger()
     }
 
     func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
@@ -153,7 +182,7 @@ class SessionManager {
                 let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
                 let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
                 return wallets.sorted()
-            }
+            }.tapLogger()
     }
 
     func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
@@ -164,7 +193,7 @@ class SessionManager {
                 let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: []))
                 self.twoFactorConfig = twoFactorConfig
                 return twoFactorConfig
-            }
+            }.tapLogger()
     }
 
     func loadSettings() -> Promise<Settings?> {
@@ -174,7 +203,7 @@ class SessionManager {
             .compactMap { data in
                 self.settings = Settings.from(data)
                 return self.settings
-            }
+            }.tapLogger()
     }
 
     func discover(mnemonic: String?, password: String?) -> Promise<Void> {
@@ -183,11 +212,9 @@ class SessionManager {
             .map(on: bgq) { _ in
                 if let mnemonic = mnemonic {
                     guard try gaios.validateMnemonic(mnemonic: mnemonic) else {
-                        throw LoginError.invalidMnemonic
+                        throw LoginError.invalidMnemonic()
                     }
                 }
-            }.map(on: bgq) {
-                try self.connect()
             }.then(on: bgq) { _ in
                 self.loginUser(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""])
             }.map(on: bgq) { walletHashId in
@@ -196,13 +223,13 @@ class SessionManager {
                     $0.walletHashId == walletHashId && !$0.isHW &&
                     $0.networkName == self.gdkNetwork.network
                     }) {
-                    throw LoginError.walletsJustRestored
+                    throw LoginError.walletsJustRestored()
                 }
             }.recover { err in
                 switch err {
                 case TwoFactorCallError.failure(let localizedDescription):
                     if localizedDescription == "id_login_failed", !self.gdkNetwork.electrum {
-                        throw LoginError.walletNotFound
+                        throw LoginError.walletNotFound()
                     }
                 default:
                     throw err
@@ -211,17 +238,18 @@ class SessionManager {
                 // discover subaccounts
                 self.subaccounts(true).recover { _ in
                     Promise { _ in
-                        throw LoginError.connectionFailed
+                        throw LoginError.connectionFailed()
                     }
                 }
             }.get(on: bgq) { wallets in
                 // check account discover if singlesig
                 if self.gdkNetwork.electrum {
                     if wallets.filter({ $0.bip44Discovered ?? false }).isEmpty {
-                        throw LoginError.walletNotFound
+                        throw LoginError.walletNotFound()
                     }
                 }
-           }.asVoid()
+           }.tapLogger()
+            .asVoid()
     }
 
     // create a default segwit account if doesn't exist on singlesig
@@ -232,7 +260,9 @@ class SessionManager {
             return Guarantee()
                 .compactMap(on: bgq) { try self.session?.createSubaccount(details: ["name": "",
                                                              "type": AccountType.segWit.rawValue]) }
-                .then(on: bgq) { $0.resolve(session: self) }.asVoid()
+                .then(on: bgq) { $0.resolve(session: self) }
+                .tapLogger()
+                .asVoid()
         }
         return Promise<Void>().asVoid()
     }
@@ -242,13 +272,14 @@ class SessionManager {
         return Guarantee()
             .then(on: bgq) { self.loginWithCredentials(credentials) }
             .then(on: bgq) { _ in self.load(refreshSubaccounts: true) }
+            .tapLogger()
             .asVoid()
     }
 
     func create(_ credentials: Credentials) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .map(on: bgq) { try self.connect() }
+            .then(on: bgq) { self.connect() }
             .then(on: bgq) { _ in self.registerSW(credentials) }
             .then(on: bgq) { _ in self.loginWithCredentials(credentials) }
             .then(on: bgq) { _ in self.createDefaultSubaccount(wallets: []) }
@@ -262,26 +293,27 @@ class SessionManager {
                 default:
                     throw err
                 }
-            }
+            }.tapLogger()
     }
 
     func reconnect() -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .map(on: bgq) { try self.connect() }
-            .then(on: bgq) { self.loginUser().asVoid() }
+            .then(on: bgq) { self.loginUser() }
+            .asVoid()
     }
 
     private func loginUser(details: [String: Any] = [:], hwDevice: [String: Any] = [:]) -> Promise<String> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
+            .then(on: bgq) { self.connect() }
             .compactMap(on: bgq) { try self.session?.loginUser(details: details, hw_device: hwDevice) }
             .then(on: bgq) { $0.resolve(session: self) }
             .compactMap { res in
                 self.session?.logged = true
                 let result = res["result"] as? [String: Any]
                 return result?["wallet_hash_id"] as? String
-            }
+            }.tapLogger()
     }
 
     func loginWithPin(_ pin: String, pinData: PinData) -> Promise<String> {
@@ -289,7 +321,6 @@ class SessionManager {
         let data = try? JSONEncoder().encode(pinData)
         let pin_data = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
-            .map(on: bgq) { try self.connect() }
             .then(on: bgq) { self.loginUser(details: ["pin": pin, "pin_data": pin_data ?? [:]]) }
     }
 
@@ -298,7 +329,6 @@ class SessionManager {
         let data = try? JSONEncoder().encode(credentials)
         let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
-            .map(on: bgq) { try self.connect() }
             .then(on: bgq) { self.loginUser(details: details ?? [:]) }
     }
 
@@ -315,12 +345,12 @@ class SessionManager {
             }.map(on: bgq) {
                 self.registry?.cache(session: self)
                 self.registry?.loadAsync(session: self)
-            }
+            }.tapLogger()
     }
 
     func loginWatchOnly(_ username: String, _ password: String) -> Promise<String> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().map(on: bgq) { try self.connect() }
+        return Guarantee()
             .then(on: bgq) { self.loginUser(details: ["username": username, "password": password]) }
             .get { _ in
                 self.registry?.cache(session: self)
@@ -333,7 +363,7 @@ class SessionManager {
         let data = try? JSONEncoder().encode(hwDevice)
         let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
-            .map(on: bgq) { try self.connect() }
+            .then(on: bgq) { self.connect() }
             .then(on: bgq) { self.registerHW(hw: hwDevice) }
             .then(on: bgq) { self.loginUser(hwDevice: ["device": device ?? [:]]) }
     }
@@ -347,7 +377,7 @@ class SessionManager {
                 let result = $0["result"] as? [String: Any]
                 let jsonData = try JSONSerialization.data(withJSONObject: result ?? "")
                 return try JSONDecoder().decode(Credentials.self, from: jsonData)
-            }
+            }.tapLogger()
     }
 
     func registerSW(_ credentials: Credentials) -> Promise<Void> {
@@ -357,6 +387,7 @@ class SessionManager {
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.registerUser(details: details ?? [:], hw_device: [:]) }
             .then(on: bgq) { $0.resolve(session: self) }
+            .tapLogger()
             .asVoid()
     }
 
@@ -367,6 +398,7 @@ class SessionManager {
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.registerUser(details: [:], hw_device: ["device": device ?? [:]]) }
             .then(on: bgq) { $0.resolve(session: self) }
+            .tapLogger()
             .asVoid()
     }
 
@@ -380,34 +412,39 @@ class SessionManager {
                 let txt = result?["pin_data"] as? [String: Any]
                 let jsonData = try JSONSerialization.data(withJSONObject: txt ?? "")
                 return try JSONDecoder().decode(PinData.self, from: jsonData)
-            }
+            }.tapLogger()
     }
 
     func resetTwoFactor(email: String, isDispute: Bool) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.resetTwoFactor(email: email, isDispute: isDispute) }
             .then { $0.resolve(session: self) }.asVoid()
+            .tapLogger()
     }
 
     func cancelTwoFactorReset() -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.cancelTwoFactorReset() }
             .then { $0.resolve(session: self) }.asVoid()
+            .tapLogger()
     }
 
     func undoTwoFactorReset(email: String) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.undoTwoFactorReset(email: email) }
             .then { $0.resolve(session: self) }.asVoid()
+            .tapLogger()
     }
 
     func setWatchOnly(username: String, password: String) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.setWatchOnly(username: username, password: password) }
+            .tapLogger()
     }
     func getWatchOnlyUsername() -> Promise<String> {
         return Guarantee()
             .compactMap { try self.session?.getWatchOnlyUsername() }
+            .tapLogger()
     }
 
     func setCSVTime(value: Int) -> Promise<Void> {
@@ -420,6 +457,7 @@ class SessionManager {
         return Guarantee()
             .compactMap { try self.session?.setTwoFactorLimit(details: details) }
             .then { $0.resolve(session: self) }.asVoid()
+            .tapLogger()
     }
 
     func convertAmount(input: [String: Any]) throws -> [String: Any] {
@@ -438,7 +476,7 @@ class SessionManager {
                 let result = res["result"] as? [String: Any]
                 let data = try? JSONSerialization.data(withJSONObject: result!, options: [])
                 return try? JSONDecoder().decode(Address.self, from: data!)
-            }
+            }.tapLogger()
     }
 
     func getBalance(subaccount: UInt32, numConfs: Int) -> Promise<[String: UInt64]> {
@@ -446,6 +484,7 @@ class SessionManager {
             .compactMap { try self.session?.getBalance(details: ["subaccount": subaccount, "num_confs": numConfs]) }
             .then { $0.resolve(session: self) }
             .compactMap { $0["result"] as? [String: UInt64] }
+            .tapLogger()
     }
 
     func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) -> Promise<Void> {
@@ -453,12 +492,14 @@ class SessionManager {
         return Guarantee()
             .compactMap { try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: details ?? [:]) }
             .then { $0.resolve(session: self) }.asVoid()
+            .tapLogger()
     }
 
     func updateSubaccount(subaccount: UInt32, hidden: Bool) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.updateSubaccount(details: ["subaccount": subaccount, "hidden": hidden]) }
             .then { $0.resolve(session: self) }.asVoid()
+            .tapLogger()
     }
 
     func createSubaccount(details: [String: Any]) -> Promise<Void> {
@@ -470,6 +511,7 @@ class SessionManager {
     func renameSubaccount(subaccount: UInt32, newName: String) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.renameSubaccount(subaccount: subaccount, newName: newName) }
+            .tapLogger()
             .asVoid()
     }
 
@@ -478,6 +520,7 @@ class SessionManager {
         return Guarantee()
             .compactMap { try self.session?.changeSettings(details: settings ?? [:]) }
             .then { $0.resolve(session: self) }.asVoid()
+            .tapLogger()
     }
 
     func getUnspentOutputs(subaccount: UInt32, numConfs: Int) -> Promise<[String: Any]> {
@@ -487,7 +530,7 @@ class SessionManager {
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
                 return result?["unspent_outputs"] as? [String: Any]
-            }
+            }.tapLogger()
     }
 
     func createTransaction(tx: Transaction) -> Promise<Transaction> {
@@ -496,6 +539,7 @@ class SessionManager {
             .compactMap(on: bgq) { try self.session?.createTransaction(details: tx.details) }
             .then(on: bgq) { $0.resolve(session: self) }
             .compactMap(on: bgq) { Transaction($0["result"] as? [String: Any] ?? [:]) }
+            .tapLogger()
     }
 
     func signTransaction(tx: Transaction) -> Promise<[String: Any]> {
@@ -504,12 +548,14 @@ class SessionManager {
             .compactMap(on: bgq) { try self.session?.signTransaction(details: tx.details) }
             .then(on: bgq) { $0.resolve(session: self) }
             .compactMap(on: bgq) { $0["result"] as? [String: Any] }
+            .tapLogger()
     }
 
     func broadcastTransaction(txHex: String) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.broadcastTransaction(tx_hex: txHex) }
+            .tapLogger()
             .asVoid()
     }
 
@@ -518,6 +564,7 @@ class SessionManager {
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.sendTransaction(details: tx.details) }
             .then(on: bgq) { $0.resolve(session: self) }
+            .tapLogger()
             .asVoid()
     }
 
@@ -529,12 +576,14 @@ class SessionManager {
     func loadSystemMessage() -> Promise<String?> {
         return Guarantee()
             .compactMap { try self.session?.getSystemMessage() }
+            .tapLogger()
     }
 
     func ackSystemMessage(message: String) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.ackSystemMessage(message: message) }
             .then { $0.resolve(session: self) }
+            .tapLogger()
             .asVoid()
     }
 
@@ -542,5 +591,6 @@ class SessionManager {
         return Guarantee()
             .compactMap { try self.session?.getAvailableCurrencies() }
             .compactMap { $0?["per_exchange"] as? [String: [String]] }
+            .tapLogger()
     }
 }

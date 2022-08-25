@@ -180,7 +180,7 @@ class LoginViewController: UIViewController {
                         session = SessionManager(self.account.gdkNetwork!)
                         return session!
                             .loginWithCredentials(credentials)
-                            .recover { _ in Promise().map { throw LoginError.walletNotFound }}
+                            .recover { _ in Promise().map { throw LoginError.walletNotFound() }}
                     }
             }
             return Guarantee().map { res }
