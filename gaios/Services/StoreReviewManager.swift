@@ -45,6 +45,7 @@ extension StoreReviewHelper {
 
         if isSendAll { return }
         if appReview == 0 { return }
+        if AnalyticsManager.shared.exceptionCounter != 0 { return }
 
         if !isReviewDateValid() { return }
         requestReview()
