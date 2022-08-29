@@ -59,8 +59,9 @@ class AnalyticsManager {
                            CLYConsent.viewTracking,
                            CLYConsent.userDetails,
                            CLYConsent.location,
-                           CLYConsent.remoteConfig]
-    let deniedGroup = [CLYConsent.crashReporting, CLYConsent.remoteConfig]
+                           CLYConsent.remoteConfig,
+                           CLYConsent.metrics]
+    let deniedGroup = [CLYConsent.crashReporting, CLYConsent.remoteConfig, CLYConsent.metrics]
 
     // list of ignorable common error messages
     let skipExceptionRecording = [
