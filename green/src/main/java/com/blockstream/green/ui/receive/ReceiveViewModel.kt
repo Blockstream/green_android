@@ -110,12 +110,7 @@ class ReceiveViewModel @AssistedInject constructor(
             // https://stackoverflow.com/questions/8534899/is-it-possible-to-use-uri-builder-and-not-have-the-part
 
             val scheme = Uri.Builder().also {
-                if(session.isLiquid){
-                    it.scheme("liquidnetwork")
-                }else{
-                    it.scheme("bitcoin")
-                }
-
+                it.scheme(session.network.bip21Prefix)
                 it.opaquePart(address.value?.address)
             }.toString()
 

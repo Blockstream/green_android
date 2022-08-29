@@ -20,6 +20,7 @@ data class Network(
     @SerialName("liquid") val isLiquid: Boolean,
     @SerialName("development") val isDevelopment: Boolean,
     @SerialName("default_peers") val defaultPeers: List<String> = listOf(),
+    @SerialName("bip21_prefix") val bip21Prefix: String = "network",
     @SerialName("tx_explorer_url") val explorerUrl: String? = null,
     @SerialName("policy_asset") val policyAsset: String = "btc",
     @SerialName("server_type") val serverType: String? = null,

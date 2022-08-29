@@ -82,8 +82,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="liquidnetwork" />
                 <data android:scheme="bitcoin" />
+                <data android:scheme="liquidnetwork" />
+                <data android:scheme="liquidtestnet" />
             </intent-filter>
 
             <intent-filter>
