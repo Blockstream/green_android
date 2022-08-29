@@ -16,6 +16,7 @@
 "id_2fa_methods" = "2FA 방법";
 "id_2fa_reset_in_progress" = "2FA 초기화 진행 중";
 "id_2fa_threshold" = "2FA 기준값";
+"id_2of3" = "2of3";
 "id_2of3_account" = "2of3 계정";
 "id_4_hours" = "~4시간";
 "id_5_seconds_minimum" = "최소 5초";
@@ -73,6 +74,7 @@
 "id_always_ask" = "Always ask";
 "id_amount" = "금액";
 "id_amount_in_s" = "%@ 안의 금액";
+"id_amp" = "AMP";
 "id_amp_account" = "AMP 계정";
 "id_amp_accounts_are_only_available" = "AMP 계정은 Liquid 지갑에서만 제공됩니다. AMP 자산을 받으려면 발행자에게 계정 ID를 제공해야 할 수 있습니다.";
 "id_amp_id" = "AMP ID";
@@ -510,7 +512,10 @@
 "id_ledger_devices" = "Ledger 기기";
 "id_ledger_supports_a_limited_set" = "Ledger는 한정된 자산 세트를 지원합니다. 목록을 확인하려면 여기를 탭하세요.";
 "id_legacy_account" = "레거시 계정";
+"id_legacy_bip44" = "Legacy (BIP44)";
 "id_legacy_script_coins" = "레거시 스크립트 코인";
+"id_legacy_segwit_account" = "Legacy SegWit Account";
+"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
 "id_lets_get_you_set_up" = "시작해봅시다.";
 "id_liquid_electrum_server" = "Liquid Electrum 서버";
 "id_liquid_is_a_sidechainbased" = "거래자와 거래소가 사용하는 사이드체인 기반 결제 네트워크인 Liquid는 더욱 빠르고 기밀성 높은 비트코인 ​​거래와 디지털 자산 발행을 가능하게 합니다.";
@@ -793,6 +798,7 @@
 "id_see_our_privacy_policy_s" = "개인 정보 보호 정책 보기 %@";
 "id_see_our_terms_of_service_s" = "서비스 약관 보기 %@";
 "id_segwit_account" = "세그윗 계정";
+"id_segwit_bip84" = "SegWit (BIP84)";
 "id_select_a_fiat_currency_and" = "지갑에 금액을 표시하려면 법정 통화와 비트코인 ​​단위를 선택하세요.";
 "id_select_account" = "계정을 선택하세요";
 "id_select_an_app_on_s" = "%@에서 앱을 선택하세요";
@@ -881,6 +887,7 @@
 "id_spv_synchronization_using_tor" = "Tor를 사용한 SPV 동기화에는 신뢰할 수 있는 노드 어니언 URL이 필요합니다.";
 "id_spv_unverified" = "SPV가 검증되지 않았습니다";
 "id_spv_verification" = "SPV 검증";
+"id_standard" = "Standard";
 "id_standard_account" = "표준 계정";
 "id_standard_accounts_allow_you_to" = "표준 계정을 사용하면 자금을 분리할 수 있습니다. 각 계정에는 자체 수신 주소가 있고, 계정 간 자금을 이동하려면 거래가 필요합니다.";
 "id_standard_wallet" = "표준 지갑";
@@ -901,6 +908,8 @@
 "id_tap_on_the_card_to_view" = "카드를 탭하여 거래를 확인하세요";
 "id_tap_to_restart_the_simplified" = "탭하여 Simplified Payment Verification을 다시 시작하세요";
 "id_tap_to_scan_a_qr_code_and" = "탭해서 QR 코드를 스캔하고 노드에 연결하여 SPV를 실행하세요";
+"id_taproot_account" = "Taproot account";
+"id_taproot_bip86" = "Taproot (BIP86)";
 "id_telegram" = "Telegram";
 "id_terms_of_service" = "서비스 약관";
 "id_terms_of_use" = "이용 약관";

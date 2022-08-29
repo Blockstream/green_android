@@ -16,6 +16,7 @@
 "id_2fa_methods" = "Metode 2FA";
 "id_2fa_reset_in_progress" = "2FA în curs de resetare";
 "id_2fa_threshold" = "Limită pentru autentificarea în doi pași (2FA)";
+"id_2of3" = "2of3";
 "id_2of3_account" = "Cont 2-din-3";
 "id_4_hours" = "Aprox. 4 ore";
 "id_5_seconds_minimum" = "Minimum 5 secunde";
@@ -73,6 +74,7 @@
 "id_always_ask" = "Always ask";
 "id_amount" = "Sumă";
 "id_amount_in_s" = "Amount in %@";
+"id_amp" = "AMP";
 "id_amp_account" = "Cont AMP";
 "id_amp_accounts_are_only_available" = "Conturile AMP sunt disponibile doar în portofelele Liquid. Este posibil să vi se ceară ID-ul contului pentru a primi active AMP.";
 "id_amp_id" = "AMP ID";
@@ -510,7 +512,10 @@
 "id_ledger_devices" = "Dispozitive Ledger";
 "id_ledger_supports_a_limited_set" = "Ledger oferă suport pentru un număr limitat de monede: apăsați aici pentru a verifica lista.";
 "id_legacy_account" = "Legacy Account";
+"id_legacy_bip44" = "Legacy (BIP44)";
 "id_legacy_script_coins" = "Legacy script coins";
+"id_legacy_segwit_account" = "Legacy SegWit Account";
+"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
 "id_lets_get_you_set_up" = "Haideți să facem setările inițiale.";
 "id_liquid_electrum_server" = "Liquid Electrum server";
 "id_liquid_is_a_sidechainbased" = "Liquid este un sidechain al Bitcoin, conceput pentru traderi si exchange-uri care permite tranzacții rapide și confidențiale dar și emiterea de active digitale. ";
@@ -793,6 +798,7 @@
 "id_see_our_privacy_policy_s" = "Consultați politica noastră de confidențialitate %@";
 "id_see_our_terms_of_service_s" = "Verificați Termenii și Condițiile de Utilizare %@";
 "id_segwit_account" = "SegWit Account";
+"id_segwit_bip84" = "SegWit (BIP84)";
 "id_select_a_fiat_currency_and" = "Selectați o monedă fiat și o denominare în bitcoin pentru a afișa cantitățile aflate în portofelul dvs";
 "id_select_account" = "Selectați Contul";
 "id_select_an_app_on_s" = "Selectați o aplicație în %@";
@@ -881,6 +887,7 @@
 "id_spv_synchronization_using_tor" = "Sincronizarea SPV folosind Tor necesită un URL pentru nod onion de încredere";
 "id_spv_unverified" = "SPV neverificat";
 "id_spv_verification" = "Verificare SPV";
+"id_standard" = "Standard";
 "id_standard_account" = "Cont standard";
 "id_standard_accounts_allow_you_to" = "Conturile standard vă permit să țineți monedele separate. Fiecare cont va avea propriile adrese de primire, iar mutarea monedelor între conturi va necesita o tranzacție.";
 "id_standard_wallet" = "Portofel standard";
@@ -901,6 +908,8 @@
 "id_tap_on_the_card_to_view" = "Apăsați pe card pentru a vizualiza tranzacțiile.";
 "id_tap_to_restart_the_simplified" = "Apăsați pentru a reporni Simple Payment Verification (SPV)";
 "id_tap_to_scan_a_qr_code_and" = "Apăsați pentru a scana un cod QR și pentru a vă conecta la un nod pentru SPV";
+"id_taproot_account" = "Taproot account";
+"id_taproot_bip86" = "Taproot (BIP86)";
 "id_telegram" = "Telegram";
 "id_terms_of_service" = "Condiții de utilizare";
 "id_terms_of_use" = "Termeni de Utilizare";

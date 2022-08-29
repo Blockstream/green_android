@@ -16,6 +16,7 @@
 "id_2fa_methods" = "双重验证（2FA）方法";
 "id_2fa_reset_in_progress" = "双重验证（2FA）重设中";
 "id_2fa_threshold" = "双重验证（2FA）临界点";
+"id_2of3" = "2of3";
 "id_2of3_account" = "2of3账户";
 "id_4_hours" = "~ 4小时";
 "id_5_seconds_minimum" = "最少5秒";
@@ -73,6 +74,7 @@
 "id_always_ask" = "Always ask";
 "id_amount" = "金额";
 "id_amount_in_s" = "%@中的数量";
+"id_amp" = "AMP";
 "id_amp_account" = "AMP账户";
 "id_amp_accounts_are_only_available" = "AMP账户仅适用于液态网络钱包。您可能需要向发行人提供您的帐户ID才能接收AMP资产。";
 "id_amp_id" = "AMP ID";
@@ -510,7 +512,10 @@
 "id_ledger_devices" = "Ledger设备";
 "id_ledger_supports_a_limited_set" = "Ledger支持有限的几种资产：点击这里查看完整列表。";
 "id_legacy_account" = "旧账户";
+"id_legacy_bip44" = "Legacy (BIP44)";
 "id_legacy_script_coins" = "传统的脚本代币";
+"id_legacy_segwit_account" = "Legacy SegWit Account";
+"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
 "id_lets_get_you_set_up" = "立即开始设置。";
 "id_liquid_electrum_server" = "液态网络Electrum服务器";
 "id_liquid_is_a_sidechainbased" = "液态网络是面向交易员和交易所的基于侧链的结算网络，可实现更快、更隐私的比特币交易和数字资产发行。";
@@ -793,6 +798,7 @@
 "id_see_our_privacy_policy_s" = "查看隐私政策%@";
 "id_see_our_terms_of_service_s" = "查看服务条款%@";
 "id_segwit_account" = "隔离见证账户";
+"id_segwit_bip84" = "SegWit (BIP84)";
 "id_select_a_fiat_currency_and" = "选择一种法币和比特币面额在账户中显示";
 "id_select_account" = "选择账户";
 "id_select_an_app_on_s" = "在%@上选择一个app";
@@ -881,6 +887,7 @@
 "id_spv_synchronization_using_tor" = "使用Tor来进行SPV同步时需要一个可信任的节点的onion URL";
 "id_spv_unverified" = "SPV未验证";
 "id_spv_verification" = "SPV验证";
+"id_standard" = "Standard";
 "id_standard_account" = "标准账户";
 "id_standard_accounts_allow_you_to" = "标准账户允许你将资金分开存放。每个账户都有单独的收款地址，而且跨账户转移资金需要发起转账。";
 "id_standard_wallet" = "标准钱包";
@@ -901,6 +908,8 @@
 "id_tap_on_the_card_to_view" = "点击卡片以查看转账。";
 "id_tap_to_restart_the_simplified" = "点击以重启SPV";
 "id_tap_to_scan_a_qr_code_and" = "点击以扫描二维码并连接到SPV节点";
+"id_taproot_account" = "Taproot account";
+"id_taproot_bip86" = "Taproot (BIP86)";
 "id_telegram" = "Telegram";
 "id_terms_of_service" = "服务条款";
 "id_terms_of_use" = "用户协议";

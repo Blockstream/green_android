@@ -16,6 +16,7 @@
 "id_2fa_methods" = "2段階認証の手段";
 "id_2fa_reset_in_progress" = "2段階認証のリセット中";
 "id_2fa_threshold" = "2段階認証の閾値";
+"id_2of3" = "2of3";
 "id_2of3_account" = "2of3 アカウント";
 "id_4_hours" = "4時間前後";
 "id_5_seconds_minimum" = "最低5秒";
@@ -73,6 +74,7 @@
 "id_always_ask" = "Always ask";
 "id_amount" = "額";
 "id_amount_in_s" = "%@の金額";
+"id_amp" = "AMP";
 "id_amp_account" = "AMPアカウント";
 "id_amp_accounts_are_only_available" = "AMPアカウントはLiquidウォレットでのみ使用できます。AMPアセットによっては発行者にアカウントIDを提示してからしか受け取れない場合があります。";
 "id_amp_id" = "AMP ID";
@@ -510,7 +512,10 @@
 "id_ledger_devices" = "Ledgerデバイス";
 "id_ledger_supports_a_limited_set" = "Ledgerは限られた種類のアセットに対応しています。こちらをタップしてリストを確認しましょう。";
 "id_legacy_account" = "レガシーアカウント";
+"id_legacy_bip44" = "Legacy (BIP44)";
 "id_legacy_script_coins" = "レガシースクリプトで保護されたコイン";
+"id_legacy_segwit_account" = "Legacy SegWit Account";
+"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
 "id_lets_get_you_set_up" = "設定してみましょう。";
 "id_liquid_electrum_server" = "Liquid Electrum server";
 "id_liquid_is_a_sidechainbased" = "Liquidはサイドチェーンを用いたトレーダーや取引所向けの決済ネットワークで、高速で秘匿性の高いビットコイントランザクションとデジタル資産の発行を可能にします。";
@@ -793,6 +798,7 @@
 "id_see_our_privacy_policy_s" = "プライバシーポリシーを確認する %@";
 "id_see_our_terms_of_service_s" = "利用規約を確認する %@";
 "id_segwit_account" = "SegWitアカウント";
+"id_segwit_bip84" = "SegWit (BIP84)";
 "id_select_a_fiat_currency_and" = "ウォレット内の金額表示に利用する法定通貨とビットコインの単位を選択してください";
 "id_select_account" = "アカウントを選択";
 "id_select_an_app_on_s" = "%@でアプリを選択してください";
@@ -881,6 +887,7 @@
 "id_spv_synchronization_using_tor" = "Tor経由のSPV同期には信頼できるノードのオニオンアドレスが必要です";
 "id_spv_unverified" = "SPV未検証";
 "id_spv_verification" = "SPVの検証";
+"id_standard" = "Standard";
 "id_standard_account" = "スタンダードアカウント";
 "id_standard_accounts_allow_you_to" = "スタンダードアカウントは資金の分割管理に向きます。各アカウントは独自の受け取り用アドレスを持ち、アカウント間の資金のやり取りにはトランザクションが必要になります。";
 "id_standard_wallet" = "スタンダード・ウォレット";
@@ -901,6 +908,8 @@
 "id_tap_on_the_card_to_view" = "トランザクション確認にはカードをタップして下さい。";
 "id_tap_to_restart_the_simplified" = "SPVを再始動する";
 "id_tap_to_scan_a_qr_code_and" = "タップしてQRコードからSPVでノードに接続する";
+"id_taproot_account" = "Taproot account";
+"id_taproot_bip86" = "Taproot (BIP86)";
 "id_telegram" = "テレグラム";
 "id_terms_of_service" = "利用規約";
 "id_terms_of_use" = "利用規約";

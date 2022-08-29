@@ -16,6 +16,7 @@
 "id_2fa_methods" = "2FA Méthodes";
 "id_2fa_reset_in_progress" = "2FA Réinitialisation en cours";
 "id_2fa_threshold" = "2FA Limite";
+"id_2of3" = "2of3";
 "id_2of3_account" = "2 à 3 comptes";
 "id_4_hours" = "~ 4 heures";
 "id_5_seconds_minimum" = "5 secondes minimum";
@@ -73,6 +74,7 @@
 "id_always_ask" = "Always ask";
 "id_amount" = "Montant";
 "id_amount_in_s" = "Montant en %@";
+"id_amp" = "AMP";
 "id_amp_account" = "Compte AMP";
 "id_amp_accounts_are_only_available" = "Les comptes AMP sont uniquement disponibles sur les portefeuilles Liquid. Il peut vous être demandé de fournir votre identifiant de compte aux émetteurs pour recevoir un actif AMP.";
 "id_amp_id" = "AMP ID";
@@ -510,7 +512,10 @@
 "id_ledger_devices" = "Appareils Ledger";
 "id_ledger_supports_a_limited_set" = "Ledger prend en charge un ensemble limité d'actifs : tapez ici pour vérifier la liste.";
 "id_legacy_account" = "Compte Legacy";
+"id_legacy_bip44" = "Legacy (BIP44)";
 "id_legacy_script_coins" = "Legacy script coins";
+"id_legacy_segwit_account" = "Legacy SegWit Account";
+"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
 "id_lets_get_you_set_up" = "Préparons votre installation.";
 "id_liquid_electrum_server" = "Liquid Electrum serveur";
 "id_liquid_is_a_sidechainbased" = "Liquid est un réseau de règlement basé sur la sidechain pour les négociants et les échanges, permettant des transactions en bitcoin plus rapides et plus confidentielles et l'émission d'actifs numériques.";
@@ -793,6 +798,7 @@
 "id_see_our_privacy_policy_s" = "Voir notre politique de confidentialité %@";
 "id_see_our_terms_of_service_s" = "Voir nos conditions de service %@";
 "id_segwit_account" = "Compte SegWit";
+"id_segwit_bip84" = "SegWit (BIP84)";
 "id_select_a_fiat_currency_and" = "Sélectionnez une devise fiat et une dénomination bitcoin pour afficher les montants dans votre portefeuille.";
 "id_select_account" = "Sélectionner le compte";
 "id_select_an_app_on_s" = "Sélectionner une app sur %@";
@@ -881,6 +887,7 @@
 "id_spv_synchronization_using_tor" = "La synchronisation SPV utilisant Tor nécessite un nœud de confiance oignon URL";
 "id_spv_unverified" = "SPV non vérifié";
 "id_spv_verification" = "SPV verification";
+"id_standard" = "Standard";
 "id_standard_account" = "Compte standard ";
 "id_standard_accounts_allow_you_to" = "Les comptes standard vous permettent de séparer vos fonds. Chaque compte aura ses propres adresses de réception, et le transfert de fonds entre les comptes nécessite une transaction.";
 "id_standard_wallet" = "Portefeuille standard";
@@ -901,6 +908,8 @@
 "id_tap_on_the_card_to_view" = "Tapoter sur la carte pour voir la transaction";
 "id_tap_to_restart_the_simplified" = "Tapotez pour redémarrer la vérification des paiements simplifiée";
 "id_tap_to_scan_a_qr_code_and" = "Appuyez pour numériser un QR code et vous connecter à un nœud pour SPV";
+"id_taproot_account" = "Taproot account";
+"id_taproot_bip86" = "Taproot (BIP86)";
 "id_telegram" = "Telegram";
 "id_terms_of_service" = "Conditions de service";
 "id_terms_of_use" = "Conditions d'utilisation";

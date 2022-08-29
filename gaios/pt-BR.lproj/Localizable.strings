@@ -16,6 +16,7 @@
 "id_2fa_methods" = "Métodos 2FA";
 "id_2fa_reset_in_progress" = "Redefinição 2FA em andamento";
 "id_2fa_threshold" = "Limite 2FA";
+"id_2of3" = "2of3";
 "id_2of3_account" = "Conta conjunta 2de3";
 "id_4_hours" = "~ 4 horas";
 "id_5_seconds_minimum" = "mínimo de 5 segundos";
@@ -73,6 +74,7 @@
 "id_always_ask" = "Sempre perguntar";
 "id_amount" = "Quantidade";
 "id_amount_in_s" = "Quantidade em %@";
+"id_amp" = "AMP";
 "id_amp_account" = "Conta AMP";
 "id_amp_accounts_are_only_available" = "Contas AMP só estão disponíveis em carteiras Liquid. Pode ser necessário fornecer o ID da sua conta aos emissores para receber um ativo AMP.";
 "id_amp_id" = "ID AMP";
@@ -510,7 +512,10 @@
 "id_ledger_devices" = "Dispositivos Ledger";
 "id_ledger_supports_a_limited_set" = "A Ledger suporta uma quantidade limitada de ativos: clique aqui para verificar a lista.";
 "id_legacy_account" = "Conta Legacy";
+"id_legacy_bip44" = "Legacy (BIP44)";
 "id_legacy_script_coins" = "Moedas script legacy";
+"id_legacy_segwit_account" = "Legacy SegWit Account";
+"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
 "id_lets_get_you_set_up" = "Vamos lá então configurar sua carteira.";
 "id_liquid_electrum_server" = "Servidor Liquid Electrum";
 "id_liquid_is_a_sidechainbased" = "A Liquid é uma rede de liquidação baseada em sidechain para traders e exchanges, permitindo transações bitcoin mais rápidas e confidenciais e também a emissão de ativos digitais.";
@@ -793,6 +798,7 @@
 "id_see_our_privacy_policy_s" = "Veja nossa política de privacidade %@";
 "id_see_our_terms_of_service_s" = "Veja nossos termos de serviço %@";
 "id_segwit_account" = "Conta SegWit";
+"id_segwit_bip84" = "SegWit (BIP84)";
 "id_select_a_fiat_currency_and" = "Escolha uma moeda fiduciária e a unidade de bitcoin que serão usadas para mostrar valores na sua carteira. ";
 "id_select_account" = "Selecionar conta";
 "id_select_an_app_on_s" = "Selecione um aplicativo em%@";
@@ -881,6 +887,7 @@
 "id_spv_synchronization_using_tor" = "A sincronização SPV usando Tor requer um nó confiável onion URL";
 "id_spv_unverified" = "SPV não verificado";
 "id_spv_verification" = "Verificação SPV";
+"id_standard" = "Standard";
 "id_standard_account" = "Conta conjunta 2de2";
 "id_standard_accounts_allow_you_to" = "Contas conjuntas 2de2 exigem duas assinaturas para movimentar os fundos. Uma assinatura é de uma chave exclusiva sua e a outra é de uma chave conhecida somente pela empresa Blockstream.\nObs. É possível resgatar os fundos mesmo se a empresa Blockstream deixar de existir ou assinar as transações.";
 "id_standard_wallet" = "Individual";
@@ -901,6 +908,8 @@
 "id_tap_on_the_card_to_view" = "Toque no cartão para ver as transações. ";
 "id_tap_to_restart_the_simplified" = "Toque para reiniciar a Verificação Simplificada de Pagamentos ";
 "id_tap_to_scan_a_qr_code_and" = "Toque para ler um código QR e conectar-se a um nó para SPV";
+"id_taproot_account" = "Taproot account";
+"id_taproot_bip86" = "Taproot (BIP86)";
 "id_telegram" = "Telegram";
 "id_terms_of_service" = "Termos de serviço";
 "id_terms_of_use" = "Termos de Uso";

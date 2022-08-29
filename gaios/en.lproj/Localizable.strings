@@ -16,6 +16,7 @@
 "id_2fa_methods" = "2FA Methods";
 "id_2fa_reset_in_progress" = "2FA Reset in Progress";
 "id_2fa_threshold" = "2FA Threshold";
+"id_2of3" = "2of3";
 "id_2of3_account" = "2of3 Account";
 "id_4_hours" = "~ 4 Hours";
 "id_5_seconds_minimum" = "5 seconds minimum";
@@ -73,6 +74,7 @@
 "id_always_ask" = "Always ask";
 "id_amount" = "Amount";
 "id_amount_in_s" = "Amount in %@";
+"id_amp" = "AMP";
 "id_amp_account" = "AMP Account";
 "id_amp_accounts_are_only_available" = "AMP accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive an AMP Asset.";
 "id_amp_id" = "AMP ID";
@@ -510,7 +512,10 @@
 "id_ledger_devices" = "Ledger devices";
 "id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: tap here to check the list.";
 "id_legacy_account" = "Legacy Account";
+"id_legacy_bip44" = "Legacy (BIP44)";
 "id_legacy_script_coins" = "Legacy script coins";
+"id_legacy_segwit_account" = "Legacy SegWit Account";
+"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
 "id_lets_get_you_set_up" = "Let's get you set up.";
 "id_liquid_electrum_server" = "Liquid Electrum server";
 "id_liquid_is_a_sidechainbased" = "Liquid is a sidechain-based settlement network for traders and exchanges, enabling faster, more confidential Bitcoin transactions and the issuance of digital assets.";
@@ -793,6 +798,7 @@
 "id_see_our_privacy_policy_s" = "See our privacy policy %@";
 "id_see_our_terms_of_service_s" = "See our Terms of Service %@";
 "id_segwit_account" = "SegWit Account";
+"id_segwit_bip84" = "SegWit (BIP84)";
 "id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "Select Account";
 "id_select_an_app_on_s" = "Select an app on %@";
@@ -881,6 +887,7 @@
 "id_spv_synchronization_using_tor" = "SPV synchronization using Tor requires a trusted node onion URL";
 "id_spv_unverified" = "SPV unverified";
 "id_spv_verification" = "SPV verification";
+"id_standard" = "Standard";
 "id_standard_account" = "Standard Account";
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_standard_wallet" = "Standard Wallet";
@@ -901,6 +908,8 @@
 "id_tap_on_the_card_to_view" = "Tap on the card to view transactions.";
 "id_tap_to_restart_the_simplified" = "Tap to restart the Simplified Payment Verification";
 "id_tap_to_scan_a_qr_code_and" = "Tap to scan a QR code and connect to a node for SPV";
+"id_taproot_account" = "Taproot account";
+"id_taproot_bip86" = "Taproot (BIP86)";
 "id_telegram" = "Telegram";
 "id_terms_of_service" = "Terms of Service";
 "id_terms_of_use" = "Terms of Use";
@@ -1118,17 +1127,3 @@
 "id_your_wallet_is_not_yet_fully" = "Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.";
 "id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";
 "id_youve_entered_an_invalid_pin" = "You've entered an invalid PIN too many times.";
-
-"id_legacy_segwit_account" = "Legacy SegWit Account";
-"id_legacy_bip44" = "Legacy (BIP44)";
-"id_legacy_segwit_bip49" = "Legacy SegWit (BIP49)";
-"id_segwit_bip84" = "SegWit (BIP84)";
-"id_taproot_account" = "Taproot account";
-"id_taproot_bip86" = "Taproot (BIP86)";
-"id_standard" = "Standard";
-"id_amp" = "AMP";
-"id_2of3" = "2of3";
-"Legacy SegWit" = "Legacy SegWit";
-"SegWit" = "SegWit";
-"Taproot" = "Taproot";
-"Legacy" = "Legacy";
