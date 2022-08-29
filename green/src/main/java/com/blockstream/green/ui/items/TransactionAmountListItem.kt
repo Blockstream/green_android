@@ -27,19 +27,19 @@ data class TransactionAmountListItem constructor(
 
     override fun bindView(binding: ListItemTransactionAmountBinding, payloads: List<Any>) {
         binding.isChange = look.isChange(index)
-        binding.type = look.txType
         binding.address = look.getAddress(index)
+        binding.amount = look.getAmount(index)
 
         if(withStroke){
             binding.card.strokeWidth = binding.root.context.toPixels(1)
             binding.card.strokeColor = ContextCompat.getColor(binding.root.context, R.color.color_on_surface_divider)
         }
-        look.setAssetToBinding(index, binding.amount)
+        look.setAssetToBinding(index, binding.amountView)
 
         // make address,amount & fee selectable
         binding.addressTextView.setTextIsSelectable(true)
-        binding.amount.amountTextView.setTextIsSelectable(true)
-        binding.amount.fiatTextView.setTextIsSelectable(true)
+        binding.amountView.amountTextView.setTextIsSelectable(true)
+        binding.amountView.fiatTextView.setTextIsSelectable(true)
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemTransactionAmountBinding {

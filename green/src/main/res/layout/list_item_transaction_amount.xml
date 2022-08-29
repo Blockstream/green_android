@@ -8,16 +8,16 @@
         <import type="com.blockstream.gdk.data.Transaction.Type"/>
 
         <variable
-            name="type"
-            type="Type" />
-
-        <variable
             name="isChange"
             type="Boolean" />
 
         <variable
             name="address"
             type="String" />
+
+        <variable
+            name="amount"
+            type="Long" />
 
     </data>
 
@@ -43,7 +43,7 @@
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:textColor="@color/color_on_surface_emphasis_low"
                 android:includeFontPadding="false"
-                android:text="@{isChange ? @string/id_change : type == Type.OUT ? @string/id_sent_to : @string/id_received_on}"
+                android:text="@{isChange ? @string/id_change : amount &lt; 0L ? (address != null ? @string/id_sent_to : @string/id_sent) : (address != null ? @string/id_received_on: @string/id_received)}"
                 tools:text="@string/id_sent_to" />
 
             <TextView
@@ -96,7 +96,7 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <include
-                android:id="@+id/amount"
+                android:id="@+id/amountView"
                 layout="@layout/list_item_transaction_asset" />
 
         </com.blockstream.green.views.GappedLinearLayout>

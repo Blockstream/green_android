@@ -126,10 +126,20 @@ class GreenWallet constructor(
                   loginCredentialsParams: LoginCredentialsParams
     ) = gdk.loginUser(session, deviceParams, loginCredentialsParams)
 
+    fun validate(
+        session: GASession,
+        params: JsonElement
+    ) = gdk.validate(session, params)
+
     fun encryptWithPin(
         session: GASession,
         encryptWithPinParams: EncryptWithPinParams
     ) = gdk.encryptWithPin(session, encryptWithPinParams)
+
+    fun decryptWithPin(
+        session: GASession,
+        decryptWithPinParams: DecryptWithPinParams
+    ) = gdk.decryptWithPin(session, decryptWithPinParams)
 
     fun getCredentials(session: GASession, params: CredentialsParams) = gdk.getCredentials(session, params)
 

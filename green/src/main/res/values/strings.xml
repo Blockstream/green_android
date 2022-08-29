@@ -1132,4 +1132,5 @@
   <string name="id_you_have_successfully_sent_a_transaction">You have successfully sent a transaction. Please give us your feedback to improve Green.</string>
   <string name="id_you_will_be_asked_to_enter">You will be asked to enter your passphrase at every login.</string>
   <string name="id_the_qr_code_does_not_inlcude_the">The QR code does not include the BIP39 Passphrase</string>
+  <string name="id_swap">Swap</string>
 </resources>

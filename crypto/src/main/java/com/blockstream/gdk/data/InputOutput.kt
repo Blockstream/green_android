@@ -52,8 +52,7 @@ data class InputOutput constructor(
     @SerialName("asset_id") val assetId: String? = null, // asset id for Liquid txs
     @SerialName("blinding_key") val blindingKey: String? = null, // the blinding public key embedded into the blinded address we are sending to
 
-    @SerialName("eph_keypair_sec") val ephKeypairSec: String? = null, // our secret key used for the blinding
-    @SerialName("eph_keypair_pub") val ephKeypairPub: String? = null, // and the public key
+    @SerialName("eph_private_key") val ephPrivateKey: String? = null, // our secret key used for the blinding
 ) : Parcelable {
 
     // Called from Java to use the UInt.toInt() inline fun
@@ -94,7 +93,7 @@ data class InputOutput constructor(
     }
 
     fun getEphKeypairPubBytes(): ByteArray {
-        return Wally.hex_to_bytes(ephKeypairPub)
+        return Wally.ec_public_key_from_private_key(Wally.hex_to_bytes(ephPrivateKey))
     }
 
     fun getPublicKeyBytes(): ByteArray {

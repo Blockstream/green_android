@@ -39,7 +39,11 @@ class KotlinGDK {
         loginCredentialsParams: LoginCredentialsParams
     ): GAAuthHandler = GDK.login_user(session, deviceParams, loginCredentialsParams)
 
+    fun validate(session: GASession, params: JsonElement): GAAuthHandler = GDK.validate(session, params)
+
     fun encryptWithPin(session: GASession, params: EncryptWithPinParams): GAAuthHandler = GDK.encrypt_with_pin(session, params)
+
+    fun decryptWithPin(session: GASession, params: DecryptWithPinParams): GAAuthHandler = GDK.decrypt_with_pin(session, params)
 
     fun getCredentials(session: GASession, params: CredentialsParams) = GDK.get_credentials(session, params)
 

@@ -573,6 +573,11 @@ class GreenSession constructor(
         greenWallet.encryptWithPin(gaSession, encryptWithPinParams)
     ).result<EncryptWithPin>(hardwareWalletResolver = DeviceResolver(this))
 
+    fun decryptCredentialsWithPin(decryptWithPinParams: DecryptWithPinParams) = AuthHandler(
+        greenWallet,
+        greenWallet.decryptWithPin(gaSession, decryptWithPinParams)
+    ).result<Credentials>(hardwareWalletResolver = DeviceResolver(this))
+
     fun getCredentials(params: CredentialsParams = CredentialsParams()) =
         AuthHandler(greenWallet, greenWallet.getCredentials(gaSession, params))
             .result<Credentials>(hardwareWalletResolver = DeviceResolver(this))

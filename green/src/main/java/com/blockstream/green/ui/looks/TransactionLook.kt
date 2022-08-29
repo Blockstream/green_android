@@ -53,46 +53,49 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     // GDK returns non-confidential addresses for Liquid. Hide them for now
     override fun getAddress(index: Int): String? = when {
         session.isLiquid -> null
-        txType == Transaction.Type.OUT -> tx.addressees.getOrNull(index)
-        txType == Transaction.Type.IN -> tx.outputs.filter { it.isRelevant == true }.getOrNull(index)?.address
+        txType == Transaction.Type.IN || txType == Transaction.Type.OUT -> tx.outputs.filter { it.isRelevant == true }.getOrNull(index)?.address
         else -> null
+    }
+
+    override fun getAmount(index: Int): Long {
+        return getAmountAndAsset(index).second
+    }
+
+    private fun getAmountAndAsset(index: Int): Pair<String,Long> {
+        return (if (tx.txType == Transaction.Type.REDEPOSIT) {
+            session.policyAsset to tx.fee
+        } else if (substractFeeFromOutgoing && tx.txType == Transaction.Type.OUT && assets.getOrNull(index)?.first == session.policyAsset) {
+            // OUT transactions in BTC/L-BTC have fee included
+            assets[index].let {
+                it.first to (it.second - tx.fee)
+            }
+        } else {
+            assets.getOrNull(index)
+        }) ?: (session.policyAsset to 0L)
     }
 
     // Cache amounts to avoid calling convert every time for performance reasons
     private val cacheAmounts = hashMapOf<Int, String>()
     fun amount(index: Int): String {
         if(!cacheAmounts.containsKey(index)) {
+            val amount = getAmountAndAsset(index)
             if (tx.txType == Transaction.Type.REDEPOSIT) {
-                cacheAmounts[index] = tx.fee.toAmountLookOrNa(
+                cacheAmounts[index] = amount.second.toAmountLookOrNa(
                     session,
                     withUnit = false,
-                    withDirection = tx.txType,
+                    withDirection = true,
                     withGrouping = true,
                     withMinimumDigits = true
                 )
-            } else if (substractFeeFromOutgoing && tx.txType == Transaction.Type.OUT && assets.getOrNull(index)?.first == session.policyAsset) {
-                // OUT transactions in BTC/L-BTC have fee included
-                cacheAmounts[index] = assets.getOrNull(index)?.let {
-                    (it.second - tx.fee).toAmountLookOrNa(
-                        session,
-                        assetId = it.first,
-                        withUnit = false,
-                        withDirection = tx.txType,
-                        withGrouping = true,
-                        withMinimumDigits = true
-                    )
-                } ?: "-"
             } else {
-                cacheAmounts[index] = assets.getOrNull(index)?.let {
-                    it.second.toAmountLookOrNa(
-                        session,
-                        assetId = it.first,
-                        withUnit = false,
-                        withDirection = tx.txType,
-                        withGrouping = true,
-                        withMinimumDigits = true
-                    )
-                } ?: "-"
+                cacheAmounts[index] = amount.second.toAmountLookOrNa(
+                    session,
+                    assetId = amount.first,
+                    withUnit = false,
+                    withDirection = true,
+                    withGrouping = true,
+                    withMinimumDigits = true
+                )
             }
         }
 
@@ -109,8 +112,9 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
         )
     }
 
-    private val valueColor
-        get() = if (tx.isIn) R.color.brand_green else R.color.white
+    private fun getValueColor(index: Int): Int {
+        return if (getAmount(index) < 0) R.color.white else R.color.brand_green
+    }
 
     fun ticker(index: Int): String {
         return assets.getOrNull(index)?.let{
@@ -128,7 +132,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     }
 
     override fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding) {
-        binding.directionColor = ContextCompat.getColor(binding.root.context, valueColor)
+        binding.directionColor = ContextCompat.getColor(binding.root.context, getValueColor(index))
 
         binding.amount = amount(index)
         binding.fiat = if(showFiat) fiat(index)?.let { "≈ $it" } else null

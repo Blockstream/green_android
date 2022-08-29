@@ -7,15 +7,14 @@ import com.blockstream.gdk.GAJson
 import com.blockstream.gdk.serializers.DateAsMicrosecondsSerializer
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.*
+import kotlin.math.absoluteValue
 
 @Serializable
 @Parcelize
 data class Transaction(
-    @SerialName("addressees") val addressees: List<String>,
     @SerialName("block_height") val blockHeight: Long,
     @SerialName("can_cpfp") val canCPFP: Boolean,
     @SerialName("can_rbf") val canRBF: Boolean,
@@ -56,7 +55,7 @@ data class Transaction(
     }
 
     enum class Type {
-        OUT, IN, REDEPOSIT
+        OUT, IN, REDEPOSIT, MIXED
     }
 
     val txType: Type
@@ -64,6 +63,7 @@ data class Transaction(
             "outgoing" -> Type.OUT
             "incoming" -> Type.IN
             "redeposit" -> Type.REDEPOSIT
+            "mixed" -> Type.MIXED
             else -> Type.OUT
         }
 
@@ -92,8 +92,14 @@ data class Transaction(
         if (o1 == network.policyAsset) -1 else o1.compareTo(o2)
     }.mapNotNull {
         if (network.isLiquid && it.key == network.policyAsset && txType == Type.OUT && satoshi.size > 1) {
-            // Remove to display fee as amount in liquid
-            null
+            // Check if the L-BTC amount is actually the fee
+            val valueWithoutFee = it.value.absoluteValue - fee.absoluteValue
+            if(valueWithoutFee != 0L){
+                it.key to valueWithoutFee
+            }else{
+                // Remove to display fee as amount in liquid
+                null
+            }
         } else {
             it.toPair()
         }
@@ -127,7 +133,6 @@ data class Transaction(
     companion object {
         // Create a dummy transaction to describe the loading state (blockHeight == -1)
         val LoadingTransaction = Transaction(
-            addressees = listOf(),
             blockHeight = -1,
             canCPFP = false,
             canRBF = false,

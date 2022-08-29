@@ -2,7 +2,6 @@ package com.blockstream.green.utils
 
 import com.blockstream.gdk.data.Balance
 import com.blockstream.gdk.data.CreateTransaction
-import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.GreenSession
 import java.text.DateFormat
@@ -167,7 +166,7 @@ fun Long?.toAmountLookOrNa(
     isFiat: Boolean? = null,
     withUnit: Boolean = true,
     withGrouping: Boolean = true,
-    withDirection: Transaction.Type? = null,
+    withDirection: Boolean = false,
     withMinimumDigits: Boolean = false,
     overrideDenomination: Boolean = false,
 ): String {
@@ -181,7 +180,7 @@ fun Long?.toAmountLook(
     isFiat: Boolean? = null,
     withUnit: Boolean = true,
     withGrouping: Boolean = true,
-    withDirection: Transaction.Type? = null,
+    withDirection: Boolean = false,
     withMinimumDigits: Boolean = false,
     overrideDenomination: Boolean = false,
 ): String? {
@@ -215,13 +214,11 @@ fun Long?.toAmountLook(
             overrideDenomination = overrideDenomination
         )
     }?.let { amount ->
-        withDirection?.let { direction ->
-            if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){
-                "-$amount"
-            }else{
-                "+$amount"
-            }
-        } ?: amount
+        if(withDirection && this > 0L){
+            "+$amount"
+        }else{
+            amount
+        }
     }
 }
 

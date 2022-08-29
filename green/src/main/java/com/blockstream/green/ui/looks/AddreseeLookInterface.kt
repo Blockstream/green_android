@@ -9,5 +9,6 @@ interface AddreseeLookInterface {
     fun isChange(index: Int): Boolean
     fun getAssetId(index: Int): String
     fun getAddress(index: Int): String?
+    fun getAmount(index: Int): Long
     fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding)
 }

@@ -120,7 +120,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
     private fun mockSession(isSuccess: Boolean) {
         if (isSuccess) {
             whenever(greenSession.loginWatchOnly(any<Network>(), any(), any())).then {
-                LoginData("")
+                LoginData("", "")
             }
         }else{
             whenever(greenSession.loginWatchOnly(any<Network>(), any(), any())).then {

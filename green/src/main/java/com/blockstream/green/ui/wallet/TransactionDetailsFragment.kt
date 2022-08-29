@@ -67,6 +67,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             when (args.transaction.txType) {
                 Transaction.Type.OUT -> R.string.id_sent
                 Transaction.Type.REDEPOSIT -> R.string.id_redeposited
+                Transaction.Type.MIXED -> R.string.id_swap
                 else -> R.string.id_received
             }
         )

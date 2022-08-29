@@ -57,30 +57,33 @@ data class ConfirmTransactionLook constructor(
         return index >= recipients
     }
 
-    override fun getAssetId(index: Int): String = tx.addressees.getOrNull(index)?.assetId ?: session.policyAsset // changeOutput
+    override fun getAssetId(index: Int): String = if(isChange(index)){
+        changeOutputs.getOrNull(index - recipients)?.assetId
+    }else{
+        tx.addressees.getOrNull(index)?.assetId
+    } ?: session.policyAsset
+
     override fun getAddress(index: Int): String? = tx.addressees.getOrNull(index)?.address ?: changeOutputs.getOrNull(index - recipients)?.address
+
+    override fun getAmount(index: Int): Long = (if (isChange(index)) {
+        changeOutputs.getOrNull(index - recipients)?.satoshi
+    } else if (!session.isElectrum && tx.isSendAll) {
+        tx.satoshi[getAssetId(index)]
+    } else {
+        tx.addressees.getOrNull(index)?.satoshi
+    }) ?: 0L
 
     override fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding) {
         binding.directionColor = ContextCompat.getColor(binding.root.context, R.color.white)
 
-        val assetId = if(isChange(index)){
-            changeOutputs.getOrNull(index - recipients)?.assetId
-        }else{
-            tx.addressees.getOrNull(index)?.assetId
-        } ?: session.policyAsset
-        val satoshi = if (isChange(index)){
-            changeOutputs.getOrNull(index - recipients)?.satoshi
-        }else if(!session.isElectrum && tx.isSendAll){
-            tx.satoshi[assetId]
-        }else{
-            tx.addressees.getOrNull(index)?.satoshi
-        } ?: 0
+        val assetId = getAssetId(index)
+        val satoshi = getAmount(index)
 
         binding.amount = satoshi.toAmountLook(
             session = session,
             assetId = assetId,
             withUnit = false,
-            withDirection = null,
+            withDirection = false,
             withGrouping = true,
             withMinimumDigits = true,
             overrideDenomination = overrideDenomination,

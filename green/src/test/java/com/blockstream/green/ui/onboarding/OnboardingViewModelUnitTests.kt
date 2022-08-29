@@ -70,13 +70,13 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
             if (loginCredentials.mnemonic != "valid") {
                 throw Exception("invalid recovery phrase")
             }else{
-                LoginData("")
+                LoginData("", "")
             }
         }
 
         whenever(session.walletHashId).thenReturn("")
 
-        whenever(session.createNewWallet(any(), any())).thenAnswer { LoginData("") }
+        whenever(session.createNewWallet(any(), any())).thenAnswer { LoginData("", "") }
 
         whenever(session.getCredentials(anyOrNull())).thenReturn(Credentials(mnemonic = ""))
         whenever(session.encryptWithPin(anyOrNull())).thenReturn(EncryptWithPin(pinData = PinData("","","")))
