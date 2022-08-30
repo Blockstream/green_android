@@ -55,15 +55,15 @@ extension AnalyticsManager {
         return nil
     }
 
-    func subAccSeg(_ account: Account?, walletType: String?) -> Sgmt? {
+    func subAccSeg(_ account: Account?, walletType: AccountType?) -> Sgmt? {
         if var s = sessSgmt(account), let walletType = walletType {
-            s[AnalyticsManager.strAccountType] = walletType
+            s[AnalyticsManager.strAccountType] = walletType.rawValue
             return s
         }
         return nil
     }
 
-    func twoFacSgmt(_ account: Account?, walletType: String?, twoFactorType: TwoFactorType?) -> Sgmt? {
+    func twoFacSgmt(_ account: Account?, walletType: AccountType?, twoFactorType: TwoFactorType?) -> Sgmt? {
         if var s = subAccSeg(account, walletType: walletType) {
             if let twoFactorType = twoFactorType {
                 s[AnalyticsManager.str2fa] = twoFactorType.rawValue

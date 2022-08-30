@@ -152,7 +152,7 @@ class SessionManager {
                 let subaccounts = result?["subaccounts"] as? [[String: Any]]
                 let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
                 let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
-                return wallets
+                return wallets.sorted()
             }
     }
 
@@ -227,7 +227,7 @@ class SessionManager {
     // create a default segwit account if doesn't exist on singlesig
     func createDefaultSubaccount(wallets: [WalletItem]) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
-        let notFound = !wallets.contains(where: {$0.type == AccountType.segWit.rawValue })
+        let notFound = !wallets.contains(where: {$0.type == AccountType.segWit })
         if gdkNetwork.electrum && notFound {
             return Guarantee()
                 .compactMap(on: bgq) { try self.session?.createSubaccount(details: ["name": "",

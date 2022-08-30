@@ -83,7 +83,7 @@ class OverviewViewController: UIViewController {
     private var account = AccountsManager.shared.current
     private var session: SessionManager? { SessionsManager.shared[account?.id ?? ""] }
     private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
-    private var isAmp: Bool { presentingWallet?.accountType() == AccountType.amp }
+    private var isAmp: Bool { presentingWallet?.type == AccountType.amp }
     private var btc: String { return account?.gdkNetwork?.getFeeAsset() ?? "" }
     private var color: UIColor = .clear
     private var userWillLogout = false
@@ -337,7 +337,7 @@ class OverviewViewController: UIViewController {
         }
         let walletFunded: Bool = accountsFunded > 0
         let accounts: Int = allSubaccounts.count
-        let accountsTypes: String = Array(Set(allSubaccounts.map { $0.type })).sorted().joined(separator: ",")
+        let accountsTypes: String = Array(Set(allSubaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
 
         AnalyticsManager.shared.activeWallet(account: account, walletData: AnalyticsManager.WalletData(walletFunded: walletFunded, accountsFunded: accountsFunded, accounts: accounts, accountsTypes: accountsTypes))
 

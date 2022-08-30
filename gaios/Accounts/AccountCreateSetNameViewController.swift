@@ -118,7 +118,7 @@ class AccountCreateSetNameViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            AnalyticsManager.shared.createAccount(account: AccountsManager.shared.current, walletType: type.rawValue)
+            AnalyticsManager.shared.createAccount(account: AccountsManager.shared.current, walletType: type)
             self.dismiss()
         }.catch { e in
             switch e {

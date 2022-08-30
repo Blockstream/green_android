@@ -46,7 +46,7 @@ extension AnalyticsManager {
         recordEvent(.deleteWallet)
     }
 
-    func renameAccount(account: Account?, walletType: String?) {
+    func renameAccount(account: Account?, walletType: AccountType?) {
         if let s = subAccSeg(account, walletType: walletType) {
             recordEvent(.renameAccount, sgmt: s)
         }
@@ -102,13 +102,13 @@ extension AnalyticsManager {
         }
     }
 
-    func createAccount(account: Account?, walletType: String?) {
+    func createAccount(account: Account?, walletType: AccountType?) {
         if let s = subAccSeg(account, walletType: walletType) {
             recordEvent(.createAccount, sgmt: s)
         }
     }
 
-    func receiveAddress(account: Account?, walletType: String?, data: ReceiveAddressData) {
+    func receiveAddress(account: Account?, walletType: AccountType?, data: ReceiveAddressData) {
         if var s = subAccSeg(account, walletType: walletType) {
             s[AnalyticsManager.strType] = data.type.rawValue
             s[AnalyticsManager.strMedia] = data.media.rawValue

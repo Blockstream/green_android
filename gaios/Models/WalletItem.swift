@@ -1,7 +1,7 @@
 import Foundation
 import PromiseKit
 
-class WalletItem: Codable, Equatable {
+class WalletItem: Codable, Equatable, Comparable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -21,7 +21,7 @@ class WalletItem: Codable, Equatable {
     let pointer: UInt32
     var receiveAddress: String?
     let receivingId: String
-    let type: String
+    let type: AccountType
     var satoshi: [String: UInt64]?
     var recoveryChainCode: String?
     var recoveryPubKey: String?
@@ -33,13 +33,12 @@ class WalletItem: Codable, Equatable {
         if !name.isEmpty {
             return name
         }
-        let accountType = AccountType(rawValue: self.type)
-        switch accountType {
+        switch type {
         case .legacy, .segwitWrapped, .segWit, .taproot:
             if accountNumber() == 1 {
-                return "\(NSLocalizedString(accountType?.shortNameStringId ?? "", comment: "")) Account \(accountNumber())"
+                return "\(NSLocalizedString(type.shortNameStringId, comment: "")) Account \(accountNumber())"
             } else {
-                return "\(NSLocalizedString(accountType?.shortNameStringId ?? "", comment: "")) \(accountNumber())"
+                return "\(NSLocalizedString(type.shortNameStringId, comment: "")) \(accountNumber())"
             }
         default:
             if pointer == 0 {
@@ -50,13 +49,11 @@ class WalletItem: Codable, Equatable {
     }
 
     func localizedHint() -> String {
-        let accountType = AccountType(rawValue: self.type)
-        return "\((NSLocalizedString(accountType?.typeStringId ?? "", comment: "")).uppercased()) #\(self.accountNumber())"
+        return "\((NSLocalizedString(type.typeStringId, comment: "")).uppercased()) #\(self.accountNumber())"
     }
 
     func accountNumber() -> UInt32 {
-        let accountType = AccountType(rawValue: self.type)
-        switch accountType {
+        switch type {
         case .legacy, .segwitWrapped, .segWit, .taproot:
             return (self.pointer / 16) + 1
         default:
@@ -111,7 +108,8 @@ class WalletItem: Codable, Equatable {
             lhs.recoveryPubKey == rhs.recoveryPubKey
     }
 
-    func accountType() -> AccountType? {
-        AccountType(rawValue: type)
+    static func < (lhs: WalletItem, rhs: WalletItem) -> Bool {
+        return lhs.type < rhs.type ||
+        ( lhs.type == rhs.type && lhs.pointer < rhs.pointer)
     }
 }

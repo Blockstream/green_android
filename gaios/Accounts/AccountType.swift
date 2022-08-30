@@ -1,4 +1,4 @@
-enum AccountType: String, CaseIterable {
+enum AccountType: String, CaseIterable, Codable {
     /// multiSig
     case standard = "2of2"
     case amp = "2of2_no_recovery"
@@ -70,6 +70,16 @@ enum AccountType: String, CaseIterable {
             case .taproot:
                 return "Taproot"
             }
+        }
+    }
+
+    static func < (a: AccountType, b: AccountType) -> Bool {
+        if a == .segWit {
+            return true
+        } else if b == .segWit {
+            return false
+        } else {
+           return a.rawValue < b.rawValue
         }
     }
 }

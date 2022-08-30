@@ -399,7 +399,7 @@ final class Jade: JadeOTA, HWProtocol {
                 }
         } else {
             // Green Electrum Singlesig
-            let variant = mapAddressType(wallet.type)
+            let variant = mapAddressType(wallet.type.rawValue)
             let cmd = JadeGetReceiveSinglesigAddress(network: network.chain, path: path, variant: variant ?? "")
             return exchange(JadeRequest<JadeGetReceiveSinglesigAddress>(method: "get_receive_address", params: cmd))
                 .compactMap { (res: JadeResponse<String>) -> String in
