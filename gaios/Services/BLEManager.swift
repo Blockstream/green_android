@@ -199,11 +199,17 @@ class BLEManager {
                 } else if version.jadeNetworks == "MAIN" && testnet {
                     throw JadeError.Abort("\(network.name) not supported in Jade \(version.jadeNetworks) mode")
                 }
-                if version.jadeState == "READY" {
+                // JADE_STATE => READY  (device unlocked / ready to use)
+                // anything else ( LOCKED | UNSAVED | UNINIT | TEMP) will need an authUser first to unlock
+                switch version.jadeState {
+                case "READY":
                     return Observable.just(true)
+                case "TEMP":
+                    return Jade.shared.unlock(network: network.chain)
+                default:
+                    return Jade.shared.auth(network: network.chain)
+                        .retry(3)
                 }
-                return Jade.shared.auth(network: network.chain)
-                    .retry(3)
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in

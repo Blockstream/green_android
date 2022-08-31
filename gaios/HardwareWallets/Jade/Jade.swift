@@ -40,6 +40,20 @@ final class Jade: JadeOTA, HWProtocol {
         return try! JSONDecoder().decode(K.self, from: deserialized!)
     }
 
+    func unlock(network: String) -> Observable<Bool> {
+        // Send initial auth user request
+        let epoch = Date().timeIntervalSince1970
+        let cmd = JadeAuthRequest(network: network, epoch: UInt32(epoch))
+        return exchange(JadeRequest<JadeAuthRequest>(method: "auth_user", params: cmd))
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .compactMap { (res: JadeResponse<Bool>) -> Bool in
+                if let result = res.result, result {
+                    return result
+                }
+                throw JadeError.Abort(res.error?.message ?? "Invalid pin")
+            }
+    }
+
     func auth(network: String) -> Observable<Bool> {
         // Send initial auth user request
         let epoch = Date().timeIntervalSince1970
