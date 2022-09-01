@@ -130,7 +130,7 @@ class ReceiveViewController: UIViewController {
     }
 
     func isBipAddress(_ addr: String) -> Bool {
-        return addr.starts(with: "bitcoin:") || addr.starts(with: "liquidnetwork:")
+        return SessionsManager.current?.validBip21Uri(uri: addr) ?? false
     }
 
     @objc func copyToClipboard(_ sender: Any) {
@@ -169,7 +169,10 @@ class ReceiveViewController: UIViewController {
     }
 
     func uriBitcoin(address: String) -> String {
-        let ntwPrefix = (account?.gdkNetwork?.liquid ?? false) ? "liquidnetwork" : "bitcoin"
+        var ntwPrefix = "bitcoin"
+        if let network = account?.gdkNetwork, network.liquid {
+            ntwPrefix = network.mainnet ? "liquidnetwork" :  "liquidtestnet"
+        }
         if satoshi == nil || satoshi == 0 {
             btnEdit.isHidden = true
             return address

@@ -593,4 +593,11 @@ class SessionManager {
             .compactMap { $0?["per_exchange"] as? [String: [String]] }
             .tapLogger()
     }
+
+    func validBip21Uri(uri: String) -> Bool {
+        if let prefix = gdkNetwork.bip21Prefix {
+            return uri.starts(with: prefix)
+        }
+        return false
+    }
 }

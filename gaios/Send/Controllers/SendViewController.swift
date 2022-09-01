@@ -197,7 +197,7 @@ class SendViewController: KeyboardViewController {
 
     func isBipAddress() -> Bool {
         let addressInput: String = recipients.first?.address ?? ""
-        return addressInput.starts(with: "bitcoin:") || addressInput.starts(with: "liquidnetwork:")
+        return SessionsManager.current?.validBip21Uri(uri: addressInput) ?? false
     }
 
     func validateTransaction() {

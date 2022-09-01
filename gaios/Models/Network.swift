@@ -14,6 +14,7 @@ struct GdkNetwork: Codable, Equatable {
         case policyAsset = "policy_asset"
         case serverType = "server_type"
         case csvBuckets = "csv_buckets"
+        case bip21Prefix = "bip21_prefix"
     }
 
     let name: String
@@ -26,6 +27,7 @@ struct GdkNetwork: Codable, Equatable {
     var policyAsset: String?
     var serverType: String?
     var csvBuckets: [Int]?
+    var bip21Prefix: String?
 
     /// Get the asset used to pay transaction fees
     func getFeeAsset() -> String {

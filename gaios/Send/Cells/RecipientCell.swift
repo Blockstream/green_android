@@ -185,24 +185,22 @@ class RecipientCell: UITableViewCell {
 
         btnConvert.isHidden = !(recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset)
 
-        if let address = addressTextView.text {
-            if address.starts(with: "bitcoin:") || address.starts(with: "liquidnetwork:") {
-                btnSendAll.isHidden = true
-                btnConvert.isHidden = true
-                btnPasteAmount.isUserInteractionEnabled = false
-                btnCancelAmount.isUserInteractionEnabled = false
-                btnChooseAsset.isUserInteractionEnabled = false
-                assetBox.alpha = 0.6
-                amountFieldIsEnabled(false)
-            }
-            if inputType == .sweep {
-                lblAvailableFunds.isHidden = true
-                btnSendAll.isHidden = true
-                btnConvert.isHidden = true
-                btnPasteAmount.isUserInteractionEnabled = false
-                btnCancelAmount.isUserInteractionEnabled = false
-                amountFieldIsEnabled(false)
-            }
+        if isBipAddress() {
+            btnSendAll.isHidden = true
+            btnConvert.isHidden = true
+            btnPasteAmount.isUserInteractionEnabled = false
+            btnCancelAmount.isUserInteractionEnabled = false
+            btnChooseAsset.isUserInteractionEnabled = false
+            assetBox.alpha = 0.6
+            amountFieldIsEnabled(false)
+        }
+        if inputType == .sweep {
+            lblAvailableFunds.isHidden = true
+            btnSendAll.isHidden = true
+            btnConvert.isHidden = true
+            btnPasteAmount.isUserInteractionEnabled = false
+            btnCancelAmount.isUserInteractionEnabled = false
+            amountFieldIsEnabled(false)
         }
         if inputType == .bumpFee {
             isUserInteractionEnabled = false
@@ -326,7 +324,7 @@ class RecipientCell: UITableViewCell {
     }
 
     func isBipAddress() -> Bool {
-        return addressTextView.text.starts(with: "bitcoin:") || addressTextView.text.starts(with: "liquidnetwork:")
+        return SessionsManager.current?.validBip21Uri(uri: addressTextView.text) ?? false
     }
 
     @objc func triggerTextChange() {
