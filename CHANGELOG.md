@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.8.7] - 2022-09-01
+
+### Added
+- New About screen with social links
+- Show announcements alerts
+- Add BIP info on account labels
+
+### Fixed
+- Improve ephemeral BIP39 Passphrase based wallets
+- Improve errors during restore
+- Fix Jade login using Emergency Restore
+- Fix BIP21 prefix for liquid testnet
+
 ## [3.8.6] - 2022-07-29
 
 ### Added
