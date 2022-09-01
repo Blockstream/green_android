@@ -189,8 +189,10 @@ struct Account: Codable, Equatable {
     var activeWallet: UInt32 {
         get {
             let pointerKey = String(format: "%@_wallet_pointer", id)
-            let pointer = UserDefaults.standard.integer(forKey: pointerKey)
-            return UInt32(pointer)
+            if UserDefaults.standard.object(forKey: pointerKey) != nil {
+                return UInt32(UserDefaults.standard.integer(forKey: pointerKey))
+            }
+            return UInt32(isSingleSig ?? false ? 1 : 0)
         }
         set {
             let pointerKey = String(format: "%@_wallet_pointer", id)
