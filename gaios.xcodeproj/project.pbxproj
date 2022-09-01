@@ -132,7 +132,6 @@
 		3486AD7227CFC5060013D8FF /* AssetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3486AD7127CFC5060013D8FF /* AssetsList.swift */; };
 		3486ADA027D622EE0013D8FF /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3486AD9F27D622EE0013D8FF /* SliderView.swift */; };
 		349365FB2758C2DD003EC603 /* ManualRestoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349365FA2758C2DD003EC603 /* ManualRestoreViewController.swift */; };
-		34959D3826EF7D8400EAF853 /* OverviewAlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34959D3726EF7D8400EAF853 /* OverviewAlertCardCell.swift */; };
 		34959D3A26F0739700EAF853 /* OverviewAccountIdCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34959D3926F0739700EAF853 /* OverviewAccountIdCell.swift */; };
 		3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3497935325F8B18C0029ECB1 /* OnBoard.storyboard */; };
 		3497936525F8B18C0029ECB1 /* LandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497935525F8B18C0029ECB1 /* LandingViewController.swift */; };
@@ -171,6 +170,7 @@
 		34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */; };
 		34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */; };
 		34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */; };
+		34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */; };
 		34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D12636A12700FB8011 /* HWWCell.swift */; };
 		34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D42636A12700FB8011 /* Enums.swift */; };
 		34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34BAD9D52636A12700FB8011 /* HWW.storyboard */; };
@@ -207,6 +207,8 @@
 		34EB670128212EBA0036D615 /* AMEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670028212EBA0036D615 /* AMEvents.swift */; };
 		34EB6703282138710036D615 /* AMSegmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB6702282138710036D615 /* AMSegmentation.swift */; };
 		34EB670528213A8A0036D615 /* AMConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670428213A8A0036D615 /* AMConstants.swift */; };
+		34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */; };
+		34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */; };
 		34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */; };
 		34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */; };
 		34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F8E7C22823E66C00555F5B /* AMViews.swift */; };
@@ -474,7 +476,6 @@
 		3486AD7127CFC5060013D8FF /* AssetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsList.swift; sourceTree = "<group>"; };
 		3486AD9F27D622EE0013D8FF /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		349365FA2758C2DD003EC603 /* ManualRestoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualRestoreViewController.swift; sourceTree = "<group>"; };
-		34959D3726EF7D8400EAF853 /* OverviewAlertCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewAlertCardCell.swift; sourceTree = "<group>"; };
 		34959D3926F0739700EAF853 /* OverviewAccountIdCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewAccountIdCell.swift; sourceTree = "<group>"; };
 		3497935325F8B18C0029ECB1 /* OnBoard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = OnBoard.storyboard; sourceTree = "<group>"; };
 		3497935525F8B18C0029ECB1 /* LandingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingViewController.swift; sourceTree = "<group>"; };
@@ -514,6 +515,7 @@
 		34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryInstructionViewController.swift; sourceTree = "<group>"; };
 		34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCreateViewController.swift; sourceTree = "<group>"; };
 		34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerifyViewController.swift; sourceTree = "<group>"; };
+		34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAlertManager.swift; sourceTree = "<group>"; };
 		34BAD9D12636A12700FB8011 /* HWWCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWCell.swift; sourceTree = "<group>"; };
 		34BAD9D42636A12700FB8011 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		34BAD9D52636A12700FB8011 /* HWW.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HWW.storyboard; sourceTree = "<group>"; };
@@ -550,6 +552,8 @@
 		34EB670028212EBA0036D615 /* AMEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMEvents.swift; sourceTree = "<group>"; };
 		34EB6702282138710036D615 /* AMSegmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMSegmentation.swift; sourceTree = "<group>"; };
 		34EB670428213A8A0036D615 /* AMConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMConstants.swift; sourceTree = "<group>"; };
+		34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertCardCell.swift; sourceTree = "<group>"; };
+		34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AlertCardCell.xib; sourceTree = "<group>"; };
 		34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDeleteViewController.swift; sourceTree = "<group>"; };
 		34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWalletViewController.swift; sourceTree = "<group>"; };
 		34F8E7C22823E66C00555F5B /* AMViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMViews.swift; sourceTree = "<group>"; };
@@ -1137,6 +1141,7 @@
 				819DFBA726038E800022BD85 /* AccountsManager.swift */,
 				816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */,
 				81C2D3BC2845184000F45CB9 /* TorSessionManager.swift */,
+				34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1564,8 +1569,9 @@
 				34C3020526E7659000A3F910 /* OverviewAccountCell.swift */,
 				34FC83A226EA66B10087EE8B /* OverviewAssetCell.swift */,
 				34C3022726E88A1D00A3F910 /* OverviewTransactionCell.swift */,
-				34959D3726EF7D8400EAF853 /* OverviewAlertCardCell.swift */,
 				34959D3926F0739700EAF853 /* OverviewAccountIdCell.swift */,
+				34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */,
+				34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -1756,6 +1762,7 @@
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
+				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				349D1ED927424F200095B5CA /* Transaction.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
@@ -1914,7 +1921,6 @@
 				3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */,
 				3418BAB6274285BD00F9B2D0 /* TransactionFeeCell.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
-				34959D3826EF7D8400EAF853 /* OverviewAlertCardCell.swift in Sources */,
 				34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */,
 				34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
@@ -1948,6 +1954,7 @@
 				34440E7A28B379C8006CD464 /* WalletListHDCell.swift in Sources */,
 				34959D3A26F0739700EAF853 /* OverviewAccountIdCell.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
+				34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */,
 				34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */,
 				81097AD62889925600E48A2B /* AssetsManagerLiquid.swift in Sources */,
 				6D2A613623302694008C518A /* UIImage.swift in Sources */,
@@ -2121,6 +2128,7 @@
 				34C3022826E88A1D00A3F910 /* OverviewTransactionCell.swift in Sources */,
 				81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */,
 				81683F9226BC02960058982E /* Transactions.swift in Sources */,
+				34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

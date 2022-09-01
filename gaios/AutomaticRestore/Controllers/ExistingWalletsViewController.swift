@@ -9,6 +9,11 @@ enum FailingState {
     case invalid
 }
 
+enum ExistingWalletSection: Int, CaseIterable {
+    case remoteAlerts = 0
+    case wallet = 1
+}
+
 struct ExistingWallet {
     let isSingleSig: Bool
     let failure: FailingState?
@@ -28,6 +33,8 @@ class ExistingWalletsViewController: UIViewController {
     var mnemonic = ""
     var mnemonicPassword = ""
 
+    private var remoteAlert: RemoteAlert?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -42,7 +49,28 @@ class ExistingWalletsViewController: UIViewController {
 
         checkWallets()
 
+        tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
+
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .onBoardScan, network: AccountsManager.shared.current?.network)
+
         AnalyticsManager.shared.recordView(.onBoardScan, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
+    }
+
+    func remoteAlertDismiss() {
+        remoteAlert = nil
+        reloadSections([ExistingWalletSection.remoteAlerts], animated: true)
+    }
+
+    func reloadSections(_ sections: [ExistingWalletSection], animated: Bool) {
+        DispatchQueue.main.async {
+            if animated {
+                self.tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+            } else {
+                UIView.performWithoutAnimation {
+                    self.tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+                }
+            }
+        }
     }
 
     func setContent() {
@@ -112,20 +140,53 @@ class ExistingWalletsViewController: UIViewController {
 
 extension ExistingWalletsViewController: UITableViewDelegate, UITableViewDataSource {
 
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return ExistingWalletSection.allCases.count
+    }
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return wallets.count
+
+        switch section {
+        case ExistingWalletSection.remoteAlerts.rawValue:
+            return self.remoteAlert != nil ? 1 : 0
+        case ExistingWalletSection.wallet.rawValue:
+            return wallets.count
+        default:
+            return 0
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "ExistingWalletCell") as? ExistingWalletCell {
-            cell.configure(wallets[indexPath.row])
-            cell.selectionStyle = .none
-            return cell
+        switch indexPath.section {
+        case ExistingWalletSection.remoteAlerts.rawValue:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
+                cell.configure(AlertCardType.remoteAlert(remoteAlert),
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: {[weak self] in
+                                 self?.remoteAlertDismiss()
+                    },
+                               onLink: { [weak self] in
+                    if let url = URL(string: self?.remoteAlert?.link ?? "") {
+                        UIApplication.shared.open(url)
+                    }
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case ExistingWalletSection.wallet.rawValue:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "ExistingWalletCell") as? ExistingWalletCell {
+                cell.configure(wallets[indexPath.row])
+                cell.selectionStyle = .none
+                return cell
+            }
+        default:
+            break
         }
 
         return UITableViewCell()

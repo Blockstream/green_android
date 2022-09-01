@@ -20,6 +20,16 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var lblWalletLockHint1: UILabel!
     @IBOutlet weak var lblWalletLockHint2: UILabel!
     @IBOutlet weak var btnWalletLock: UIButton!
+
+    @IBOutlet weak var alertCard: UIView!
+    @IBOutlet weak var alertTitle: UILabel!
+    @IBOutlet weak var alertHint: UILabel!
+    @IBOutlet weak var alertIconWarn: UIImageView!
+    @IBOutlet weak var alertBtnDismiss: UIButton!
+    @IBOutlet weak var alertBtnLink: UIButton!
+
+    private var remoteAlert: RemoteAlert?
+
     var account: Account!
 
     private var pinCode = ""
@@ -65,6 +75,24 @@ class LoginViewController: UIViewController {
         setContent()
         setStyle()
 
+        alertCard.isHidden = true
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .login, network: nil)
+        if remoteAlert != nil {
+            alertCard.isHidden = false
+            alertTitle.text = remoteAlert?.title
+            alertHint.text = remoteAlert?.message
+            alertTitle.isHidden = remoteAlert?.title?.isEmpty ?? true
+            alertHint.isHidden = remoteAlert?.message?.isEmpty ?? true
+            alertIconWarn.isHidden = !(remoteAlert?.isWarning ?? false)
+            alertBtnDismiss.isHidden = !(remoteAlert?.dismissable ?? false)
+            alertBtnLink.isHidden = true
+            if remoteAlert?.link != nil {
+                if URL(string: remoteAlert?.link ?? "") != nil {
+                    alertBtnLink.isHidden = false
+                }
+            }
+        }
+
         view.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.view
         navigationItem.leftBarButtonItem?.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.backBtn
         menuButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.menuBtn
@@ -89,6 +117,7 @@ class LoginViewController: UIViewController {
 
     func setStyle() {
         btnWalletLock.setStyle(.primary)
+        alertCard.layer.cornerRadius = 6.0
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -385,6 +414,15 @@ class LoginViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 
+    @IBAction func alertDismiss(_ sender: Any) {
+        alertCard.isHidden = true
+    }
+
+    @IBAction func alertLink(_ sender: Any) {
+        if let url = URL(string: self.remoteAlert?.link ?? "") {
+            UIApplication.shared.open(url)
+        }
+    }
 }
 
 extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {

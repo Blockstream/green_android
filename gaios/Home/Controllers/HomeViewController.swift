@@ -1,5 +1,13 @@
 import UIKit
 
+enum HomeSection: Int, CaseIterable {
+    case remoteAlerts = 0
+    case swWallet = 1
+    case ephWallet = 2
+    case hwWallet = 3
+    case device = 4
+}
+
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
@@ -8,6 +16,8 @@ class HomeViewController: UIViewController {
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
+
+    private var remoteAlert: RemoteAlert?
 
     private var ephAccounts: [Account] {
         AccountsManager.shared.ephAccounts.filter { account in
@@ -27,6 +37,9 @@ class HomeViewController: UIViewController {
         tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
         tableView.register(UINib(nibName: "WalletListHDCell", bundle: nil), forCellReuseIdentifier: "WalletListHDCell")
         tableView.register(UINib(nibName: "WalletListEmptyCell", bundle: nil), forCellReuseIdentifier: "WalletListEmptyCell")
+        tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
+
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .home, network: nil)
 
         AnalyticsManager.shared.recordView(.home)
         AnalyticsManager.shared.appLoadingFinished()
@@ -57,6 +70,17 @@ class HomeViewController: UIViewController {
         AccountNavigator.goHWLogin(isJade: account.isJade)
     }
 
+    func remoteAlertDismiss() {
+        remoteAlert = nil
+        tableView.reloadData()
+    }
+
+    func remoteAlertLink() {
+        if let url = URL(string: self.remoteAlert?.link ?? "") {
+            UIApplication.shared.open(url)
+        }
+    }
+
     @objc func didPressAddWallet() {
         AccountNavigator.goCreateRestore()
     }
@@ -72,19 +96,21 @@ class HomeViewController: UIViewController {
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return HomeSection.allCases.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         switch section {
-        case 0:
+        case HomeSection.remoteAlerts.rawValue:
+            return remoteAlert != nil ? 1 : 0
+        case HomeSection.swWallet.rawValue:
             return AccountsManager.shared.swAccounts.count == 0 ? 1 : AccountsManager.shared.swAccounts.count
-        case 1:
+        case HomeSection.ephWallet.rawValue:
             return ephAccounts.count
-        case 2:
+        case HomeSection.hwWallet.rawValue:
             return AccountsManager.shared.hwAccounts.count
-        case 3:
+        case HomeSection.device.rawValue:
             return AccountsManager.shared.devices.count
         default:
             return 0
@@ -94,7 +120,22 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         switch indexPath.section {
-        case 0:
+
+        case HomeSection.remoteAlerts.rawValue:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
+                cell.configure(AlertCardType.remoteAlert(remoteAlert),
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: {[weak self] in
+                    self?.remoteAlertDismiss()
+                },
+                               onLink: { [weak self] in
+                    self?.remoteAlertLink()
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case HomeSection.swWallet.rawValue:
             if AccountsManager.shared.swAccounts.count == 0 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListEmptyCell") as? WalletListEmptyCell {
                     cell.configure(NSLocalizedString("id_it_looks_like_you_have_no", comment: ""), UIImage(named: "ic_logo_green")!)
@@ -115,7 +156,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                     return cell
                 }
             }
-        case 1: /// EPHEMERAL
+        case HomeSection.ephWallet.rawValue:
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
@@ -128,7 +169,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case 2:
+        case HomeSection.hwWallet.rawValue:
             let account = AccountsManager.shared.hwAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
@@ -141,7 +182,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case 3:
+        case HomeSection.device.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListHDCell") as? WalletListHDCell {
                 let hw = AccountsManager.shared.devices[indexPath.row]
                 let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
@@ -157,10 +198,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 1 && ephAccounts.isEmpty {
+        if section == HomeSection.ephWallet.rawValue && ephAccounts.isEmpty {
             return 0.1
         }
-        if section == 2 && AccountsManager.shared.hwAccounts.isEmpty {
+        if section == HomeSection.hwWallet.rawValue && AccountsManager.shared.hwAccounts.isEmpty {
+            return 0.1
+        }
+        if section == HomeSection.remoteAlerts.rawValue {
             return 0.1
         }
         return headerH
@@ -168,7 +212,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch section {
-        case 0:
+        case HomeSection.swWallet.rawValue:
             return footerH
         default:
             return 0.1
@@ -181,19 +225,21 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
-        case 0:
+        case HomeSection.remoteAlerts.rawValue:
+            return nil
+        case HomeSection.swWallet.rawValue:
             return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
-        case 1:
+        case HomeSection.ephWallet.rawValue:
             if ephAccounts.isEmpty {
                 return UIView()
             }
             return headerView(NSLocalizedString("id_ephemeral_wallets", comment: "").uppercased())
-        case 2:
+        case HomeSection.hwWallet.rawValue:
             if AccountsManager.shared.hwAccounts.isEmpty {
                 return UIView()
             }
             return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
-        case 3:
+        case HomeSection.device.rawValue:
             return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
         default:
             return nil
@@ -202,7 +248,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch section {
-        case 0:
+        case HomeSection.swWallet.rawValue:
             return footerView(NSLocalizedString("id_add_wallet", comment: ""))
         default:
             return nil
@@ -211,20 +257,22 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 0:
+        case HomeSection.remoteAlerts.rawValue:
+            break
+        case HomeSection.swWallet.rawValue:
             if AccountsManager.shared.swAccounts.count > 0 {
                 let account = AccountsManager.shared.swAccounts[indexPath.row]
                 enterWallet(account)
             }
-        case 1:
+        case HomeSection.ephWallet.rawValue:
             let account = ephAccounts[indexPath.row]
             enterWallet(account)
-        case 2:
+        case HomeSection.hwWallet.rawValue:
             if AccountsManager.shared.hwAccounts.count > 0 {
                 let account = AccountsManager.shared.hwAccounts[indexPath.row]
                 enterWallet(account)
             }
-        case 3:
+        case HomeSection.device.rawValue:
             showHardwareWallet(indexPath.row)
         default:
             break

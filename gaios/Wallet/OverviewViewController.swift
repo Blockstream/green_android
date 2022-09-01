@@ -90,6 +90,8 @@ class OverviewViewController: UIViewController {
     private var analyticsDone = false
     private var isLoading = false
 
+    private var remoteAlert: RemoteAlert?
+
     // first load
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,6 +102,10 @@ class OverviewViewController: UIViewController {
         tableView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.view
         sendView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.sendView
         receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
+
+        tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
+
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: account?.gdkNetwork?.network)
 
         startAnimating()
         AnalyticsManager.shared.recordView(.overview, sgmt: AnalyticsManager.shared.sessSgmt(account))
@@ -262,6 +268,9 @@ class OverviewViewController: UIViewController {
             // Price provider not available
             cards.append(AlertCardType.fiatMissing)
         }
+        if let remoteAlert = remoteAlert {
+            cards.append(AlertCardType.remoteAlert(remoteAlert))
+        }
         self.alertCards = cards
         self.reloadSections([OverviewSection.card], animated: false)
 
@@ -281,6 +290,12 @@ class OverviewViewController: UIViewController {
         }.catch { err in
             print(err.localizedDescription)
         }
+    }
+
+    // dismiss remote alert
+    func remoteAlertDismiss() {
+        remoteAlert = nil
+        reloadAlertCards()
     }
 
     // tableview refresh gesture
@@ -592,7 +607,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
         case .card:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAlertCardCell", for: indexPath) as? OverviewAlertCardCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
                 let alertCard = alertCards[indexPath.row]
                 switch alertCard {
                 case .reset, .dispute, .reactivate:
@@ -602,25 +617,47 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                     },
                                    onRight: {[weak self] in
                         self?.performSegue(withIdentifier: "overviewLeaarnMore2fa", sender: self)
-                    })
+                    },
+                                   onDismiss: nil,
+                                   onLink: nil)
                 case .systemMessage(let text):
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
                                    onRight: {[weak self] in
                         self?.systemMessageScreen(text: text)
-                    })
+                    },
+                                   onDismiss: nil,
+                                   onLink: nil)
                 case .fiatMissing:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
-                                   onRight: nil)
+                                   onRight: nil,
+                                   onDismiss: nil,
+                                   onLink: nil)
                 case .testnetNoValue:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
-                                   onRight: nil)
+                                   onRight: nil,
+                                   onDismiss: nil,
+                                   onLink: nil)
                 case .ephemeralWallet:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
-                                   onRight: nil)
+                                   onRight: nil,
+                                   onDismiss: nil,
+                                   onLink: nil)
+                case .remoteAlert:
+                    cell.configure(alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: {[weak self] in
+                        self?.remoteAlertDismiss()
+                    },
+                                   onLink: { [weak self] in
+                        if let url = URL(string: self?.remoteAlert?.link ?? "") {
+                            UIApplication.shared.open(url)
+                        }
+                    })
                 }
                 cell.selectionStyle = .none
                 return cell

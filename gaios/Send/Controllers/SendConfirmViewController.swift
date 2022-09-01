@@ -5,10 +5,11 @@ import PromiseKit
 class SendConfirmViewController: KeyboardViewController {
 
     enum SendConfirmSection: Int, CaseIterable {
-        case addressee = 0
-        case fee = 1
-        case change = 2
-        case note = 3
+        case remoteAlerts = 0
+        case addressee = 1
+        case fee = 2
+        case change = 3
+        case note = 4
     }
 
     @IBOutlet weak var tableView: UITableView!
@@ -21,6 +22,8 @@ class SendConfirmViewController: KeyboardViewController {
     var inputType: InputType = .transaction // for analytics
     var addressInputType: AnalyticsManager.AddressInputType = .paste // for analytics
 
+    private var remoteAlert: RemoteAlert?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -31,6 +34,10 @@ class SendConfirmViewController: KeyboardViewController {
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.view
         sliderView.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.viewSlider
+
+        tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
+
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: AccountsManager.shared.current?.network)
 
         AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
@@ -47,6 +54,11 @@ class SendConfirmViewController: KeyboardViewController {
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
+    }
+
+    func remoteAlertDismiss() {
+        remoteAlert = nil
+        reloadSections([SendConfirmSection.remoteAlerts], animated: true)
     }
 
     func reloadSections(_ sections: [SendConfirmSection], animated: Bool) {
@@ -183,6 +195,8 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         switch section {
+        case SendConfirmSection.remoteAlerts.rawValue:
+            return self.remoteAlert != nil ? 1 : 0
         case SendConfirmSection.addressee.rawValue:
             return transaction?.addressees.count ?? 0
         case SendConfirmSection.fee.rawValue:
@@ -199,6 +213,22 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         switch indexPath.section {
+        case SendConfirmSection.remoteAlerts.rawValue:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
+                cell.configure(AlertCardType.remoteAlert(remoteAlert),
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: {[weak self] in
+                                 self?.remoteAlertDismiss()
+                    },
+                               onLink: { [weak self] in
+                    if let url = URL(string: self?.remoteAlert?.link ?? "") {
+                        UIApplication.shared.open(url)
+                    }
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
         case SendConfirmSection.addressee.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AddresseeCell") as? AddresseeCell, let tx = transaction {
                 cell.configure(transaction: tx, index: indexPath.row)

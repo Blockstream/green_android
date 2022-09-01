@@ -5,9 +5,10 @@ import PromiseKit
 class SendViewController: KeyboardViewController {
 
     enum SendSection: Int, CaseIterable {
-        case recipient = 0
-        case addRecipient = 1
-        case fee = 2
+        case remoteAlerts = 0
+        case recipient = 1
+        case addRecipient = 2
+        case fee = 3
     }
 
     @IBOutlet weak var tableView: UITableView!
@@ -64,6 +65,8 @@ class SendViewController: KeyboardViewController {
         return settings.transactionPriority
     }()
 
+    private var remoteAlert: RemoteAlert?
+
     func selectedFee() -> Int {
         switch transactionPriority {
         case .High:
@@ -98,8 +101,12 @@ class SendViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
 
+        tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
+
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .send, network: AccountsManager.shared.current?.network)
+
         AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
-         AnalyticsManager.shared.startSendTransaction()
+        AnalyticsManager.shared.startSendTransaction()
     }
 
     func setContent() {
@@ -302,6 +309,11 @@ class SendViewController: KeyboardViewController {
         }
     }
 
+    func remoteAlertDismiss() {
+        remoteAlert = nil
+        reloadSections([SendSection.remoteAlerts], animated: true)
+    }
+
     @IBAction func btnNext(_ sender: Any) {
         onTransactionReady()
     }
@@ -316,6 +328,8 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         switch section {
+        case SendSection.remoteAlerts.rawValue:
+            return self.remoteAlert != nil ? 1 : 0
         case SendSection.recipient.rawValue:
             return recipients.count
         case SendSection.addRecipient.rawValue:
@@ -330,6 +344,22 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         switch indexPath.section {
+        case SendSection.remoteAlerts.rawValue:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
+                cell.configure(AlertCardType.remoteAlert(remoteAlert),
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: {[weak self] in
+                                 self?.remoteAlertDismiss()
+                    },
+                               onLink: { [weak self] in
+                    if let url = URL(string: self?.remoteAlert?.link ?? "") {
+                        UIApplication.shared.open(url)
+                    }
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
         case SendSection.recipient.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "RecipientCell") as? RecipientCell {
                 cell.configure(recipient: recipients[indexPath.row],

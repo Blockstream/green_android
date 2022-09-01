@@ -8,9 +8,10 @@ enum AlertCardType {
     case fiatMissing
     case testnetNoValue
     case ephemeralWallet
+    case remoteAlert(RemoteAlert)
 }
 
-class OverviewAlertCardCell: UITableViewCell {
+class AlertCardCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblTitle: UILabel!
@@ -18,10 +19,16 @@ class OverviewAlertCardCell: UITableViewCell {
     @IBOutlet weak var btnRight: UIButton!
     @IBOutlet weak var btnLeft: UIButton!
     @IBOutlet weak var btnsContainer: UIView!
+    @IBOutlet weak var iconWarn: UIImageView!
+    @IBOutlet weak var btnDismiss: UIButton!
+    @IBOutlet weak var btnLink: UIButton!
+
     var type: AlertCardType?
 
     var onLeft:(() -> Void)?
     var onRight:(() -> Void)?
+    var onDismiss:(() -> Void)?
+    var onLink:(() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,15 +42,27 @@ class OverviewAlertCardCell: UITableViewCell {
         btnsContainer.isHidden = false
         btnRight.isHidden = false
         btnLeft.isHidden = false
+        btnLink.isHidden = true
     }
 
-    func configure(_ type: AlertCardType, onLeft:(() -> Void)?, onRight:(() -> Void)?) {
+    func configure(_ type: AlertCardType,
+                   onLeft:(() -> Void)?,
+                   onRight:(() -> Void)?,
+                   onDismiss:(() -> Void)?,
+                   onLink:(() -> Void)?) {
         self.type = type
         self.backgroundColor = UIColor.customTitaniumDark()
         bg.layer.cornerRadius = 6.0
+
         self.onLeft = onLeft
         self.onRight = onRight
+        self.onDismiss = onDismiss
+        self.onLink = onLink
+
         btnsContainer.isHidden = false
+        iconWarn.isHidden = true
+        btnDismiss.isHidden = true
+        btnLink.isHidden = true
 
         switch type {
         case .reset(let resetDaysRemaining):
@@ -85,6 +104,25 @@ class OverviewAlertCardCell: UITableViewCell {
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
+        case .remoteAlert(let remoteAlert):
+            lblTitle.text = remoteAlert.title
+            lblHint.text = remoteAlert.message
+            lblTitle.isHidden = remoteAlert.title?.isEmpty ?? true
+            lblHint.isHidden = remoteAlert.message?.isEmpty ?? true
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
+            if remoteAlert.isWarning ?? false {
+                iconWarn.isHidden = false
+            }
+            if remoteAlert.dismissable ?? false {
+                btnDismiss.isHidden = false
+            }
+            if remoteAlert.link != nil {
+                if URL(string: remoteAlert.link ?? "") != nil {
+                    btnLink.isHidden = false
+                }
+            }
         }
     }
 
@@ -94,5 +132,12 @@ class OverviewAlertCardCell: UITableViewCell {
 
     @IBAction func btnLeft(_ sender: Any) {
         onLeft?()
+    }
+
+    @IBAction func onDismiss(_ sender: Any) {
+        onDismiss?()
+    }
+    @IBAction func onBtnLink(_ sender: Any) {
+        onLink?()
     }
 }

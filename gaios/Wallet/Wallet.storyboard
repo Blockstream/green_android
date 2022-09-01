@@ -742,94 +742,8 @@
                                             <outlet property="lblTitle" destination="RtK-Sv-5he" id="ubt-BP-Smh"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="OverviewAlertCardCell" rowHeight="192" id="Byy-r9-Y4n" customClass="OverviewAlertCardCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="235.5" width="414" height="192"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Byy-r9-Y4n" id="V2k-u8-Ewy">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="192"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o0Q-H8-CGz">
-                                                    <rect key="frame" x="20" y="10" width="374" height="172"/>
-                                                    <subviews>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="mRM-6V-wNr">
-                                                            <rect key="frame" x="22" y="20" width="330" height="132"/>
-                                                            <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b9X-f1-bhU">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="330" height="21.5"/>
-                                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
-                                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="lbl_hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6g6-95-G7H">
-                                                                    <rect key="frame" x="0.0" y="31.5" width="330" height="46.5"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
-                                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z0Z-OR-v0J">
-                                                                    <rect key="frame" x="0.0" y="88" width="330" height="44"/>
-                                                                    <subviews>
-                                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b5o-3A-IIp">
-                                                                            <rect key="frame" x="210" y="7" width="120" height="30"/>
-                                                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
-                                                                            <state key="normal" title="btn_action_right">
-                                                                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                            </state>
-                                                                            <connections>
-                                                                                <action selector="btnRight:" destination="Byy-r9-Y4n" eventType="touchUpInside" id="jkF-zg-gLh"/>
-                                                                            </connections>
-                                                                        </button>
-                                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PbE-uu-Cis">
-                                                                            <rect key="frame" x="85" y="7" width="105" height="30"/>
-                                                                            <state key="normal" title="btn_action_left">
-                                                                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                            </state>
-                                                                            <connections>
-                                                                                <action selector="btnLeft:" destination="Byy-r9-Y4n" eventType="touchUpInside" id="s7A-bt-6EC"/>
-                                                                            </connections>
-                                                                        </button>
-                                                                    </subviews>
-                                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                    <constraints>
-                                                                        <constraint firstAttribute="trailing" secondItem="b5o-3A-IIp" secondAttribute="trailing" id="3Jk-px-JBv"/>
-                                                                        <constraint firstAttribute="height" constant="44" id="AhT-AE-g6A"/>
-                                                                        <constraint firstItem="PbE-uu-Cis" firstAttribute="centerY" secondItem="Z0Z-OR-v0J" secondAttribute="centerY" id="cu9-aB-yfV"/>
-                                                                        <constraint firstItem="b5o-3A-IIp" firstAttribute="leading" secondItem="PbE-uu-Cis" secondAttribute="trailing" constant="20" id="dqd-mp-hM2"/>
-                                                                        <constraint firstItem="b5o-3A-IIp" firstAttribute="centerY" secondItem="Z0Z-OR-v0J" secondAttribute="centerY" id="weH-OJ-aeg"/>
-                                                                    </constraints>
-                                                                </view>
-                                                            </subviews>
-                                                        </stackView>
-                                                    </subviews>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="trailing" secondItem="mRM-6V-wNr" secondAttribute="trailing" constant="22" id="3qi-jg-ygc"/>
-                                                        <constraint firstItem="mRM-6V-wNr" firstAttribute="leading" secondItem="o0Q-H8-CGz" secondAttribute="leading" constant="22" id="IPa-Ja-YqX"/>
-                                                        <constraint firstItem="mRM-6V-wNr" firstAttribute="top" secondItem="o0Q-H8-CGz" secondAttribute="top" constant="20" symbolic="YES" id="N7e-3M-aSG"/>
-                                                        <constraint firstAttribute="bottom" secondItem="mRM-6V-wNr" secondAttribute="bottom" constant="20" id="qT1-gG-fTl"/>
-                                                    </constraints>
-                                                </view>
-                                            </subviews>
-                                            <color key="backgroundColor" name="customTitaniumDark"/>
-                                            <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="o0Q-H8-CGz" secondAttribute="trailing" constant="20" id="UMn-CT-Zdx"/>
-                                                <constraint firstItem="o0Q-H8-CGz" firstAttribute="top" secondItem="V2k-u8-Ewy" secondAttribute="top" constant="10" id="a2X-LX-BGT"/>
-                                                <constraint firstItem="o0Q-H8-CGz" firstAttribute="leading" secondItem="V2k-u8-Ewy" secondAttribute="leading" constant="20" id="bL2-oU-sZm"/>
-                                                <constraint firstAttribute="bottom" secondItem="o0Q-H8-CGz" secondAttribute="bottom" constant="10" id="kp8-Rb-R1g"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="bg" destination="o0Q-H8-CGz" id="pdg-Px-QKd"/>
-                                            <outlet property="btnLeft" destination="PbE-uu-Cis" id="MK3-kr-VIV"/>
-                                            <outlet property="btnRight" destination="b5o-3A-IIp" id="hpe-Dx-CW8"/>
-                                            <outlet property="btnsContainer" destination="Z0Z-OR-v0J" id="PDg-V5-iy2"/>
-                                            <outlet property="lblHint" destination="6g6-95-G7H" id="mtA-E5-gP3"/>
-                                            <outlet property="lblTitle" destination="b9X-f1-bhU" id="dzc-1C-I5J"/>
-                                        </connections>
-                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="OverviewAssetCell" rowHeight="95" id="ILL-KW-FLd" customClass="OverviewAssetCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="427.5" width="414" height="95"/>
+                                        <rect key="frame" x="0.0" y="235.5" width="414" height="95"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ILL-KW-FLd" id="h6j-rj-rXQ">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="95"/>
@@ -911,7 +825,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="OverviewTransactionCell" rowHeight="84" id="FAV-bn-sNB" customClass="OverviewTransactionCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="522.5" width="414" height="84"/>
+                                        <rect key="frame" x="0.0" y="330.5" width="414" height="84"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="FAV-bn-sNB" id="DAG-hb-g4c">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="84"/>
