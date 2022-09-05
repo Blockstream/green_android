@@ -1,6 +1,6 @@
 import Foundation
 
-struct RemoteAlert {
+struct RemoteAlert: Decodable {
     var dismissable: Bool?
     var isWarning: Bool?
     var link: String?
@@ -9,33 +9,20 @@ struct RemoteAlert {
     var screens: [String]?
     var title: String?
 
-    init(_ dic: [String: Any]) {
-
-        let dismissable: Bool? = dic["dismissable"] as? Bool
-        let isWarning: Bool? = dic["is_warning"] as? Bool
-        let message: String? = dic["message"] as? String
-        let networks: [String]? = dic["networks"] as? [String]
-        let screens: [String]? = dic["screens"] as? [String]
-        let title: String? = dic["title"] as? String
-        let link: String? = dic["link"] as? String
-
-        self.dismissable = dismissable
-        self.isWarning = isWarning
-        self.message = message
-        self.networks = networks
-        self.screens = screens
-        self.title = title
-        self.link = link
+    enum CodingKeys: String, CodingKey {
+        case dismissable
+        case isWarning = "is_warning"
+        case link
+        case message
+        case networks
+        case screens
+        case title
     }
 
-    static func decode(_ banners: [Any]) -> [RemoteAlert] {
-        var remoteAlerts: [RemoteAlert] = []
-        banners.forEach { item in
-            if let dic = item as? [String: Any] {
-                remoteAlerts.append(RemoteAlert(dic))
-            }
-        }
-        return remoteAlerts
+    static func getList(_ banners: [Any]) -> [RemoteAlert] {
+        let json = try? JSONSerialization.data(withJSONObject: banners, options: [])
+        let alerts = try? JSONDecoder().decode([RemoteAlert].self, from: json ?? Data())
+        return alerts ?? []
     }
 }
 
@@ -45,7 +32,7 @@ class RemoteAlertManager {
 
     var remoteAlerts: [RemoteAlert] {
         if let banners: [Any] = AnalyticsManager.shared.getRemoteConfigValue(key: Constants.countlyRemoteConfigBanners) as? [Any] {
-            return RemoteAlert.decode(banners)
+            return RemoteAlert.getList(banners)
         }
         return []
     }
@@ -65,7 +52,14 @@ class RemoteAlertManager {
                 if let networks = item.networks {
                     return networks.contains( network )
                 }
-                return true
+                return false
+            }
+        } else {
+            alerts = alerts.filter { item in
+                if item.networks?.isEmpty ?? true {
+                    return true
+                }
+                return false
             }
         }
         alerts.shuffle()

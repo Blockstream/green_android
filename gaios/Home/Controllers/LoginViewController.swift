@@ -76,7 +76,7 @@ class LoginViewController: UIViewController {
         setStyle()
 
         alertCard.isHidden = true
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .login, network: nil)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .login, network: account.networkName)
         if remoteAlert != nil {
             alertCard.isHidden = false
             alertTitle.text = remoteAlert?.title

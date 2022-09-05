@@ -105,7 +105,7 @@ class OverviewViewController: UIViewController {
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: account?.gdkNetwork?.network)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountsManager.shared.current?.networkName)
 
         startAnimating()
         AnalyticsManager.shared.recordView(.overview, sgmt: AnalyticsManager.shared.sessSgmt(account))

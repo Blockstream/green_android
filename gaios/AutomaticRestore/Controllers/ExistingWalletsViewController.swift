@@ -51,7 +51,7 @@ class ExistingWalletsViewController: UIViewController {
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .onBoardScan, network: AccountsManager.shared.current?.network)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .onBoardScan, network: nil)
 
         AnalyticsManager.shared.recordView(.onBoardScan, sgmt: AnalyticsManager.shared.onBoardSgmt(onBoardParams: OnBoardManager.shared.params, flow: AnalyticsManager.OnBoardFlow.strRestore))
     }
