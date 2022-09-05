@@ -41,6 +41,7 @@ class HomeViewController: UIViewController {
 
         self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .home, network: nil)
 
+        AnalyticsManager.shared.delegate = self
         AnalyticsManager.shared.recordView(.home)
         AnalyticsManager.shared.appLoadingFinished()
     }
@@ -337,5 +338,14 @@ extension HomeViewController {
         section.addGestureRecognizer(tapGesture)
         section.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.addWalletView
         return section
+    }
+}
+
+extension HomeViewController: AnalyticsManagerDelegate {
+    func remoteConfigIsReady() {
+        DispatchQueue.main.async {
+            self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .home, network: nil)
+            self.tableView.reloadData()
+        }
     }
 }

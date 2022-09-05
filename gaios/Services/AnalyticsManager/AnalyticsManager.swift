@@ -7,6 +7,10 @@ enum AnalyticsConsent: Int {
     case authorized
 }
 
+protocol AnalyticsManagerDelegate: AnyObject {
+    func remoteConfigIsReady()
+}
+
 class AnalyticsManager {
 
     static let shared = AnalyticsManager()
@@ -97,6 +101,8 @@ class AnalyticsManager {
         }
     }
 
+    weak var delegate: AnalyticsManagerDelegate?
+
     func secureRandom(max: Int) -> UInt {
         // SystemRandomNumberGenerator is automatically seeded, is safe to use in multiple threads
         // and uses a cryptographically secure algorithm whenever possible.
@@ -128,6 +134,18 @@ class AnalyticsManager {
         }
         config.urlSessionConfiguration = getSessionConfiguration()
 
+        if consent == .notDetermined {
+            config.consents = deniedGroup
+        }
+
+        config.remoteConfigCompletionHandler = { error in
+            if error == nil {
+                print("Remote Config is ready to use!")
+                self.delegate?.remoteConfigIsReady()
+            } else {
+                print("There was an error while fetching Remote Config:\n\(error!.localizedDescription)")
+            }
+        }
         Countly.sharedInstance().start(with: config)
 
         giveConsent(previous: consent)
