@@ -6,23 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [3.8.7] - 2022-09-06
 
 ### Added
-- Enable OTP feature on Jade
+- Enable OTP feature on Jade starting from version 0.1.37
 - Enable Emergency Restore on Jade
-- Add Apple Store inapp rating
-- Enable Bip21 uri for liquid testnet
-- Show announcements alerts
+- Prompt users for app review
 
 ### Changed
-- Update labels on app settings
-- Update visibility of network notification bar
-- Change Transaction address wording 
-- Improved ephemeral wallets identification
+- Improved BIP39 wallets support
 - Updated accounts naming
 
 ### Fixed
-- Improved reload transactions
-- Improved failure messages on watch-only setup
-- Improved reconnection on background and foreground
+- Improved transactions reloading
+- Improved error messages for watch-only setup
+- Fixes for reconnection
 
 ## [3.8.6] - 2022-08-03
 
