@@ -14,6 +14,7 @@ enum AnalyticsEventName: String {
     case failedWalletLogin = "failed_wallet_login"
     case failedRecoveryPhraseCheck = "failed_recovery_phrase_check"
     case failedTransaction = "failed_transaction"
+    case appReview = "app_review"
 }
 
 extension AnalyticsManager {
@@ -150,6 +151,12 @@ extension AnalyticsManager {
         if var s = ntwSgmt(onBoardParams) {
             s[AnalyticsManager.strPage] = "\(page)"
             recordEvent(.failedRecoveryPhraseCheck, sgmt: s)
+        }
+    }
+
+    func appReview(account: Account?, walletType: AccountType?) {
+        if let s = subAccSeg(account, walletType: walletType) {
+            recordEvent(.appReview, sgmt: s)
         }
     }
 }

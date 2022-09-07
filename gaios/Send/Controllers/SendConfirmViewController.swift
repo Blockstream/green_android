@@ -159,13 +159,15 @@ class SendConfirmViewController: KeyboardViewController {
                                transactionSgmt: transSgmt, withMemo: withMemo)
 
         self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
-            self.stopAnimating()
-            self.navigationController?.popToRootViewController(animated: true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) { [weak self] in
+            self?.stopAnimating()
+            self?.navigationController?.popToRootViewController(animated: true)
 
             StoreReviewHelper
                 .shared
-                .request(isSendAll: isSendAll)
+                .request(isSendAll: isSendAll,
+                         account: AccountsManager.shared.current,
+                         walletType: self?.wallet?.type)
         }
     }
 
