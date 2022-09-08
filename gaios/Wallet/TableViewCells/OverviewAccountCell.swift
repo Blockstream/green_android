@@ -16,10 +16,6 @@ class OverviewAccountCell: UITableViewCell {
     var action: VoidToVoid?
     let iconW: CGFloat = 18
 
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-    }
-
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -42,10 +38,12 @@ class OverviewAccountCell: UITableViewCell {
         iconsView.isHidden = true
     }
 
-    func configure(account: WalletItem, action: VoidToVoid? = nil, color: UIColor, showAccounts: Bool, isLiquid: Bool) {
+    func configure(account: WalletItem, action: VoidToVoid? = nil, showAccounts: Bool) {
         prepareForReuse()
-        bg.backgroundColor = color
-        if showAccounts { bgShadow.backgroundColor = .clear } else { bgShadow.backgroundColor = color }
+        let gdkNetwork = getGdkNetwork(account.network ?? "mainnet")
+        let networkType = NetworkSecurityCase(rawValue: account.network ?? "mainnet")
+        bg.backgroundColor = networkType?.color()
+        if showAccounts { bgShadow.backgroundColor = .clear } else { bgShadow.backgroundColor = networkType?.color() }
         self.lblAccountTitle.text = account.localizedName()
 
         if let converted = Balance.fromSatoshi(account.btc) {
@@ -81,7 +79,7 @@ class OverviewAccountCell: UITableViewCell {
         }
         iconsStackWidth.constant = CGFloat(icons.count) * iconW
         setImages(icons)
-        iconsView.isHidden = !showAccounts || !isLiquid
+        iconsView.isHidden = !showAccounts || !gdkNetwork.liquid
     }
 
     func setImages(_ images: [UIImage]) {

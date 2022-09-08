@@ -617,7 +617,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                     }
                 }
                 if let subaccount = showSubaccounts ? subaccounts[indexPath.row] : presentingWallet {
-                    cell.configure(account: subaccount, action: action, color: color, showAccounts: showSubaccounts, isLiquid: isLiquid)
+                    cell.configure(account: subaccount, action: action, showAccounts: showSubaccounts)
                 }
                 cell.selectionStyle = .none
                 return cell
