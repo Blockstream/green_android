@@ -321,7 +321,7 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
         if let section = NetworkSection(rawValue: indexPath.section),
             let networkSection = networks[section] {
             let item: NetworkSecurityCase = networkSection[indexPath.row]
-            connect(peripheral, network: item.network())
+            connect(peripheral, network: item.network)
         }
     }
 }

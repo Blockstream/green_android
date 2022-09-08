@@ -58,34 +58,17 @@ enum AvailableNetworks: String, CaseIterable {
 }
 
 enum NetworkSecurityCase: String, CaseIterable {
-    case bitcoinMS
-    case bitcoinSS
-    case liquidMS
-    case liquidSS
-    case testnetMS
-    case testnetSS
-    case testnetLiquidMS
-    case testnetLiquidSS
+    case bitcoinMS = "mainnet"
+    case bitcoinSS = "electrum-mainnet"
+    case liquidMS = "liquid"
+    case liquidSS = "electrum-liquid"
+    case testnetMS = "testnet"
+    case testnetSS = "electrum-testnet"
+    case testnetLiquidMS = "testnet-liquid"
+    case testnetLiquidSS = "electrum-testnet-liquid"
 
-    func network() -> String {
-        switch self {
-        case .bitcoinMS:
-            return "mainnet"
-        case .bitcoinSS:
-            return "electrum-mainnet"
-        case .liquidMS:
-            return "liquid"
-        case .liquidSS:
-            return "electrum-liquid"
-        case .testnetMS:
-            return "testnet"
-        case .testnetSS:
-            return "electrum-testnet"
-        case .testnetLiquidMS:
-            return "testnet-liquid"
-        case .testnetLiquidSS:
-            return "electrum-testnet-liquid"
-        }
+    var network: String {
+        self.rawValue
     }
 
     func name() -> String {
