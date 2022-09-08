@@ -222,61 +222,30 @@ class LoginViewController: UIViewController {
     }
     fileprivate func loginWithPin(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        var session: SessionManager? = SessionManager(account.gdkNetwork!)
+        let wm = WalletManager(account: account, testnet: !(account?.gdkNetwork?.mainnet ?? true))
         firstly {
             return Guarantee()
         }.compactMap {
             try self.account.auth(usingAuth)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-        }.then(on: bgq) { pinData -> Promise<String> in
+        }.then(on: bgq) { pinData -> Promise<Void> in
             let pin = withPIN ?? pinData.plaintextBiometric ?? ""
-            return session!.loginWithPin(pin, pinData: pinData)
+            return wm.login(pin: pin, pinData: pinData, bip39passphrase: bip39passphrase)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
-        }.then(on: bgq) { (res: String) -> Promise<String> in
-            if let bip39passphrase = bip39passphrase, !bip39passphrase.isEmpty {
-                return session!.getCredentials(password: "")
-                    .compactMap { Credentials(mnemonic: $0.mnemonic, password: nil, bip39Passphrase: bip39passphrase) }
-                    .then { credentials -> Promise<String> in
-                        session = nil
-                        session = SessionManager(self.account.gdkNetwork!)
-                        return session!
-                            .loginWithCredentials(credentials)
-                            .recover { _ in Promise().map { throw LoginError.walletNotFound() }}
-                    }
-            }
-            return Guarantee().map { res }
-        }.compactMap { walletHashId in
-            if let bip39passphrase = bip39passphrase, !bip39passphrase.isEmpty {
-                let storedAccount = AccountsManager.shared.ephAccounts
-                    .filter { $0.walletHashId == walletHashId && !$0.isHW }
-                    .first
-                self.account = storedAccount ?? Account(name: self.account.name,
-                                network: self.account.network,
-                                isSingleSig: self.account?.isSingleSig ?? true,
-                                isEphemeral: true)
-                let firstLogin = self.account?.walletHashId == nil
-                self.account.walletHashId = walletHashId
-                return firstLogin
-            }
-            let storedAccount = AccountsManager.shared.accounts
-                .filter { $0.walletHashId == walletHashId && !$0.isHW }
-                .first
-            self.account = storedAccount ?? self.account
-            let firstLogin = self.account?.walletHashId == nil
-            self.account.walletHashId = walletHashId
-            return firstLogin
-        }.then { (firstLogin: Bool) in
-            session!.load(refreshSubaccounts: firstLogin)
         }.then(on: bgq) { _ in
-            session!.subaccount(self.account.activeWallet)
+            wm.subaccounts()
+        //}.then { (firstLogin: Bool) in
+        //    session!.load(refreshSubaccounts: firstLogin)
+        //}.then(on: bgq) { _ in
+        //    session!.subaccount(self.account.activeWallet)
         }.done { wallet in
             if withPIN != nil {
                 self.account.attempts = 0
             }
             AccountsManager.shared.current = self.account
-            SessionsManager.shared[self.account.id] = session
+            //SessionsManager.shared[self.account.id] = session
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
                                                 ephemeralBip39: self.account.isEphemeral,
                                                 account: self.account)
@@ -284,7 +253,7 @@ class LoginViewController: UIViewController {
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
             if let vc = nav?.topViewController as? ContainerViewController {
-                vc.presentingWallet = wallet
+                //vc.presentingWallet =
             }
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
