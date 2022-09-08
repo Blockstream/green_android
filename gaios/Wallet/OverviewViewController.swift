@@ -82,6 +82,7 @@ class OverviewViewController: UIViewController {
     // global variables
     private var account = AccountsManager.shared.current
     private var session: SessionManager? { SessionsManager.shared[account?.id ?? ""] }
+    private var wm: WalletManager? { WalletManager.shared[account?.id ?? ""] }
     private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
     private var isAmp: Bool { presentingWallet?.type == AccountType.amp }
     private var btc: String { return account?.gdkNetwork?.getFeeAsset() ?? "" }
@@ -386,13 +387,11 @@ class OverviewViewController: UIViewController {
 
     // refresh and reload the current wallet
     func reloadWallet() -> Promise<Void> {
-        guard let session = SessionsManager.current else { return Promise().asVoid() }
-        return session.subaccount(activeWallet).then { wallet in
-            wallet.getBalance().compactMap { _ in wallet }
-        }.compactMap { wallet in
-            self.presentingWallet = wallet
-            self.reloadSections([OverviewSection.account, OverviewSection.accountId], animated: true)
-        }.asVoid()
+        return wm!.balances(subaccounts: [presentingWallet!])
+            .compactMap { balance in
+                self.presentingWallet?.satoshi = balance
+                self.reloadSections([OverviewSection.account, OverviewSection.accountId], animated: true)
+            }.asVoid()
     }
 
     // reset and reload the transaction list until selected page
@@ -459,14 +458,10 @@ class OverviewViewController: UIViewController {
     // reload in tableview all subaccounts with balance
     func reloadSubaccounts(refresh: Bool, discovery: Bool) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return Promise().asVoid() }
         return Guarantee()
-            .then(on: bgq) { session.subaccounts(discovery) }
-            .then(on: bgq) { wallets -> Promise<[WalletItem]> in
-                // load balance for each wallet
-                let balances = wallets.filter { refresh || $0.satoshi == nil }.map { wallet in { wallet.getBalance() } }
-                return Promise.chain(balances).compactMap { _ in wallets }
-            }.compactMap { wallets in
+            .then(on: bgq) { self.wm!.subaccounts(discovery) }
+            .get(on: bgq) { self.wm!.balances(subaccounts: $0) }
+            .compactMap { wallets in
                 self.allSubaccounts = wallets
                 self.reloadSections([OverviewSection.account], animated: false)
             }.asVoid()
