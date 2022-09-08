@@ -1,7 +1,7 @@
 import Foundation
 import PromiseKit
 
-class WalletItem: Codable, Equatable, Comparable {
+class WalletItem: Codable, Equatable, Comparable, Hashable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -28,6 +28,7 @@ class WalletItem: Codable, Equatable, Comparable {
     let bip44Discovered: Bool?
     let recoveryXpub: String?
     let hidden: Bool?
+    var network: String?
 
     func localizedName() -> String {
         if !name.isEmpty {
@@ -111,5 +112,11 @@ class WalletItem: Codable, Equatable, Comparable {
     static func < (lhs: WalletItem, rhs: WalletItem) -> Bool {
         return lhs.type < rhs.type ||
         ( lhs.type == rhs.type && lhs.pointer < rhs.pointer)
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(network)
+        hasher.combine(pointer)
+        hasher.combine(type)
     }
 }

@@ -168,7 +168,9 @@ class SessionManager {
             }.compactMap(on: bgq) { data in
                 let result = data["result"] as? [String: Any]
                 let jsonData = try JSONSerialization.data(withJSONObject: result ?? [:])
-                return try JSONDecoder().decode(WalletItem.self, from: jsonData)
+                let wallet = try JSONDecoder().decode(WalletItem.self, from: jsonData)
+                wallet.network = self.gdkNetwork.network
+                return wallet
             }.tapLogger()
     }
 
@@ -182,6 +184,7 @@ class SessionManager {
                 let subaccounts = result?["subaccounts"] as? [[String: Any]]
                 let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
                 let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
+                wallets.forEach { $0.network = self.gdkNetwork.network }
                 return wallets.sorted()
             }.tapLogger()
     }
