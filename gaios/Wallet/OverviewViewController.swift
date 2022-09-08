@@ -50,7 +50,7 @@ class OverviewViewController: UIViewController {
     // subaccounts data for tableviews
     private var allSubaccounts = [WalletItem]()
     private var showSubaccounts = false
-    private var activeWallet: UInt32 = 0
+    private var activeWalletHash: Int?
     private var archivedSubaccount: Int { allSubaccounts.filter { $0.hidden == true }.count }
     private var subaccounts: [WalletItem] {
         get {
@@ -58,23 +58,23 @@ class OverviewViewController: UIViewController {
                 return []
             }
             return allSubaccounts
-                .filter { $0.pointer == activeWallet} +
+                .filter { $0.hashValue == activeWalletHash} +
             allSubaccounts
-                .filter { $0.pointer != activeWallet && $0.hidden == false}
+                .filter { $0.hashValue != activeWalletHash && $0.hidden == false}
         }
     }
 
     // current wallet
     var presentingWallet: WalletItem? {
-        didSet {
-            // update into subaccount on updating
-            guard let presentingWallet = presentingWallet else {
-                return
+        get {
+            if activeWalletHash == nil {
+                return allSubaccounts.first { $0.hidden == false }
             }
-            if let index = allSubaccounts.firstIndex(where: {$0.pointer == presentingWallet.pointer}) {
-                allSubaccounts[index] = presentingWallet
-            } else {
-                allSubaccounts += [presentingWallet]
+            return allSubaccounts.first { $0.hashValue == activeWalletHash}
+        }
+        set {
+            if let newValue = newValue, let index = allSubaccounts.firstIndex(where: { $0.pointer == newValue.pointer && $0.network == newValue.network}) {
+                allSubaccounts[index] = newValue
             }
         }
     }
@@ -328,7 +328,6 @@ class OverviewViewController: UIViewController {
             return
         }
         isLoading = true
-        activeWallet = account?.activeWallet ?? 0
         let contentOffset = tableView.contentOffset
         firstly { Guarantee() }
             .compactMap { self.reloadAlertCards() }
@@ -403,7 +402,7 @@ class OverviewViewController: UIViewController {
         self.reloadSections([OverviewSection.transaction], animated: false)
         func step() -> Promise<Void> {
             return session
-                .transactions(subaccount: activeWallet, first: UInt32(self.transactions.count))
+                .transactions(subaccount: presentingWallet?.pointer ?? 0, first: UInt32(self.transactions.count))
                 .then { txs -> Promise<Void> in
                     self.transactions += txs.list
                     self.callPage += 1
@@ -775,9 +774,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             showSubaccounts = !showSubaccounts
             reloadSections([OverviewSection.account], animated: true)
             if indexPath.row > 0 {
-                presentingWallet = subaccounts[indexPath.row]
-                activeWallet = presentingWallet?.pointer ?? 0
-                account?.activeWallet = activeWallet
+                activeWalletHash = subaccounts[indexPath.row].hashValue
                 assets.removeAll()
                 transactions.removeAll()
                 reloadSections([.asset, .transaction], animated: false)
@@ -820,7 +817,7 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
         if self.callPage > 0 && row > (self.callPage - 1) * Constants.trxPerPage {
             let session = SessionsManager.shared[account?.id ?? ""]
             let offset = self.transactions.count
-            self.fetchTxs = session?.transactions(subaccount: activeWallet, first: UInt32(offset))
+            self.fetchTxs = session?.transactions(subaccount: presentingWallet?.pointer ?? 0, first: UInt32(offset))
                 .map { page in
                     self.transactions += page.list
                     self.callPage += 1
@@ -1120,9 +1117,7 @@ extension OverviewViewController: PopoverMenuAccountDelegate {
             self.stopAnimating()
         }.done { _ in
             let present = (index == 0 ? self.subaccounts[1] : self.subaccounts[0])
-            self.activeWallet = present.pointer
-            self.account?.activeWallet = self.activeWallet
-            self.presentingWallet = present
+            self.activeWalletHash = present.hashValue
             self.reloadData()
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)
