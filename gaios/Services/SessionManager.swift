@@ -420,7 +420,7 @@ class SessionManager {
         let bgq = DispatchQueue.global(qos: .background)
         let text = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(pinData), options: .allowFragments) as? [String: Any]
         return Guarantee()
-            .compactMap(on: bgq) { try self.session?.decryptWithPin(details: ["pin": pin, "pin_data": text ?? ""]) }
+            .compactMap(on: bgq) { try self.session?.decryptWithPin(details: ["pin": pin, "pin_data": text ?? [:]]) }
             .then(on: bgq) { $0.resolve(session: self) }
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
