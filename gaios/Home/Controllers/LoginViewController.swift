@@ -147,7 +147,7 @@ class LoginViewController: UIViewController {
         if account.askEphemeral ?? false {
             loginWithPassphrase(isAlwaysAsk: account.askEphemeral ?? false)
         } else if account.hasBioPin {
-            loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
+            loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
         }
         if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
             showLock()
@@ -220,7 +220,7 @@ class LoginViewController: UIViewController {
             self.errorLogin(error: err, usingAuth: usingAuth)
         }
     }
-    fileprivate func loginWithPin(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
+    fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         let wm = WalletManager(account: account, testnet: !(account?.gdkNetwork?.mainnet ?? true))
         firstly {
@@ -283,6 +283,32 @@ class LoginViewController: UIViewController {
                 prettyError = "id_invalid_pin"
                 self.wrongPin(usingAuth ?? "")
             } else {
+=======
+            var prettyError = "id_login_failed"
+            self.stopLoader()
+            switch error {
+            case AuthenticationTypeHandler.AuthError.CanceledByUser:
+                return
+            case AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
+                return self.onBioAuthError(error.localizedDescription)
+            case LoginError.connectionFailed:
+                prettyError = "id_connection_failed"
+                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+            case LoginError.walletNotFound:
+                prettyError = "id_wallet_not_found"
+                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+            case GaError.NotAuthorizedError:
+                self.wrongPin()
+                prettyError = "NotAuthorizedError"
+            case TwoFactorCallError.failure(let localizedDescription):
+                if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
+                    prettyError = "id_invalid_pin"
+                    self.wrongPin()
+                } else {
+                    DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+                }
+            default:
+>>>>>>> 27f4fcd6 (authenticator: add enum authentication type and watchonly password)
                 DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             }
         default:
@@ -297,7 +323,7 @@ class LoginViewController: UIViewController {
         emergencyRestore = false
     }
 
-    func wrongPin(_ usingAuth: String) {
+    func wrongPin() {
         account?.attempts += 1
         AccountsManager.shared.upsert(account)
         if account?.attempts == self.MAXATTEMPTS {
@@ -345,6 +371,7 @@ class LoginViewController: UIViewController {
         guard pinCode.count == 6 else {
             return
         }
+<<<<<<< HEAD
         if emergencyRestore {
             decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthKeyPIN,
                             withPIN: pinCode,
@@ -352,6 +379,9 @@ class LoginViewController: UIViewController {
             return
         }
         loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN,
+=======
+        loginWithPin(usingAuth: .AuthKeyPIN,
+>>>>>>> 27f4fcd6 (authenticator: add enum authentication type and watchonly password)
                      withPIN: pinCode,
                      bip39passphrase: bip39passphare)
     }
@@ -511,7 +541,7 @@ extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
         account.askEphemeral = alwaysAsk
         AccountsManager.shared.upsert(account)
         if account.hasBioPin {
-            loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
+            loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
         }
     }
 }

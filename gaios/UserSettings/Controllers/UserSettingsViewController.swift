@@ -625,7 +625,7 @@ extension UserSettingsViewController {
 extension UserSettingsViewController {
     private func enableBioAuth() {
         // An auth key pin should be set before updating bio auth
-        if !AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: self.account!.keychain) {
+        if !AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: self.account!.keychain) {
             onAuthError(message: NSLocalizedString("id_please_enable_pin", comment: ""))
             return
         }

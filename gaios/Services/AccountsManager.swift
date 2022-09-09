@@ -59,8 +59,8 @@ class AccountsManager {
     func onFirstInitialization() {
         for network in ["mainnet", "testnet", "liquid"] {
             if !UserDefaults.standard.bool(forKey: network + "FirstInitialization") {
-                _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-                _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+                _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, forNetwork: network)
+                _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: network)
                 UserDefaults.standard.set(true, forKey: network + "FirstInitialization")
             }
         }
@@ -130,8 +130,8 @@ class AccountsManager {
     private func migratedAccounts() -> [Account] {
         var accounts = [Account]()
         for network in ["mainnet", "testnet", "liquid"] {
-            let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-            let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+            let bioData = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: network)
+            let pinData = AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: network)
             if pinData || bioData {
                 var account = Account(name: nameLabel(network), network: network, keychain: network, isSingleSig: false)
                 account.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")

@@ -10,23 +10,23 @@ func getUserNetworkSettings() -> [String: Any] {
 
 func removeKeychainData() {
     let network = getNetwork()
-    _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-    _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+    _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, forNetwork: network)
+    _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: network)
 }
 
 func removeBioKeychainData() {
     let network = getNetwork()
-    _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+    _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, forNetwork: network)
 }
 
 func removePinKeychainData() {
     let network = getNetwork()
-    _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+    _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: network)
 }
 
 func isPinEnabled(network: String) -> Bool {
-    let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-    let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+    let bioData = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: network)
+    let pinData = AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: network)
     return pinData || bioData
 }
 

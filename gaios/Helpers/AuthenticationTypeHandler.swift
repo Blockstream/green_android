@@ -37,8 +37,11 @@ class AuthenticationTypeHandler {
         }
     }
 
-    static let AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
-    static let AuthKeyPIN = "com.blockstream.green.auth_key_pin"
+    public enum AuthType: String {
+        case AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
+        case AuthKeyPIN = "com.blockstream.green.auth_key_pin"
+        case AuthKeyWOPassword = "com.blockstream.green.auth_key_wathonly_password"
+    }
 
     static let PrivateKeyPathSize = 32
     static let AuthKeyBiometricPrivateKeyPathPrefix = "com.blockstream.green."
@@ -230,14 +233,14 @@ class AuthenticationTypeHandler {
                         .merging([kSecReturnData: kCFBooleanTrue ?? true]) { (current, _) in current }
     }
 
-    fileprivate static func set(method: String, data: [String: Any], forNetwork: String) throws {
+    fileprivate static func set(method: AuthType, data: [String: Any], forNetwork: String) throws {
         if !supportsPasscodeAuthentication() {
             throw AuthError.PasscodeNotSet
         }
         guard let data = try? JSONSerialization.data(withJSONObject: data) else {
             throw AuthError.ServiceNotAvailable("Operation failed: Invalid json on serialization.")
         }
-        let q = queryFor(method: method, forNetwork: forNetwork)
+        let q = queryFor(method: method.rawValue, forNetwork: forNetwork)
         let qAdd = q.merging([kSecValueData: data]) { (current, _) in current }
         var status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
         if status == errSecDuplicateItem {
@@ -266,7 +269,7 @@ class AuthenticationTypeHandler {
         let data = try get_(method: method, forNetwork: forNetwork)
         var extended = data
         if toDecrypt {
-            precondition(method == AuthKeyBiometric)
+            precondition(method == AuthType.AuthKeyBiometric.rawValue)
             let encryptedBiometric = data["encrypted_biometric"] as? String
             let decoded = Data(base64Encoded: encryptedBiometric!)
             let plaintext = try decrypt(base64Encoded: decoded!, forNetwork: forNetwork)
@@ -275,14 +278,14 @@ class AuthenticationTypeHandler {
         return extended
     }
 
-    static func getAuth(method: String, forNetwork: String) throws -> PinData {
-        let pinData = try get(method: method, toDecrypt: method == AuthKeyBiometric, forNetwork: forNetwork)
+    static func getAuth(method: AuthType, forNetwork: String) throws -> PinData {
+        let pinData = try get(method: method.rawValue, toDecrypt: method == .AuthKeyBiometric, forNetwork: forNetwork)
         let jsonData = try JSONSerialization.data(withJSONObject: pinData)
         return try JSONDecoder().decode(PinData.self, from: jsonData)
     }
 
-    static func findAuth(method: String, forNetwork: String) -> Bool {
-        return (try? get_(method: method, forNetwork: forNetwork)) != nil
+    static func findAuth(method: AuthType, forNetwork: String) -> Bool {
+        return (try? get_(method: method.rawValue, forNetwork: forNetwork)) != nil
     }
 
     static func removePrivateKey(forNetwork: String) throws {
@@ -301,8 +304,8 @@ class AuthenticationTypeHandler {
         }
     }
 
-    static func removeAuth(method: String, forNetwork: String) -> Bool {
-        let q = queryForData(method: method, forNetwork: forNetwork)
+    static func removeAuth(method: AuthType, forNetwork: String) -> Bool {
+        let q = queryForData(method: method.rawValue, forNetwork: forNetwork)
         return callWrapper(fun: SecItemDelete(q as CFDictionary)) == errSecSuccess
     }
 
@@ -312,12 +315,16 @@ class AuthenticationTypeHandler {
         pindata.encryptedBiometric = encrypted
         let data = try? JSONEncoder().encode(pindata)
         let extended = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        try set(method: AuthKeyBiometric, data: extended ?? [:], forNetwork: forNetwork)
+        try set(method: .AuthKeyBiometric, data: extended ?? [:], forNetwork: forNetwork)
     }
 
     static func addPIN(pinData: PinData, forNetwork: String) throws {
         let data = try? JSONEncoder().encode(pinData)
         let extended = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        try set(method: AuthKeyPIN, data: extended ?? [:], forNetwork: forNetwork)
+        try set(method: .AuthKeyPIN, data: extended ?? [:], forNetwork: forNetwork)
+    }
+
+    static func addWatchonly(password: String, forNetwork: String) throws {
+        try set(method: .AuthKeyWOPassword, data: [:], forNetwork: forNetwork)
     }
 }

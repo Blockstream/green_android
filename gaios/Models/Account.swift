@@ -100,13 +100,13 @@ struct Account: Codable, Equatable {
 
     var hasManualPin: Bool {
         get {
-            return AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: keychain)
+            return AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: keychain)
         }
     }
 
     var hasBioPin: Bool {
         get {
-            AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: keychain)
+            AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: keychain)
         }
     }
 
@@ -116,7 +116,7 @@ struct Account: Codable, Equatable {
         }
     }
 
-    func auth(_ method: String) throws -> PinData {
+    func auth(_ method: AuthenticationTypeHandler.AuthType) throws -> PinData {
         return try AuthenticationTypeHandler.getAuth(method: method, forNetwork: keychain)
     }
 
@@ -145,13 +145,13 @@ struct Account: Codable, Equatable {
     }
 
     func removeBioKeychainData() {
-        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: keychain)
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, forNetwork: keychain)
         try? AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
         UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + keychain)
     }
 
     func removePinKeychainData() {
-        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: keychain)
+        _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: keychain)
     }
 
     func addBioPin(session: SessionManager) -> Promise<Void> {
