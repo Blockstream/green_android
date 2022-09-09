@@ -41,6 +41,9 @@ class WalletManager {
     // Static store all the Wallet available in the app for each account
     static var shared = [String: WalletManager]()
 
+    // Serial reconnect queue for network events
+    static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
+
     // Static store the current WalletManager used in the active user session
     static var current: WalletManager? {
         let account = AccountsManager.shared.current
@@ -159,5 +162,24 @@ class WalletManager {
     func subaccountsFilteredByAsset(subaccounts: [WalletItem], asset: String) -> [WalletItem] {
         return subaccounts.filter { $0.satoshi?.keys.contains(asset) ?? false }
     }
-    
+
+    func pause() {
+        activeSessions.forEach { (_, session) in
+            if session.connected {
+                WalletManager.reconnectionQueue.async {
+                    try? session.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
+                }
+            }
+        }
+    }
+
+    func resume() {
+        activeSessions.forEach { (_, session) in
+            if session.connected {
+                WalletManager.reconnectionQueue.async {
+                    try? session.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
+                }
+            }
+        }
+    }
 }

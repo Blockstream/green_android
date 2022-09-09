@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func logout(with pin: Bool) {
         let account = AccountsManager.shared.current
         if let account = account {
-            SessionsManager.remove(for: account)
+            WalletManager.shared.removeValue(forKey: account.id)
         }
         if account?.isWatchonly ?? false {
             let homeS = UIStoryboard(name: "Home", bundle: nil)
@@ -135,12 +135,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        SessionsManager.pause()
+        WalletManager.shared.forEach { _, wm in
+            wm.pause()
+        }
+        WalletManager.reconnectionQueue.async {
+            TorSessionManager.shared.pause()
+        }
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-        SessionsManager.resume()
+        WalletManager.shared.forEach { _, wm in
+            wm.resume()
+        }
+        WalletManager.reconnectionQueue.async {
+            TorSessionManager.shared.resume()
+        }
+        AnalyticsManager.shared.setupSession()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
