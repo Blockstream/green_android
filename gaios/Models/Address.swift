@@ -27,7 +27,7 @@ struct Address: Codable {
 
     static func validate(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String) -> Promise<String> {
         return Promise { seal in
-            let network = AccountsManager.shared.current?.gdkNetwork
+            let network = AccountDao.shared.current?.gdkNetwork
             _ = hw.newReceiveAddress(network: network!, wallet: wallet, path: addr.userPath ?? [], csvBlocks: addr.subtype ?? 0)
                 .subscribe(onNext: { data in
                     seal.fulfill(data)

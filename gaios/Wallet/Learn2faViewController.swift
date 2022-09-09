@@ -27,7 +27,7 @@ class Learn2faViewController: UIViewController {
 
         setContent()
 
-        AnalyticsManager.shared.recordView(.twoFactorReset, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.twoFactorReset, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
     }
 
     func setContent() {
@@ -59,7 +59,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func canceltwoFactorReset() {
-        AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountDao.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = WalletManager.current?.currentSession else { return }
@@ -86,7 +86,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func disputeReset(email: String) {
-        AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountDao.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = WalletManager.current?.currentSession else { return }
@@ -110,7 +110,7 @@ class Learn2faViewController: UIViewController {
     }
 
     func undoReset(email: String) {
-        AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountDao.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = WalletManager.current?.currentSession else { return }

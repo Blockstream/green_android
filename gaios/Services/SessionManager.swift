@@ -223,7 +223,7 @@ class SessionManager {
                 self.loginUser(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""])
             }.map(on: bgq) { walletHashId in
                 // check if wallet just exist
-                if AccountsManager.shared.accounts.contains(where: {
+                if AccountDao.shared.accounts.contains(where: {
                     $0.walletHashId == walletHashId && !$0.isHW &&
                     $0.networkName == self.gdkNetwork.network
                     }) {

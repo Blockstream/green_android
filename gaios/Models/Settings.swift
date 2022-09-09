@@ -53,7 +53,7 @@ public enum TransactionPriority: Int, CaseIterable {
     }
 
     var time: String {
-        let network = AccountsManager.shared.current?.gdkNetwork
+        let network = AccountDao.shared.current?.gdkNetwork
         let isLiquid = network?.liquid ?? false
         let blocksPerHour = isLiquid ? 60 : 6
         let blocks = self.rawValue
@@ -100,8 +100,8 @@ public enum DenominationType: String, CodingKey {
     static let denominationsLTEST: [DenominationType: String] = [ .BTC: "L-TEST", .MilliBTC: "L-mTEST", .MicroBTC: "L-µTEST", .Bits: "L-TEST", .Sats: "L-TEST"]
 
     static var denominations: [DenominationType: String] {
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
-        let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+        let isLiquid = AccountDao.shared.current?.gdkNetwork?.liquid ?? false
+        let isMainnet = AccountDao.shared.current?.gdkNetwork?.mainnet ?? true
         if isLiquid {
             return isMainnet ? DenominationType.denominationsLBTC : DenominationType.denominationsLTEST
         }
@@ -251,7 +251,7 @@ class Settings: Codable {
     }
 
     func getScreenLock() -> ScreenLockType {
-        let account = AccountsManager.shared.current
+        let account = AccountDao.shared.current
         if account?.hasBioPin ?? false && account?.hasManualPin ?? false {
             return .All
         } else if account?.hasBioPin ?? false {
@@ -270,7 +270,7 @@ class Settings: Codable {
         case Long
 
         static func all() -> [CsvTime] {
-            if let network = AccountsManager.shared.current?.gdkNetwork,
+            if let network = AccountDao.shared.current?.gdkNetwork,
                network.liquid {
                 return [Long]
             } else {
@@ -279,12 +279,12 @@ class Settings: Codable {
         }
 
         static func values() -> [Int]? {
-            return AccountsManager.shared.current?.gdkNetwork?.csvBuckets
+            return AccountDao.shared.current?.gdkNetwork?.csvBuckets
         }
 
         func value() -> Int? {
             let csvBuckets = CsvTime.values()
-            if let network = AccountsManager.shared.current?.gdkNetwork,
+            if let network = AccountDao.shared.current?.gdkNetwork,
                network.liquid {
                 return csvBuckets?[0]
             }

@@ -67,7 +67,7 @@ class OverviewViewController: UIViewController {
     var presentingWallet: WalletItem? { wm?.currentSubaccount }
 
     // global variables
-    private var account = AccountsManager.shared.current
+    private var account = AccountDao.shared.current
     private var wm: WalletManager? { WalletManager.shared[account?.id ?? ""] }
     private var session: SessionManager? { wm?.currentSession }
     private var isLiquid: Bool { session?.gdkNetwork.liquid ?? false }
@@ -93,7 +93,7 @@ class OverviewViewController: UIViewController {
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountsManager.shared.current?.networkName)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountDao.shared.current?.networkName)
 
         startAnimating()
         AnalyticsManager.shared.recordView(.overview, sgmt: AnalyticsManager.shared.sessSgmt(account))

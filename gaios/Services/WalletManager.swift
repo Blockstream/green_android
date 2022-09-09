@@ -46,7 +46,7 @@ class WalletManager {
 
     // Static store the current WalletManager used in the active user session
     static var current: WalletManager? {
-        let account = AccountsManager.shared.current
+        let account = AccountDao.shared.current
         return WalletManager.shared[account?.id ?? ""]
     }
 

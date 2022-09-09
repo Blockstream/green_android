@@ -115,7 +115,7 @@ struct Transaction {
     }
 
     static var feeAsset: String {
-        AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     var amounts: [String: Int64] {

@@ -49,7 +49,7 @@ struct Account: Codable, Equatable {
         self.isEphemeral = isEphemeral
         self.askEphemeral = askEphemeral
         if isEphemeral {
-            let ephAccounts = AccountsManager.shared.ephAccounts
+            let ephAccounts = AccountDao.shared.ephAccounts
             if ephAccounts.count == 0 {
                 self.ephemeralId = 1
             } else {

@@ -16,7 +16,7 @@ class TransactionAmountCell: UITableViewCell {
     var copyRecipient: ((String) -> Void)?
 
     private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {

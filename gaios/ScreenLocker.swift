@@ -95,7 +95,7 @@ class ScreenLocker {
                Int(countdown) >= settings.altimeout * 60 {
                 WalletManager.shared.removeValue(forKey: id)
 
-                if id == AccountsManager.shared.current?.id ?? "" {
+                if id == AccountDao.shared.current?.id ?? "" {
                     self.isScreenLockLocked = true
                 }
             }

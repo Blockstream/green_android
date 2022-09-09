@@ -56,7 +56,7 @@ struct Balance: Codable {
     }
 
     static func fromValue(_ value: String, asset: AssetInfo? = nil) -> Balance? {
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
+        let feeAsset = AccountDao.shared.current?.gdkNetwork?.getFeeAsset()
         let assetId = asset?.assetId ?? feeAsset ?? "btc"
         var details: [String: Any] = [assetId: value]
         if let asset = asset, assetId != feeAsset {
@@ -66,7 +66,7 @@ struct Balance: Codable {
     }
 
     static func fromSatoshi(_ satoshi: Any, asset: AssetInfo? = nil) -> Balance? {
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
+        let feeAsset = AccountDao.shared.current?.gdkNetwork?.getFeeAsset()
         var details: [String: Any] = ["satoshi": satoshi]
         if let asset = asset, asset.assetId != feeAsset {
             details["asset_info"] = asset.encode()
@@ -79,7 +79,7 @@ struct Balance: Codable {
     }
 
     func toFiat() -> (String, String) {
-        let mainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet
+        let mainnet = AccountDao.shared.current?.gdkNetwork?.mainnet
         return (fiat?.localeFormattedString(2) ?? "n/a", mainnet ?? true ? fiatCurrency : "FIAT")
     }
 
@@ -95,7 +95,7 @@ struct Balance: Codable {
     }
 
     func toValue() -> (String, String) {
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
+        let feeAsset = AccountDao.shared.current?.gdkNetwork?.getFeeAsset()
         if let asset = assetInfo, asset.assetId != feeAsset {
             return toAssetValue()
         } else {

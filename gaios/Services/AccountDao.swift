@@ -1,9 +1,9 @@
 import Foundation
 
-class AccountsManager {
+class AccountDao {
     let attrAccount = "AccountsManager_Account"
     let attrService = "AccountsManager_Service"
-    static let shared = AccountsManager()
+    static let shared = AccountDao()
 
     // List of saved accounts with cache
     private var accountsCached: [Account]?
@@ -180,7 +180,7 @@ class AccountsManager {
         var name = baseName
         for num in 0...999 {
             name = num == 0 ? baseName : "\(baseName) #\(num + 1)"
-            if (AccountsManager.shared.swAccounts.filter { $0.name.lowercased().hasPrefix(name.lowercased()) }.count) > 0 {
+            if (AccountDao.shared.swAccounts.filter { $0.name.lowercased().hasPrefix(name.lowercased()) }.count) > 0 {
             } else {
                 break
             }

@@ -15,7 +15,7 @@ class TransactionViewController: UIViewController {
     var wallet: WalletItem!
     var transaction: Transaction!
 
-    private var account = AccountsManager.shared.current
+    private var account = AccountDao.shared.current
 
     var viewInExplorerPreference: Bool {
         get {
@@ -43,7 +43,7 @@ class TransactionViewController: UIViewController {
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
         navBarSetup()
 
-        AnalyticsManager.shared.recordView(.transactionDetails, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.transactionDetails, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -103,7 +103,7 @@ class TransactionViewController: UIViewController {
 
     @objc func shareButtonTapped(_ sender: UIButton) {
 
-        AnalyticsManager.shared.shareTransaction(account: AccountsManager.shared.current, isShare: true)
+        AnalyticsManager.shared.shareTransaction(account: AccountDao.shared.current, isShare: true)
         // We have more options in liquid for confidential txs
         if transaction.isLiquid {
             let storyboard = UIStoryboard(name: "Shared", bundle: nil)
@@ -208,7 +208,7 @@ class TransactionViewController: UIViewController {
 
     func copyToClipboard(_ value: String) {
 
-        AnalyticsManager.shared.shareTransaction(account: AccountsManager.shared.current, isShare: false)
+        AnalyticsManager.shared.shareTransaction(account: AccountDao.shared.current, isShare: false)
 
         UIPasteboard.general.string = value
         DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)

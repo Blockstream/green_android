@@ -25,7 +25,7 @@ class WalletNameViewController: UIViewController {
         if let isSingleSig = OnBoardManager.shared.account.isSingleSig,
             let network: AvailableNetworks = (AvailableNetworks.allCases.filter { $0.rawValue == OnBoardManager.shared.account.network}).first {
 
-            defaultName = AccountsManager.shared.getUniqueAccountName(
+            defaultName = AccountDao.shared.getUniqueAccountName(
                 securityOption: isSingleSig ? .single : .multi,
                 network: network)
         }
@@ -147,13 +147,13 @@ class WalletNameViewController: UIViewController {
             self.stopLoader()
         }.done { _ in
             let account = OnBoardManager.shared.account
-            AccountsManager.shared.current = account
+            AccountDao.shared.current = account
             // TODO : ONBOARDING
             // SessionsManager.shared[account.id] = session
             if restored {
-                AnalyticsManager.shared.restoreWallet(account: AccountsManager.shared.current)
+                AnalyticsManager.shared.restoreWallet(account: AccountDao.shared.current)
             } else {
-                AnalyticsManager.shared.createWallet(account: AccountsManager.shared.current)
+                AnalyticsManager.shared.createWallet(account: AccountDao.shared.current)
             }
             self.next()
         }.catch { error in

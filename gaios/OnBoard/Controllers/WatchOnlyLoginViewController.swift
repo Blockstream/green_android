@@ -156,8 +156,8 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            AccountsManager.shared.current = self.account
-            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsManager.shared.current)
+            AccountDao.shared.current = self.account
+            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountDao.shared.current)
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
@@ -187,14 +187,14 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
     func didRename(name: String, index: Int?) {
         account?.name = name
         if let account = self.account {
-            AccountsManager.shared.current = account
+            AccountDao.shared.current = account
             navigationItem.title = account.name
             AnalyticsManager.shared.renameWallet()
         }
     }
     func didDelete() {
         if let account = self.account {
-            AccountsManager.shared.remove(account)
+            AccountDao.shared.remove(account)
             navigationController?.popViewController(animated: true)
             AnalyticsManager.shared.deleteWallet()
         }

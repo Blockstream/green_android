@@ -110,7 +110,7 @@ class LoginViewController: UIViewController {
         attempts.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.attemptsLbl
         connectionSettingsButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.settingsBtn
 
-        AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.login, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
     }
 
     func setContent() {
@@ -244,7 +244,7 @@ class LoginViewController: UIViewController {
             if withPIN != nil {
                 self.account.attempts = 0
             }
-            AccountsManager.shared.current = self.account
+            AccountDao.shared.current = self.account
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
                                                 ephemeralBip39: self.account.isEphemeral,
                                                 account: self.account)
@@ -325,7 +325,7 @@ class LoginViewController: UIViewController {
 
     func wrongPin() {
         account?.attempts += 1
-        AccountsManager.shared.upsert(account)
+        AccountDao.shared.upsert(account)
         if account?.attempts == self.MAXATTEMPTS {
             showLock()
         } else {
@@ -484,14 +484,14 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
     func didRename(name: String, index: Int?) {
         self.account?.name = name
         if let account = self.account {
-            AccountsManager.shared.upsert(account)
+            AccountDao.shared.upsert(account)
             navigationItem.title = account.name
             AnalyticsManager.shared.renameWallet()
         }
     }
     func didDelete() {
         if let account = self.account {
-            AccountsManager.shared.remove(account)
+            AccountDao.shared.remove(account)
             navigationController?.popViewController(animated: true)
             AnalyticsManager.shared.deleteWallet()
         }
@@ -539,7 +539,7 @@ extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
     func didConfirm(passphrase: String, alwaysAsk: Bool) {
         bip39passphare = passphrase
         account.askEphemeral = alwaysAsk
-        AccountsManager.shared.upsert(account)
+        AccountDao.shared.upsert(account)
         if account.hasBioPin {
             loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
         }

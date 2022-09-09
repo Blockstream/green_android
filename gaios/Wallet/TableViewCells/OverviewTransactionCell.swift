@@ -7,7 +7,21 @@ class OverviewTransactionCell: UITableViewCell {
     @IBOutlet weak var lblStatus: UILabel!
     @IBOutlet weak var lblNote: UILabel!
     @IBOutlet weak var lblDate: UILabel!
+<<<<<<< HEAD
     @IBOutlet weak var amountsStackView: UIStackView!
+=======
+    @IBOutlet weak var lblDenom: UILabel!
+    @IBOutlet weak var icon: UIImageView!
+    @IBOutlet weak var spvVerifyIcon: UIImageView!
+
+    var isLiquid: Bool {
+        let account = AccountDao.shared.current
+        return account?.gdkNetwork?.liquid ?? false
+    }
+    private var btc: String {
+        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+    }
+>>>>>>> ed59adcd (unification: rename accountManager as accountDao to handle persistent storage)
 
     override func layoutSubviews() {
         super.layoutSubviews()

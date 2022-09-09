@@ -37,9 +37,9 @@ class SendConfirmViewController: KeyboardViewController {
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: AccountsManager.shared.current?.networkName)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: AccountDao.shared.current?.networkName)
 
-        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountDao.shared.current, walletType: wallet?.type))
     }
 
     func setContent() {
@@ -78,7 +78,7 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     func send() {
-        let account = AccountsManager.shared.current
+        let account = AccountDao.shared.current
 
         guard let transaction = transaction else { return }
         guard let session = WalletManager.current?.currentSession else { return }
@@ -143,7 +143,7 @@ class SendConfirmViewController: KeyboardViewController {
                 self?.showError(error.localizedDescription)
                 prettyError = error.localizedDescription
             }
-            AnalyticsManager.shared.failedTransaction(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
+            AnalyticsManager.shared.failedTransaction(account: AccountDao.shared.current, error: error, prettyError: prettyError)
         }
     }
 
@@ -154,7 +154,7 @@ class SendConfirmViewController: KeyboardViewController {
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
                                                      addressInputType: addressInputType,
                                                      sendAll: isSendAll)
-        AnalyticsManager.shared.sendTransaction(account: AccountsManager.shared.current,
+        AnalyticsManager.shared.sendTransaction(account: AccountDao.shared.current,
                                walletItem: wallet,
                                transactionSgmt: transSgmt, withMemo: withMemo)
 

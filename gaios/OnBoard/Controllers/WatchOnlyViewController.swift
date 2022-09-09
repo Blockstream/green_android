@@ -140,7 +140,7 @@ class WatchOnlyViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
-        let name = AccountsManager.shared.getUniqueAccountName(
+        let name = AccountDao.shared.getUniqueAccountName(
             securityOption: watchOnlySecurityOption,
             network: network)
 
@@ -158,8 +158,8 @@ class WatchOnlyViewController: KeyboardViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            AccountsManager.shared.current = account
-            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsManager.shared.current)
+            AccountDao.shared.current = account
+            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountDao.shared.current)
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             var prettyError: String?
@@ -171,7 +171,7 @@ class WatchOnlyViewController: KeyboardViewController {
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
                 prettyError = "id_login_failed"
             }
-            AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
+            AnalyticsManager.shared.failedWalletLogin(account: AccountDao.shared.current, error: error, prettyError: prettyError)
         }
     }
 

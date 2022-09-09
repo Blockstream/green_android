@@ -8,7 +8,7 @@ class NetworkSelectorBarItem: UIView {
     var onTap: (() -> Void)?
 
     func configure(isEphemeral: Bool, _ onTap:@escaping (() -> Void)) {
-        let account = AccountsManager.shared.current
+        let account = AccountDao.shared.current
         lblNetwork.text = account?.name ?? ""
         if let image = account?.icon {
             icon.image = image

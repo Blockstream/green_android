@@ -13,7 +13,7 @@ class UserSettingsViewController: UIViewController {
     var items = [UserSettingsItem]()
     var sections = [UserSettingsSections]()
     var data: [UserSettingsSections: Any] = [:]
-    var account = { AccountsManager.shared.current }()
+    var account = { AccountDao.shared.current }()
     var isWatchOnly: Bool { get { return account?.isWatchonly ?? false } }
     var username: String?
     var twoFactorConfig: TwoFactorConfig?
@@ -37,7 +37,7 @@ class UserSettingsViewController: UIViewController {
         self.navigationItem.rightBarButtonItem  = btn
         view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
 
-        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
     }
 
     @objc func close() {

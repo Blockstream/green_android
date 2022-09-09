@@ -37,7 +37,7 @@ class AccountCreateSetNameViewController: UIViewController {
         fieldName.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSetNameScreen.nameField
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSetNameScreen.nextBtn
 
-        AnalyticsManager.shared.recordView(.addAccountConfirm, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.addAccountConfirm, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
     }
 
     func setContent() {
@@ -118,7 +118,7 @@ class AccountCreateSetNameViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            AnalyticsManager.shared.createAccount(account: AccountsManager.shared.current, walletType: type)
+            AnalyticsManager.shared.createAccount(account: AccountDao.shared.current, walletType: type)
             self.dismiss()
         }.catch { e in
             switch e {

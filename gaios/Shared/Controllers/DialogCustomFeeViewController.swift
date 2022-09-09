@@ -28,7 +28,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
 
     private var minFeeRate: UInt64 = {
         guard let estimates = WalletManager.current?.currentSession?.getFeeEstimates() else {
-            let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
+            let defaultMinFee = AccountDao.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
             return UInt64(defaultMinFee)
         }
         return estimates[0]

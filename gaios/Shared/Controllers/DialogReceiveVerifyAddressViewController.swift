@@ -27,7 +27,7 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
             icWallet.image = UIImage(named: "ic_hww_jade")
         }
 
-        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
     }
 
     func setContent() {

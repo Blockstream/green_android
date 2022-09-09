@@ -63,13 +63,13 @@ class RecipientCell: UITableViewCell {
 
     var isLiquid: Bool {
         get {
-            return AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
+            return AccountDao.shared.current?.gdkNetwork?.liquid ?? false
         }
     }
 
     var network: String? {
         get {
-            return AccountsManager.shared.current?.network
+            return AccountDao.shared.current?.network
         }
     }
 
@@ -81,7 +81,7 @@ class RecipientCell: UITableViewCell {
     }
 
     private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {

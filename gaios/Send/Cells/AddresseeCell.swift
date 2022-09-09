@@ -15,7 +15,7 @@ class AddresseeCell: UITableViewCell {
 
     var network: String? {
         get {
-            return AccountsManager.shared.current?.network
+            return AccountDao.shared.current?.network
         }
     }
 
@@ -39,13 +39,13 @@ class AddresseeCell: UITableViewCell {
 
         let addreessee = transaction.addressees.first
         var value = addreessee?.satoshi ?? 0
-        let network = AccountsManager.shared.current?.gdkNetwork
+        let network = AccountDao.shared.current?.gdkNetwork
         let asset = (network?.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
-        if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
+        if !(AccountDao.shared.current?.isSingleSig ?? false) && transaction.sendAll {
             value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
         let assetInfo = WalletManager.current?.currentSession?.registry?.info(for: asset)
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
+        let feeAsset = AccountDao.shared.current?.gdkNetwork?.getFeeAsset()
         if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
             let (amount, ticker) = value == 0 ? ("", "") : balance.toValue()
             lblAmount.text = amount
