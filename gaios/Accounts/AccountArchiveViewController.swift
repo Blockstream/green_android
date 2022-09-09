@@ -84,13 +84,11 @@ class AccountArchiveViewController: UIViewController {
 
     func reloadData() {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
-        Guarantee().then(on: bgq) {
-                session.subaccounts()
-            }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
-                let balances = wallets.map { wallet in { wallet.getBalance() } }
-                return Promise.chain(balances).compactMap { _ in wallets }
-            }.map { wallets in
+        Guarantee()
+            .compactMap { self.account?.id }
+            .compactMap { WalletManager.shared[$0] }
+            .then(on: bgq) { $0.subaccounts() }
+            .map { wallets in
                 self.subAccounts = wallets.filter { $0.hidden == true }
                 self.reloadSections([AccountArchiveSection.account], animated: false)
             }.done {
