@@ -22,7 +22,7 @@ class HomeViewController: UIViewController {
 
     private var ephAccounts: [Account] {
         AccountsManager.shared.ephAccounts.filter { account in
-            account.isEphemeral && !SessionsManager.shared.filter {$0.key == account.id }.isEmpty
+            account.isEphemeral && !WalletManager.shared.filter {$0.key == account.id }.isEmpty
         }
     }
 
@@ -156,10 +156,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 let account = AccountsManager.shared.swAccounts[indexPath.row]
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                     let selected = { () -> Bool in
-                        if let session = SessionsManager.get(for: account) {
-                            return session.connected && session.logged
-                        }
-                        return false
+                        return WalletManager.shared[account.id]?.activeSessions.count ?? 0 > 0
                     }
                     cell.configure(item: account, isSelected: selected())
                     cell.selectionStyle = .none
@@ -170,10 +167,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
-                    if let session = SessionsManager.get(for: account) {
-                        return session.connected && session.logged
-                    }
-                    return false
+                    return WalletManager.shared[account.id]?.activeSessions.count ?? 0 > 0
                 }
                 cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none
@@ -183,10 +177,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = AccountsManager.shared.hwAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
-                    if let session = SessionsManager.get(for: account) {
-                        return session.connected && session.logged
-                    }
-                    return false
+                    return WalletManager.shared[account.id]?.activeSessions.count ?? 0 > 0
                 }
                 cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none

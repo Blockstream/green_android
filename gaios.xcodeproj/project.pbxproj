@@ -269,7 +269,6 @@
 		8122D7292554848C003F2785 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8122D7282554848C003F2785 /* Promise.swift */; };
 		8124524225D6B0DD00537238 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8124524125D6B0DD00537238 /* Address.swift */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
-		813D053A27AD7D9700AA6655 /* SessionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813D053927AD7D9700AA6655 /* SessionsManager.swift */; };
 		815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
 		8158974B2701980700DDF6D4 /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
 		815D4AA028638A56004DC015 /* PinData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D4A9F28638A56004DC015 /* PinData.swift */; };
@@ -638,7 +637,6 @@
 		8122D7282554848C003F2785 /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
 		8124524125D6B0DD00537238 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
-		813D053927AD7D9700AA6655 /* SessionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsManager.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
 		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
 		815D4A9F28638A56004DC015 /* PinData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinData.swift; sourceTree = "<group>"; };
@@ -1184,7 +1182,6 @@
 				3469A2452887D23700B2F640 /* StoreReviewManager.swift */,
 				34EB66FF28212E9C0036D615 /* AnalyticsManager */,
 				81D671EA26C8007600682508 /* SessionManager.swift */,
-				813D053927AD7D9700AA6655 /* SessionsManager.swift */,
 				81D671F626C81B0800682508 /* NotificationManager.swift */,
 				344562EA25D297CF00A5EC18 /* BLEManager.swift */,
 				819DFBA726038E800022BD85 /* AccountsManager.swift */,
@@ -2106,7 +2103,6 @@
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
 				34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */,
 				349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */,
-				813D053A27AD7D9700AA6655 /* SessionsManager.swift in Sources */,
 				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */,
 				34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */,

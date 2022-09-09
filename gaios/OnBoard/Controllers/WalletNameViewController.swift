@@ -148,7 +148,8 @@ class WalletNameViewController: UIViewController {
         }.done { _ in
             let account = OnBoardManager.shared.account
             AccountsManager.shared.current = account
-            SessionsManager.shared[account.id] = session
+            // TODO : ONBOARDING
+            // SessionsManager.shared[account.id] = session
             if restored {
                 AnalyticsManager.shared.restoreWallet(account: AccountsManager.shared.current)
             } else {

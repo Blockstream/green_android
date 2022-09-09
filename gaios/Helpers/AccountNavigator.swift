@@ -17,21 +17,12 @@ class AccountNavigator {
     // open the account if just logged or redirect to login
     static func goLogin(account: Account) {
         // switch on selected active session
-        if let session = SessionsManager.shared[account.id],
-           session.connected && session.logged {
-            session.subaccount(account.activeWallet).done { wallet in
-                AccountsManager.shared.current = account
-                SessionsManager.shared[account.id] = session
-                let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-                let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
-                if let vc = nav?.topViewController as? ContainerViewController {
-                    vc.presentingWallet = wallet
-                }
-                UIApplication.shared.keyWindow?.rootViewController = nav
-            }.catch { err in
-                print("subaccount error: \(err.localizedDescription)")
-            }
-            return
+        if WalletManager.shared[account.id]?.activeSessions.isEmpty == false {
+            AccountsManager.shared.current = account
+            let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+            let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
+            UIApplication.shared.keyWindow?.rootViewController = nav
+           return
         }
         // switch on pin view of selected account
         let homeS = UIStoryboard(name: "Home", bundle: nil)

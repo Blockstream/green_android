@@ -183,7 +183,7 @@ class SetPinViewController: UIViewController {
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
         guard var account = AccountsManager.shared.current,
-              let session = SessionsManager.get(for: account) else {
+              let session = WalletManager.shared[account.id]?.currentSession else {
             fatalError("Error: No account or session found")
         }
         firstly {

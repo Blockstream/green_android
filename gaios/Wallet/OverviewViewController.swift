@@ -804,7 +804,7 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
         let filteredIndexPaths = indexPaths.filter { $0.section == OverviewSection.transaction.rawValue }
         let row = filteredIndexPaths.last?.row ?? 0
         if self.callPage > 0 && row > (self.callPage - 1) * Constants.trxPerPage {
-            let session = SessionsManager.shared[account?.id ?? ""]
+            let session = wm?.currentSession
             let offset = self.transactions.count
             self.fetchTxs = session?.transactions(subaccount: presentingWallet?.pointer ?? 0, first: UInt32(offset))
                 .map { page in
@@ -1036,7 +1036,7 @@ extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faVi
         self.presentedViewController?.dismiss(animated: true, completion: {
             DispatchQueue.main.async {
                 self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
-                SessionsManager.remove(for: self.account?.id ?? "")
+                WalletManager.shared.removeValue(forKey: self.account?.id ?? "")
                 self.stopLoader()
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)
                 let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController

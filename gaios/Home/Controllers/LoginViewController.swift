@@ -245,7 +245,6 @@ class LoginViewController: UIViewController {
                 self.account.attempts = 0
             }
             AccountsManager.shared.current = self.account
-            //SessionsManager.shared[self.account.id] = session
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
                                                 ephemeralBip39: self.account.isEphemeral,
                                                 account: self.account)
