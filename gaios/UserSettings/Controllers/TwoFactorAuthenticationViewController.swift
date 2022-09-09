@@ -52,7 +52,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         setContent()
         setStyle()
 
-        currentCsv = SessionsManager.current?.settings?.csvtime
+        currentCsv = WalletManager.current?.currentSession?.settings?.csvtime
         tableViewCsvTime.estimatedRowHeight = 80
         tableViewCsvTime.rowHeight = UITableView.automaticDimension
 
@@ -126,7 +126,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func reloadData() {
-        guard let dataTwoFactorConfig = try? SessionsManager.current?.session?.getTwoFactorConfig() else { return }
+        guard let dataTwoFactorConfig = try? WalletManager.current?.currentSession?.session?.getTwoFactorConfig() else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
         self.twoFactorConfig = twoFactorConfig
         factors.removeAll()
@@ -139,7 +139,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
         thresholdView.isHidden = true
         if self.twoFactorConfig?.anyEnabled ?? false,
-            let session = SessionsManager.current,
+            let session = WalletManager.current?.currentSession,
             let settings = session.settings,
             let twoFactorConfig = self.twoFactorConfig {
 
@@ -170,7 +170,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func disable(_ type: TwoFactorType) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -200,7 +200,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func setCsvTimeLock(csv: Settings.CsvTime) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -251,7 +251,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()

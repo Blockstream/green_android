@@ -104,7 +104,7 @@ class AccountArchiveViewController: UIViewController {
     func unarchiveAccount(_ index: Int) {
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()

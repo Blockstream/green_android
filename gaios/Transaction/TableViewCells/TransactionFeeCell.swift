@@ -55,7 +55,7 @@ class TransactionFeeCell: UITableViewCell {
             lblHint.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(transaction.feeRate) / 1000))"
         }
         let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false
-        let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(SessionsManager.current?.isResetActive ?? false)
+        let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(WalletManager.current?.currentSession?.isResetActive ?? false)
         feeBtnView.isHidden = !showBumpFee
     }
 

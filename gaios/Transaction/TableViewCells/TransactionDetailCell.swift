@@ -34,6 +34,12 @@ class TransactionDetailCell: UITableViewCell {
                    copyHash: ((String) -> Void)?) {
         let color: UIColor = .white
         copyIcon.image = copyIcon.image?.maskWithColor(color: color)
+<<<<<<< HEAD
+=======
+        lblConfirmationsTitle.text = NSLocalizedString("id_confirmations", comment: "")
+        confirmationsView.isHidden = true // transaction.blockHeight == 0
+        lblConfirmationsHint.text = "\(WalletManager.current?.currentSession?.notificationManager?.blockHeight ?? 0 - transaction.blockHeight + 1)"
+>>>>>>> 68c5aa77 (unification: add active session in wallet manager)
         lblTxidTitle.text = NSLocalizedString("id_transaction_id", comment: "")
         lblTxidHint.text = transaction.hash
         btnExplorer.setTitle(NSLocalizedString("id_view_in_explorer", comment: ""), for: .normal)

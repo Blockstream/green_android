@@ -19,7 +19,7 @@ class SetGauthViewController: UIViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_authenticator_qr_code", comment: "")
 
-        guard let session = SessionsManager.current?.session,
+        guard let session = WalletManager.current?.currentSession?.session,
               let dataTwoFactorConfig = try? session.getTwoFactorConfig(),
               let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
         gauthData = twoFactorConfig.gauth.data
@@ -67,7 +67,7 @@ class SetGauthViewController: UIViewController {
 
     @objc func click(_ sender: UIButton) {
         guard let gauth = gauthData,
-              let session = SessionsManager.current else { return }
+              let session = WalletManager.current?.currentSession else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()

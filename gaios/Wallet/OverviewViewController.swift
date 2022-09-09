@@ -384,7 +384,7 @@ class OverviewViewController: UIViewController {
 
     // reset and reload the transaction list until selected page
     func reloadTransactions(untilPage: UInt32) -> Promise<Void> {
-        guard let session = SessionsManager.current else { return Promise().asVoid() }
+        guard let session = WalletManager.current?.currentSession else { return Promise().asVoid() }
         self.transactions.removeAll()
         self.callPage = 0
         self.isTxLoading = true
@@ -669,8 +669,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAssetCell", for: indexPath) as? OverviewAssetCell {
                 let tag = assets[indexPath.row].key
-                let info = SessionsManager.current?.registry?.info(for: tag)
-                let icon = SessionsManager.current?.registry?.image(for: tag)
+                let info = WalletManager.current?.currentSession?.registry?.info(for: tag)
+                let icon = WalletManager.current?.currentSession?.registry?.image(for: tag)
                 let satoshi = assets[indexPath.row].value
                 cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi, isLiquid: isLiquid)
                 return cell
@@ -679,7 +679,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewTransactionCell", for: indexPath) as? OverviewTransactionCell {
                 let transaction = transactions[indexPath.row]
                 cell.setup(transaction: transaction, network: account?.network)
-                cell.checkBlockHeight(transaction: transaction, blockHeight: SessionsManager.current?.notificationManager?.blockHeight ?? 0)
+                cell.checkBlockHeight(transaction: transaction, blockHeight: WalletManager.current?.currentSession?.notificationManager?.blockHeight ?? 0)
                 return cell
             }
         default:
@@ -746,7 +746,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         switch OverviewSection(rawValue: section) {
         case .account:
             let isWatchonly = account?.isWatchonly ?? false
-            let isResetActive = SessionsManager.current?.isResetActive ?? false
+            let isResetActive = WalletManager.current?.currentSession?.isResetActive ?? false
             return showSubaccounts && !isWatchonly && !isResetActive ? footerView(.handleAccount) : footerView(.none)
         case .transaction:
             return transactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
@@ -775,7 +775,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
                 let tag = assets[indexPath.row].key
                 vc.tag = tag
-                vc.asset = SessionsManager.current?.registry?.info(for: tag)
+                vc.asset = WalletManager.current?.currentSession?.registry?.info(for: tag)
                 vc.satoshi = presentingWallet?.satoshi?[tag]
                 vc.modalPresentationStyle = .overFullScreen
                 present(vc, animated: false, completion: nil)
@@ -1010,7 +1010,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
             return
         }
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -1096,7 +1096,7 @@ extension OverviewViewController: PopoverMenuAccountDelegate {
     // subaccounts section: archive a subaccount
     func archiveSubaccount(_ index: Int) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()

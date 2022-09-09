@@ -63,8 +63,8 @@ extension AssetsListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "AssetCell") as? AssetCell {
             let tag = assets[indexPath.row].key
-            let info = SessionsManager.current?.registry?.info(for: tag)
-            let icon = SessionsManager.current?.registry?.image(for: tag)
+            let info = WalletManager.current?.currentSession?.registry?.info(for: tag)
+            let icon = WalletManager.current?.currentSession?.registry?.image(for: tag)
             let satoshi = assets[indexPath.row].value
             cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi)
             cell.selectionStyle = .none

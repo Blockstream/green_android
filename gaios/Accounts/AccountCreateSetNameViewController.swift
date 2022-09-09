@@ -102,7 +102,7 @@ class AccountCreateSetNameViewController: UIViewController {
 
     func createSubaccount(name: String, type: AccountType, recoveryMnemonic: String? = nil, recoveryXpub: String? = nil) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()

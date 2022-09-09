@@ -50,12 +50,9 @@ class SystemMessageViewController: UIViewController {
 
     @IBAction func confirmBtn(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().then(on: bgq) {
-            SessionsManager.current!.ackSystemMessage(message: self.text ?? "")
-        }.done { _ in
-            self.navigationController?.popViewController(animated: true)
-        }.catch { _ in
-            print("Error removing system message")
-        }
+        Guarantee().compactMap { WalletManager.current?.currentSession  }
+            .then(on: bgq) { $0.ackSystemMessage(message: self.text ?? "") }
+            .done { _ in self.navigationController?.popViewController(animated: true) }
+            .catch { _ in print("Error removing system message") }
     }
 }

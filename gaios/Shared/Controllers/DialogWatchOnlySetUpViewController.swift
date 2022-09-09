@@ -101,7 +101,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     func updateWatchOnly(username: String, password: String, action: WatchOnlySetUpAction) {
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -127,9 +127,9 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     }
 
     func load() throws {
-        if let session = SessionsManager.current {
+        if let session = WalletManager.current?.currentSession {
             if let settings = try session.session?.getSettings() {
-                SessionsManager.current?.settings = Settings.from(settings)
+                WalletManager.current?.currentSession?.settings = Settings.from(settings)
             }
             if let account = account, let network = account.gdkNetwork,
                !(account.isSingleSig ?? false) && !network.liquid {

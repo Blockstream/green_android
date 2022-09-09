@@ -60,7 +60,7 @@ class AccountArchiveCell: UITableViewCell {
         var icons: [UIImage] = []
         for asset in assets {
             let tag = asset.key
-            let icon = SessionsManager.current?.registry?.image(for: tag)
+            let icon = WalletManager.current?.currentSession?.registry?.image(for: tag)
             if icon != nil {
                 if icons.count > 0 {
                     if icon != icons.last {

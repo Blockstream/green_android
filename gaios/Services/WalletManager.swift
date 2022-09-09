@@ -41,6 +41,12 @@ class WalletManager {
     // Static store all the Wallet available in the app for each account
     static var shared = [String: WalletManager]()
 
+    // Static store the current WalletManager used in the active user session
+    static var current: WalletManager? {
+        let account = AccountsManager.shared.current
+        return WalletManager.shared[account?.id ?? ""]
+    }
+
     init(account: Account, testnet: Bool) {
         self.account = account
         if testnet {

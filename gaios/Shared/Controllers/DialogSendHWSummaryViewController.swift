@@ -74,7 +74,7 @@ class DialogSendHWSummaryViewController: UIViewController {
             if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
                 value =  transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
             }
-            let registry = SessionsManager.current?.registry
+            let registry = WalletManager.current?.currentSession?.registry
             let info = registry?.info(for: assetId)
             if let balance = Balance.fromSatoshi(value, asset: info) {
                 let (value, ticker) = balance.toValue()

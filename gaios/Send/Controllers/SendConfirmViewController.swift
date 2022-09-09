@@ -81,7 +81,7 @@ class SendConfirmViewController: KeyboardViewController {
         let account = AccountsManager.shared.current
 
         guard let transaction = transaction else { return }
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             sliderView.isUserInteractionEnabled = false

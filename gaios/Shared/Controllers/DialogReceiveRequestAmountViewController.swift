@@ -106,7 +106,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     }
 
     func setButton() {
-        guard let settings = SessionsManager.current?.settings else {
+        guard let settings = WalletManager.current?.currentSession?.settings else {
             return
         }
         if selectedType == TransactionBaseType.BTC {

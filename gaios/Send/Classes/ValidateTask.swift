@@ -13,9 +13,9 @@ class ValidateTask {
     private var task: DispatchWorkItem?
 
     init(details: [String: Any], inputType: InputType) {
+        guard let session = WalletManager.current?.currentSession else { return }
         task = DispatchWorkItem {
             var details = details
-            let session = SessionsManager.current
             if inputType == .transaction && details["utxos"] == nil {
                 let subaccount = details["subaccount"] as? UInt32
                 let unspent = try? session?.getUnspentOutputs(subaccount: subaccount ?? 0, numConfs: 0).wait()

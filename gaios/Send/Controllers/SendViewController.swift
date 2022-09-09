@@ -45,7 +45,7 @@ class SendViewController: KeyboardViewController {
 
     private var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
-        guard let estimates = SessionsManager.current?.getFeeEstimates() else {
+        guard let estimates = WalletManager.current?.currentSession?.getFeeEstimates() else {
             // We use the default minimum fee rates when estimates are not available
             let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
             return [UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee)]
@@ -58,7 +58,7 @@ class SendViewController: KeyboardViewController {
     }()
 
     private var defaultTransactionPriority: TransactionPriority = {
-        guard let settings = SessionsManager.current?.settings else { return .High }
+        guard let settings = WalletManager.current?.currentSession?.settings else { return .High }
         if let pref = TransactionPriority.getPreference() {
             settings.transactionPriority = pref
         }
@@ -204,7 +204,7 @@ class SendViewController: KeyboardViewController {
 
     func isBipAddress() -> Bool {
         let addressInput: String = recipients.first?.address ?? ""
-        return SessionsManager.current?.validBip21Uri(uri: addressInput) ?? false
+        return WalletManager.current?.currentSession?.validBip21Uri(uri: addressInput) ?? false
     }
 
     func validateTransaction() {
@@ -281,7 +281,7 @@ class SendViewController: KeyboardViewController {
         if !(AccountsManager.shared.current?.isSingleSig ?? false) && tx?.sendAll ?? false {
             value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        let assetInfo = SessionsManager.current?.registry?.info(for: asset)
+        let assetInfo = WalletManager.current?.currentSession?.registry?.info(for: asset)
         if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
             let (amount, _) = value == 0 ? ("", "") : balance.toValue()
             recipients.first?.amount = amount

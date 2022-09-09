@@ -45,7 +45,7 @@ class TransactionStatusCell: UITableViewCell {
         var steps: UInt32 = 0
         steps = isLiquid ? 2 : 6
 
-        let blockHeight = SessionsManager.current?.notificationManager?.blockHeight ?? 0
+        let blockHeight = WalletManager.current?.currentSession?.notificationManager?.blockHeight ?? 0
         var status: TransactionStatus = .unconfirmed
         if transaction.blockHeight == 0 {
             lblStatus.text = NSLocalizedString("id_unconfirmed", comment: "")
@@ -106,7 +106,7 @@ class TransactionStatusCell: UITableViewCell {
         if tx.blockHeight == 0 {
             return false
         }
-        if let notificationManager = SessionsManager.current?.notificationManager,
+        if let notificationManager = WalletManager.current?.currentSession?.notificationManager,
            notificationManager.blockHeight - tx.blockHeight + 1 < 6 {
             return false
         }

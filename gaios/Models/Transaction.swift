@@ -144,8 +144,8 @@ struct Transaction {
         }
         var tAssets: [SortingAsset] = []
         Array(sorted).forEach { asset in
-            let info = SessionsManager.current?.registry?.info(for: asset.key)
-            let hasImage = SessionsManager.current?.registry?.hasImage(for: asset.key)
+            let info = WalletManager.current?.currentSession?.registry?.info(for: asset.key)
+            let hasImage = WalletManager.current?.currentSession?.registry?.hasImage(for: asset.key)
             let tAss = SortingAsset(tag: asset.key, info: info, hasImage: hasImage ?? false, value: asset.value)
             tAssets.append(tAss)
         }

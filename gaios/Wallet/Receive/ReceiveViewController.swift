@@ -80,7 +80,7 @@ class ReceiveViewController: UIViewController {
     func newAddress(_ notification: Notification?) {
         let dict = notification?.userInfo as NSDictionary?
         let pointer = dict?["pointer"] as? UInt32
-        guard let session = SessionsManager.current,
+        guard let session = WalletManager.current?.currentSession,
               let wallet = wallet,
               wallet.pointer == pointer else {
             return
@@ -129,12 +129,12 @@ class ReceiveViewController: UIViewController {
     }
 
     func isBipAddress(_ addr: String) -> Bool {
-        return SessionsManager.current?.validBip21Uri(uri: addr) ?? false
+        return WalletManager.current?.currentSession?.validBip21Uri(uri: addr) ?? false
     }
 
     @objc func copyToClipboard(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current,
+        guard let session = WalletManager.current?.currentSession,
               let wallet = wallet else {
             return
         }

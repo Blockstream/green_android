@@ -20,7 +20,7 @@ class Learn2faViewController: UIViewController {
     var wallet: WalletItem?
 
     weak var delegate: Learn2faViewControllerDelegate?
-    let isDisputeActive = SessionsManager.current?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
+    let isDisputeActive = WalletManager.current?.currentSession?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +45,7 @@ class Learn2faViewController: UIViewController {
             btnUndoReset.setTitle(NSLocalizedString("id_undo_2fa_dispute", comment: ""), for: .normal)
             return
         }
-        let resetDaysRemaining = SessionsManager.current?.twoFactorConfig?.twofactorReset.daysRemaining
+        let resetDaysRemaining = WalletManager.current?.currentSession?.twoFactorConfig?.twofactorReset.daysRemaining
         lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
         lblResetTitle.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), resetDaysRemaining ?? 0)
         lblResetHint.text = NSLocalizedString("id_the_waiting_period_is_necessary", comment: "")
@@ -62,7 +62,7 @@ class Learn2faViewController: UIViewController {
         AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -89,7 +89,7 @@ class Learn2faViewController: UIViewController {
         AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -113,7 +113,7 @@ class Learn2faViewController: UIViewController {
         AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()

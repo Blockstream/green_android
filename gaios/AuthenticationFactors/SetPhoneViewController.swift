@@ -61,7 +61,7 @@ class SetPhoneViewController: KeyboardViewController {
             DropAlert().warning(message: NSLocalizedString("id_invalid_phone_number_format", comment: ""))
             return
         }
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()

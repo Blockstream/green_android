@@ -57,7 +57,7 @@ class SetEmailViewController: KeyboardViewController {
     @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
         guard let text = textField.text else { return }
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()

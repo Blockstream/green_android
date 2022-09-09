@@ -44,7 +44,7 @@ class AddresseeCell: UITableViewCell {
         if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
             value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        let assetInfo = SessionsManager.current?.registry?.info(for: asset)
+        let assetInfo = WalletManager.current?.currentSession?.registry?.info(for: asset)
         let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
         if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
             let (amount, ticker) = value == 0 ? ("", "") : balance.toValue()
@@ -56,7 +56,7 @@ class AddresseeCell: UITableViewCell {
             }
             lblFiat.isHidden = asset != feeAsset
         }
-        icon.image = SessionsManager.current?.registry?.image(for: asset)
+        icon.image = WalletManager.current?.currentSession?.registry?.image(for: asset)
     }
 
     func setStyle() {

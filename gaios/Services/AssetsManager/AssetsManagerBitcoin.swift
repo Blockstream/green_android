@@ -3,7 +3,7 @@ import UIKit
 
 class AssetsManagerBitcoin: Codable, AssetsManagerProtocol {
     func info(for key: String) -> AssetInfo {
-        let denomination = SessionsManager.current?.settings?.denomination
+        let denomination = WalletManager.current?.currentSession?.settings?.denomination
         let precision = UInt8(denomination?.digits ?? 8)
         let ticker = denomination?.string ?? "BTC"
         return AssetInfo(assetId: "btc", name: "Bitcoin", precision: precision, ticker: ticker)

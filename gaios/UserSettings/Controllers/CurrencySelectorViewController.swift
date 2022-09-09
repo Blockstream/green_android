@@ -37,7 +37,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func getCurrentRate() {
-        if let settings = SessionsManager.current?.settings {
+        if let settings = WalletManager.current?.currentSession?.settings {
             currentCurrency.text = settings.pricing["currency"] ?? ""
             currentExchange.text = settings.pricing["exchange"]?.capitalized ?? ""
         }
@@ -81,7 +81,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func setExchangeRate(_ currency: CurrencyItem) {
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         guard let settings = session.settings else { return }
         let bgq = DispatchQueue.global(qos: .background)
 
@@ -103,7 +103,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
 
     func getExchangeRate() {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = SessionsManager.current else { return }
+        guard let session = WalletManager.current?.currentSession else { return }
         Guarantee().then(on: bgq) {
             session.getAvailableCurrencies()
         }.done { perExchange in

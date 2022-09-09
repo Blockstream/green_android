@@ -29,7 +29,7 @@ struct Balance: Codable {
     var asset: [String: String]?
 
     static func from(details: [String: Any]) -> Balance? {
-        if var res = try? SessionsManager.current?.convertAmount(input: details) {
+        if var res = try? WalletManager.current?.currentSession?.convertAmount(input: details) {
             res["asset_info"] = details["asset_info"]
             if let data = try? JSONSerialization.data(withJSONObject: res, options: []),
                var balance = try? JSONDecoder().decode(Balance.self, from: data) {
@@ -49,7 +49,7 @@ struct Balance: Codable {
     }
 
     static func fromDenomination(_ value: String) -> Balance? {
-        let session = SessionsManager.current
+        let session = WalletManager.current?.currentSession
         let denomination = session?.settings?.denomination.rawValue ?? "btc"
         let details: [String: Any] = [denomination: value]
         return Balance.from(details: details)
@@ -84,7 +84,7 @@ struct Balance: Codable {
     }
 
     func toDenom() -> (String, String) {
-        let denomination = SessionsManager.current?.settings?.denomination ?? .BTC
+        let denomination = WalletManager.current?.currentSession?.settings?.denomination ?? .BTC
         let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
         let value = res![denomination.rawValue] as? String
         return (value?.localeFormattedString(denomination.digits) ?? "n/a", denomination.string)
