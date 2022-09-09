@@ -78,24 +78,28 @@ class WalletManager {
             .then { credentials in
                 when(guarantees: self.sessions.values
                     .filter { !$0.logged }
-                    .map { $0.loginWithCredentials(credentials)
+                    .map { session in
+                        session.loginWithCredentials(credentials)
                         .asVoid()
                         .recover { _ in Promise().asVoid() }
+                        .map { session.registry?.cache(session: session) }
+                        .map { session.registry?.loadAsync(session: session) }
                     }
                 )
             }.map {
                 self.account.isEphemeral = ![nil, ""].contains(bip39passphrase)
-                //self.registry?.cache(session: self)
-                //self.registry?.loadAsync(session: self)
             }
     }
 
     func loginWatchOnly(username: String, password: String) -> Guarantee<Void> {
         return when(guarantees: self.sessions.values
                 .filter { !$0.logged }
-                .map { $0.loginWatchOnly(username, password)
+                .map { session in
+                    session.loginWatchOnly(username, password)
                     .asVoid()
                     .recover { _ in Promise().asVoid() }
+                    .map { session.registry?.cache(session: session) }
+                    .map { session.registry?.loadAsync(session: session) }
                 }
         )
     }
