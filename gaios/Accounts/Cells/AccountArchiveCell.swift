@@ -40,7 +40,7 @@ class AccountArchiveCell: UITableViewCell {
         bg.backgroundColor = color
         self.lblAccountTitle.text = account.localizedName()
 
-        if let converted = Balance.fromSatoshi(account.btc) {
+        if let converted = Balance.fromSatoshi(account.satoshi?["btc"] ?? 0) {
             let (amount, denom) = converted.toDenom()
             lblBalance.text = "\(denom) \(amount)"
             lblBalance.isHidden = false

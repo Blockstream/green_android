@@ -88,7 +88,6 @@ class ReceiveViewController: UIViewController {
         session.getReceiveAddress(subaccount: pointer ?? 0)
             .done { [weak self] addr in
                 self?.address = addr
-                self?.wallet?.receiveAddress = addr.address
                 self?.reload()
             }.catch { _ in
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
@@ -108,7 +107,7 @@ class ReceiveViewController: UIViewController {
         }.ensure {
             self.presentedViewController?.dismiss(animated: true, completion: nil)
         }.done { addr in
-            if self.wallet?.receiveAddress == addr {
+            if self.address?.address == addr {
                 DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
             } else {
                 DropAlert().error(message: NSLocalizedString("id_the_addresses_dont_match", comment: ""))
@@ -134,17 +133,18 @@ class ReceiveViewController: UIViewController {
     }
 
     @objc func copyToClipboard(_ sender: Any) {
-
-        guard let wallet = self.wallet else { return }
         let bgq = DispatchQueue.global(qos: .background)
+        guard let session = SessionsManager.current,
+              let wallet = wallet else {
+            return
+        }
         Guarantee().then(on: bgq) {
-            return wallet.getAddress()
+            return session.getReceiveAddress(subaccount: wallet.pointer)
         }.done { address in
-
-            let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.text, method: AnalyticsManager.ReceiveAddressMethod.copy)
+            let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address.address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.text, method: AnalyticsManager.ReceiveAddressMethod.copy)
             AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
 
-            UIPasteboard.general.string = self.uriBitcoin(address: address)
+            UIPasteboard.general.string = self.uriBitcoin(address: address.address)
             DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 1.0)
             UINotificationFeedbackGenerator().notificationOccurred(.success)
         }.catch { _ in }
@@ -156,7 +156,7 @@ class ReceiveViewController: UIViewController {
             btnQRCode.isHidden = true
             return
         }
-        guard let address = wallet.receiveAddress, !address.isEmpty else {
+        guard let address = self.address?.address, !address.isEmpty else {
             return
         }
         let uri = uriBitcoin(address: address)
@@ -292,14 +292,10 @@ extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
     func didSelect(_ option: ReceiveShareOption) {
 
         if option == .cancel { return }
-        guard let wallet = self.wallet else { return }
-
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().then(on: bgq) {
-            return wallet.getAddress()
-        }.done { address in
+        guard let wallet = self.wallet,
+              let address = self.address?.address else { return }
             if address.isEmpty {
-                throw GaError.GenericError()
+                return
             }
             if option == .address {
                 let uri = self.uriBitcoin(address: address)
@@ -322,6 +318,5 @@ extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
             case .cancel:
                 break
             }
-        }.catch { _ in }
     }
 }

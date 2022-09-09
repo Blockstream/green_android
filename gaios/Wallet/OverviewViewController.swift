@@ -214,7 +214,9 @@ class OverviewViewController: UIViewController {
             self.present(alert, animated: true, completion: nil)
             return
         }
-        if presentingWallet?.btc == 0 {
+        
+        let feeAsset = getGdkNetwork(presentingWallet?.network ?? "mainnet").getFeeAsset() ?? "btc"
+        if presentingWallet?.satoshi?[feeAsset] ?? 0 == 0 {
             let message = isLiquid ? NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "") : NSLocalizedString("id_you_have_no_coins_to_send", comment: "")
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })

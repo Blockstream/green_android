@@ -46,7 +46,9 @@ class OverviewAccountCell: UITableViewCell {
         if showAccounts { bgShadow.backgroundColor = .clear } else { bgShadow.backgroundColor = networkType?.color() }
         self.lblAccountTitle.text = account.localizedName()
 
-        if let converted = Balance.fromSatoshi(account.btc) {
+        let feeAsset = getGdkNetwork(account.network ?? "mainnet").getFeeAsset() ?? "btc"
+        let satoshi = account.satoshi?[feeAsset] ?? 0
+        if let converted = Balance.fromSatoshi(satoshi) {
             let (amount, denom) = converted.toValue()
             lblBalance.text = "\(denom) \(amount)"
             lblBalance.isHidden = !showAccounts

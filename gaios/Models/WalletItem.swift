@@ -6,7 +6,6 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     enum CodingKeys: String, CodingKey {
         case name
         case pointer
-        case receiveAddress
         case receivingId = "receiving_id"
         case type
         case satoshi
@@ -19,7 +18,6 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
 
     private let name: String
     let pointer: UInt32
-    var receiveAddress: String?
     let receivingId: String
     let type: AccountType
     var satoshi: [String: Int64]?
