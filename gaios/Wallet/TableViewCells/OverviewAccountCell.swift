@@ -41,13 +41,13 @@ class OverviewAccountCell: UITableViewCell {
     func configure(account: WalletItem, action: VoidToVoid? = nil, showAccounts: Bool) {
         prepareForReuse()
         let gdkNetwork = getGdkNetwork(account.network ?? "mainnet")
+        let session = WalletManager.current?.activeSessions[account.network ?? "mainnet"]
         let networkType = NetworkSecurityCase(rawValue: account.network ?? "mainnet")
         bg.backgroundColor = networkType?.color()
         if showAccounts { bgShadow.backgroundColor = .clear } else { bgShadow.backgroundColor = networkType?.color() }
         self.lblAccountTitle.text = account.localizedName()
 
-        let feeAsset = getGdkNetwork(account.network ?? "mainnet").getFeeAsset() ?? "btc"
-        let satoshi = account.satoshi?[feeAsset] ?? 0
+        let satoshi = account.satoshi?[gdkNetwork.getFeeAsset()] ?? 0
         if let converted = Balance.fromSatoshi(satoshi) {
             let (amount, denom) = converted.toValue()
             lblBalance.text = "\(denom) \(amount)"
@@ -68,14 +68,13 @@ class OverviewAccountCell: UITableViewCell {
         var icons: [UIImage] = []
         for asset in assets {
             let tag = asset.key
-            let icon = WalletManager.current?.currentSession?.registry?.image(for: tag)
-            if icon != nil {
+            if let icon = session?.registry?.image(for: tag) {
                 if icons.count > 0 {
                     if icon != icons.last {
-                        icons.append(icon!)
+                        icons.append(icon)
                     }
                 } else {
-                    icons.append(icon!)
+                    icons.append(icon)
                 }
             }
         }
