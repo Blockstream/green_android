@@ -4,9 +4,41 @@ import PromiseKit
 
 class WalletManager {
 
+    // Current account
     var account: Account
+
+    // Hashmap of available networks with open session
     var sessions = [String: SessionManager]()
 
+    // Cached subaccounts list
+    var subaccounts = [WalletItem]()
+
+    // Store active subaccount
+    private var activeWalletHash: Int?
+    var currentSubaccount: WalletItem? {
+        get {
+            if activeWalletHash == nil {
+                return subaccounts.first { $0.hidden == false }
+            }
+            return subaccounts.first { $0.hashValue == activeWalletHash}
+        }
+        set {
+            if let newValue = newValue {
+                activeWalletHash = newValue.hashValue
+                if let index = subaccounts.firstIndex(where: { $0.pointer == newValue.pointer && $0.network == newValue.network}) {
+                    subaccounts[index] = newValue
+                }
+            }
+        }
+    }
+
+    // Get active session of the active subaccount
+    var currentSession: SessionManager? {
+        let network = currentSubaccount?.network
+        return sessions[network ?? ""]
+    }
+
+    // Static store all the Wallet available in the app for each account
     static var shared = [String: WalletManager]()
 
     init(account: Account, testnet: Bool) {
@@ -84,7 +116,8 @@ class WalletManager {
                     return nil
                 }
             }
-            return Array(txt.joined())
+            self.subaccounts = Array(txt.joined())
+            return self.subaccounts
         }
     }
 
@@ -116,4 +149,5 @@ class WalletManager {
     func subaccountsFilteredByAsset(subaccounts: [WalletItem], asset: String) -> [WalletItem] {
         return subaccounts.filter { $0.satoshi?.keys.contains(asset) ?? false }
     }
+    
 }

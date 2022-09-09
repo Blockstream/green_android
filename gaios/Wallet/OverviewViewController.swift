@@ -50,7 +50,6 @@ class OverviewViewController: UIViewController {
     // subaccounts data for tableviews
     private var allSubaccounts = [WalletItem]()
     private var showSubaccounts = false
-    private var activeWalletHash: Int?
     private var archivedSubaccount: Int { allSubaccounts.filter { $0.hidden == true }.count }
     private var subaccounts: [WalletItem] {
         get {
@@ -58,34 +57,22 @@ class OverviewViewController: UIViewController {
                 return []
             }
             return allSubaccounts
-                .filter { $0.hashValue == activeWalletHash} +
+                .filter { $0.hashValue == wm?.currentSubaccount?.hashValue } +
             allSubaccounts
-                .filter { $0.hashValue != activeWalletHash && $0.hidden == false}
+                .filter { $0.hashValue != wm?.currentSubaccount?.hashValue && $0.hidden == false}
         }
     }
 
     // current wallet
-    var presentingWallet: WalletItem? {
-        get {
-            if activeWalletHash == nil {
-                return allSubaccounts.first { $0.hidden == false }
-            }
-            return allSubaccounts.first { $0.hashValue == activeWalletHash}
-        }
-        set {
-            if let newValue = newValue, let index = allSubaccounts.firstIndex(where: { $0.pointer == newValue.pointer && $0.network == newValue.network}) {
-                allSubaccounts[index] = newValue
-            }
-        }
-    }
+    var presentingWallet: WalletItem? { wm?.currentSubaccount }
 
     // global variables
     private var account = AccountsManager.shared.current
-    private var session: SessionManager? { SessionsManager.shared[account?.id ?? ""] }
     private var wm: WalletManager? { WalletManager.shared[account?.id ?? ""] }
-    private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
+    private var session: SessionManager? { wm?.currentSession }
+    private var isLiquid: Bool { session?.gdkNetwork.liquid ?? false }
     private var isAmp: Bool { presentingWallet?.type == AccountType.amp }
-    private var btc: String { return account?.gdkNetwork?.getFeeAsset() ?? "" }
+    private var btc: String { return session?.gdkNetwork.getFeeAsset() ?? "btc" }
     private var color: UIColor = .clear
     private var userWillLogout = false
     private var analyticsDone = false
@@ -214,8 +201,8 @@ class OverviewViewController: UIViewController {
             self.present(alert, animated: true, completion: nil)
             return
         }
-        
-        let feeAsset = getGdkNetwork(presentingWallet?.network ?? "mainnet").getFeeAsset() ?? "btc"
+
+        let feeAsset = getGdkNetwork(presentingWallet?.network ?? "mainnet").getFeeAsset()
         if presentingWallet?.satoshi?[feeAsset] ?? 0 == 0 {
             let message = isLiquid ? NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "") : NSLocalizedString("id_you_have_no_coins_to_send", comment: "")
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
@@ -776,7 +763,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             showSubaccounts = !showSubaccounts
             reloadSections([OverviewSection.account], animated: true)
             if indexPath.row > 0 {
-                activeWalletHash = subaccounts[indexPath.row].hashValue
+                wm?.currentSubaccount = subaccounts[indexPath.row]
                 assets.removeAll()
                 transactions.removeAll()
                 reloadSections([.asset, .transaction], animated: false)
@@ -1119,7 +1106,7 @@ extension OverviewViewController: PopoverMenuAccountDelegate {
             self.stopAnimating()
         }.done { _ in
             let present = (index == 0 ? self.subaccounts[1] : self.subaccounts[0])
-            self.activeWalletHash = present.hashValue
+            self.wm?.currentSubaccount = present
             self.reloadData()
         }.catch { e in
             DropAlert().error(message: e.localizedDescription)

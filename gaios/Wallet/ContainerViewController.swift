@@ -101,12 +101,4 @@ class ContainerViewController: UIViewController {
             }
         }
     }
-
-    // open overview screen
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nv = segue.destination as? UINavigationController,
-           let vc = nv.topViewController as? OverviewViewController {
-            vc.presentingWallet = presentingWallet
-        }
-    }
 }
