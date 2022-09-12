@@ -148,13 +148,14 @@ class WatchOnlyViewController: KeyboardViewController {
         if self.rememberSwitch.isOn {
             account.password = password
         }
-        let session = SessionManager(account.gdkNetwork!)
         firstly {
             dismissKeyboard()
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
+        }.compactMap {
+            WalletManager.getOrAdd(for: account)
         }.then(on: bgq) {
-            session.loginWatchOnly(username, password)
+            $0.loginWatchOnly(username, password)
         }.ensure {
             self.stopLoader()
         }.done { _ in

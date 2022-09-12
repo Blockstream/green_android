@@ -231,7 +231,7 @@ class LoginViewController: UIViewController {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         }.then(on: bgq) { pinData -> Promise<Void> in
             let pin = withPIN ?? pinData.plaintextBiometric ?? ""
-            return wm.login(pin: pin, pinData: pinData, bip39passphrase: bip39passphrase)
+            return wm.loginWithPin(pin: pin, pinData: pinData, bip39passphrase: bip39passphrase)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
         }.then(on: bgq) { _ in

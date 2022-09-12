@@ -73,39 +73,48 @@ class WalletManager {
         activeSessions.count > 0
     }
 
-    func login(pin: String, pinData: PinData, bip39passphrase: String?) -> Promise<Void> {
+    func loginWithPin(pin: String, pinData: PinData, bip39passphrase: String?) -> Promise<Void> {
         guard let mainSession = sessions[prominentNetwork.rawValue] else {
             fatalError()
         }
         return Guarantee()
-            .then { mainSession.connect() }
-            .then { _ in mainSession.decryptWithPin(pin: pin, pinData: pinData) }
-            .compactMap { Credentials(mnemonic: $0.mnemonic, password: nil, bip39Passphrase: bip39passphrase) }
-            .then { credentials in
-                when(guarantees: self.sessions.values
-                    .filter { !$0.logged }
-                    .map { session in
-                        session.loginWithCredentials(credentials)
-                        .asVoid()
-                        .recover { _ in Promise().asVoid() }
-                        .map { session.registry?.cache(session: session) }
-                        .map { session.registry?.loadAsync(session: session) }
-                    }
-                )
-            }
+            //.then { mainSession.connect() }
+            //.then { _ in mainSession.decryptWithPin(pin: pin, pinData: pinData) }
+            .then { _ in mainSession.loginWithPin(pin, pinData: pinData) }
+            .then { _ in mainSession.getCredentials(password: "") }
+            .then { self.login($0) }
+            .compactMap { self.loadRegistry() }
     }
 
-    func loginWatchOnly(username: String, password: String) -> Guarantee<Void> {
+    func loginWatchOnly(_ username: String, _ password: String) -> Promise<Void> {
+        guard let mainSession = sessions[prominentNetwork.rawValue] else {
+            fatalError()
+        }
+        return Guarantee()
+            .then { mainSession.loginWatchOnly(username, password).asVoid() }
+            .compactMap { Credentials(username: username, password: password) }
+            .then { self.login($0) }
+            .compactMap { self.loadRegistry() }
+    }
+
+    func login(_ credentials: Credentials) -> Guarantee<Void> {
         return when(guarantees: self.sessions.values
                 .filter { !$0.logged }
                 .map { session in
-                    session.loginWatchOnly(username, password)
+                    session.loginWithCredentials(credentials)
                     .asVoid()
-                    .recover { _ in Promise().asVoid() }
-                    .map { session.registry?.cache(session: session) }
-                    .map { session.registry?.loadAsync(session: session) }
+                    .recover { _ in return Guarantee().asVoid() }
                 }
         )
+    }
+
+    func loadRegistry() {
+        self.sessions.values
+            .filter { $0.logged }
+            .forEach {
+                $0.registry?.cache(session: $0)
+                $0.registry?.loadAsync(session: $0)
+            }
     }
 
     func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {

@@ -117,7 +117,7 @@ class WalletNameViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let session = SessionManager(OnBoardManager.shared.gdkNetwork)
         let params = OnBoardManager.shared.params
-        let credentials = Credentials(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword, bip39Passphrase: nil)
+        let credentials = Credentials(mnemonic: params?.mnemonic ?? "", bip39Passphrase: nil, password: params?.mnemomicPassword)
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
