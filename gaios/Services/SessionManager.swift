@@ -416,7 +416,7 @@ class SessionManager {
             .asVoid()
     }
 
-    func decryptWithPin(pin: String, pinData: PinData) -> Promise<Credentials> {
+    /*func decryptWithPin(pin: String, pinData: PinData) -> Promise<Credentials> {
         let bgq = DispatchQueue.global(qos: .background)
         let text = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(pinData), options: .allowFragments) as? [String: Any]
         return Guarantee()
@@ -427,7 +427,7 @@ class SessionManager {
                 let jsonData = try JSONSerialization.data(withJSONObject: result ?? "")
                 return try JSONDecoder().decode(Credentials.self, from: jsonData)
             }.tapLogger()
-    }
+    }*/
 
     func encryptWithPin(pin: String, text: [String: Any?]) -> Promise<PinData> {
         let bgq = DispatchQueue.global(qos: .background)
