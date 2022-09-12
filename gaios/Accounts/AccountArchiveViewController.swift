@@ -86,7 +86,7 @@ class AccountArchiveViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
             .compactMap { self.account?.id }
-            .compactMap { WalletManager.shared[$0] }
+            .compactMap { WalletManager.get(for: $0) }
             .then(on: bgq) { $0.subaccounts() }
             .map { wallets in
                 self.subAccounts = wallets.filter { $0.hidden == true }

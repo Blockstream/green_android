@@ -71,6 +71,10 @@ enum NetworkSecurityCase: String, CaseIterable {
         self.rawValue
     }
 
+    var gdkNetwork: GdkNetwork? {
+        getGdkNetwork(self.rawValue)
+    }
+
     func name() -> String {
         switch self {
         case .bitcoinMS:

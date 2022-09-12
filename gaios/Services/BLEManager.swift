@@ -330,9 +330,7 @@ class BLEManager {
                 session
                     .load(refreshSubaccounts: firstLogin)
                     .done {
-                        if WalletManager.shared[account.id] != nil {
-                            WalletManager.shared.removeValue(forKey: account.id)
-                        }
+                        WalletManager.delete(for: account)
                         AccountDao.shared.current = account
                         self.delegate?.onLogin(p, account: account)
                     }.catch { _ in

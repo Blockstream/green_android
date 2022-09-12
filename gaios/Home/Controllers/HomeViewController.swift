@@ -22,7 +22,7 @@ class HomeViewController: UIViewController {
 
     private var ephAccounts: [Account] {
         AccountDao.shared.ephAccounts.filter { account in
-            account.isEphemeral && !WalletManager.shared.filter {$0.key == account.id }.isEmpty
+            account.isEphemeral && !WalletManager.wallets.filter {$0.key == account.id }.isEmpty
         }
     }
 
@@ -156,7 +156,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 let account = AccountDao.shared.swAccounts[indexPath.row]
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                     let selected = { () -> Bool in
-                        return WalletManager.shared[account.id]?.activeSessions.count ?? 0 > 0
+                        return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
                     }
                     cell.configure(item: account, isSelected: selected())
                     cell.selectionStyle = .none
@@ -167,7 +167,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
-                    return WalletManager.shared[account.id]?.activeSessions.count ?? 0 > 0
+                    return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
                 }
                 cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none
@@ -177,7 +177,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = AccountDao.shared.hwAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
-                    return WalletManager.shared[account.id]?.activeSessions.count ?? 0 > 0
+                    return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
                 }
                 cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none

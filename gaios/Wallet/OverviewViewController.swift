@@ -68,7 +68,7 @@ class OverviewViewController: UIViewController {
 
     // global variables
     private var account = AccountDao.shared.current
-    private var wm: WalletManager? { WalletManager.shared[account?.id ?? ""] }
+    private var wm: WalletManager? { WalletManager.get(for: account?.id ?? "") }
     private var session: SessionManager? { wm?.currentSession }
     private var isLiquid: Bool { session?.gdkNetwork.liquid ?? false }
     private var isAmp: Bool { presentingWallet?.type == AccountType.amp }
@@ -1036,7 +1036,7 @@ extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faVi
         self.presentedViewController?.dismiss(animated: true, completion: {
             DispatchQueue.main.async {
                 self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
-                WalletManager.shared.removeValue(forKey: self.account?.id ?? "")
+                WalletManager.delete(for: self.account)
                 self.stopLoader()
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)
                 let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController

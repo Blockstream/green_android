@@ -4,11 +4,14 @@ import PromiseKit
 
 class WalletManager {
 
-    // Current account
-    var account: Account
+    // Store all the Wallet available for each account id
+    static var wallets = [String: WalletManager]()
 
     // Hashmap of available networks with open session
     var sessions = [String: SessionManager]()
+
+    // Prominent network used for login with stored credentials
+    var prominentNetwork = NetworkSecurityCase.bitcoinSS
 
     // Cached subaccounts list
     var subaccounts = [WalletItem]()
@@ -38,32 +41,22 @@ class WalletManager {
         return sessions[network ?? ""]
     }
 
-    // Static store all the Wallet available in the app for each account
-    static var shared = [String: WalletManager]()
-
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
 
-    // Static store the current WalletManager used in the active user session
-    static var current: WalletManager? {
-        let account = AccountDao.shared.current
-        return WalletManager.shared[account?.id ?? ""]
-    }
-
-    init(account: Account, testnet: Bool) {
-        self.account = account
-        if testnet {
-            addSession(for: .testnetSS)
-            addSession(for: .testnetLiquidSS)
-            addSession(for: .testnetMS)
-            addSession(for: .testnetLiquidMS)
-        } else {
+    init(prominentNetwork: NetworkSecurityCase?) {
+        self.prominentNetwork = prominentNetwork ?? .bitcoinSS
+        if prominentNetwork?.gdkNetwork?.mainnet ?? true {
             addSession(for: .bitcoinSS)
             addSession(for: .liquidSS)
             addSession(for: .bitcoinMS)
             addSession(for: .liquidMS)
+        } else {
+            addSession(for: .testnetSS)
+            addSession(for: .testnetLiquidSS)
+            addSession(for: .testnetMS)
+            addSession(for: .testnetLiquidMS)
         }
-        WalletManager.shared[account.id] = self
     }
 
     func addSession(for network: NetworkSecurityCase) {
@@ -76,8 +69,12 @@ class WalletManager {
         self.sessions.filter { $0.1.logged }
     }
 
+    var logged: Bool {
+        activeSessions.count > 0
+    }
+
     func login(pin: String, pinData: PinData, bip39passphrase: String?) -> Promise<Void> {
-        guard let mainSession = sessions[account.networkName] else {
+        guard let mainSession = sessions[prominentNetwork.rawValue] else {
             fatalError()
         }
         return Guarantee()
@@ -95,8 +92,6 @@ class WalletManager {
                         .map { session.registry?.loadAsync(session: session) }
                     }
                 )
-            }.map {
-                self.account.isEphemeral = ![nil, ""].contains(bip39passphrase)
             }
     }
 
@@ -180,6 +175,46 @@ class WalletManager {
                     try? session.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
                 }
             }
+        }
+    }
+}
+
+extension WalletManager {
+
+    // Return current WalletManager used for the active user session
+    static var current: WalletManager? {
+        let account = AccountDao.shared.current
+        return get(for: account?.id ?? "")
+    }
+
+    static func add(for account: Account) {
+        let network = NetworkSecurityCase(rawValue: account.networkName)
+        let wm = WalletManager(prominentNetwork: network)
+        wallets[account.id] = wm
+    }
+
+    static func get(for accountId: String) -> WalletManager? {
+        return wallets[accountId]
+    }
+
+    static func get(for account: Account) -> WalletManager? {
+        get(for: account.id)
+    }
+
+    static func getOrAdd(for account: Account) -> WalletManager {
+        if !wallets.keys.contains(account.id) {
+            add(for: account)
+        }
+        return get(for: account)!
+    }
+
+    static func delete(for accountId: String) {
+        wallets.removeValue(forKey: accountId)
+    }
+
+    static func delete(for account: Account?) {
+        if let account = account {
+            delete(for: account.id)
         }
     }
 }

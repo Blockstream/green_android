@@ -90,10 +90,10 @@ class ScreenLocker {
         }
         let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval
 
-        WalletManager.shared.forEach { (id, wm) in
+        WalletManager.wallets.forEach { (id, wm) in
             if let settings = wm.currentSession?.settings,
                Int(countdown) >= settings.altimeout * 60 {
-                WalletManager.shared.removeValue(forKey: id)
+                WalletManager.delete(for: id)
 
                 if id == AccountDao.shared.current?.id ?? "" {
                     self.isScreenLockLocked = true

@@ -222,7 +222,7 @@ class LoginViewController: UIViewController {
     }
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let wm = WalletManager(account: account, testnet: !(account?.gdkNetwork?.mainnet ?? true))
+        let wm = WalletManager.getOrAdd(for: account)
         firstly {
             return Guarantee()
         }.compactMap {
@@ -236,14 +236,11 @@ class LoginViewController: UIViewController {
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
         }.then(on: bgq) { _ in
             wm.subaccounts()
-        //}.then { (firstLogin: Bool) in
-        //    session!.load(refreshSubaccounts: firstLogin)
-        //}.then(on: bgq) { _ in
-        //    session!.subaccount(self.account.activeWallet)
-        }.done { wallet in
+        }.done { _ in
             if withPIN != nil {
                 self.account.attempts = 0
             }
+            self.account.isEphemeral = ![nil, ""].contains(bip39passphrase)
             AccountDao.shared.current = self.account
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
                                                 ephemeralBip39: self.account.isEphemeral,
@@ -251,9 +248,6 @@ class LoginViewController: UIViewController {
 
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
-            if let vc = nav?.topViewController as? ContainerViewController {
-                //vc.presentingWallet =
-            }
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
