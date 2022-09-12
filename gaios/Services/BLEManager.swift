@@ -139,14 +139,8 @@ class BLEManager {
         p.peripheral.name?.contains("Jade") ?? false
     }
 
-    func connectLedger(_ p: Peripheral, network: GdkNetwork) {
-        let session = SessionManager(network)
-        self.session = session
-        var connection = Observable.just(p)
-        if !p.isConnected {
-            connection = p.establishConnection()
-        }
-        enstablishDispose = connection
+    func connectLedger(_ p: Peripheral, network: GdkNetwork) -> Observable<Bool> {
+        return Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p in Ledger.shared.open(p) }
             .flatMap { _ in Ledger.shared.application() }
@@ -161,18 +155,57 @@ class BLEManager {
                 } else if name == "Bitcoin" && version[0] ?? 0 < 1 {
                     throw DeviceError.outdated_app
                 }
-            }.compactMap { _ in
-                try? session.connect().wait()
+                return false
             }
+    }
+
+    func connectJade(_ p: Peripheral) -> Observable<Bool> {
+        var hasPin = false
+        return Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { p in Jade.shared.open(p) }
+            .flatMap { _ in Jade.shared.addEntropy() }
+            .flatMap { _ in Jade.shared.version() }
+            .flatMap { version -> Observable<Bool> in
+                hasPin = version.jadeHasPin
+                self.fmwVersion = version.jadeVersion
+                self.boardType = version.boardType
+                let networkType: NetworkSecurityCase = version.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS
+                let chain = networkType.chain
+                switch version.jadeState {
+                case "READY":
+                    return Observable.just(true)
+                case "TEMP":
+                    return Jade.shared.unlock(network: chain)
+                default:
+                    return Jade.shared.auth(network: chain)
+                            .retry(3)
+                }
+            }.compactMap { _ in return hasPin }
+    }
+
+    func connect(_ p: Peripheral, network: GdkNetwork? = nil) {
+        addStatusListener(p)
+        let gdkNetwork = network ?? getGdkNetwork("electrum-mainnet")
+        session = SessionManager(gdkNetwork)
+        var connection = Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+        if !p.isConnected {
+            connection = connection
+                .flatMap { $0.establishConnection() }
+        }
+        enstablishDispose = connection
+            .compactMap { _ in try? self.session?.connect().wait() }
+            .flatMap { self.isJade(p) ? self.connectJade(p) : self.connectLedger(p, network: gdkNetwork) }
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                self.delegate?.onAuthenticate(p, network: network, firstInitialization: false)
+            .subscribe(onNext: { hasPin in
+                self.delegate?.onAuthenticate(p, network: gdkNetwork, firstInitialization: !hasPin)
             }, onError: { err in
-                // session.destroy()
-                self.onError(err, network: network.name)
+                self.onError(err, network: "")
             })
     }
 
+/*
     func connectJade(_ p: Peripheral, network: GdkNetwork) {
         let session = SessionManager(network)
         self.session = session
@@ -217,7 +250,7 @@ class BLEManager {
             }, onError: { err in
                 self.onError(err, network: network.name)
             })
-    }
+    }*/
 
     func checkFirmware(_ p: Peripheral) -> Observable<Peripheral> {
         var verInfo: JadeVersionInfo?
@@ -262,15 +295,6 @@ class BLEManager {
         }
     }
 
-    func connect(_ p: Peripheral, network: GdkNetwork) {
-        addStatusListener(p)
-        if isJade(p) {
-            connectJade(p, network: network)
-        } else {
-            connectLedger(p, network: network)
-        }
-    }
-
     func device(isJade: Bool, fmwVersion: String) -> HWDevice {
         if !isJade {
             return HWDevice(name: "Ledger",
@@ -288,6 +312,45 @@ class BLEManager {
                          supportsLiquid: 1,
                          supportsAntiExfilProtocol: 1,
                          supportsHostUnblinding: supportUnblinding)
+    }
+
+    func loginJade(_ p: Peripheral) {
+        _ = Observable.just(p)
+            .flatMap { _ in Jade.shared.version() }
+            .compactMap { $0.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS }
+            .compactMap { WalletManager(prominentNetwork: $0) }
+            .flatMap { wm -> Observable<WalletManager> in
+                let device = self.device(isJade: self.isJade(p),
+                                        fmwVersion: self.fmwVersion ?? "")
+                return Observable<WalletManager>.create { observer in
+                    wm.loginWithHW(device)
+                        .done { res in
+                            observer.onNext(wm)
+                            observer.onCompleted()
+                        }.catch { err in
+                            observer.onError(err)
+                        }
+                    return Disposables.create { }
+                }
+            }.observeOn(MainScheduler.instance)
+            .subscribe(onNext: { wm in
+                let network = wm.prominentNetwork
+                let account = Account(name: p.name ?? "HW",
+                                     network: network.chain,
+                                     isJade: true,
+                                     isLedger: false,
+                                     isSingleSig: network.gdkNetwork?.electrum ?? true)
+                AccountDao.shared.current = account
+                WalletManager.add(for: account, wm: wm)
+                self.delegate?.onLogin(p, account: account)
+            }, onError: { err in
+                switch err {
+                case BLEManagerError.firmwareErr(_): // nothing to do
+                    return
+                default:
+                    self.onError(err, network: nil)
+                }
+            })
     }
 
     func login(_ p: Peripheral, network: GdkNetwork, checkFirmware: Bool = true) {

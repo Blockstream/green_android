@@ -239,9 +239,10 @@ class HWWConnectViewController: UIViewController {
             hwwState = .connecting
             BLEManager.shared.dispose()
             navigationController?.popViewController(animated: true)
+            return
         }
         hwwState = .connected
-        BLEManager.shared.login(peripheral, network: network)
+        BLEManager.shared.loginJade(peripheral)
     }
 
     @IBAction func btnSettings(_ sender: Any) {
@@ -386,7 +387,11 @@ extension HWWConnectViewController: BLEManagerDelegate {
         }
     }
 
-    func onPrepare(_: Peripheral, reset: Bool = false) {
+    func onPrepare( _ p: Peripheral, reset: Bool = false) {
+        if BLEManager.shared.isJade(peripheral) {
+            connect(p, network: "mainnet")
+            return
+        }
         DispatchQueue.main.async {
             self.hwwState = .selectNetwork
             self.resetBle = reset
@@ -399,7 +404,7 @@ extension HWWConnectViewController: BLEManagerDelegate {
                 self.hwwState = .initialized
             }
             self.hwwState = .connected
-            BLEManager.shared.login(peripheral, network: network)
+            BLEManager.shared.loginJade(peripheral)
         }
     }
 
@@ -440,7 +445,7 @@ extension HWWConnectViewController: BLEManagerDelegate {
                         BLEManager.shared.dispose()
                         self?.onError(BLEManagerError.genericErr(txt: NSLocalizedString("id_new_jade_firmware_required", comment: "")))
                     }
-                    BLEManager.shared.login(peripheral, network: self!.network, checkFirmware: false)
+                    BLEManager.shared.loginJade(peripheral)
                 }
             }
             present(vc, animated: false, completion: nil)

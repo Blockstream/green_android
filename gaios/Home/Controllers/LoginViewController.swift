@@ -234,8 +234,6 @@ class LoginViewController: UIViewController {
             return wm.loginWithPin(pin: pin, pinData: pinData, bip39passphrase: bip39passphrase)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
-        }.then(on: bgq) { _ in
-            wm.subaccounts()
         }.done { _ in
             if withPIN != nil {
                 self.account.attempts = 0

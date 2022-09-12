@@ -83,6 +83,7 @@ class WalletManager {
             .then { _ in mainSession.loginWithPin(pin, pinData: pinData) }
             .then { _ in mainSession.getCredentials(password: "") }
             .then { self.login($0) }
+            .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
     }
 
@@ -94,6 +95,7 @@ class WalletManager {
             .then { mainSession.loginWatchOnly(username, password).asVoid() }
             .compactMap { Credentials(username: username, password: password) }
             .then { self.login($0) }
+            .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
     }
 
@@ -104,8 +106,24 @@ class WalletManager {
                     session.loginWithCredentials(credentials)
                     .asVoid()
                     .recover { _ in return Guarantee().asVoid() }
-                }
-        )
+                })
+    }
+
+    func loginWithHW(_ device: HWDevice) -> Promise<Void> {
+        var iterator = self.sessions.values
+            .filter { !$0.logged }
+            .filter { $0.gdkNetwork.network != "electrum-liquid" }
+            .makeIterator()
+        let generator = AnyIterator<Promise<Void>> {
+            guard let session = iterator.next() else {
+                return nil
+            }
+            return session.loginWithHW(device).asVoid()
+                .recover { _ in return Guarantee().asVoid() }
+        }
+        return when(fulfilled: generator, concurrently: 1)
+            .then { _ in self.subaccounts() }.asVoid()
+            .compactMap { self.loadRegistry() }
     }
 
     func loadRegistry() {
@@ -196,7 +214,11 @@ extension WalletManager {
         return get(for: account?.id ?? "")
     }
 
-    static func add(for account: Account) {
+    static func add(for account: Account, wm: WalletManager? = nil) {
+        if let wm = wm {
+            wallets[account.id] = wm
+            return
+        }
         let network = NetworkSecurityCase(rawValue: account.networkName)
         let wm = WalletManager(prominentNetwork: network)
         wallets[account.id] = wm

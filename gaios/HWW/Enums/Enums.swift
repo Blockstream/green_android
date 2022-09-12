@@ -75,6 +75,10 @@ enum NetworkSecurityCase: String, CaseIterable {
         getGdkNetwork(self.rawValue)
     }
 
+    var chain: String {
+        network.replacingOccurrences(of: "electrum-", with: "")
+    }
+
     func name() -> String {
         switch self {
         case .bitcoinMS:

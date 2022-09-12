@@ -166,7 +166,7 @@ class SendConfirmViewController: KeyboardViewController {
             StoreReviewHelper
                 .shared
                 .request(isSendAll: isSendAll,
-                         account: AccountsManager.shared.current,
+                         account: AccountDao.shared.current,
                          walletType: self?.wallet?.type)
         }
     }
