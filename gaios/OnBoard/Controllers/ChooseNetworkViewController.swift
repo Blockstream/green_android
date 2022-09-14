@@ -48,17 +48,16 @@ class ChooseNetworkViewController: UIViewController {
 
         let hideTestnets: Bool = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) != true
         cardTestnet.isHidden = hideTestnets
-        cardLiquidTestnet.isHidden = hideTestnets
+        cardLiquidTestnet.isHidden = true
+        cardLiquid.isHidden = true
     }
 
     func setContent() {
         title = ""
         lblTitle.text = NSLocalizedString("id_choose_your_network", comment: "")
         lblHint.text = NSLocalizedString("id_blockstream_green_supports_both", comment: "")
-        lblBitcoinTitle.text = "Bitcoin"
-        lblBitcoinHint.text = NSLocalizedString("id_bitcoin_is_the_worlds_leading", comment: "")
-        lblLiquidTitle.text = "Liquid"
-        lblLiquidHint.text = NSLocalizedString("id_the_liquid_network_is_a_bitcoin", comment: "")
+        lblBitcoinTitle.text = "Bitcoin / Liquid"
+        lblBitcoinHint.text = ""
         lblTestnetTitle.text = "Testnet"
         lblTestnetHint.text = ""
     }
@@ -132,8 +131,8 @@ class ChooseNetworkViewController: UIViewController {
     func next() {
         switch LandingViewController.flowType {
         case .add:
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
+            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
             navigationController?.pushViewController(vc, animated: true)
         case .restore:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)

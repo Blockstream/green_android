@@ -139,10 +139,11 @@ class WatchOnlyViewController: KeyboardViewController {
         let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
+        let gdknetwork = getGdkNetwork(network.rawValue)
 
         let name = AccountDao.shared.getUniqueAccountName(
-            securityOption: watchOnlySecurityOption,
-            network: network)
+            testnet: !gdknetwork.mainnet,
+            watchonly: true)
 
         var account = Account(name: name, network: network.rawValue, username: username, isSingleSig: false)
         if self.rememberSwitch.isOn {

@@ -1,4 +1,5 @@
 import UIKit
+import PromiseKit
 
 class WalletSuccessViewController: UIViewController {
 
@@ -60,8 +61,20 @@ class WalletSuccessViewController: UIViewController {
     }
 
     @IBAction func btnWallet(_ sender: Any) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        appDelegate?.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+        guard let account = AccountDao.shared.current else {
+            fatalError("account must exist")
+        }
+        let wm = WalletManager.getOrAdd(for: account)
+        Guarantee()
+            .compactMap { OnBoardManager.shared.session }
+            .then { $0.getCredentials(password: "") }
+            .then { wm.login($0) }
+            .done {
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+            }.catch { _ in
+                print ("login error")
+            }
     }
 
     @IBAction func btnBackup(_ sender: Any) {

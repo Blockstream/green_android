@@ -183,7 +183,7 @@ class SetPinViewController: UIViewController {
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
         guard var account = AccountDao.shared.current,
-              let session = WalletManager.get(for: account.id)?.currentSession else {
+              let session = OnBoardManager.shared.session else {
             fatalError("Error: No account or session found")
         }
         firstly {
@@ -212,7 +212,7 @@ class SetPinViewController: UIViewController {
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         }.catch { error in
-            if let err = error as? GaError {
+            if let _ = error as? GaError {
                 self.showError(NSLocalizedString("id_connection_failed", comment: ""))
             } else if let err = error as? AuthenticationTypeHandler.AuthError {
                 self.showError(err.localizedDescription)

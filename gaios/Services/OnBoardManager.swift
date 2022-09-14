@@ -6,12 +6,13 @@ class OnBoardManager {
     static let shared = OnBoardManager()
 
     var params: OnBoardParams?
+    var session: SessionManager?
 
     var account: Account {
         return Account(id: params?.accountId ?? UUID().uuidString,
                        name: params?.walletName ?? "",
                        network: params?.network ?? "mainnet",
-                       isSingleSig: params?.singleSig ?? false)
+                       isSingleSig: params?.singleSig ?? true)
     }
 
     var networkName: String {

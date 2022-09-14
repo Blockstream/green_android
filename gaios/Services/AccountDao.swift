@@ -172,19 +172,15 @@ class AccountDao {
         accounts = currentList
     }
 
-    func getUniqueAccountName(
-        securityOption: SecurityOption,
-        network: AvailableNetworks) -> String {
-
-        let baseName = "\(securityOption.rawValue) \(network.name())"
-        var name = baseName
+    func getUniqueAccountName(testnet: Bool, watchonly: Bool? = false) -> String {
+        let baseName = "\(testnet ? "Testnet ": "")\(watchonly ?? false ? "Watchonly ": "")Wallet"
         for num in 0...999 {
-            name = num == 0 ? baseName : "\(baseName) #\(num + 1)"
+            let name = num == 0 ? baseName : "\(baseName) #\(num + 1)"
             if (AccountDao.shared.swAccounts.filter { $0.name.lowercased().hasPrefix(name.lowercased()) }.count) > 0 {
             } else {
-                break
+                return name
             }
         }
-        return name
+        return baseName
     }
 }

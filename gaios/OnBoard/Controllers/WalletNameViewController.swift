@@ -21,13 +21,9 @@ class WalletNameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        if let isSingleSig = OnBoardManager.shared.account.isSingleSig,
-            let network: AvailableNetworks = (AvailableNetworks.allCases.filter { $0.rawValue == OnBoardManager.shared.account.network}).first {
-
-            defaultName = AccountDao.shared.getUniqueAccountName(
-                securityOption: isSingleSig ? .single : .multi,
-                network: network)
+        if let network = AvailableNetworks.allCases.filter({ $0.rawValue == OnBoardManager.shared.account.network}).first {
+            let mainnet = getGdkNetwork(network.rawValue).mainnet
+            defaultName = AccountDao.shared.getUniqueAccountName(testnet: !mainnet)
         }
 
         fieldName.delegate = self
@@ -147,9 +143,8 @@ class WalletNameViewController: UIViewController {
             self.stopLoader()
         }.done { _ in
             let account = OnBoardManager.shared.account
+            OnBoardManager.shared.session = session
             AccountDao.shared.current = account
-            // TODO : ONBOARDING
-            // SessionsManager.shared[account.id] = session
             if restored {
                 AnalyticsManager.shared.restoreWallet(account: AccountDao.shared.current)
             } else {

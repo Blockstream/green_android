@@ -221,17 +221,10 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                 OnBoardManager.shared.params?.mnemonic = mnemonic
                 OnBoardManager.shared.params?.mnemomicPassword = password
 
-                if OnBoardManager.shared.params?.accountId != nil {
-                    // recovery of existing wallet
-                    let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                    let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
-                    self.navigationController?.pushViewController(vc, animated: true)
-                } else {
-                    // recovery of new wallet
-                    let storyboard = UIStoryboard(name: "AutomaticRestore", bundle: nil)
-                    let vc = storyboard.instantiateViewController(withIdentifier: "ExistingWalletsViewController")
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
+               // recovery of existing wallet
+                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
+                self.navigationController?.pushViewController(vc, animated: true)
             case .addSubaccount:
                 let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
