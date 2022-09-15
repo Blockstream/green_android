@@ -10,7 +10,7 @@ class AssetCell: UITableViewCell {
     @IBOutlet weak var bgView: UIView!
 
     private var btc: String {
-        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func prepareForReuse() {

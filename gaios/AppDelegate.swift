@@ -7,7 +7,7 @@ func getAppDelegate() -> AppDelegate? {
 }
 
 func getNetwork() -> String {
-    AccountDao.shared.current?.network ?? "mainnet"
+    AccountsManager.shared.current?.network ?? "mainnet"
 }
 
 @UIApplicationMain
@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout(with pin: Bool) {
-        let account = AccountDao.shared.current
+        let account = AccountsManager.shared.current
         if let account = account {
             WalletManager.delete(for: account.id)
         }
@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
             if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
                 let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
-                    vc.account = AccountDao.shared.current
+                    vc.account = AccountsManager.shared.current
                     nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
                     nav.pushViewController(vc, animated: false)
@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let hwwS = UIStoryboard(name: "HWW", bundle: nil)
             if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
                 let vc = hwwS.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-                    vc.jade = AccountDao.shared.current?.isJade == true
+                    vc.jade = AccountsManager.shared.current?.isJade == true
                     nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
                     nav.pushViewController(vc, animated: false)
@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let homeS = UIStoryboard(name: "Home", bundle: nil)
             if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
                 let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
-                vc.account = AccountDao.shared.current
+                vc.account = AccountsManager.shared.current
                 nav.pushViewController(vc, animated: false)
                 UIApplication.shared.keyWindow?.rootViewController = nav
                 nav.pushViewController(vc, animated: false)
@@ -98,7 +98,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Initialize gdk and accounts
         try? gdkinitialize()
-        AccountDao.shared.onFirstInitialization()
+        AccountsManager.shared.onFirstInitialization()
 
         // Set screen lock
         instantiateViewControllerAsRoot(storyboard: "Home", identifier: "HomeViewController")

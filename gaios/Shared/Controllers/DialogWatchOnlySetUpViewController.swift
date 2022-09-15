@@ -31,7 +31,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
     weak var delegate: DialogWatchOnlySetUpViewControllerDelegate?
 
-    var account = { AccountDao.shared.current }()
+    var account = { AccountsManager.shared.current }()
     var buttonConstraint: NSLayoutConstraint?
     var wallet: WalletItem?
     var username: String?

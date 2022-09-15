@@ -42,7 +42,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
         cardAmp.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.cardAmp
         card2of3.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.card2of3
 
-        AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
+        AnalyticsManager.shared.recordView(.addAccountChooseType, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {
@@ -77,7 +77,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
     }
 
     func setVisibility() {
-        if let account = AccountDao.shared.current {
+        if let account = AccountsManager.shared.current {
             let isSingleSig = (account.isSingleSig ?? false)
             let isLiquid = account.network == "liquid"
             let isLiquidTestnet = account.network == "testnet-liquid"

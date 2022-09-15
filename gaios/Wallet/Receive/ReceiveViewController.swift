@@ -25,8 +25,7 @@ class ReceiveViewController: UIViewController {
 
     private var newAddressToken: NSObjectProtocol?
     var satoshi: Int64?
-    private var account = AccountDao.shared.current
-    var satoshi: UInt64?
+    private var account = AccountsManager.shared.current
     var address: Address?
 
     override func viewDidLoad() {
@@ -46,7 +45,7 @@ class ReceiveViewController: UIViewController {
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
         btnAddress.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.addressBtn
 
-        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountDao.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -97,7 +96,7 @@ class ReceiveViewController: UIViewController {
 
     func validate() {
         guard let addr = self.address,
-              let network = AccountDao.shared.current?.network else {
+              let network = AccountsManager.shared.current?.network else {
             return
         }
         let hw: HWProtocol = account?.isLedger ?? false ? Ledger.shared : Jade.shared
@@ -143,7 +142,7 @@ class ReceiveViewController: UIViewController {
             return session.getReceiveAddress(subaccount: wallet.pointer)
         }.done { address in
             let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address.address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.text, method: AnalyticsManager.ReceiveAddressMethod.copy)
-            AnalyticsManager.shared.receiveAddress(account: AccountDao.shared.current, walletType: wallet.type, data: data)
+            AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
 
             UIPasteboard.general.string = self.uriBitcoin(address: address.address)
             DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 1.0)
@@ -312,10 +311,10 @@ extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
             switch option {
             case .address:
                 let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.text, method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(account: AccountDao.shared.current, walletType: wallet.type, data: data)
+                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
             case .qr:
                 let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.image, method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(account: AccountDao.shared.current, walletType: wallet.type, data: data)
+                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
             case .cancel:
                 break
             }

@@ -35,7 +35,7 @@ class FeeEditCell: UITableViewCell {
     weak var delegate: FeeEditCellDelegate?
 
     private var btc: String {
-        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {

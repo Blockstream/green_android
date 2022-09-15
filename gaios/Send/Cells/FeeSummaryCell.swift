@@ -8,7 +8,7 @@ class FeeSummaryCell: UITableViewCell {
     @IBOutlet weak var lblFeeInfo: UILabel!
 
     private var btc: String {
-        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {

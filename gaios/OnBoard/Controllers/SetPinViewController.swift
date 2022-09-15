@@ -42,7 +42,7 @@ class SetPinViewController: UIViewController {
         if actionPin == .set {
             switch self.pinFlow {
             case .settings:
-                AnalyticsManager.shared.recordView(.walletSettingsChangePIN, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
+                AnalyticsManager.shared.recordView(.walletSettingsChangePIN, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
             case .onboard:
                 switch LandingViewController.flowType {
                 case .add:
@@ -182,7 +182,7 @@ class SetPinViewController: UIViewController {
 
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard var account = AccountDao.shared.current,
+        guard var account = AccountsManager.shared.current,
               let session = OnBoardManager.shared.session else {
             fatalError("Error: No account or session found")
         }
@@ -202,7 +202,7 @@ class SetPinViewController: UIViewController {
             self.stopLoader()
         }.done { _ in
             account.attempts = 0
-            AccountDao.shared.current = account
+            AccountsManager.shared.current = account
             switch self.pinFlow {
             case .settings:
                 self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)

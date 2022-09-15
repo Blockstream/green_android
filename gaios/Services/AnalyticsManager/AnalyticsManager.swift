@@ -231,7 +231,7 @@ class AnalyticsManager {
     }
 
     private func updateUserProperties() {
-        let accounts = AccountDao.shared.swAccounts
+        let accounts = AccountsManager.shared.swAccounts
 
         let bitcoin_wallets = accounts.filter { $0.network == "mainnet"}
         let liquid_wallets = accounts.filter { $0.network == "liquid"}

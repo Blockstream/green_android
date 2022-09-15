@@ -20,7 +20,7 @@ class MnemonicAuthViewController: UIViewController {
         setContent()
         setStyle()
 
-        AnalyticsManager.shared.recordView(.recoveryIntro, sgmt: AnalyticsManager.shared.ntwSgmt(AccountDao.shared.current))
+        AnalyticsManager.shared.recordView(.recoveryIntro, sgmt: AnalyticsManager.shared.ntwSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {

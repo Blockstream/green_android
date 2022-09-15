@@ -23,7 +23,7 @@ class WalletNameViewController: UIViewController {
         super.viewDidLoad()
         if let network = AvailableNetworks.allCases.filter({ $0.rawValue == OnBoardManager.shared.account.network}).first {
             let mainnet = getGdkNetwork(network.rawValue).mainnet
-            defaultName = AccountDao.shared.getUniqueAccountName(testnet: !mainnet)
+            defaultName = AccountsManager.shared.getUniqueAccountName(testnet: !mainnet)
         }
 
         fieldName.delegate = self
@@ -144,11 +144,11 @@ class WalletNameViewController: UIViewController {
         }.done { _ in
             let account = OnBoardManager.shared.account
             OnBoardManager.shared.session = session
-            AccountDao.shared.current = account
+            AccountsManager.shared.current = account
             if restored {
-                AnalyticsManager.shared.restoreWallet(account: AccountDao.shared.current)
+                AnalyticsManager.shared.restoreWallet(account: AccountsManager.shared.current)
             } else {
-                AnalyticsManager.shared.createWallet(account: AccountDao.shared.current)
+                AnalyticsManager.shared.createWallet(account: AccountsManager.shared.current)
             }
             self.next()
         }.catch { error in

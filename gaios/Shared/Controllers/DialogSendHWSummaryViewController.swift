@@ -29,12 +29,12 @@ class DialogSendHWSummaryViewController: UIViewController {
     @IBOutlet weak var lblChangeHint: UILabel!
 
     private var btc: String {
-        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     var network: String? {
         get {
-            return AccountDao.shared.current?.network
+            return AccountsManager.shared.current?.network
         }
     }
 
@@ -55,7 +55,7 @@ class DialogSendHWSummaryViewController: UIViewController {
             icWallet.image = UIImage(named: "ic_hww_jade")
         }
 
-        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
+        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {
@@ -69,9 +69,9 @@ class DialogSendHWSummaryViewController: UIViewController {
 
             let addreessee = transaction.addressees.first
             var value = addreessee?.satoshi ?? 0
-            let network = AccountDao.shared.current?.gdkNetwork
+            let network = AccountsManager.shared.current?.gdkNetwork
             let assetId = (network?.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
-            if !(AccountDao.shared.current?.isSingleSig ?? false) && transaction.sendAll {
+            if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
                 value = transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
             }
             let registry = WalletManager.current?.currentSession?.registry

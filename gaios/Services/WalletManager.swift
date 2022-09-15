@@ -223,7 +223,7 @@ extension WalletManager {
 
     // Return current WalletManager used for the active user session
     static var current: WalletManager? {
-        let account = AccountDao.shared.current
+        let account = AccountsManager.shared.current
         return get(for: account?.id ?? "")
     }
 

@@ -24,7 +24,7 @@ class AccountArchiveViewController: UIViewController {
             return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet}
         }
     }
-    var account = AccountDao.shared.current
+    var account = AccountsManager.shared.current
     private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
 //    private var isAmp: Bool {
 //        guard let wallet = presentingWallet else { return false }
@@ -55,7 +55,7 @@ class AccountArchiveViewController: UIViewController {
 
         reloadData()
 
-        AnalyticsManager.shared.recordView(.archivedAccounts, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
+        AnalyticsManager.shared.recordView(.archivedAccounts, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     @objc func back(sender: UIBarButtonItem) {

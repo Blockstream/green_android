@@ -33,7 +33,7 @@ class OverviewAssetCell: UITableViewCell {
             lblAmount.text = amount
             lblDenom.text = denom
             lblAmount2.text = ""
-            if tag == AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? "" {
+            if tag == AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? "" {
                 let (fiat, fiatCurrency) = balance.toFiat()
                 lblAmount2.text = "≈ \(fiat) \(fiatCurrency)"
             }

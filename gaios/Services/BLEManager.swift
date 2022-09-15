@@ -340,7 +340,7 @@ class BLEManager {
                                      isJade: true,
                                      isLedger: false,
                                      isSingleSig: network.gdkNetwork?.electrum ?? true)
-                AccountDao.shared.current = account
+                AccountsManager.shared.current = account
                 WalletManager.add(for: account, wm: wm)
                 self.delegate?.onLogin(p, account: account)
             }, onError: { err in
@@ -379,7 +379,7 @@ class BLEManager {
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { walletHashId in
                 // update previously account if exist
-                let storedAccount = AccountDao.shared.accounts.filter {
+                let storedAccount = AccountsManager.shared.accounts.filter {
                     $0.isHW && $0.walletHashId == walletHashId
                 }.first
                 var account = storedAccount ??
@@ -394,7 +394,7 @@ class BLEManager {
                     .load(refreshSubaccounts: firstLogin)
                     .done {
                         WalletManager.delete(for: account)
-                        AccountDao.shared.current = account
+                        AccountsManager.shared.current = account
                         self.delegate?.onLogin(p, account: account)
                     }.catch { _ in
                         self.onError(LoginError.connectionFailed(), network: nil)
@@ -430,7 +430,7 @@ class BLEManager {
             let authErr = err as? AuthenticationTypeHandler.AuthError
             bleErr = BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
 
-            AnalyticsManager.shared.failedWalletLogin(account: AccountDao.shared.current, error: err, prettyError: authErr?.localizedDescription ?? "")
+            AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: err, prettyError: authErr?.localizedDescription ?? "")
         case is Ledger.SWError:
             bleErr = BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
         case is JadeError:
@@ -442,7 +442,7 @@ class BLEManager {
             default:
                 bleErr = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
 
-                AnalyticsManager.shared.failedWalletLogin(account: AccountDao.shared.current, error: err, prettyError: "id_login_failed")
+                AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: err, prettyError: "id_login_failed")
             }
         default:
             bleErr = BLEManagerError.genericErr(txt: err.localizedDescription)

@@ -15,11 +15,11 @@ class OverviewTransactionCell: UITableViewCell {
     @IBOutlet weak var spvVerifyIcon: UIImageView!
 
     var isLiquid: Bool {
-        let account = AccountDao.shared.current
+        let account = AccountsManager.shared.current
         return account?.gdkNetwork?.liquid ?? false
     }
     private var btc: String {
-        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 >>>>>>> ed59adcd (unification: rename accountManager as accountDao to handle persistent storage)
 

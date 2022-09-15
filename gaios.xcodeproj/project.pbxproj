@@ -289,7 +289,7 @@
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
 		818EE78026A5C2ED008CD09E /* HWDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818EE77F26A5C2ED008CD09E /* HWDevice.swift */; };
-		819DFBA826038E800022BD85 /* AccountDao.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819DFBA726038E800022BD85 /* AccountDao.swift */; };
+		819DFBA826038E800022BD85 /* AccountsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819DFBA726038E800022BD85 /* AccountsManager.swift */; };
 		819DFBAC26038E8B0022BD85 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819DFBAB26038E8B0022BD85 /* Account.swift */; };
 		81A062D0245322B0003464A0 /* HWResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062CF245322B0003464A0 /* HWResolver.swift */; };
 		81A062D224532454003464A0 /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
@@ -680,7 +680,7 @@
 		8192BB9821EF616100B04185 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8192BB9921EF616F00B04185 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8192BB9A21EF616F00B04185 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		819DFBA726038E800022BD85 /* AccountDao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDao.swift; sourceTree = "<group>"; };
+		819DFBA726038E800022BD85 /* AccountsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsManager.swift; sourceTree = "<group>"; };
 		819DFBAB26038E8B0022BD85 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
@@ -1184,7 +1184,7 @@
 				81D671EA26C8007600682508 /* SessionManager.swift */,
 				81D671F626C81B0800682508 /* NotificationManager.swift */,
 				344562EA25D297CF00A5EC18 /* BLEManager.swift */,
-				819DFBA726038E800022BD85 /* AccountDao.swift */,
+				819DFBA726038E800022BD85 /* AccountsManager.swift */,
 				816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */,
 				34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */,
 				340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */,
@@ -2030,7 +2030,7 @@
 				6D2A613623302694008C518A /* UIImage.swift in Sources */,
 				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
 				347942A527561AAC0020D60F /* ExistingWalletCell.swift in Sources */,
-				819DFBA826038E800022BD85 /* AccountDao.swift in Sources */,
+				819DFBA826038E800022BD85 /* AccountsManager.swift in Sources */,
 				3451017827EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift in Sources */,
 				340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,

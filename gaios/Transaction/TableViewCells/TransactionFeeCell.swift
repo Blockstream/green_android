@@ -15,7 +15,7 @@ class TransactionFeeCell: UITableViewCell {
     var amount: String?
 
     private var btc: String {
-        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {
@@ -54,7 +54,7 @@ class TransactionFeeCell: UITableViewCell {
             lblFiat.text = "≈ \(fiat) \(fiatCurrency)"
             lblHint.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(transaction.feeRate) / 1000))"
         }
-        let isWatchonly = AccountDao.shared.current?.isWatchonly ?? false
+        let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false
         let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(WalletManager.current?.currentSession?.isResetActive ?? false)
         feeBtnView.isHidden = !showBumpFee
     }

@@ -61,7 +61,7 @@ class WalletSuccessViewController: UIViewController {
     }
 
     @IBAction func btnWallet(_ sender: Any) {
-        guard let account = AccountDao.shared.current else {
+        guard let account = AccountsManager.shared.current else {
             fatalError("account must exist")
         }
         let wm = WalletManager.getOrAdd(for: account)

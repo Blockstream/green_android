@@ -73,7 +73,7 @@ class RecoveryVerifyViewController: UIViewController {
         button3.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word3btn
         textLabel.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.quizLbl
 
-        AnalyticsManager.shared.recordView(.recoveryCheck, sgmt: AnalyticsManager.shared.ntwSgmt(AccountDao.shared.current))
+        AnalyticsManager.shared.recordView(.recoveryCheck, sgmt: AnalyticsManager.shared.ntwSgmt(AccountsManager.shared.current))
     }
 
     override func viewWillAppear(_ animated: Bool) {

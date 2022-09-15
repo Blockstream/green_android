@@ -39,7 +39,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     private var connected = true
     private var updateToken: NSObjectProtocol?
     var twoFactorConfig: TwoFactorConfig?
-    var account = { AccountDao.shared.current }()
+    var account = { AccountsManager.shared.current }()
     var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
     var wallet: WalletItem?
 
@@ -64,7 +64,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             reset2faView.isHidden = true
         }
 
-        AnalyticsManager.shared.recordView(.walletSettings2FA, sgmt: AnalyticsManager.shared.sessSgmt(AccountDao.shared.current))
+        AnalyticsManager.shared.recordView(.walletSettings2FA, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     func setContent() {
@@ -248,7 +248,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func resetTwoFactor(email: String) {
-        AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountDao.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
         guard let session = WalletManager.current?.currentSession else { return }
@@ -361,7 +361,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
                 navigationController?.pushViewController(vc, animated: true)
             }
 
-            AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountDao.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
+            AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
         } else if tableView == tableViewCsvTime {
             let selected = csvTypes[indexPath.row]
             newCsv = selected.value()

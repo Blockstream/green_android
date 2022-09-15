@@ -28,26 +28,26 @@ class SendViewController: KeyboardViewController {
 
     var isLiquid: Bool {
         get {
-            return AccountDao.shared.current?.gdkNetwork?.liquid ?? false
+            return AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
         }
     }
 
     var isBtc: Bool {
         get {
-            let ntw = AccountDao.shared.current?.network
+            let ntw = AccountsManager.shared.current?.network
             return ntw == "mainnet" || ntw == "testnet"
         }
     }
 
     private var btc: String {
-        return AccountDao.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     private var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
         guard let estimates = WalletManager.current?.currentSession?.getFeeEstimates() else {
             // We use the default minimum fee rates when estimates are not available
-            let defaultMinFee = AccountDao.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
+            let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
             return [UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee)]
         }
         for (index, value) in [3, 12, 24, 0].enumerated() {
@@ -103,9 +103,9 @@ class SendViewController: KeyboardViewController {
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .send, network: AccountDao.shared.current?.networkName)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .send, network: AccountsManager.shared.current?.networkName)
 
-        AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountDao.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
         AnalyticsManager.shared.startSendTransaction()
     }
 
@@ -160,7 +160,7 @@ class SendViewController: KeyboardViewController {
         let recipient = recipients.first
         let addressInput: String = recipient?.address ?? ""
 
-        let network = AccountDao.shared.current?.gdkNetwork
+        let network = AccountsManager.shared.current?.gdkNetwork
         let policyAsset = recipient?.assetId
 
         let satoshi = recipient?.getSatoshi() ?? 0
@@ -278,7 +278,7 @@ class SendViewController: KeyboardViewController {
         recipients.first?.txError = tx?.error ?? ""
         recipients.first?.assetId = asset
 
-        if !(AccountDao.shared.current?.isSingleSig ?? false) && tx?.sendAll ?? false {
+        if !(AccountsManager.shared.current?.isSingleSig ?? false) && tx?.sendAll ?? false {
             value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
         let assetInfo = WalletManager.current?.currentSession?.registry?.info(for: asset)
