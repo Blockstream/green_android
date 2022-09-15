@@ -181,8 +181,21 @@ class WalletManager {
             }
     }
 
-    func subaccountsFilteredByAsset(subaccounts: [WalletItem], asset: String) -> [WalletItem] {
-        return subaccounts.filter { $0.satoshi?.keys.contains(asset) ?? false }
+    func transactions(subaccounts: [WalletItem]) -> Promise<[Transaction]> {
+        var txs = [Transaction]()
+        var iterator = subaccounts.makeIterator()
+        let generator = AnyIterator<Promise<Void>> {
+            guard let sub = iterator.next(),
+                  let network = sub.network,
+                let session = self.sessions[network] else {
+                return nil
+            }
+            return session.transactions(subaccount: sub.pointer)
+                .compactMap { txs += $0.list }
+                .asVoid()
+        }
+        return when(fulfilled: generator, concurrently: 1)
+            .compactMap { _ in txs }
     }
 
     func pause() {
