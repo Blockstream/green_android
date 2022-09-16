@@ -9,7 +9,7 @@ class ContainerViewController: UIViewController {
     private var timer = Timer()
     private var seconds = 0
 
-    var presentingWallet: WalletItem?
+    var presentingWallet: WalletItem!
 
     @IBOutlet weak var networkView: UIView!
     @IBOutlet weak var networkText: UILabel!
