@@ -15,7 +15,9 @@ class OVViewController: UIViewController {
     @IBOutlet weak var btnReceive: UIButton!
 
     var headerH: CGFloat = 54.0
-    var presentingWallet: WalletItem!
+    var presentingWallet: WalletItem! = WalletManager.current!.currentSubaccount!
+
+    lazy var viewModel = { OVViewModel() }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +28,7 @@ class OVViewController: UIViewController {
 
         setContent()
         setStyle()
+        initViewModel()
     }
 
     func setContent() {
@@ -46,10 +49,31 @@ class OVViewController: UIViewController {
 
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
+
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl!.tintColor = UIColor.white
+        tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
     }
 
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
+    }
+
+    func initViewModel() {
+        viewModel.getAssets()
+        viewModel.reloadTableView = { [weak self] in
+            DispatchQueue.main.async {
+                if self?.tableView.refreshControl?.isRefreshing ?? false {
+                    self?.tableView.refreshControl?.endRefreshing()
+                }
+                self?.tableView.reloadData()
+            }
+        }
+    }
+
+    // tableview refresh gesture
+    @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
+        viewModel.getAssets()
     }
 
     // open settings
@@ -124,7 +148,7 @@ extension OVViewController: UITableViewDelegate, UITableViewDataSource {
         case OVSection.balance.rawValue:
             return 1
         case OVSection.asset.rawValue:
-            return 3
+            return viewModel.assetCellModels.count
         case OVSection.cards.rawValue:
             return 0
         case OVSection.transaction.rawValue:
@@ -138,23 +162,16 @@ extension OVViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch indexPath.section {
         case OVSection.balance.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "OVBalanceCell", for: indexPath) as? OVBalanceCell {
-
-                cell.configure(lblBalanceTitle: "Total Balance",
-                               lblBalanceValue: "33.210,23 USD",
-                               lblAssetsNum: "4.122",
-                               lblAssetsOther: "other assets"
-                )
+            if let cell = tableView.dequeueReusableCell(withIdentifier: OVBalanceCell.identifier, for: indexPath) as? OVBalanceCell {
+                let cellVm = viewModel.getBalanceCellModel()
+                cell.viewModel = cellVm
                 cell.selectionStyle = .none
                 return cell
             }
         case OVSection.asset.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "OVAssetCell", for: indexPath) as? OVAssetCell {
-
-                cell.configure(icon: nil,
-                               lblAsset: "Bitcoin",
-                               lblBalance1: "33.210,23 USD",
-                               lblBalance2: "0,001700 BTC")
+            if let cell = tableView.dequeueReusableCell(withIdentifier: OVAssetCell.identifier, for: indexPath) as? OVAssetCell {
+                let cellVm = viewModel.getAssetCellModels(at: indexPath)
+                cell.viewModel = cellVm
                 cell.selectionStyle = .none
                 return cell
             }

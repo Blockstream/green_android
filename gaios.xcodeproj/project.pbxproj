@@ -304,6 +304,10 @@
 		81A062D0245322B0003464A0 /* HWResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062CF245322B0003464A0 /* HWResolver.swift */; };
 		81A062D224532454003464A0 /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
 		81A062D624532643003464A0 /* HWChannelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWChannelProtocol.swift */; };
+		81A6116428D486F100FC372A /* OVViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A6116328D486F100FC372A /* OVViewModel.swift */; };
+		81A6116828D4890A00FC372A /* OVAssetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A6116728D4890A00FC372A /* OVAssetCellModel.swift */; };
+		81A6116A28D49BF300FC372A /* OVBalanceCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A6116928D49BF300FC372A /* OVBalanceCellModel.swift */; };
+		81A6116C28D4B7AD00FC372A /* OVTransactionCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A6116B28D4B7AD00FC372A /* OVTransactionCellModel.swift */; };
 		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
 		81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B1EB2928E3703200F409A3 /* AssetAmountView.swift */; };
 		81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */; };
@@ -705,6 +709,10 @@
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
 		81A062D524532643003464A0 /* HWChannelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWChannelProtocol.swift; sourceTree = "<group>"; };
+		81A6116328D486F100FC372A /* OVViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OVViewModel.swift; sourceTree = "<group>"; };
+		81A6116728D4890A00FC372A /* OVAssetCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OVAssetCellModel.swift; sourceTree = "<group>"; };
+		81A6116928D49BF300FC372A /* OVBalanceCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OVBalanceCellModel.swift; sourceTree = "<group>"; };
+		81A6116B28D4B7AD00FC372A /* OVTransactionCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OVTransactionCellModel.swift; sourceTree = "<group>"; };
 		81ACC4B0227337F3004B1E92 /* Wallet.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Wallet.storyboard; sourceTree = "<group>"; };
 		81B1EB2928E3703200F409A3 /* AssetAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAmountView.swift; sourceTree = "<group>"; };
 		81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetAmountView.xib; sourceTree = "<group>"; };
@@ -838,6 +846,7 @@
 			children = (
 				34019C1B28D20FD900E64BEE /* Cells */,
 				34019C1728D1B19700E64BEE /* OVViewController.swift */,
+				81A6116328D486F100FC372A /* OVViewModel.swift */,
 			);
 			path = OVViewController;
 			sourceTree = "<group>";
@@ -857,6 +866,7 @@
 			children = (
 				34019C2228D34E4700E64BEE /* OVBalanceCell.swift */,
 				34019C2028D34E2A00E64BEE /* OVBalanceCell.xib */,
+				81A6116928D49BF300FC372A /* OVBalanceCellModel.swift */,
 			);
 			path = OVBalanceCell;
 			sourceTree = "<group>";
@@ -866,6 +876,7 @@
 			children = (
 				34019C1C28D2107800E64BEE /* OVAssetCell.swift */,
 				34019C1D28D2107800E64BEE /* OVAssetCell.xib */,
+				81A6116728D4890A00FC372A /* OVAssetCellModel.swift */,
 			);
 			path = OVAssetCell;
 			sourceTree = "<group>";
@@ -875,6 +886,7 @@
 			children = (
 				34019C2D28D37CD200E64BEE /* OVTransactionCell.swift */,
 				34019C2B28D37CB700E64BEE /* OVTransactionCell.xib */,
+				81A6116B28D4B7AD00FC372A /* OVTransactionCellModel.swift */,
 			);
 			path = OVTransactionCell;
 			sourceTree = "<group>";
@@ -2113,6 +2125,7 @@
 				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
 				81097AD42889923200E48A2B /* AssetsManagerBitcoin.swift in Sources */,
 				3497936825F8B18C0029ECB1 /* WalletNameViewController.swift in Sources */,
+				81A6116828D4890A00FC372A /* OVAssetCellModel.swift in Sources */,
 				34477D322771D2600021698B /* RecipientCell.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */,
@@ -2168,10 +2181,12 @@
 				349C75242796DBB90046DA59 /* AssetCell.swift in Sources */,
 				34E0CA9029817CE400695304 /* CountlyWidget.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
+				81A6116A28D49BF300FC372A /* OVBalanceCellModel.swift in Sources */,
 				8111485F287891F500C6F030 /* JadeOTA.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
+				81A6116428D486F100FC372A /* OVViewModel.swift in Sources */,
 				34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */,
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
 				34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */,
@@ -2273,6 +2288,7 @@
 				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
 				347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */,
 				34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */,
+				81A6116C28D4B7AD00FC372A /* OVTransactionCellModel.swift in Sources */,
 				81BF4E3022E9E9EA005A04C6 /* LedgerChannel.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				34EB670528213A8A0036D615 /* AMConstants.swift in Sources */,
