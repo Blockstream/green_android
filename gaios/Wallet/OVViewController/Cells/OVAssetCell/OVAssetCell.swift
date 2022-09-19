@@ -1,6 +1,6 @@
 import UIKit
 
-class OVAssetCell: UITableViewCell {
+class OVAssetCell: BaseCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var imgView: UIImageView!

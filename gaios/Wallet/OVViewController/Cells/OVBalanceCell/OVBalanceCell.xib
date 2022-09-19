@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -23,13 +23,6 @@
                         <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_eye_flat" translatesAutoresizingMaskIntoConstraints="NO" id="NmA-1I-gC6">
-                        <rect key="frame" x="159.5" y="16" width="28" height="28"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="28" id="Gie-TM-L7C"/>
-                            <constraint firstAttribute="height" constant="28" id="kyl-Rz-sHy"/>
-                        </constraints>
-                    </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="lbl_balance_value" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cwj-w8-ZQr">
                         <rect key="frame" x="20" y="44.5" width="364" height="67.5"/>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="34"/>
@@ -55,6 +48,18 @@
                         <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FAM-KX-0hP">
+                        <rect key="frame" x="159.5" y="13" width="34" height="34"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="34" id="HQ2-c8-rxC"/>
+                            <constraint firstAttribute="width" constant="34" id="ovp-we-O4D"/>
+                        </constraints>
+                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                        <state key="normal" image="ic_eye_flat"/>
+                        <connections>
+                            <action selector="btnFiat:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="tX2-Mp-NBC"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <color key="backgroundColor" red="0.074509803921568626" green="0.086274509803921567" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
@@ -64,14 +69,14 @@
                     <constraint firstItem="UWo-Pa-oSR" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="4ID-P9-4uA"/>
                     <constraint firstItem="tNb-Gd-mPe" firstAttribute="centerY" secondItem="UEO-hg-6sy" secondAttribute="centerY" id="897-pN-QkE"/>
                     <constraint firstItem="UEO-hg-6sy" firstAttribute="centerY" secondItem="sbk-gw-Kq8" secondAttribute="centerY" id="AXU-X3-FRa"/>
+                    <constraint firstItem="FAM-KX-0hP" firstAttribute="centerY" secondItem="UWo-Pa-oSR" secondAttribute="centerY" id="G5R-Y0-d9L"/>
                     <constraint firstItem="cwj-w8-ZQr" firstAttribute="top" secondItem="UWo-Pa-oSR" secondAttribute="bottom" constant="5" id="N3H-B7-uLw"/>
                     <constraint firstItem="tNb-Gd-mPe" firstAttribute="leading" secondItem="UEO-hg-6sy" secondAttribute="trailing" constant="8" id="O3Z-Qd-wVV"/>
-                    <constraint firstItem="NmA-1I-gC6" firstAttribute="centerY" secondItem="UWo-Pa-oSR" secondAttribute="centerY" id="P6N-8H-tvF"/>
                     <constraint firstItem="cwj-w8-ZQr" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="Scl-TU-RQf"/>
                     <constraint firstAttribute="trailing" secondItem="cwj-w8-ZQr" secondAttribute="trailing" constant="20" id="WfM-cq-n0o"/>
-                    <constraint firstItem="NmA-1I-gC6" firstAttribute="leading" secondItem="UWo-Pa-oSR" secondAttribute="trailing" constant="10" id="YKZ-vg-PL3"/>
                     <constraint firstItem="sbk-gw-Kq8" firstAttribute="top" secondItem="cwj-w8-ZQr" secondAttribute="bottom" constant="5" id="Yhk-ax-KZU"/>
                     <constraint firstItem="UWo-Pa-oSR" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="fDe-qh-eCR"/>
+                    <constraint firstItem="FAM-KX-0hP" firstAttribute="leading" secondItem="UWo-Pa-oSR" secondAttribute="trailing" constant="10" id="lYj-C6-IAF"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>

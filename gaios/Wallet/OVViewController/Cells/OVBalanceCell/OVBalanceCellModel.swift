@@ -19,4 +19,8 @@ class OVBalanceCellModel {
         numAssets = 0
         value = "--"
     }
+
+    var fiatValue: String {
+        return "0.0000 todo USD"
+    }
 }
