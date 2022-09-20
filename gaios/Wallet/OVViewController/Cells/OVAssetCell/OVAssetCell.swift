@@ -19,7 +19,7 @@ class OVAssetCell: BaseCell {
         didSet {
             self.lblAsset.text = viewModel?.asset?.name ?? viewModel?.asset?.assetId
             self.lblBalance1.text = viewModel?.value ?? ""
-            self.lblBalance2.text = viewModel?.fiat ?? ""
+            self.lblBalance2.text = viewModel?.fiat ?? " - "
             self.imgView?.image = viewModel?.icon
         }
     }
