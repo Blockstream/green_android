@@ -13,6 +13,7 @@ class ContainerViewController: UIViewController {
 
     @IBOutlet weak var networkView: UIView!
     @IBOutlet weak var networkText: UILabel!
+    @IBOutlet weak var containerView: UIView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +21,12 @@ class ContainerViewController: UIViewController {
         torToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: updateTor)
         self.networkView.isHidden = true
         view.accessibilityIdentifier = AccessibilityIdentifiers.ContainerScreen.view
+
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "OVViewController") as? OVViewController {
+            let nav = UINavigationController(rootViewController: vc)
+            add(nav, frame: view.frame)
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
