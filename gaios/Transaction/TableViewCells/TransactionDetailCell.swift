@@ -2,9 +2,6 @@ import UIKit
 
 class TransactionDetailCell: UITableViewCell {
 
-    @IBOutlet weak var confirmationsView: UIView!
-    @IBOutlet weak var lblConfirmationsTitle: UILabel!
-    @IBOutlet weak var lblConfirmationsHint: UILabel!
     @IBOutlet weak var lblTxidTitle: UILabel!
     @IBOutlet weak var lblTxidHint: UILabel!
     @IBOutlet weak var btnExplorer: UIButton!
@@ -37,9 +34,6 @@ class TransactionDetailCell: UITableViewCell {
                    copyHash: ((String) -> Void)?) {
         let color: UIColor = .white
         copyIcon.image = copyIcon.image?.maskWithColor(color: color)
-        lblConfirmationsTitle.text = NSLocalizedString("id_confirmations", comment: "")
-        confirmationsView.isHidden = true // transaction.blockHeight == 0
-        lblConfirmationsHint.text = "\(SessionsManager.current?.notificationManager?.blockHeight ?? 0 - transaction.blockHeight + 1)"
         lblTxidTitle.text = NSLocalizedString("id_transaction_id", comment: "")
         lblTxidHint.text = transaction.hash
         btnExplorer.setTitle(NSLocalizedString("id_view_in_explorer", comment: ""), for: .normal)
