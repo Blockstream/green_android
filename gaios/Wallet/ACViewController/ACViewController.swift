@@ -18,8 +18,6 @@ class ACViewController: UIViewController {
     private var showAll = false
     var headerH: CGFloat = 54.0
 
-    var presentingWallet: WalletItem! = WalletManager.current!.currentSubaccount!
-
     lazy var viewModel = { ACViewModel() }()
 
     override func viewDidLoad() {
@@ -76,7 +74,6 @@ class ACViewController: UIViewController {
             if let vc = nvc.viewControllers.first as? UserSettingsViewController {
                 /// Fix
                 ///vc.delegate = self
-                vc.wallet = presentingWallet
                 nvc.modalPresentationStyle = .fullScreen
                 present(nvc, animated: true, completion: nil)
             }
@@ -85,11 +82,8 @@ class ACViewController: UIViewController {
 
     // open send flow
     func sendfromWallet() {
-
-        /// ... ...
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            vc.wallet = presentingWallet
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -103,7 +97,6 @@ class ACViewController: UIViewController {
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            vc.wallet = presentingWallet
             navigationController?.pushViewController(vc, animated: true)
         }
     }

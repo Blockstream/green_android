@@ -20,7 +20,7 @@ class ReceiveViewController: UIViewController {
     @IBOutlet weak var qrFrame: UIView!
     @IBOutlet weak var btnVerify: UIButton!
 
-    var wallet: WalletItem?
+    var wallet = WalletManager.current?.currentSubaccount
     var selectedType = TransactionBaseType.BTC
 
     private var newAddressToken: NSObjectProtocol?

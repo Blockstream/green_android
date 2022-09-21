@@ -14,7 +14,7 @@ class SendViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnNext: UIButton!
 
-    var wallet: WalletItem?
+    var wallet = WalletManager.current?.currentSubaccount
     var recipients: [Recipient] = []
     var inputType: InputType = .transaction
     var addressInputType: AnalyticsManager.AddressInputType = .paste
