@@ -241,13 +241,6 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
             break
         case .transaction:
             break
-//            let transaction = transactions[indexPath.row]
-//            let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
-//                vc.transaction = transaction
-//                vc.wallet = presentingWallet
-//                navigationController?.pushViewController(vc, animated: true)
-//            }
         case .more:
             break
         default:
@@ -259,25 +252,7 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
 extension ACViewController: DialogWalletNameViewControllerDelegate {
 
     func didRename(name: String, index: Int?) {
-//        guard let index = index else {
-//            return
-//        }
-//        let bgq = DispatchQueue.global(qos: .background)
-//        guard let session = WalletManager.current?.currentSession else { return }
-//        firstly {
-//            self.startAnimating()
-//            return Guarantee()
-//        }.then(on: bgq) {
-//            session.renameSubaccount(subaccount: self.subaccounts[index].pointer, newName: name)
-//        }.ensure {
-//            self.stopAnimating()
-//        }.done { _ in
-//            self.reloadData()
-//            AnalyticsManager.shared.renameAccount(account: self.account, walletType: self.presentingWallet?.type)
-//        }.catch { e in
-//            DropAlert().error(message: e.localizedDescription)
-//            print(e.localizedDescription)
-//        }
+        //...
     }
     func didCancel() {
     }
@@ -285,17 +260,7 @@ extension ACViewController: DialogWalletNameViewControllerDelegate {
 
 extension ACViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
     func userLogout() {
-//        userWillLogout = true
-//        self.presentedViewController?.dismiss(animated: true, completion: {
-//            DispatchQueue.main.async {
-//                self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
-//                WalletManager.delete(for: self.account)
-//                self.stopLoader()
-//                let storyboard = UIStoryboard(name: "Home", bundle: nil)
-//                let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-//                UIApplication.shared.keyWindow?.rootViewController = nav
-//            }
-//        })
+        // ...
     }
 }
 
@@ -307,64 +272,6 @@ extension ACViewController: UIPopoverPresentationControllerDelegate {
 
     func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         return UINavigationController(rootViewController: controller.presentedViewController)
-    }
-}
-
-extension ACViewController: PopoverMenuAccountDelegate {
-    // subaccounts section: select menu options
-    func didSelectionMenuOption(option: MenuAccountOption, index: Int) {
-        switch option {
-        case .rename:
-            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
-                vc.modalPresentationStyle = .overFullScreen
-                vc.isAccountRename = true
-                vc.delegate = self
-                vc.index = index
-                present(vc, animated: false, completion: nil)
-            }
-        case .archive:
-            archiveSubaccount(index)
-        }
-    }
-
-    // subaccounts section: popup on subaccounts
-    func presentAccountMenu(frame: CGRect, index: Int) {
-//        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
-//        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuAccountViewController") as? PopoverMenuAccountViewController {
-//            popover.delegate = self
-//            popover.index = index
-//            popover.canArchive = (subaccounts.filter { $0.hidden == false }).count > 1
-//            popover.modalPresentationStyle = .popover
-//            let popoverPresentationController = popover.popoverPresentationController
-//            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
-//            popoverPresentationController?.delegate = self
-//            popoverPresentationController?.sourceView = self.tableView
-//            popoverPresentationController?.sourceRect = CGRect(x: self.tableView.frame.width - 80.0, y: frame.origin.y, width: 60.0, height: 60.0)
-//            popoverPresentationController?.permittedArrowDirections = .up
-//            self.present(popover, animated: true)
-//        }
-    }
-
-    // subaccounts section: archive a subaccount
-    func archiveSubaccount(_ index: Int) {
-//        let bgq = DispatchQueue.global(qos: .background)
-//        guard let session = WalletManager.current?.currentSession else { return }
-//        firstly {
-//            self.startAnimating()
-//            return Guarantee()
-//        }.then(on: bgq) {
-//            session.updateSubaccount(subaccount: self.subaccounts[index].pointer, hidden: true)
-//        }.ensure {
-//            self.stopAnimating()
-//        }.done { _ in
-//            let present = (index == 0 ? self.subaccounts[1] : self.subaccounts[0])
-//            self.wm?.currentSubaccount = present
-//            self.reloadData()
-//        }.catch { e in
-//            DropAlert().error(message: e.localizedDescription)
-//            print(e.localizedDescription)
-//        }
     }
 }
 
