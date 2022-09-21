@@ -35,8 +35,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
                 let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
                     vc.account = AccountsManager.shared.current
-                    nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
+                    nav.pushViewController(vc, animated: false)
             }
         } else if account?.isHW ?? false {
             let homeS = UIStoryboard(name: "Home", bundle: nil)
@@ -44,16 +44,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
                 let vc = hwwS.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
                     vc.jade = AccountsManager.shared.current?.isJade == true
-                    nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
+                    nav.pushViewController(vc, animated: false)
             }
         } else {
             let homeS = UIStoryboard(name: "Home", bundle: nil)
             if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
                 let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
                 vc.account = AccountsManager.shared.current
-                nav.pushViewController(vc, animated: false)
                 UIApplication.shared.keyWindow?.rootViewController = nav
+                nav.pushViewController(vc, animated: false)
             }
         }
     }

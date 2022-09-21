@@ -135,7 +135,7 @@ class LoginViewController: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-
+        super.viewDidAppear(animated)
         if account.askEphemeral ?? false {
             loginWithPassphrase(isAlwaysAsk: account.askEphemeral ?? false)
         } else if account.hasBioPin {
