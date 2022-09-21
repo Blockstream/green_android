@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ACEditCell" rowHeight="68" id="KGk-i7-Jjw" customClass="ACEditCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="407" height="68"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="407" height="68"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j1h-eB-w7m">
+                        <rect key="frame" x="0.0" y="0.0" width="407" height="68"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FDU-hk-aEF">
+                                <rect key="frame" x="20" y="12" width="58" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="021-3j-MvD"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="btn_add">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnAdd:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ghs-9M-6VW"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fi0-oO-DSi">
+                                <rect key="frame" x="98" y="12" width="289" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="ftf-z6-1EU"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="btn_archive">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnArchive:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="lWX-P8-dGV"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="fi0-oO-DSi" secondAttribute="trailing" constant="20" id="03P-Df-sLb"/>
+                            <constraint firstAttribute="height" constant="68" id="Jtn-sJ-e69"/>
+                            <constraint firstItem="fi0-oO-DSi" firstAttribute="leading" secondItem="FDU-hk-aEF" secondAttribute="trailing" constant="20" id="PBe-Hw-4TT"/>
+                            <constraint firstItem="FDU-hk-aEF" firstAttribute="centerY" secondItem="j1h-eB-w7m" secondAttribute="centerY" id="QZg-b8-3iB"/>
+                            <constraint firstItem="fi0-oO-DSi" firstAttribute="centerY" secondItem="j1h-eB-w7m" secondAttribute="centerY" id="RkN-py-aLi"/>
+                            <constraint firstItem="FDU-hk-aEF" firstAttribute="leading" secondItem="j1h-eB-w7m" secondAttribute="leading" constant="20" id="wO6-C2-2WV"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="j1h-eB-w7m" secondAttribute="bottom" id="UnI-mI-z3S"/>
+                    <constraint firstAttribute="trailing" secondItem="j1h-eB-w7m" secondAttribute="trailing" id="mfC-vJ-Sbv"/>
+                    <constraint firstItem="j1h-eB-w7m" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="qom-DI-F1c"/>
+                    <constraint firstItem="j1h-eB-w7m" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="v4A-YI-fRa"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="btnAdd" destination="FDU-hk-aEF" id="hnC-Fx-iMV"/>
+                <outlet property="btnArchive" destination="fi0-oO-DSi" id="iVW-ex-8yf"/>
+            </connections>
+            <point key="canvasLocation" x="148.55072463768118" y="64.955357142857139"/>
+        </tableViewCell>
+    </objects>
+</document>

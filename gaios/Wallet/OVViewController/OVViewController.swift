@@ -3,7 +3,7 @@ import UIKit
 enum OVSection: Int, CaseIterable {
     case balance = 0
     case asset = 1
-    case cards = 2
+    case card = 2
     case transaction = 3
 }
 
@@ -149,7 +149,7 @@ extension OVViewController: UITableViewDelegate, UITableViewDataSource {
             return 1
         case OVSection.asset.rawValue:
             return viewModel.assetCellModels.count
-        case OVSection.cards.rawValue:
+        case OVSection.card.rawValue:
             return 0
         case OVSection.transaction.rawValue:
             return 2
@@ -175,7 +175,7 @@ extension OVViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
-        case OVSection.cards.rawValue:
+        case OVSection.card.rawValue:
 
             /// Fix
             return UITableViewCell()
@@ -228,6 +228,11 @@ extension OVViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ACViewController") as? ACViewController {
+//            vc.wallet = presentingWallet
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
 
