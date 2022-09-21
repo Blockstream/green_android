@@ -221,10 +221,15 @@ extension OVViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ACViewController") as? ACViewController {
-            navigationController?.pushViewController(vc, animated: true)
+        switch indexPath.section {
+        case OVSection.asset.rawValue:
+            let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "ACViewController") as? ACViewController {
+                vc.assetId = viewModel.getAssetCellModels(at: indexPath).asset?.assetId
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        default:
+            break
         }
     }
 }

@@ -15,10 +15,12 @@ class ACViewController: UIViewController {
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var btnReceive: UIButton!
 
-    private var showAll = false
-    var headerH: CGFloat = 54.0
+    var assetId: String?
 
-    lazy var viewModel = { ACViewModel() }()
+    private var showAll = true
+    private var headerH: CGFloat = 54.0
+
+    private lazy var viewModel = { ACViewModel() }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +31,7 @@ class ACViewController: UIViewController {
 
         setContent()
         setStyle()
+        initViewModel()
     }
 
     func reloadSections(_ sections: [ACSection], animated: Bool) {
@@ -59,6 +62,18 @@ class ACViewController: UIViewController {
 
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
+    }
+
+    func initViewModel() {
+        viewModel.getSubaccounts(assetId: assetId ?? "btc")
+        viewModel.reloadTableView = { [weak self] in
+            DispatchQueue.main.async {
+                if self?.tableView.refreshControl?.isRefreshing ?? false {
+                    self?.tableView.refreshControl?.endRefreshing()
+                }
+                self?.tableView.reloadData()
+            }
+        }
     }
 
     // tableview refresh gesture
@@ -126,7 +141,7 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch ACSection(rawValue: section) {
         case .account:
-            return showAll ? 3 : 1
+            return showAll ? viewModel.accountCellModels.count : 1
         case .edit:
             return 1
         case .transaction:
@@ -142,14 +157,13 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch ACSection(rawValue: indexPath.section) {
         case .account:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ACAccountCell") as? ACAccountCell {
-                var action: (() -> Void)?
-                if showAll {
-                    action = { [weak self] in
-                        self?.accountPrefs()
-                    }
+            if let cell = tableView.dequeueReusableCell(withIdentifier: ACAccountCell.identifier, for: indexPath) as? ACAccountCell {
+                let cellVm = viewModel.getAccountCellModels(at: indexPath)
+                cell.viewModel = cellVm
+                cell.showAll = showAll
+                cell.action = { [weak self] in
+                    self?.accountPrefs()
                 }
-                cell.configure(showAll: showAll, action: action)
                 cell.selectionStyle = .none
                 return cell
             }

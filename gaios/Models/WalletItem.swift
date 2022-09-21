@@ -28,6 +28,8 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     let hidden: Bool?
     var network: String?
 
+    var gdkNetwork: GdkNetwork { getGdkNetwork(network!)}
+
     func localizedName() -> String {
         if !name.isEmpty {
             return name

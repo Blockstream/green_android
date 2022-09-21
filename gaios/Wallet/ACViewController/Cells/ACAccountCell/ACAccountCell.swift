@@ -16,7 +16,20 @@ class ACAccountCell: BaseCell {
     @IBOutlet weak var lblBalance: UILabel!
     @IBOutlet weak var actionBtn: UIButton!
 
-    var action: (() -> Void)?
+    class var identifier: String { return String(describing: self) }
+
+    var action: (() -> Void)? {
+        didSet {
+            actionBtn.isHidden = action != nil && showAll
+        }
+    }
+
+    var showAll: Bool = true {
+        didSet {
+            actionBtn.isHidden = action != nil && showAll
+            bgShadow.backgroundColor = showAll ? .clear : .customMatrixGreen()
+        }
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,21 +48,19 @@ class ACAccountCell: BaseCell {
         lblBalance.text = ""
         lblFiat.text = ""
 //        lblBalance.isHidden = true
+        actionBtn.isHidden = true
+        bg.backgroundColor = UIColor.customMatrixGreen()
     }
 
-    func configure(showAll: Bool, action: (() -> Void)?) {
-        prepareForReuse()
-
-        self.action = action
-        bg.backgroundColor = UIColor.customMatrixGreen()
-        if showAll { bgShadow.backgroundColor = .clear } else { bgShadow.backgroundColor = UIColor.customMatrixGreen() }
-        self.lblAccountTitle.text = "BTC Account"
-        self.lblType.text = "Legacy"
-        self.lblSecurity.text = "Singlesig"
-        self.lblBalance.text = "BTC 0,000000000"
-        self.lblFiat.text = "~0,00 USD"
-
-        self.actionBtn.isHidden = action == nil
+    var viewModel: ACAccountCellModel? {
+        didSet {
+            prepareForReuse()
+            self.lblAccountTitle.text = viewModel?.name
+            self.lblType.text = viewModel?.type
+            self.lblSecurity.text = viewModel?.security
+            self.lblBalance.text = viewModel?.value
+            self.lblFiat.text = viewModel?.fiat
+        }
     }
 
     @IBAction func actionBtn(_ sender: Any) {
