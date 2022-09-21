@@ -16,7 +16,7 @@ class ACAccountCell: BaseCell {
     @IBOutlet weak var lblBalance: UILabel!
     @IBOutlet weak var actionBtn: UIButton!
 
-    var action: VoidToVoid?
+    var action: (() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -37,9 +37,10 @@ class ACAccountCell: BaseCell {
 //        lblBalance.isHidden = true
     }
 
-    func configure(showAll: Bool) {
+    func configure(showAll: Bool, action: (() -> Void)?) {
         prepareForReuse()
 
+        self.action = action
         bg.backgroundColor = UIColor.customMatrixGreen()
         if showAll { bgShadow.backgroundColor = .clear } else { bgShadow.backgroundColor = UIColor.customMatrixGreen() }
         self.lblAccountTitle.text = "BTC Account"
@@ -47,6 +48,8 @@ class ACAccountCell: BaseCell {
         self.lblSecurity.text = "Singlesig"
         self.lblBalance.text = "BTC 0,000000000"
         self.lblFiat.text = "~0,00 USD"
+
+        self.actionBtn.isHidden = action == nil
     }
 
     @IBAction func actionBtn(_ sender: Any) {

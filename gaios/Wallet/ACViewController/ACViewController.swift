@@ -108,6 +108,11 @@ class ACViewController: UIViewController {
         }
     }
 
+    func accountPrefs() {
+
+        print("accaount prefs")
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -145,13 +150,13 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
         switch ACSection(rawValue: indexPath.section) {
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ACAccountCell") as? ACAccountCell {
-                var action: VoidToVoid?
+                var action: (() -> Void)?
                 if showAll {
                     action = { [weak self] in
-                        self?.presentAccountMenu(frame: cell.frame, index: indexPath.row)
+                        self?.accountPrefs()
                     }
                 }
-                cell.configure(showAll: showAll)
+                cell.configure(showAll: showAll, action: action)
                 cell.selectionStyle = .none
                 return cell
             }
