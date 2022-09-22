@@ -1,5 +1,6 @@
 package com.blockstream.green.utils
 
+import com.blockstream.green.R
 import com.blockstream.green.data.Banner
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.ui.AppFragment
@@ -30,14 +31,20 @@ object BannersHelper {
                     appFragment.getAppViewModel()?.banner?.postValue(banner)
                 }
                 ?.also { banner ->
-                    if(banner.dismissable == true) {
-                        appFragment.getBannerAlertView()?.closeButton {
-                            dismiss(appFragment, banner)
+                    appFragment.getBannerAlertView()?.let { bannerAlertView ->
+                        if(banner.dismissable == true) {
+                            bannerAlertView.closeButton {
+                                dismiss(appFragment, banner)
+                            }
                         }
-                    }
 
-                    appFragment.getBannerAlertView()?.binding?.root?.setOnClickListener { _ ->
-                        handleClick(appFragment, banner)
+                        if(banner.link.isNullOrBlank()){
+                            bannerAlertView.primaryButton("", null)
+                        }else{
+                            bannerAlertView.primaryButton(appFragment.requireContext().getString(R.string.id_learn_more)){
+                                handleClick(appFragment, banner)
+                            }
+                        }
                     }
                 }
         }

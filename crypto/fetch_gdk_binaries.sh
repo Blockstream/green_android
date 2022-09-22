@@ -23,7 +23,7 @@ TARBALL="${NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
 TAGNAME="release_0.0.56"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="1867f106dcfe37b14095ccaa2322a61075b95f4c5367116b978d227de413ff10"
+SHA256="ee4cd5fa655ce3a4d58dd0b0986c409e6fac6cd96c9369a64b3ef0affe3a5ccd"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"

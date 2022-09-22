@@ -17,7 +17,7 @@ data class OnboardingOptions constructor(
 ) : Parcelable{
     fun createCopyForNetwork(greenWallet: GreenWallet, networkType: String, isElectrum: Boolean): OnboardingOptions {
         val id = greenWallet.networks.getNetworkByType(networkTypeOrId = networkType, isElectrum = isElectrum).id
-        return copy(network = greenWallet.networks.getNetworkById(id), networkType = networkType)
+        return copy(network = greenWallet.networks.getNetworkById(id), networkType = networkType, isSinglesig = isElectrum)
     }
 
     companion object {

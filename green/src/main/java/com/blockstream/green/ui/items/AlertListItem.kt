@@ -81,6 +81,10 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
             is AlertType.Banner -> {
                 binding.banner = alertType.banner
 
+                if(alertType.banner.link.isNullOrBlank()){
+                    binding.alertView.primaryButton("", null)
+                }
+
                 if(alertType.banner.dismissable == true) {
                     binding.alertView.closeButton {
                         action?.invoke(true)

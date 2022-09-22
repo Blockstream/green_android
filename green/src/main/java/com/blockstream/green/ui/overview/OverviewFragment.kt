@@ -151,6 +151,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     applicationScope.launch(context = logException(countly)) {
                         delay(1000)
                         viewModel.setAppReview(true)
+                        countly.appReview(session, viewModel.getSubAccountLiveData().value)
                     }
                 }
                 clearNavigationResult(BROADCASTED_TRANSACTION)
@@ -412,7 +413,11 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                                 }
                             }
                             is AlertType.Banner -> {
-                                BannersHelper.dismiss(this, alertListItem.alertType.banner)
+                                if(isClose) {
+                                    BannersHelper.dismiss(this, alertListItem.alertType.banner)
+                                }else{
+                                    BannersHelper.handleClick(this, alertListItem.alertType.banner)
+                                }
                             }
                             AlertType.EphemeralBip39, AlertType.TestnetWarning, AlertType.AppReview -> {}
                         }
@@ -594,11 +599,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 is TitleListItem -> {
                     if (item.showBackButton) {
                         closeOpenElements()
-                    }
-                }
-                is AlertListItem -> {
-                    if(item.alertType is AlertType.Banner){
-                        BannersHelper.handleClick(this, item.alertType.banner)
                     }
                 }
             }

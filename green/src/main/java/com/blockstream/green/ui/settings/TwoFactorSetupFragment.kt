@@ -141,7 +141,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                     }
                 }
                 // setupEmail is used only to setup the email address for recovery transactions legacy option
-                viewModel.enable2FA(args.method, data = data, enabled = args.action != TwoFactorSetupAction.SETUP_EMAIL, twoFactorResolver = DialogTwoFactorResolver(this))
+                viewModel.enable2FA(args.method, data = data, action = args.action, twoFactorResolver = DialogTwoFactorResolver(this))
             }else{
                 val email = binding.emailEditText.text.toString()
                 when(action){

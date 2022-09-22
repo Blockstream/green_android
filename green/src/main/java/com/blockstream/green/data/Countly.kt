@@ -394,6 +394,11 @@ class Countly constructor(
         )
     }
 
+    fun appReview(session: GreenSession, subAccount: SubAccount?) {
+        events.recordEvent(Events.APP_REVIEW.toString(),
+            subAccountSegmentation(session, subAccount))
+    }
+
     fun failedWalletLogin(session: GreenSession, error: Throwable) {
         events
             .recordEvent(
@@ -560,6 +565,8 @@ class Countly constructor(
 
         SHARE_TRANSACTION("share_transaction"),
 
+        APP_REVIEW("app_review"),
+
         SEND_TRANSACTION("send_transaction"),
         FAILED_TRANSACTION("failed_transaction"),
         FAILED_RECOVERY_PHRASE_CHECK("failed_recovery_phrase_check");
@@ -644,7 +651,8 @@ class Countly constructor(
             "id_action_canceled",
             "id_login_failed",
             "id_error_parsing",
-            "id_invalid_address"
+            "id_invalid_address",
+            "id_invalid_asset_id"
         )
 
         val consentRequiredGroup = arrayOf(

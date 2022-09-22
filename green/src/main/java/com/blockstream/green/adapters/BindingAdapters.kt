@@ -59,7 +59,6 @@ fun bindBanner(view: GreenAlertView, banner: Banner?) {
         view.message = banner.message ?: ""
         view.setIconVisibility(banner.isWarning)
         view.setMaxLines(3)
-        view.primaryButton(null, null)
     }
 }
 

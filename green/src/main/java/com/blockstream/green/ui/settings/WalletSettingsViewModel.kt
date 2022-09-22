@@ -150,11 +150,24 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         )
     }
 
-    fun enable2FA(method: TwoFactorMethod, data: String, enabled: Boolean = true, twoFactorResolver: DialogTwoFactorResolver){
+    fun enable2FA(method: TwoFactorMethod, data: String, action: TwoFactorSetupAction, twoFactorResolver: DialogTwoFactorResolver){
         session.observable {
             session
-                .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(confirmed = true, enabled = enabled, data = data))
+                .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(confirmed = true, enabled = action != TwoFactorSetupAction.SETUP_EMAIL, data = data))
                 .resolve(twoFactorResolver = twoFactorResolver)
+
+            // Enable legacy recovery emails
+            if(action == TwoFactorSetupAction.SETUP_EMAIL){
+                settingsLiveData.value?.copy(
+                    notifications = SettingsNotification(
+                        emailIncoming = true,
+                        emailOutgoing = true
+                    )
+                )?.also { newSettings ->
+                    it.changeSettings(newSettings).resolve()
+                    it.updateSettings()
+                }
+            }
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
