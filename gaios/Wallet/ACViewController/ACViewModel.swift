@@ -12,12 +12,29 @@ class ACViewModel {
         wm.subaccounts.filter { !($0.hidden ?? false) }
     }
 
+    // reload all contents
     var reloadTableView: (() -> Void)?
 
+    // account cell models
     var accountCellModels = [ACAccountCellModel]() {
         didSet {
             reloadTableView?()
         }
+    }
+
+    // transaction cell models
+    var txCellModels = [ACTransactionCellModel]() {
+        didSet {
+            reloadTableView?()
+        }
+    }
+
+    func getAccountCellModels(at indexPath: IndexPath) -> ACAccountCellModel {
+        return accountCellModels[indexPath.row]
+    }
+
+    func getTransactionCellModels(at indexPath: IndexPath) -> ACTransactionCellModel {
+        return txCellModels[indexPath.row]
     }
 
     func getSubaccounts(assetId: String) {
@@ -37,7 +54,15 @@ class ACViewModel {
             }
     }
 
-    func getAccountCellModels(at indexPath: IndexPath) -> ACAccountCellModel {
-        return accountCellModels[indexPath.row]
+    func getTransactions() {
+        let blockHeight = wm.currentSession?.notificationManager?.blockHeight ?? 0
+        wm.transactions(subaccounts: self.subaccounts)
+            .done { txs in
+                let txCellModels = txs.map { ACTransactionCellModel(tx: $0, blockHeight: blockHeight)}
+                self.txCellModels = Array(txCellModels[...10])                
+            }.catch { err in
+                print(err)
+            }
     }
+
 }

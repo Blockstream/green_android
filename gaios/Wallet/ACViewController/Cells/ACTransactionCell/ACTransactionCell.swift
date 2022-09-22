@@ -9,6 +9,8 @@ class ACTransactionCell: UITableViewCell {
     @IBOutlet weak var lblAmount: UILabel!
     @IBOutlet weak var lblWallet: UILabel!
 
+    class var identifier: String { return String(describing: self) }
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -32,15 +34,12 @@ class ACTransactionCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(lblStatus: String,
-                   lblDate: String,
-                   lblAmount: String,
-                   lblWallet: String
-    ) {
-        self.lblStatus.text = lblStatus
-        self.lblDate.text = lblDate
-        self.lblAmount.text = lblAmount
-        self.lblWallet.text = lblWallet
-
+    var viewModel: ACTransactionCellModel? {
+        didSet {
+            self.lblStatus.text = viewModel?.status
+            self.lblDate.text = viewModel?.date
+            self.lblAmount.text = viewModel?.value
+            self.lblWallet.text = viewModel?.subaccountName
+        }
     }
 }

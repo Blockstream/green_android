@@ -60,6 +60,7 @@ class OVViewController: UIViewController {
 
     func initViewModel() {
         viewModel.getAssets()
+        viewModel.getPendingTransactions()
         viewModel.reloadTableView = { [weak self] in
             DispatchQueue.main.async {
                 if self?.tableView.refreshControl?.isRefreshing ?? false {
@@ -73,6 +74,7 @@ class OVViewController: UIViewController {
     // tableview refresh gesture
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
         viewModel.getAssets()
+        viewModel.getPendingTransactions()
     }
 
     // open settings
@@ -146,7 +148,7 @@ extension OVViewController: UITableViewDelegate, UITableViewDataSource {
         case OVSection.card.rawValue:
             return 0
         case OVSection.transaction.rawValue:
-            return 2
+            return viewModel.txCellModels.count
         default:
             return 0
         }
@@ -174,12 +176,9 @@ extension OVViewController: UITableViewDelegate, UITableViewDataSource {
             /// Fix
             return UITableViewCell()
         case OVSection.transaction.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "OVTransactionCell", for: indexPath) as? OVTransactionCell {
-
-                cell.configure(lblStatus: "Sending",
-                               lblDate: "May 21",
-                               lblAmount: "41,22 USD",
-                               lblWallet: "Work BTC")
+            if let cell = tableView.dequeueReusableCell(withIdentifier: OVTransactionCell.identifier, for: indexPath) as? OVTransactionCell {
+                let cellVm = viewModel.getTransactionCellModel(at: indexPath)
+                cell.viewModel = cellVm
                 cell.selectionStyle = .none
                 return cell
             }

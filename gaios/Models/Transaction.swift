@@ -32,13 +32,15 @@ enum TransactionType: String {
 
 struct Transaction {
     var details: [String: Any]
+    var subaccount: Int?
 
     private func get<T>(_ key: String) -> T? {
         return details[key] as? T
     }
 
-    init(_ details: [String: Any]) {
+    init(_ details: [String: Any], subaccount: Int? = nil) {
         self.details = details
+        self.subaccount = subaccount
     }
 
     var addressees: [Addressee] {

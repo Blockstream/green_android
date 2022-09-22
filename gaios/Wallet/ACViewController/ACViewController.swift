@@ -66,6 +66,7 @@ class ACViewController: UIViewController {
 
     func initViewModel() {
         viewModel.getSubaccounts(assetId: assetId ?? "btc")
+        viewModel.getTransactions()
         viewModel.reloadTableView = { [weak self] in
             DispatchQueue.main.async {
                 if self?.tableView.refreshControl?.isRefreshing ?? false {
@@ -145,7 +146,7 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
         case .edit:
             return 1
         case .transaction:
-            return 5
+            return viewModel.txCellModels.count
         case .more:
             return 1
         default:
@@ -175,11 +176,9 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .transaction:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ACTransactionCell", for: indexPath) as? ACTransactionCell {
-                cell.configure(lblStatus: "Sending",
-                               lblDate: "May 21",
-                               lblAmount: "41,22 USD",
-                               lblWallet: "Work BTC")
+            if let cell = tableView.dequeueReusableCell(withIdentifier: ACTransactionCell.identifier, for: indexPath) as? ACTransactionCell {
+                let cellVm = viewModel.getTransactionCellModels(at: indexPath)
+                cell.viewModel = cellVm
                 cell.selectionStyle = .none
                 return cell
             }
