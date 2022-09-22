@@ -119,14 +119,13 @@ class AnalyticsManager {
 
         let config: CountlyConfig = CountlyConfig()
 
-        if isProduction {
-            config.appKey = AnalyticsManager.appKeyProd
-            config.host = getHost()
+        if let appKey = ProcessInfo.processInfo.environment["COUNTLY_APP_KEY"] {
+            config.appKey = appKey
         } else {
             config.appKey = AnalyticsManager.appKeyDev
-            config.host = getHost()
         }
 
+        config.host = getHost()
         config.offset = countlyOffset
         config.deviceID = analyticsUUID
         config.features = [.crashReporting]

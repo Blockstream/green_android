@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - New "About" section
 - Give us your feedback utility
+- Improve testing with debug & adhoc release
 
 ### Changed
 - Announcements alerts: improve navigation

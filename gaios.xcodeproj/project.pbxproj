@@ -686,6 +686,8 @@
 		81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerWrapper.swift; sourceTree = "<group>"; };
 		81C2D3BC2845184000F45CB9 /* TorSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorSessionManager.swift; sourceTree = "<group>"; };
 		81C602A422A553D3004E26E1 /* Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
+		81CF900C28EC75FE003CC793 /* ProdSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ProdSettings.xcconfig; sourceTree = "<group>"; };
+		81CF900D28EC7631003CC793 /* DevSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevSettings.xcconfig; sourceTree = "<group>"; };
 		81D671EA26C8007600682508 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		81D671EE26C80D3400682508 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		81D671F026C80D4E00682508 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
@@ -1332,6 +1334,8 @@
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
+				81CF900C28EC75FE003CC793 /* ProdSettings.xcconfig */,
+				81CF900D28EC7631003CC793 /* DevSettings.xcconfig */,
 				676FCF1E1F9D0CF800354E93 /* gaios */,
 				676FCF351F9D0CF800354E93 /* gaiosTests */,
 				676FCF401F9D0CF800354E93 /* gaiosUITests */,
@@ -2310,6 +2314,7 @@
 /* Begin XCBuildConfiguration section */
 		676FCF441F9D0CF800354E93 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 81CF900D28EC7631003CC793 /* DevSettings.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -2370,6 +2375,7 @@
 		};
 		676FCF451F9D0CF800354E93 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 81CF900C28EC75FE003CC793 /* ProdSettings.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -2578,6 +2584,137 @@
 			};
 			name = Release;
 		};
+		81CF900E28EC77B0003CC793 /* Staging */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 81CF900D28EC7631003CC793 /* DevSettings.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Staging;
+		};
+		81CF900F28EC77B0003CC793 /* Staging */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
+				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = D9W37S9468;
+				ENABLE_BITCODE = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
+				INFOPLIST_FILE = gaios/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 3.8.8;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lc++",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
+				);
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_SWIFT_SYMBOLS = NO;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
+				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "$(inherited)";
+				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Staging;
+		};
+		81CF901028EC77B0003CC793 /* Staging */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = D9W37S9468;
+				INFOPLIST_FILE = gaiosTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.gaiosTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/gaios.app/gaios";
+			};
+			name = Staging;
+		};
+		81CF901128EC77B0003CC793 /* Staging */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = D9W37S9468;
+				INFOPLIST_FILE = gaiosUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.blockstream.gaiosUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = gaios;
+			};
+			name = Staging;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2586,6 +2723,7 @@
 			buildConfigurations = (
 				676FCF441F9D0CF800354E93 /* Debug */,
 				676FCF451F9D0CF800354E93 /* Release */,
+				81CF900E28EC77B0003CC793 /* Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2595,6 +2733,7 @@
 			buildConfigurations = (
 				676FCF471F9D0CF800354E93 /* Debug */,
 				676FCF481F9D0CF800354E93 /* Release */,
+				81CF900F28EC77B0003CC793 /* Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2604,6 +2743,7 @@
 			buildConfigurations = (
 				676FCF4A1F9D0CF800354E93 /* Debug */,
 				676FCF4B1F9D0CF800354E93 /* Release */,
+				81CF901028EC77B0003CC793 /* Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2613,6 +2753,7 @@
 			buildConfigurations = (
 				676FCF4D1F9D0CF800354E93 /* Debug */,
 				676FCF4E1F9D0CF800354E93 /* Release */,
+				81CF901128EC77B0003CC793 /* Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
