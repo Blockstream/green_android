@@ -53,6 +53,16 @@ class OVViewModel {
             }
     }
 
+    func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
+        if let subaccount = self.wm.subaccounts.filter({ $0.hashValue == subaccountHash }).first,
+            let network = subaccount.network,
+            let session = self.wm.sessions[network],
+            let blockHeight = session.notificationManager?.blockHeight {
+                return blockHeight
+        }
+        return 0
+    }
+
     func getAssetCellModels(at indexPath: IndexPath) -> OVAssetCellModel {
         return assetCellModels[indexPath.row]
     }

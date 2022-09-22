@@ -30,7 +30,7 @@ enum TransactionType: String {
     case mixed
 }
 
-struct Transaction {
+struct Transaction: Comparable {
     var details: [String: Any]
     var subaccount: Int?
 
@@ -262,5 +262,13 @@ struct Transaction {
             }
         }
         return blindingUrlString.isEmpty ? "" : "#blinded=" + blindingUrlString.joined(separator: ",")
+    }
+
+    static func == (lhs: Transaction, rhs: Transaction) -> Bool {
+        (lhs.details as NSDictionary).isEqual(to: rhs.details)
+    }
+
+    static func < (lhs: Transaction, rhs: Transaction) -> Bool {
+        return lhs.createdAtTs < rhs.createdAtTs
     }
 }

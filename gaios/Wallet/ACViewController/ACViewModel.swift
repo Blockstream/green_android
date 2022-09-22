@@ -12,6 +12,10 @@ class ACViewModel {
         wm.subaccounts.filter { !($0.hidden ?? false) }
     }
 
+    // Cached data
+    var cachedSubaccounts = [WalletItem]()
+    var cachedTransactions = [Transaction]()
+
     // reload all contents
     var reloadTableView: (() -> Void)?
 
@@ -42,6 +46,7 @@ class ACViewModel {
             (assetId == "btc" && !$0.gdkNetwork.liquid) ||
             (assetId != "btc" && $0.gdkNetwork.liquid)
         }
+        cachedSubaccounts = subaccounts
         wm.balances(subaccounts: subaccounts)
             .done { _ in
                 self.accountCellModels = subaccounts.map {
@@ -54,15 +59,25 @@ class ACViewModel {
             }
     }
 
-    func getTransactions() {
-        let blockHeight = wm.currentSession?.notificationManager?.blockHeight ?? 0
-        wm.transactions(subaccounts: self.subaccounts)
+    func getTransactions(subaccounts: [WalletItem]? = nil, page: Int = 0, max: Int? = nil) {
+        wm.transactions(subaccounts: subaccounts ?? self.subaccounts)
             .done { txs in
-                let txCellModels = txs.map { ACTransactionCellModel(tx: $0, blockHeight: blockHeight)}
-                self.txCellModels = Array(txCellModels[...10])                
+                self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
+                self.txCellModels = self.cachedTransactions
+                    .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
+                    .map { ACTransactionCellModel(tx: $0.0, blockHeight: $0.1) }
             }.catch { err in
                 print(err)
             }
     }
 
+    func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
+        if let subaccount = self.wm.subaccounts.filter({ $0.hashValue == subaccountHash }).first,
+            let network = subaccount.network,
+            let session = self.wm.sessions[network],
+            let blockHeight = session.notificationManager?.blockHeight {
+                return blockHeight
+        }
+        return 0
+    }
 }
