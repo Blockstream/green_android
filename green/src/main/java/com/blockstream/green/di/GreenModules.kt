@@ -104,8 +104,8 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideCountly(@ApplicationContext context: Context, applicationScope: ApplicationScope, settingsManager: SettingsManager, sessionManager: SessionManager, walletRepository: WalletRepository): Countly {
-        return Countly(context, applicationScope, settingsManager, sessionManager, walletRepository)
+    fun provideCountly(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, applicationScope: ApplicationScope, settingsManager: SettingsManager, sessionManager: SessionManager, walletRepository: WalletRepository): Countly {
+        return Countly(context, sharedPreferences, applicationScope, settingsManager, sessionManager, walletRepository)
     }
 
     @Singleton

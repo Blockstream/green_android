@@ -2,9 +2,13 @@ package com.blockstream.green.data
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
+import com.android.installreferrer.api.InstallReferrerClient
+import com.android.installreferrer.api.InstallReferrerStateListener
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.WalletBalances
 import com.blockstream.gdk.data.Network
@@ -31,16 +35,20 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import ly.count.android.sdk.Countly
 import ly.count.android.sdk.CountlyConfig
 import ly.count.android.sdk.RemoteConfigCallback
-import mu.KLogging
+import mu.NamedKLogging
+import java.net.URLDecoder
 import kotlin.properties.Delegates
 
 
 
 class Countly constructor(
     private val context: Context,
+    private val sharedPreferences: SharedPreferences,
     private val applicationScope: ApplicationScope,
     private val settingsManager: SettingsManager,
     private val sessionManager: SessionManager,
@@ -103,7 +111,8 @@ class Countly constructor(
     private val crashes = countly.crashes()
     private val consent = countly.consent()
     private val userProfile = countly.userProfile()
-    val remoteConfig = countly.remoteConfig()
+    private val remoteConfig = countly.remoteConfig()
+    private val attribution = countly.attribution()
 
     private var analyticsConsent : Boolean by Delegates.observable(settingsManager.getApplicationSettings().analytics) { _, oldValue, newValue ->
         if(oldValue != newValue){
@@ -159,6 +168,88 @@ class Countly constructor(
         // Set number of user software wallets
         walletRepository.getWalletsLiveData().observeForever {
             updateUserProfile(it)
+        }
+
+        // If no referrer is set, try to get it from the install referrer
+        // Empty string is also allowed
+        if (!this.sharedPreferences.contains(REFERRER_KEY)) {
+            handleReferrer { referrer ->
+                // Mark it as complete
+                sharedPreferences.edit {
+                    putString(REFERRER_KEY, referrer)
+                }
+            }
+        }
+    }
+
+    fun handleReferrer(onComplete: (referrer: String) -> Unit) {
+        InstallReferrerClient.newBuilder(context).build().also { referrerClient ->
+            referrerClient.startConnection(object : InstallReferrerStateListener {
+                override fun onInstallReferrerSetupFinished(responseCode: Int) {
+                    when (responseCode) {
+                        InstallReferrerClient.InstallReferrerResponse.OK -> {
+                            var cid: String? = null
+                            var uid: String? = null
+                            var referrer: String? = null
+
+                            try {
+                                // The string may be URL Encoded, so decode it just to be sure.
+                                // eg. utm_source=google-play&utm_medium=organic
+                                // eg. "cly_id=0eabe3eac38ff74556c69ed25a8275b19914ea9d&cly_uid=c27b33b16ac7947fae0ed9e60f3a5ceb96e0e545425dd431b791fe930fabafde4b96c69e0f63396202377a8025f008dfee2a9baf45fa30f7c80958bd5def6056"
+                                referrer = URLDecoder.decode(
+                                    referrerClient.installReferrer.installReferrer,
+                                    "UTF-8"
+                                )
+
+                                logger.info { "Referrer: $referrer" }
+
+                                val parts = referrer.split("&")
+
+                                for (part in parts) {
+                                    // Countly campaign
+                                    if (part.startsWith("cly_id")) {
+                                        cid = part.replace("cly_id=", "").trim()
+                                    }
+                                    if (part.startsWith("cly_uid")) {
+                                        uid = part.replace("cly_uid=", "").trim()
+                                    }
+
+                                    // Google Play organic
+                                    if (part.trim() == "utm_medium=organic") {
+                                        cid = if (isProductionFlavor) GOOGLE_PLAY_ORGANIC_PRODUCTION else GOOGLE_PLAY_ORGANIC_DEVELOPMENT
+                                    }
+                                }
+                                
+                                attribution.recordDirectAttribution("countly", buildJsonObject {
+                                    put("cid", cid)
+                                    if (uid != null) {
+                                        put("cuid", uid)
+                                    }
+                                }.toString())
+
+                            } catch (e: Exception) {
+                                recordException(e)
+                            }
+
+                            onComplete.invoke(referrer ?: "")
+                        }
+                        InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> {
+                            // API not available on the current Play Store app.
+                            // logger.info { "InstallReferrerService FEATURE_NOT_SUPPORTED" }
+                            onComplete.invoke("")
+                        }
+                        InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> {
+                            // Connection couldn't be established.
+                            // logger.info { "InstallReferrerService SERVICE_UNAVAILABLE" }
+                        }
+                    }
+
+                    // Disconnect the client
+                    referrerClient.endConnection()
+                }
+
+                override fun onInstallReferrerServiceDisconnected() {}
+            })
         }
     }
 
@@ -575,12 +666,17 @@ class Countly constructor(
     }
 
 
-    companion object : KLogging() {
+    companion object : NamedKLogging("AppCountly") {
         const val SERVER_URL = "https://countly.blockstream.com"
         const val SERVER_URL_ONION = "http://greciphd2z3eo6bpnvd6mctxgfs4sslx4hyvgoiew4suoxgoquzl72yd.onion/"
 
         const val PRODUCTION_APP_KEY = "351d316234a4a83169fecd7e760ef64bfd638d21"
         const val DEVELOPMENT_APP_KEY = "cb8e449057253add71d2f9b65e5f66f73c073e63"
+
+        const val GOOGLE_PLAY_ORGANIC_PRODUCTION = "95d7943329b90c07d6d7d16b874f97de68fbf67c"
+        const val GOOGLE_PLAY_ORGANIC_DEVELOPMENT = "fba90e3e3959c95c18cca2f173bdf31cfb934d47"
+
+        const val REFERRER_KEY = "referrer"
 
         const val MAX_OFFSET_PRODUCTION     = 12 * 60 * 60 * 1000L // 12 hours
         const val MAX_OFFSET_DEVELOPMENT    =      30 * 60 * 1000L // 30 mins

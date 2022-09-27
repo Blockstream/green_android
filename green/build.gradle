@@ -185,6 +185,7 @@ dependencies {
     implementation "androidx.browser:browser:1.4.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "com.google.android.play:review-ktx:2.0.0"
+    implementation "com.android.installreferrer:installreferrer:2.2"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
