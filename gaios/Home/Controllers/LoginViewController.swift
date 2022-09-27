@@ -26,7 +26,8 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var alertHint: UILabel!
     @IBOutlet weak var alertIconWarn: UIImageView!
     @IBOutlet weak var alertBtnDismiss: UIButton!
-    @IBOutlet weak var alertBtnLink: UIButton!
+    @IBOutlet weak var alertBtnRight: UIButton!
+    @IBOutlet weak var alertBtnsContainer: UIView!
 
     private var remoteAlert: RemoteAlert?
 
@@ -84,11 +85,12 @@ class LoginViewController: UIViewController {
             alertTitle.isHidden = remoteAlert?.title?.isEmpty ?? true
             alertHint.isHidden = remoteAlert?.message?.isEmpty ?? true
             alertIconWarn.isHidden = !(remoteAlert?.isWarning ?? false)
+            alertBtnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             alertBtnDismiss.isHidden = !(remoteAlert?.dismissable ?? false)
-            alertBtnLink.isHidden = true
+            alertBtnsContainer.isHidden = true
             if remoteAlert?.link != nil {
                 if URL(string: remoteAlert?.link ?? "") != nil {
-                    alertBtnLink.isHidden = false
+                    alertBtnsContainer.isHidden = false
                 }
             }
         }
@@ -419,9 +421,7 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func alertLink(_ sender: Any) {
-        if let url = URL(string: self.remoteAlert?.link ?? "") {
-            UIApplication.shared.open(url)
-        }
+        SafeNavigationManager.shared.navigate(remoteAlert?.link)
     }
 }
 

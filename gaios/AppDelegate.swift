@@ -15,6 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    var navigateWindow: UIWindow?
+
     func instantiateViewControllerAsRoot(storyboard: String, identifier: String) {
         let storyboard = UIStoryboard(name: storyboard, bundle: nil)
         let firstVC = storyboard.instantiateViewController(withIdentifier: identifier)

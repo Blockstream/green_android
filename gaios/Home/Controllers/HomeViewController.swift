@@ -77,9 +77,7 @@ class HomeViewController: UIViewController {
     }
 
     func remoteAlertLink() {
-        if let url = URL(string: self.remoteAlert?.link ?? "") {
-            UIApplication.shared.open(url)
-        }
+        SafeNavigationManager.shared.navigate(remoteAlert?.link)
     }
 
     @objc func didPressAddWallet() {
@@ -125,13 +123,12 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case HomeSection.remoteAlerts.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
                 cell.configure(AlertCardType.remoteAlert(remoteAlert),
-                                   onLeft: nil,
-                                   onRight: nil,
-                                   onDismiss: {[weak self] in
-                    self?.remoteAlertDismiss()
+                               onLeft: nil,
+                               onRight: (remoteAlert.link ?? "" ).isEmpty ? nil : {[weak self] in
+                    self?.remoteAlertLink() // to solve cylomatic complexity
                 },
-                               onLink: { [weak self] in
-                    self?.remoteAlertLink()
+                               onDismiss: {[weak self] in
+                    self?.remoteAlertDismiss()
                 })
                 cell.selectionStyle = .none
                 return cell

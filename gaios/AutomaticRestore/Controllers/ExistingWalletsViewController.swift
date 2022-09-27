@@ -167,15 +167,12 @@ extension ExistingWalletsViewController: UITableViewDelegate, UITableViewDataSou
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
                 cell.configure(AlertCardType.remoteAlert(remoteAlert),
                                    onLeft: nil,
-                                   onRight: nil,
+                                   onRight: (remoteAlert.link ?? "" ).isEmpty ? nil : { () in
+                    SafeNavigationManager.shared.navigate(remoteAlert.link)
+                },
                                    onDismiss: {[weak self] in
                                  self?.remoteAlertDismiss()
-                    },
-                               onLink: { [weak self] in
-                    if let url = URL(string: self?.remoteAlert?.link ?? "") {
-                        UIApplication.shared.open(url)
-                    }
-                })
+                    })
                 cell.selectionStyle = .none
                 return cell
             }

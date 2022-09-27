@@ -619,45 +619,39 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                                    onRight: {[weak self] in
                         self?.performSegue(withIdentifier: "overviewLeaarnMore2fa", sender: self)
                     },
-                                   onDismiss: nil,
-                                   onLink: nil)
+                                   onDismiss: nil)
                 case .systemMessage(let text):
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
                                    onRight: {[weak self] in
                         self?.systemMessageScreen(text: text)
                     },
-                                   onDismiss: nil,
-                                   onLink: nil)
+                                   onDismiss: nil)
                 case .fiatMissing:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
                                    onRight: nil,
-                                   onDismiss: nil,
-                                   onLink: nil)
+                                   onDismiss: nil)
                 case .testnetNoValue:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
                                    onRight: nil,
-                                   onDismiss: nil,
-                                   onLink: nil)
+                                   onDismiss: nil)
                 case .ephemeralWallet:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
                                    onRight: nil,
-                                   onDismiss: nil,
-                                   onLink: nil)
+                                   onDismiss: nil)
                 case .remoteAlert:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
-                                   onRight: nil,
-                                   onDismiss: {[weak self] in
-                        self?.remoteAlertDismiss()
-                    },
-                                   onLink: { [weak self] in
+                                   onRight: (remoteAlert?.link ?? "" ).isEmpty ? nil : {[weak self] in
                         if let url = URL(string: self?.remoteAlert?.link ?? "") {
                             UIApplication.shared.open(url)
                         }
+                    },
+                                   onDismiss: {[weak self] in
+                        self?.remoteAlertDismiss()
                     })
                 }
                 cell.selectionStyle = .none
