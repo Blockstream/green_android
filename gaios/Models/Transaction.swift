@@ -13,10 +13,10 @@ struct Addressee: Codable {
     }
 
     let address: String
-    let satoshi: UInt64
+    let satoshi: Int64
     let assetId: String?
 
-    init(address: String, satoshi: UInt64, assetId: String? = nil) {
+    init(address: String, satoshi: Int64, assetId: String? = nil) {
         self.address = address
         self.satoshi = satoshi
         self.assetId = assetId
@@ -45,7 +45,7 @@ struct Transaction {
             let out: [[String: Any]] = get("addressees") ?? []
             return out.map { value in
                 let address = value["address"] as? String
-                let satoshi = value["satoshi"] as? UInt64
+                let satoshi = value["satoshi"] as? Int64
                 let assetId = value["asset_id"] as? String
                 return Addressee(address: address!, satoshi: satoshi ?? 0, assetId: assetId)
             }
@@ -117,13 +117,13 @@ struct Transaction {
         AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
-    var amounts: [String: UInt64] {
+    var amounts: [String: Int64] {
         get {
-            return get("satoshi") as [String: UInt64]? ?? [:]
+            return get("satoshi") as [String: Int64]? ?? [:]
         }
     }
 
-    static func sort(_ dict: [String: UInt64]) -> [(key: String, value: UInt64)] {
+    static func sort(_ dict: [String: Int64]) -> [(key: String, value: Int64)] {
         var sorted = dict.filter { $0.key != feeAsset }.sorted(by: {$0.0 < $1.0 })
         if dict.contains(where: { $0.key == feeAsset }) {
             sorted.insert((key: feeAsset, value: dict[feeAsset]!), at: 0)
@@ -135,7 +135,7 @@ struct Transaction {
             let tAss = SortingAsset(tag: asset.key, info: info, hasImage: hasImage ?? false, value: asset.value)
             tAssets.append(tAss)
         }
-        var oAssets = [(key: String, value: UInt64)]()
+        var oAssets = [(key: String, value: Int64)]()
         tAssets.sort(by: {!$0.hasImage && !$1.hasImage ? $0.info?.ticker != nil && !($1.info?.ticker != nil) : $0.hasImage && !$1.hasImage})
         tAssets.forEach { asset in
             oAssets.append((key:asset.tag, value: asset.value))
@@ -186,7 +186,7 @@ struct Transaction {
     }
 
     func hasBlindingData(data: [String: Any]) -> Bool {
-        let satoshi = data["satoshi"] as? UInt64 ?? 0
+        let satoshi = data["satoshi"] as? Int64 ?? 0
         let assetId = data["asset_id"] as? String ?? ""
         let amountBlinder = data["amountblinder"] as? String ?? ""
         let assetBlinder = data["assetblinder"] as? String ?? ""

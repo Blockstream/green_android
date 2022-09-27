@@ -22,7 +22,7 @@ class WalletItem: Codable, Equatable, Comparable {
     var receiveAddress: String?
     let receivingId: String
     let type: AccountType
-    var satoshi: [String: UInt64]?
+    var satoshi: [String: Int64]?
     var recoveryChainCode: String?
     var recoveryPubKey: String?
     let bip44Discovered: Bool?
@@ -80,7 +80,7 @@ class WalletItem: Codable, Equatable, Comparable {
         }
     }
 
-    func getBalance() -> Promise<[String: UInt64]> {
+    func getBalance() -> Promise<[String: Int64]> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().then(on: bgq) {
             SessionsManager.current!.getBalance(subaccount: self.pointer, numConfs: 0)
@@ -90,7 +90,7 @@ class WalletItem: Codable, Equatable, Comparable {
         }
     }
 
-    var btc: UInt64 {
+    var btc: Int64 {
         get {
             if let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() {
                 return satoshi?[feeAsset] ?? 0

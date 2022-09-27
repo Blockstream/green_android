@@ -20,7 +20,7 @@ class AssetCell: UITableViewCell {
         assetIconImageView.image = nil
     }
 
-    func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64, negative: Bool = false, isTransaction: Bool = false, sendAll: Bool = false) {
+    func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: Int64, negative: Bool = false, isTransaction: Bool = false, sendAll: Bool = false) {
         if let balance = Balance.fromSatoshi(satoshi, asset: info) {
             let (amount, denom) = balance.toValue()
             let amountTxt = sendAll ? NSLocalizedString("id_all", comment: "") : amount

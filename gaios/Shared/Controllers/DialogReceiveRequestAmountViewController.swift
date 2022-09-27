@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol DialogReceiveRequestAmountViewControllerDelegate: AnyObject {
-    func didConfirm(satoshi: UInt64?)
+    func didConfirm(satoshi: Int64?)
     func didCancel()
 }
 
@@ -31,7 +31,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     var buttonConstraint: NSLayoutConstraint?
     var isAccountRename = false
     var selectedType = TransactionBaseType.BTC
-    var prefill: UInt64?
+    var prefill: Int64?
     var wallet: WalletItem?
 
     override func viewDidLoad() {
@@ -121,7 +121,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         }
     }
 
-    func getSatoshi() -> UInt64? {
+    func getSatoshi() -> Int64? {
         var amountText = amountTextField.text!
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)

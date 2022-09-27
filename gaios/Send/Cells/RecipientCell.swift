@@ -299,7 +299,7 @@ class RecipientCell: UITableViewCell {
         return ""
     }
 
-    func getSatoshi() -> UInt64? {
+    func getSatoshi() -> Int64? {
         var amountText = amountTextField.text ?? ""
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)

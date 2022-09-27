@@ -50,7 +50,7 @@ class AccountArchiveCell: UITableViewCell {
         self.action = action
         self.actionBtn.isHidden = false
 
-        var assets = [(key: String, value: UInt64)]()
+        var assets = [(key: String, value: Int64)]()
         assets = Transaction.sort(account.satoshi ?? [:])
 
         for v in iconsStack.subviews {

@@ -36,7 +36,7 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = true
     }
 
-    func configure(tx: Transaction, id: String, value: UInt64, copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
+    func configure(tx: Transaction, id: String, value: Int64, copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
 
         self.copyAmount = copyAmount
         self.copyRecipient = copyRecipient

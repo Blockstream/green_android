@@ -39,7 +39,7 @@ class OverviewViewController: UIViewController {
     private var alertCards: [AlertCardType] = []
 
     // subaccount balance for tableviews
-    private var assets = [(key: String, value: UInt64)]()
+    private var assets = [(key: String, value: Int64)]()
 
     // transactions data for tableviews
     private var transactions: [Transaction] = []
@@ -457,7 +457,7 @@ class OverviewViewController: UIViewController {
 
     // reload in tableview assets of current wallet
     func reloadAssets() {
-        assets = [(key: String, value: UInt64)]()
+        assets = [(key: String, value: Int64)]()
         if let wallet = presentingWallet {
             assets = Transaction.sort(wallet.satoshi ?? [:])
         }

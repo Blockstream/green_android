@@ -16,7 +16,7 @@ class AssetsListViewController: UIViewController {
 
     weak var delegate: AssetsListViewControllerDelegate?
 
-    private var assets: [(key: String, value: UInt64)] {
+    private var assets: [(key: String, value: Int64)] {
         get {
             return Transaction.sort(wallet!.satoshi ?? [:])
         }

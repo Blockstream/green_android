@@ -72,7 +72,7 @@ class DialogSendHWSummaryViewController: UIViewController {
             let network = AccountsManager.shared.current?.gdkNetwork
             let assetId = (network?.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
             if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
-                value = transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
+                value =  transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
             }
             let registry = SessionsManager.current?.registry
             let info = registry?.info(for: assetId)

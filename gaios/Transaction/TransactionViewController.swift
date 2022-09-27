@@ -32,15 +32,15 @@ class TransactionViewController: UIViewController {
             return SessionsManager.current?.isResetActive ?? false ||
             !transaction.canRBF || account?.isWatchonly ?? false
     }
-    private var amounts: [(key: String, value: UInt64)] {
+    private var amounts: [(key: String, value: Int64)] {
         if transaction?.type == .some(.redeposit) {
             return []
         }
-        var amounts = Array(transaction.amounts)
+        var amounts = Transaction.sort(transaction.amounts)
         // OUT transactions in BTC/L-BTC have fee included
         if transaction.type == .some(.outgoing) {
             let feeAsset = account?.gdkNetwork?.getFeeAsset()
-            amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value - transaction.fee) : $0 }
+            amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value + Int64(transaction.fee)) : $0 }
         }
         return amounts.filter({ $0.value != 0 })
     }

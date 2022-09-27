@@ -58,7 +58,7 @@ class OverviewTransactionCell: UITableViewCell {
         } else if transaction.defaultAsset == btc {
             if let balance = Balance.fromSatoshi(transaction.amounts[btc] ?? 0) {
                 let (value, denom) = balance.toValue()
-                lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value)
+                lblAmount.text = String(format: "%@%@", transaction.type == .incoming ? "+" : "", value)
                 lblDenom.text = "\(denom)"
             }
         } else {
@@ -66,7 +66,7 @@ class OverviewTransactionCell: UITableViewCell {
             let info = SessionsManager.current?.registry?.info(for: asset)
             if let balance = Balance.fromSatoshi(transaction.amounts[asset] ?? 0, asset: info) {
                 let (value, ticker) = balance.toValue()
-                lblAmount.text = String(format: "%@%@", transaction.type == .outgoing || transaction.type == .redeposit ? "-" : "+", value)
+                lblAmount.text = String(format: "%@%@", transaction.type == .incoming ? "+" : "", value)
                 lblDenom.text = "\(ticker)"
             }
         }

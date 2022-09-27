@@ -22,7 +22,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         return amount
     }
 
-    var satoshi: UInt64? {
+    var satoshi: Int64? {
         guard amount != nil else { return nil }
         if isFiat {
             return Balance.fromFiat(amount ?? "0")?.satoshi

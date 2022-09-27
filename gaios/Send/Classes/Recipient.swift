@@ -13,7 +13,7 @@ class Recipient: Codable {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
-    func getSatoshi() -> UInt64? {
+    func getSatoshi() -> Int64? {
         var amountText = amount ?? ""
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)

@@ -25,7 +25,7 @@ class ReceiveViewController: UIViewController {
 
     private var newAddressToken: NSObjectProtocol?
     private var account = AccountsManager.shared.current
-    var satoshi: UInt64?
+    var satoshi: Int64?
     var address: Address?
 
     override func viewDidLoad() {
@@ -180,7 +180,7 @@ class ReceiveViewController: UIViewController {
         if !(account?.gdkNetwork?.liquid ?? false) {
             btnEdit.isHidden = false
         }
-        return String(format: "%@:%@?amount=%.8f", ntwPrefix, address, toBTC(satoshi!))
+        return String(format: "%@:%@?amount=%.8f", ntwPrefix, address, toBTC(UInt64(satoshi ?? 0)))
     }
 
     func toBTC(_ satoshi: UInt64) -> Double {
@@ -259,7 +259,7 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
 }
 
 extension ReceiveViewController: DialogReceiveRequestAmountViewControllerDelegate {
-    func didConfirm(satoshi: UInt64?) {
+    func didConfirm(satoshi: Int64?) {
         self.satoshi = satoshi
         updateQRCode()
     }

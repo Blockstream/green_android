@@ -475,11 +475,11 @@ class SessionManager {
             }.tapLogger()
     }
 
-    func getBalance(subaccount: UInt32, numConfs: Int) -> Promise<[String: UInt64]> {
+    func getBalance(subaccount: UInt32, numConfs: Int) -> Promise<[String: Int64]> {
         return Guarantee()
             .compactMap { try self.session?.getBalance(details: ["subaccount": subaccount, "num_confs": numConfs]) }
             .then { $0.resolve(session: self) }
-            .compactMap { $0["result"] as? [String: UInt64] }
+            .compactMap { $0["result"] as? [String: Int64] }
             .tapLogger()
     }
 

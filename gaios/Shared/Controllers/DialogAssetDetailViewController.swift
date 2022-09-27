@@ -15,7 +15,7 @@ class DialogAssetDetailViewController: UIViewController {
 
     var tag: String!
     var asset: AssetInfo?
-    var satoshi: UInt64?
+    var satoshi: Int64?
     private var assetDetailCellTypes = DetailCellType.allCases
     private var isLBTC: Bool {
         get {

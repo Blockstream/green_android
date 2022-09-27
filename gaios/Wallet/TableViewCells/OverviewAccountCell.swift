@@ -58,7 +58,7 @@ class OverviewAccountCell: UITableViewCell {
         self.action = action
         self.actionBtn.isHidden = action == nil
 
-        var assets = [(key: String, value: UInt64)]()
+        var assets = [(key: String, value: Int64)]()
         assets = Transaction.sort(account.satoshi ?? [:])
 
         for v in iconsStack.subviews {

@@ -10,7 +10,7 @@ struct SortingAsset {
     let tag: String
     let info: AssetInfo?
     let hasImage: Bool
-    let value: UInt64
+    let value: Int64
 }
 
 struct AssetInfo: Codable {

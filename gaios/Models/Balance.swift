@@ -22,7 +22,7 @@ struct Balance: Codable {
     let fiatCurrency: String
     let fiatRate: String?
     let mbtc: String
-    let satoshi: UInt64
+    let satoshi: Int64
     let ubtc: String
     let sats: String
     let assetInfo: AssetInfo?
@@ -65,13 +65,17 @@ struct Balance: Codable {
         return Balance.from(details: details)
     }
 
-    static func fromSatoshi(_ satoshi: UInt64, asset: AssetInfo? = nil) -> Balance? {
+    static func fromSatoshi(_ satoshi: Any, asset: AssetInfo? = nil) -> Balance? {
         let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
         var details: [String: Any] = ["satoshi": satoshi]
         if let asset = asset, asset.assetId != feeAsset {
             details["asset_info"] = asset.encode()
         }
         return Balance.from(details: details)
+    }
+
+    static func fromSatoshi(_ satoshi: UInt64, asset: AssetInfo? = nil) -> Balance? {
+        return Balance.fromSatoshi(Int64(satoshi), asset: asset)
     }
 
     func toFiat() -> (String, String) {

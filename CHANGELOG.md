@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Announcements alerts: improve navigation
 - Improved performance of asset registry usage
+- Support gdk 0.0.56
 
 ### Fixed
 

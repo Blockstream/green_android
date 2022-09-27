@@ -26,7 +26,7 @@ class OverviewAssetCell: UITableViewCell {
         icon.image = nil
     }
 
-    func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64, isLiquid: Bool = false) {
+    func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: Int64, isLiquid: Bool = false) {
         prepareForReuse()
         if let balance = Balance.fromSatoshi(satoshi, asset: info) {
             let (amount, denom) = balance.toValue()
