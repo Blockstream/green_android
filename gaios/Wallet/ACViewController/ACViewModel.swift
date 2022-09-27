@@ -19,6 +19,9 @@ class ACViewModel {
     // reload all contents
     var reloadTableView: (() -> Void)?
 
+    // reload by section with animation
+    var reloadSections: (([ACSection], Bool) -> Void)?
+
     // account cell models
     var accountCellModels = [ACAccountCellModel]() {
         didSet {
@@ -29,7 +32,7 @@ class ACViewModel {
     // transaction cell models
     var txCellModels = [ACTransactionCellModel]() {
         didSet {
-            reloadTableView?()
+            reloadSections?( [ACSection.transaction], true )
         }
     }
 

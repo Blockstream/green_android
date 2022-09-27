@@ -18,18 +18,9 @@ class ACAccountCell: BaseCell {
 
     class var identifier: String { return String(describing: self) }
 
-    var action: (() -> Void)? {
-        didSet {
-            actionBtn.isHidden = action != nil && showAll
-        }
-    }
-
-    var showAll: Bool = true {
-        didSet {
-            actionBtn.isHidden = action != nil && showAll
-            bgShadow.backgroundColor = showAll ? .clear : .customMatrixGreen()
-        }
-    }
+    var action: (() -> Void)?
+    var showAll: Bool?
+    var viewModel: ACAccountCellModel?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -47,20 +38,23 @@ class ACAccountCell: BaseCell {
         lblSecurity.text = ""
         lblBalance.text = ""
         lblFiat.text = ""
-//        lblBalance.isHidden = true
         actionBtn.isHidden = true
-        bg.backgroundColor = UIColor.customMatrixGreen()
     }
 
-    var viewModel: ACAccountCellModel? {
-        didSet {
-            prepareForReuse()
-            self.lblAccountTitle.text = viewModel?.name
-            self.lblType.text = viewModel?.type
-            self.lblSecurity.text = viewModel?.security
-            self.lblBalance.text = viewModel?.value
-            self.lblFiat.text = viewModel?.fiat
-        }
+    func configure(viewModel: ACAccountCellModel, showAll: Bool, action: (() -> Void)?) {
+        self.viewModel = viewModel
+        self.showAll = showAll
+        self.action = action
+
+        self.lblAccountTitle.text = viewModel.name
+        self.lblType.text = viewModel.type.localized
+        self.lblSecurity.text = viewModel.security
+        self.lblBalance.text = viewModel.value
+        self.lblFiat.text = viewModel.fiat
+
+        actionBtn.isHidden = action == nil || !showAll
+        bg.backgroundColor = UIColor.customMatrixGreen()
+        bgShadow.backgroundColor = showAll ? .clear : .customMatrixGreen()
     }
 
     @IBAction func actionBtn(_ sender: Any) {

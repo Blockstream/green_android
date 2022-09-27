@@ -75,6 +75,10 @@ class ACViewController: UIViewController {
                 self?.tableView.reloadData()
             }
         }
+        let reloadSections: (([ACSection], Bool) -> Void)? = { [weak self] (sections, animated) in
+            self?.reloadSections(sections, animated: true)
+        }
+        viewModel.reloadSections = reloadSections
     }
 
     // tableview refresh gesture
@@ -142,7 +146,9 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch ACSection(rawValue: section) {
         case .account:
-            return showAll ? viewModel.accountCellModels.count : 1
+            let num = viewModel.accountCellModels.count
+            return showAll ? num : ( num == 0 ? 0 : 1)
+//            return showAll ? viewModel.accountCellModels.count : 1
         case .edit:
             return 1
         case .transaction:
@@ -160,11 +166,9 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ACAccountCell.identifier, for: indexPath) as? ACAccountCell {
                 let cellVm = viewModel.getAccountCellModels(at: indexPath)
-                cell.viewModel = cellVm
-                cell.showAll = showAll
-                cell.action = { [weak self] in
+                cell.configure(viewModel: cellVm, showAll: showAll, action: { [weak self] in
                     self?.accountPrefs()
-                }
+                })
                 cell.selectionStyle = .none
                 return cell
             }
