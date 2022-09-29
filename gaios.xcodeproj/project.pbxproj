@@ -292,6 +292,8 @@
 		81A062D224532454003464A0 /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
 		81A062D624532643003464A0 /* HWChannelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWChannelProtocol.swift */; };
 		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
+		81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B1EB2928E3703200F409A3 /* AssetAmountView.swift */; };
+		81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */; };
 		81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */; };
 		81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */; };
 		81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2722E9E9EA005A04C6 /* Ledger.swift */; };
@@ -677,6 +679,8 @@
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
 		81A062D524532643003464A0 /* HWChannelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWChannelProtocol.swift; sourceTree = "<group>"; };
 		81ACC4B0227337F3004B1E92 /* Wallet.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Wallet.storyboard; sourceTree = "<group>"; };
+		81B1EB2928E3703200F409A3 /* AssetAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAmountView.swift; sourceTree = "<group>"; };
+		81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetAmountView.xib; sourceTree = "<group>"; };
 		81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountNavigator.swift; sourceTree = "<group>"; };
 		81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMessageViewController.swift; sourceTree = "<group>"; };
 		81BF4E2722E9E9EA005A04C6 /* Ledger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
@@ -1624,6 +1628,8 @@
 				81640CDD21FB2B1100E7F79C /* FeeButton.swift */,
 				340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */,
 				340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */,
+				81B1EB2928E3703200F409A3 /* AssetAmountView.swift */,
+				81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1810,6 +1816,7 @@
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
 				340A5F5928E476C6003D56B1 /* About.storyboard in Resources */,
+				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
 				340F07E42620499A0065A986 /* NetworkSelectorBarItem.xib in Resources */,
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
 				3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */,
@@ -2015,6 +2022,7 @@
 				3497936825F8B18C0029ECB1 /* WalletNameViewController.swift in Sources */,
 				34477D322771D2600021698B /* RecipientCell.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
+				81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */,
 				346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,

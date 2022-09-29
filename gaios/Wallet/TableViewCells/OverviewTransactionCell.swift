@@ -6,19 +6,8 @@ class OverviewTransactionCell: UITableViewCell {
     @IBOutlet weak var statusBadge: UIView!
     @IBOutlet weak var lblStatus: UILabel!
     @IBOutlet weak var lblNote: UILabel!
-    @IBOutlet weak var lblAmount: UILabel!
     @IBOutlet weak var lblDate: UILabel!
-    @IBOutlet weak var lblDenom: UILabel!
-    @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var spvVerifyIcon: UIImageView!
-
-    var isLiquid: Bool {
-        let account = AccountsManager.shared.current
-        return account?.gdkNetwork?.liquid ?? false
-    }
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-    }
+    @IBOutlet weak var amountsStackView: UIStackView!
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -33,93 +22,46 @@ class OverviewTransactionCell: UITableViewCell {
     override func prepareForReuse() {
         lblStatus.text = ""
         lblNote.text = ""
-        lblAmount.text = ""
         lblDate.text = ""
-        lblDenom.text = ""
-        icon.image = UIImage()
-        spvVerifyIcon.image = UIImage()
+        amountsStackView.subviews.forEach({ $0.removeFromSuperview() })
     }
 
     func setup(transaction: Transaction, network: String?) {
         prepareForReuse()
-        self.backgroundColor = UIColor.customTitaniumDark()
+        backgroundColor = UIColor.customTitaniumDark()
         statusBadge.layer.cornerRadius = 3.0
-        let assetTag = transaction.defaultAsset
-        let multipleAssets = transaction.amounts.count > 1
-        let isRedeposit = transaction.type == .redeposit
-        let isIncoming = transaction.type == .incoming
-        if isRedeposit, let balance = Balance.fromSatoshi(transaction.fee) {
-            // For redeposits we show fees paid in btc
-            let (fee, denom) = balance.toDenom()
-            lblAmount.text = "-\(fee)"
-            lblDenom.text = "\(denom)"
-        } else if multipleAssets && isIncoming {
-            lblAmount.text = NSLocalizedString("id_multiple_assets", comment: "")
-        } else if transaction.defaultAsset == btc {
-            if let balance = Balance.fromSatoshi(transaction.amounts[btc] ?? 0) {
-                let (value, denom) = balance.toValue()
-                lblAmount.text = String(format: "%@%@", transaction.type == .incoming ? "+" : "", value)
-                lblDenom.text = "\(denom)"
-            }
-        } else {
-            let asset = transaction.defaultAsset
-            let info = SessionsManager.current?.registry?.info(for: asset)
-            if let balance = Balance.fromSatoshi(transaction.amounts[asset] ?? 0, asset: info) {
-                let (value, ticker) = balance.toValue()
-                lblAmount.text = String(format: "%@%@", transaction.type == .incoming ? "+" : "", value)
-                lblDenom.text = "\(ticker)"
-            }
-        }
         selectionStyle = .none
         lblDate.text = transaction.date(dateStyle: .medium, timeStyle: .none)
 
-        let isAsset = !(assetTag == "btc")
         if !transaction.memo.isEmpty {
             lblNote.text = transaction.memo
-        } else if isAsset && SessionsManager.current?.registry?.info(for: assetTag).entity?.domain != nil {
-            lblNote.text = multipleAssets && isIncoming ?
-                NSLocalizedString("id_multiple_assets", comment: "") :
-            SessionsManager.current?.registry?.info(for: assetTag).entity?.domain ?? ""
-        } else if isRedeposit {
-            lblNote.text = String(format: "%@ %@", NSLocalizedString("id_redeposited", comment: ""),
-                                  isAsset ? NSLocalizedString("id_asset", comment: "") : "")
-        } else if isIncoming {
-            lblNote.text = String(format: "%@ %@", NSLocalizedString("id_received", comment: ""),
-                                  isAsset ? NSLocalizedString("id_asset", comment: "") : "")
-        } else {
-            lblNote.text = String(format: "%@ %@", NSLocalizedString("id_sent", comment: ""), isLiquid && isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         }
-        icon.image = SessionsManager.current?.registry?.image(for: transaction.defaultAsset)
-        lblAmount.textColor = color(tx: transaction)
-        setSpvVerifyIcon(tx: transaction)
+
+        var amounts = [(key: String, value: Int64)]()
+         if transaction.type == .redeposit,
+           let feeAsset = SessionsManager.current?.gdkNetwork.getFeeAsset() {
+            amounts = [(key: feeAsset, value: -1 * Int64(transaction.fee))]
+        } else {
+            amounts = transaction.amountsWithoutFees
+        }
+        amounts.forEach { addAssetAmountView(tx: transaction, satoshi: $0.value, assetId: $0.key) }
     }
 
-    func setSpvVerifyIcon(tx: Transaction) {
-        switch tx.spvVerified {
-        case "disabled", "verified", nil:
-            spvVerifyIcon.isHidden = true
-        case "in_progress":
-            spvVerifyIcon.isHidden = false
-            spvVerifyIcon.image = UIImage(named: "ic_spv_progress")
-            spvVerifyIcon.tintColor = .white
-        case "not_verified":
-            spvVerifyIcon.isHidden = false
-            spvVerifyIcon.image = UIImage(named: "ic_spv_warning")
-            spvVerifyIcon.tintColor = .red
-        default:
-            spvVerifyIcon.isHidden = false
-            spvVerifyIcon.image = UIImage(named: "ic_spv_warning")
-            spvVerifyIcon.tintColor = .yellow
+    func addAssetAmountView(tx: Transaction, satoshi: Int64, assetId: String) {
+        if let amountView = Bundle.main.loadNibNamed("AssetAmountView", owner: self, options: nil)?.first as? AssetAmountView {
+                amountView.setup(tx: tx,
+                                 satoshi: satoshi,
+                                 assetId: assetId)
+            amountsStackView.addArrangedSubview(amountView)
         }
     }
 
     func checkBlockHeight(transaction: Transaction, blockHeight: UInt32) {
-
         if transaction.blockHeight == 0 {
             setStatus(.unconfirmed, label: NSLocalizedString("id_unconfirmed", comment: ""))
-        } else if isLiquid && blockHeight < transaction.blockHeight + 1 {
+        } else if transaction.isLiquid && blockHeight < transaction.blockHeight + 1 {
             setStatus(.holding, label: NSLocalizedString("id_12_confirmations", comment: ""))
-        } else if !isLiquid && blockHeight < transaction.blockHeight + 5 {
+        } else if !transaction.isLiquid && blockHeight < transaction.blockHeight + 5 {
             guard blockHeight >= transaction.blockHeight else {
                 setStatus(.confirmed, label: "")
                 return
@@ -145,15 +87,6 @@ class OverviewTransactionCell: UITableViewCell {
         case .confirmed:
             statusBadge.isHidden = true
             lblDate.isHidden = false
-        }
-    }
-
-    func color(tx: Transaction) -> UIColor {
-        switch tx.type {
-        case .incoming:
-            return tx.isLiquid ? UIColor.blueLight() : UIColor.customMatrixGreen()
-        default:
-            return UIColor.white
         }
     }
 }

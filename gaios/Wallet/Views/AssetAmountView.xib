@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AssetAmountView" customModule="gaios" customModuleProvider="target"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="560-vH-Dxr" customClass="AssetAmountView" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_asset_icon" translatesAutoresizingMaskIntoConstraints="NO" id="EhZ-Fo-bj7">
+                    <rect key="frame" x="8" y="8" width="32" height="32"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="32" id="cNd-QN-CVQ"/>
+                        <constraint firstAttribute="width" constant="32" id="nn1-wT-14a"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="denom" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.60000002384185791" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Nqd-vL-gY2">
+                    <rect key="frame" x="48" y="13.5" width="56" height="21.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_spv_warning" translatesAutoresizingMaskIntoConstraints="NO" id="veW-MH-sHp">
+                    <rect key="frame" x="104" y="8" width="32" height="32"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="32" id="8JY-TV-DSh"/>
+                        <constraint firstAttribute="height" constant="32" id="iEq-K9-CiB"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="amount" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.60000002384185791" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IPb-PM-xfh">
+                    <rect key="frame" x="350" y="13" width="64" height="22"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="22" id="NY0-Ws-90m"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                    <color key="textColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="ytd-cJ-Zmv"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="Nqd-vL-gY2" firstAttribute="leading" secondItem="EhZ-Fo-bj7" secondAttribute="trailing" constant="8" id="9QK-pu-qnC"/>
+                <constraint firstAttribute="bottom" secondItem="EhZ-Fo-bj7" secondAttribute="bottom" constant="8" id="CHp-VJ-IbA"/>
+                <constraint firstItem="IPb-PM-xfh" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Nqd-vL-gY2" secondAttribute="trailing" priority="999" constant="32" id="Haj-ie-ivw"/>
+                <constraint firstItem="EhZ-Fo-bj7" firstAttribute="leading" secondItem="560-vH-Dxr" secondAttribute="leading" constant="8" id="Jus-b4-zl3"/>
+                <constraint firstItem="IPb-PM-xfh" firstAttribute="centerY" secondItem="560-vH-Dxr" secondAttribute="centerY" id="KjC-yg-6Un"/>
+                <constraint firstAttribute="height" constant="48" id="TT8-4v-g3M"/>
+                <constraint firstItem="veW-MH-sHp" firstAttribute="centerY" secondItem="560-vH-Dxr" secondAttribute="centerY" id="YUd-FG-fKQ"/>
+                <constraint firstAttribute="trailing" secondItem="IPb-PM-xfh" secondAttribute="trailing" id="gzf-Iv-v6z"/>
+                <constraint firstItem="veW-MH-sHp" firstAttribute="leading" secondItem="Nqd-vL-gY2" secondAttribute="trailing" id="m5W-II-2pg"/>
+                <constraint firstItem="EhZ-Fo-bj7" firstAttribute="top" secondItem="560-vH-Dxr" secondAttribute="top" constant="8" id="noi-kx-7bX"/>
+                <constraint firstItem="Nqd-vL-gY2" firstAttribute="centerY" secondItem="560-vH-Dxr" secondAttribute="centerY" id="qdG-B3-3c4"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="icon" destination="EhZ-Fo-bj7" id="TwG-3p-y4t"/>
+                <outlet property="lblAmount" destination="IPb-PM-xfh" id="FjO-qJ-iNM"/>
+                <outlet property="lblDenom" destination="Nqd-vL-gY2" id="0mY-d6-W5N"/>
+                <outlet property="spvVerifyIcon" destination="veW-MH-sHp" id="Oy2-dN-9bq"/>
+            </connections>
+            <point key="canvasLocation" x="281.15942028985512" y="-386.38392857142856"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="default_asset_icon" width="60" height="61"/>
+        <image name="ic_spv_warning" width="60" height="60"/>
+    </resources>
+</document>

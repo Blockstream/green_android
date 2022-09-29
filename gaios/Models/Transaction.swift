@@ -27,6 +27,7 @@ enum TransactionType: String {
     case incoming
     case outgoing
     case redeposit
+    case mixed
 }
 
 struct Transaction {
@@ -121,6 +122,19 @@ struct Transaction {
         get {
             return get("satoshi") as [String: Int64]? ?? [:]
         }
+    }
+
+    var amountsWithoutFees: [(key: String, value: Int64)] {
+        if type == .some(.redeposit) {
+            return []
+        }
+        var amounts = Transaction.sort(amounts)
+        // OUT transactions in BTC/L-BTC have fee included
+        if type == .some(.outgoing) {
+            let feeAsset = SessionsManager.current?.gdkNetwork.getFeeAsset()
+            amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value + Int64(fee)) : $0 }
+        }
+        return amounts.filter({ $0.value != 0 })
     }
 
     static func sort(_ dict: [String: Int64]) -> [(key: String, value: Int64)] {

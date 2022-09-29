@@ -32,18 +32,6 @@ class TransactionViewController: UIViewController {
             return SessionsManager.current?.isResetActive ?? false ||
             !transaction.canRBF || account?.isWatchonly ?? false
     }
-    private var amounts: [(key: String, value: Int64)] {
-        if transaction?.type == .some(.redeposit) {
-            return []
-        }
-        var amounts = Transaction.sort(transaction.amounts)
-        // OUT transactions in BTC/L-BTC have fee included
-        if transaction.type == .some(.outgoing) {
-            let feeAsset = account?.gdkNetwork?.getFeeAsset()
-            amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value + Int64(transaction.fee)) : $0 }
-        }
-        return amounts.filter({ $0.value != 0 })
-    }
 
     var headerH: CGFloat = 44.0
 
@@ -270,7 +258,7 @@ class TransactionViewController: UIViewController {
 
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
-            let amount = amounts[index]
+            let amount = transaction.amountsWithoutFees[index]
             vc.tag = amount.key
             vc.asset = SessionsManager.current?.registry?.info(for: amount.key)
             vc.satoshi = wallet?.satoshi?[amount.key] ?? 0
@@ -289,7 +277,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case TransactionSection.amount.rawValue:
-            return amounts.count
+            return transaction.amountsWithoutFees.count
         case TransactionSection.fee.rawValue:
             return 1
         case TransactionSection.status.rawValue:
@@ -311,7 +299,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 self?.copyToClipboard(value)
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
-                let amount = amounts[indexPath.row]
+                let amount = transaction.amountsWithoutFees[indexPath.row]
                 cell.configure(tx: transaction, id: amount.key, value: amount.value, copyAmount: copyAmount, copyRecipient: copyRecipient)
                 cell.selectionStyle = .none
                 return cell
