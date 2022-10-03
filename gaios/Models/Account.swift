@@ -16,6 +16,7 @@ struct Account: Codable, Equatable {
         case isSingleSig
         case walletHashId = "wallet_hash_id"
         case askEphemeral = "ask_ephemeral"
+        case xpubHashId = "xpub_hash_id"
     }
 
     var name: String
@@ -28,6 +29,7 @@ struct Account: Codable, Equatable {
     var network: String
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
     var walletHashId: String?
+    var xpubHashId: String?
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
     var isEphemeral: Bool = false
     var askEphemeral: Bool?
