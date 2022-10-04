@@ -1,6 +1,6 @@
 GA_APP_NAME = Green-dev
 GA_APP_BUNDLE_ID = io.blockstream.green
-GA_APP_ICON = AppIcon
+GA_APP_ICON = AppIconDev
 COUNTLY_APP_HOST = https:\/\/countly.blockstream.com
 COUNTLY_APP_HOST_ONION = http:\/\/greciphd2z3eo6bpnvd6mctxgfs4sslx4hyvgoiew4suoxgoquzl72yd.onion
 COUNTLY_APP_KEY = cb8e449057253add71d2f9b65e5f66f73c073e63
