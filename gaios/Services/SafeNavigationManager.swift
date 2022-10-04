@@ -9,6 +9,10 @@ class SafeNavigationManager {
         guard let urlString = urlString, let url = URL(string: urlString) else {
             return
         }
+        navigate(url)
+    }
+
+    func navigate(_ url: URL) {
 
         let networkSettings = getUserNetworkSettings()
         if let tor = networkSettings["tor"] as? Bool, tor { } else {
@@ -32,7 +36,7 @@ class SafeNavigationManager {
                 case .cancel:
                     break
                 case .copy:
-                    UIPasteboard.general.string = urlString
+                    UIPasteboard.general.string = url.absoluteString
                     DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }

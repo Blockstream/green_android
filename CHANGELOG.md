@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- New "About" section
+- Give us your feedback utility
 
 ### Changed
 - Announcements alerts: improve navigation

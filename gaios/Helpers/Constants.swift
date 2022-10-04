@@ -42,4 +42,16 @@ enum ExternalUrls {
     static let mnemonicNotWorking = URL(string: "https://help.blockstream.com/hc/en-us/articles/900001388566-Why-is-my-mnemonic-backup-not-working-")!
     static let analyticsReadMore = URL(string: "https://blockstream.zendesk.com/hc/en-us/articles/5988514431897")!
     static let passphraseReadMore = URL(string: "https://help.blockstream.com/hc/en-us/articles/8712301763737")!
+
+    static let aboutBlockstreamGreenWebSite = URL(string: "https://blockstream.com/green/")!
+    static let aboutBlockstreamTwitter = URL(string: "https://twitter.com/Blockstream")!
+    static let aboutBlockstreamLinkedIn = URL(string: "https://www.linkedin.com/company/blockstream")!
+    static let aboutBlockstreamFacebook = URL(string: "https://www.facebook.com/Blockstream")!
+    static let aboutBlockstreamTelegram = URL(string: "https://t.me/blockstream_green")!
+    static let aboutBlockstreamGitHub = URL(string: "https://github.com/Blockstream")!
+    static let aboutBlockstreamYouTube = URL(string: "https://www.youtube.com/channel/UCZNt3fZazX9cwWcC9vjDJ4Q")!
+
+    static let aboutHelpCenter = URL(string: "https://help.blockstream.com/hc/en-us/categories/900000056183-Blockstream-Green/")!
+    static let aboutTermsOfService = URL(string: "https://blockstream.com/green/terms/")!
+    static let aboutPrivacyPolicy = URL(string: "https://blockstream.com/green/privacy/")!
 }

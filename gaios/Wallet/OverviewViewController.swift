@@ -553,6 +553,15 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
             }
         })
     }
+
+    func didSelectAbout() {
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            let storyboard = UIStoryboard(name: "About", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AboutViewController") as? AboutViewController {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        })
+    }
 }
 
 extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {

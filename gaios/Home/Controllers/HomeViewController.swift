@@ -11,7 +11,8 @@ enum HomeSection: Int, CaseIterable {
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var lblVersion: UILabel!
+
+    @IBOutlet weak var btnAbout: UIButton!
     @IBOutlet weak var btnSettings: UIButton!
 
     var headerH: CGFloat = 44.0
@@ -52,8 +53,11 @@ class HomeViewController: UIViewController {
     }
 
     func setContent() {
-        lblVersion.text = String(format: NSLocalizedString("id_version_1s", comment: ""), "\(Bundle.main.versionNumber)")
         btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        btnSettings.setTitleColor(.lightGray, for: .normal)
+        btnAbout.setTitle(NSLocalizedString("id_about", comment: ""), for: .normal)
+        btnAbout.setImage(UIImage(named: "ic_about")!, for: .normal)
+        btnAbout.setTitleColor(.lightGray, for: .normal)
     }
 
     func setStyle() {
@@ -82,6 +86,14 @@ class HomeViewController: UIViewController {
 
     @objc func didPressAddWallet() {
         AccountNavigator.goCreateRestore()
+    }
+
+    @IBAction func btnAbout(_ sender: Any) {
+
+        let storyboard = UIStoryboard(name: "About", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AboutViewController") as? AboutViewController {
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnSettings(_ sender: Any) {

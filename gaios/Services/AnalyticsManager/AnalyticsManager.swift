@@ -64,8 +64,13 @@ class AnalyticsManager {
                            CLYConsent.userDetails,
                            CLYConsent.location,
                            CLYConsent.remoteConfig,
-                           CLYConsent.metrics]
-    let deniedGroup = [CLYConsent.crashReporting, CLYConsent.remoteConfig, CLYConsent.metrics]
+                           CLYConsent.metrics,
+                           CLYConsent.feedback]
+
+    let deniedGroup = [CLYConsent.crashReporting,
+                       CLYConsent.remoteConfig,
+                       CLYConsent.metrics,
+                       CLYConsent.feedback]
 
     // list of ignorable common error messages
     let skipExceptionRecording = [
@@ -300,5 +305,14 @@ class AnalyticsManager {
         let value = Countly.sharedInstance().remoteConfigValue(forKey: key)
         print("Remote config value: \(value)")
         return value
+    }
+
+    func recordFeedback(rating: Int, email: String?, comment: String) {
+        Countly.sharedInstance()
+            .recordRatingWidget(withID: AnalyticsManager.ratingWidgetId,
+                                rating: rating,
+                                email: email,
+                                comment: comment,
+                                userCanBeContacted: true)
     }
 }
