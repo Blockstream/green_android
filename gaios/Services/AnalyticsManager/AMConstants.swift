@@ -1,9 +1,5 @@
 extension AnalyticsManager {
 
-    static let host = "https://countly.blockstream.com"
-    static let onionHost = "http://greciphd2z3eo6bpnvd6mctxgfs4sslx4hyvgoiew4suoxgoquzl72yd.onion"
-    static let appKeyDev = "cb8e449057253add71d2f9b65e5f66f73c073e63"
-
     static let strNetwork = "network"
     static let strSecurity = "security"
     static let strAccountType = "account_type"
@@ -76,7 +72,6 @@ extension AnalyticsManager {
         case watchOnly = "watch_only"
         case hardware = "hardware"
     }
-
     static let maxOffsetProduction = 12 * 60 * 60 * 1000 // 12 hours
     static let maxOffsetDevelopment = 30 * 60 * 1000 // 30 mins
 

@@ -1,3 +1,8 @@
 GA_APP_NAME = Green
 GA_APP_BUNDLE_ID = io.blockstream.green
 GA_APP_ICON = AppIcon
+COUNTLY_APP_HOST = https:\/\/countly.blockstream.com
+COUNTLY_APP_HOST_ONION = http:\/\/greciphd2z3eo6bpnvd6mctxgfs4sslx4hyvgoiew4suoxgoquzl72yd.onion
+COUNTLY_APP_KEY = 351d316234a4a83169fecd7e760ef64bfd638d21
+COUNTLY_APP_MAX_OFFSET = 43200
+COUNTLY_APP_EVENT_SEND_THRESHOLD = 10

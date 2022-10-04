@@ -72,5 +72,15 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>COUNTLY_APP_HOST</key>
+	<string>$(COUNTLY_APP_HOST)</string>
+	<key>COUNTLY_APP_HOST_ONION</key>
+	<string>$(COUNTLY_APP_HOST_ONION)</string>
+	<key>COUNTLY_APP_KEY</key>
+	<string>$(COUNTLY_APP_KEY)</string>
+	<key>COUNTLY_APP_MAX_OFFSET</key>
+	<string>$(COUNTLY_APP_MAX_OFFSET)</string>
+	<key>COUNTLY_APP_EVENT_SEND_THRESHOLD</key>
+	<string>$(COUNTLY_APP_EVENT_SEND_THRESHOLD)</string>
 </dict>
 </plist>

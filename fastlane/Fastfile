@@ -27,7 +27,7 @@ platform :ios do
   lane :build_signed_adhoc_release do
     cocoapods()
     build_ios_app(
-      configuration: "Release",
+      configuration: "Staging",
       scheme: "gaios",
       workspace: "gaios.xcworkspace",
       #silent: true,

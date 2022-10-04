@@ -703,6 +703,9 @@
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		88A86540174AD367FC26E586 /* libPods-gaiosTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gaiosTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D8E98627CDD86B44BE10DD1 /* Pods-gaiosTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.staging.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.staging.xcconfig"; sourceTree = "<group>"; };
+		A638BAA3899F9D96FF553D62 /* Pods-gaios.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.staging.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.staging.xcconfig"; sourceTree = "<group>"; };
+		DDDF0E61D35C837472841564 /* Pods-gaiosUITests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.staging.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.staging.xcconfig"; sourceTree = "<group>"; };
 		FF29CA7122374E8B0035F95A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		FF29CA7522374F1A0035F95A /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		FF29CA7722374F8D0035F95A /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
@@ -766,6 +769,9 @@
 				1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */,
 				5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */,
 				34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */,
+				A638BAA3899F9D96FF553D62 /* Pods-gaios.staging.xcconfig */,
+				9D8E98627CDD86B44BE10DD1 /* Pods-gaiosTests.staging.xcconfig */,
+				DDDF0E61D35C837472841564 /* Pods-gaiosUITests.staging.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -2640,7 +2646,7 @@
 		};
 		81CF900F28EC77B0003CC793 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */;
+			baseConfigurationReference = A638BAA3899F9D96FF553D62 /* Pods-gaios.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
@@ -2682,7 +2688,7 @@
 		};
 		81CF901028EC77B0003CC793 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */;
+			baseConfigurationReference = 9D8E98627CDD86B44BE10DD1 /* Pods-gaiosTests.staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -2700,7 +2706,7 @@
 		};
 		81CF901128EC77B0003CC793 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */;
+			baseConfigurationReference = DDDF0E61D35C837472841564 /* Pods-gaiosUITests.staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

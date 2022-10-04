@@ -15,20 +15,23 @@ class AnalyticsManager {
 
     static let shared = AnalyticsManager()
 
-    var isProduction: Bool {
-#if DEBUG
-        return false
-#else
-        return true
-#endif
-    }
-
+    let host = (Bundle.main.infoDictionary?["COUNTLY_APP_HOST"] as? String ?? "")
+        .replacingOccurrences(of: "\\", with: "")
+    let hostOnion = (Bundle.main.infoDictionary?["COUNTLY_APP_HOST_ONION"] as? String ?? "")
+        .replacingOccurrences(of: "\\", with: "")
+    let appKey = (Bundle.main.infoDictionary?["COUNTLY_APP_KEY"] as? String ?? "")
     var maxCountlyOffset: Int {
-#if DEBUG
-        return AnalyticsManager.maxOffsetDevelopment
-#else
-        return AnalyticsManager.maxOffsetProduction
-#endif
+        if let offset = Bundle.main.infoDictionary?["COUNTLY_APP_MAX_OFFSET"] as? String,
+           let number = Int(offset) {
+            return number * 1000
+        }
+        return 1
+    }
+    var eventSendThreshold: UInt? {
+        if let offset = Bundle.main.infoDictionary?["COUNTLY_APP_EVENT_SEND_THRESHOLD"] as? String {
+            return UInt(offset)
+        }
+        return nil
     }
 
     var consent: AnalyticsConsent {
@@ -118,13 +121,7 @@ class AnalyticsManager {
     func countlyStart() {
 
         let config: CountlyConfig = CountlyConfig()
-
-        if let appKey = ProcessInfo.processInfo.environment["COUNTLY_APP_KEY"] {
-            config.appKey = appKey
-        } else {
-            config.appKey = AnalyticsManager.appKeyDev
-        }
-
+        config.appKey = appKey
         config.host = getHost()
         config.offset = countlyOffset
         config.deviceID = analyticsUUID
@@ -133,8 +130,8 @@ class AnalyticsManager {
         config.enableDebug = true
         config.requiresConsent = true
         config.enableRemoteConfig = true
-        if isProduction == false {
-            config.eventSendThreshold = 1
+        if let threshold = eventSendThreshold {
+            config.eventSendThreshold = threshold
         }
         config.urlSessionConfiguration = getSessionConfiguration()
 
@@ -196,9 +193,9 @@ class AnalyticsManager {
     private func getHost() -> String {
         let networkSettings = getUserNetworkSettings()
         if let tor = networkSettings["tor"] as? Bool, tor {
-            return AnalyticsManager.onionHost
+            return hostOnion
         }
-        return AnalyticsManager.host
+        return host
     }
 
     private func getSessionConfiguration() -> URLSessionConfiguration {

@@ -39,13 +39,14 @@ build_signed_adhoc_release:
   variables:
     GDK_COMMIT: latest
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
+    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
   script:
     - echo $COUNTLY_APP_KEY
     - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_signed_adhoc_release
     - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
-    - ./Pods/Countly/countly_dsym_uploader.sh "https://countly.blockstream.com" $COUNTLY_APP_KEY ./tmp/gaios.app.dSYM
+    - ./Pods/Countly/countly_dsym_uploader.sh $COUNTLY_APP_HOST $COUNTLY_APP_KEY ./tmp/gaios.app.dSYM
     - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
     - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
     - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html" | qrencode -t UTF8
@@ -64,11 +65,12 @@ build_signed_prod_release:
       - release
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
+    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
   script:
     - ./tools/fetch_gdk_binaries.sh
     - fastlane build_signed_prod_release
     - mkdir tmp && unzip ./release/Green.app.dSYM.zip -d tmp
-    - ./Pods/Countly/countly_dsym_uploader.sh "https://countly.blockstream.com" $COUNTLY_APP_KEY ./tmp/gaios.app.dSYM
+    - ./Pods/Countly/countly_dsym_uploader.sh $COUNTLY_APP_HOST $COUNTLY_APP_KEY ./tmp/gaios.app.dSYM
 
 ui_tests:
   stage: test
