@@ -42,7 +42,12 @@ class OverviewTransactionCell: UITableViewCell {
            let feeAsset = SessionsManager.current?.gdkNetwork.getFeeAsset() {
             amounts = [(key: feeAsset, value: -1 * Int64(transaction.fee))]
         } else {
-            amounts = transaction.amountsWithoutFees
+            amounts = Transaction.sort(transaction.amounts)
+            // remove L-BTC asset only if fee on outgoing transactions
+            if transaction.type == .some(.outgoing) || transaction.type == .some(.mixed) {
+                let feeAsset = SessionsManager.current?.gdkNetwork.getFeeAsset()
+                amounts = amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(transaction.fee)) })
+            }
         }
         amounts.forEach { addAssetAmountView(tx: transaction, satoshi: $0.value, assetId: $0.key) }
     }
