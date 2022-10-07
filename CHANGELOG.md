@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.8.9] - 2022-10-07
+
+### Added
+- Add 2FA reset option for multisig shield Liquid wallets
+
+### Changed
+- Update GDK to 0.0.56
+
+### Fixed
+- Incorrectly displaying "insufficient funds" when sending from Jade singlesig wallet
+
 ## [3.8.7] - 2022-09-01
 
 ### Added
