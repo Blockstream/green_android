@@ -44,11 +44,6 @@ class SessionsManager {
                 }
             }
         }
-        if useTor() {
-            reconnectionQueue.async {
-                TorSessionManager.shared.pause()
-            }
-        }
     }
 
     static func resume() {
@@ -57,11 +52,6 @@ class SessionsManager {
                 reconnectionQueue.async {
                     try? session.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
                 }
-            }
-        }
-        if useTor() {
-            reconnectionQueue.async {
-                TorSessionManager.shared.resume()
             }
         }
     }

@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Support gdk 0.0.56
 
 ### Fixed
+- Improve tor bootstrapping support
 
 ## [3.8.8] - 2022-09-23
 

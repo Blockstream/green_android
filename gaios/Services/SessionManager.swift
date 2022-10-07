@@ -88,6 +88,7 @@ class SessionManager {
         }
         return Guarantee()
             .compactMap { try self.connect(network: self.gdkNetwork.network) }
+            .compactMap { AnalyticsManager.shared.setupSession(session: self.session) } // Update analytics endpoint with session tor/proxy
     }
 
     private func connect(network: String, params: [String: Any]? = nil) throws {

@@ -133,7 +133,7 @@ class AnalyticsManager {
         if let threshold = eventSendThreshold {
             config.eventSendThreshold = threshold
         }
-        config.urlSessionConfiguration = getSessionConfiguration()
+        config.urlSessionConfiguration = getSessionConfiguration(session: nil)
 
         if consent == .notDetermined {
             config.consents = deniedGroup
@@ -177,9 +177,9 @@ class AnalyticsManager {
         }
     }
 
-    public func setupSession() {
+    public func setupSession(session: Session?) {
         let host = getHost()
-        let conf = getSessionConfiguration()
+        let conf = getSessionConfiguration(session: session)
         Countly.sharedInstance().setNewHost(host)
         Countly.sharedInstance().setNewURLSessionConfiguration(conf)
         /*URLSession(configuration: conf).dataTask(with: URL(string: host+"/i")!) {
@@ -198,7 +198,7 @@ class AnalyticsManager {
         return host
     }
 
-    private func getSessionConfiguration() -> URLSessionConfiguration {
+    private func getSessionConfiguration(session: Session?) -> URLSessionConfiguration {
         let configuration = URLSessionConfiguration.ephemeral
         let networkSettings = getUserNetworkSettings()
         let useProxy = networkSettings["proxy"] as? Bool ?? false
@@ -214,7 +214,7 @@ class AnalyticsManager {
         }
         // set implicit tor proxy
         if useTor {
-            let proxySettings = TorSessionManager.shared.proxySettings
+            let proxySettings = try? session?.getProxySettings()
             let proxy = proxySettings?["proxy"] as? String ?? ""
             let parser = proxy.split(separator: ":").map { $0.replacingOccurrences(of: "/", with: "") }
             if parser.first == "socks5" && parser.count == 3 {

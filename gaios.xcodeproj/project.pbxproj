@@ -301,7 +301,6 @@
 		81BF4E3022E9E9EA005A04C6 /* LedgerChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2922E9E9EA005A04C6 /* LedgerChannel.swift */; };
 		81BF4E3122E9E9EA005A04C6 /* LedgerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */; };
 		81BF4E3222E9E9EA005A04C6 /* LedgerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */; };
-		81C2D3BD2845184000F45CB9 /* TorSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C2D3BC2845184000F45CB9 /* TorSessionManager.swift */; };
 		81C602A522A553D3004E26E1 /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C602A422A553D3004E26E1 /* Assets.swift */; };
 		81D671EB26C8007600682508 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671EA26C8007600682508 /* SessionManager.swift */; };
 		81D671EF26C80D3400682508 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671EE26C80D3400682508 /* EventType.swift */; };
@@ -688,7 +687,6 @@
 		81BF4E2922E9E9EA005A04C6 /* LedgerChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerChannel.swift; sourceTree = "<group>"; };
 		81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerCommands.swift; sourceTree = "<group>"; };
 		81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerWrapper.swift; sourceTree = "<group>"; };
-		81C2D3BC2845184000F45CB9 /* TorSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorSessionManager.swift; sourceTree = "<group>"; };
 		81C602A422A553D3004E26E1 /* Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
 		81CF900C28EC75FE003CC793 /* ProdSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ProdSettings.xcconfig; sourceTree = "<group>"; };
 		81CF900D28EC7631003CC793 /* DevSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevSettings.xcconfig; sourceTree = "<group>"; };
@@ -1179,7 +1177,6 @@
 				344562EA25D297CF00A5EC18 /* BLEManager.swift */,
 				819DFBA726038E800022BD85 /* AccountsManager.swift */,
 				816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */,
-				81C2D3BC2845184000F45CB9 /* TorSessionManager.swift */,
 				34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */,
 				340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */,
 			);
@@ -2050,7 +2047,6 @@
 				346300E0274D114A00B28521 /* DialogExplorerOptionsViewController.swift in Sources */,
 				3486ADA027D622EE0013D8FF /* SliderView.swift in Sources */,
 				818EE78026A5C2ED008CD09E /* HWDevice.swift in Sources */,
-				81C2D3BD2845184000F45CB9 /* TorSessionManager.swift in Sources */,
 				81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */,
 				347942A2275615FC0020D60F /* ExistingWalletsViewController.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,

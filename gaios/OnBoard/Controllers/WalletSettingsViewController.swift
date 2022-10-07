@@ -284,7 +284,11 @@ class WalletSettingsViewController: KeyboardViewController {
                 //no change
             }
         }
-        updateTorSession(start: switchTor.isOn)
+        var session: Session? = nil
+        if let account = AccountsManager.shared.current {
+            session = SessionsManager.get(for: account)?.session
+        }
+        AnalyticsManager.shared.setupSession(session: session)
         delegate?.didSet(tor: switchTor.isOn)
         delegate?.didSet(testnet: switchTestnet.isOn)
         dismiss(animated: true, completion: nil)
@@ -297,21 +301,6 @@ class WalletSettingsViewController: KeyboardViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.disableControls = true
             self.present(vc, animated: true, completion: nil)
-        }
-    }
-
-    func updateTorSession(start: Bool = true) {
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) { _ in
-            if start {
-                return TorSessionManager.shared.resume()
-            } else {
-                return TorSessionManager.shared.disconnect()
-            }
-        }.done {
-            AnalyticsManager.shared.setupSession()
-        }.catch { err in
-            print(err.localizedDescription)
         }
     }
 }
