@@ -10,7 +10,6 @@ import mu.KLogging
 
 interface AssetQATester {
     fun isAssetFetchDisabled(): Boolean
-    fun isAssetIconsFetchDisabled(): Boolean
 }
 
 interface AssetsProvider {

@@ -18,7 +18,6 @@ class QATester(val context: Context) : HardwareQATester, AssetQATester {
     val corruptedJadeFirmwareHash = MutableLiveData(false)
 
     val assetsFetchDisabled = MutableLiveData(false)
-    val assetsIconsFetchDisabled = MutableLiveData(false)
 
     val notificationsEvents = PublishSubject.create<QTNotificationDelay>()
 
@@ -36,10 +35,6 @@ class QATester(val context: Context) : HardwareQATester, AssetQATester {
 
     override fun isAssetFetchDisabled(): Boolean {
         return assetsFetchDisabled.value ?: false
-    }
-
-    override fun isAssetIconsFetchDisabled(): Boolean {
-        return assetsIconsFetchDisabled.value ?: false
     }
 
     fun getSessionNotificationInjectorObservable() : Observable<Notification> {

@@ -281,13 +281,18 @@ class WalletSettingsFragment :
         viewModel.settingsLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 unitPreference.subtitle = StringHolder(getBitcoinOrLiquidUnit(session, it.unit))
-                priceSourcePreference.subtitle = StringHolder(
-                    getString(
-                        R.string.id_s_from_s,
-                        it.pricing.currency,
-                        it.pricing.exchange
+                if(session.isSinglesig){
+                    priceSourcePreference.subtitle = StringHolder(it.pricing.currency)
+                }else{
+                    priceSourcePreference.subtitle = StringHolder(
+                        getString(
+                            R.string.id_s_from_s,
+                            it.pricing.currency,
+                            it.pricing.exchange
+                        )
                     )
-                )
+                }
+
                 txPriorityPreference.subtitle = StringHolder(prioritySummary(it.requiredNumBlocks))
                 pgpPreference.subtitle = StringHolder(R.string.id_add_a_pgp_public_key_to_receive)
 
@@ -516,7 +521,12 @@ class WalletSettingsFragment :
                 val currencies = session.availableCurrencies()
                 
                 val entries : Array<CharSequence> = currencies.map {
-                    getString(R.string.id_s_from_s, it.currency, it.exchange)
+                    if(session.isSinglesig){
+                        it.currency
+                    }else{
+                        getString(R.string.id_s_from_s, it.currency, it.exchange)
+                    }
+
                 }.toTypedArray()
 
                 val values = currencies.map {

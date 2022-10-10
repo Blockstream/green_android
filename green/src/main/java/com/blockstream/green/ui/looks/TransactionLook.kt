@@ -12,6 +12,7 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.utils.*
 import mu.KLogging
+import kotlin.math.absoluteValue
 
 abstract class TransactionLook constructor(open val session: GreenSession, internal open val tx: Transaction): FeeLookInterface, AddreseeLookInterface {
     abstract val substractFeeFromOutgoing : Boolean
@@ -63,11 +64,11 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
 
     private fun getAmountAndAsset(index: Int): Pair<String,Long> {
         return (if (tx.txType == Transaction.Type.REDEPOSIT) {
-            session.policyAsset to tx.fee
+            session.policyAsset to -tx.fee
         } else if (substractFeeFromOutgoing && tx.txType == Transaction.Type.OUT && assets.getOrNull(index)?.first == session.policyAsset) {
             // OUT transactions in BTC/L-BTC have fee included
             assets[index].let {
-                it.first to (it.second - tx.fee)
+                it.first to -(it.second.absoluteValue - tx.fee)
             }
         } else {
             assets.getOrNull(index)

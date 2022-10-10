@@ -529,6 +529,11 @@ class GreenSession constructor(
         // Update Liquid Assets from GDK before getting balances to sort them properly
         updateLiquidAssets()
 
+        // Init Singlesig exchange rates
+        if(isSinglesig){
+            convertAmount(Convert(satoshi = 0))
+        }
+
         updateSubAccountsAndBalances(isInitialize = true, refresh = false)
 
         updateSystemMessage()

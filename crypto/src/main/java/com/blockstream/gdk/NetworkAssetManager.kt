@@ -19,8 +19,7 @@ enum class CacheStatus {
 }
 
 data class AssetStatus(
-    var metadataStatus: CacheStatus = CacheStatus.Empty,
-    var iconStatus: CacheStatus = CacheStatus.Empty,
+    var cacheStatus: CacheStatus = CacheStatus.Empty,
     var onProgress: Boolean = false,
 )
 
@@ -91,52 +90,28 @@ class NetworkAssetManager constructor(
     }
 
     fun updateAssetsIfNeeded(provider: AssetsProvider, forceUpdate: Boolean = false) {
-        if (status.metadataStatus != CacheStatus.Latest || status.iconStatus != CacheStatus.Latest || forceUpdate) {
+        if (status.cacheStatus != CacheStatus.Latest || forceUpdate) {
 
             coroutineScope.launch(context = Dispatchers.IO) {
 
                 try {
                     statusLiveData.postValue(status.apply { onProgress = true })
 
-                    if (status.metadataStatus != CacheStatus.Latest || forceUpdate) {
-
-                        // Allow forceUpdate to override QATester settings
-                        if (!qaTester.isAssetFetchDisabled() || forceUpdate) {
-                            // Try to update the registry - only metadata
-                            // Fetch assets without icons as we have better chances to complete the network call
-                            provider.refreshAssets(
-                                AssetsParams(
-                                    assets = true,
-                                    icons = false,
-                                    refresh = true
-                                )
+                    // Allow forceUpdate to override QATester settings
+                    if (!qaTester.isAssetFetchDisabled() || forceUpdate) {
+                        // Try to update the registry
+                        provider.refreshAssets(
+                            AssetsParams(
+                                assets = true,
+                                icons = true,
+                                refresh = true
                             )
+                        )
 
-                            // Clear our local cache
-                            metadata.clear()
+                        // Clear our local cache
+                        metadata.clear()
 
-                            status.metadataStatus = CacheStatus.Latest
-                        }
-                    }
-
-                    if (status.iconStatus != CacheStatus.Latest || forceUpdate) {
-
-                        // Allow forceUpdate to override QATester settings
-                        if (!qaTester.isAssetIconsFetchDisabled() || forceUpdate) {
-                            // Try to update the registry - only icons
-                            provider.refreshAssets(
-                                AssetsParams(
-                                    assets = false,
-                                    icons = true,
-                                    refresh = true
-                                )
-                            )
-
-                            // Clear our local cache
-                            icons.clear()
-
-                            status.iconStatus = CacheStatus.Latest
-                        }
+                        status.cacheStatus = CacheStatus.Latest
                     }
 
                 } catch (e: Exception) {

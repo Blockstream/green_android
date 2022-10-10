@@ -329,6 +329,12 @@ class LoginViewModel @AssistedInject constructor(
                 device = device,
                 hardwareWalletResolver = DeviceResolver(session, this)
             )
+
+            // Change active account if necessary (account archived or the newly created SegWit)
+            if(wallet.activeAccount != session.activeAccount){
+                wallet.activeAccount = session.activeAccount
+            }
+
         }
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe {

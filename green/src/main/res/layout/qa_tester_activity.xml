@@ -107,19 +107,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/settings_element_margin" />
 
-                        <com.blockstream.green.views.GreenSwitch
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="@={qaTester.assetsIconsFetchDisabled}"
-                            app:captionText="Disable Icons fetching"
-                            app:icon="@drawable/ic_liquid_network_60"
-                            app:titleText="Disable Assets Icons fetching" />
-
-                        <com.blockstream.green.views.DividerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/settings_element_margin" />
-
                         <TextView
                             android:id="@+id/errorCounter"
                             android:layout_width="match_parent"

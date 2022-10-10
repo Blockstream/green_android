@@ -66,7 +66,6 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        println("onViewCreatedGuarded")
         binding.vm = viewModel
 
         binding.address.setOnClickListener {
