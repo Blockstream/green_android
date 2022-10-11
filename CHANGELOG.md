@@ -3,17 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.8.9] - 2022-10-11
 
 ### Added
 - New "About" section
 - Give us your feedback utility
-- Improve testing with debug & adhoc release
 
 ### Changed
-- Announcements alerts: improve navigation
+- Announcements and alerts, improved navigation
 - Improved performance of asset registry usage
-- Support gdk 0.0.56
+- Updates GDK to version 0.0.56
+- Improve testing with debug & adhoc release
 
 ### Fixed
 - Improve tor bootstrapping support
