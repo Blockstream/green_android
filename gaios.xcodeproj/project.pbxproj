@@ -863,6 +863,8 @@
 				340A5F5B28E47704003D56B1 /* AboutViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
 		34019C1628D1B07600E64BEE /* OVViewController */ = {
 			isa = PBXGroup;
 			children = (
