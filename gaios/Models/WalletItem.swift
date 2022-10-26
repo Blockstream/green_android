@@ -62,35 +62,6 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
         }
     }
 
-    func generateNewAddress() -> Promise<Address> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().then(on: bgq) {_ in
-            SessionsManager.current!.getReceiveAddress(subaccount: self.pointer)
-        }
-    }
-
-    func getAddress() -> Promise<String> {
-        if let address = receiveAddress {
-            return Guarantee().compactMap { _ in
-                return address
-            }
-        }
-        return generateNewAddress().compactMap { address in
-            self.receiveAddress = address.address
-            return address.address
-        }
-    }
-
-    func getBalance() -> Promise<[String: Int64]> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().then(on: bgq) {
-            SessionsManager.current!.getBalance(subaccount: self.pointer, numConfs: 0)
-        }.compactMap { satoshi in
-            self.satoshi = satoshi
-            return satoshi
-        }
-    }
-
     var btc: Int64 {
         get {
             if let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() {

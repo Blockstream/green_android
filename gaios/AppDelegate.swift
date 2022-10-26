@@ -141,9 +141,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         WalletManager.wallets.forEach { _, wm in
             wm.pause()
         }
-        WalletManager.reconnectionQueue.async {
-            TorSessionManager.shared.pause()
-        }
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -151,10 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         WalletManager.wallets.forEach { _, wm in
             wm.resume()
         }
-        WalletManager.reconnectionQueue.async {
-            TorSessionManager.shared.resume()
-        }
-        AnalyticsManager.shared.setupSession()
+        AnalyticsManager.shared.setupSession(session: WalletManager.current?.currentSession?.session)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

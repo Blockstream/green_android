@@ -6,7 +6,7 @@ class OVBalanceCellModel {
     var value: String
     var numAssets: Int
 
-    init(satoshi: UInt64, numAssets: Int) {
+    init(satoshi: Int64, numAssets: Int) {
         self.numAssets = numAssets
         if let balance = Balance.fromSatoshi(satoshi)?.toDenom() {
             value = "\(balance.0) \(balance.1)"

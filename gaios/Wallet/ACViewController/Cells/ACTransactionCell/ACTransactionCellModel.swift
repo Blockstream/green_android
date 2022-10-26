@@ -44,6 +44,11 @@ class ACTransactionCellModel {
                 self.value = "\(balance.0) \(balance.1)"
             }
             self.status = pending ? "Sending" : "Sent"
+        case .mixed:
+            if let balance = Balance.fromSatoshi(satoshi ?? 0, asset: asset)?.toValue() {
+                self.value = "\(balance.0) \(balance.1)"
+            }
+            self.status = pending ? "Swaping" : "Swap"
         }
     }
 

@@ -9,7 +9,7 @@ class ACAccountCellModel {
     var value: String?
     var fiat: String?
 
-    init(subaccount: WalletItem, assetId: String, satoshi: UInt64) {
+    init(subaccount: WalletItem, assetId: String, satoshi: Int64) {
         name = subaccount.localizedName()
         type = subaccount.type.typeStringId
         security = getGdkNetwork(subaccount.network ?? "mainnet").electrum ? "Singlesig" : "Multisig"

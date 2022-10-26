@@ -284,10 +284,7 @@ class WalletSettingsViewController: KeyboardViewController {
                 //no change
             }
         }
-        var session: Session? = nil
-        if let account = AccountsManager.shared.current {
-            session = SessionsManager.get(for: account)?.session
-        }
+        var session = WalletManager.current?.currentSession?.session
         AnalyticsManager.shared.setupSession(session: session)
         delegate?.didSet(tor: switchTor.isOn)
         delegate?.didSet(testnet: switchTestnet.isOn)

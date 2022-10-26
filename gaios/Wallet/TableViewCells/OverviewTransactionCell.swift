@@ -7,21 +7,7 @@ class OverviewTransactionCell: UITableViewCell {
     @IBOutlet weak var lblStatus: UILabel!
     @IBOutlet weak var lblNote: UILabel!
     @IBOutlet weak var lblDate: UILabel!
-<<<<<<< HEAD
     @IBOutlet weak var amountsStackView: UIStackView!
-=======
-    @IBOutlet weak var lblDenom: UILabel!
-    @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var spvVerifyIcon: UIImageView!
-
-    var isLiquid: Bool {
-        let account = AccountsManager.shared.current
-        return account?.gdkNetwork?.liquid ?? false
-    }
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-    }
->>>>>>> ed59adcd (unification: rename accountManager as accountDao to handle persistent storage)
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -52,14 +38,14 @@ class OverviewTransactionCell: UITableViewCell {
         }
 
         var amounts = [(key: String, value: Int64)]()
+        let feeAsset = WalletManager.current?.currentSession?.gdkNetwork.getFeeAsset()
          if transaction.type == .redeposit,
-           let feeAsset = SessionsManager.current?.gdkNetwork.getFeeAsset() {
+           let feeAsset = feeAsset {
             amounts = [(key: feeAsset, value: -1 * Int64(transaction.fee))]
         } else {
             amounts = Transaction.sort(transaction.amounts)
             // remove L-BTC asset only if fee on outgoing transactions
             if transaction.type == .some(.outgoing) || transaction.type == .some(.mixed) {
-                let feeAsset = SessionsManager.current?.gdkNetwork.getFeeAsset()
                 amounts = amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(transaction.fee)) })
             }
         }

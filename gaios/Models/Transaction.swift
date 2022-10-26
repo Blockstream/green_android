@@ -133,7 +133,7 @@ struct Transaction: Comparable {
         var amounts = Transaction.sort(amounts)
         // OUT transactions in BTC/L-BTC have fee included
         if type == .some(.outgoing) {
-            let feeAsset = SessionsManager.current?.gdkNetwork.getFeeAsset()
+            let feeAsset = WalletManager.current?.currentSession?.gdkNetwork.getFeeAsset()
             amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value + Int64(fee)) : $0 }
         }
         return amounts.filter({ $0.value != 0 })

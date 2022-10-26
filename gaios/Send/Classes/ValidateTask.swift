@@ -18,10 +18,10 @@ class ValidateTask {
             var details = details
             if inputType == .transaction && details["utxos"] == nil {
                 let subaccount = details["subaccount"] as? UInt32
-                let unspent = try? session?.getUnspentOutputs(subaccount: subaccount ?? 0, numConfs: 0).wait()
+                let unspent = try? session.getUnspentOutputs(subaccount: subaccount ?? 0, numConfs: 0).wait()
                 details["utxos"] = unspent ?? [:]
             }
-            self.tx = try? session?.createTransaction(tx: Transaction(details)).wait()
+            self.tx = try? session.createTransaction(tx: Transaction(details)).wait()
         }
     }
 

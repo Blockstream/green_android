@@ -161,7 +161,7 @@ class WalletManager {
         }
     }
 
-    func balances(subaccounts: [WalletItem]) -> Promise<[String: UInt64]> {
+    func balances(subaccounts: [WalletItem]) -> Promise<[String: Int64]> {
         let promises = subaccounts
             .map { sub in
                 sessions[sub.network ?? ""]!
@@ -171,7 +171,7 @@ class WalletManager {
             }
         return when(fulfilled: promises)
             .compactMap { _ in
-                var balance = [String: UInt64]()
+                var balance = [String: Int64]()
                 subaccounts.forEach { subaccount in
                     let satoshi = subaccount.satoshi ?? [:]
                     satoshi.forEach {

@@ -7,7 +7,7 @@ class OVAssetCellModel {
     var value: String?
     var fiat: String?
 
-    init(assetId: String, satoshi: UInt64) {
+    init(assetId: String, satoshi: Int64) {
         asset = WalletManager.current?.registry.info(for: assetId)
         icon = WalletManager.current?.registry.image(for: assetId)
 

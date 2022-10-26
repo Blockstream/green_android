@@ -179,7 +179,7 @@ class AnalyticsManager {
         }
     }
 
-    public func setupSession(session: Session?) {
+    public func setupSession(session: GDKSession?) {
         let host = getHost()
         let conf = getSessionConfiguration(session: session)
         Countly.sharedInstance().setNewHost(host)

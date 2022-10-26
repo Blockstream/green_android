@@ -7,7 +7,7 @@ class OVViewModel {
 
     var subaccounts: [WalletItem] { wm.subaccounts }
 
-    var cachedBalance = [(String, UInt64)]()
+    var cachedBalance = [(String, Int64)]()
 
     var assetCellModels = [OVAssetCellModel]() {
         didSet {
