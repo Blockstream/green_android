@@ -114,3 +114,27 @@ extension UIColor {
         return UIColor(named: "accountLightBlue")!
     }
 }
+
+extension UIColor {
+    class func gAccountGray() -> UIColor {
+        return UIColor(named: "gAccountGray")!
+    }
+    class func gAccountLightBlue() -> UIColor {
+        return UIColor(named: "gAccountLightBlue")!
+    }
+    class func gAccountOrange() -> UIColor {
+        return UIColor(named: "gAccountOrange")!
+    }
+    class func gBlackBg() -> UIColor {
+        return UIColor(named: "gBlackBg")!
+    }
+    class func gGrayBtn() -> UIColor {
+        return UIColor(named: "gGrayBtn")!
+    }
+    class func gGrayCard() -> UIColor {
+        return UIColor(named: "gGrayCard")!
+    }
+    class func gGreenMatrix() -> UIColor {
+        return UIColor(named: "gGreenMatrix")!
+    }
+}

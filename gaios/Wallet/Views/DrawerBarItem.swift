@@ -6,7 +6,8 @@ class DrawerBarItem: UIView {
     var onTap: (() -> Void)?
 
     func configure(_ onTap:@escaping (() -> Void)) {
-        lblWallet.text = "Work Wallet"
+        let account = AccountsManager.shared.current
+        lblWallet.text = account?.name ?? ""
         self.onTap = onTap
     }
 

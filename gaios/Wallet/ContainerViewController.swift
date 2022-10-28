@@ -23,7 +23,7 @@ class ContainerViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.ContainerScreen.view
 
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "OVViewController") as? OVViewController {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletViewController") as? WalletViewController {
             let nav = UINavigationController(rootViewController: vc)
             add(nav, frame: view.frame)
         }

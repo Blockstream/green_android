@@ -13,6 +13,7 @@ class ACAccountCellModel {
         name = subaccount.localizedName()
         type = subaccount.type.typeStringId
         security = getGdkNetwork(subaccount.network ?? "mainnet").electrum ? "Singlesig" : "Multisig"
+
         let asset = WalletManager.current?.registry.info(for: assetId)
         if let balance = Balance.fromSatoshi(satoshi, asset: asset)?.toValue() {
             self.value = "\(balance.0) \(balance.1)"
