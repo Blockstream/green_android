@@ -5,6 +5,7 @@ class BalanceCellModel {
 
     var value: String
     var numAssets: Int
+    var valueFiat: String
 
     init(satoshi: Int64, numAssets: Int) {
         self.numAssets = numAssets
@@ -13,11 +14,7 @@ class BalanceCellModel {
         } else {
             value = "--"
         }
-    }
-
-    init() {
-        numAssets = 0
-        value = "--"
+        valueFiat = "-- USD"
     }
 
     var fiatValue: String {

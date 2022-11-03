@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -23,12 +24,29 @@
                         <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="lbl_balance_value" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cwj-w8-ZQr">
-                        <rect key="frame" x="20" y="44.5" width="364" height="67.5"/>
-                        <fontDescription key="fontDescription" type="boldSystem" pointSize="34"/>
-                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <nil key="highlightedColor"/>
-                    </label>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="KrQ-SM-fsW">
+                        <rect key="frame" x="20" y="44.5" width="364" height="60.5"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="lbl_balance_value" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cwj-w8-ZQr">
+                                <rect key="frame" x="0.0" y="0.0" width="364" height="41"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="34"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_balance_fiat" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pwm-j0-vaS">
+                                <rect key="frame" x="0.0" y="41" width="364" height="19.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="cwj-w8-ZQr" secondAttribute="trailing" id="Bte-GR-1qR"/>
+                            <constraint firstAttribute="trailing" secondItem="pwm-j0-vaS" secondAttribute="trailing" id="ObX-aO-EL2"/>
+                            <constraint firstItem="cwj-w8-ZQr" firstAttribute="leading" secondItem="KrQ-SM-fsW" secondAttribute="leading" id="Rbc-mF-KWQ"/>
+                            <constraint firstItem="pwm-j0-vaS" firstAttribute="leading" secondItem="KrQ-SM-fsW" secondAttribute="leading" id="ii7-0z-ZtD"/>
+                        </constraints>
+                    </stackView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_coins" translatesAutoresizingMaskIntoConstraints="NO" id="sbk-gw-Kq8">
                         <rect key="frame" x="20" y="117" width="28" height="18"/>
                         <constraints>
@@ -36,18 +54,6 @@
                             <constraint firstAttribute="width" constant="28" id="Vvt-03-o38"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_assets_num" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UEO-hg-6sy">
-                        <rect key="frame" x="56" y="117.5" width="101" height="17"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_assets_other" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tNb-Gd-mPe">
-                        <rect key="frame" x="165" y="117.5" width="106.5" height="17"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FAM-KX-0hP">
                         <rect key="frame" x="159.5" y="13" width="34" height="34"/>
                         <constraints>
@@ -60,30 +66,40 @@
                             <action selector="btnFiat:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="tX2-Mp-NBC"/>
                         </connections>
                     </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kER-qn-FtF">
+                        <rect key="frame" x="58" y="110" width="326" height="32"/>
+                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                        <state key="normal" title="btn_assets">
+                            <color key="titleColor" name="gGreenMatrix"/>
+                        </state>
+                        <connections>
+                            <action selector="btnAssets:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="S2q-Ta-IYI"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <color key="backgroundColor" red="0.074509803921568626" green="0.086274509803921567" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
                     <constraint firstAttribute="bottom" secondItem="sbk-gw-Kq8" secondAttribute="bottom" constant="20" id="0xV-0z-ssW"/>
                     <constraint firstItem="sbk-gw-Kq8" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" symbolic="YES" id="3dV-kX-70k"/>
-                    <constraint firstItem="UEO-hg-6sy" firstAttribute="leading" secondItem="sbk-gw-Kq8" secondAttribute="trailing" constant="8" id="4De-6P-BpJ"/>
                     <constraint firstItem="UWo-Pa-oSR" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="4ID-P9-4uA"/>
-                    <constraint firstItem="tNb-Gd-mPe" firstAttribute="centerY" secondItem="UEO-hg-6sy" secondAttribute="centerY" id="897-pN-QkE"/>
-                    <constraint firstItem="UEO-hg-6sy" firstAttribute="centerY" secondItem="sbk-gw-Kq8" secondAttribute="centerY" id="AXU-X3-FRa"/>
+                    <constraint firstItem="kER-qn-FtF" firstAttribute="centerY" secondItem="sbk-gw-Kq8" secondAttribute="centerY" id="6O1-bi-afV"/>
+                    <constraint firstAttribute="trailing" secondItem="KrQ-SM-fsW" secondAttribute="trailing" constant="20" id="F1t-WS-GNd"/>
                     <constraint firstItem="FAM-KX-0hP" firstAttribute="centerY" secondItem="UWo-Pa-oSR" secondAttribute="centerY" id="G5R-Y0-d9L"/>
-                    <constraint firstItem="cwj-w8-ZQr" firstAttribute="top" secondItem="UWo-Pa-oSR" secondAttribute="bottom" constant="5" id="N3H-B7-uLw"/>
-                    <constraint firstItem="tNb-Gd-mPe" firstAttribute="leading" secondItem="UEO-hg-6sy" secondAttribute="trailing" constant="8" id="O3Z-Qd-wVV"/>
-                    <constraint firstItem="cwj-w8-ZQr" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="Scl-TU-RQf"/>
-                    <constraint firstAttribute="trailing" secondItem="cwj-w8-ZQr" secondAttribute="trailing" constant="20" id="WfM-cq-n0o"/>
-                    <constraint firstItem="sbk-gw-Kq8" firstAttribute="top" secondItem="cwj-w8-ZQr" secondAttribute="bottom" constant="5" id="Yhk-ax-KZU"/>
+                    <constraint firstItem="sbk-gw-Kq8" firstAttribute="top" secondItem="KrQ-SM-fsW" secondAttribute="bottom" constant="12" id="GNG-HK-O3V"/>
+                    <constraint firstItem="KrQ-SM-fsW" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="Ltb-J2-zhc"/>
                     <constraint firstItem="UWo-Pa-oSR" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="fDe-qh-eCR"/>
+                    <constraint firstItem="KrQ-SM-fsW" firstAttribute="top" secondItem="UWo-Pa-oSR" secondAttribute="bottom" constant="5" id="hjY-JV-BYQ"/>
                     <constraint firstItem="FAM-KX-0hP" firstAttribute="leading" secondItem="UWo-Pa-oSR" secondAttribute="trailing" constant="10" id="lYj-C6-IAF"/>
+                    <constraint firstAttribute="trailing" secondItem="kER-qn-FtF" secondAttribute="trailing" constant="20" id="tpB-13-U4m"/>
+                    <constraint firstItem="kER-qn-FtF" firstAttribute="leading" secondItem="sbk-gw-Kq8" secondAttribute="trailing" constant="10" id="w5u-w7-0GU"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
-                <outlet property="lblAssetsNum" destination="UEO-hg-6sy" id="izu-uw-uuF"/>
-                <outlet property="lblAssetsOther" destination="tNb-Gd-mPe" id="3Fb-qD-657"/>
+                <outlet property="btnAssets" destination="kER-qn-FtF" id="Ksg-gk-3X6"/>
+                <outlet property="lblBalanceFiat" destination="pwm-j0-vaS" id="ZwJ-Fm-xai"/>
                 <outlet property="lblBalanceTitle" destination="UWo-Pa-oSR" id="S2Y-1p-iAD"/>
                 <outlet property="lblBalanceValue" destination="cwj-w8-ZQr" id="dLB-bq-Skq"/>
             </connections>
@@ -93,5 +109,8 @@
     <resources>
         <image name="ic_coins" width="28" height="18"/>
         <image name="ic_eye_flat" width="28.5" height="28"/>
+        <namedColor name="gGreenMatrix">
+            <color red="0.0" green="0.71399998664855957" blue="0.43900001049041748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>

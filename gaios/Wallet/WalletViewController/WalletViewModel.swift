@@ -9,6 +9,8 @@ class WalletViewModel {
 
     var presentingWallet: WalletItem? { wm.currentSubaccount }
 
+    var cachedBalance = [(String, Int64)]()
+
     // load visible subaccounts
     var subaccounts: [WalletItem] {
         wm.subaccounts.filter { !($0.hidden ?? false) }
@@ -38,16 +40,16 @@ class WalletViewModel {
         }
     }
 
-    var balanceCellModel = BalanceCellModel() {
+    var balanceCellModel: BalanceCellModel? {
         didSet {
-            reloadTableView?()   ///???
+            reloadSections?([WalletSection.balance], false)
         }
     }
 
-//    func getAccountCellModels(at indexPath: IndexPath) -> ACAccountCellModel {
-//        return accountCellModels[indexPath.row]
-//    }
-
+    var walletAssetCellModels: [WalletAssetCellModel] {
+        return cachedBalance.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
+    }
+    
     func getTransactionCellModels(at indexPath: IndexPath) -> ACTransactionCellModel {
         return txCellModels[indexPath.row]
     }
@@ -80,6 +82,7 @@ class WalletViewModel {
 //                                           assetId: assetId,
 //                                           satoshi: $0.satoshi?[assetId] ?? 0)
                     }
+                self.getAssets()
             }.catch { err in
                 print(err)
             }
@@ -112,7 +115,27 @@ class WalletViewModel {
         return 0
     }
 
-    func getBalanceCellModel() -> BalanceCellModel {
-        return balanceCellModel
+    func getAssets() {
+        wm.balances(subaccounts: self.subaccounts)
+            .done { amounts in
+                self.cachedBalance = amounts.map { ($0.key, $0.value) }.sorted(by: { (rhs, lhs) in
+                    let lbtc = getGdkNetwork("liquid").getFeeAsset()
+                    if rhs.0 == "btc" { return true
+                    } else if lhs.0 == "btc" { return false
+                    } else if rhs.0 == lbtc { return true
+                    } else if lhs.0 == lbtc { return false
+                    } else if self.wm.registry.hasImage(for: rhs.0) == true { return true
+                    } else if self.wm.registry.hasImage(for: lhs.0) == true { return false
+                    } else if self.wm.registry.info(for: rhs.0).ticker != nil { return true
+                    } else if self.wm.registry.info(for: lhs.0).ticker != nil { return false
+                    } else { return true}
+                })
+                let total = amounts.filter({$0.0 == "btc"}).map {$0.1}.reduce(0, +)
+
+                // self.balanceCellModel = OVBalanceCellModel(satoshi: total, numAssets: amounts.count - 2)
+                self.balanceCellModel = BalanceCellModel(satoshi: total, numAssets: amounts.count)
+            }.catch { err in
+                print(err)
+            }
     }
 }

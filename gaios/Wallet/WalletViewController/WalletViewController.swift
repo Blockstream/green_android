@@ -54,6 +54,7 @@ class WalletViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        viewModel.getAssets()
     }
 
     func reloadSections(_ sections: [WalletSection], animated: Bool) {
@@ -152,6 +153,14 @@ class WalletViewController: UIViewController {
         print("accaount prefs")
     }
 
+    func assetsScreen() {
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetsViewController") as? AssetsViewController {
+            vc.viewModel = AssetsViewModel(assetCellModels: viewModel.walletAssetCellModels)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -172,7 +181,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch WalletSection(rawValue: section) {
         case .balance:
-            return 1
+            return viewModel.balanceCellModel == nil ? 0 : 1
         case .account:
 //            let num = viewModel.accountCellModels.count
             return viewModel.accountCellModels.count //showAll ? num : ( num == 0 ? 0 : 1)
@@ -188,9 +197,11 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch WalletSection(rawValue: indexPath.section) {
         case .balance:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell {
-                let cellVm = viewModel.getBalanceCellModel()
-                cell.viewModel = cellVm
+            if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell, let model = viewModel.balanceCellModel {
+                cell.configure(model: model,
+                               onAssets: {[weak self] in
+                    self?.assetsScreen()
+                })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -199,7 +210,10 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configure(model: viewModel.accountCellModels[indexPath.row],
                                cIdx: indexPath.row,
                                sIdx: sIdx,
-                               isLast: indexPath.row == viewModel.accountCellModels.count - 1)
+                               isLast: indexPath.row == viewModel.accountCellModels.count - 1,
+                               onSelect: {[weak self] in
+                    print("onSelect")
+                })
                 cell.selectionStyle = .none
                 return cell
             }

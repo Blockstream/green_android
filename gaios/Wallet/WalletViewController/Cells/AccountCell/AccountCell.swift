@@ -20,6 +20,7 @@ class AccountCell: UITableViewCell {
     private var sIdx: Int = 0
     private var cIdx: Int = 0
     private var isLast: Bool = false
+    private var onSelect: (() -> Void)?
 
     static var identifier: String { return String(describing: self) }
 
@@ -46,10 +47,12 @@ class AccountCell: UITableViewCell {
     func configure(model: AccountCellModel,
                    cIdx: Int,
                    sIdx: Int,
-                   isLast: Bool) {
+                   isLast: Bool,
+                   onSelect: (() ->Void)?) {
         self.cIdx = cIdx
         self.sIdx = sIdx
         self.isLast = isLast
+        self.onSelect = onSelect
 
         lblType.text = model.lblType
         lblName.text = model.name
@@ -75,5 +78,9 @@ class AccountCell: UITableViewCell {
         UIView.animate(withDuration: 0.3, animations: {
             self.updateUI(value)
         })
+    }
+
+    @IBAction func btnSelect(_ sender: Any) {
+        onSelect?()
     }
 }

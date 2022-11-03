@@ -1,11 +1,3 @@
-//
-//  BaseCell.swift
-//  gaios
-//
-//  Created by Mauro Olivo on 19/09/22.
-//  Copyright © 2022 Blockstream Corporation. All rights reserved.
-//
-
 import UIKit
 
 class BaseCell: UITableViewCell {
