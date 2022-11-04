@@ -43,7 +43,7 @@ class WalletViewController: UIViewController {
         }
         viewModel.reloadSections = reloadSections
 
-        ["AccountCell", "BalanceCell", "ACTransactionCell" ].forEach {
+        ["AccountCell", "BalanceCell", "TransactionCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 
@@ -54,7 +54,6 @@ class WalletViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        viewModel.getAssets()
     }
 
     func reloadSections(_ sections: [WalletSection], animated: Bool) {
@@ -161,6 +160,16 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func accountDetail(model: AccountCellModel?) {
+        guard let model = model else { return }
+
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController, let account = viewModel.presentingWallet {
+            vc.viewModel = AccountViewModel(model: model, account: account)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -199,6 +208,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         case .balance:
             if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell, let model = viewModel.balanceCellModel {
                 cell.configure(model: model,
+                               cachedBalance: viewModel.cachedBalance,
                                onAssets: {[weak self] in
                     self?.assetsScreen()
                 })
@@ -212,15 +222,14 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                                sIdx: sIdx,
                                isLast: indexPath.row == viewModel.accountCellModels.count - 1,
                                onSelect: {[weak self] in
-                    print("onSelect")
+                    self?.accountDetail(model: self?.viewModel.accountCellModels[indexPath.row])
                 })
                 cell.selectionStyle = .none
                 return cell
             }
         case .transaction:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: ACTransactionCell.identifier, for: indexPath) as? ACTransactionCell {
-                let cellVm = viewModel.getTransactionCellModels(at: indexPath)
-                cell.viewModel = cellVm
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
+                cell.configure(model: viewModel.txCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
@@ -263,7 +272,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch WalletSection(rawValue: section) {
         case .transaction:
-            return headerView( "Latest 30 transactions" )
+            return headerView( "Latest transactions" )
         default:
             return nil
         }

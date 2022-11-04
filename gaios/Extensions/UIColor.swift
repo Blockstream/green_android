@@ -116,9 +116,6 @@ extension UIColor {
 }
 
 extension UIColor {
-    class func gAccountGray() -> UIColor {
-        return UIColor(named: "gAccountGray")!
-    }
     class func gAccountLightBlue() -> UIColor {
         return UIColor(named: "gAccountLightBlue")!
     }
@@ -136,5 +133,11 @@ extension UIColor {
     }
     class func gGreenMatrix() -> UIColor {
         return UIColor(named: "gGreenMatrix")!
+    }
+    class func gAccountTestGray() -> UIColor {
+        return UIColor(named: "gAccountTestGray")!
+    }
+    class func gAccountTestLightBlue() -> UIColor {
+        return UIColor(named: "gAccountTestLightBlue")!
     }
 }

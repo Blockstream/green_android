@@ -1,46 +1,55 @@
 import UIKit
 import PromiseKit
 
-enum ACSection: Int, CaseIterable {
-    case account = 0
-    case edit = 1
-    case transaction = 2
-    case more = 3
+enum AccountSection: Int, CaseIterable {
+    case account
+    case transaction
+    case footer
 }
 
-class ACViewController: UIViewController {
+class AccountViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var actionsBg: UIView!
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var btnReceive: UIButton!
 
-    var assetId: String?
-
-    private var showAll = true
     private var headerH: CGFloat = 54.0
+    private var cardH: CGFloat = 64.0
+    private var cardHc: CGFloat = 184.0
 
-    private lazy var viewModel = { ACViewModel() }()
+    private var sIdx: Int = 0
+
+    var viewModel: AccountViewModel?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ["ACAccountCell", "ACEditCell", "ACTransactionCell", "ACMoreCell"].forEach {
+        ["AccountCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 
         setContent()
         setStyle()
-        initViewModel()
+        tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
     }
 
-    func reloadSections(_ sections: [ACSection], animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        viewModel?.getTransactions()
+    }
+
+    func reloadSections(_ sections: [AccountSection], animated: Bool) {
         if animated {
             tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
         } else {
             UIView.performWithoutAnimation {
                 tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
             }
+        }
+        if sections.contains(AccountSection.account) {
+            tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
         }
     }
 
@@ -58,32 +67,15 @@ class ACViewController: UIViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
+
     }
 
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
     }
 
-    func initViewModel() {
-        viewModel.getSubaccounts(assetId: assetId ?? "btc")
-        viewModel.getTransactions(assetId: assetId ?? "btc", max: 10)
-        viewModel.reloadTableView = { [weak self] in
-            DispatchQueue.main.async {
-                if self?.tableView.refreshControl?.isRefreshing ?? false {
-                    self?.tableView.refreshControl?.endRefreshing()
-                }
-                self?.tableView.reloadData()
-            }
-        }
-        let reloadSections: (([ACSection], Bool) -> Void)? = { [weak self] (sections, animated) in
-            self?.reloadSections(sections, animated: true)
-        }
-        viewModel.reloadSections = reloadSections
-    }
-
     // tableview refresh gesture
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
-
     }
 
     // open settings
@@ -136,25 +128,19 @@ class ACViewController: UIViewController {
 
 }
 
-extension ACViewController: UITableViewDelegate, UITableViewDataSource {
+extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return ACSection.allCases.count
+        return AccountSection.allCases.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        switch ACSection(rawValue: section) {
+        switch AccountSection(rawValue: section) {
         case .account:
-            let num = viewModel.accountCellModels.count
-            return showAll ? num : ( num == 0 ? 0 : 1)
-//            return showAll ? viewModel.accountCellModels.count : 1
-        case .edit:
-            return 1
+            return viewModel?.accountCellModels.count ?? 0
         case .transaction:
-            return viewModel.txCellModels.count
-        case .more:
-            return 1
+            return viewModel?.txCellModels.count ?? 0
         default:
             return 0
         }
@@ -162,34 +148,21 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        switch ACSection(rawValue: indexPath.section) {
+        switch AccountSection(rawValue: indexPath.section) {
         case .account:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: ACAccountCell.identifier, for: indexPath) as? ACAccountCell {
-                let cellVm = viewModel.getAccountCellModels(at: indexPath)
-                cell.configure(viewModel: cellVm, showAll: showAll, action: { [weak self] in
-                    self?.accountPrefs()
-                })
-                cell.selectionStyle = .none
-                return cell
-            }
-        case .edit:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ACEditCell") as? ACEditCell {
-
-                cell.configure(onAdd: nil, onArchive: nil)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell,
+               let model = viewModel?.accountCellModels[indexPath.row] {
+                cell.configure(model: model,
+                               cIdx: indexPath.row,
+                               sIdx: sIdx,
+                               isLast: true,
+                               onSelect: nil)
                 cell.selectionStyle = .none
                 return cell
             }
         case .transaction:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: ACTransactionCell.identifier, for: indexPath) as? ACTransactionCell {
-                let cellVm = viewModel.getTransactionCellModels(at: indexPath)
-                cell.viewModel = cellVm
-                cell.selectionStyle = .none
-                return cell
-            }
-        case .more:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ACMoreCell") as? ACMoreCell {
-
-                cell.configure(onTap: nil)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell, let viewModel = viewModel {
+                cell.configure(model: viewModel.txCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
@@ -201,7 +174,7 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch ACSection(rawValue: section) {
+        switch AccountSection(rawValue: section) {
         case .transaction:
             return headerH
         default:
@@ -210,19 +183,29 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 0.1
+        switch AccountSection(rawValue: section) {
+        case .footer:
+            return 100.0
+        default:
+            return 0.1
+        }
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 
-        return UITableView.automaticDimension
+        switch AccountSection(rawValue: indexPath.section) {
+        case .account:
+            return indexPath.row == sIdx ? cardHc : cardH
+        default:
+            return UITableView.automaticDimension
+        }
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
-        switch ACSection(rawValue: section) {
+        switch AccountSection(rawValue: section) {
         case .transaction:
-            return headerView( "Latest 30 transactions" )
+            return headerView( "Latest transactions" )
         default:
             return nil
         }
@@ -235,35 +218,25 @@ extension ACViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        switch ACSection(rawValue: indexPath.section) {
-        case .account:
-            UIView.setAnimationsEnabled(true)
-            showAll = !showAll
-            reloadSections([ACSection.account], animated: true)
-            if indexPath.row > 0 {
-                let subaccount = viewModel.cachedSubaccounts[indexPath.row]
-                viewModel.getTransactions(assetId: assetId ?? "btc", subaccounts: [subaccount], page: 0)
-            } else {
-                viewModel.getTransactions(assetId: assetId ?? "btc", page: 0, max: 10)
-            }
-        case .edit:
-            break
-        case .transaction:
-            let transaction = viewModel.cachedTransactions[indexPath.row]
-            let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
-                vc.transaction = transaction
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        case .more:
-            break
-        default:
-            break
-        }
+//        switch AccountSection(rawValue: indexPath.section) {
+//        case .account:
+//            sIdx = indexPath.row
+//            tableView.beginUpdates()
+//            tableView.endUpdates()
+//        case .transaction:
+//            let transaction = viewModel.cachedTransactions[indexPath.row]
+//            let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
+//            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
+//                vc.transaction = transaction
+//                navigationController?.pushViewController(vc, animated: true)
+//            }
+//        default:
+//            break
+//        }
     }
 }
 
-extension ACViewController: DialogWalletNameViewControllerDelegate {
+extension AccountViewController: DialogWalletNameViewControllerDelegate {
 
     func didRename(name: String, index: Int?) {
         //...
@@ -272,13 +245,13 @@ extension ACViewController: DialogWalletNameViewControllerDelegate {
     }
 }
 
-extension ACViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
+extension AccountViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
     func userLogout() {
         // ...
     }
 }
 
-extension ACViewController: UIPopoverPresentationControllerDelegate {
+extension AccountViewController: UIPopoverPresentationControllerDelegate {
 
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
@@ -289,7 +262,7 @@ extension ACViewController: UIPopoverPresentationControllerDelegate {
     }
 }
 
-extension ACViewController {
+extension AccountViewController {
 
     func headerView(_ txt: String) -> UIView {
 

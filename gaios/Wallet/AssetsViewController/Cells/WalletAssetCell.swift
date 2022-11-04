@@ -1,6 +1,6 @@
 import UIKit
 
-class WalletAssetCell: BaseCell {
+class WalletAssetCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var imgView: UIImageView!
