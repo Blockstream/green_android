@@ -12,6 +12,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
     @IBOutlet weak var limitButtonConstraint: NSLayoutConstraint!
 
     fileprivate var isFiat = false
+    var session: SessionManager!
 
     var amount: String? {
         var amount = limitTextField.text!
@@ -32,13 +33,13 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     var limits: TwoFactorConfigLimits? {
-        guard let dataTwoFactorConfig = try? WalletManager.current?.currentSession?.session?.getTwoFactorConfig() else { return nil }
+        guard let dataTwoFactorConfig = try? session.session?.getTwoFactorConfig() else { return nil }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return nil }
         return twoFactorConfig.limits
     }
 
     var denomination: DenominationType {
-        return WalletManager.current?.currentSession?.settings?.denomination ?? .BTC
+        return session.settings?.denomination ?? .BTC
     }
 
     override func viewDidLoad() {
@@ -103,10 +104,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap {
-            WalletManager.current?.currentSession
         }.then(on: bgq) {
-            $0.setTwoFactorLimit(details: details)
+            self.session.setTwoFactorLimit(details: details)
         }.ensure {
             self.stopAnimating()
         }.done { _ in

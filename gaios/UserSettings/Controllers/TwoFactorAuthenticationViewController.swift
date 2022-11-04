@@ -30,18 +30,16 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var lblRecoveryTool: UILabel!
     @IBOutlet weak var btnRecoveryTool: UIButton!
 
-    var csvTypes = Settings.CsvTime.all()
-    var csvValues = Settings.CsvTime.values()
-    var newCsv: Int?
-    var currentCsv: Int?
+    private var csvTypes = Settings.CsvTime.all()
+    private var csvValues = Settings.CsvTime.values()
+    private var newCsv: Int?
+    private var currentCsv: Int?
 
     fileprivate var factors = [TwoFactorItem]()
     private var connected = true
     private var updateToken: NSObjectProtocol?
-    var twoFactorConfig: TwoFactorConfig?
-    var account = { AccountsManager.shared.current }()
-    var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
-    var wallet: WalletItem?
+    private var twoFactorConfig: TwoFactorConfig?
+    var session: SessionManager!
 
     weak var delegate: TwoFactorAuthenticationViewControllerDelegate?
 
@@ -52,11 +50,11 @@ class TwoFactorAuthenticationViewController: UIViewController {
         setContent()
         setStyle()
 
-        currentCsv = WalletManager.current?.currentSession?.settings?.csvtime
+        currentCsv = session.settings?.csvtime
         tableViewCsvTime.estimatedRowHeight = 80
         tableViewCsvTime.rowHeight = UITableView.automaticDimension
 
-        if isLiquid {
+        if session.gdkNetwork.liquid {
             lbl2faExpiryTitle.isHidden = true
             lbl2faExpiryHint.isHidden = true
             tableViewCsvTime.isHidden = true
@@ -126,7 +124,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func reloadData() {
-        guard let dataTwoFactorConfig = try? WalletManager.current?.currentSession?.session?.getTwoFactorConfig() else { return }
+        guard let dataTwoFactorConfig = try? session.session?.getTwoFactorConfig() else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
         self.twoFactorConfig = twoFactorConfig
         factors.removeAll()
@@ -139,7 +137,6 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
         thresholdView.isHidden = true
         if self.twoFactorConfig?.anyEnabled ?? false,
-            let session = WalletManager.current?.currentSession,
             let settings = session.settings,
             let twoFactorConfig = self.twoFactorConfig {
 
@@ -170,16 +167,15 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func disable(_ type: TwoFactorType) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap {
             TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
         }.then(on: bgq) { config in
-            session.changeSettingsTwoFactor(method: type, config: config)
+            self.session.changeSettingsTwoFactor(method: type, config: config)
         }.then(on: bgq) { _ in
-            session.loadTwoFactorConfig()
+            self.session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -200,14 +196,13 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func setCsvTimeLock(csv: Settings.CsvTime) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            session.setCSVTime(value: csv.value()!)
+            self.session.setCSVTime(value: csv.value()!)
         }.then(on: bgq) { _ in
-            session.loadSettings()
+            self.session.loadSettings()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -248,17 +243,16 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func resetTwoFactor(email: String) {
-        AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        //AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            session.resetTwoFactor(email: email, isDispute: false)
+            self.session.resetTwoFactor(email: email, isDispute: false)
         }.then(on: bgq) {_ in
-            session.loadTwoFactorConfig()
+            self.session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -284,8 +278,10 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     @IBAction func btn2faThreshold(_ sender: Any) {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorLimitViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorLimitViewController") as? TwoFactorLimitViewController {
+            vc.session = session
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnRecoveryTool(_ sender: Any) {
@@ -361,7 +357,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
                 navigationController?.pushViewController(vc, animated: true)
             }
 
-            AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
+            //AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
         } else if tableView == tableViewCsvTime {
             let selected = csvTypes[indexPath.row]
             newCsv = selected.value()

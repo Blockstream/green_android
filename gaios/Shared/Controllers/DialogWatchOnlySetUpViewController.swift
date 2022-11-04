@@ -33,7 +33,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
 
     var account = { AccountsManager.shared.current }()
     var buttonConstraint: NSLayoutConstraint?
-    var wallet: WalletItem?
+    var session: SessionManager!
     var username: String?
     var preDeleteFlag = false
 
@@ -44,14 +44,6 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         setStyle()
         view.alpha = 0.0
 
-        if let username = username, username != "" {
-            btnSave.setTitle(NSLocalizedString("id_update", comment: ""), for: .normal)
-            usernameField.text = username
-        } else {
-            btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
-            btnDelete.isHidden = true
-        }
-        validate()
         passwordField.isSecureTextEntry = true
         updateSecureBtn()
 
@@ -63,6 +55,7 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         btnDismiss.accessibilityIdentifier = AccessibilityIdentifiers.DialogWatchOnlySetUpScreen.dismissBtn
 
         AnalyticsManager.shared.recordView(.watchOnlyCredentials)
+        load()
     }
 
     func setContent() {
@@ -99,19 +92,16 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     }
 
     func updateWatchOnly(username: String, password: String, action: WatchOnlySetUpAction) {
-
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            session.setWatchOnly(username: username, password: password)
-        }.compactMap(on: bgq) {
-            try self.load()
+            self.session.setWatchOnly(username: username, password: password)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
+            self.load()
             self.dismiss(action)
         }.catch { err in
             switch err {
@@ -126,20 +116,20 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
         }
     }
 
-    func load() throws {
-        if let session = WalletManager.current?.currentSession {
-            if let settings = try session.session?.getSettings() {
-                WalletManager.current?.currentSession?.settings = Settings.from(settings)
+    func load() {
+        session.getWatchOnlyUsername().done { username in
+            self.username = username
+            if username != "" {
+                self.btnSave.setTitle(NSLocalizedString("id_update", comment: ""), for: .normal)
+                self.usernameField.text = username
+            } else {
+                self.btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
+                self.btnDelete.isHidden = true
             }
-            if let account = account, let network = account.gdkNetwork,
-               !(account.isSingleSig ?? false) && !network.liquid {
-                // watchonly available on multisig for not liquid networks
-                session.getWatchOnlyUsername().done {
-                    self.username = $0
-                }
-            }
+            self.validate()
         }
     }
+
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in

@@ -184,7 +184,6 @@ class OverviewViewController: UIViewController {
         if let nvc = nvc as? UINavigationController {
             if let vc = nvc.viewControllers.first as? UserSettingsViewController {
                 vc.delegate = self
-                vc.wallet = presentingWallet
                 nvc.modalPresentationStyle = .fullScreen
                 present(nvc, animated: true, completion: nil)
             }

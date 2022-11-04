@@ -8,6 +8,8 @@ class PgpViewController: KeyboardViewController {
     @IBOutlet weak var textarea: UITextView!
     @IBOutlet weak var btnSave: UIButton!
 
+    var session: SessionManager!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_pgp_key", comment: "")
@@ -28,8 +30,7 @@ class PgpViewController: KeyboardViewController {
     }
 
     @objc func save(_ sender: UIButton) {
-        guard let session = WalletManager.current?.currentSession,
-              let settings = session.settings else { return }
+        guard let settings = session.settings else { return }
         let bgq = DispatchQueue.global(qos: .background)
         let value = settings.pgp
         settings.pgp = textarea.text
@@ -37,7 +38,7 @@ class PgpViewController: KeyboardViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            session.changeSettings(settings: settings)
+            self.session.changeSettings(settings: settings)
         }.ensure {
             self.stopAnimating()
         }.done {_ in

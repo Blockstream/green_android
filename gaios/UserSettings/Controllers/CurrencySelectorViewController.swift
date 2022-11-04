@@ -49,7 +49,8 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
             self.tableView.reloadData()
             return
         }
-        let filteredStrings = currencyList.filter({(item: CurrencyItem) -> Bool in                let stringMatch = item.currency.lowercased().range(of: textField.text!.lowercased())
+        let filteredStrings = currencyList.filter({(item: CurrencyItem) -> Bool in
+            let stringMatch = item.currency.lowercased().range(of: textField.text!.lowercased())
                 return stringMatch != nil ? true : false
         })
         searchCurrencyList = filteredStrings
