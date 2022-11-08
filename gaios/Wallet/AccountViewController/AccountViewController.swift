@@ -220,21 +220,23 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-//        switch AccountSection(rawValue: indexPath.section) {
-//        case .account:
-//            sIdx = indexPath.row
-//            tableView.beginUpdates()
-//            tableView.endUpdates()
-//        case .transaction:
-//            let transaction = viewModel.cachedTransactions[indexPath.row]
-//            let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
-//                vc.transaction = transaction
-//                navigationController?.pushViewController(vc, animated: true)
-//            }
-//        default:
-//            break
-//        }
+        switch AccountSection(rawValue: indexPath.section) {
+        case .account:
+            sIdx = indexPath.row
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        case .transaction:
+            let transaction = viewModel?.cachedTransactions[indexPath.row]
+            let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
+                vc.transaction = transaction
+                navigationController?.pushViewController(vc, animated: true)
+            }
+            tableView.deselectRow(at: indexPath, animated: false)
+            tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
+        default:
+            break
+        }
     }
 }
 
