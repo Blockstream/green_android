@@ -41,8 +41,8 @@ class TransactionStatusCell: UITableViewCell {
     func configure(transaction: Transaction, isLiquid: Bool, blockHeight: UInt32) {
         lblDate.text = transaction.date(dateStyle: .long, timeStyle: .short)
 
-        var step: UInt32 = 0
-        var steps: UInt32 = 0
+        var step: Int = 0
+        var steps: Int = 0
         steps = isLiquid ? 2 : 6
 
         var status: TransactionStatus = .unconfirmed
@@ -50,14 +50,14 @@ class TransactionStatusCell: UITableViewCell {
             lblStatus.text = NSLocalizedString("id_unconfirmed", comment: "")
             lblStatus.textColor = UIColor.errorRed()
         } else if isLiquid && blockHeight < transaction.blockHeight + 1 {
-            step = (blockHeight - transaction.blockHeight) + 1
+            step = Int(blockHeight) - Int(transaction.blockHeight) + 1
             status = .confirming
             lblStatus.textColor = UIColor.customTitaniumLight()
             lblStatus.text = NSLocalizedString("id_pending_confirmation", comment: "")
         } else if !isLiquid && blockHeight < transaction.blockHeight + 5 {
             if blockHeight >= transaction.blockHeight {
                 status = .confirming
-                step = (blockHeight - transaction.blockHeight) + 1
+                step = Int(blockHeight) - Int(transaction.blockHeight) + 1
                 lblStatus.textColor = UIColor.customTitaniumLight()
                 lblStatus.text = NSLocalizedString("id_pending_confirmation", comment: "")
             }
@@ -106,7 +106,7 @@ class TransactionStatusCell: UITableViewCell {
             return false
         }
         if let notificationManager = WalletManager.current?.currentSession?.notificationManager,
-           notificationManager.blockHeight - tx.blockHeight + 1 < 6 {
+           Int(notificationManager.blockHeight) - Int(tx.blockHeight) + 1 < 6 {
             return false
         }
         return true

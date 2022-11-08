@@ -71,7 +71,7 @@ class OverviewTransactionCell: UITableViewCell {
                 setStatus(.confirmed, label: "")
                 return
             }
-            let confirmCount = (blockHeight - transaction.blockHeight) + 1
+            let confirmCount = Int(blockHeight) - Int(transaction.blockHeight) + 1
             setStatus(.holding, label: String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount))
         } else {
             setStatus(.confirmed, label: "")
