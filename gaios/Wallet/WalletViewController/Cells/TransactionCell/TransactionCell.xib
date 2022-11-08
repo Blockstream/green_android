@@ -11,69 +11,35 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="101" id="KGk-i7-Jjw" customClass="TransactionCell" customModule="gaios" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="395" height="101"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="116" id="KGk-i7-Jjw" customClass="TransactionCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="395" height="116"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="395" height="101"/>
+                <rect key="frame" x="0.0" y="0.0" width="395" height="116"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PO2-Ak-rfF">
-                        <rect key="frame" x="20" y="5" width="355" height="91"/>
+                        <rect key="frame" x="20" y="5" width="355" height="106"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_tx_received" translatesAutoresizingMaskIntoConstraints="NO" id="Ac8-PC-sk1">
-                                <rect key="frame" x="20" y="33.666666666666664" width="24" height="24"/>
+                                <rect key="frame" x="20" y="41" width="24" height="24"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="ORA-it-I9w"/>
                                     <constraint firstAttribute="width" constant="24" id="S0M-Dl-XMK"/>
                                 </constraints>
                             </imageView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Goy-8R-eCy">
-                                <rect key="frame" x="61" y="30" width="69" height="31.333333333333329"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" text="lbl_status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D0y-TB-ZMR">
-                                        <rect key="frame" x="0.0" y="0.0" width="69" height="17"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="lbl_date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BlU-rT-pLL">
-                                        <rect key="frame" x="0.0" y="17" width="69" height="14.333333333333336"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                        <color key="textColor" white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                            </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="9RF-Jr-1HQ">
-                                <rect key="frame" x="150" y="20" width="185" height="51"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" text="lbl_amount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FKH-wl-278">
-                                        <rect key="frame" x="107" y="0.0" width="78" height="36.666666666666664"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
-                                        <color key="textColor" name="gGreenMatrix"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="lbl_wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mG5-0b-bML">
-                                        <rect key="frame" x="132.33333333333331" y="36.666666666666664" width="52.666666666666657" height="14.333333333333336"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                        <color key="textColor" white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="a7n-lN-ZsY">
+                                <rect key="frame" x="64" y="10" width="271" height="86"/>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="9RF-Jr-1HQ" secondAttribute="bottom" constant="20" id="2JU-DC-ko3"/>
                             <constraint firstItem="Ac8-PC-sk1" firstAttribute="centerY" secondItem="PO2-Ak-rfF" secondAttribute="centerY" id="2sW-as-t2I"/>
-                            <constraint firstItem="9RF-Jr-1HQ" firstAttribute="centerY" secondItem="PO2-Ak-rfF" secondAttribute="centerY" id="5pp-Nl-n8q"/>
-                            <constraint firstItem="Goy-8R-eCy" firstAttribute="centerY" secondItem="PO2-Ak-rfF" secondAttribute="centerY" id="BOA-JP-vkb"/>
-                            <constraint firstItem="9RF-Jr-1HQ" firstAttribute="top" secondItem="PO2-Ak-rfF" secondAttribute="top" constant="20" id="Dp3-5J-bO0"/>
+                            <constraint firstItem="a7n-lN-ZsY" firstAttribute="top" secondItem="PO2-Ak-rfF" secondAttribute="top" constant="10" id="I3S-TH-nww"/>
+                            <constraint firstAttribute="bottom" secondItem="a7n-lN-ZsY" secondAttribute="bottom" constant="10" id="MfD-6z-9OS"/>
                             <constraint firstItem="Ac8-PC-sk1" firstAttribute="leading" secondItem="PO2-Ak-rfF" secondAttribute="leading" constant="20" id="f9t-yt-W57"/>
-                            <constraint firstItem="Goy-8R-eCy" firstAttribute="leading" secondItem="Ac8-PC-sk1" secondAttribute="trailing" constant="17" id="fcp-M9-LcW"/>
-                            <constraint firstItem="9RF-Jr-1HQ" firstAttribute="leading" secondItem="Goy-8R-eCy" secondAttribute="trailing" constant="20" id="oKa-cP-CUf"/>
-                            <constraint firstAttribute="trailing" secondItem="9RF-Jr-1HQ" secondAttribute="trailing" constant="20" id="wmj-pN-bjT"/>
+                            <constraint firstAttribute="trailing" secondItem="a7n-lN-ZsY" secondAttribute="trailing" constant="20" id="kIp-bS-SED"/>
+                            <constraint firstItem="a7n-lN-ZsY" firstAttribute="leading" secondItem="Ac8-PC-sk1" secondAttribute="trailing" constant="20" id="m4q-K2-Z27"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -89,12 +55,9 @@
             <connections>
                 <outlet property="bg" destination="PO2-Ak-rfF" id="e2j-9X-FEl"/>
                 <outlet property="imgView" destination="Ac8-PC-sk1" id="Q7R-2L-4xf"/>
-                <outlet property="lblAmount" destination="FKH-wl-278" id="0K0-cb-gh1"/>
-                <outlet property="lblDate" destination="BlU-rT-pLL" id="xRL-WR-K8Z"/>
-                <outlet property="lblStatus" destination="D0y-TB-ZMR" id="eDX-eH-nIk"/>
-                <outlet property="lblWallet" destination="mG5-0b-bML" id="cWn-j6-OoS"/>
+                <outlet property="innerStack" destination="a7n-lN-ZsY" id="UUn-Wl-lor"/>
             </connections>
-            <point key="canvasLocation" x="26.717557251908396" y="7.394366197183099"/>
+            <point key="canvasLocation" x="26.717557251908396" y="11.971830985915494"/>
         </tableViewCell>
     </objects>
     <resources>
@@ -104,9 +67,6 @@
         </namedColor>
         <namedColor name="gGrayCard">
             <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="gGreenMatrix">
-            <color red="0.0" green="0.71372549019607845" blue="0.43529411764705883" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

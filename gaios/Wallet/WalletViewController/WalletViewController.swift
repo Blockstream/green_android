@@ -164,8 +164,8 @@ class WalletViewController: UIViewController {
         guard let model = model else { return }
 
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController, let account = viewModel.presentingWallet {
-            vc.viewModel = AccountViewModel(model: model, account: account)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
+            vc.viewModel = AccountViewModel(model: model, account: model.account)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -297,6 +297,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 vc.transaction = transaction
                 navigationController?.pushViewController(vc, animated: true)
             }
+            tableView.deselectRow(at: indexPath, animated: false)
+            tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
         default:
             break
         }

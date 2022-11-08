@@ -60,8 +60,8 @@ class AccountCell: UITableViewCell {
 
         lblType.text = model.lblType
         lblName.text = model.name
-        lblFiat.text = "19.80 USD"
-        lblAmount.text = "0.00000100 BTC"
+        lblFiat.text = model.fiatStr
+        lblAmount.text = model.balanceStr
         imgSS.isHidden = !model.isSS
         imgMS.isHidden = model.isSS
         btnWarn.isHidden = true
@@ -74,19 +74,19 @@ class AccountCell: UITableViewCell {
         }
         btnDisclose.isHidden = onSelect == nil
 
-        let session = WalletManager.current?.activeSessions[model.account.network ?? "mainnet"]
         for v in iconsStack.subviews {
             v.removeFromSuperview()
         }
 
         var assets = [(key: String, value: Int64)]()
+        // to be changed, for now is ok
         assets = Transaction.sort(model.account.satoshi ?? [:])
 
         // need rework here, icons list is not correct
         var icons: [UIImage] = []
         for asset in assets {
             let tag = asset.key
-            if let icon = session?.registry?.image(for: tag) {
+            if let icon = WalletManager.current?.registry.image(for: tag) {
                 if icons.count > 0 {
                     if icon != icons.last {
                         icons.append(icon)

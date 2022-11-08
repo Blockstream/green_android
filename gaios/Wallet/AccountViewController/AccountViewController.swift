@@ -25,7 +25,9 @@ class AccountViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ["AccountCell"].forEach {
+        viewModel?.reloadSections = reloadSections
+
+        ["AccountCell", "TransactionCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 

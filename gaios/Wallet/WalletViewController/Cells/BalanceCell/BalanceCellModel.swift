@@ -14,10 +14,11 @@ class BalanceCellModel {
         } else {
             value = "--"
         }
-        valueFiat = "-- USD"
-    }
 
-    var fiatValue: String {
-        return "0.0000 todo USD"
+        if let balance = Balance.fromSatoshi(satoshi)?.toFiat() {
+            self.valueFiat = "\(balance.0) \(balance.1)"
+        } else {
+            valueFiat = "--"
+        }
     }
 }

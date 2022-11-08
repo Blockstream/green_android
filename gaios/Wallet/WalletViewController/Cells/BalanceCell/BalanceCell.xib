@@ -76,7 +76,7 @@
                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                         <state key="normal" image="ic_eye_flat"/>
                         <connections>
-                            <action selector="btnFiat:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="tX2-Mp-NBC"/>
+                            <action selector="btnEye:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Jtr-vL-XmX"/>
                         </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kER-qn-FtF">
@@ -112,6 +112,7 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
                 <outlet property="btnAssets" destination="kER-qn-FtF" id="Ksg-gk-3X6"/>
+                <outlet property="btnEye" destination="FAM-KX-0hP" id="HLL-EQ-jzq"/>
                 <outlet property="iconsStack" destination="q8A-6Q-39Y" id="CdD-g1-g99"/>
                 <outlet property="iconsStackWidth" destination="PDg-df-3eW" id="qWC-rO-VpN"/>
                 <outlet property="iconsView" destination="XZK-xt-jFK" id="8aa-bw-JwG"/>

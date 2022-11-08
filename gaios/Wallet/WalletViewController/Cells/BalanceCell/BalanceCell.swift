@@ -9,8 +9,9 @@ class BalanceCell: UITableViewCell {
     @IBOutlet weak var iconsView: UIView!
     @IBOutlet weak var iconsStack: UIStackView!
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
+    @IBOutlet weak var btnEye: UIButton!
 
-    private var isFiat = false
+    private var isEyeOff = false
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
     private let iconW: CGFloat = 18
@@ -30,9 +31,8 @@ class BalanceCell: UITableViewCell {
     func configure(model: BalanceCellModel,
                    cachedBalance: [(String, Int64)],
                    onAssets: (() -> Void)?) {
-        lblBalanceTitle.text = "Total Balance"
-        lblBalanceValue.text = model.value
-        lblBalanceFiat.text = model.valueFiat
+        self.model = model
+        setContent()
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
         let str = NSAttributedString(string: "\(model.numAssets) assets in total", attributes: uLineAttr)
         btnAssets.setAttributedTitle(str, for: .normal)
@@ -49,6 +49,18 @@ class BalanceCell: UITableViewCell {
         iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
     }
 
+    func setContent() {
+        if isEyeOff {
+            lblBalanceValue.text = "---"
+            lblBalanceFiat.text = "---"
+            btnEye.setImage(UIImage(named: "ic_hide"), for: .normal)
+        } else {
+            lblBalanceValue.text = model?.value ?? ""
+            lblBalanceFiat.text = model?.valueFiat ?? ""
+            btnEye.setImage(UIImage(named: "ic_eye_flat"), for: .normal)
+        }
+    }
+
     func setImages(_ images: [UIImage]) {
         for img in images {
             let imageView = UIImageView()
@@ -60,18 +72,9 @@ class BalanceCell: UITableViewCell {
         }
     }
 
-    @IBAction func btnFiat(_ sender: Any) {
-        if isFiat {
-            if let value = model?.value {
-                lblBalanceValue.text = value
-                isFiat = !isFiat
-            }
-        } else {
-            if let fiatValue = model?.fiatValue {
-                lblBalanceValue.text = fiatValue
-                isFiat = !isFiat
-            }
-        }
+    @IBAction func btnEye(_ sender: Any) {
+        isEyeOff = !isEyeOff
+        setContent()
     }
 
     @IBAction func btnAssets(_ sender: Any) {

@@ -5,7 +5,6 @@ import PromiseKit
 class AccountViewModel {
 
     var wm: WalletManager { WalletManager.current! }
-    var presentingWallet: WalletItem? { wm.currentSubaccount }
 
     var accountCellModels: [AccountCellModel] = []
     var account: WalletItem
@@ -14,12 +13,12 @@ class AccountViewModel {
 
     var txCellModels = [TransactionCellModel]() {
         didSet {
-            reloadSections?( [WalletSection.transaction], true )
+            reloadSections?( [AccountSection.transaction], true )
         }
     }
 
     /// reload by section with animation
-    var reloadSections: (([WalletSection], Bool) -> Void)?
+    var reloadSections: (([AccountSection], Bool) -> Void)?
 
     init(model: AccountCellModel, account: WalletItem) {
         self.accountCellModels = [model]
@@ -27,9 +26,9 @@ class AccountViewModel {
     }
 
     func getTransactions(page: Int = 0, max: Int? = nil) {
-        guard let subaccount = presentingWallet else { return }
-        wm.transactions(subaccounts: [subaccount])
+        wm.transactions(subaccounts: [account])
             .done { txs in
+                print("-----------> \(txs.count)")
                 self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
                 self.txCellModels = self.cachedTransactions
                     .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }

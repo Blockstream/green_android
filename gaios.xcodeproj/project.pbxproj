@@ -54,6 +54,9 @@
 		341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
 		341D0325279EB9E900E2ABAB /* ValidateTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D0324279EB9E900E2ABAB /* ValidateTask.swift */; };
+		34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34204707291A67E900EDE945 /* MultiLabelView.xib */; };
+		3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204709291A6BD800EDE945 /* MultiLabelView.swift */; };
+		3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */; };
 		34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */; };
 		34237FC7276A479700618502 /* ExistingWallets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC6276A479700618502 /* ExistingWallets.swift */; };
 		34237FC9276A520800618502 /* ManualRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC8276A520800618502 /* ManualRestore.swift */; };
@@ -426,6 +429,9 @@
 		341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogSendHWSummaryViewController.swift; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
 		341D0324279EB9E900E2ABAB /* ValidateTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateTask.swift; sourceTree = "<group>"; };
+		34204707291A67E900EDE945 /* MultiLabelView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MultiLabelView.xib; sourceTree = "<group>"; };
+		34204709291A6BD800EDE945 /* MultiLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLabelView.swift; sourceTree = "<group>"; };
+		3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLabelViewModel.swift; sourceTree = "<group>"; };
 		34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCountlyConsentViewController.swift; sourceTree = "<group>"; };
 		34237FC6276A479700618502 /* ExistingWallets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingWallets.swift; sourceTree = "<group>"; };
 		34237FC8276A520800618502 /* ManualRestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualRestore.swift; sourceTree = "<group>"; };
@@ -1456,6 +1462,9 @@
 				34F980B029151C7500C12D48 /* TransactionCellModel.swift */,
 				34F980AC29151C6600C12D48 /* TransactionCell.swift */,
 				34F980AD29151C6600C12D48 /* TransactionCell.xib */,
+				34204709291A6BD800EDE945 /* MultiLabelView.swift */,
+				3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */,
+				34204707291A67E900EDE945 /* MultiLabelView.xib */,
 			);
 			path = TransactionCell;
 			sourceTree = "<group>";
@@ -1951,6 +1960,7 @@
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
 				3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */,
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
+				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
@@ -2218,6 +2228,7 @@
 				34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */,
 				3447553329098DA000B9C1AF /* WalletViewController.swift in Sources */,
 				349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */,
+				3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */,
 				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */,
 				34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */,
@@ -2322,6 +2333,7 @@
 				34EB670528213A8A0036D615 /* AMConstants.swift in Sources */,
 				34237FD5276B693100618502 /* SendViewController.swift in Sources */,
 				34C3022826E88A1D00A3F910 /* OverviewTransactionCell.swift in Sources */,
+				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
 				81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */,
 				81683F9226BC02960058982E /* Transactions.swift in Sources */,
 				34019C1A28D1FC5100E64BEE /* Localizable.swift in Sources */,

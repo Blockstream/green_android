@@ -140,4 +140,7 @@ extension UIColor {
     class func gAccountTestLightBlue() -> UIColor {
         return UIColor(named: "gAccountTestLightBlue")!
     }
+    class func gGrayTxt() -> UIColor {
+        return UIColor(named: "gGrayTxt")!
+    }
 }
