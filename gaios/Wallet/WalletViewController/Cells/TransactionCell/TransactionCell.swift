@@ -37,14 +37,23 @@ class TransactionCell: UITableViewCell {
                 amounts = amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(model.tx.fee)) })
             }
         }
-
-        amounts.forEach {
+        var txtCache = ""
+        for (idx, amount) in amounts.enumerated() {
             let registry = WalletManager.current?.registry
-            let asset = registry?.info(for: $0.key)
-            if let balance = Balance.fromSatoshi($0.value, asset: asset) {
+            let asset = registry?.info(for: amount.key)
+            if let balance = Balance.fromSatoshi(amount.value, asset: asset) {
                 let (value, denom) = balance.toValue()
                 let txtRight = "\(value) \(denom)"
-                addStackRow(MultiLabelViewModel(txtLeft: model.status, txtRight: txtRight, style: $0.value > 0 ? .amountIn : .amountOut ))
+                var txtLeft = ""
+                if idx == 0 {
+                    txtLeft = model.status ?? ""
+                    txtCache = txtLeft
+                } else {
+                    if txtCache != model.status ?? "" {
+                        txtLeft = model.status ?? ""
+                    }
+                }
+                addStackRow(MultiLabelViewModel(txtLeft: txtLeft, txtRight: txtRight, style: amount.value > 0 ? .amountIn : .amountOut ))
             }
         }
         addStackRow(MultiLabelViewModel(txtLeft: model.date, txtRight: model.subaccountName, style: .simple))

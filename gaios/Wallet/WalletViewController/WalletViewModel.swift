@@ -5,7 +5,8 @@ import PromiseKit
 class WalletViewModel {
 
     var wm: WalletManager { WalletManager.current! }
-    var presentingWallet: WalletItem? { wm.currentSubaccount }
+
+    var isTxLoading = true // on init is always true
 
     /// load visible subaccounts
     var subaccounts: [WalletItem] {
@@ -56,8 +57,10 @@ class WalletViewModel {
 
     func getTransactions(subaccounts: [WalletItem]? = nil, page: Int = 0, max: Int? = nil) {
         let accounts = subaccounts != nil ? subaccounts : self.subaccounts
+        isTxLoading = true
         wm.transactions(subaccounts: accounts ?? [])
             .done { txs in
+                self.isTxLoading = false
                 self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
                 self.txCellModels = self.cachedTransactions
                     .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
