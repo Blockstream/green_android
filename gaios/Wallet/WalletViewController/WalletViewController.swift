@@ -208,7 +208,6 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         case .balance:
             if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell, let model = viewModel.balanceCellModel {
                 cell.configure(model: model,
-                               cachedBalance: viewModel.cachedBalance,
                                onAssets: {[weak self] in
                     self?.assetsScreen()
                 })

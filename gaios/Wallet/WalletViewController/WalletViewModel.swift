@@ -95,7 +95,7 @@ class WalletViewModel {
                 let total = amounts.filter({$0.0 == "btc"}).map {$0.1}.reduce(0, +)
 
                 // self.balanceCellModel = OVBalanceCellModel(satoshi: total, numAssets: amounts.count - 2)
-                self.balanceCellModel = BalanceCellModel(satoshi: total, numAssets: amounts.count)
+                self.balanceCellModel = BalanceCellModel(satoshi: total, numAssets: amounts.count, cachedBalance: self.cachedBalance)
             }.catch { err in
                 print(err)
             }

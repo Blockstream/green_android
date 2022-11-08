@@ -15,7 +15,6 @@ class BalanceCell: UITableViewCell {
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
     private let iconW: CGFloat = 18
-    private var cachedBalance = [(String, Int64)]()
 
     class var identifier: String { return String(describing: self) }
 
@@ -29,7 +28,6 @@ class BalanceCell: UITableViewCell {
     }
 
     func configure(model: BalanceCellModel,
-                   cachedBalance: [(String, Int64)],
                    onAssets: (() -> Void)?) {
         self.model = model
         setContent()
@@ -38,7 +36,7 @@ class BalanceCell: UITableViewCell {
         btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
 
-        let icons = cachedBalance.compactMap { WalletManager.current?.registry.image(for: $0.0) }
+        let icons = model.cachedBalance.compactMap { WalletManager.current?.registry.image(for: $0.0) }
 
         for v in iconsStack.subviews {
             v.removeFromSuperview()
