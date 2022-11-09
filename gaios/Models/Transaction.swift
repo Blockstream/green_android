@@ -120,8 +120,8 @@ struct Transaction: Comparable {
         amounts["btc"] == nil
     }
 
-    static var feeAsset: String {
-        AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+    var feeAsset: String {
+        subaccountItem?.gdkNetwork.getFeeAsset() ?? ""
     }
 
     var amounts: [String: Int64] {
@@ -141,17 +141,11 @@ struct Transaction: Comparable {
             return []
         }
         var amounts = assetamounts
-        // OUT transactions in BTC/L-BTC have fee included
-        if type == .some(.outgoing) {
-            let feeAsset = self.subaccountItem?.gdkNetwork.getFeeAsset()
-            amounts = amounts.map { $0.0 == feeAsset ? ($0.0, $0.1 + Int64(fee)) : $0 }
+        // remove L-BTC asset only if fee on outgoing transactions
+        if type == .some(.outgoing) || type == .some(.mixed) {
+            amounts = amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(fee)) })
         }
-        return amounts.filter({ $0.1 != 0 })
-    }
-
-    /// Asset we are trying to send or receive, other than bitcoins for fees
-    var defaultAsset: String {
-        return assetamounts.filter { $0.0 != Transaction.feeAsset }.first?.0 ?? Transaction.feeAsset
+        return amounts
     }
 
     var sendAll: Bool {

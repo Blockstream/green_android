@@ -196,8 +196,9 @@ class WalletManager {
                 return nil
             }
             return session.transactions(subaccount: sub.pointer)
-                .compactMap { txs += $0.list }
-                .compactMap { for i in 0..<txs.count { txs[i].subaccount = sub.hashValue } }
+                .compactMap { $0.list.map { Transaction($0.details, subaccount: sub.hashValue) } }
+                .compactMap {
+                    txs += $0 }
                 .asVoid()
         }
         return when(fulfilled: generator, concurrently: 1)

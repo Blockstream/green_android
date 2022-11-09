@@ -26,9 +26,8 @@ class TransactionCell: UITableViewCell {
         self.imgView.image = model.icon
 
         var txtCache = ""
-        var amounts = model.amounts
         let registry = WalletManager.current?.registry 
-        for (idx, amount) in amounts.enumerated() {
+        for (idx, amount) in model.amounts.enumerated() {
             let asset = registry?.info(for: amount.key)
             if let balance = Balance.fromSatoshi(amount.value, asset: asset) {
                 let (value, denom) = balance.toValue()

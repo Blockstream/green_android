@@ -50,7 +50,7 @@ class TransactionAmountCell: UITableViewCell {
         lblFiat.textColor = color
         copyRecipientIcon.isHidden = tx.isLiquid
         lblAmount.textColor = color
-        lblFiat.isHidden = tx.defaultAsset != btc
+        lblFiat.isHidden = id != tx.feeAsset
 
         let registry = WalletManager.current?.currentSession?.registry
         let asset = registry?.info(for: id)
