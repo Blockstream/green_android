@@ -58,8 +58,7 @@ class OverviewAccountCell: UITableViewCell {
         self.action = action
         self.actionBtn.isHidden = action == nil
 
-        var assets = [(key: String, value: Int64)]()
-        assets = Transaction.sort(account.satoshi ?? [:])
+        var assets = AssetAmountList(account.satoshi ?? [:]).sorted()
 
         for v in iconsStack.subviews {
             v.removeFromSuperview()
@@ -67,7 +66,7 @@ class OverviewAccountCell: UITableViewCell {
 
         var icons: [UIImage] = []
         for asset in assets {
-            let tag = asset.key
+            let tag = asset.0
             if let icon = session?.registry?.image(for: tag) {
                 if icons.count > 0 {
                     if icon != icons.last {

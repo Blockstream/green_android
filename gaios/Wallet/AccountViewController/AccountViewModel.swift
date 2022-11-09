@@ -17,6 +17,11 @@ class AccountViewModel {
             reloadSections?( [AccountSection.transaction], true )
         }
     }
+    var assetCellModels = [WalletAssetCellModel]() {
+        didSet {
+            reloadSections?( [AccountSection.assets], true )
+        }
+    }
 
     /// reload by section with animation
     var reloadSections: (([AccountSection], Bool) -> Void)?

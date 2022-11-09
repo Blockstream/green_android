@@ -34,6 +34,10 @@ struct Transaction: Comparable {
     var details: [String: Any]
     var subaccount: Int?
 
+    var subaccountItem: WalletItem? {
+        return WalletManager.current?.subaccounts.filter({ $0.hashValue == subaccount }).first
+    }
+
     private func get<T>(_ key: String) -> T? {
         return details[key] as? T
     }
@@ -126,42 +130,28 @@ struct Transaction: Comparable {
         }
     }
 
-    var amountsWithoutFees: [(key: String, value: Int64)] {
+    var assetamounts: AssetAmountList {
+        get {
+            return AssetAmountList(amounts).sorted()
+        }
+    }
+
+    var amountsWithoutFees: AssetAmountList {
         if type == .some(.redeposit) {
             return []
         }
-        var amounts = Transaction.sort(amounts)
+        var amounts = assetamounts
         // OUT transactions in BTC/L-BTC have fee included
         if type == .some(.outgoing) {
-            let feeAsset = WalletManager.current?.currentSession?.gdkNetwork.getFeeAsset()
-            amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value + Int64(fee)) : $0 }
+            let feeAsset = self.subaccountItem?.gdkNetwork.getFeeAsset()
+            amounts = amounts.map { $0.0 == feeAsset ? ($0.0, $0.1 + Int64(fee)) : $0 }
         }
-        return amounts.filter({ $0.value != 0 })
-    }
-
-    static func sort(_ dict: [String: Int64]) -> [(key: String, value: Int64)] {
-        var sorted = dict.filter { $0.key != feeAsset }.sorted(by: {$0.0 < $1.0 })
-        if dict.contains(where: { $0.key == feeAsset }) {
-            sorted.insert((key: feeAsset, value: dict[feeAsset]!), at: 0)
-        }
-        var tAssets: [SortingAsset] = []
-        Array(sorted).forEach { asset in
-            let info = WalletManager.current?.currentSession?.registry?.info(for: asset.key)
-            let hasImage = WalletManager.current?.currentSession?.registry?.hasImage(for: asset.key)
-            let tAss = SortingAsset(tag: asset.key, info: info, hasImage: hasImage ?? false, value: asset.value)
-            tAssets.append(tAss)
-        }
-        var oAssets = [(key: String, value: Int64)]()
-        tAssets.sort(by: {!$0.hasImage && !$1.hasImage ? $0.info?.ticker != nil && !($1.info?.ticker != nil) : $0.hasImage && !$1.hasImage})
-        tAssets.forEach { asset in
-            oAssets.append((key:asset.tag, value: asset.value))
-        }
-        return oAssets
+        return amounts.filter({ $0.1 != 0 })
     }
 
     /// Asset we are trying to send or receive, other than bitcoins for fees
     var defaultAsset: String {
-        return Transaction.sort(amounts).filter { $0.key != Transaction.feeAsset }.first?.key ?? Transaction.feeAsset
+        return assetamounts.filter { $0.0 != Transaction.feeAsset }.first?.0 ?? Transaction.feeAsset
     }
 
     var sendAll: Bool {

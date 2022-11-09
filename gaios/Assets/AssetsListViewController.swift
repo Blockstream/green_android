@@ -16,9 +16,9 @@ class AssetsListViewController: UIViewController {
 
     weak var delegate: AssetsListViewControllerDelegate?
 
-    private var assets: [(key: String, value: Int64)] {
+    private var assets: AssetAmountList {
         get {
-            return Transaction.sort(wallet!.satoshi ?? [:])
+            return AssetAmountList(wallet!.satoshi ?? [:]).sorted()
         }
     }
 
@@ -62,10 +62,10 @@ extension AssetsListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "AssetCell") as? AssetCell {
-            let tag = assets[indexPath.row].key
+            let tag = assets[indexPath.row].0
             let info = WalletManager.current?.currentSession?.registry?.info(for: tag)
             let icon = WalletManager.current?.currentSession?.registry?.image(for: tag)
-            let satoshi = assets[indexPath.row].value
+            let satoshi = assets[indexPath.row].1
             cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi)
             cell.selectionStyle = .none
             return cell
@@ -78,7 +78,7 @@ extension AssetsListViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let tag = assets[indexPath.row].key
+        let tag = assets[indexPath.row].0
         delegate?.didSelect(assetId: tag, index: index)
         dismiss(animated: true)
     }

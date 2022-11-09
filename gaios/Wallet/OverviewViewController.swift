@@ -458,7 +458,7 @@ class OverviewViewController: UIViewController {
     func reloadAssets() {
         assets = [(key: String, value: Int64)]()
         if let wallet = presentingWallet {
-            assets = Transaction.sort(wallet.satoshi ?? [:])
+            assets = AssetAmountList(wallet.satoshi ?? [:]).sorted()
         }
         self.reloadSections([OverviewSection.asset], animated: false)
     }

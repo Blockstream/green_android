@@ -25,21 +25,10 @@ class TransactionCell: UITableViewCell {
     func configure(model: TransactionCellModel) {
         self.imgView.image = model.icon
 
-        var amounts = [(key: String, value: Int64)]()
-        let feeAsset = WalletManager.current?.currentSession?.gdkNetwork.getFeeAsset()
-        if model.tx.type == .redeposit,
-           let feeAsset = feeAsset {
-            amounts = [(key: feeAsset, value: -1 * Int64(model.tx.fee))]
-        } else {
-            amounts = Transaction.sort(model.tx.amounts)
-            // remove L-BTC asset only if fee on outgoing transactions
-            if model.tx.type == .some(.outgoing) || model.tx.type == .some(.mixed) {
-                amounts = amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(model.tx.fee)) })
-            }
-        }
         var txtCache = ""
+        var amounts = model.amounts
+        let registry = WalletManager.current?.registry 
         for (idx, amount) in amounts.enumerated() {
-            let registry = WalletManager.current?.registry
             let asset = registry?.info(for: amount.key)
             if let balance = Balance.fromSatoshi(amount.value, asset: asset) {
                 let (value, denom) = balance.toValue()
@@ -56,7 +45,7 @@ class TransactionCell: UITableViewCell {
                 addStackRow(MultiLabelViewModel(txtLeft: txtLeft, txtRight: txtRight, style: amount.value > 0 ? .amountIn : .amountOut ))
             }
         }
-        addStackRow(MultiLabelViewModel(txtLeft: model.date, txtRight: model.subaccountName, style: .simple))
+        addStackRow(MultiLabelViewModel(txtLeft: model.date, txtRight: model.subaccount?.localizedName() ?? "", style: .simple))
     }
 
     func addStackRow(_ model: MultiLabelViewModel) {

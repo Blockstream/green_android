@@ -3,6 +3,7 @@ import PromiseKit
 
 enum AccountSection: Int, CaseIterable {
     case account
+    case assets
     case transaction
     case footer
 }
@@ -27,7 +28,7 @@ class AccountViewController: UIViewController {
 
         viewModel?.reloadSections = reloadSections
 
-        ["AccountCell", "TransactionCell"].forEach {
+        ["AccountCell", "WalletAssetCell", "TransactionCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 
@@ -144,6 +145,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         switch AccountSection(rawValue: section) {
         case .account:
             return viewModel?.accountCellModels.count ?? 0
+        case .assets:
+            return viewModel?.assetCellModels.count ?? 0
         case .transaction:
             return viewModel?.txCellModels.count ?? 0
         default:
@@ -180,7 +183,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch AccountSection(rawValue: section) {
-        case .transaction:
+        case .transaction, .assets:
             return headerH
         default:
             return 0.1
@@ -211,6 +214,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         switch AccountSection(rawValue: section) {
         case .transaction:
             return headerView( "Latest transactions" )
+        case .assets:
+            return headerView( "Balance" )
         default:
             return nil
         }

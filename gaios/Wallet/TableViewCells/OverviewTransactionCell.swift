@@ -37,19 +37,19 @@ class OverviewTransactionCell: UITableViewCell {
             lblNote.text = transaction.memo
         }
 
-        var amounts = [(key: String, value: Int64)]()
+        var amounts = AssetAmountList()
         let feeAsset = WalletManager.current?.currentSession?.gdkNetwork.getFeeAsset()
          if transaction.type == .redeposit,
            let feeAsset = feeAsset {
             amounts = [(key: feeAsset, value: -1 * Int64(transaction.fee))]
         } else {
-            amounts = Transaction.sort(transaction.amounts)
+            amounts = transaction.assetamounts
             // remove L-BTC asset only if fee on outgoing transactions
             if transaction.type == .some(.outgoing) || transaction.type == .some(.mixed) {
-                amounts = amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(transaction.fee)) })
+                amounts = amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(transaction.fee)) })
             }
         }
-        amounts.forEach { addAssetAmountView(tx: transaction, satoshi: $0.value, assetId: $0.key) }
+        amounts.forEach { addAssetAmountView(tx: transaction, satoshi: $0.1, assetId: $0.0) }
     }
 
     func addAssetAmountView(tx: Transaction, satoshi: Int64, assetId: String) {

@@ -50,8 +50,8 @@ class AccountArchiveCell: UITableViewCell {
         self.action = action
         self.actionBtn.isHidden = false
 
-        var assets = [(key: String, value: Int64)]()
-        assets = Transaction.sort(account.satoshi ?? [:])
+        let assets = AssetAmountList(account.satoshi ?? [:]).sorted()
+        let registry = WalletManager.current?.currentSession?.registry
 
         for v in iconsStack.subviews {
             v.removeFromSuperview()
@@ -59,8 +59,8 @@ class AccountArchiveCell: UITableViewCell {
 
         var icons: [UIImage] = []
         for asset in assets {
-            let tag = asset.key
-            let icon = WalletManager.current?.currentSession?.registry?.image(for: tag)
+            let tag = asset.0
+            let icon = registry?.image(for: tag)
             if icon != nil {
                 if icons.count > 0 {
                     if icon != icons.last {

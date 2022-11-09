@@ -36,18 +36,6 @@ class TransactionViewController: UIViewController {
             return WalletManager.current?.currentSession?.isResetActive ?? false ||
             !transaction.canRBF || account?.isWatchonly ?? false
     }
-    private var amounts: [(key: String, value: Int64)] {
-        if transaction?.type == .some(.redeposit) {
-            return []
-        }
-        var amounts = Array(transaction.amounts)
-        // OUT transactions in BTC/L-BTC have fee included
-        if transaction.type == .some(.outgoing) {
-            let feeAsset = session?.gdkNetwork.getFeeAsset()
-            amounts = amounts.map { $0.key == feeAsset ? ($0.key, $0.value - Int64(transaction.fee)) : $0 }
-        }
-        return amounts.filter({ $0.value != 0 })
-    }
 
     var headerH: CGFloat = 44.0
 
@@ -275,9 +263,9 @@ class TransactionViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
             let amount = transaction.amountsWithoutFees[index]
-            vc.tag = amount.key
-            vc.asset = WalletManager.current?.currentSession?.registry?.info(for: amount.key)
-            vc.satoshi = wallet?.satoshi?[amount.key] ?? 0
+            vc.tag = amount.0
+            vc.asset = WalletManager.current?.currentSession?.registry?.info(for: amount.0)
+            vc.satoshi = wallet?.satoshi?[amount.0] ?? 0
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -316,7 +304,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
                 let amount = transaction.amountsWithoutFees[indexPath.row]
-                cell.configure(tx: transaction, id: amount.key, value: amount.value, copyAmount: copyAmount, copyRecipient: copyRecipient)
+                cell.configure(tx: transaction, id: amount.0, value: amount.1, copyAmount: copyAmount, copyRecipient: copyRecipient)
                 cell.selectionStyle = .none
                 return cell
             }

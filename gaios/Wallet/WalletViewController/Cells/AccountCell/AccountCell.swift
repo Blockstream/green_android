@@ -78,14 +78,12 @@ class AccountCell: UITableViewCell {
             v.removeFromSuperview()
         }
 
-        var assets = [(key: String, value: Int64)]()
-        // to be changed, for now is ok
-        assets = Transaction.sort(model.account.satoshi ?? [:])
+        let assets = AssetAmountList(model.account.satoshi ?? [:]).sorted()
 
         // need rework here, icons list is not correct
         var icons: [UIImage] = []
         for asset in assets {
-            let tag = asset.key
+            let tag = asset.0
             if let icon = WalletManager.current?.registry.image(for: tag) {
                 if icons.count > 0 {
                     if icon != icons.last {

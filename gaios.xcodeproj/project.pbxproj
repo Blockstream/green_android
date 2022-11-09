@@ -306,6 +306,7 @@
 		81205D6921C3B7EB005180CF /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81205D6821C3B7EB005180CF /* Events.swift */; };
 		8122D7292554848C003F2785 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8122D7282554848C003F2785 /* Promise.swift */; };
 		8124524225D6B0DD00537238 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8124524125D6B0DD00537238 /* Address.swift */; };
+		81268E7C291BC8190079C13D /* AssetAmountList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81268E7B291BC8190079C13D /* AssetAmountList.swift */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
 		8158974B2701980700DDF6D4 /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
@@ -718,6 +719,7 @@
 		81205D6821C3B7EB005180CF /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		8122D7282554848C003F2785 /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
 		8124524125D6B0DD00537238 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
+		81268E7B291BC8190079C13D /* AssetAmountList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAmountList.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
 		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
@@ -1849,6 +1851,7 @@
 				81D671F226C80D6B00682508 /* TorNotification.swift */,
 				815D4A9F28638A56004DC015 /* PinData.swift */,
 				81F72E0828904D3F00D4DEFF /* Credentials.swift */,
+				81268E7B291BC8190079C13D /* AssetAmountList.swift */,
 				34E0CA8F29817CE400695304 /* CountlyWidget.swift */,
 			);
 			path = Models;
@@ -2414,6 +2417,7 @@
 				81DC54352885BD8400DC37C9 /* Balance.swift in Sources */,
 				34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
+				81268E7C291BC8190079C13D /* AssetAmountList.swift in Sources */,
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,
 				81D671EB26C8007600682508 /* SessionManager.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
