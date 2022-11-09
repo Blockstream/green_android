@@ -7,8 +7,8 @@ class AccountViewModel {
     var wm: WalletManager { WalletManager.current! }
 
     var accountCellModels: [AccountCellModel] = []
-    var account: WalletItem
     var cachedBalance: [(String, Int64)]
+    var account: WalletItem!
 
     var cachedTransactions = [Transaction]()
 
@@ -43,6 +43,11 @@ class AccountViewModel {
             }.catch { err in
                 print(err)
             }
+    }
+
+    func getBalance() {
+        let assets = AssetAmountList(account.satoshi ?? [:]).sorted()
+        self.assetCellModels = assets.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
     }
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {

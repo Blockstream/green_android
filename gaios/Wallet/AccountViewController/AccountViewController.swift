@@ -40,6 +40,7 @@ class AccountViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        viewModel?.getBalance()
         viewModel?.getTransactions()
     }
 
@@ -168,12 +169,19 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
             }
+        case .assets:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: WalletAssetCell.identifier, for: indexPath) as? WalletAssetCell, let viewModel = viewModel {
+                cell.configure(model: viewModel.assetCellModels[indexPath.row])
+                cell.selectionStyle = .none
+                return cell
+            }
         case .transaction:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell, let viewModel = viewModel {
                 cell.configure(model: viewModel.txCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
+
         default:
             break
         }
