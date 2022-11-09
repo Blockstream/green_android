@@ -17,17 +17,16 @@ class AccountCellModel {
     var account: WalletItem
 
     init(subaccount: WalletItem) {
-        name = subaccount.localizedName()
-        type = subaccount.type.typeStringId.localized.uppercased()
-        isSS = getGdkNetwork(subaccount.network ?? "mainnet").electrum ? true : false
-        isLiquid = getGdkNetwork(subaccount.network ?? "mainnet").liquid
-        isTest = (getGdkNetwork(subaccount.network ?? "mainnet").network).contains("testnet")
+        account = subaccount
+        name = account.localizedName()
+        type = account.type.typeStringId.localized.uppercased()
+        isSS = account.gdkNetwork.electrum ? true : false
+        isLiquid = account.gdkNetwork.liquid
+        isTest = !account.gdkNetwork.mainnet
         security = (isSS ? "Singlesig" : "Multisig").uppercased()
         lblType = security + " / " + type
-        account = subaccount
 
-        let gdkNetwork = getGdkNetwork(account.network ?? "mainnet")
-        let satoshi = account.satoshi?[gdkNetwork.getFeeAsset()] ?? 0
+        let satoshi = account.satoshi?[account.gdkNetwork.getFeeAsset()] ?? 0
         if let converted = Balance.fromSatoshi(satoshi) {
             let (amount, denom) = converted.toValue()
             balanceStr = "\(amount) \(denom)"
