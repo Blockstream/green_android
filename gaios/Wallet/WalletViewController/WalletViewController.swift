@@ -296,6 +296,15 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        switch WalletSection(rawValue: indexPath.section) {
+        case .balance:
+            return nil
+        default:
+            return indexPath
+        }
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         switch WalletSection(rawValue: indexPath.section) {
