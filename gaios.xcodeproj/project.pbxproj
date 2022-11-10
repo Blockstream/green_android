@@ -57,6 +57,16 @@
 		34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34204707291A67E900EDE945 /* MultiLabelView.xib */; };
 		3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204709291A6BD800EDE945 /* MultiLabelView.swift */; };
 		3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */; };
+		34204711291B919600EDE945 /* SecuritySelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204710291B919600EDE945 /* SecuritySelectViewController.swift */; };
+		34204713291B91B000EDE945 /* SecuritySelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204712291B91B000EDE945 /* SecuritySelectViewModel.swift */; };
+		34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204715291B9A8600EDE945 /* PolicyCell.swift */; };
+		34204718291B9A8600EDE945 /* PolicyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34204716291B9A8600EDE945 /* PolicyCell.xib */; };
+		3420471A291B9AA700EDE945 /* PolicyCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204719291B9AA700EDE945 /* PolicyCellModel.swift */; };
+		3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3420471B291BFFEF00EDE945 /* Utility.storyboard */; };
+		34204720291C12C000EDE945 /* AssetSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420471F291C12C000EDE945 /* AssetSelectViewController.swift */; };
+		34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204721291C12DB00EDE945 /* AssetSelectViewModel.swift */; };
+		34204726291CE13100EDE945 /* AssetSelectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204724291CE13100EDE945 /* AssetSelectCell.swift */; };
+		34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34204725291CE13100EDE945 /* AssetSelectCell.xib */; };
 		34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */; };
 		34237FC7276A479700618502 /* ExistingWallets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC6276A479700618502 /* ExistingWallets.swift */; };
 		34237FC9276A520800618502 /* ManualRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC8276A520800618502 /* ManualRestore.swift */; };
@@ -171,6 +181,8 @@
 		3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3497937E25F8B3F90029ECB1 /* Loader.xib */; };
 		3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */; };
 		349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */; };
+		3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */; };
+		3498079F291CF05700F8DB95 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079E291CF05600F8DB95 /* Collection.swift */; };
 		349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75042791BCA60046DA59 /* ChangeCell.swift */; };
 		349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75212796D99E0046DA59 /* AssetsListViewController.swift */; };
 		349C75242796DBB90046DA59 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75232796DBB90046DA59 /* AssetCell.swift */; };
@@ -432,6 +444,16 @@
 		34204707291A67E900EDE945 /* MultiLabelView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MultiLabelView.xib; sourceTree = "<group>"; };
 		34204709291A6BD800EDE945 /* MultiLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLabelView.swift; sourceTree = "<group>"; };
 		3420470B291A6FE100EDE945 /* MultiLabelViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLabelViewModel.swift; sourceTree = "<group>"; };
+		34204710291B919600EDE945 /* SecuritySelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuritySelectViewController.swift; sourceTree = "<group>"; };
+		34204712291B91B000EDE945 /* SecuritySelectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuritySelectViewModel.swift; sourceTree = "<group>"; };
+		34204715291B9A8600EDE945 /* PolicyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyCell.swift; sourceTree = "<group>"; };
+		34204716291B9A8600EDE945 /* PolicyCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PolicyCell.xib; sourceTree = "<group>"; };
+		34204719291B9AA700EDE945 /* PolicyCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyCellModel.swift; sourceTree = "<group>"; };
+		3420471B291BFFEF00EDE945 /* Utility.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Utility.storyboard; sourceTree = "<group>"; };
+		3420471F291C12C000EDE945 /* AssetSelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectViewController.swift; sourceTree = "<group>"; };
+		34204721291C12DB00EDE945 /* AssetSelectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectViewModel.swift; sourceTree = "<group>"; };
+		34204724291CE13100EDE945 /* AssetSelectCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectCell.swift; sourceTree = "<group>"; };
+		34204725291CE13100EDE945 /* AssetSelectCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetSelectCell.xib; sourceTree = "<group>"; };
 		34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCountlyConsentViewController.swift; sourceTree = "<group>"; };
 		34237FC6276A479700618502 /* ExistingWallets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingWallets.swift; sourceTree = "<group>"; };
 		34237FC8276A520800618502 /* ManualRestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualRestore.swift; sourceTree = "<group>"; };
@@ -545,6 +567,8 @@
 		3497937E25F8B3F90029ECB1 /* Loader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Loader.xib; sourceTree = "<group>"; };
 		3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletViewController.swift; sourceTree = "<group>"; };
 		349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRecipientDeleteViewController.swift; sourceTree = "<group>"; };
+		3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectCellModel.swift; sourceTree = "<group>"; };
+		3498079E291CF05600F8DB95 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		349C75042791BCA60046DA59 /* ChangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeCell.swift; sourceTree = "<group>"; };
 		349C75212796D99E0046DA59 /* AssetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsListViewController.swift; sourceTree = "<group>"; };
 		349C75232796DBB90046DA59 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
@@ -887,6 +911,56 @@
 				3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */,
 			);
 			path = TransactionBarItem;
+			sourceTree = "<group>";
+		};
+		3420470D291B913E00EDE945 /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				3420471E291C127E00EDE945 /* AssetSelect */,
+				3420471D291C126B00EDE945 /* SecuritySelect */,
+				3420471B291BFFEF00EDE945 /* Utility.storyboard */,
+			);
+			path = Utility;
+			sourceTree = "<group>";
+		};
+		34204714291B9A2900EDE945 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34204715291B9A8600EDE945 /* PolicyCell.swift */,
+				34204719291B9AA700EDE945 /* PolicyCellModel.swift */,
+				34204716291B9A8600EDE945 /* PolicyCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		3420471D291C126B00EDE945 /* SecuritySelect */ = {
+			isa = PBXGroup;
+			children = (
+				34204714291B9A2900EDE945 /* Cells */,
+				34204710291B919600EDE945 /* SecuritySelectViewController.swift */,
+				34204712291B91B000EDE945 /* SecuritySelectViewModel.swift */,
+			);
+			path = SecuritySelect;
+			sourceTree = "<group>";
+		};
+		3420471E291C127E00EDE945 /* AssetSelect */ = {
+			isa = PBXGroup;
+			children = (
+				34204723291C13B800EDE945 /* AssetSelectCell */,
+				3420471F291C12C000EDE945 /* AssetSelectViewController.swift */,
+				34204721291C12DB00EDE945 /* AssetSelectViewModel.swift */,
+			);
+			path = AssetSelect;
+			sourceTree = "<group>";
+		};
+		34204723291C13B800EDE945 /* AssetSelectCell */ = {
+			isa = PBXGroup;
+			children = (
+				3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */,
+				34204724291CE13100EDE945 /* AssetSelectCell.swift */,
+				34204725291CE13100EDE945 /* AssetSelectCell.xib */,
+			);
+			path = AssetSelectCell;
 			sourceTree = "<group>";
 		};
 		34237FCE276B5DF000618502 /* Send */ = {
@@ -1518,6 +1592,7 @@
 				81073D7A21E8B27700E08F86 /* Localizable.strings */,
 				8187B47E21E9026900235A35 /* InfoPlist.strings */,
 				6D8099D923021CF50069A69F /* Menu */,
+				3420470D291B913E00EDE945 /* Utility */,
 				81A3B53F2244AE9A0091B6BC /* Wallet */,
 				6D56C76D235E162A00E4F990 /* Accounts */,
 				349D1ED727424ECE0095B5CA /* Transaction */,
@@ -1799,6 +1874,7 @@
 				3469A2472887D56E00B2F640 /* Date.swift */,
 				34E0CA9129829C2A00695304 /* Collection.swift */,
 				34019C1928D1FC5100E64BEE /* Localizable.swift */,
+				3498079E291CF05600F8DB95 /* Collection.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1948,10 +2024,12 @@
 				3447553C290A5BD300B9C1AF /* AccountCell.xib in Resources */,
 				349D1ED927424F200095B5CA /* Transaction.storyboard in Resources */,
 				34019C2728D35F2400E64BEE /* DrawerBarItem.xib in Resources */,
+				3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
+				34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */,
 				340A5F5928E476C6003D56B1 /* About.storyboard in Resources */,
 				34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */,
 				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
@@ -1973,6 +2051,7 @@
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
+				34204718291B9A8600EDE945 /* PolicyCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2104,6 +2183,7 @@
 				341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */,
 				34F980AE29151C6600C12D48 /* TransactionCell.swift in Sources */,
 				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,
+				34204713291B91B000EDE945 /* SecuritySelectViewModel.swift in Sources */,
 				344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */,
 				3447553529098DB300B9C1AF /* WalletViewModel.swift in Sources */,
 				34C3020426E7531E00A3F910 /* OverviewViewController.swift in Sources */,
@@ -2115,6 +2195,7 @@
 				34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
 				3491C9922912B3670063C055 /* AssetsViewController.swift in Sources */,
+				3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */,
 				81C602A522A553D3004E26E1 /* Assets.swift in Sources */,
 				81BF5D4928C885AF006225C6 /* WalletManager.swift in Sources */,
 				3497936925F8B18C0029ECB1 /* ChooseSecurityViewController.swift in Sources */,
@@ -2130,6 +2211,7 @@
 				34C2464D2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				8158974B2701980700DDF6D4 /* JadeError.swift in Sources */,
+				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
 				343A697E27E08C29008D5F4C /* AssetDetailCell.swift in Sources */,
 				815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */,
 				81F74BA52278857800A397C9 /* Network.swift in Sources */,
@@ -2140,10 +2222,12 @@
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
+				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
 				811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */,
 				34C3020626E7659000A3F910 /* OverviewAccountCell.swift in Sources */,
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,
 				34440E7A28B379C8006CD464 /* WalletListHDCell.swift in Sources */,
+				34204720291C12C000EDE945 /* AssetSelectViewController.swift in Sources */,
 				34959D3A26F0739700EAF853 /* OverviewAccountIdCell.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
 				34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */,
@@ -2192,6 +2276,7 @@
 				818EE78026A5C2ED008CD09E /* HWDevice.swift in Sources */,
 				81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */,
 				347942A2275615FC0020D60F /* ExistingWalletsViewController.swift in Sources */,
+				34204726291CE13100EDE945 /* AssetSelectCell.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */,
 				34EB670128212EBA0036D615 /* AMEvents.swift in Sources */,
@@ -2219,9 +2304,11 @@
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
 				34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */,
+				3420471A291B9AA700EDE945 /* PolicyCellModel.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
 				34F980AA2914286300C12D48 /* AccountViewModel.swift in Sources */,
 				34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */,
+				34204711291B919600EDE945 /* SecuritySelectViewController.swift in Sources */,
 				3491C9942912B4C70063C055 /* AssetsViewModel.swift in Sources */,
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
 				34F980B129151C7500C12D48 /* TransactionCellModel.swift in Sources */,
@@ -2299,6 +2386,7 @@
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */,
 				340A5F7928EAC3F3003D56B1 /* DialogSendFeedbackViewController.swift in Sources */,
+				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,
 				81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */,
 				6D8099DB23021D0F0069A69F /* PopoverMenuViewController.swift in Sources */,

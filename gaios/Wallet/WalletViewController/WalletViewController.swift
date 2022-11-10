@@ -55,6 +55,20 @@ class WalletViewController: UIViewController {
 
         setContent()
         setStyle()
+
+//        let button = UIButton(frame: CGRect(x: 100, y: 100, width: 100, height: 50))
+//        button.backgroundColor = .red
+//        button.setTitle("SECURITY", for: .normal)
+//        button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+//        self.view.addSubview(button)
+    }
+
+    @objc func buttonAction(sender: UIButton!) {
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
+            vc.viewModel = SecuritySelectViewModel(assetSelectCellModels: viewModel.assetSelectCellModels)
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
