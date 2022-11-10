@@ -38,7 +38,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
         super.viewDidLoad()
 
         lblCustomFeeTitle.text = NSLocalizedString("id_set_custom_fee_rate", comment: "")
-        lblCustomFeeHint.text = "satoshi / byte"
+        lblCustomFeeHint.text = "satoshi/vbyte"
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         btnSave.cornerRadius = 4.0
         feeTextField.placeholder = ""
