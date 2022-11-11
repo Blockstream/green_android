@@ -266,6 +266,9 @@ extension AccountViewController: DialogWalletNameViewControllerDelegate {
 }
 
 extension AccountViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
+    func refresh() {
+    }
+
     func userLogout() {
         // ...
     }

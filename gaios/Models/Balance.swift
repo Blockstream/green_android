@@ -28,8 +28,12 @@ struct Balance: Codable {
     let assetInfo: AssetInfo?
     var asset: [String: String]?
 
+    static var session: SessionManager? { WalletManager.current?.prominentSession }
+    static var lbtc: String { getGdkNetwork("liquid").getFeeAsset() }
+    static var ltest: String { getGdkNetwork("testnet-liquid").getFeeAsset() }
+
     static func from(details: [String: Any]) -> Balance? {
-        if var res = try? WalletManager.current?.currentSession?.convertAmount(input: details) {
+        if var res = try? session?.convertAmount(input: details) {
             res["asset_info"] = details["asset_info"]
             if let data = try? JSONSerialization.data(withJSONObject: res, options: []),
                var balance = try? JSONDecoder().decode(Balance.self, from: data) {
@@ -49,26 +53,23 @@ struct Balance: Codable {
     }
 
     static func fromDenomination(_ value: String) -> Balance? {
-        let session = WalletManager.current?.currentSession
         let denomination = session?.settings?.denomination.rawValue ?? "btc"
         let details: [String: Any] = [denomination: value]
         return Balance.from(details: details)
     }
 
     static func fromValue(_ value: String, asset: AssetInfo? = nil) -> Balance? {
-        let lbtc = getGdkNetwork("liquid").getFeeAsset()
         let assetId = asset?.assetId ?? "btc"
         var details: [String: Any] = [assetId: value]
-        if let asset = asset, !["btc", lbtc].contains(asset.assetId) {
+        if let asset = asset, !["btc", lbtc, ltest].contains(asset.assetId) {
             details["asset_info"] = asset.encode()
         }
         return Balance.from(details: details)
     }
 
     static func fromSatoshi(_ satoshi: Any, asset: AssetInfo? = nil) -> Balance? {
-        let lbtc = getGdkNetwork("liquid").getFeeAsset()
         var details: [String: Any] = ["satoshi": satoshi]
-        if let asset = asset, !["btc", lbtc].contains(asset.assetId) {
+        if let asset = asset, !["btc", lbtc, ltest].contains(asset.assetId) {
             details["asset_info"] = asset.encode()
         }
         return Balance.from(details: details)
@@ -80,8 +81,7 @@ struct Balance: Codable {
 
     func toFiat() -> (String, String) {
         let mainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet
-        let lbtc = getGdkNetwork("liquid").getFeeAsset()
-        if let asset = assetInfo, !["btc", lbtc].contains(asset.assetId) {
+        if let asset = assetInfo, !["btc", Balance.lbtc, Balance.ltest].contains(asset.assetId) {
             return ("", "")
         } else {
             return (fiat?.localeFormattedString(2) ?? "n/a", mainnet ?? true ? fiatCurrency : "FIAT")
@@ -89,7 +89,7 @@ struct Balance: Codable {
     }
 
     func toDenom() -> (String, String) {
-        let denomination = WalletManager.current?.currentSession?.settings?.denomination ?? .BTC
+        let denomination = Balance.session?.settings?.denomination ?? .BTC
         let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
         let value = res![denomination.rawValue] as? String
         return (value?.localeFormattedString(denomination.digits) ?? "n/a", denomination.string)
@@ -100,8 +100,7 @@ struct Balance: Codable {
     }
 
     func toValue() -> (String, String) {
-        let lbtc = getGdkNetwork("liquid").getFeeAsset()
-        if let asset = assetInfo, !["btc", lbtc].contains(asset.assetId) {
+        if let asset = assetInfo, !["btc", Balance.lbtc, Balance.ltest].contains(asset.assetId) {
             return toAssetValue()
         } else {
             return toDenom()

@@ -130,8 +130,7 @@ class WalletViewController: UIViewController {
         let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
         if let nvc = nvc as? UINavigationController {
             if let vc = nvc.viewControllers.first as? UserSettingsViewController {
-                /// Fix
-                ///vc.delegate = self
+                vc.delegate = self
                 nvc.modalPresentationStyle = .fullScreen
                 present(nvc, animated: true, completion: nil)
             }
@@ -346,7 +345,20 @@ extension WalletViewController: DialogWalletNameViewControllerDelegate {
 
 extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
     func userLogout() {
-        // ...
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            DispatchQueue.main.async {
+                if let account = AccountsManager.shared.current {
+                    WalletManager.delete(for: account.id)
+                }
+                let storyboard = UIStoryboard(name: "Home", bundle: nil)
+                let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
+                UIApplication.shared.keyWindow?.rootViewController = nav
+            }
+        })
+    }
+
+    func refresh() {
+        viewModel.loadSubaccounts()
     }
 }
 

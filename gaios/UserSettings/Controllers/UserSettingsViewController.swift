@@ -3,6 +3,7 @@ import PromiseKit
 
 protocol UserSettingsViewControllerDelegate: AnyObject {
     func userLogout()
+    func refresh()
 }
 
 class UserSettingsViewController: UIViewController {
@@ -11,12 +12,7 @@ class UserSettingsViewController: UIViewController {
     weak var delegate: UserSettingsViewControllerDelegate?
 
     var account = { AccountsManager.shared.current }()
-    var isWatchOnly: Bool { get { return account?.isWatchonly ?? false } }
-    var isResetActive: Bool {
-        get {
-            WalletManager.current?.currentSession?.isResetActive ?? false
-        }
-    }
+    var session = { WalletManager.current?.prominentSession }()
     var headerH: CGFloat = 54.0
     var viewModel = UserSettingsViewModel()
 
@@ -28,7 +24,7 @@ class UserSettingsViewController: UIViewController {
         self.navigationItem.rightBarButtonItem  = btn
         view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
 
-        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(account))
 
         initViewModel()
     }
@@ -55,7 +51,7 @@ class UserSettingsViewController: UIViewController {
     }
 
     func getSwitchValue() -> Bool {
-        guard let screenlock = WalletManager.current?.currentSession?.settings?.getScreenLock() else {
+        guard let screenlock = session?.settings?.getScreenLock() else {
             DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return false
         }
@@ -155,13 +151,15 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         let item = viewModel.getCellModel(at: indexPath)
         switch item?.type {
         case .Logout:
-            logout()
+            delegate?.userLogout()
         case .BitcoinDenomination:
             showBitcoinDenomination()
         case .ReferenceExchangeRate:
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "CurrencySelectorViewController")
-            navigationController?.pushViewController(vc, animated: true)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "CurrencySelectorViewController") as? CurrencySelectorViewController {
+                vc.delegate = self
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .BackUpRecoveryPhrase:
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicAuthViewController")
@@ -183,7 +181,7 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .Version:
             break
         case .SupportID:
-            WalletManager.current?.currentSession?.subaccount(0).done { wallet in
+            session?.subaccount(0).done { wallet in
                 UIPasteboard.general.string = wallet.receivingId
                 DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
@@ -230,15 +228,12 @@ extension UserSettingsViewController {
         }
     }
 
-    func logout() {
-        delegate?.userLogout()
-    }
-
     func openMultisig(network: AvailableNetworks) {
         guard network == .liquid || network == .bitcoin else {
             return
         }
         guard let session = WalletManager.current?.sessions[network.rawValue] else {
+            showAlert(title: network.name(), message: "Multisig wallet not created")
             return
         }
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
@@ -250,13 +245,19 @@ extension UserSettingsViewController {
 
     func showBitcoinDenomination() {
         let list = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats].map { DenominationType.denominations[$0]! }
-        guard let settings = WalletManager.current?.currentSession?.settings else { return }
+        guard let settings = session?.settings else { return }
         let selected = settings.denomination.string
         let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
             alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
                 settings.denomination = DenominationType.from(item)
                 self.changeSettings(settings)
+                    .done {
+                        self.viewModel.load()
+                        self.delegate?.refresh()
+                    }.catch { error in
+                        self.showAlert(error)
+                    }
             })
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
@@ -264,7 +265,7 @@ extension UserSettingsViewController {
     }
 
     func showAutoLogout() {
-        guard let settings = WalletManager.current?.currentSession?.settings else { return }
+        guard let settings = session?.settings else { return }
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
         let selected = settings.autolock.string
         let alert = UIAlertController(title: NSLocalizedString("id_auto_logout_timeout", comment: ""), message: "", preferredStyle: .actionSheet)
@@ -272,27 +273,20 @@ extension UserSettingsViewController {
             alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
                 settings.autolock = AutoLockType.from(item)
                 self.changeSettings(settings)
+                    .done { self.viewModel.load() }
+                    .catch { error in self.showAlert(error) }
             })
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
 
-    func changeSettings(_ settings: Settings) {
-        guard let session = WalletManager.current?.currentSession else { return }
+    func changeSettings(_ settings: Settings) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map {_ in
-            self.startAnimating()
-        }.then(on: bgq) { _ in
-            session.changeSettings(settings: settings)
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.viewModel.load()
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "settings"), object: nil, userInfo: nil)
-        }.catch { error in
-            self.showAlert(error)
-        }
+        return Guarantee().map { _ in self.startAnimating() }
+            .compactMap { self.session }
+            .then(on: bgq) { $0.changeSettings(settings: settings) }
+            .ensure { self.stopAnimating() }
     }
 }
 
@@ -304,12 +298,13 @@ extension UserSettingsViewController {
             return
         }
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
+        }.compactMap {
+            self.session
         }.compactMap(on: bgq) {
-            self.account?.addBioPin(session: session)
+            self.account?.addBioPin(session: $0)
         }.ensure {
             self.stopAnimating()
         }.catch { error in
@@ -375,9 +370,12 @@ extension UserSettingsViewController {
         }
     }
 }
-extension UserSettingsViewController: TwoFactorAuthenticationViewControllerDelegate {
+extension UserSettingsViewController: UserSettingsViewControllerDelegate, TwoFactorAuthenticationViewControllerDelegate {
     func userLogout() {
-        self.logout()
+        self.delegate?.userLogout()
+    }
+    func refresh() {
+        self.delegate?.refresh()
     }
 }
 

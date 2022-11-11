@@ -21,7 +21,7 @@ class ShowMnemonicsViewController: UIViewController {
             self.collectionView.reloadData()
             return
         }
-        WalletManager.current?.currentSession?.getCredentials(password: "").done {
+        WalletManager.current?.prominentSession?.getCredentials(password: "").done {
             self.credentials = $0
             self.collectionView.reloadData()
         }.catch { err in

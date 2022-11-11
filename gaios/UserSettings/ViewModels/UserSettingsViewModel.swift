@@ -8,7 +8,7 @@ class UserSettingsViewModel {
     var wm: WalletManager { WalletManager.current! }
 
     // load wallet manager for current logged session
-    var settings: Settings? { wm.currentSession?.settings }
+    var settings: Settings? { wm.prominentSession?.settings }
 
     // reload all contents
     var reloadTableView: (() -> Void)?

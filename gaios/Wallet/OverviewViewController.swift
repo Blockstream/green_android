@@ -1030,6 +1030,9 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
 }
 
 extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
+    func refresh() {
+    }
+
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {

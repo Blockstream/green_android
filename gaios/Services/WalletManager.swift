@@ -44,6 +44,11 @@ class WalletManager {
         return sessions[network ?? ""]
     }
 
+    // Get active session of the active subaccount
+    var prominentSession: SessionManager? {
+        return sessions[prominentNetwork.rawValue]
+    }
+
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
 

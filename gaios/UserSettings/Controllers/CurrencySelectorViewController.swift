@@ -5,11 +5,13 @@ import PromiseKit
 class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     @IBOutlet weak var tableView: UITableView!
-    var currencyList = [CurrencyItem]()
-    var searchCurrencyList = [CurrencyItem]()
     @IBOutlet weak var textField: SearchTextField!
     @IBOutlet weak var currentCurrency: UILabel!
     @IBOutlet weak var currentExchange: UILabel!
+
+    private var currencyList = [CurrencyItem]()
+    private var searchCurrencyList = [CurrencyItem]()
+    weak var delegate: UserSettingsViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,7 +97,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         }.then(on: bgq) { _ in
             session.changeSettings(settings: settings)
         }.done { _ in
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "settings"), object: nil, userInfo: nil)
+            self.delegate?.refresh()
             self.navigationController?.popViewController(animated: true)
         }.catch {_ in
             self.showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
