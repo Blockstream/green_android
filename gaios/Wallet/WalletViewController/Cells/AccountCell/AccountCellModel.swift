@@ -35,17 +35,5 @@ class AccountCellModel {
             let (fAmount, fDenom) = converted.toFiat()
             fiatStr = "\(fAmount) \(fDenom)"
         }
-
-        // c'è il campo satochi in WalletItem con assetid e valore
-        // prondo lista di chiavi per avere lista degli asset per le icone
-        // per l'ammontare: il valore in btc o in l-btc
-        // nella variabile satoshi il campo è fee-asset
-
-        // in alternativa
-        // qui posso mettere il subaccount
-        // notare che essendo chiamata verso gdk è in promise
-//        come faccio in WalletViewModel
-//        wm.balances(subaccounts: self.subaccounts)
-//            .done { amounts in
     }
 }

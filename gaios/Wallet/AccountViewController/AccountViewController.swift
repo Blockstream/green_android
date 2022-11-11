@@ -111,6 +111,9 @@ class AccountViewController: UIViewController {
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
+
+            guard let account = viewModel?.account, let cachedBalance = viewModel?.cachedBalance else { return }
+            vc.viewModel = ReceiveViewModel(accounts: [account], cachedBalance: cachedBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
     }

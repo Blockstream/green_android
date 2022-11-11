@@ -11,14 +11,22 @@ public enum TransactionBaseType: UInt32 {
 class ReceiveViewController: UIViewController {
 
     @IBOutlet weak var cardQRCode: UIView!
+    @IBOutlet weak var bgCardQR: UIView!
     @IBOutlet weak var btnQRCode: UIButton!
-    @IBOutlet weak var btnAddress: UIButton!
+    @IBOutlet weak var lblAddress: UILabel!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnShare: UIButton!
     @IBOutlet weak var btnEdit: UIButton!
     @IBOutlet weak var btnOptions: UIButton!
     @IBOutlet weak var qrFrame: UIView!
     @IBOutlet weak var btnVerify: UIButton!
+    @IBOutlet weak var lblAssetTitle: UILabel!
+    @IBOutlet weak var bgAssetCard: UIView!
+    @IBOutlet weak var lblAddressTitle: UILabel!
+
+    @IBOutlet weak var iconAsset: UIImageView!
+    @IBOutlet weak var lblAsset: UILabel!
+    @IBOutlet weak var lblAccount: UILabel!
 
     var wallet = WalletManager.current?.currentSubaccount
     var selectedType = TransactionBaseType.BTC
@@ -27,6 +35,8 @@ class ReceiveViewController: UIViewController {
     var satoshi: Int64?
     private var account = AccountsManager.shared.current
     var address: Address?
+
+    var viewModel: ReceiveViewModel?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,9 +53,10 @@ class ReceiveViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.view
         btnQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.qrCodeBtn
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
-        btnAddress.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.addressBtn
 
         AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+
+        receiverRefresh()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -67,14 +78,24 @@ class ReceiveViewController: UIViewController {
         btnEdit.setTitle(NSLocalizedString("id_edit", comment: ""), for: .normal)
         btnOptions.setTitle(NSLocalizedString("id_more_options", comment: ""), for: .normal)
         btnVerify.setTitle(NSLocalizedString("id_verify_on_device", comment: ""), for: .normal)
+        lblAssetTitle.text = "Asset & Account"
+        lblAddressTitle.text = "Account Address"
     }
 
     func setStyle() {
-        cardQRCode.layer.cornerRadius = 5.0
         btnShare.setStyle(.primary)
-        btnEdit.setStyle(.outlined)
-        btnOptions.setStyle(.outlinedGray)
-        btnVerify.layer.cornerRadius = 4.0
+        btnEdit.setStyle(.outlinedWhite)
+        btnOptions.setStyle(.outlinedWhite)
+        btnVerify.setStyle(.outlinedWhite)
+        btnCopy.cornerRadius = 5.0
+        bgCardQR.layer.cornerRadius = 5.0
+        bgAssetCard.layer.cornerRadius = 5.0
+    }
+
+    func receiverRefresh() {
+        iconAsset.image = viewModel?.assetIcon()
+        lblAsset.text = viewModel?.assetName()
+        lblAccount.text = viewModel?.accountType()
     }
 
     func newAddress(_ notification: Notification?) {
@@ -152,7 +173,7 @@ class ReceiveViewController: UIViewController {
 
     func updateQRCode() {
         guard let wallet = self.wallet else {
-            btnAddress.isHidden = true
+            lblAddress.isHidden = true
             btnQRCode.isHidden = true
             return
         }
@@ -160,7 +181,7 @@ class ReceiveViewController: UIViewController {
             return
         }
         let uri = uriBitcoin(address: address)
-        btnAddress.setTitle(uri, for: .normal)
+        lblAddress.text = uri
         let dim = min(qrFrame.frame.size.width, qrFrame.frame.size.height)
         let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
         btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
@@ -230,6 +251,15 @@ class ReceiveViewController: UIViewController {
 
     @IBAction func copyAction(_ sender: Any) {
         copyToClipboard(sender)
+    }
+
+    @IBAction func btnChangeReceiver(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
+            guard let viewModel = viewModel else { return }
+            vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts, cachedBalance: viewModel.cachedBalance)
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
 

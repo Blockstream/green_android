@@ -40,9 +40,6 @@ class WalletViewModel {
     var walletAssetCellModels: [WalletAssetCellModel] {
         return cachedBalance.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
     }
-    var assetSelectCellModels: [AssetSelectCellModel] {
-        return cachedBalance.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) }
-    }
 
     func loadSubaccounts() {
         cachedSubaccounts = self.subaccounts

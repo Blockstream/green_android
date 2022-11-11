@@ -8,6 +8,7 @@ class AccountViewModel {
 
     var accountCellModels: [AccountCellModel] = []
     var account: WalletItem
+    var cachedBalance: [(String, Int64)]
 
     var cachedTransactions = [Transaction]()
 
@@ -20,9 +21,10 @@ class AccountViewModel {
     /// reload by section with animation
     var reloadSections: (([AccountSection], Bool) -> Void)?
 
-    init(model: AccountCellModel, account: WalletItem) {
+    init(model: AccountCellModel, account: WalletItem, cachedBalance: [(String, Int64)]) {
         self.accountCellModels = [model]
         self.account = account
+        self.cachedBalance = cachedBalance
     }
 
     func getTransactions(page: Int = 0, max: Int? = nil) {

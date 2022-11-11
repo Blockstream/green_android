@@ -35,15 +35,7 @@ class WalletViewController: UIViewController {
         super.viewDidLoad()
 
         viewModel.loadSubaccounts()
-        //        viewModel.getTransactions(assetId: assetId ?? "btc", max: 10)
-//                viewModel.reloadTableView = { [weak self] in
-//                    DispatchQueue.main.async {
-//                        if self?.tableView.refreshControl?.isRefreshing ?? false {
-//                            self?.tableView.refreshControl?.endRefreshing()
-//                        }
-//                        self?.tableView.reloadData()
-//                    }
-//                }
+
         let reloadSections: (([WalletSection], Bool) -> Void)? = { [weak self] (sections, animated) in
             self?.reloadSections(sections, animated: true)
         }
@@ -56,17 +48,17 @@ class WalletViewController: UIViewController {
         setContent()
         setStyle()
 
-//        let button = UIButton(frame: CGRect(x: 100, y: 100, width: 100, height: 50))
-//        button.backgroundColor = .red
-//        button.setTitle("SECURITY", for: .normal)
-//        button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-//        self.view.addSubview(button)
+        let button = UIButton(frame: CGRect(x: 100, y: 100, width: 100, height: 50))
+        button.backgroundColor = .red
+        button.setTitle("SECURITY", for: .normal)
+        button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+        self.view.addSubview(button)
     }
 
     @objc func buttonAction(sender: UIButton!) {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-            vc.viewModel = SecuritySelectViewModel(assetSelectCellModels: viewModel.assetSelectCellModels)
+            vc.viewModel = SecuritySelectViewModel(accounts: viewModel.subaccounts, cachedBalance: viewModel.cachedBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -163,6 +155,8 @@ class WalletViewController: UIViewController {
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
+
+            vc.viewModel = ReceiveViewModel(accounts: viewModel.subaccounts, cachedBalance: viewModel.cachedBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -185,7 +179,7 @@ class WalletViewController: UIViewController {
 
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
-            vc.viewModel = AccountViewModel(model: model, account: model.account)
+            vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: viewModel.cachedBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
     }

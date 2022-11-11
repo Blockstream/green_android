@@ -87,8 +87,21 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let index = viewModel?.getAssetIndex(indexPath.row) else { return }
-        delegate?.didSelectAssetAt(index)
-        navigationController?.popViewController(animated: true)
+
+        if (self.navigationController?.viewControllers ?? [])
+            .contains(where: {
+            return $0 is SecuritySelectViewController
+        }) {
+            delegate?.didSelectAssetAt(index)
+            navigationController?.popViewController(animated: true)
+        } else {
+            let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSelectViewController") as? AccountSelectViewController {
+                guard let viewModel = viewModel else { return }
+                vc.viewModel = AccountSelectViewModel(accounts: viewModel.accounts, cachedBalance: viewModel.cachedBalance)
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
     }
 }
 

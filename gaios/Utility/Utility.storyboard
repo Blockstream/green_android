@@ -146,6 +146,63 @@
             </objects>
             <point key="canvasLocation" x="3870" y="1559"/>
         </scene>
+        <!--Account Select View Controller-->
+        <scene sceneID="GOd-Pc-v3q">
+            <objects>
+                <viewController storyboardIdentifier="AccountSelectViewController" id="kBP-wI-a2z" customClass="AccountSelectViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="AYF-B2-iLN">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="QQx-uG-Gpk">
+                                <rect key="frame" x="0.0" y="59" width="393" height="793"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="kBP-wI-a2z" id="Wz6-RZ-EEI"/>
+                                    <outlet property="delegate" destination="kBP-wI-a2z" id="hjc-Zt-hK6"/>
+                                </connections>
+                            </tableView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg_actions" translatesAutoresizingMaskIntoConstraints="NO" id="udc-SE-Aze">
+                                <rect key="frame" x="0.0" y="660" width="393" height="192"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WHb-9V-4pm" userLabel="btn_advanced">
+                                <rect key="frame" x="20" y="779" width="353" height="29"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <inset key="titleEdgeInsets" minX="5" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="btn_mode">
+                                    <color key="titleColor" name="gGreenMatrix"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnAdvanced:" destination="kBP-wI-a2z" eventType="touchUpInside" id="wsG-uU-Y6y"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="P9y-7O-UWb"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
+                        <constraints>
+                            <constraint firstItem="P9y-7O-UWb" firstAttribute="trailing" secondItem="QQx-uG-Gpk" secondAttribute="trailing" id="1r8-tw-iVZ"/>
+                            <constraint firstItem="udc-SE-Aze" firstAttribute="leading" secondItem="QQx-uG-Gpk" secondAttribute="leading" id="6e3-Ym-v3m"/>
+                            <constraint firstItem="udc-SE-Aze" firstAttribute="trailing" secondItem="QQx-uG-Gpk" secondAttribute="trailing" id="EDD-bk-TPS"/>
+                            <constraint firstItem="P9y-7O-UWb" firstAttribute="bottom" secondItem="WHb-9V-4pm" secondAttribute="bottom" constant="10" id="Ehr-Jx-JpB"/>
+                            <constraint firstItem="QQx-uG-Gpk" firstAttribute="top" secondItem="P9y-7O-UWb" secondAttribute="top" id="PGy-lA-M4D"/>
+                            <constraint firstItem="udc-SE-Aze" firstAttribute="bottom" secondItem="QQx-uG-Gpk" secondAttribute="bottom" id="b8p-v8-63R"/>
+                            <constraint firstItem="QQx-uG-Gpk" firstAttribute="leading" secondItem="P9y-7O-UWb" secondAttribute="leading" id="fVL-IN-v5W"/>
+                            <constraint firstItem="P9y-7O-UWb" firstAttribute="trailing" secondItem="WHb-9V-4pm" secondAttribute="trailing" constant="20" id="nWc-IJ-06j"/>
+                            <constraint firstAttribute="bottom" secondItem="QQx-uG-Gpk" secondAttribute="bottom" id="o2J-rQ-soM"/>
+                            <constraint firstItem="WHb-9V-4pm" firstAttribute="leading" secondItem="P9y-7O-UWb" secondAttribute="leading" constant="20" id="z5W-5M-tEE"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="2zg-1K-dUW"/>
+                    <connections>
+                        <outlet property="btnAdvanced" destination="WHb-9V-4pm" id="29v-kH-8mf"/>
+                        <outlet property="tableView" destination="QQx-uG-Gpk" id="3c2-Bv-bb0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uoA-uI-k5y" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4560" y="1558"/>
+        </scene>
     </scenes>
     <resources>
         <image name="bg_actions" width="375" height="192"/>

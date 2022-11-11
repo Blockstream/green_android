@@ -3,16 +3,20 @@ import PromiseKit
 
 class AssetSelectViewModel {
 
+    var accounts: [WalletItem]
+    var cachedBalance: [(String, Int64)]
+
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
 
-    init(assetSelectCellModels: [AssetSelectCellModel]) {
-        self.assetSelectCellModels = assetSelectCellModels
+    init(accounts: [WalletItem], cachedBalance: [(String, Int64)]) {
+        self.accounts = accounts
+        self.cachedBalance = cachedBalance
+        self.assetSelectCellModels = cachedBalance.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) }
         self.assetSelectCellModelsFilter = assetSelectCellModels
     }
 
     func search(_ txt: String?) {
-
         self.assetSelectCellModelsFilter = []
         assetSelectCellModels.forEach {
             if let txt = txt, txt.count > 0 {

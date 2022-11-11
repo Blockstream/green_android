@@ -1,16 +1,14 @@
 import UIKit
 import PromiseKit
 
-enum SecuritySelectSection: Int, CaseIterable {
-    case asset
-    case policy
+enum AccountSelectSection: Int, CaseIterable {
+    case account
     case footer
 }
 
-class SecuritySelectViewController: UIViewController {
+class AccountSelectViewController: UIViewController {
 
     enum FooterType {
-        case noTransactions
         case none
     }
 
@@ -20,17 +18,17 @@ class SecuritySelectViewController: UIViewController {
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
 
-    var viewModel: SecuritySelectViewModel?
+    var viewModel: AccountSelectViewModel?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let reloadSections: (([SecuritySelectSection], Bool) -> Void)? = { [weak self] (sections, animated) in
+        let reloadSections: (([AccountSelectSection], Bool) -> Void)? = { [weak self] (sections, animated) in
             self?.reloadSections(sections, animated: true)
         }
         viewModel?.reloadSections = reloadSections
 
-        ["PolicyCell", "AssetSelectCell" ].forEach {
+        ["AccountSelectCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 
@@ -43,7 +41,7 @@ class SecuritySelectViewController: UIViewController {
 
     }
 
-    func reloadSections(_ sections: [SecuritySelectSection], animated: Bool) {
+    func reloadSections(_ sections: [AccountSelectSection], animated: Bool) {
         if animated {
             tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
         } else {
@@ -54,31 +52,29 @@ class SecuritySelectViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Create New Account"
-        btnAdvanced.setTitle("See Advanced Options", for: .normal)
+        title = "Select Account"
+        btnAdvanced.setTitle("Create a new account", for: .normal)
     }
 
     func setStyle() {
     }
 
     @IBAction func btnAdvanced(_ sender: Any) {
-        viewModel?.showAll.toggle()
+        print("btnAdvanced")
     }
 }
 
-extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSource {
+extension AccountSelectViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return SecuritySelectSection.allCases.count
+        return AccountSelectSection.allCases.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        switch SecuritySelectSection(rawValue: section) {
-        case .asset:
-            return 1
-        case .policy:
-            return viewModel?.getPolicyCellModels().count ?? 0
+        switch AccountSelectSection(rawValue: section) {
+        case .account:
+            return viewModel?.accountSelectCellModels.count ?? 0
         default:
             return 0
         }
@@ -86,18 +82,11 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        switch SecuritySelectSection(rawValue: indexPath.section) {
-        case .asset:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell,
-               let selectedAsset = viewModel?.selectedAsset {
-                cell.configure(model: selectedAsset)
-                cell.selectionStyle = .none
-                return cell
-            }
-        case .policy:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: PolicyCell.identifier, for: indexPath) as? PolicyCell,
+        switch AccountSelectSection(rawValue: indexPath.section) {
+        case .account:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AccountSelectCell.identifier, for: indexPath) as? AccountSelectCell,
                let model = viewModel {
-                cell.configure(model: model.getPolicyCellModels()[indexPath.row])
+                cell.configure(model: model.accountSelectCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
@@ -109,14 +98,14 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch SecuritySelectSection(rawValue: section) {
+        switch AccountSelectSection(rawValue: section) {
         default:
             return headerH
         }
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch SecuritySelectSection(rawValue: section) {
+        switch AccountSelectSection(rawValue: section) {
         case .footer:
             return 100.0
         default:
@@ -126,7 +115,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 
-        switch SecuritySelectSection(rawValue: indexPath.section) {
+        switch AccountSelectSection(rawValue: indexPath.section) {
         default:
             return UITableView.automaticDimension
         }
@@ -134,25 +123,23 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
-        switch SecuritySelectSection(rawValue: section) {
-        case .asset:
-            return headerView( "Asset" )
-        case .policy:
-            return headerView( "Security Policy" )
+        switch AccountSelectSection(rawValue: section) {
+        case .account:
+            return headerView( "Accounts" )
         default:
             return nil
         }
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        switch SecuritySelectSection(rawValue: section) {
+        switch AccountSelectSection(rawValue: section) {
         default:
             return footerView(.none)
         }
     }
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        switch SecuritySelectSection(rawValue: indexPath.section) {
+        switch AccountSelectSection(rawValue: indexPath.section) {
         default:
             return indexPath
         }
@@ -160,22 +147,17 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        switch SecuritySelectSection(rawValue: indexPath.section) {
-        case .asset:
-            let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                guard let viewModel = viewModel else { return }
-                vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts, cachedBalance: viewModel.cachedBalance)
-                vc.delegate = self
-                navigationController?.pushViewController(vc, animated: true)
-            }
+        switch AccountSelectSection(rawValue: indexPath.section) {
+        case .account:
+            /// handle selection
+            navigationController?.popToViewController(ofClass: ReceiveViewController.self)
         default:
             break
         }
     }
 }
 
-extension SecuritySelectViewController {
+extension AccountSelectViewController {
 
     func headerView(_ txt: String) -> UIView {
 
@@ -207,12 +189,5 @@ extension SecuritySelectViewController {
             section.backgroundColor = .clear
             return section
         }
-    }
-}
-
-extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
-    func didSelectAssetAt(_ index: Int) {
-        viewModel?.selectedAsset = viewModel?.assetSelectCellModels[index]
-        reloadSections([.asset], animated: false)
     }
 }

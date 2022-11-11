@@ -4,11 +4,15 @@ import PromiseKit
 
 class SecuritySelectViewModel {
 
+    var accounts: [WalletItem]
+    var cachedBalance: [(String, Int64)]
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var selectedAsset: AssetSelectCellModel?
 
-    init(assetSelectCellModels: [AssetSelectCellModel]) {
-        self.assetSelectCellModels = assetSelectCellModels
+    init(accounts: [WalletItem], cachedBalance: [(String, Int64)]) {
+        self.accounts = accounts
+        self.cachedBalance = cachedBalance
+        self.assetSelectCellModels = cachedBalance.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) }
 
         /// is this correct?
         selectedAsset = self.assetSelectCellModels.first
