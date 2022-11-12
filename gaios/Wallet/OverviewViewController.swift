@@ -444,14 +444,6 @@ class OverviewViewController: UIViewController {
 
     // reload in tableview all subaccounts with balance
     func reloadSubaccounts(refresh: Bool, discovery: Bool) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .then(on: bgq) { self.wm!.subaccounts(discovery) }
-            .get(on: bgq) { self.wm!.balances(subaccounts: $0) }
-            .compactMap { wallets in
-                self.allSubaccounts = wallets
-                self.reloadSections([OverviewSection.account], animated: false)
-            }.asVoid()
     }
 
     // reload in tableview assets of current wallet
@@ -479,7 +471,6 @@ class OverviewViewController: UIViewController {
         }
     }
 
-    // TODO: fix this delegate
     func onAccountChange() {
         reloadData(refreshBalance: true)
     }
