@@ -134,17 +134,14 @@ class WalletViewController: UIViewController {
         }
     }
 
-    // open receive flow
-    func receiveToWallet() {
-        receiveScreen()
-    }
-
     // open receive screen
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-
-            vc.viewModel = ReceiveViewModel(accounts: viewModel.subaccounts, cachedBalance: viewModel.cachedBalance)
+            let model = viewModel.accountCellModels[sIdx]
+            vc.viewModel = ReceiveViewModel(account: model.account,
+                                            accounts: viewModel.subaccounts,
+                                            cachedBalance: viewModel.cachedBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -172,7 +169,7 @@ class WalletViewController: UIViewController {
     }
 
     @IBAction func btnReceive(_ sender: Any) {
-        receiveToWallet()
+        receiveScreen()
     }
 
 }

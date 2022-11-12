@@ -28,22 +28,19 @@ class ReceiveViewController: UIViewController {
     @IBOutlet weak var lblAsset: UILabel!
     @IBOutlet weak var lblAccount: UILabel!
 
-    var wallet = WalletManager.current?.currentSubaccount
-    var selectedType = TransactionBaseType.BTC
-
+    private var selectedType = TransactionBaseType.BTC
     private var newAddressToken: NSObjectProtocol?
-    var satoshi: Int64?
-    private var account = AccountsManager.shared.current
-    var address: Address?
+    private var satoshi: Int64?
 
-    var viewModel: ReceiveViewModel?
+    var viewModel: ReceiveViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setContent()
         setStyle()
-        btnVerify.isHidden = !(self.account?.isHW == true && self.account?.isLedger == false)
+        let userAccount = AccountsManager.shared.current
+        btnVerify.isHidden = !(userAccount?.isHW == true && userAccount?.isLedger == false)
         btnEdit.isHidden = true
         let helpBtn = UIButton(type: .system)
         helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
@@ -54,9 +51,11 @@ class ReceiveViewController: UIViewController {
         btnQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.qrCodeBtn
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
 
-        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: viewModel.account.type))
 
-        receiverRefresh()
+        viewModel.reload = reload
+        viewModel.error = showError
+        reload()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -92,120 +91,64 @@ class ReceiveViewController: UIViewController {
         bgAssetCard.layer.cornerRadius = 5.0
     }
 
-    func receiverRefresh() {
-        iconAsset.image = viewModel?.assetIcon()
-        lblAsset.text = viewModel?.assetName()
-        lblAccount.text = viewModel?.accountType()
+    func reload() {
+        iconAsset.image = viewModel.assetIcon()
+        lblAsset.text = viewModel.assetName()
+        lblAccount.text = viewModel.accountType()
+        lblAddress.text = viewModel.address?.address
+        btnEdit.isHidden = true //self.viewModel.account.gdkNetwork.liquid
+        if let address = viewModel.address, !address.address.isEmpty {
+            let uri = viewModel.addressToUri(address: address.address, satoshi: satoshi ?? 0)
+            let dim = min(qrFrame.frame.size.width, qrFrame.frame.size.height)
+            let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
+            btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
+            btnQRCode.imageView?.contentMode = .scaleAspectFit
+            btnQRCode.layer.cornerRadius = 5.0
+        }
     }
 
     func newAddress(_ notification: Notification?) {
-        let dict = notification?.userInfo as NSDictionary?
-        let pointer = dict?["pointer"] as? UInt32
-        guard let session = WalletManager.current?.currentSession,
-              let wallet = wallet,
-              wallet.pointer == pointer else {
-            return
-        }
-        session.getReceiveAddress(subaccount: pointer ?? 0)
-            .done { [weak self] addr in
-                self?.address = addr
-                self?.reload()
-            }.catch { _ in
-                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-            }
+        viewModel?.newAddress()
     }
 
     func validate() {
-        guard let addr = self.address,
-              let network = AccountsManager.shared.current?.network else {
-            return
-        }
-        let hw: HWProtocol = account?.isLedger ?? false ? Ledger.shared : Jade.shared
-        firstly {
-            return Guarantee()
-        }.then {
-            Address.validate(with: self.wallet!, hw: hw, addr: addr, network: network)
-        }.ensure {
-            self.presentedViewController?.dismiss(animated: true, completion: nil)
-        }.done { addr in
-            if self.address?.address == addr {
-                DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
-            } else {
-                DropAlert().error(message: NSLocalizedString("id_the_addresses_dont_match", comment: ""))
+        viewModel?.validateHw()
+            .ensure {
+                self.presentedViewController?.dismiss(animated: true, completion: nil)
+            }.done { equal in
+                if equal {
+                    DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
+                } else {
+                    DropAlert().error(message: NSLocalizedString("id_the_addresses_dont_match", comment: ""))
+                }
+            }.catch { err in
+                switch err {
+                case JadeError.Abort(let desc),
+                     JadeError.URLError(let desc),
+                     JadeError.Declined(let desc):
+                    DropAlert().error(message: desc)
+                default:
+                    DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+                }
             }
-        }.catch { err in
-            switch err {
-            case JadeError.Abort(let desc),
-                 JadeError.URLError(let desc),
-                 JadeError.Declined(let desc):
-                DropAlert().error(message: desc)
-            default:
-                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-            }
-        }
-    }
-
-    func reload() {
-        updateQRCode()
     }
 
     func isBipAddress(_ addr: String) -> Bool {
-        return WalletManager.current?.currentSession?.validBip21Uri(uri: addr) ?? false
+        return viewModel?.isBipAddress(addr) ?? false
     }
 
     @objc func copyToClipboard(_ sender: Any) {
-        let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession,
-              let wallet = wallet else {
-            return
-        }
-        Guarantee().then(on: bgq) {
-            return session.getReceiveAddress(subaccount: wallet.pointer)
-        }.done { address in
-            let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address.address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.text, method: AnalyticsManager.ReceiveAddressMethod.copy)
-            AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
-
-            UIPasteboard.general.string = self.uriBitcoin(address: address.address)
-            DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 1.0)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-        }.catch { _ in }
-    }
-
-    func updateQRCode() {
-        guard let wallet = self.wallet else {
-            lblAddress.isHidden = true
-            btnQRCode.isHidden = true
-            return
-        }
-        guard let address = self.address?.address, !address.isEmpty else {
-            return
-        }
-        let uri = uriBitcoin(address: address)
-        lblAddress.text = uri
-        let dim = min(qrFrame.frame.size.width, qrFrame.frame.size.height)
-        let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
-        btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
-        btnQRCode.imageView?.contentMode = .scaleAspectFit
-        btnQRCode.layer.cornerRadius = 5.0
-    }
-
-    func uriBitcoin(address: String) -> String {
-        var ntwPrefix = "bitcoin"
-        if let network = account?.gdkNetwork, network.liquid {
-            ntwPrefix = network.mainnet ? "liquidnetwork" :  "liquidtestnet"
-        }
-        if satoshi == nil || satoshi == 0 {
-            btnEdit.isHidden = true
-            return address
-        }
-        if !(account?.gdkNetwork?.liquid ?? false) {
-            btnEdit.isHidden = false
-        }
-        return String(format: "%@:%@?amount=%.8f", ntwPrefix, address, toBTC(UInt64(satoshi ?? 0)))
-    }
-
-    func toBTC(_ satoshi: UInt64) -> Double {
-        return Double(satoshi) / 100000000
+        let address = (viewModel.address?.address)!
+        let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
+        let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                                                       media: AnalyticsManager.ReceiveAddressMedia.text,
+                                                       method: AnalyticsManager.ReceiveAddressMethod.copy)
+        AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
+                                               walletType: viewModel.account.type,
+                                               data: data)
+        UIPasteboard.general.string = uri
+        DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 1.0)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
     @objc func helpBtnTap() {
@@ -229,8 +172,8 @@ class ReceiveViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveMoreOptionsViewController") as? DialogReceiveMoreOptionsViewController {
             vc.modalPresentationStyle = .overFullScreen
-            vc.isLiquid = account?.gdkNetwork?.liquid ?? false
-            vc.isSingleSig = account?.isSingleSig ?? false
+            vc.isLiquid = viewModel.account.gdkNetwork.liquid
+            vc.isSingleSig = viewModel.account.gdkNetwork.electrum
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
@@ -246,7 +189,7 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func refreshClick(_ sender: Any?) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, userInfo: ["pointer": self.wallet?.pointer ?? 0])
+        viewModel.newAddress()
     }
 
     @IBAction func copyAction(_ sender: Any) {
@@ -271,7 +214,7 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveRequestAmountViewController") as? DialogReceiveRequestAmountViewController {
                 vc.modalPresentationStyle = .overFullScreen
                 vc.delegate = self
-                vc.wallet = wallet
+                vc.wallet = viewModel.account
                 vc.prefill = self.satoshi
                 present(vc, animated: false, completion: nil)
             }
@@ -279,7 +222,7 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
             let storyboard = UIStoryboard(name: "Send", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
                 vc.inputType = .sweep
-                vc.wallet = wallet
+                vc.wallet = viewModel.account
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .cancel:
@@ -291,7 +234,7 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
 extension ReceiveViewController: DialogReceiveRequestAmountViewControllerDelegate {
     func didConfirm(satoshi: Int64?) {
         self.satoshi = satoshi
-        updateQRCode()
+        reload()
     }
 
     func didCancel() {
@@ -320,33 +263,32 @@ extension ReceiveViewController: UIActivityItemSource {
 
 extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
     func didSelect(_ option: ReceiveShareOption) {
-
-        if option == .cancel { return }
-        guard let wallet = self.wallet,
-              let address = self.address?.address else { return }
-            if address.isEmpty {
-                return
-            }
-            if option == .address {
-                let uri = self.uriBitcoin(address: address)
+        guard let address = viewModel.address?.address, !address.isEmpty else { return }
+        switch option {
+        case .cancel:
+            return
+        case .address:
+            let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
             let activityViewController = UIActivityViewController(activityItems: [uri], applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = self.view
             self.present(activityViewController, animated: true, completion: nil)
-            } else if option == .qr {
-                let image = (self.btnQRCode.imageView?.image)!
-                let share = UIActivityViewController(activityItems: [image, self], applicationActivities: nil)
-                self.present(share, animated: true, completion: nil)
-            }
-            // analytics
-            switch option {
-            case .address:
-                let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.text, method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
-            case .qr:
-                let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(self.uriBitcoin(address: address)) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address, media: AnalyticsManager.ReceiveAddressMedia.image, method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current, walletType: wallet.type, data: data)
-            case .cancel:
-                break
-            }
+            let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                                                           media: AnalyticsManager.ReceiveAddressMedia.text,
+                                                           method: AnalyticsManager.ReceiveAddressMethod.share)
+            AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
+                                                   walletType: viewModel.account.type,
+                                                   data: data)
+        case .qr:
+            let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
+            let image = (self.btnQRCode.imageView?.image)!
+            let share = UIActivityViewController(activityItems: [image, self], applicationActivities: nil)
+            self.present(share, animated: true, completion: nil)
+            let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                                                           media: AnalyticsManager.ReceiveAddressMedia.image,
+                                                           method: AnalyticsManager.ReceiveAddressMethod.share)
+            AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
+                                                   walletType: viewModel.account.type,
+                                                   data: data)
+        }
     }
 }

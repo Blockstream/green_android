@@ -5,30 +5,67 @@ import PromiseKit
 class ReceiveViewModel {
 
     var accounts: [WalletItem]
-    var cachedBalance: [(String, Int64)]
-    var cAccount: WalletItem
-    var cAsset: (String, Int64)
+    var asset: String
+    var account: WalletItem
+    var address: Address?
+    var reload: (() -> Void)?
+    var error: ((String) -> Void)?
+    var wm: WalletManager { WalletManager.current! }
 
-    init(accounts: [WalletItem], cachedBalance: [(String, Int64)]) {
+    init(account: WalletItem, accounts: [WalletItem]) {
+        self.account = account
         self.accounts = accounts
-        self.cachedBalance = cachedBalance
-        /// remove unwrapping here and change logic
-        /// only for demo
-        self.cAccount = accounts.first!
-        self.cAsset = cachedBalance.first!
+        self.asset = account.gdkNetwork.getFeeAsset()
     }
 
     func assetIcon() -> UIImage {
-        return WalletManager.current?.registry.image(for: cAsset.0) ?? UIImage()
+        return WalletManager.current?.registry.image(for: asset) ?? UIImage()
     }
     func assetName() -> String {
-        return WalletManager.current?.registry.info(for: cAsset.0).name ?? "--"
+        return WalletManager.current?.registry.info(for: asset).name ?? "--"
     }
     func accountType() -> String {
-        return cAccount.type.typeStringId.localized.uppercased()
+        return account.localizedName()
     }
 
-    var assetSelectCellModels: [AssetSelectCellModel] {
-        return cachedBalance.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) }
+    func newAddress() {
+        let session = wm.sessions[account.gdkNetwork.network]
+        session?.getReceiveAddress(subaccount: account.pointer)
+            .done { [weak self] addr in
+                self?.address = addr
+                self?.reload?()
+            }.catch { [weak self] _ in
+                self?.error?("id_connection_failed")
+            }
+    }
+
+    func isBipAddress(_ addr: String) -> Bool {
+        let session = wm.sessions[account.gdkNetwork.network]
+        return session?.validBip21Uri(uri: addr) ?? false
+    }
+
+    func validateHw() -> Promise<Bool> {
+        let hw: HWProtocol = AccountsManager.shared.current?.isLedger ?? false ? Ledger.shared : Jade.shared
+        let chain = account.gdkNetwork.chain
+        guard let addr = address else {
+            return Promise() { $0.reject(GaError.GenericError()) }
+        }
+        return Address.validate(with: self.account, hw: hw, addr: addr, network: chain)
+            .compactMap { return self.address?.address == $0 }
+    }
+
+    func addressToUri(address: String, satoshi: Int64) -> String {
+        var ntwPrefix = "bitcoin"
+        if account.gdkNetwork.liquid {
+            ntwPrefix = account.gdkNetwork.mainnet ? "liquidnetwork" :  "liquidtestnet"
+        }
+        if satoshi == 0 {
+            return address
+        }
+        return String(format: "%@:%@?amount=%.8f", ntwPrefix, address, toBTC(satoshi))
+    }
+
+    func toBTC(_ satoshi: Int64) -> Double {
+        return Double(satoshi) / 100000000
     }
 }
