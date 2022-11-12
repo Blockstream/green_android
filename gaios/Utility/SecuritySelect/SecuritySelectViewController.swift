@@ -165,7 +165,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
                 guard let viewModel = viewModel else { return }
-                vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts, cachedBalance: viewModel.cachedBalance)
+                vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }

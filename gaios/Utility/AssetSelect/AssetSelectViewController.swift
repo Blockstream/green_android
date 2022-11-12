@@ -11,7 +11,7 @@ class AssetSelectViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchField: UITextField!
 
-    var viewModel: AssetSelectViewModel?
+    var viewModel: AssetSelectViewModel!
     weak var delegate: AssetSelectViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -24,6 +24,9 @@ class AssetSelectViewController: UIViewController {
         title = "Choose Asset"
         setContent()
         setStyle()
+
+        viewModel.reload = tableView.reloadData
+        viewModel.loadAssets()
     }
 
     func setContent() {
@@ -56,8 +59,8 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell,
-           let model = viewModel?.assetSelectCellModelsFilter[indexPath.row] {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell {
+            let model = viewModel.assetSelectCellModelsFilter[indexPath.row]
             cell.configure(model: model)
             cell.selectionStyle = .none
             return cell
@@ -97,8 +100,14 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
         } else {
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSelectViewController") as? AccountSelectViewController {
-                guard let viewModel = viewModel else { return }
-                vc.viewModel = AccountSelectViewModel(accounts: viewModel.accounts, cachedBalance: viewModel.cachedBalance)
+                var accounts = viewModel.accounts
+                let asset = viewModel.assetSelectCellModelsFilter[indexPath.row].asset?.assetId
+                if let asset = asset, asset == "btc" {
+                    accounts.removeAll(where: { $0.gdkNetwork.liquid })
+                } else {
+                    accounts.removeAll(where: { !$0.gdkNetwork.liquid })
+                }
+                vc.viewModel = AccountSelectViewModel(accounts: accounts)
                 navigationController?.pushViewController(vc, animated: true)
             }
         }

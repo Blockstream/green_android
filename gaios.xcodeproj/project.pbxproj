@@ -365,6 +365,7 @@
 		81E0B4D725531AD6001C8544 /* TxInputLiquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */; };
 		81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C358291FDAF000B2196B /* DialogTableViewController.swift */; };
 		81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */; };
+		81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35C292041F800B2196B /* EnrichedAsset.swift */; };
 		81F72E0928904D3F00D4DEFF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F72E0828904D3F00D4DEFF /* Credentials.swift */; };
 		81F74BA52278857800A397C9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F74BA42278857800A397C9 /* Network.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
@@ -805,6 +806,7 @@
 		81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputLiquid.swift; sourceTree = "<group>"; };
 		81E8C358291FDAF000B2196B /* DialogTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTableViewController.swift; sourceTree = "<group>"; };
 		81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveViewModel.swift; sourceTree = "<group>"; };
+		81E8C35C292041F800B2196B /* EnrichedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnrichedAsset.swift; sourceTree = "<group>"; };
 		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
@@ -1858,6 +1860,7 @@
 				815D4A9F28638A56004DC015 /* PinData.swift */,
 				81F72E0828904D3F00D4DEFF /* Credentials.swift */,
 				81268E7B291BC8190079C13D /* AssetAmountList.swift */,
+				81E8C35C292041F800B2196B /* EnrichedAsset.swift */,
 				34E0CA8F29817CE400695304 /* CountlyWidget.swift */,
 			);
 			path = Models;
@@ -2480,6 +2483,7 @@
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */,
 				340A5F7928EAC3F3003D56B1 /* DialogSendFeedbackViewController.swift in Sources */,
+				81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */,
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,
 				81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */,

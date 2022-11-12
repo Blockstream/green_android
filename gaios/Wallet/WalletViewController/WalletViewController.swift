@@ -140,8 +140,7 @@ class WalletViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
             let model = viewModel.accountCellModels[sIdx]
             vc.viewModel = ReceiveViewModel(account: model.account,
-                                            accounts: viewModel.subaccounts,
-                                            cachedBalance: viewModel.cachedBalance)
+                                            accounts: viewModel.subaccounts)
             navigationController?.pushViewController(vc, animated: true)
         }
     }

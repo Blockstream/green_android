@@ -56,12 +56,12 @@ class ReceiveViewController: UIViewController {
         viewModel.reload = reload
         viewModel.error = showError
         reload()
+        viewModel.newAddress()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         newAddressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, queue: .main, using: newAddress)
-        refreshClick(nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -200,7 +200,7 @@ class ReceiveViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
             guard let viewModel = viewModel else { return }
-            vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts, cachedBalance: viewModel.cachedBalance)
+            vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts)
             navigationController?.pushViewController(vc, animated: true)
         }
     }

@@ -4,16 +4,14 @@ import PromiseKit
 class AssetSelectViewModel {
 
     var accounts: [WalletItem]
-    var cachedBalance: [(String, Int64)]
+    var assets = [String]()
+    var reload: (() -> Void)?
 
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
 
-    init(accounts: [WalletItem], cachedBalance: [(String, Int64)]) {
+    init(accounts: [WalletItem]) {
         self.accounts = accounts
-        self.cachedBalance = cachedBalance
-        self.assetSelectCellModels = cachedBalance.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) }
-        self.assetSelectCellModelsFilter = assetSelectCellModels
     }
 
     func search(_ txt: String?) {
@@ -35,5 +33,20 @@ class AssetSelectViewModel {
             return idx
         }
         return nil
+    }
+
+    func loadAssets() {
+        guard let registry = WalletManager.current?.registry else { return }
+        self.assets = registry.allAssets
+        if let account = accounts.first, accounts.count == 1 {
+            if account.gdkNetwork.liquid {
+                self.assets.removeAll(where: { $0 == "btc"})
+            } else {
+                self.assets.removeAll(where: { $0 != "btc"})
+            }
+        }
+        self.assetSelectCellModels = self.assets.map { AssetSelectCellModel(assetId: $0, satoshi: 0) }
+        self.assetSelectCellModelsFilter = self.assetSelectCellModels
+        self.reload?()
     }
 }
