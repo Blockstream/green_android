@@ -40,8 +40,6 @@ class WalletViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModel.loadSubaccounts()
-
         let reloadSections: (([WalletSection], Bool) -> Void)? = { [weak self] (sections, animated) in
             self?.reloadSections(sections, animated: true)
         }
@@ -57,7 +55,7 @@ class WalletViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        viewModel.loadSubaccounts()
     }
 
     func reloadSections(_ sections: [WalletSection], animated: Bool) {
@@ -517,7 +515,10 @@ extension WalletViewController: DialogTableViewControllerDelegate {
                 }
             }
         case .ArchivedAccounts:
-            break
+            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .CreateNewAccount:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {

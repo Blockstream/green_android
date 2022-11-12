@@ -12,36 +12,16 @@ class AccountArchiveViewController: UIViewController {
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
 
-    private var subAccounts = [WalletItem]()
-
-    var isLoading = false
-    var accounts: [WalletItem] {
-        get {
-            if subAccounts.count == 0 {
-                return []
-            }
-            let activeWallet = account?.activeWallet ?? 0
-            return subAccounts.filter { $0.pointer == activeWallet} + subAccounts.filter { $0.pointer != activeWallet}
-        }
-    }
-    var account = AccountsManager.shared.current
-    private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
-//    private var isAmp: Bool {
-//        guard let wallet = presentingWallet else { return false }
-//        return AccountType(rawValue: wallet.type) == AccountType.amp
-//    }
-
-    var color: UIColor = .clear
+    var viewModel = AccountArchiveViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let account = AccountsManager.shared.current
         navigationItem.title = account?.name ?? ""
         navigationItem.setHidesBackButton(true, animated: false)
 
         let ntwBtn = UIButton(type: .system)
-        let img = account?.icon ?? UIImage()
-        ntwBtn.setImage(img.withRenderingMode(.alwaysOriginal), for: .normal)
         ntwBtn.imageView?.contentMode = .scaleAspectFit
         ntwBtn.addTarget(self, action: #selector(AccountArchiveViewController.back), for: .touchUpInside)
         ntwBtn.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
@@ -51,9 +31,6 @@ class AccountArchiveViewController: UIViewController {
             ]
 
         setContent()
-        setStyle()
-
-        reloadData()
 
         AnalyticsManager.shared.recordView(.archivedAccounts, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
@@ -73,51 +50,17 @@ class AccountArchiveViewController: UIViewController {
     }
 
     func setContent() {
-    }
-
-    func setStyle() {
-        if account?.network == AvailableNetworks.bitcoin.rawValue { color = AvailableNetworks.bitcoin.color() }
-        if account?.network == AvailableNetworks.liquid.rawValue { color = AvailableNetworks.liquid.color() }
-        if account?.network == AvailableNetworks.testnet.rawValue { color = AvailableNetworks.testnet.color() }
-        if account?.network == AvailableNetworks.testnetLiquid.rawValue { color = AvailableNetworks.testnetLiquid.color() }
-    }
-
-    func reloadData() {
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee()
-            .compactMap { self.account?.id }
-            .compactMap { WalletManager.get(for: $0) }
-            .then(on: bgq) { $0.subaccounts() }
-            .map { wallets in
-                self.subAccounts = wallets.filter { $0.hidden == true }
-                self.reloadSections([AccountArchiveSection.account], animated: false)
-            }.done {
-                if self.accounts.count == 0 {
-                    self.navigationController?.popViewController(animated: true)
-                }
-            }.catch { e in
-                DropAlert().error(message: e.localizedDescription)
-                print(e.localizedDescription)
-            }
-    }
-
-    func unarchiveAccount(_ index: Int) {
-
-        let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession else { return }
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            session.updateSubaccount(subaccount: self.accounts[index].pointer, hidden: false)
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.reloadData()
-        }.catch { e in
-            DropAlert().error(message: e.localizedDescription)
-            print(e.localizedDescription)
+        let reloadSections: (([AccountArchiveSection], Bool) -> Void)? = { [weak self] (sections, animated) in
+            self?.reloadSections(sections, animated: true)
         }
+        viewModel.reloadSections = reloadSections
+    }
+
+    func getColor(_ account: WalletItem) -> UIColor {
+        if account.network == AvailableNetworks.bitcoin.rawValue { return AvailableNetworks.bitcoin.color() }
+        if account.network == AvailableNetworks.liquid.rawValue { return AvailableNetworks.liquid.color() }
+        if account.network == AvailableNetworks.testnet.rawValue { return AvailableNetworks.testnet.color() }
+        return AvailableNetworks.testnetLiquid.color()
     }
 
     func presentUnarchiveMenu(frame: CGRect, index: Int) {
@@ -146,7 +89,7 @@ extension AccountArchiveViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case AccountArchiveSection.account.rawValue:
-            return accounts.count
+            return viewModel.subaccounts.count
         default:
             return 0
         }
@@ -161,7 +104,8 @@ extension AccountArchiveViewController: UITableViewDelegate, UITableViewDataSour
                     action = { [weak self] in
                         self?.presentUnarchiveMenu(frame: cell.frame, index: indexPath.row)
                     }
-                cell.configure(account: accounts[indexPath.row], action: action, color: color, isLiquid: isLiquid)
+                let account = viewModel.subaccounts[indexPath.row]
+                cell.configure(account: account, action: action, color: getColor(account), isLiquid: account.gdkNetwork.liquid)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -210,7 +154,8 @@ extension AccountArchiveViewController: PopoverMenuUnarchiveDelegate {
     func didSelectionMenuOption(option: MenuUnarchiveOption, index: Int) {
         switch option {
         case .unarchive:
-            unarchiveAccount(index)
+            let subaccount = viewModel.subaccounts[index]
+            viewModel.unarchiveSubaccount(subaccount)
         }
     }
 }
