@@ -15,6 +15,12 @@ class WalletViewController: UIViewController {
         case none
     }
 
+    enum WalletPreferences: String, CaseIterable {
+        case WalletSettings = "Wallet Settings"
+        case ArchivedAccounts = "Archived Accounts"
+        case CreateNewAccount = "Create a New Account"
+    }
+
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var actionsBg: UIView!
     @IBOutlet weak var btnSend: UIButton!
@@ -47,20 +53,6 @@ class WalletViewController: UIViewController {
 
         setContent()
         setStyle()
-
-        let button = UIButton(frame: CGRect(x: 100, y: 100, width: 100, height: 50))
-        button.backgroundColor = .red
-        button.setTitle("SECURITY", for: .normal)
-        button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-        self.view.addSubview(button)
-    }
-
-    @objc func buttonAction(sender: UIButton!) {
-        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-            vc.viewModel = SecuritySelectViewModel(accounts: viewModel.subaccounts, cachedBalance: viewModel.cachedBalance)
-            navigationController?.pushViewController(vc, animated: true)
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -126,14 +118,13 @@ class WalletViewController: UIViewController {
 
     // open settings
     @objc func settingsBtnTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
-        if let nvc = nvc as? UINavigationController {
-            if let vc = nvc.viewControllers.first as? UserSettingsViewController {
-                vc.delegate = self
-                nvc.modalPresentationStyle = .fullScreen
-                present(nvc, animated: true, completion: nil)
-            }
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogTableViewController") as? DialogTableViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.titleText = "Wallet Preferences"
+            vc.items = WalletPreferences.allCases.map { $0.rawValue }
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
         }
     }
 
@@ -158,11 +149,6 @@ class WalletViewController: UIViewController {
             vc.viewModel = ReceiveViewModel(accounts: viewModel.subaccounts, cachedBalance: viewModel.cachedBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
-    }
-
-    func accountPrefs() {
-
-        print("accaount prefs")
     }
 
     func assetsScreen() {
@@ -514,5 +500,32 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         })
+    }
+}
+extension WalletViewController: DialogTableViewControllerDelegate {
+    func didSelect(_ action: String?) {
+        guard let action = action else { return }
+        switch WalletPreferences(rawValue: action) {
+        case .WalletSettings:
+            let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+            let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
+            if let nvc = nvc as? UINavigationController {
+                if let vc = nvc.viewControllers.first as? UserSettingsViewController {
+                    vc.delegate = self
+                    nvc.modalPresentationStyle = .fullScreen
+                    present(nvc, animated: true, completion: nil)
+                }
+            }
+        case .ArchivedAccounts:
+            break
+        case .CreateNewAccount:
+            let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
+                vc.viewModel = SecuritySelectViewModel(accounts: viewModel.subaccounts, cachedBalance: viewModel.cachedBalance)
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        case .none:
+            break
+        }
     }
 }

@@ -5,18 +5,22 @@ import PromiseKit
 class AccountViewModel {
 
     var wm: WalletManager { WalletManager.current! }
-
-    var accountCellModels: [AccountCellModel] = []
-    var cachedBalance: [(String, Int64)]
     var account: WalletItem!
-
+    var cachedBalance: [(String, Int64)]
     var cachedTransactions = [Transaction]()
+
+    var accountCellModels: [AccountCellModel] {
+        didSet {
+            reloadSections?( [AccountSection.account], true )
+        }
+    }
 
     var txCellModels = [TransactionCellModel]() {
         didSet {
             reloadSections?( [AccountSection.transaction], true )
         }
     }
+
     var assetCellModels = [WalletAssetCellModel]() {
         didSet {
             reloadSections?( [AccountSection.assets], true )
@@ -58,5 +62,38 @@ class AccountViewModel {
                 return blockHeight
         }
         return 0
+    }
+
+    func getSubaccount() {
+        guard let session = wm.sessions[account.gdkNetwork.network] else {
+            return
+        }
+        session.subaccount(account.pointer).done {
+            self.accountCellModels = [AccountCellModel(subaccount: $0)]
+        }.catch { err in
+            print(err)
+        }
+    }
+
+    func archiveSubaccount() {
+        guard let session = wm.sessions[account.gdkNetwork.network] else {
+            return
+        }
+        session.updateSubaccount(subaccount: account.pointer, hidden: true).done {
+            self.getSubaccount()
+        }.catch { err in
+            print(err)
+        }
+    }
+
+    func renameSubaccount(name: String) {
+        guard let session = wm.sessions[account.gdkNetwork.network] else {
+            return
+        }
+        session.renameSubaccount(subaccount: account.pointer, newName: name).done {
+            self.getSubaccount()
+        }.catch { err in
+            print(err)
+        }
     }
 }

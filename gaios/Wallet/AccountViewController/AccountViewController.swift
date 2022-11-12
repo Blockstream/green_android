@@ -8,6 +8,12 @@ enum AccountSection: Int, CaseIterable {
     case footer
 }
 
+enum AccountPreferences: String, CaseIterable {
+    case Rename = "Rename"
+    case Archive = "Archive"
+    case EnhanceSecurity = "Enhance Security"
+}
+
 class AccountViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
@@ -84,15 +90,13 @@ class AccountViewController: UIViewController {
 
     // open settings
     @objc func settingsBtnTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
-        if let nvc = nvc as? UINavigationController {
-            if let vc = nvc.viewControllers.first as? UserSettingsViewController {
-                /// Fix
-                ///vc.delegate = self
-                nvc.modalPresentationStyle = .fullScreen
-                present(nvc, animated: true, completion: nil)
-            }
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogTableViewController") as? DialogTableViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.titleText = "Account Preferences"
+            vc.items = AccountPreferences.allCases.map { $0.rawValue }
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
         }
     }
 
@@ -118,11 +122,6 @@ class AccountViewController: UIViewController {
             vc.viewModel = ReceiveViewModel(accounts: [account], cachedBalance: cachedBalance)
             navigationController?.pushViewController(vc, animated: true)
         }
-    }
-
-    func accountPrefs() {
-
-        print("accaount prefs")
     }
 
     @IBAction func btnSend(_ sender: Any) {
@@ -256,24 +255,6 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension AccountViewController: DialogWalletNameViewControllerDelegate {
-
-    func didRename(name: String, index: Int?) {
-        //...
-    }
-    func didCancel() {
-    }
-}
-
-extension AccountViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
-    func refresh() {
-    }
-
-    func userLogout() {
-        // ...
-    }
-}
-
 extension AccountViewController: UIPopoverPresentationControllerDelegate {
 
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -307,5 +288,44 @@ extension AccountViewController {
         ])
 
         return section
+    }
+}
+
+extension AccountViewController: DialogTableViewControllerDelegate {
+    func didSelect(_ action: String?) {
+        guard let action = action else { return }
+        switch AccountPreferences(rawValue: action) {
+        case .Rename:
+            rename()
+        case .Archive:
+            archive()
+        case .EnhanceSecurity:
+            break
+        case .none:
+            break
+        }
+    }
+
+    func rename() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.isAccountRename = true
+            vc.delegate = self
+            vc.index = nil
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func archive() {
+        viewModel?.archiveSubaccount()
+    }
+}
+
+extension AccountViewController: DialogWalletNameViewControllerDelegate {
+    func didRename(name: String, index: Int?) {
+        viewModel?.renameSubaccount(name: name)
+    }
+    func didCancel() {
     }
 }
