@@ -49,13 +49,13 @@ class WalletViewModel {
                     AccountCellModel(subaccount: $0)
                 }
                 self.getAssets()
-                self.getTransactions()
+                self.getTransactions(max: 10)
             }.catch { err in
                 print(err)
             }
     }
 
-    func getTransactions(subaccounts: [WalletItem]? = nil, page: Int = 0, max: Int? = nil) {
+    func getTransactions(subaccounts: [WalletItem]? = nil, max: Int? = nil) {
         let accounts = subaccounts != nil ? subaccounts : self.subaccounts
         isTxLoading = true
         wm.transactions(subaccounts: accounts ?? [])
