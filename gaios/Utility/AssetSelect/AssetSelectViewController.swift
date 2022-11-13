@@ -1,7 +1,7 @@
 import UIKit
 
 protocol AssetSelectViewControllerDelegate: AnyObject {
-    func didSelectAssetAt(_ index: Int)
+    func didSelectAsset(_ assetId: String)
 }
 
 class AssetSelectViewController: UIViewController {
@@ -12,7 +12,8 @@ class AssetSelectViewController: UIViewController {
     @IBOutlet weak var searchField: UITextField!
 
     var viewModel: AssetSelectViewModel!
-    weak var delegate: AssetSelectViewControllerDelegate?
+    weak var delegateAsset: AssetSelectViewControllerDelegate?
+    weak var delegateAccount: AccountSelectViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -89,25 +90,24 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let index = viewModel?.getAssetIndex(indexPath.row) else { return }
-
+        let asset = viewModel?.assetSelectCellModelsFilter[indexPath.row].asset?.assetId
+        delegateAsset?.didSelectAsset(asset ?? "")
         if (self.navigationController?.viewControllers ?? [])
             .contains(where: {
             return $0 is SecuritySelectViewController
         }) {
-            delegate?.didSelectAssetAt(index)
             navigationController?.popViewController(animated: true)
         } else {
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSelectViewController") as? AccountSelectViewController {
                 var accounts = viewModel.accounts
-                let asset = viewModel.assetSelectCellModelsFilter[indexPath.row].asset?.assetId
                 if let asset = asset, asset == "btc" {
                     accounts.removeAll(where: { $0.gdkNetwork.liquid })
                 } else {
                     accounts.removeAll(where: { !$0.gdkNetwork.liquid })
                 }
                 vc.viewModel = AccountSelectViewModel(accounts: accounts)
+                vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
@@ -118,5 +118,12 @@ extension AssetSelectViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
+    }
+}
+
+extension AssetSelectViewController: AccountSelectViewControllerDelegate {
+    func didSelectAccount(_ account: WalletItem) {
+        delegateAccount?.didSelectAccount(account)
+        navigationController?.popViewController(animated: true)
     }
 }

@@ -89,8 +89,8 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         switch SecuritySelectSection(rawValue: indexPath.section) {
         case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell,
-               let selectedAsset = viewModel?.selectedAsset {
-                cell.configure(model: selectedAsset)
+               let model = viewModel?.assetCellModel {
+                cell.configure(model: model)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -166,7 +166,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
                 guard let viewModel = viewModel else { return }
                 vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts)
-                vc.delegate = self
+                vc.delegateAsset = self
                 navigationController?.pushViewController(vc, animated: true)
             }
         default:
@@ -211,8 +211,8 @@ extension SecuritySelectViewController {
 }
 
 extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
-    func didSelectAssetAt(_ index: Int) {
-        viewModel?.selectedAsset = viewModel?.assetSelectCellModels[index]
+    func didSelectAsset(_ assetId: String) {
+        viewModel?.asset = assetId
         reloadSections([.asset], animated: false)
     }
 }

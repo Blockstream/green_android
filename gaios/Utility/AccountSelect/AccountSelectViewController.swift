@@ -6,6 +6,10 @@ enum AccountSelectSection: Int, CaseIterable {
     case footer
 }
 
+protocol AccountSelectViewControllerDelegate: AnyObject {
+    func didSelectAccount(_ account: WalletItem)
+}
+
 class AccountSelectViewController: UIViewController {
 
     enum FooterType {
@@ -19,6 +23,7 @@ class AccountSelectViewController: UIViewController {
     private var footerH: CGFloat = 54.0
 
     var viewModel: AccountSelectViewModel?
+    weak var delegate: AccountSelectViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -149,8 +154,10 @@ extension AccountSelectViewController: UITableViewDelegate, UITableViewDataSourc
 
         switch AccountSelectSection(rawValue: indexPath.section) {
         case .account:
-            /// handle selection
-            navigationController?.popToViewController(ofClass: ReceiveViewController.self)
+            if let account = viewModel?.accountSelectCellModels[indexPath.row].account {
+                delegate?.didSelectAccount(account)
+            }
+            navigationController?.popViewController(animated: true)
         default:
             break
         }

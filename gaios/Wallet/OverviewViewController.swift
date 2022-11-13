@@ -444,6 +444,7 @@ class OverviewViewController: UIViewController {
 
     // reload in tableview all subaccounts with balance
     func reloadSubaccounts(refresh: Bool, discovery: Bool) -> Promise<Void> {
+        return Promise().asVoid()
     }
 
     // reload in tableview assets of current wallet

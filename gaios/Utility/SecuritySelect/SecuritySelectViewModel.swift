@@ -5,17 +5,16 @@ import PromiseKit
 class SecuritySelectViewModel {
 
     var accounts: [WalletItem]
-    var cachedBalance: [(String, Int64)]
-    var assetSelectCellModels: [AssetSelectCellModel] = []
-    var selectedAsset: AssetSelectCellModel?
+    var assetCellModel: AssetSelectCellModel?
+    var asset: String {
+        didSet {
+            assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
+        }
+    }
 
-    init(accounts: [WalletItem], cachedBalance: [(String, Int64)]) {
+    init(accounts: [WalletItem], asset: String) {
         self.accounts = accounts
-        self.cachedBalance = cachedBalance
-        self.assetSelectCellModels = cachedBalance.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) }
-
-        /// is this correct?
-        selectedAsset = self.assetSelectCellModels.first
+        self.asset = asset
     }
 
     /// reload by section with animation
@@ -29,7 +28,6 @@ class SecuritySelectViewModel {
 
     /// cell models
     func getPolicyCellModels() -> [PolicyCellModel] {
-
         let data = [
             PolicyCellModel(isSS: true, isLight: false, type: "SINGLESIG / LEGACY SEGWIT", name: "Standard", hint: "Simple, portable, standard account, secured by your key, the recovery phrase."),
             PolicyCellModel(isSS: false, isLight: true, type: "Lightning", name: "Instant", hint: "Fast transactions on the Lightning Network, powered by Greenlight."),

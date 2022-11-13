@@ -201,11 +201,24 @@ class ReceiveViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
             guard let viewModel = viewModel else { return }
             vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts)
+            vc.delegateAsset = self
+            vc.delegateAccount = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
-
+extension ReceiveViewController: AssetSelectViewControllerDelegate {
+    func didSelectAsset(_ assetId: String) {
+        viewModel?.asset = assetId
+        reload()
+    }
+}
+extension ReceiveViewController: AccountSelectViewControllerDelegate {
+    func didSelectAccount(_ account: WalletItem) {
+        viewModel?.account = account
+        reload()
+    }
+}
 extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate {
     func didSelect(_ action: ReceiveOptionAction) {
         switch action {

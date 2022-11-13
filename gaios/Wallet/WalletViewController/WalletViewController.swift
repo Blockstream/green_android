@@ -518,7 +518,7 @@ extension WalletViewController: DialogTableViewControllerDelegate {
         case .CreateNewAccount:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-                vc.viewModel = SecuritySelectViewModel(accounts: viewModel.subaccounts, cachedBalance: viewModel.cachedBalance)
+                vc.viewModel = SecuritySelectViewModel(accounts: viewModel.subaccounts, asset: "btc")
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .none:
