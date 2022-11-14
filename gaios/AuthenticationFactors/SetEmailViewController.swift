@@ -14,6 +14,7 @@ class SetEmailViewController: KeyboardViewController {
     private var updateToken: NSObjectProtocol?
 
     var isSetRecovery: Bool = false
+    var session: SessionManager!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,16 +58,15 @@ class SetEmailViewController: KeyboardViewController {
     @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
         guard let text = textField.text else { return }
-        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap {
             TwoFactorConfigItem(enabled: self.isSetRecovery ? false : true, confirmed: true, data: text)
         }.then(on: bgq) { config in
-            session.changeSettingsTwoFactor(method: .email, config: config)
+            self.session.changeSettingsTwoFactor(method: .email, config: config)
         }.then(on: bgq) { _ in
-            session.loadTwoFactorConfig()
+            self.session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

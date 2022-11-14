@@ -337,24 +337,30 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
             switch selectedFactor.type {
             case .email:
                 let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "SetEmailViewController")
-                navigationController?.pushViewController(vc, animated: true)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "SetEmailViewController") as? SetEmailViewController {
+                    vc.session = session
+                    navigationController?.pushViewController(vc, animated: true)
+                }
             case .sms:
                 let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
                     vc.sms = true
+                    vc.session = session
                     navigationController?.pushViewController(vc, animated: true)
                 }
             case .phone:
                 let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "SetPhoneViewController") as? SetPhoneViewController {
                     vc.phoneCall = true
+                    vc.session = session
                     navigationController?.pushViewController(vc, animated: true)
                 }
             case .gauth:
                 let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "SetGauthViewController")
-                navigationController?.pushViewController(vc, animated: true)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "SetGauthViewController") as? SetGauthViewController {
+                    vc.session = session
+                    navigationController?.pushViewController(vc, animated: true)
+                }
             }
 
             //AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))

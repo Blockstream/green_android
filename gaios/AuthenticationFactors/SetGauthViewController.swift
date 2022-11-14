@@ -11,6 +11,7 @@ class SetGauthViewController: UIViewController {
     @IBOutlet weak var copyImage: UIImageView!
     @IBOutlet weak var nextButton: UIButton!
 
+    var session: SessionManager!
     private var gauthData: String?
     private var connected = true
     private var updateToken: NSObjectProtocol?
@@ -66,8 +67,7 @@ class SetGauthViewController: UIViewController {
     }
 
     @objc func click(_ sender: UIButton) {
-        guard let gauth = gauthData,
-              let session = WalletManager.current?.currentSession else { return }
+        guard let gauth = gauthData else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()
@@ -75,9 +75,9 @@ class SetGauthViewController: UIViewController {
         }.compactMap {
             TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
         }.then(on: bgq) { config in
-            session.changeSettingsTwoFactor(method: .gauth, config: config)
+            self.session.changeSettingsTwoFactor(method: .gauth, config: config)
         }.then(on: bgq) { _ in
-            session.loadTwoFactorConfig()
+            self.session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

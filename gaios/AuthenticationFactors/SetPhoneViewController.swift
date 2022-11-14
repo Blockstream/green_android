@@ -12,6 +12,7 @@ class SetPhoneViewController: KeyboardViewController {
 
     var sms = false
     var phoneCall = false
+    var session: SessionManager!
     private var connected = true
     private var updateToken: NSObjectProtocol?
 
@@ -61,16 +62,15 @@ class SetPhoneViewController: KeyboardViewController {
             DropAlert().warning(message: NSLocalizedString("id_invalid_phone_number_format", comment: ""))
             return
         }
-        guard let session = WalletManager.current?.currentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap {
             TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone)
         }.then(on: bgq) { config in
-            session.changeSettingsTwoFactor(method: method, config: config)
+            self.session.changeSettingsTwoFactor(method: method, config: config)
         }.then(on: bgq) { _ in
-            session.loadTwoFactorConfig()
+            self.session.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

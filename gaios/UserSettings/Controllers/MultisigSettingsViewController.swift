@@ -19,6 +19,11 @@ class MultisigSettingsViewController: UIViewController {
         initViewModel()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.load()
+    }
+
     func initViewModel() {
         viewModel = MultisigSettingsViewModel(session: session)
         viewModel.reloadTableView = { [weak self] in
@@ -31,7 +36,6 @@ class MultisigSettingsViewController: UIViewController {
                 self?.showError(text)
             }
         }
-        viewModel.load()
     }
 
     @objc func close() {
