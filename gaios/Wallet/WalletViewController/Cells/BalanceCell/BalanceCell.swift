@@ -36,7 +36,20 @@ class BalanceCell: UITableViewCell {
         btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
 
-        let icons = model.cachedBalance.compactMap { WalletManager.current?.registry.image(for: $0.0) }
+        let sorted = model.cachedBalance.sorted()
+        var icons: [UIImage] = []
+        for asset in sorted {
+            let tag = asset.0
+            if let icon = WalletManager.current?.registry.image(for: tag) {
+                if icons.count > 0 {
+                    if icon != icons.last {
+                        icons.append(icon)
+                    }
+                } else {
+                    icons.append(icon)
+                }
+            }
+        }
 
         for v in iconsStack.subviews {
             v.removeFromSuperview()

@@ -25,6 +25,7 @@ class AccountCell: UITableViewCell {
     private var isLast: Bool = false
     private var onSelect: (() -> Void)?
     private let iconW: CGFloat = 24
+    private var cColor: UIColor = .clear
 
     static var identifier: String { return String(describing: self) }
 
@@ -66,11 +67,11 @@ class AccountCell: UITableViewCell {
         imgMS.isHidden = model.isSS
         btnWarn.isHidden = true
         btcImg.isHidden = model.isLiquid
+        model.isTest ? (cColor = model.isLiquid ? UIColor.gAccountTestLightBlue() : UIColor.gAccountTestGray()) :
+        (cColor = model.isLiquid ? UIColor.gAccountLightBlue() : UIColor.gAccountOrange())
+
         [bg, effectView, btnWarn].forEach {
-            model.isTest ?
-            ($0?.backgroundColor = model.isLiquid ? UIColor.gAccountTestLightBlue() : UIColor.gAccountTestGray())
-            :
-            ($0?.backgroundColor = model.isLiquid ? UIColor.gAccountLightBlue() : UIColor.gAccountOrange())
+            $0?.backgroundColor = cColor
         }
         btnDisclose.isHidden = onSelect == nil
 
@@ -106,9 +107,11 @@ class AccountCell: UITableViewCell {
             imageView.image = img
             imageView.heightAnchor.constraint(equalToConstant: iconW).isActive = true
             imageView.widthAnchor.constraint(equalToConstant: iconW).isActive = true
+            imageView.backgroundColor = cColor
             imageView.borderWidth = 1.0
             imageView.borderColor = UIColor.gBlackBg()
             imageView.cornerRadius = iconW / 2.0
+            imageView.clipsToBounds = true
             iconsStack.addArrangedSubview(imageView)
         }
     }

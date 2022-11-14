@@ -9,7 +9,7 @@ extension AssetAmountList {
     init(_ amounts: [String: Int64]) {
         self = amounts.map { ($0.key, $0.value) }
     }
-    
+
     func sorted() -> [(String, Int64)] {
         return self.sorted(by: { (rhs, lhs) in
             let lbtc = getGdkNetwork("liquid").getFeeAsset()
