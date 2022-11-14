@@ -7,7 +7,6 @@ class UserSettingsCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var actionSwitch: UISwitch!
     @IBOutlet weak var disclosure: UIImageView!
-    var onActionSwitch: (() -> Void)?
 
     class var identifier: String { return String(describing: self) }
 
@@ -26,14 +25,11 @@ class UserSettingsCell: UITableViewCell {
         didSet {
             lblTitle.text = viewModel?.title
             lblHint.text = viewModel?.subtitle
-            onActionSwitch = viewModel?.delegate
-            actionSwitch.isHidden = viewModel?.delegate == nil
+            actionSwitch.isEnabled = false
+            actionSwitch.isOn = viewModel?.switcher ?? false
+            actionSwitch.isHidden = viewModel?.switcher == nil
             disclosure.isHidden = !(viewModel?.disclosure ?? false)
             disclosure.image = viewModel?.disclosureImage
         }
-    }
-
-    @IBAction func actionSwitchChanged(_ sender: UISwitch) {
-        onActionSwitch?()
     }
 }

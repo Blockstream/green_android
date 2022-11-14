@@ -171,7 +171,10 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 navigationController?.pushViewController(vc, animated: true)
             }
         case.LoginWithBiometrics:
-            break
+            let vm = viewModel.getCellModel(at: indexPath)
+            if let value = vm?.switcher {
+                onBiometricSwitch(!value)
+            }
         case .AutoLogout:
             showAutoLogout()
         case .Bitcoin:
@@ -303,10 +306,12 @@ extension UserSettingsViewController {
             return Guarantee()
         }.compactMap {
             self.session
-        }.compactMap(on: bgq) {
-            self.account?.addBioPin(session: $0)
+        }.then(on: bgq) {
+            self.account!.addBioPin(session: $0)
         }.ensure {
             self.stopAnimating()
+        }.done {
+            self.viewModel.load()
         }.catch { error in
             if let _ = error as? GaError {
                 self.onAuthError(message: NSLocalizedString("id_connection_failed", comment: ""))
@@ -323,6 +328,7 @@ extension UserSettingsViewController {
     private func disableBioAuth() {
         onAuthRemoval { [weak self] in
             self?.account?.removeBioKeychainData()
+            self?.viewModel.load()
         }
     }
 

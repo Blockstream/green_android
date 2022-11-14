@@ -54,11 +54,18 @@ class UserSettingsViewModel {
             section: .Security,
             type: .ChangePin)
         let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "") : NSLocalizedString("id_touchface_id_not_available", comment: "")
+        var bioSwitch: Bool? = nil
+        if AuthenticationTypeHandler.supportsBiometricAuthentication() {
+            let account = AccountsManager.shared.current
+            bioSwitch = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account?.keychain ?? "")
+        }
         let loginWithBiometrics = UserSettingsItem(
             title: bioTitle,
             subtitle: "",
             section: .Security,
-            type: .LoginWithBiometrics)
+            type: .LoginWithBiometrics,
+            switcher: bioSwitch
+        )
         let autolock = UserSettingsItem(
             title: USItem.AutoLogout.string,
             subtitle: (settings?.autolock ?? .fiveMinutes).string,

@@ -7,15 +7,14 @@ class UserSettingsCellModel {
     var subtitle: String
     var disclosure: Bool = false
     var disclosureImage: UIImage?
-    var delegate: (() -> Void)?
+    var switcher: Bool? = nil
     var type: USItem?
 
-    init(_ item: UserSettingsItem, onActionSwitch: (() -> Void)? = nil) {
+    init(_ item: UserSettingsItem) {
         title = item.title
         subtitle = item.subtitle
-        delegate = onActionSwitch
         type = item.type
-
+        switcher = item.switcher
         switch type {
         case .Logout, .ArchievedAccounts, .ChangePin, .BackUpRecoveryPhrase, .Bitcoin, .Liquid:
             disclosure = true
