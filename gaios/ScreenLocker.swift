@@ -91,7 +91,7 @@ class ScreenLocker {
         let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval
 
         WalletManager.wallets.forEach { (id, wm) in
-            if let settings = wm.currentSession?.settings,
+            if let settings = wm.prominentSession?.settings,
                Int(countdown) >= settings.altimeout * 60 {
                 WalletManager.delete(for: id)
 
