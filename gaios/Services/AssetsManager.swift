@@ -99,7 +99,6 @@ class AssetsManager {
         Guarantee().compactMap(on: bgq) {
             _ = try session.refreshAssets(icons: false, assets: true, refresh: true)
             _ = try session.refreshAssets(icons: true, assets: false, refresh: true)
-        }.compactMap(on: bgq) {
             self.fetchFromCountly()
         }.done { _ in
             let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
