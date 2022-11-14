@@ -232,8 +232,8 @@ extension UserSettingsViewController {
         guard network == .liquid || network == .bitcoin else {
             return
         }
-        guard let session = WalletManager.current?.sessions[network.rawValue] else {
-            showAlert(title: network.name(), message: "Multisig wallet not created")
+        guard let session = WalletManager.current?.sessions[network.rawValue], session.logged else {
+            showAlert(title: network.name(), message: "Multisig wallet not created or not logged")
             return
         }
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)

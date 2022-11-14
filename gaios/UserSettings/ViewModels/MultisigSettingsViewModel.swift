@@ -16,6 +16,9 @@ class MultisigSettingsViewModel {
     // reload all contents
     var reloadTableView: (() -> Void)?
 
+    // show errors
+    var error: ((String) -> Void)?
+
     // settings cell models
     var cellModels = [MultisigSettingsCellModel]() {
         didSet {
@@ -66,7 +69,7 @@ class MultisigSettingsViewModel {
         Guarantee().then { self.session.getWatchOnlyUsername() }
             .map { self.getItems(username: $0) }
             .done { self.cellModels = $0.map { MultisigSettingsCellModel($0) } }
-            .catch { err in print(err) }
+            .catch { err in self.error?(err.localizedDescription) }
     }
 
     func enableRecoveryTransactions(_ enable: Bool) {
@@ -75,6 +78,6 @@ class MultisigSettingsViewModel {
         Guarantee()
             .then(on: bgq) { self.session.changeSettings(settings: settings) }
             .done { _ in self.load() }
-            .catch { err in print(err) }
+            .catch { err in self.error?(err.localizedDescription) }
     }
 }

@@ -26,6 +26,11 @@ class MultisigSettingsViewController: UIViewController {
                 self?.tableView.reloadData()
             }
         }
+        viewModel.error = { [weak self] text in
+            DispatchQueue.main.async {
+                self?.showError(message: text)
+            }
+        }
         viewModel.load()
     }
 
