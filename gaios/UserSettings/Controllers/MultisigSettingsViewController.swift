@@ -28,7 +28,7 @@ class MultisigSettingsViewController: UIViewController {
         }
         viewModel.error = { [weak self] text in
             DispatchQueue.main.async {
-                self?.showError(message: text)
+                self?.showError(text)
             }
         }
         viewModel.load()
