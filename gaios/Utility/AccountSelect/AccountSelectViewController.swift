@@ -18,7 +18,8 @@ class AccountSelectViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnAdvanced: UIButton!
-
+    @IBOutlet weak var ampSubview: UIView!
+    @IBOutlet weak var lblAmp: UILabel!
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
 
@@ -39,6 +40,13 @@ class AccountSelectViewController: UIViewController {
 
         setContent()
         setStyle()
+
+        ampSubview.isHidden = true
+        ampSubview.cornerRadius = 5.0
+        if let ampWarn = viewModel?.ampWarn as? String {
+            ampSubview.isHidden = false
+            lblAmp.text = ampWarn
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -105,7 +113,7 @@ extension AccountSelectViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch AccountSelectSection(rawValue: section) {
         default:
-            return headerH
+            return 0.1
         }
     }
 
@@ -130,7 +138,7 @@ extension AccountSelectViewController: UITableViewDelegate, UITableViewDataSourc
 
         switch AccountSelectSection(rawValue: section) {
         case .account:
-            return headerView( "Accounts" )
+            return nil // headerView( "Accounts" )
         default:
             return nil
         }
@@ -157,7 +165,7 @@ extension AccountSelectViewController: UITableViewDelegate, UITableViewDataSourc
             if let account = viewModel?.accountSelectCellModels[indexPath.row].account {
                 delegate?.didSelectAccount(account)
             }
-            navigationController?.popViewController(animated: true)
+            navigationController?.popToViewController(ofClass: ReceiveViewController.self, animated: true)
         default:
             break
         }

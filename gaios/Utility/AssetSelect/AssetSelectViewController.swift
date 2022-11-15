@@ -90,7 +90,8 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let asset = viewModel?.assetSelectCellModelsFilter[indexPath.row].asset?.assetId
+        guard let assetCellModel = viewModel?.assetSelectCellModelsFilter[indexPath.row] as? AssetSelectCellModel else { return }
+        let asset = assetCellModel.asset?.assetId
         delegateAsset?.didSelectAsset(asset ?? "")
         if (self.navigationController?.viewControllers ?? [])
             .contains(where: {
@@ -106,7 +107,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
                 } else {
                     accounts.removeAll(where: { !$0.gdkNetwork.liquid })
                 }
-                vc.viewModel = AccountSelectViewModel(accounts: accounts)
+                vc.viewModel = AccountSelectViewModel(accounts: accounts, ampWarn: assetCellModel.ampWarn)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
@@ -124,6 +125,5 @@ extension AssetSelectViewController: UITextFieldDelegate {
 extension AssetSelectViewController: AccountSelectViewControllerDelegate {
     func didSelectAccount(_ account: WalletItem) {
         delegateAccount?.didSelectAccount(account)
-        navigationController?.popViewController(animated: true)
     }
 }

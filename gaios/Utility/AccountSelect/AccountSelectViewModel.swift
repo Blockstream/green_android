@@ -8,11 +8,13 @@ class AccountSelectViewModel {
 
     var accountSelectCellModels: [AccountSelectCellModel] = []
     var accountSelectCellModelsFilter: [AccountSelectCellModel] = []
+    var ampWarn: String?
 
-    init(accounts: [WalletItem]) {
+    init(accounts: [WalletItem], ampWarn: String?) {
         self.accounts = accounts
         self.accountSelectCellModels = accounts.map { AccountSelectCellModel(account: $0) }
         self.accountSelectCellModelsFilter = accountSelectCellModels
+        self.ampWarn = ampWarn
     }
 
     /// reload by section with animation
