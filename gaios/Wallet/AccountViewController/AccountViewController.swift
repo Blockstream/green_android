@@ -90,12 +90,11 @@ class AccountViewController: UIViewController {
 
     // open settings
     @objc func settingsBtnTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogTableViewController") as? DialogTableViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.titleText = "Account Preferences"
-            vc.items = AccountPreferences.allCases.map { $0.rawValue }
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Account Preferences", items: AccountPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
@@ -117,6 +116,21 @@ class AccountViewController: UIViewController {
                                             accounts: [account])
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+
+    func rename() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.isAccountRename = true
+            vc.delegate = self
+            vc.index = nil
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func archive() {
+        viewModel?.archiveSubaccount()
     }
 
     @IBAction func btnSend(_ sender: Any) {
@@ -286,34 +300,18 @@ extension AccountViewController {
     }
 }
 
-extension AccountViewController: DialogTableViewControllerDelegate {
-    func didSelect(_ action: String?) {
-        guard let action = action else { return }
-        switch AccountPreferences(rawValue: action) {
-        case .Rename:
+extension AccountViewController: DialogListViewControllerDelegate {
+    func didSelectRowAtIndex(_ index: Int) {
+        switch AccountPrefs(rawValue: index) {
+        case .rename:
             rename()
-        case .Archive:
+        case .archive:
             archive()
-        case .EnhanceSecurity:
+        case .enhanceSecurity:
             break
         case .none:
             break
         }
-    }
-
-    func rename() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.isAccountRename = true
-            vc.delegate = self
-            vc.index = nil
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
-    func archive() {
-        viewModel?.archiveSubaccount()
     }
 }
 

@@ -127,6 +127,15 @@
 		3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73726A5A41A00451FB3 /* Drawer.swift */; };
 		3453C74226A6BD7E00451FB3 /* HWWScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C74126A6BD7E00451FB3 /* HWWScan.swift */; };
 		34574C61283FB8670068212F /* DialogAnalyticsConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */; };
+		3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3457F4A62923943C00EF33B5 /* Dialogs.storyboard */; };
+		3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4A82923947A00EF33B5 /* DialogListViewController.swift */; };
+		3457F4AB292394DD00EF33B5 /* CustomVisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4AA292394DD00EF33B5 /* CustomVisualEffectView.swift */; };
+		3457F4AE292397A600EF33B5 /* DialogListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4AD292397A600EF33B5 /* DialogListViewModel.swift */; };
+		3457F4B22923988600EF33B5 /* DialogListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4B02923988600EF33B5 /* DialogListCell.swift */; };
+		3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3457F4B12923988600EF33B5 /* DialogListCell.xib */; };
+		3457F4B529239F2400EF33B5 /* DialogListCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4B429239F2400EF33B5 /* DialogListCellModel.swift */; };
+		3457F4B82923A72900EF33B5 /* WalletPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4B72923A72900EF33B5 /* WalletPrefs.swift */; };
+		3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4B92923B0B500EF33B5 /* AccountPrefs.swift */; };
 		34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34580EB026FCB78D00D3BEFC /* UITableView.swift */; };
 		345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345C70852836233800EF3971 /* AnalyticsManager.swift */; };
 		345C70882836254600EF3971 /* AssetsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345C70872836254600EF3971 /* AssetsManager.swift */; };
@@ -530,6 +539,15 @@
 		3453C73726A5A41A00451FB3 /* Drawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawer.swift; sourceTree = "<group>"; };
 		3453C74126A6BD7E00451FB3 /* HWWScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWWScan.swift; sourceTree = "<group>"; };
 		34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAnalyticsConsent.swift; sourceTree = "<group>"; };
+		3457F4A62923943C00EF33B5 /* Dialogs.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Dialogs.storyboard; sourceTree = "<group>"; };
+		3457F4A82923947A00EF33B5 /* DialogListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogListViewController.swift; sourceTree = "<group>"; };
+		3457F4AA292394DD00EF33B5 /* CustomVisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomVisualEffectView.swift; sourceTree = "<group>"; };
+		3457F4AD292397A600EF33B5 /* DialogListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogListViewModel.swift; sourceTree = "<group>"; };
+		3457F4B02923988600EF33B5 /* DialogListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogListCell.swift; sourceTree = "<group>"; };
+		3457F4B12923988600EF33B5 /* DialogListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DialogListCell.xib; sourceTree = "<group>"; };
+		3457F4B429239F2400EF33B5 /* DialogListCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogListCellModel.swift; sourceTree = "<group>"; };
+		3457F4B72923A72900EF33B5 /* WalletPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPrefs.swift; sourceTree = "<group>"; };
+		3457F4B92923B0B500EF33B5 /* AccountPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPrefs.swift; sourceTree = "<group>"; };
 		34580EB026FCB78D00D3BEFC /* UITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
 		345C70852836233800EF3971 /* AnalyticsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		345C70872836254600EF3971 /* AssetsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsManager.swift; sourceTree = "<group>"; };
@@ -864,6 +882,7 @@
 				6D0983F223FF033900289ACA /* DropAlert.swift */,
 				34C9E10826B92F0B00200D2F /* DynamicTableView.swift */,
 				81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */,
+				3457F4AA292394DD00EF33B5 /* CustomVisualEffectView.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -1167,6 +1186,35 @@
 				341D0324279EB9E900E2ABAB /* ValidateTask.swift */,
 			);
 			path = Classes;
+			sourceTree = "<group>";
+		};
+		3457F4AC2923978600EF33B5 /* DialogList */ = {
+			isa = PBXGroup;
+			children = (
+				3457F4AF2923986D00EF33B5 /* Cells */,
+				3457F4A82923947A00EF33B5 /* DialogListViewController.swift */,
+				3457F4AD292397A600EF33B5 /* DialogListViewModel.swift */,
+			);
+			path = DialogList;
+			sourceTree = "<group>";
+		};
+		3457F4AF2923986D00EF33B5 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				3457F4B02923988600EF33B5 /* DialogListCell.swift */,
+				3457F4B12923988600EF33B5 /* DialogListCell.xib */,
+				3457F4B429239F2400EF33B5 /* DialogListCellModel.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		3457F4B62923A6D300EF33B5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3457F4B72923A72900EF33B5 /* WalletPrefs.swift */,
+				3457F4B92923B0B500EF33B5 /* AccountPrefs.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		345E1A80261EE6A500A1D934 /* DrawerNetworkSelection */ = {
@@ -1524,7 +1572,9 @@
 		34DDD0A7260A484E00020380 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				3457F4B62923A6D300EF33B5 /* Models */,
 				34DDD0A8260A486300020380 /* Shared.storyboard */,
+				3457F4A62923943C00EF33B5 /* Dialogs.storyboard */,
 				343A697C27E08AA3008D5F4C /* Cells */,
 				34DDD0AC260A48DF00020380 /* Controllers */,
 			);
@@ -1559,6 +1609,7 @@
 				34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */,
 				340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */,
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
+				3457F4AC2923978600EF33B5 /* DialogList */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2109,6 +2160,7 @@
 				34019C2728D35F2400E64BEE /* DrawerBarItem.xib in Resources */,
 				3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
+				3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
@@ -2127,6 +2179,7 @@
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
 				3479429F275615560020D60F /* AutomaticRestore.storyboard in Resources */,
+				3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */,
 				34DDD0A9260A486300020380 /* Shared.storyboard in Resources */,
 				34440E7B28B379C8006CD464 /* WalletListHDCell.xib in Resources */,
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
@@ -2263,6 +2316,7 @@
 			files = (
 				346752EF291E559900256132 /* AccountSelectViewController.swift in Sources */,
 				3497936625F8B18C0029ECB1 /* ChooseNetworkViewController.swift in Sources */,
+				3457F4AB292394DD00EF33B5 /* CustomVisualEffectView.swift in Sources */,
 				3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */,
 				3418BABC2743984400F9B2D0 /* TransactionDetailCell.swift in Sources */,
 				341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */,
@@ -2310,6 +2364,7 @@
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
+				3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */,
 				811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */,
 				34C3020626E7659000A3F910 /* OverviewAccountCell.swift in Sources */,
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,
@@ -2317,6 +2372,7 @@
 				34204720291C12C000EDE945 /* AssetSelectViewController.swift in Sources */,
 				34959D3A26F0739700EAF853 /* OverviewAccountIdCell.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
+				3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */,
 				346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */,
 				34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */,
 				34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */,
@@ -2347,6 +2403,7 @@
 				8164909027F4C4FF0097B2E4 /* JadeMessage.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */,
+				3457F4B82923A72900EF33B5 /* WalletPrefs.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
@@ -2461,6 +2518,7 @@
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
 				3423C6E727C380DD001D9E2C /* DialogMnemonicLengthViewController.swift in Sources */,
 				81BF4E3122E9E9EA005A04C6 /* LedgerCommands.swift in Sources */,
+				3457F4AE292397A600EF33B5 /* DialogListViewModel.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView.swift in Sources */,
 				3497936D25F8B18C0029ECB1 /* RotationAnimation.swift in Sources */,
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
@@ -2502,6 +2560,7 @@
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
 				345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */,
 				6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */,
+				3457F4B22923988600EF33B5 /* DialogListCell.swift in Sources */,
 				6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */,
 				34440E7F28B37C2D006CD464 /* WalletListEmptyCell.swift in Sources */,
 				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,
@@ -2513,6 +2572,7 @@
 				81A062D0245322B0003464A0 /* HWResolver.swift in Sources */,
 				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
 				347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */,
+				3457F4B529239F2400EF33B5 /* DialogListCellModel.swift in Sources */,
 				34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */,
 				81BF4E3022E9E9EA005A04C6 /* LedgerChannel.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,

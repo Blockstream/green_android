@@ -116,12 +116,11 @@ class WalletViewController: UIViewController {
 
     // open settings
     @objc func settingsBtnTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogTableViewController") as? DialogTableViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.titleText = "Wallet Preferences"
-            vc.items = WalletPreferences.allCases.map { $0.rawValue }
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Wallet Preferences", items: WalletPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
@@ -496,11 +495,11 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
         })
     }
 }
-extension WalletViewController: DialogTableViewControllerDelegate {
-    func didSelect(_ action: String?) {
-        guard let action = action else { return }
-        switch WalletPreferences(rawValue: action) {
-        case .WalletSettings:
+
+extension WalletViewController: DialogListViewControllerDelegate {
+    func didSelectRowAtIndex(_ index: Int) {
+        switch WalletPrefs(rawValue: index) {
+        case .settings:
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
             let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
             if let nvc = nvc as? UINavigationController {
@@ -510,17 +509,17 @@ extension WalletViewController: DialogTableViewControllerDelegate {
                     present(nvc, animated: true, completion: nil)
                 }
             }
-        case .ArchivedAccounts:
-            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        case .CreateNewAccount:
+        case .createAccount:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
                 vc.viewModel = SecuritySelectViewModel(accounts: viewModel.subaccounts, asset: "btc")
                 navigationController?.pushViewController(vc, animated: true)
             }
+//        case .ArchivedAccounts:
+//            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+//            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
+//                navigationController?.pushViewController(vc, animated: true)
+//            }
         case .none:
             break
         }
