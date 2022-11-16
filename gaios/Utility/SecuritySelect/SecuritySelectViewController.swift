@@ -20,7 +20,7 @@ class SecuritySelectViewController: UIViewController {
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
 
-    var viewModel: SecuritySelectViewModel?
+    var viewModel: SecuritySelectViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,7 +28,11 @@ class SecuritySelectViewController: UIViewController {
         let reloadSections: (([SecuritySelectSection], Bool) -> Void)? = { [weak self] (sections, animated) in
             self?.reloadSections(sections, animated: true)
         }
-        viewModel?.reloadSections = reloadSections
+        viewModel.reloadSections = reloadSections
+        viewModel.success = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        viewModel.error = showError
 
         ["PolicyCell", "AssetSelectCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
@@ -164,11 +168,13 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                guard let viewModel = viewModel else { return }
                 vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts)
                 vc.delegateAsset = self
                 navigationController?.pushViewController(vc, animated: true)
             }
+        case .policy:
+            let cell = viewModel.getPolicyCellModels()[indexPath.row]
+            viewModel.create(policy: cell.policy, asset: viewModel.asset)
         default:
             break
         }

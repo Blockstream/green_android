@@ -18,6 +18,35 @@ extension UIViewController {
             self.present(alert, animated: true, completion: nil)
         }
     }
+
+    func showError(_ err: Error) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: self.getError(err), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    func getError(_ err: Error) -> String {
+        switch err {
+        case AuthenticationTypeHandler.AuthError.CanceledByUser, AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
+            return err.localizedDescription
+        case LoginError.connectionFailed:
+            return "id_connection_failed"
+        case LoginError.walletNotFound:
+            return "id_wallet_not_found"
+        case GaError.NotAuthorizedError:
+            return "NotAuthorizedError"
+        case GaError.GenericError(let txt):
+            return txt ?? "id_operation_failed"
+        case TwoFactorCallError.cancel(let txt):
+            return txt
+        case TwoFactorCallError.failure(let txt):
+            return txt
+        default:
+            return err.localizedDescription
+        }
+    }
 }
 
 extension UIViewController {

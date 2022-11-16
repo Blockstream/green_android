@@ -75,6 +75,10 @@ class WalletManager {
         sessions[networkName] = SessionManager(gdknetwork)
     }
 
+    var testnet: Bool {
+        return !(prominentNetwork.gdkNetwork?.mainnet ?? true)
+    }
+
     var activeSessions: [String: SessionManager] {
         self.sessions.filter { $0.1.logged }
     }
