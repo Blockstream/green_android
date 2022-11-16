@@ -107,6 +107,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
                 } else {
                     accounts.removeAll(where: { !$0.gdkNetwork.liquid })
                 }
+                ///ampWarn: can we remove?
                 vc.viewModel = AccountSelectViewModel(accounts: accounts, ampWarn: assetCellModel.ampWarn)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)

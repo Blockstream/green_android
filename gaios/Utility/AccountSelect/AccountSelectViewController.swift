@@ -41,12 +41,13 @@ class AccountSelectViewController: UIViewController {
         setContent()
         setStyle()
 
+        /// probably we can remove
         ampSubview.isHidden = true
-        ampSubview.cornerRadius = 5.0
-        if let ampWarn = viewModel?.ampWarn as? String {
-            ampSubview.isHidden = false
-            lblAmp.text = ampWarn
-        }
+//        ampSubview.cornerRadius = 5.0
+//        if let ampWarn = viewModel?.ampWarn as? String {
+//            ampSubview.isHidden = false
+//            lblAmp.text = ampWarn
+//        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

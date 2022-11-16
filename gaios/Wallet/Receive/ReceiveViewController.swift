@@ -205,8 +205,24 @@ class ReceiveViewController: UIViewController {
             vc.delegateAccount = self
             navigationController?.pushViewController(vc, animated: true)
         }
+//        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
+//            guard let viewModel = viewModel else { return }
+//            vc.viewModel = AssetExpandableSelectViewModel(accounts: viewModel.accounts)
+//            vc.delegate = self
+//            navigationController?.pushViewController(vc, animated: true)
+//        }
     }
 }
+
+extension ReceiveViewController: AssetExpandableSelectViewControllerDelegate {
+    func didSelectReceiver(assetId: String, account: WalletItem) {
+        viewModel?.asset = assetId
+        viewModel?.account = account
+        reload()
+    }
+}
+
 extension ReceiveViewController: AssetSelectViewControllerDelegate {
     func didSelectAsset(_ assetId: String) {
         viewModel?.asset = assetId
