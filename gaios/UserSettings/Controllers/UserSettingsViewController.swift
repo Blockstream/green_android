@@ -189,7 +189,9 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
             }.catch { _ in }
-        default:
+        case .ArchievedAccounts:
+            openArchivedAccounts()
+        case .none:
             break
         }
     }
@@ -228,6 +230,13 @@ extension UserSettingsViewController {
                 text = localizedDescription
             }
             self.showError(text)
+        }
+    }
+
+    func openArchivedAccounts() {
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
