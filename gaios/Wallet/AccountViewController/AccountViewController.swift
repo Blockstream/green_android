@@ -27,12 +27,10 @@ class AccountViewController: UIViewController {
 
     private var sIdx: Int = 0
 
-    var viewModel: AccountViewModel?
+    var viewModel: AccountViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        viewModel?.reloadSections = reloadSections
 
         ["AccountCell", "WalletAssetCell", "TransactionCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
@@ -45,9 +43,11 @@ class AccountViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        viewModel?.getBalance()
-        viewModel?.getTransactions()
+        viewModel?.reloadSections = reloadSections
+        viewModel.success = { self.reloadSections([.account], animated: false) }
+        viewModel.error = showError
+        viewModel.getBalance()
+        viewModel.getTransactions()
     }
 
     func reloadSections(_ sections: [AccountSection], animated: Bool) {
@@ -111,7 +111,7 @@ class AccountViewController: UIViewController {
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            guard let account = viewModel?.account else { return }
+            guard let account = viewModel.account else { return }
             vc.viewModel = ReceiveViewModel(account: account,
                                             accounts: [account])
             navigationController?.pushViewController(vc, animated: true)
@@ -153,11 +153,11 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch AccountSection(rawValue: section) {
         case .account:
-            return viewModel?.accountCellModels.count ?? 0
+            return viewModel.accountCellModels.count
         case .assets:
-            return viewModel?.assetCellModels.count ?? 0
+            return viewModel.assetCellModels.count
         case .transaction:
-            return viewModel?.txCellModels.count ?? 0
+            return viewModel.txCellModels.count
         default:
             return 0
         }
@@ -167,8 +167,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch AccountSection(rawValue: indexPath.section) {
         case .account:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell,
-               let model = viewModel?.accountCellModels[indexPath.row] {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell {
+                let model = viewModel.accountCellModels[indexPath.row]
                 cell.configure(model: model,
                                cIdx: indexPath.row,
                                sIdx: sIdx,

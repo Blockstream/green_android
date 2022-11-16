@@ -30,6 +30,12 @@ class AccountViewModel {
     /// reload by section with animation
     var reloadSections: (([AccountSection], Bool) -> Void)?
 
+    // on success
+    var success: (() -> Void)?
+
+    // on errors
+    var error: ((Error) -> Void)?
+
     init(model: AccountCellModel, account: WalletItem, cachedBalance: [(String, Int64)]) {
         self.accountCellModels = [model]
         self.account = account
@@ -64,36 +70,29 @@ class AccountViewModel {
         return 0
     }
 
-    func getSubaccount() {
-        guard let session = wm.sessions[account.gdkNetwork.network] else {
-            return
-        }
-        session.subaccount(account.pointer).done {
-            self.accountCellModels = [AccountCellModel(subaccount: $0)]
-        }.catch { err in
-            print(err)
-        }
-    }
-
     func archiveSubaccount() {
         guard let session = wm.sessions[account.gdkNetwork.network] else {
             return
         }
-        session.updateSubaccount(subaccount: account.pointer, hidden: true).done {
-            self.getSubaccount()
-        }.catch { err in
-            print(err)
-        }
+        Guarantee()
+            .then { session.updateSubaccount(subaccount: self.account.pointer, hidden: true) }
+            .then { session.subaccount(self.account.pointer) }
+            .compactMap { self.accountCellModels = [AccountCellModel(subaccount: $0)]}
+            .then { self.wm.subaccounts() }
+            .done { _ in self.success?() }
+            .catch { err in self.error?(err) }
     }
 
     func renameSubaccount(name: String) {
         guard let session = wm.sessions[account.gdkNetwork.network] else {
             return
         }
-        session.renameSubaccount(subaccount: account.pointer, newName: name).done {
-            self.getSubaccount()
-        }.catch { err in
-            print(err)
-        }
+        Guarantee()
+            .then { session.renameSubaccount(subaccount: self.account.pointer, newName: name) }
+            .then { session.subaccount(self.account.pointer) }
+            .compactMap { self.accountCellModels = [AccountCellModel(subaccount: $0)]}
+            .then { self.wm.subaccounts() }
+            .done { _ in self.success?() }
+            .catch { err in self.error?(err) }
     }
 }
