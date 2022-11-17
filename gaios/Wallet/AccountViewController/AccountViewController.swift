@@ -242,6 +242,15 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         return nil
     }
 
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        switch AccountSection(rawValue: indexPath.section) {
+        case .assets:
+            return nil
+        default:
+            return indexPath
+        }
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         switch AccountSection(rawValue: indexPath.section) {
@@ -249,6 +258,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             sIdx = indexPath.row
             tableView.beginUpdates()
             tableView.endUpdates()
+        case .assets:
+            break
         case .transaction:
             let transaction = viewModel?.cachedTransactions[indexPath.row]
             let storyboard = UIStoryboard(name: "Transaction", bundle: nil)

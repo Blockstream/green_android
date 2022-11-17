@@ -32,6 +32,7 @@ class WalletViewController: UIViewController {
     private var footerH: CGFloat = 54.0
     private var cardH: CGFloat = 64.0
     private var cardHc: CGFloat = 184.0
+    private var hideBalance = false
 
     private var sIdx: Int = 0
 
@@ -200,6 +201,10 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         case .balance:
             if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell, let model = viewModel.balanceCellModel {
                 cell.configure(model: model,
+                               hideBalance: hideBalance,
+                               onHide: {[weak self] value in
+                    self?.hideBalance = value
+                },
                                onAssets: {[weak self] in
                     self?.assetsScreen()
                 })

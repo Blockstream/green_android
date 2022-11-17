@@ -10,11 +10,13 @@ class BalanceCell: UITableViewCell {
     @IBOutlet weak var iconsStack: UIStackView!
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
     @IBOutlet weak var btnEye: UIButton!
+    @IBOutlet weak var blurArea: UIView!
 
-    private var isEyeOff = false
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
+    private var onHide: ((Bool) -> Void)?
     private let iconW: CGFloat = 18
+    private var hideBalance = false
 
     class var identifier: String { return String(describing: self) }
 
@@ -27,15 +29,34 @@ class BalanceCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
+    lazy var blurredView: UIView = {
+        let containerView = UIView()
+        let blurEffect = UIBlurEffect(style: .dark)
+        let customBlurEffectView = CustomVisualEffectView(effect: blurEffect, intensity: 0.4)
+        customBlurEffectView.frame = blurArea.bounds
+
+        let dimmedView = UIView()
+        dimmedView.backgroundColor = .black.withAlphaComponent(0.15)
+        dimmedView.frame = blurArea.bounds
+        containerView.addSubview(customBlurEffectView)
+        containerView.addSubview(dimmedView)
+        return containerView
+    }()
+
     func configure(model: BalanceCellModel,
+                   hideBalance: Bool,
+                   onHide: ((Bool) -> Void)?,
                    onAssets: (() -> Void)?) {
+        self.hideBalance = hideBalance
         self.model = model
-        setContent()
+        lblBalanceValue.text = model.value
+        lblBalanceFiat.text = model.valueFiat
+
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
         let str = NSAttributedString(string: "\(model.numAssets) assets in total", attributes: uLineAttr)
         btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
-
+        self.onHide = onHide
         let sorted = model.cachedBalance.sorted()
         var icons: [UIImage] = []
         for asset in sorted {
@@ -58,18 +79,7 @@ class BalanceCell: UITableViewCell {
         iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
         setImages(icons)
         iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
-    }
-
-    func setContent() {
-        if isEyeOff {
-            lblBalanceValue.text = "---"
-            lblBalanceFiat.text = "---"
-            btnEye.setImage(UIImage(named: "ic_hide"), for: .normal)
-        } else {
-            lblBalanceValue.text = model?.value ?? ""
-            lblBalanceFiat.text = model?.valueFiat ?? ""
-            btnEye.setImage(UIImage(named: "ic_eye_flat"), for: .normal)
-        }
+        refreshBlur()
     }
 
     func setImages(_ images: [UIImage]) {
@@ -83,9 +93,21 @@ class BalanceCell: UITableViewCell {
         }
     }
 
+    func refreshBlur() {
+        if hideBalance {
+            blurArea.subviews.forEach {$0.removeFromSuperview()}
+            blurArea.addSubview(blurredView)
+            btnEye.setImage(UIImage(named: "ic_hide"), for: .normal)
+        } else {
+            blurArea.subviews.forEach {$0.removeFromSuperview()}
+            btnEye.setImage(UIImage(named: "ic_eye_flat"), for: .normal)
+        }
+    }
+
     @IBAction func btnEye(_ sender: Any) {
-        isEyeOff = !isEyeOff
-        setContent()
+        hideBalance = !hideBalance
+        onHide?(hideBalance)
+        refreshBlur()
     }
 
     @IBAction func btnAssets(_ sender: Any) {

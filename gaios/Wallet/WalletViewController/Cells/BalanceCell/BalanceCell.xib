@@ -18,12 +18,6 @@
                 <rect key="frame" x="0.0" y="0.0" width="404" height="219"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_balance_title" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UWo-Pa-oSR">
-                        <rect key="frame" x="20" y="20" width="129.5" height="19.5"/>
-                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
-                        <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="KrQ-SM-fsW">
                         <rect key="frame" x="20" y="44.5" width="364" height="122.5"/>
                         <subviews>
@@ -47,6 +41,16 @@
                             <constraint firstItem="pwm-j0-vaS" firstAttribute="leading" secondItem="KrQ-SM-fsW" secondAttribute="leading" id="ii7-0z-ZtD"/>
                         </constraints>
                     </stackView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EqE-af-hKK">
+                        <rect key="frame" x="0.0" y="34.5" width="404" height="142.5"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_balance_title" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UWo-Pa-oSR">
+                        <rect key="frame" x="20" y="20" width="129.5" height="19.5"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XZK-xt-jFK">
                         <rect key="frame" x="20" y="177" width="22" height="22"/>
                         <subviews>
@@ -97,20 +101,25 @@
                     <constraint firstAttribute="bottom" secondItem="XZK-xt-jFK" secondAttribute="bottom" constant="20" id="D7b-Rp-rni"/>
                     <constraint firstAttribute="trailing" secondItem="KrQ-SM-fsW" secondAttribute="trailing" constant="20" id="F1t-WS-GNd"/>
                     <constraint firstItem="FAM-KX-0hP" firstAttribute="centerY" secondItem="UWo-Pa-oSR" secondAttribute="centerY" id="G5R-Y0-d9L"/>
+                    <constraint firstItem="EqE-af-hKK" firstAttribute="bottom" secondItem="KrQ-SM-fsW" secondAttribute="bottom" constant="10" id="GUu-lO-kXD"/>
                     <constraint firstItem="KrQ-SM-fsW" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="Ltb-J2-zhc"/>
                     <constraint firstItem="XZK-xt-jFK" firstAttribute="top" secondItem="KrQ-SM-fsW" secondAttribute="bottom" constant="10" id="MJN-pb-g01"/>
+                    <constraint firstItem="EqE-af-hKK" firstAttribute="leading" secondItem="KrQ-SM-fsW" secondAttribute="leading" constant="-20" id="NIY-hy-MkF"/>
                     <constraint firstItem="XZK-xt-jFK" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="NUT-e1-6Ux"/>
+                    <constraint firstItem="EqE-af-hKK" firstAttribute="trailing" secondItem="KrQ-SM-fsW" secondAttribute="trailing" constant="20" id="eyb-Ax-cMZ"/>
                     <constraint firstItem="kER-qn-FtF" firstAttribute="centerY" secondItem="XZK-xt-jFK" secondAttribute="centerY" id="ezu-F3-bXK"/>
                     <constraint firstItem="UWo-Pa-oSR" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="fDe-qh-eCR"/>
                     <constraint firstItem="kER-qn-FtF" firstAttribute="leading" secondItem="XZK-xt-jFK" secondAttribute="trailing" constant="10" id="g8N-bz-lax"/>
                     <constraint firstItem="KrQ-SM-fsW" firstAttribute="top" secondItem="UWo-Pa-oSR" secondAttribute="bottom" constant="5" id="hjY-JV-BYQ"/>
                     <constraint firstItem="FAM-KX-0hP" firstAttribute="leading" secondItem="UWo-Pa-oSR" secondAttribute="trailing" constant="10" id="lYj-C6-IAF"/>
+                    <constraint firstItem="EqE-af-hKK" firstAttribute="top" secondItem="KrQ-SM-fsW" secondAttribute="top" constant="-10" id="oOk-ph-HBr"/>
                     <constraint firstAttribute="trailing" secondItem="kER-qn-FtF" secondAttribute="trailing" constant="20" id="tpB-13-U4m"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
+                <outlet property="blurArea" destination="EqE-af-hKK" id="k8d-HT-asL"/>
                 <outlet property="btnAssets" destination="kER-qn-FtF" id="Ksg-gk-3X6"/>
                 <outlet property="btnEye" destination="FAM-KX-0hP" id="HLL-EQ-jzq"/>
                 <outlet property="iconsStack" destination="q8A-6Q-39Y" id="CdD-g1-g99"/>
