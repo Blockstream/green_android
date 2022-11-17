@@ -1,4 +1,4 @@
-enum AccountType: String, CaseIterable, Codable {
+enum AccountType: String, CaseIterable, Codable, Comparable {
     /// multiSig
     case standard = "2of2"
     case amp = "2of2_no_recovery"

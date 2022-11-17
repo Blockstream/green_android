@@ -1,7 +1,7 @@
 import Foundation
 import PromiseKit
 
-struct GdkNetwork: Codable, Equatable {
+struct GdkNetwork: Codable, Equatable, Comparable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -44,6 +44,12 @@ struct GdkNetwork: Codable, Equatable {
 
     var chain: String {
         network.replacingOccurrences(of: "electrum-", with: "")
+    }
+
+    static func < (lhs: GdkNetwork, rhs: GdkNetwork) -> Bool {
+        if lhs.liquid && !rhs.liquid { return false }
+        if !lhs.liquid && rhs.liquid { return true }
+        return lhs.electrum
     }
 }
 

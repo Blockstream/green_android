@@ -72,7 +72,8 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     }
 
     static func == (lhs: WalletItem, rhs: WalletItem) -> Bool {
-        return lhs.name == rhs.name &&
+        return lhs.network == rhs.network &&
+            lhs.name == rhs.name &&
             lhs.pointer == rhs.pointer &&
             lhs.receivingId == rhs.receivingId &&
             lhs.type == rhs.type &&
@@ -81,8 +82,15 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     }
 
     static func < (lhs: WalletItem, rhs: WalletItem) -> Bool {
-        return lhs.type < rhs.type ||
-        ( lhs.type == rhs.type && lhs.pointer < rhs.pointer)
+        let lhsNetwork = lhs.gdkNetwork
+        let rhsNetwork = rhs.gdkNetwork
+        if lhsNetwork == rhsNetwork {
+            if lhs.type == rhs.type {
+                return lhs.pointer < rhs.pointer
+            }
+            return lhs.type < rhs.type
+        }
+        return lhsNetwork < rhsNetwork
     }
 
     func hash(into hasher: inout Hasher) {

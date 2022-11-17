@@ -165,7 +165,7 @@ class WalletManager {
                     return nil
                 }
             }
-            self.subaccounts = Array(txt.joined())
+            self.subaccounts = Array(txt.joined()).sorted()
             return self.subaccounts
         }
     }
