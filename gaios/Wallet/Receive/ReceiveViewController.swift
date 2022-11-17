@@ -197,7 +197,7 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func btnChangeReceiver(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+/*        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
             guard let viewModel = viewModel else { return }
             vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts)
@@ -205,13 +205,14 @@ class ReceiveViewController: UIViewController {
             vc.delegateAccount = self
             navigationController?.pushViewController(vc, animated: true)
         }
-//        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
-//            guard let viewModel = viewModel else { return }
-//            vc.viewModel = AssetExpandableSelectViewModel(accounts: viewModel.accounts)
-//            vc.delegate = self
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
+ */
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
+            guard let viewModel = viewModel else { return }
+            vc.viewModel = AssetExpandableSelectViewModel()
+            vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
 

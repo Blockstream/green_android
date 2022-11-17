@@ -4,57 +4,36 @@ import PromiseKit
 
 class AssetsManager {
 
-    let testnet: Bool
-    var infos = [String: AssetInfo]()
-    var icons = [String: String]()
+    private let testnet: Bool
+    private var infos = [String: AssetInfo]()
+    private var icons = [String: String]()
 
     init(testnet: Bool) {
         self.testnet = testnet
+        if testnet {
+            self.infos = [AssetInfo.testId: AssetInfo.test,
+                          AssetInfo.ltestId: AssetInfo.ltest]
+        } else {
+            self.infos = [AssetInfo.btcId: AssetInfo.btc,
+                          AssetInfo.lbtcId: AssetInfo.lbtc]
+        }
     }
-
-    static var btc: AssetInfo {
-        let denomination = WalletManager.current?.prominentSession?.settings?.denomination
-        let precision = UInt8(denomination?.digits ?? 8)
-        let ticker = denomination?.string ?? "BTC"
-        return AssetInfo(assetId: "btc", name: "Bitcoin", precision: precision, ticker: ticker)
-    }
-
-    static var tbtc: AssetInfo {
-        let denomination = WalletManager.current?.prominentSession?.settings?.denomination
-        let precision = UInt8(denomination?.digits ?? 8)
-        let ticker = denomination?.string ?? "TEST"
-        return AssetInfo(assetId: "btc", name: "Testnet", precision: precision, ticker: ticker)
-    }
-    static var lbtc: String { getGdkNetwork("liquid").getFeeAsset() }
-    static var ltest: String { getGdkNetwork("testnet-liquid").getFeeAsset() }
 
     var session: SessionManager? {
         let liquid: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
         return WalletManager.current?.sessions[liquid.rawValue]
     }
 
-    var allAssets: [String] {
-        var assets = self.infos.map { $0.key }
-        if testnet {
-            assets += ["btc", AssetsManager.ltest]
-        } else {
-            assets += ["btc", AssetsManager.lbtc]
-        }
-        return assets
+    var all: [AssetInfo] {
+        return infos.map { $0.value }.sorted()
     }
 
     func info(for key: String) -> AssetInfo {
-        if key == "btc" {
-            return testnet ? AssetsManager.tbtc : AssetsManager.btc
-        }
-        if let session = session, infos[key] == nil {
+        if infos[key] == nil, let session = session {
             let infos = fetchAssets(session: session, assetsId: [key])
             self.infos.merge(infos, uniquingKeysWith: {_, new in new})
         }
-        if var asset = infos[key] {
-            if key == session?.gdkNetwork.getFeeAsset() ?? "" {
-                asset.name = session?.gdkNetwork.mainnet ?? true ? "Liquid Bitcoin" : "Liquid Testnet Bitcoin"
-            }
+        if let asset = infos[key] {
             return asset
         }
         return AssetInfo(assetId: key, name: nil, precision: 0, ticker: nil)
@@ -64,7 +43,7 @@ class AssetsManager {
         if key == "btc" {
             return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc")
         }
-        if let session = session, icons[key] == nil {
+        if icons[key] == nil, let session = session {
             let icons = fetchIcons(session: session, assetsId: [key])
             self.icons.merge(icons, uniquingKeysWith: {_, new in new})
         }
@@ -113,20 +92,19 @@ class AssetsManager {
     }
 
     func getAssetsFromCountly() -> [EnrichedAsset] {
-        if let assets: [Any] = AnalyticsManager.shared.getRemoteConfigValue(key: Constants.countlyRemoteConfigAssets) as? [Any] {
-            let json = try? JSONSerialization.data(withJSONObject: assets, options: [])
-            let assets = try? JSONDecoder().decode([EnrichedAsset].self, from: json ?? Data())
-            return assets ?? []
-        }
-        return []
+        let assets = AnalyticsManager.shared.getRemoteConfigValue(key: Constants.countlyRemoteConfigAssets) as? [[String: Any]]
+        let json = try? JSONSerialization.data(withJSONObject: assets ?? [], options: [])
+        let res = try! JSONDecoder().decode([EnrichedAsset].self, from: json ?? Data())
+        return res
     }
 
     func fetchFromCountly() {
         guard let session = session else { return }
-        let assets = getAssetsFromCountly().map { $0.id }
-        let infos = fetchAssets(session: session, assetsId: assets)
+        let assets = getAssetsFromCountly()
+        var infos = fetchAssets(session: session, assetsId: assets.map { $0.id })
+        assets.forEach { infos[$0.id]?.amp = $0.amp }
         self.infos.merge(infos, uniquingKeysWith: {_, new in new})
-        let icons = fetchIcons(session: session, assetsId: assets)
+        let icons = fetchIcons(session: session, assetsId: assets.map { $0.id })
         self.icons.merge(icons, uniquingKeysWith: {_, new in new})
     }
 }

@@ -19,7 +19,7 @@ class AssetExpandableSelectViewController: UIViewController {
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
 
-    var viewModel: AssetExpandableSelectViewModel?
+    var viewModel = AssetExpandableSelectViewModel()
     weak var delegate: AssetExpandableSelectViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -31,6 +31,9 @@ class AssetExpandableSelectViewController: UIViewController {
         searchField.delegate = self
         setContent()
         setStyle()
+
+        viewModel.loadAssets()
+        tableView.reloadData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -48,7 +51,7 @@ class AssetExpandableSelectViewController: UIViewController {
     }
 
     @objc func triggerTextChange() {
-        viewModel?.search(searchField.text ?? "")
+        viewModel.search(searchField.text ?? "")
         tableView.reloadData()
     }
 
@@ -61,24 +64,21 @@ class AssetExpandableSelectViewController: UIViewController {
 extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        guard let viewModel = viewModel else { return 0 }
         return viewModel.assetSelectCellModelsFilter.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let viewModel = viewModel else { return 0 }
         if viewModel.selectedSection != section {
             return 0
         }
         /// need value for specific asset
-        return viewModel.accounts.count
+        return viewModel.accountSelectSubCellModels.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        if let cell = tableView.dequeueReusableCell(withIdentifier: AccountSelectSubCell.identifier, for: indexPath) as? AccountSelectSubCell,
-           let model = viewModel {
-            cell.configure(model: model.accountSelectSubCellModels[indexPath.row], isLast: model.accountSelectSubCellModels.count - 1 == indexPath.row)
+        if let cell = tableView.dequeueReusableCell(withIdentifier: AccountSelectSubCell.identifier, for: indexPath) as? AccountSelectSubCell {
+           cell.configure(model: viewModel.accountSelectSubCellModels[indexPath.row], isLast: viewModel.accountSelectSubCellModels.count - 1 == indexPath.row)
             cell.selectionStyle = .none
             return cell
         }
@@ -98,8 +98,6 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
-        guard let viewModel = viewModel else { return nil }
         if let accountView = Bundle.main.loadNibNamed("AccountExpandableView", owner: self, options: nil)?.first as? AccountExpandableView {
             accountView.configure(model: viewModel.assetSelectCellModelsFilter[section], open: viewModel.selectedSection == section)
 
@@ -117,21 +115,25 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     @objc
     private func hideSection(sender: UIButton) {
-        guard let viewModel = viewModel else { return }
-
         let section = sender.tag
         if viewModel.selectedSection == section {
             viewModel.selectedSection = -1
         } else {
+            viewModel.selectedSection = -1
+            tableView.reloadData()
             viewModel.selectedSection = section
+            if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
+                viewModel.loadAccountsForAsset(asset)
+            }
         }
         tableView.reloadSections(IndexSet([section]), with: .automatic)
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let viewModel = viewModel else { return }
-        guard let assetId = viewModel.assetSelectCellModelsFilter[indexPath.section].asset?.assetId else { return }
-        delegate?.didSelectReceiver(assetId: assetId, account: viewModel.accounts[indexPath.row])
+        if let assetId = viewModel.assetSelectCellModelsFilter[indexPath.section].asset?.assetId {
+            viewModel.loadAccountsForAsset(assetId)
+        }
+        //delegate?.didSelectReceiver(assetId: assetId, account: viewModel.accounts[indexPath.row])
         navigationController?.popViewController(animated: true)
     }
 }

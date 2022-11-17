@@ -21,6 +21,7 @@ struct AssetInfo: Codable, Comparable {
         case precision
         case ticker
         case entity
+        case amp
     }
 
     var assetId: String
@@ -28,6 +29,7 @@ struct AssetInfo: Codable, Comparable {
     var precision: UInt8?
     var ticker: String?
     var entity: AssentEntity?
+    var amp: Bool?
 
     init(assetId: String, name: String?, precision: UInt8, ticker: String?) {
         self.assetId = assetId
@@ -40,16 +42,51 @@ struct AssetInfo: Codable, Comparable {
         return try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
     }
 
-    static var btc = "btc"
-    static var test = "btc"
-    static var lbtc = getGdkNetwork("liquid").getFeeAsset()
-    static var ltest = getGdkNetwork("testnet-liquid").getFeeAsset()
+    // Default asset id
+    static var btcId = "btc"
+    static var testId = "btc"
+    static var lbtcId = getGdkNetwork("liquid").getFeeAsset()
+    static var ltestId = getGdkNetwork("testnet-liquid").getFeeAsset()
 
+    // Default asset info
+    static var btc: AssetInfo {
+        let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
+        return AssetInfo(assetId: btcId,
+                         name: "Bitcoin",
+                         precision: denom.digits,
+                         ticker: DenominationType.denominationsBTC[denom])
+    }
+
+    static var test: AssetInfo {
+        let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
+        return AssetInfo(assetId: testId,
+                         name: "Testnet",
+                         precision: denom.digits,
+                         ticker: DenominationType.denominationsTEST[denom])
+    }
+
+    static var lbtc: AssetInfo {
+        let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
+        return AssetInfo(assetId: lbtcId,
+                         name: "Liquid Bitcoin",
+                         precision: denom.digits,
+                         ticker: DenominationType.denominationsBTC[denom])
+    }
+
+    static var ltest: AssetInfo {
+        let denom = WalletManager.current?.prominentSession?.settings?.denomination ?? .BTC
+        return AssetInfo(assetId: ltestId,
+                         name: "Liquid Testnet",
+                         precision: denom.digits,
+                         ticker: DenominationType.denominationsLTEST[denom])
+    }
+
+    // comparing functions
     static func < (lhs: AssetInfo, rhs: AssetInfo) -> Bool {
-        if [btc, test].contains(lhs.assetId) { return true }
-        if [btc, test].contains(rhs.assetId) { return false }
-        if [lbtc, ltest].contains(lhs.assetId) { return true }
-        if [lbtc, ltest].contains(rhs.assetId) { return false }
+        if [btcId, testId].contains(lhs.assetId) { return true }
+        if [btcId, testId].contains(rhs.assetId) { return false }
+        if [lbtcId, ltestId].contains(lhs.assetId) { return true }
+        if [lbtcId, ltestId].contains(rhs.assetId) { return false }
         let registry = WalletManager.current?.registry
         let lhsImage = registry?.hasImage(for: lhs.assetId) ?? false
         let rhsImage = registry?.hasImage(for: rhs.assetId) ?? false

@@ -112,7 +112,7 @@ public enum DenominationType: String, CodingKey {
         return DenominationType.denominations.filter { $0.key == self }.first?.value ?? DenominationType.denominations[.BTC]!
     }
 
-    var digits: Int {
+    var digits: UInt8 {
         switch self {
         case .BTC:
             return 8

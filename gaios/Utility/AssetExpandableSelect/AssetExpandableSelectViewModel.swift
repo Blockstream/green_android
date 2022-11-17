@@ -6,22 +6,18 @@ class AssetExpandableSelectViewModel {
 
     var selectedSection: Int = -1
     var allSections: [Int] = []
-    var accounts: [WalletItem]
-    var assets: [String] = []
-    var accountSelectSubCellModels: [AccountSelectSubCellModel] = []
-
-    var assetSelectCellModels: [AssetSelectCellModel] = []
-    var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
-
-    init(accounts: [WalletItem]) {
-        self.accounts = accounts
-        loadAssets()
-        self.accountSelectSubCellModels = accounts.map { AccountSelectSubCellModel(account: $0) }
-
-        for i in 0..<assets.count {
-            allSections.append(i)
+    var assets: [AssetInfo] = [] {
+        didSet {
+            for i in 0..<assets.count {
+                allSections.append(i)
+            }
         }
     }
+    var accountSelectSubCellModels: [AccountSelectSubCellModel] = []
+    private var assetSelectCellModels: [AssetSelectCellModel] = []
+    var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
+
+    let wm = WalletManager.current!
 
     func search(_ txt: String?) {
         self.assetSelectCellModelsFilter = []
@@ -36,17 +32,24 @@ class AssetExpandableSelectViewModel {
         }
     }
 
-    func loadAssets() {
-        guard let registry = WalletManager.current?.registry else { return }
-        self.assets = registry.allAssets
-        if let account = accounts.first, accounts.count == 1 {
-            if account.gdkNetwork.liquid {
-                self.assets.removeAll(where: { $0 == "btc"})
-            } else {
-                self.assets.removeAll(where: { $0 != "btc"})
+    func loadAccountsForAsset(_ assetId: String) {
+        var accounts = wm.subaccounts
+        if [AssetInfo.btcId, AssetInfo.testId].contains(assetId) {
+            // for btc / test btc only
+            accounts.removeAll { $0.hidden ?? false || $0.gdkNetwork.liquid }
+        } else {
+            // for liquid
+            accounts.removeAll { $0.hidden ?? false || !$0.gdkNetwork.liquid }
+            if wm.registry.info(for: assetId).amp ?? false {
+                accounts.removeAll { $0.type != .amp }
             }
         }
-        self.assetSelectCellModels = self.assets.map { AssetSelectCellModel(assetId: $0, satoshi: 0) }
-        self.assetSelectCellModelsFilter = self.assetSelectCellModels
+        accountSelectSubCellModels = accounts.map { AccountSelectSubCellModel(account: $0) }
+    }
+
+    func loadAssets() {
+        assets = wm.registry.all
+        assetSelectCellModels = assets.map { AssetSelectCellModel(assetId: $0.assetId, satoshi: 0) }
+        assetSelectCellModelsFilter = assetSelectCellModels
     }
 }

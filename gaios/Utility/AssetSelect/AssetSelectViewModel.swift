@@ -37,14 +37,14 @@ class AssetSelectViewModel {
 
     func loadAssets() {
         guard let registry = WalletManager.current?.registry else { return }
-        self.assets = registry.allAssets
+       /* self.assets = registry.allAssets
         if let account = accounts.first, accounts.count == 1 {
             if account.gdkNetwork.liquid {
                 self.assets.removeAll(where: { $0 == "btc"})
             } else {
                 self.assets.removeAll(where: { $0 != "btc"})
             }
-        }
+        }*/
         self.assetSelectCellModels = self.assets.map { AssetSelectCellModel(assetId: $0, satoshi: 0) }
         self.assetSelectCellModelsFilter = self.assetSelectCellModels
         self.reload?()

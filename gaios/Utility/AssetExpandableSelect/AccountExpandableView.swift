@@ -15,13 +15,8 @@ class AccountExpandableView: UIView {
         icon?.image = model.icon
 
         ampTip.cornerRadius = 5.0
-        ///fix here if asset is amp
-        if name == "Testnet" && open {
-            ampTip.isHidden = false
-            lblAmp.text = "\(name ?? "") " + "is a Liquid asset. You can receive it directly on a Liquid account."
-        } else {
-            ampTip.isHidden = true
-        }
+        lblAmp.text = "\(name ?? "") " + "is a Liquid asset. You can receive it directly on a Liquid account."
+        ampTip.isHidden = !(model.asset?.amp ?? false && open)
 
         if open {
             bg.borderWidth = 2.0
