@@ -80,21 +80,10 @@ class AccountCell: UITableViewCell {
         }
 
         let assets = AssetAmountList(model.account.satoshi ?? [:]).sorted()
-
-        // need rework here, icons list is not correct
-        var icons: [UIImage] = []
-        for asset in assets {
-            let tag = asset.0
-            if let icon = WalletManager.current?.registry.image(for: tag) {
-                if icons.count > 0 {
-                    if icon != icons.last {
-                        icons.append(icon)
-                    }
-                } else {
-                    icons.append(icon)
-                }
-            }
-        }
+        let registry = WalletManager.current?.registry
+        var icons = [UIImage]()
+        assets.compactMap { registry?.image(for: $0.0) }
+            .forEach { if !icons.contains($0) { icons += [$0] } }
 
         iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 10.0
         setImages(icons)

@@ -60,22 +60,26 @@ class AssetsManager {
         return AssetInfo(assetId: key, name: nil, precision: 0, ticker: nil)
     }
 
-    func image(for key: String) -> UIImage {
+    func getImage(for key: String) -> UIImage? {
         if key == "btc" {
-            return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc") ?? UIImage()
+            return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc")
         }
         if let session = session, icons[key] == nil {
             let icons = fetchIcons(session: session, assetsId: [key])
             self.icons.merge(icons, uniquingKeysWith: {_, new in new})
         }
         if let icon = icons[key] {
-            return UIImage(base64: icon) ?? UIImage()
+            return UIImage(base64: icon)
         }
-        return UIImage(named: "default_asset_icon") ?? UIImage()
+        return nil
+    }
+
+    func image(for key: String) -> UIImage {
+        return getImage(for: key) ?? UIImage(named: "default_asset_icon") ?? UIImage()
     }
 
     func hasImage(for key: String?) -> Bool {
-        return icons.filter({ $0.key == key }).first != nil
+        return getImage(for: key ?? "") != nil
     }
 
     func fetchAssets(session: SessionManager, assetsId: [String]) -> [String: AssetInfo] {

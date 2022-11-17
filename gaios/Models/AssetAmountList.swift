@@ -11,17 +11,9 @@ extension AssetAmountList {
     }
 
     func sorted() -> [(String, Int64)] {
-        return self.sorted(by: { (rhs, lhs) in
-            let lbtc = getGdkNetwork("liquid").getFeeAsset()
-            if rhs.0 == "btc" { return true
-            } else if lhs.0 == "btc" { return false
-            } else if rhs.0 == lbtc { return true
-            } else if lhs.0 == lbtc { return false
-            } else if registry?.hasImage(for: rhs.0) == true { return true
-            } else if registry?.hasImage(for: lhs.0) == true { return false
-            } else if registry?.info(for: rhs.0).ticker != nil { return true
-            } else if registry?.info(for: lhs.0).ticker != nil { return false
-            } else { return true}
+        return self.sorted(by: { (lhs, rhs) in
+            guard let registry = registry else { return lhs.0 < rhs.0 }
+            return registry.info(for: lhs.0) < registry.info(for: rhs.0)
         })
     }
 }
