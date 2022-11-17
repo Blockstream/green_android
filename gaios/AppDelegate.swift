@@ -124,7 +124,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
             var config = ["datadir": url.path]
             #if DEBUG
-            config["log_level"] = "debug"
+            config["log_level"] = "info"
             #endif
             try gdkInit(config: config)
         }
