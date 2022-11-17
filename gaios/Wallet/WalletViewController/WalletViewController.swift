@@ -32,8 +32,14 @@ class WalletViewController: UIViewController {
     private var footerH: CGFloat = 54.0
     private var cardH: CGFloat = 64.0
     private var cardHc: CGFloat = 184.0
-    private var hideBalance = false
-
+    private var hideBalance: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: AppStorage.hideBalance)
+        }
+    }
     private var sIdx: Int = 0
 
     var viewModel: WalletViewModel = WalletViewModel()

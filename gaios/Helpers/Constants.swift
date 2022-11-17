@@ -33,6 +33,7 @@ enum AppStorage {
     static let countlyOffset = "countly_offset"
     static let alwaysAskPassphrase = "always_ask_passphrase"
     static let storeReviewDate = "store_review_date"
+    static let hideBalance = "hide_balance"
 }
 
 enum ExternalUrls {
