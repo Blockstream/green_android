@@ -55,6 +55,10 @@ class AssetExpandableSelectViewController: UIViewController {
         tableView.reloadData()
     }
 
+    func onCreate() {
+        print("onCreate")
+    }
+
     @IBAction func onEditingChange(_ sender: Any) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
         perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
@@ -99,9 +103,14 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if let accountView = Bundle.main.loadNibNamed("AccountExpandableView", owner: self, options: nil)?.first as? AccountExpandableView {
-            accountView.configure(model: viewModel.assetSelectCellModelsFilter[section], open: viewModel.selectedSection == section)
+            accountView.configure(model: viewModel.assetSelectCellModelsFilter[section],
+                                  hasAccounts: viewModel.accountSelectSubCellModels.count == 0,
+                                  open: viewModel.selectedSection == section,
+                                  onCreate: {[weak self] in
+                self?.onCreate()
+            })
 
-            let handler = UIButton(frame: accountView.frame)
+            let handler = UIButton(frame: accountView.tapView.frame)
             handler.tag = section
             handler.borderColor = .red
             handler.addTarget(self,
