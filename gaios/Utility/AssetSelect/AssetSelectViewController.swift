@@ -101,7 +101,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
         } else {
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AccountSelectViewController") as? AccountSelectViewController {
-                var accounts = viewModel.accounts
+                var accounts = [WalletItem]() //viewModel.accounts
                 if let asset = asset, asset == "btc" {
                     accounts.removeAll(where: { $0.gdkNetwork.liquid })
                 } else {

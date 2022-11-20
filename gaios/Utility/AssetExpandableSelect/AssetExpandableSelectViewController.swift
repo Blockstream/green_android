@@ -31,14 +31,12 @@ class AssetExpandableSelectViewController: UIViewController {
         searchField.delegate = self
         setContent()
         setStyle()
-
-        viewModel.loadAssets()
-        tableView.reloadData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        viewModel.loadAssets()
+        tableView.reloadData()
     }
 
     func setContent() {
@@ -55,8 +53,16 @@ class AssetExpandableSelectViewController: UIViewController {
         tableView.reloadData()
     }
 
-    func onCreate() {
-        print("onCreate")
+    func onCreate(asset: AssetInfo?) {
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
+            var fixedPolicies: [PolicyCellType]?
+            if asset?.amp ?? false {
+                fixedPolicies = [.Amp]
+            }
+            vc.viewModel = SecuritySelectViewModel(asset: asset?.assetId ?? "btc", fixedPolicies: fixedPolicies)
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func onEditingChange(_ sender: Any) {
@@ -103,11 +109,12 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if let accountView = Bundle.main.loadNibNamed("AccountExpandableView", owner: self, options: nil)?.first as? AccountExpandableView {
-            accountView.configure(model: viewModel.assetSelectCellModelsFilter[section],
-                                  hasAccounts: viewModel.accountSelectSubCellModels.count == 0,
+            let cellModel = viewModel.assetSelectCellModelsFilter[section]
+            accountView.configure(model: cellModel,
+                                  hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
                                   open: viewModel.selectedSection == section,
                                   onCreate: {[weak self] in
-                self?.onCreate()
+                self?.onCreate(asset: cellModel.asset)
             })
 
             let handler = UIButton(frame: accountView.tapView.frame)
@@ -139,11 +146,11 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let assetId = viewModel.assetSelectCellModelsFilter[indexPath.section].asset?.assetId {
-            viewModel.loadAccountsForAsset(assetId)
+        if let asset = viewModel.assetSelectCellModelsFilter[indexPath.section].asset {
+            let account = viewModel.accountSelectSubCellModels[indexPath.row].account
+            delegate?.didSelectReceiver(assetId: asset.assetId, account: account)
+            navigationController?.popViewController(animated: true)
         }
-        //delegate?.didSelectReceiver(assetId: assetId, account: viewModel.accounts[indexPath.row])
-        navigationController?.popViewController(animated: true)
     }
 }
 

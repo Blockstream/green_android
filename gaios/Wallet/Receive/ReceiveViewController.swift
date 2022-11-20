@@ -208,7 +208,6 @@ class ReceiveViewController: UIViewController {
  */
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
-            guard let viewModel = viewModel else { return }
             vc.viewModel = AssetExpandableSelectViewModel()
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)

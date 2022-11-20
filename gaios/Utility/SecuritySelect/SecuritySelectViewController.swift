@@ -33,6 +33,7 @@ class SecuritySelectViewController: UIViewController {
             self?.navigationController?.popViewController(animated: true)
         }
         viewModel.error = showError
+        viewModel.unarchiveCreateDialog = unarchiveCreateDialog
 
         ["PolicyCell", "AssetSelectCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
@@ -40,6 +41,25 @@ class SecuritySelectViewController: UIViewController {
 
         setContent()
         setStyle()
+    }
+
+    func unarchiveCreateDialog() -> Promise<Bool> {
+        return Promise { result in
+            let alert = UIAlertController(title: NSLocalizedString("Archived Account", comment: ""),
+                                          message: NSLocalizedString("There is already an archived account. Do you want to create a new one?", comment: ""),
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("Unarchived Account", comment: ""),
+                                          style: .cancel) { (_: UIAlertAction) in
+                result.fulfill(false)
+            })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("Create", comment: ""),
+                                          style: .default) { (_: UIAlertAction) in
+                result.fulfill(true)
+            })
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -168,7 +188,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts)
+                vc.viewModel = AssetSelectViewModel()
                 vc.delegateAsset = self
                 navigationController?.pushViewController(vc, animated: true)
             }

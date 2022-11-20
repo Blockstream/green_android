@@ -31,9 +31,7 @@ class AccountExpandableView: UIView {
         if open {
             bg.borderWidth = 2.0
             bg.borderColor = UIColor.gGreenMatrix()
-            if hasAccounts {
-                createNew.isHidden = false
-            }
+            createNew.isHidden = hasAccounts
         } else {
             bg.borderWidth = 0.0
         }

@@ -24,6 +24,8 @@ struct PolicyCellModel {
             return PolicyCellModel(isSS: true, isLight: false, type: "SINGLESIG / NATIVE SEGWIT", name: "Native Segwit", hint: "Cheaper singlesig option. Addresses are Native SegWit Bech32.", policy: policy)
         case .Taproot:
             return PolicyCellModel(isSS: true, isLight: false, type: "SINGLESIG / TAPROOT", name: "Taproot", hint: "Cheaper and more private singlesig option. Addresses are Bech32m.", policy: policy)
+        case .Amp:
+            return PolicyCellModel(isSS: false, isLight: false, type: "MULTISIG / AMP", name: "Amp", hint: "Account for special assets, monitored or authorized by the asset issuer.", policy: policy)
         }
     }
 }

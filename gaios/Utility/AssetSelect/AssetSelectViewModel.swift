@@ -3,16 +3,11 @@ import PromiseKit
 
 class AssetSelectViewModel {
 
-    var accounts: [WalletItem]
     var assets = [String]()
     var reload: (() -> Void)?
 
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
-
-    init(accounts: [WalletItem]) {
-        self.accounts = accounts
-    }
 
     func search(_ txt: String?) {
         self.assetSelectCellModelsFilter = []

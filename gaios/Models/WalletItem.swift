@@ -29,6 +29,7 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     var network: String?
 
     var gdkNetwork: GdkNetwork { getGdkNetwork(network!)}
+    var session: SessionManager? { WalletManager.current?.sessions[network ?? ""] }
 
     func localizedName() -> String {
         if !name.isEmpty {

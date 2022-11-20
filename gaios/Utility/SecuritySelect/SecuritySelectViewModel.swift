@@ -9,22 +9,23 @@ enum PolicyCellType: String, CaseIterable {
     case TwoOfThreeWith2FA
     case NativeSegwit
     case Taproot
+    case Amp
 }
 
 class SecuritySelectViewModel {
 
-    var accounts: [WalletItem]
     var assetCellModel: AssetSelectCellModel?
     var asset: String {
         didSet {
             assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
         }
     }
-    var wm: WalletManager { WalletManager.current! }
+    var fixedPolicies: [PolicyCellType]?
+    private var wm: WalletManager { WalletManager.current! }
 
-    init(accounts: [WalletItem], asset: String) {
-        self.accounts = accounts
+    init(asset: String, fixedPolicies: [PolicyCellType]? = nil) {
         self.asset = asset
+        self.fixedPolicies = fixedPolicies
         self.assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
     }
 
@@ -36,6 +37,8 @@ class SecuritySelectViewModel {
 
     // on errors
     var error: ((Error) -> Void)?
+    
+    var unarchiveCreateDialog: (() -> Promise<Bool>)?
 
     var showAll = false {
         didSet {
@@ -45,30 +48,23 @@ class SecuritySelectViewModel {
 
     /// cell models
     func getPolicyCellModels() -> [PolicyCellModel] {
+        if let policies = fixedPolicies {
+            return policies.map { PolicyCellModel.from(policy: $0) }
+        }
         let cells = PolicyCellType.allCases.map { PolicyCellModel.from(policy: $0) }
         return showAll ? cells : Array(cells[0...2])
     }
 
     func create(policy: PolicyCellType, asset: String) {
-        let isLiquid = asset != "btc"
-        let network = getNetwork(for: policy, liquid: isLiquid)
-        guard let session = getSession(for: network) else {
+        guard
+            let network = getNetwork(for: policy, liquid: asset != "btc"),
+            let session = getSession(for: network) else {
             self.error?(GaError.GenericError("Invalid session"))
             return
         }
-        guard session.logged else {
-            // create a new session with current mnemonic
-            registerSession(session: session)
-                .then { self.createOrUnarchiveSubaccount(session: session, policy: policy)}
-                .then { self.wm.subaccounts() }
-                .asVoid()
-                .done { self.success?() }
-                .catch { err in self.error?(err) }
-            return
-
-        }
-        // use an existing session
-        createOrUnarchiveSubaccount(session: session, policy: policy)
+        Guarantee()
+            .then { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
+            .then { self.createOrUnarchiveSubaccount(session: session, policy: policy) }
             .then { self.wm.subaccounts() }
             .asVoid()
             .done { self.success?() }
@@ -102,15 +98,35 @@ class SecuritySelectViewModel {
     }
 
     func createOrUnarchiveSubaccount(session: SessionManager, policy: PolicyCellType) -> Promise<Void> {
-        if policy == .TwoFAProtected {
-            return session.subaccount(0)
-                .then { account in
-                    session.getBalance(subaccount: 0, numConfs: 0)
-                        .compactMap { account.hidden ?? false && $0.map { $0.value }.reduce(0, +) == 0 }
+        let type = getAccountType(for: policy)
+        let accounts = wm.subaccounts
+            .filter { $0.gdkNetwork == session.gdkNetwork && $0.type == type && $0.hidden ?? false }
+        return Guarantee()
+            .then { self.wm.transactions(subaccounts: accounts) }
+            .then { (txs: [Transaction]) -> Promise<Void> in
+                let items = accounts.map { account in
+                    (account, txs.filter { $0.subaccount == account.hashValue }.count)
                 }
-                .then { $0 ? session.updateSubaccount(subaccount: 0, hidden: false).asVoid() : self.createSubaccount(session: session, policy: policy) }
-        }
-        return createSubaccount(session: session, policy: policy)
+                let unfunded = items.filter { $0.1 == 0 }.map { $0.0 }.first
+                if let unfunded = unfunded {
+                    // automatically unarchive it
+                    return session.updateSubaccount(subaccount: unfunded.pointer, hidden: false).asVoid()
+                }
+                let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
+                if let funded = funded, let dialog = self.unarchiveCreateDialog {
+                    // ask user to unarchive o create a new one
+                    return dialog().then { create in
+                        if create {
+                            return self.createSubaccount(session: session, policy: policy)
+                        } else {
+                            return session.updateSubaccount(subaccount: funded.pointer, hidden: false).asVoid()
+                        }
+                    }
+                }
+
+                // automatically create a new account
+                return self.createSubaccount(session: session, policy: policy)
+            }
     }
 
     func createSubaccount(session: SessionManager, policy: PolicyCellType) -> Promise<Void> {
@@ -124,22 +140,23 @@ class SecuritySelectViewModel {
         return session.createSubaccount(details: dict ?? [:]).asVoid()
     }
 
-    func getNetwork(for policy: PolicyCellType, liquid: Bool) -> NetworkSecurityCase {
-        switch policy {
-        case .Standard:
-             // singlesig legacy segwit
-            return wm.testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
-        case .Instant:
-            return wm.testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
-        case .TwoFAProtected:
-            return wm.testnet ? NetworkSecurityCase.testnetMS : NetworkSecurityCase.bitcoinMS
-        case .TwoOfThreeWith2FA:
-            return wm.testnet ? NetworkSecurityCase.testnetMS : NetworkSecurityCase.bitcoinMS
-        case .NativeSegwit:
-            return wm.testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
-        case .Taproot:
-            return wm.testnet ? NetworkSecurityCase.testnetSS : NetworkSecurityCase.bitcoinSS
-        }
+    func getNetwork(for policy: PolicyCellType, liquid: Bool) -> NetworkSecurityCase? {
+        let btc: [PolicyCellType: NetworkSecurityCase] =
+        [.Standard: .bitcoinSS, .Instant: .bitcoinSS, .TwoFAProtected: .bitcoinMS,
+         .TwoOfThreeWith2FA: .bitcoinMS, .NativeSegwit: .bitcoinSS, .Amp: .bitcoinMS]
+        let test: [PolicyCellType: NetworkSecurityCase] =
+        [.Standard: .testnetSS, .Instant: .testnetSS, .TwoFAProtected: .testnetMS,
+         .TwoOfThreeWith2FA: .testnetMS, .NativeSegwit: .testnetSS, .Amp: .testnetMS]
+        let lbtc: [PolicyCellType: NetworkSecurityCase] =
+        [.Standard: .liquidSS, .Instant: .liquidSS, .TwoFAProtected: .liquidSS,
+         .TwoOfThreeWith2FA: .liquidMS, .NativeSegwit: .liquidSS, .Amp: .liquidMS]
+        let ltest: [PolicyCellType: NetworkSecurityCase] =
+        [.Standard: .testnetLiquidSS, .Instant: .testnetLiquidSS, .TwoFAProtected: .testnetLiquidSS,
+         .TwoOfThreeWith2FA: .testnetLiquidMS, .NativeSegwit: .testnetLiquidSS, .Amp: .testnetLiquidMS]
+        if liquid && wm.testnet { return ltest[policy] }
+        if liquid && !wm.testnet { return lbtc[policy] }
+        if !liquid && wm.testnet { return test[policy] }
+        return btc[policy]
     }
 
     func getSession(for network: NetworkSecurityCase) -> SessionManager? {
@@ -161,6 +178,8 @@ class SecuritySelectViewModel {
             return .segWit
         case .Taproot:
             return .taproot
+        case .Amp:
+            return .amp
         }
     }
 }
