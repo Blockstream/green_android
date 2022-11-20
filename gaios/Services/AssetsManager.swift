@@ -80,9 +80,9 @@ class AssetsManager {
     func loadAsync(session: SessionManager) {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap(on: bgq) {
+            self.fetchFromCountly()
             _ = try session.refreshAssets(icons: false, assets: true, refresh: true)
             _ = try session.refreshAssets(icons: true, assets: false, refresh: true)
-            self.fetchFromCountly()
         }.done { _ in
             let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
@@ -94,16 +94,16 @@ class AssetsManager {
     func getAssetsFromCountly() -> [EnrichedAsset] {
         let assets = AnalyticsManager.shared.getRemoteConfigValue(key: Constants.countlyRemoteConfigAssets) as? [[String: Any]]
         let json = try? JSONSerialization.data(withJSONObject: assets ?? [], options: [])
-        let res = try! JSONDecoder().decode([EnrichedAsset].self, from: json ?? Data())
-        return res
+        let res = try? JSONDecoder().decode([EnrichedAsset].self, from: json ?? Data())
+        return res ?? []
     }
 
     func fetchFromCountly() {
         guard let session = session else { return }
         let assets = getAssetsFromCountly()
         var infos = fetchAssets(session: session, assetsId: assets.map { $0.id })
-        assets.forEach { infos[$0.id]?.amp = $0.amp }
         self.infos.merge(infos, uniquingKeysWith: {_, new in new})
+        assets.forEach { self.infos[$0.id]?.amp = $0.amp ?? false }
         let icons = fetchIcons(session: session, assetsId: assets.map { $0.id })
         self.icons.merge(icons, uniquingKeysWith: {_, new in new})
     }

@@ -197,20 +197,30 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func btnChangeReceiver(_ sender: Any) {
-/*        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-            guard let viewModel = viewModel else { return }
-            vc.viewModel = AssetSelectViewModel(accounts: viewModel.accounts)
-            vc.delegateAsset = self
-            vc.delegateAccount = self
-            navigationController?.pushViewController(vc, animated: true)
-        }
- */
+        let previousViewController = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
-            vc.viewModel = AssetExpandableSelectViewModel()
-            vc.delegate = self
-            navigationController?.pushViewController(vc, animated: true)
+        if previousViewController is WalletViewController {
+            // from WalletViewController, show assets and account selection
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
+                vc.viewModel = AssetExpandableSelectViewModel()
+                vc.delegate = self
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        } else {
+            // from AccountViewController, show only assets selection
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
+                let showAmp = viewModel.accounts.filter { $0.type == .amp }.count > 0
+                let showLiquid = viewModel.accounts.filter { $0.gdkNetwork.liquid }.count > 0
+                let showBtc = viewModel.accounts.filter { !$0.gdkNetwork.liquid }.count > 0
+                let assets = WalletManager.current?.registry.all.filter {
+                    showAmp && $0.amp ?? false ||
+                    showLiquid && $0.assetId != AssetInfo.btc.assetId  ||
+                    showBtc && $0.assetId == AssetInfo.btc.assetId
+                }
+                vc.viewModel = AssetSelectViewModel(assets: assets ?? [])
+                vc.delegate = self
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 }

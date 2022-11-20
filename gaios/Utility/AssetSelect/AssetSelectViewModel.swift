@@ -3,21 +3,22 @@ import PromiseKit
 
 class AssetSelectViewModel {
 
-    var assets = [String]()
+    var assets = [AssetInfo]()
     var reload: (() -> Void)?
 
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
+    private var wm: WalletManager { WalletManager.current! }
 
     func search(_ txt: String?) {
-        self.assetSelectCellModelsFilter = []
+        assetSelectCellModelsFilter = []
         assetSelectCellModels.forEach {
             if let txt = txt, txt.count > 0 {
                 if ($0.asset?.name ?? "") .lowercased().contains(txt.lowercased()) {
-                    self.assetSelectCellModelsFilter.append($0)
+                    assetSelectCellModelsFilter.append($0)
                 }
             } else {
-                self.assetSelectCellModelsFilter.append($0)
+                assetSelectCellModelsFilter.append($0)
             }
         }
     }
@@ -30,18 +31,10 @@ class AssetSelectViewModel {
         return nil
     }
 
-    func loadAssets() {
-        guard let registry = WalletManager.current?.registry else { return }
-       /* self.assets = registry.allAssets
-        if let account = accounts.first, accounts.count == 1 {
-            if account.gdkNetwork.liquid {
-                self.assets.removeAll(where: { $0 == "btc"})
-            } else {
-                self.assets.removeAll(where: { $0 != "btc"})
-            }
-        }*/
-        self.assetSelectCellModels = self.assets.map { AssetSelectCellModel(assetId: $0, satoshi: 0) }
-        self.assetSelectCellModelsFilter = self.assetSelectCellModels
-        self.reload?()
+    init(assets: [AssetInfo]) {
+        self.assets = assets
+        assetSelectCellModels = assets.map { AssetSelectCellModel(assetId: $0.assetId, satoshi: 0) }
+        assetSelectCellModelsFilter = assetSelectCellModels
+        reload?()
     }
 }
