@@ -136,8 +136,9 @@ class ChooseNetworkViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         case .restore:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
-            navigationController?.pushViewController(vc, animated: true)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .watchonly:
             break
         }

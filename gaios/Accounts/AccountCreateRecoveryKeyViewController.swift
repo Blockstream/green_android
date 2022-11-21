@@ -117,7 +117,6 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         case .existingPhrase:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
-                vc.recoveryType = .phrase
                 vc.mnemonicActionType = .addSubaccount
                 navigationController?.pushViewController(vc, animated: true)
             }

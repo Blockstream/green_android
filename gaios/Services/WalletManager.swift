@@ -92,13 +92,9 @@ class WalletManager {
             fatalError()
         }
         return Guarantee()
-            //.then { mainSession.connect() }
-            //.then { _ in mainSession.decryptWithPin(pin: pin, pinData: pinData) }
-            .then { _ in mainSession.loginWithPin(pin, pinData: pinData) }
-            .then { _ in mainSession.getCredentials(password: "") }
+            .then { mainSession.connect() }
+            .then { _ in mainSession.decryptWithPin(pin: pin, pinData: pinData) }
             .then { self.login($0) }
-            .then { self.subaccounts() }.asVoid()
-            .compactMap { self.loadRegistry() }
     }
 
     func loginWatchOnly(_ username: String, _ password: String) -> Promise<Void> {
@@ -109,18 +105,46 @@ class WalletManager {
             .then { mainSession.loginWatchOnly(username, password).asVoid() }
             .compactMap { Credentials(username: username, password: password) }
             .then { self.login($0) }
+    }
+
+    func login(_ credentials: Credentials) -> Promise<Void> {
+        return when(guarantees: self.sessions.values
+                .filter { !$0.logged }
+                .map { session in
+                    if session.gdkNetwork.electrum && !session.existDatadir(credentials: credentials) {
+                        return Guarantee().asVoid()
+                    }
+                    return session.loginWithCredentials(credentials)
+                    .asVoid()
+                    .recover { _ in return Guarantee().asVoid() }
+                })
             .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
     }
 
-    func login(_ credentials: Credentials) -> Guarantee<Void> {
-        return when(guarantees: self.sessions.values
-                .filter { !$0.logged }
-                .map { session in
-                    session.loginWithCredentials(credentials)
-                    .asVoid()
-                    .recover { _ in return Guarantee().asVoid() }
-                })
+    func restore(_ credentials: Credentials) -> Guarantee<Void> {
+        let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
+        let btcSession = self.sessions[btcNetwork.rawValue]!
+        let btcRestore = Guarantee()
+            .then { btcSession.loginWithCredentials(credentials) }
+            .then { _ in btcSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
+            .then { $0.first?.bip44Discovered ?? false ? Promise().asVoid() :
+                btcSession.updateSubaccount(subaccount: $0.first?.pointer ?? 0, hidden: true) }
+        let liquidNetwork: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
+        let liquidSession = self.sessions[liquidNetwork.rawValue]!
+        let liquidRestore = Guarantee()
+            .then { liquidSession.loginWithCredentials(credentials) }
+            .then { _ in liquidSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
+            .then {
+                if $0.first?.bip44Discovered ?? false {
+                    return liquidSession.updateSubaccount(subaccount: $0.first?.pointer ?? 0, hidden: true)
+                }
+                if $0.filter({ $0.bip44Discovered ?? false }).isEmpty {
+                    liquidSession.removeDatadir(credentials: credentials)
+                }
+                return Promise().asVoid()
+            }
+        return when(resolved: [btcRestore, liquidRestore]).asVoid()
     }
 
     func loginWithHW(_ device: HWDevice) -> Promise<Void> {

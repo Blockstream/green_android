@@ -182,13 +182,7 @@ class SetPinViewController: UIViewController {
 
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
-        var session: SessionManager?
-        switch pinFlow {
-        case .settings:
-            session = WalletManager.current?.prominentSession
-        case .onboard:
-            session = OnBoardManager.shared.session
-        }
+        let session = WalletManager.current?.prominentSession
         guard var account = AccountsManager.shared.current,
                 let session = session else {
             fatalError("Error: No account or session found")
@@ -200,23 +194,19 @@ class SetPinViewController: UIViewController {
             case .onboard:
                 self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""))
             }
-            return Guarantee()
-        }.then(on: bgq) {
-            session.getCredentials(password: "")
-        }.then(on: bgq) {
-            account.addPin(session: session, pin: pin, mnemonic: $0.mnemonic ?? "")
-        }.ensure {
-            self.stopLoader()
-        }.done { _ in
+            return Guarantee() }
+        .then(on: bgq) { session.getCredentials(password: "") }
+        .then(on: bgq) { account.addPin(session: session, pin: pin, mnemonic: $0.mnemonic ?? "") }
+        .ensure { self.stopLoader() }
+        .done { _ in
             account.attempts = 0
             AccountsManager.shared.current = account
             switch self.pinFlow {
             case .settings:
                 self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
             case .onboard:
-                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "WalletSuccessViewController")
-                self.navigationController?.pushViewController(vc, animated: true)
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
             }
         }.catch { error in
             if let _ = error as? GaError {

@@ -1,11 +1,6 @@
 import UIKit
 import PromiseKit
 
-enum RecoveryType {
-    case qr
-    case phrase
-}
-
 enum MnemonicActionType {
     case recoverWallet
     case addSubaccount
@@ -19,16 +14,16 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     @IBOutlet weak var segmentMnemonicSize: UISegmentedControl!
     @IBOutlet weak var header: UIView!
     @IBOutlet weak var lblTitle: UILabel!
-    let helpButton = UIButton(type: .system)
 
     let WL = getBIP39WordList()
 
     var suggestions: KeyboardSuggestions?
     var mnemonic = [String](repeating: String(), count: 27)
     var qrCodeReader: QRCodeReaderView?
+    var viewModel = MnemonicViewModel()
 
+    var testnet = false
     var currIndexPath: IndexPath?
-    var recoveryType = RecoveryType.qr
     var mnemonicActionType: MnemonicActionType = .recoverWallet
     var page = 0 // analytics, mnemonic fails counter
 
@@ -49,20 +44,16 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         updateDoneButton(false)
 
         createSuggestionView()
-
-        switch recoveryType {
-        case .qr:
-            AnalyticsManager.shared.recordView(.camera)
-            startScan()
-        case .phrase:
-            updateNavigationItem()
-        }
+        updateNavigationItem()
         setStyle()
 
 //        passwordProtectedView.isHidden = mnemonicActionType == .addSubaccount
         view.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.view
         lblTitle.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.titleLbl
         doneButton.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.doneBtn
+
+        viewModel.error = showError
+        viewModel.success = next
     }
 
     func setStyle() {
@@ -89,9 +80,13 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     func updateNavigationItem() {
+        let helpButton = UIButton(type: .system)
         helpButton.setImage(UIImage(named: "ic_help"), for: .normal)
         helpButton.addTarget(self, action: #selector(helpButtonTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpButton)
+        let qrButton = UIButton(type: .system)
+        qrButton.setImage(UIImage(named: "ic_qr"), for: .normal)
+        qrButton.addTarget(self, action: #selector(qrButtonTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: helpButton), UIBarButtonItem(customView: qrButton)]
     }
 
     @objc func helpButtonTapped(_ sender: Any) {
@@ -103,6 +98,11 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }
     }
 
+    @objc func qrButtonTapped(_ sender: Any) {
+        AnalyticsManager.shared.recordView(.camera)
+        startScan()
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -112,12 +112,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     func updateLblTitle() {
-        switch recoveryType {
-        case .qr:
-            lblTitle.text = NSLocalizedString("id_scan_qr_code", comment: "")
-        case .phrase:
-            lblTitle.text = NSLocalizedString("id_enter_your_recovery_phrase", comment: "")
-        }
+        lblTitle.text = NSLocalizedString("id_enter_your_recovery_phrase", comment: "")
     }
 
     func updateDoneButton(_ enable: Bool) {
@@ -200,10 +195,46 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         self.suggestions!.isHidden = words.isEmpty
     }
 
-    enum LoginError: Error {
-        case invalidMnemonic
+    func showLoginError(_ err: Error) {
+        self.stopLoader()
+        switch err {
+        case LoginError.walletNotFound:
+            showError(NSLocalizedString("id_wallet_not_found", comment: ""))
+        case LoginError.walletsJustRestored:
+            showError(NSLocalizedString("id_wallet_already_restored", comment: ""))
+        case LoginError.invalidMnemonic:
+            showError(NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
+            page += 1
+            AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardManager.shared.params, page: self.page)
+        case LoginError.connectionFailed:
+            showError(NSLocalizedString("id_connection_failed", comment: ""))
+        case TwoFactorCallError.cancel(localizedDescription: let desc), TwoFactorCallError.failure(localizedDescription: let desc):
+            showError(desc)
+        default:
+            showError(err.localizedDescription)
+        }
     }
 
+    func next() {
+        self.stopLoader()
+        switch self.mnemonicActionType {
+        case .recoverWallet:
+           // recovery of existing wallet
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        case .addSubaccount:
+            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
+                vc.accountType = .twoOfThree
+                vc.recoveryKeyType = .existingPhrase
+                //vc.recoveryMnemonic = mnemonic
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+/*
     fileprivate func validate(mnemonic: String, password: String) {
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
@@ -240,12 +271,18 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardManager.shared.params, page: self.page)
             DropAlert().error(message: NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
         }
-    }
+    }*/
 
     @IBAction func doneButtonClicked(_ sender: Any) {
         _ = getMnemonicString()
             .done {
-                self.validate(mnemonic: $0.0, password: $0.1)
+                self.startLoader()
+                switch self.mnemonicActionType {
+                case .recoverWallet:
+                    self.viewModel.restore(mnemonic: $0.0, password: $0.1, testnet: self.testnet)
+                case .addSubaccount:
+                    self.viewModel.create(mnemonic: $0.0, network: .bitcoinMS)
+                }
             }
     }
 
@@ -297,7 +334,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         if !qrCodeReader!.isSessionAuthorized() {
             qrCodeReader!.requestVideoAccess(presentingViewController: self)
             if !qrCodeReader!.isSessionAuthorized() {
-                recoveryType = .phrase
                 updateLblTitle()
                 return
             }
@@ -313,7 +349,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     func onScan(mnemonic: String) {
-        recoveryType = .phrase
         updateLblTitle()
         onPaste(mnemonic)
     }

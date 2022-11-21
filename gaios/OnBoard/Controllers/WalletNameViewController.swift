@@ -114,7 +114,7 @@ class WalletNameViewController: UIViewController {
         let session = SessionManager(OnBoardManager.shared.gdkNetwork)
         let params = OnBoardManager.shared.params
         let credentials = Credentials(mnemonic: params?.mnemonic ?? "", bip39Passphrase: nil, password: params?.mnemomicPassword)
-        firstly {
+        /*firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.then(on: bgq) { () -> Promise<Void> in
@@ -166,7 +166,7 @@ class WalletNameViewController: UIViewController {
             default:
                 self.error(session, message: error.localizedDescription)
             }
-        }
+        }*/
     }
 
     func error(_ session: SessionManager, message: String) {
@@ -180,7 +180,6 @@ class WalletNameViewController: UIViewController {
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
-
 }
 
 extension WalletNameViewController: UITextFieldDelegate {

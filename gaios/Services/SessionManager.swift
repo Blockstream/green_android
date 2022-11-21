@@ -34,10 +34,12 @@ class GDKSession: Session {
     var connected = false
     var logged = false
     var ephemeral = false
+    var netParams = [String: Any]()
 
     override func connect(netParams: [String: Any]) throws {
         try super.connect(netParams: netParams)
-        connected = true
+        self.connected = true
+        self.netParams = netParams
     }
 
     override init() {
@@ -90,6 +92,25 @@ class SessionManager {
     }
 
     private func connect(network: String, params: [String: Any]? = nil) throws {
+        do {
+            if notificationManager == nil {
+                self.notificationManager = NotificationManager(session: self)
+            }
+            if let notificationManager = notificationManager {
+                session?.setNotificationHandler(notificationCompletionHandler: notificationManager.newNotification)
+            }
+            try session?.connect(netParams: networkParams(network, params: params))
+        } catch {
+            switch error {
+            case GaError.GenericError(let txt), GaError.SessionLost(let txt), GaError.TimeoutError(let txt):
+                throw LoginError.connectionFailed(txt ?? "")
+            default:
+                throw LoginError.connectionFailed()
+            }
+        }
+    }
+
+    func networkParams(_ network: String, params: [String: Any]? = nil) -> [String: Any] {
         let networkSettings = params ?? getUserNetworkSettings()
         let useProxy = networkSettings["proxy"] as? Bool ?? false
         let socks5Hostname = useProxy ? networkSettings["socks5_hostname"] as? String ?? "" : ""
@@ -120,22 +141,32 @@ class SessionManager {
                 netParams["electrum_url"] = liquidTestnetElectrumSrv
             }
         }
-        // Connect
-        do {
-            if notificationManager == nil {
-                self.notificationManager = NotificationManager(session: self)
-            }
-            if let notificationManager = notificationManager {
-                session?.setNotificationHandler(notificationCompletionHandler: notificationManager.newNotification)
-            }
-            try session?.connect(netParams: netParams)
-        } catch {
-            switch error {
-            case GaError.GenericError(let txt), GaError.SessionLost(let txt), GaError.TimeoutError(let txt):
-                throw LoginError.connectionFailed(txt ?? "")
-            default:
-                throw LoginError.connectionFailed()
-            }
+        return netParams
+    }
+
+    func walletIdentifier(_ network: String, credentials: Credentials) -> WalletIdentifier? {
+        let data = try? JSONEncoder().encode(credentials)
+        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        let res = try? self.session?.getWalletIdentifier(net_params: networkParams(network), details: dict ?? [:])
+        let json = try? JSONSerialization.data(withJSONObject: res ?? [:], options: [])
+        let hash = try? JSONDecoder().decode(WalletIdentifier.self, from: json ?? Data())
+        return hash
+    }
+
+    func existDatadir(credentials: Credentials) -> Bool {
+        if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
+            let hashes = walletIdentifier(gdkNetwork.network, credentials: credentials)
+            let dir = url.appendingPathComponent("state/\(hashes?.walletHashId ?? "")", isDirectory: true)
+            return FileManager.default.fileExists(atPath: dir.relativePath)
+        }
+        return false
+    }
+
+    func removeDatadir(credentials: Credentials) {
+        if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
+            let hashes = walletIdentifier(gdkNetwork.network, credentials: credentials)
+            let dir = url.appendingPathComponent(hashes?.walletHashId ?? "", isDirectory: true)
+            try? FileManager.default.removeItem(at: dir)
         }
     }
 
@@ -208,52 +239,6 @@ class SessionManager {
             }.tapLogger()
     }
 
-    func discover(mnemonic: String?, password: String?) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .map(on: bgq) { _ in
-                if let mnemonic = mnemonic {
-                    guard try gaios.validateMnemonic(mnemonic: mnemonic) else {
-                        throw LoginError.invalidMnemonic()
-                    }
-                }
-            }.then(on: bgq) { _ in
-                self.loginUser(details: ["mnemonic": mnemonic ?? "", "password": password ?? ""])
-            }.map(on: bgq) { walletHashId in
-                // check if wallet just exist
-                if AccountsManager.shared.accounts.contains(where: {
-                    $0.walletHashId == walletHashId && !$0.isHW &&
-                    $0.networkName == self.gdkNetwork.network
-                    }) {
-                    throw LoginError.walletsJustRestored()
-                }
-            }.recover { err in
-                switch err {
-                case TwoFactorCallError.failure(let localizedDescription):
-                    if localizedDescription == "id_login_failed", !self.gdkNetwork.electrum {
-                        throw LoginError.walletNotFound()
-                    }
-                default:
-                    throw err
-                }
-            }.then(on: bgq) {
-                // discover subaccounts
-                self.subaccounts(true).recover { _ in
-                    Promise { _ in
-                        throw LoginError.connectionFailed()
-                    }
-                }
-            }.get(on: bgq) { wallets in
-                // check account discover if singlesig
-                if self.gdkNetwork.electrum {
-                    if wallets.filter({ $0.bip44Discovered ?? false }).isEmpty {
-                        throw LoginError.walletNotFound()
-                    }
-                }
-           }.tapLogger()
-            .asVoid()
-    }
-
     // create a default segwit account if doesn't exist on singlesig
     func createDefaultSubaccount(wallets: [WalletItem]) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
@@ -267,35 +252,6 @@ class SessionManager {
                 .asVoid()
         }
         return Promise<Void>().asVoid()
-    }
-
-    func restore(_ credentials: Credentials) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .then(on: bgq) { self.loginWithCredentials(credentials) }
-            .then(on: bgq) { _ in self.load(refreshSubaccounts: true) }
-            .tapLogger()
-            .asVoid()
-    }
-
-    func create(_ credentials: Credentials) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .then(on: bgq) { self.connect() }
-            .then(on: bgq) { _ in self.registerSW(credentials) }
-            .then(on: bgq) { _ in self.loginWithCredentials(credentials) }
-            .then(on: bgq) { _ in self.createDefaultSubaccount(wallets: []) }
-            .then(on: bgq) { _ in self.load(refreshSubaccounts: false) }
-            .recover { err in
-                switch err {
-                case LoginError.walletNotFound,
-                    LoginError.walletsJustRestored:
-                    // Enable restore for HW
-                    return
-                default:
-                    throw err
-                }
-            }.tapLogger()
     }
 
     func reconnect() -> Promise<Void> {
@@ -318,20 +274,14 @@ class SessionManager {
             }.tapLogger()
     }
 
-    func loginWithPin(_ pin: String, pinData: PinData) -> Promise<String> {
-        let bgq = DispatchQueue.global(qos: .background)
-        let data = try? JSONEncoder().encode(pinData)
-        let pin_data = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        return Guarantee()
-            .then(on: bgq) { self.loginUser(details: ["pin": pin, "pin_data": pin_data ?? [:]]) }
-    }
-
     func loginWithCredentials(_ credentials: Credentials) -> Promise<String> {
         let bgq = DispatchQueue.global(qos: .background)
         let data = try? JSONEncoder().encode(credentials)
         let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        let initialized = gdkNetwork.electrum && existDatadir(credentials: credentials)
         return Guarantee()
             .then(on: bgq) { self.loginUser(details: details ?? [:]) }
+            .then(on: bgq) { res in self.subaccounts(!initialized).compactMap { _ in res } }
     }
 
     func decryptWithPin(pin: String, pinData: PinData) -> Promise<Credentials> {
@@ -414,7 +364,7 @@ class SessionManager {
             .asVoid()
     }
 
-    /*func decryptWithPin(pin: String, pinData: PinData) -> Promise<Credentials> {
+    func decryptWithPin(pin: String, pinData: PinData) -> Promise<Credentials> {
         let bgq = DispatchQueue.global(qos: .background)
         let text = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(pinData), options: .allowFragments) as? [String: Any]
         return Guarantee()
@@ -425,7 +375,7 @@ class SessionManager {
                 let jsonData = try JSONSerialization.data(withJSONObject: result ?? "")
                 return try JSONDecoder().decode(Credentials.self, from: jsonData)
             }.tapLogger()
-    }*/
+    }
 
     func encryptWithPin(pin: String, text: [String: Any?]) -> Promise<PinData> {
         let bgq = DispatchQueue.global(qos: .background)

@@ -57,18 +57,16 @@ class RecoveryPhraseViewController: UIViewController {
     }
 
     @objc func didPressCardQR() {
-        next(.qr)
+        next()
     }
 
     @objc func didPressCardPhrase() {
-        next(.phrase)
+        next()
     }
 
-    func next(_ recoveryType: RecoveryType) {
-
+    func next() {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
-            vc.recoveryType = recoveryType
             navigationController?.pushViewController(vc, animated: true)
         }
     }
