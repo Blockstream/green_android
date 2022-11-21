@@ -135,11 +135,11 @@ class WalletManager {
         let liquidRestore = Guarantee()
             .then { liquidSession.loginWithCredentials(credentials) }
             .then { _ in liquidSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
-            .then {
-                if $0.first?.bip44Discovered ?? false {
-                    return liquidSession.updateSubaccount(subaccount: $0.first?.pointer ?? 0, hidden: true)
+            .then { (accounts: [WalletItem]) -> Promise<Void> in
+                if accounts.first?.bip44Discovered ?? false {
+                    return liquidSession.updateSubaccount(subaccount: accounts.first?.pointer ?? 0, hidden: true)
                 }
-                if $0.filter({ $0.bip44Discovered ?? false }).isEmpty {
+                if accounts.filter({ $0.bip44Discovered ?? false }).isEmpty {
                     liquidSession.removeDatadir(credentials: credentials)
                 }
                 return Promise().asVoid()

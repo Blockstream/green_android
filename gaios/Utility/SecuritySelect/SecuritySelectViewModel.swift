@@ -37,7 +37,7 @@ class SecuritySelectViewModel {
 
     // on errors
     var error: ((Error) -> Void)?
-    
+
     var unarchiveCreateDialog: (() -> Promise<Bool>)?
 
     var showAll = false {
@@ -115,7 +115,7 @@ class SecuritySelectViewModel {
                 let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
                 if let funded = funded, let dialog = self.unarchiveCreateDialog {
                     // ask user to unarchive o create a new one
-                    return dialog().then { create in
+                    return dialog().then { (create: Bool) -> Promise<Void> in
                         if create {
                             return self.createSubaccount(session: session, policy: policy)
                         } else {
