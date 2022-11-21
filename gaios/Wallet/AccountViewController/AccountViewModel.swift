@@ -8,6 +8,8 @@ class AccountViewModel {
     var account: WalletItem!
     var cachedBalance: [(String, Int64)]
     var cachedTransactions = [Transaction]()
+    var page = 0
+    var fetchingTxs = false
 
     var accountCellModels: [AccountCellModel] {
         didSet {
@@ -42,14 +44,26 @@ class AccountViewModel {
         self.cachedBalance = cachedBalance
     }
 
-    func getTransactions(page: Int = 0, max: Int? = nil) {
-        wm.transactions(subaccounts: [account])
+    func getTransactions(restart: Bool = true, max: Int? = nil) {
+        if fetchingTxs {
+            return
+        }
+        fetchingTxs = true
+        wm.transactions(subaccounts: [account], first: self.cachedTransactions.count)
             .done { txs in
-                print("-----------> \(txs.count)")
-                self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
-                self.txCellModels = self.cachedTransactions
+                if restart {
+                    self.page = 0
+                    self.cachedTransactions = []
+                    self.txCellModels = []
+                }
+                print("-----------> \(self.page) \(txs.count)")
+                self.page += 1
+                self.cachedTransactions += txs
+                self.txCellModels += txs
                     .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
                     .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
+            }.ensure {
+                self.fetchingTxs = false
             }.catch { err in
                 print(err)
             }

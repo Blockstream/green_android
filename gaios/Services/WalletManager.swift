@@ -195,16 +195,17 @@ class WalletManager {
             }
     }
 
-    func transactions(subaccounts: [WalletItem]) -> Promise<[Transaction]> {
+    func transactions(subaccounts: [WalletItem], first: Int = 0) -> Promise<[Transaction]> {
         var txs = [Transaction]()
         var iterator = subaccounts.makeIterator()
         let generator = AnyIterator<Promise<Void>> {
             guard let sub = iterator.next(),
                   let network = sub.network,
-                let session = self.sessions[network] else {
+                  let session = self.sessions[network],
+                  session.logged else {
                 return nil
             }
-            return session.transactions(subaccount: sub.pointer)
+            return session.transactions(subaccount: sub.pointer, first: UInt32(first))
                 .compactMap { $0.list.map { Transaction($0.details, subaccount: sub.hashValue) } }
                 .compactMap {
                     txs += $0 }

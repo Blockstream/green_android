@@ -101,7 +101,7 @@ class AssetsManager {
     func fetchFromCountly() {
         guard let session = session else { return }
         let assets = getAssetsFromCountly()
-        var infos = fetchAssets(session: session, assetsId: assets.map { $0.id })
+        let infos = fetchAssets(session: session, assetsId: assets.map { $0.id })
         self.infos.merge(infos, uniquingKeysWith: {_, new in new})
         assets.forEach { self.infos[$0.id]?.amp = $0.amp ?? false }
         let icons = fetchIcons(session: session, assetsId: assets.map { $0.id })

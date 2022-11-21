@@ -74,6 +74,7 @@ class AccountViewController: UIViewController {
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
 
+        tableView.prefetchDataSource = self
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
@@ -275,6 +276,16 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+extension AccountViewController: UITableViewDataSourcePrefetching {
+   // incremental transactions fetching from gdk
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        let filteredIndexPaths = indexPaths.filter { $0.section == AccountSection.transaction.rawValue }
+        let row = filteredIndexPaths.last?.row ?? 0
+        if viewModel.page > 0 && row > (viewModel.txCellModels.count - 10) {
+            viewModel.getTransactions(restart: false, max: nil)
+        }
+    }
+}
 extension AccountViewController: UIPopoverPresentationControllerDelegate {
 
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
