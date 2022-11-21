@@ -39,15 +39,16 @@ class AccountViewController: UIViewController {
         setContent()
         setStyle()
         tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
-    }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         viewModel?.reloadSections = reloadSections
         viewModel.success = { self.reloadSections([.account], animated: false) }
         viewModel.error = showError
         viewModel.getBalance()
         viewModel.getTransactions()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 
     func reloadSections(_ sections: [AccountSection], animated: Bool) {
@@ -281,7 +282,7 @@ extension AccountViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         let filteredIndexPaths = indexPaths.filter { $0.section == AccountSection.transaction.rawValue }
         let row = filteredIndexPaths.last?.row ?? 0
-        if viewModel.page > 0 && row > (viewModel.txCellModels.count - 10) {
+        if viewModel.page > 0 && row > (viewModel.txCellModels.count - 3) {
             viewModel.getTransactions(restart: false, max: nil)
         }
     }
