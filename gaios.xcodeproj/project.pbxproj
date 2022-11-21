@@ -213,6 +213,11 @@
 		34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFF27BBECD0006A01E9 /* WordCell.swift */; };
 		34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */; };
 		34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */; };
+		34A75B61292B697A007995D7 /* OnBoardInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B60292B697A007995D7 /* OnBoardInfoViewController.swift */; };
+		34A75B64292B6A1E007995D7 /* OnBoardInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B63292B6A1E007995D7 /* OnBoardInfoViewModel.swift */; };
+		34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A75B66292B6B78007995D7 /* OnBoardInfoCell.xib */; };
+		34A75B69292B6B98007995D7 /* OnBoardInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B68292B6B98007995D7 /* OnBoardInfoCellModel.swift */; };
+		34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B30F78277C693700D37A3C /* SendConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B30F77277C693700D37A3C /* SendConfirmViewController.swift */; };
 		34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B30F79277C730000D37A3C /* AddresseeCell.swift */; };
@@ -633,6 +638,11 @@
 		34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterQrCell.swift; sourceTree = "<group>"; };
 		34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorAuthenticationViewController.swift; sourceTree = "<group>"; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
+		34A75B60292B697A007995D7 /* OnBoardInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardInfoViewController.swift; sourceTree = "<group>"; };
+		34A75B63292B6A1E007995D7 /* OnBoardInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardInfoViewModel.swift; sourceTree = "<group>"; };
+		34A75B66292B6B78007995D7 /* OnBoardInfoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = OnBoardInfoCell.xib; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCell.xib; sourceTree = SOURCE_ROOT; };
+		34A75B68292B6B98007995D7 /* OnBoardInfoCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnBoardInfoCellModel.swift; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCellModel.swift; sourceTree = SOURCE_ROOT; };
+		34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnBoardInfoCell.swift; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCell.swift; sourceTree = SOURCE_ROOT; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
 		34B30F77277C693700D37A3C /* SendConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirmViewController.swift; sourceTree = "<group>"; };
 		34B30F79277C730000D37A3C /* AddresseeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddresseeCell.swift; sourceTree = "<group>"; };
@@ -1452,6 +1462,7 @@
 		3497935425F8B18C0029ECB1 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				34A75B62292B6984007995D7 /* OnBoardInfo */,
 				3497935525F8B18C0029ECB1 /* LandingViewController.swift */,
 				3497935625F8B18C0029ECB1 /* ChooseNetworkViewController.swift */,
 				3497935725F8B18C0029ECB1 /* WalletSuccessViewController.swift */,
@@ -1492,6 +1503,26 @@
 				349D1EDA274250540095B5CA /* TransactionViewController.swift */,
 			);
 			path = Transaction;
+			sourceTree = "<group>";
+		};
+		34A75B62292B6984007995D7 /* OnBoardInfo */ = {
+			isa = PBXGroup;
+			children = (
+				34A75B65292B6B54007995D7 /* Cells */,
+				34A75B60292B697A007995D7 /* OnBoardInfoViewController.swift */,
+				34A75B63292B6A1E007995D7 /* OnBoardInfoViewModel.swift */,
+			);
+			path = OnBoardInfo;
+			sourceTree = "<group>";
+		};
+		34A75B65292B6B54007995D7 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */,
+				34A75B68292B6B98007995D7 /* OnBoardInfoCellModel.swift */,
+				34A75B66292B6B78007995D7 /* OnBoardInfoCell.xib */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		34AB8BAC26036742009C930A /* Services */ = {
@@ -2188,6 +2219,7 @@
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
+				34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
@@ -2440,6 +2472,7 @@
 				34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */,
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
 				34477D3B277216640021698B /* FeeEditCell.swift in Sources */,
+				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
 				8164909027F4C4FF0097B2E4 /* JadeMessage.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */,
@@ -2451,6 +2484,7 @@
 				81D671F326C80D6B00682508 /* TorNotification.swift in Sources */,
 				345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */,
 				34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */,
+				34A75B64292B6A1E007995D7 /* OnBoardInfoViewModel.swift in Sources */,
 				34B30F78277C693700D37A3C /* SendConfirmViewController.swift in Sources */,
 				34C67E722924D1B000A50F89 /* AccountExpandableView.swift in Sources */,
 				FF29CA7222374E8B0035F95A /* URL.swift in Sources */,
@@ -2553,6 +2587,7 @@
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
 				34C2464B26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift in Sources */,
 				34FB697727FEF9D000A13197 /* AccountArchiveCell.swift in Sources */,
+				34A75B69292B6B98007995D7 /* OnBoardInfoCellModel.swift in Sources */,
 				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
 				3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */,
@@ -2573,6 +2608,7 @@
 				3418BABA2742ABE100F9B2D0 /* TransactionStatusCell.swift in Sources */,
 				34477D392771F7090021698B /* AddRecipientCell.swift in Sources */,
 				81D671EF26C80D3400682508 /* EventType.swift in Sources */,
+				34A75B61292B697A007995D7 /* OnBoardInfoViewController.swift in Sources */,
 				34BD7E76278C2EB6004AEC6F /* FeeSummaryCell.swift in Sources */,
 				34FB697927FEFE5400A13197 /* PopoverMenuUnarchiveViewController.swift in Sources */,
 				3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */,

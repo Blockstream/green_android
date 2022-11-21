@@ -113,6 +113,9 @@ class LandingViewController: UIViewController {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
             navigationController?.pushViewController(vc, animated: true)
+//            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+//            let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
+//            navigationController?.pushViewController(vc, animated: true)
         case .restore:
             AnalyticsManager.shared.startRestoreWallet()
             LandingViewController.flowType = .restore
