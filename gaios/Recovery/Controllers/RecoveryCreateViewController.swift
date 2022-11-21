@@ -5,8 +5,8 @@ class RecoveryCreateViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-
-    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var lblNote: UILabel!
+    @IBOutlet weak var pageControl: UIPageControl!
     @IBOutlet weak var btnNext: UIButton!
     @IBOutlet weak var word1: UILabel!
     @IBOutlet weak var word2: UILabel!
@@ -44,6 +44,7 @@ class RecoveryCreateViewController: UIViewController {
 
         setContent()
         setStyle()
+        pageControl.numberOfPages = mnemonicSize / Constants.wordsPerPage
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.view
         word1.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word1Lbl
@@ -56,9 +57,19 @@ class RecoveryCreateViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_write_down_the_words", comment: "")
-        lblHint.text = NSLocalizedString("id_write_down_your_recovery_phrase", comment: "")
+        let title = "Write down the order and your recovery phrase"
+        let strs = ["order", "recovery phrase"]
+
+        let attributedText = NSMutableAttributedString.init(string: title)
+        for str1 in strs {
+            let range = (title as NSString).range(of: str1)
+            attributedText.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.gGreenMatrix(), range: range)
+            lblTitle.attributedText = attributedText
+        }
+
+        lblHint.text = "Store it somewhere safe."
         btnNext.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+        lblNote.text = "Make sure to be in a private and safe space"
     }
 
     func setStyle() {
@@ -90,14 +101,15 @@ class RecoveryCreateViewController: UIViewController {
     }
 
     func loadWords() {
-        progressView.progress = Float(pageCounter + 1) / Float((mnemonicSize / Constants.wordsPerPage))
+        pageControl.currentPage = pageCounter
+
         let start = pageCounter * Constants.wordsPerPage
         let end = start + Constants.wordsPerPage
         for index in start..<end {
             let real = index+1
             let formattedString = NSMutableAttributedString(string: String("\(real) \(mnemonic[index])"))
-            formattedString.setColor(color: UIColor.customMatrixGreen(), forText: String(format: "%d", real))
-            formattedString.setFont(font: UIFont.systemFont(ofSize: 18), stringValue: String(format: "%d", real))
+            formattedString.setColor(color: UIColor.gGreenMatrix(), forText: String(format: "%d", real))
+            formattedString.setFont(font: UIFont.systemFont(ofSize: 16, weight: .semibold), stringValue: String(format: "%d", real))
             arrayLabels[index % Constants.wordsPerPage].attributedText = formattedString
         }
     }

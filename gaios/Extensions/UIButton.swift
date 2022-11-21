@@ -145,7 +145,7 @@ extension UIButton {
         layer.cornerRadius = 4.0
         switch type {
         case .primary:
-            backgroundColor = UIColor.customMatrixGreen()
+            backgroundColor = UIColor.gGreenMatrix()
             setTitleColor(.white, for: .normal)
             isEnabled = true
         case .primaryGray:
@@ -158,10 +158,10 @@ extension UIButton {
             isEnabled = false
         case .outlined:
             backgroundColor = UIColor.clear
-            setTitleColor(UIColor.customMatrixGreen(), for: .normal)
-            tintColor = UIColor.customMatrixGreen()
+            setTitleColor(UIColor.gGreenMatrix(), for: .normal)
+            tintColor = UIColor.gGreenMatrix()
             layer.borderWidth = 1.0
-            layer.borderColor = UIColor.customMatrixGreen().cgColor
+            layer.borderColor = UIColor.gGreenMatrix().cgColor
             layer.cornerRadius = 5.0
         case .outlinedGray:
             backgroundColor = UIColor.clear
@@ -177,7 +177,7 @@ extension UIButton {
             layer.cornerRadius = 5.0
         case .inline:
             backgroundColor = UIColor.clear
-            setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+            setTitleColor(UIColor.gGreenMatrix(), for: .normal)
         case .destructiveOutlined:
             backgroundColor = UIColor.clear
             cornerRadius = 5.0

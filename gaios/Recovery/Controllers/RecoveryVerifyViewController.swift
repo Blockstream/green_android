@@ -13,18 +13,9 @@ class RecoveryVerifyViewController: UIViewController {
     @IBOutlet weak var button2: UIButton!
     @IBOutlet weak var button3: UIButton!
 
-    @IBOutlet weak var progressBarView: UIStackView!
-    @IBOutlet weak var processNode1: UIView!
-    @IBOutlet weak var processNode2: UIView!
-    @IBOutlet weak var processNode3: UIView!
-    @IBOutlet weak var processNode4: UIView!
-    @IBOutlet weak var progressBarConnector1: UIView!
-    @IBOutlet weak var progressBarConnector2: UIView!
-    @IBOutlet weak var progressBarConnector3: UIView!
+    @IBOutlet weak var pageControl: UIPageControl!
 
     lazy var buttonsArray: [UIButton] = [button0, button1, button2, button3]
-    lazy var processNodes: [UIView] = [processNode1, processNode2, processNode3, processNode4]
-    lazy var processConnectors: [UIView] = [progressBarConnector1, progressBarConnector2, progressBarConnector3]
 
     private var mnemonicSize: Int {
         if let subAccountCreateMnemonicLength = subAccountCreateMnemonicLength {
@@ -49,23 +40,17 @@ class RecoveryVerifyViewController: UIViewController {
         expectedWordNumbers = generateExpectedWordNumbers()
         newRandomWords()
 
-        prepareProcessBar()
-        updateProcessBar()
-        navigationItem.titleView = progressBarView
+        pageControl.numberOfPages = numberOfSteps
+        updatePageControl()
         reload()
 
         lblTitle.text = NSLocalizedString("id_recovery_phrase_check", comment: "")
-        lblHint.text = NSLocalizedString("id_write_down_your_recovery_phrase", comment: "")
+        updateHint()
 
-        for btn in buttonsArray {
-            btn.setTitleColor(.white, for: .normal)
-            btn.borderWidth = 2.0
-            btn.borderColor = UIColor.customGrayLight()
-            btn.layer.cornerRadius = 4.0
+        buttonsArray.forEach {
+            $0.setStyle(.outlinedWhite)
         }
-        for node in processNodes {
-            node.layer.cornerRadius = node.frame.size.width / 2.0
-        }
+
         view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.view
         button0.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word0btn
         button1.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word1btn
@@ -121,7 +106,7 @@ class RecoveryVerifyViewController: UIViewController {
                 questionCounter += 1
                 newRandomWords()
                 reload()
-                updateProcessBar()
+                updatePageControl()
             }
         } else {
             DropAlert().warning(message: NSLocalizedString("id_wrong_choice_check_your", comment: ""), delay: 4)
@@ -129,23 +114,8 @@ class RecoveryVerifyViewController: UIViewController {
         }
     }
 
-    func prepareProcessBar() {
-        processNodes.forEach { item in
-            item.backgroundColor = UIColor.customGrayLight()
-            item.borderColor = UIColor.black
-        }
-        processConnectors.forEach { item in
-            item.backgroundColor = UIColor.customGrayLight()
-        }
-    }
-
-    func updateProcessBar() {
-        processNodes[questionCounter].backgroundColor = UIColor.customMatrixGreen()
-        processNodes[questionCounter].borderColor = UIColor.customMatrixGreen()
-
-        if questionCounter > 0 {
-            processConnectors[questionCounter - 1].backgroundColor = UIColor.customMatrixGreen()
-        }
+    func updatePageControl() {
+        pageControl.currentPage = questionCounter
     }
 
     func newRandomWords() {
@@ -178,9 +148,8 @@ class RecoveryVerifyViewController: UIViewController {
         return words
     }
 
-    func getTitle() -> String {
-        let localized = NSLocalizedString("id_select_word_number_d", comment: "")
-        return String(format: localized, questionPosition + 1)
+    func updateHint() {
+        lblHint.text = "What is word number \(questionPosition + 1)?"
     }
 
     func isComplete() -> Bool {
@@ -210,10 +179,21 @@ class RecoveryVerifyViewController: UIViewController {
             rangeStart = questionPosition - 1
             rangeEnd = questionPosition + 1
         }
+
         let question = "  ______   "
-        let placeHolder = mnemonic[rangeStart...rangeEnd].joined(separator: " ").replacingOccurrences(of: mnemonic[questionPosition], with: question)
-        let attributedString = NSMutableAttributedString(string: placeHolder)
-        attributedString.setColor(color: UIColor.customMatrixGreen(), forText: question)
+//        var str = ""
+        let attributedString = NSMutableAttributedString(string: "")
+        for idx in rangeStart...rangeEnd {
+            if mnemonic[questionPosition] == mnemonic[idx] {
+                attributedString.append(NSMutableAttributedString(string: question))
+            } else {
+                let prefix = "\(idx + 1)."
+                attributedString.append(NSMutableAttributedString(string: "\(prefix) \(mnemonic[idx]) "))
+                attributedString.setColor(color: UIColor.customMatrixGreen(), forText: question)
+                attributedString.setColor(color: UIColor.customMatrixGreen(), forText: prefix)
+            }
+        }
         textLabel.attributedText = attributedString
+        updateHint()
     }
 }
