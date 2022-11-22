@@ -64,11 +64,11 @@ extension AnalyticsManager {
 
             switch transactionSgmt.transactionType {
             case .transaction:
-                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.send.rawValue
+                s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.send.rawValue
             case .sweep:
-                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
+                s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
             case .bumpFee:
-                s[AnalyticsManager.strTtransactionType] = AnalyticsManager.TransactionType.bump.rawValue
+                s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.bump.rawValue
             }
 
             s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType.rawValue

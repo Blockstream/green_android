@@ -39,13 +39,13 @@ extension AnalyticsManager {
                 s[AnalyticsManager.strBrand] = "Blockstream"
                 s[AnalyticsManager.strFirmware] = BLEManager.shared.fmwVersion ?? ""
                 s[AnalyticsManager.strModel] = BLEManager.shared.boardType ?? ""
-                s[AnalyticsManager.strConnection] = "BLE"
+                s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
             }
             if account?.isLedger ?? false {
                 s[AnalyticsManager.strBrand] = "Ledger"
                 s[AnalyticsManager.strFirmware] = BLEManager.shared.fmwVersion ?? ""
                 s[AnalyticsManager.strModel] = "Ledger Nano X"
-                s[AnalyticsManager.strConnection] = "BLE"
+                s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
             }
 
             s[AnalyticsManager.strAppSettings] = appSettings()

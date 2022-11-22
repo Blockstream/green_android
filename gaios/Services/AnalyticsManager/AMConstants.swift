@@ -17,7 +17,7 @@ extension AnalyticsManager {
     static let strIsUri = "is_uri"
     static let strIsQR = "is_qr"
 
-    static let strTtransactionType = "tx_type"
+    static let strTransactionType = "transaction_type"
     static let strAddressInput = "address_input"
     static let strSendAll = "send_all"
     static let strWithMemo = "with_memo"
@@ -45,8 +45,7 @@ extension AnalyticsManager {
     static let strElectrumServer = "electrum_server"
     static let strSpv = "spv"
 
-    static let strBle = "ble"
-    static let strUsb = "usb"
+    static let strBle = "BLE"
 
     static let strShare = "share"
     static let strCopy = "copy"
