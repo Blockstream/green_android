@@ -1,6 +1,6 @@
 import UIKit
 
 struct DialogListCellModel {
-    let icon: UIImage
+    var icon: UIImage?
     let title: String
 }

@@ -2736,7 +2736,7 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="brnPrint:" destination="XVu-ww-2cI" eventType="touchUpInside" id="1XP-JO-cif"/>
+                                            <action selector="btnPrint:" destination="XVu-ww-2cI" eventType="touchUpInside" id="fQM-hT-kiV"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -2760,7 +2760,7 @@
                     <navigationItem key="navigationItem" id="4QE-jE-Vvs"/>
                     <connections>
                         <outlet property="btnNext" destination="LiZ-60-THo" id="DOh-Dh-zso"/>
-                        <outlet property="btnPrint" destination="szq-bh-HOM" id="9ch-Sf-gdn"/>
+                        <outlet property="btnPrint" destination="szq-bh-HOM" id="PVk-XH-rIJ"/>
                         <outlet property="tableView" destination="Ww8-MG-gHy" id="UhW-gh-1N0"/>
                     </connections>
                 </viewController>
@@ -2815,7 +2815,7 @@
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGreenMatrix">
-            <color red="0.0" green="0.71372549019607845" blue="0.43529411764705883" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

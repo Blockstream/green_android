@@ -17,7 +17,11 @@ class DialogListCell: UITableViewCell {
     }
 
     func configure(_ model: DialogListCellModel) {
-        icon.image = model.icon
+        icon.isHidden = true
+        if let img = model.icon {
+            icon.image = img
+            icon.isHidden = false
+        }
         lblTitle.text = model.title
     }
 }

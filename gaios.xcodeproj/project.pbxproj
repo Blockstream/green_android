@@ -214,6 +214,8 @@
 		34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A75B66292B6B78007995D7 /* OnBoardInfoCell.xib */; };
 		34A75B69292B6B98007995D7 /* OnBoardInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B68292B6B98007995D7 /* OnBoardInfoCellModel.swift */; };
 		34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */; };
+		34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6C292BD704007995D7 /* NetworkPrefs.swift */; };
+		34A75B6F292BD9FC007995D7 /* PhrasePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B30F78277C693700D37A3C /* SendConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B30F77277C693700D37A3C /* SendConfirmViewController.swift */; };
 		34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B30F79277C730000D37A3C /* AddresseeCell.swift */; };
@@ -637,6 +639,8 @@
 		34A75B66292B6B78007995D7 /* OnBoardInfoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = OnBoardInfoCell.xib; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCell.xib; sourceTree = SOURCE_ROOT; };
 		34A75B68292B6B98007995D7 /* OnBoardInfoCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnBoardInfoCellModel.swift; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCellModel.swift; sourceTree = SOURCE_ROOT; };
 		34A75B6A292B6BA8007995D7 /* OnBoardInfoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnBoardInfoCell.swift; path = gaios/Utility/SecuritySelect/Cells/OnBoardInfoCell.swift; sourceTree = SOURCE_ROOT; };
+		34A75B6C292BD704007995D7 /* NetworkPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPrefs.swift; sourceTree = "<group>"; };
+		34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhrasePrefs.swift; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
 		34B30F77277C693700D37A3C /* SendConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirmViewController.swift; sourceTree = "<group>"; };
 		34B30F79277C730000D37A3C /* AddresseeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddresseeCell.swift; sourceTree = "<group>"; };
@@ -1233,7 +1237,9 @@
 			isa = PBXGroup;
 			children = (
 				3457F4B72923A72900EF33B5 /* WalletPrefs.swift */,
+				34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */,
 				3457F4B92923B0B500EF33B5 /* AccountPrefs.swift */,
+				34A75B6C292BD704007995D7 /* NetworkPrefs.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2463,6 +2469,7 @@
 				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
 				34DEF5212729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift in Sources */,
+				34A75B6F292BD9FC007995D7 /* PhrasePrefs.swift in Sources */,
 				346300E0274D114A00B28521 /* DialogExplorerOptionsViewController.swift in Sources */,
 				3486ADA027D622EE0013D8FF /* SliderView.swift in Sources */,
 				818EE78026A5C2ED008CD09E /* HWDevice.swift in Sources */,
@@ -2537,6 +2544,7 @@
 				34FB694F27FD782F00A13197 /* PopoverMenuAccountViewController.swift in Sources */,
 				81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */,
 				34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */,
+				34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */,
 				81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */,
 				34E0CA9229829C2A00695304 /* Collection.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,

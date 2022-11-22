@@ -113,9 +113,13 @@ class LandingViewController: UIViewController {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
             navigationController?.pushViewController(vc, animated: true)
-//            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-//            let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
-//            navigationController?.pushViewController(vc, animated: true)
+//            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+//            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+//                vc.delegate = self
+//                vc.viewModel = DialogListViewModel(title: "Select Network", items: NetworkPrefs.getItems())
+//                vc.modalPresentationStyle = .overFullScreen
+//                present(vc, animated: false, completion: nil)
+//            }
         case .restore:
             AnalyticsManager.shared.startRestoreWallet()
             LandingViewController.flowType = .restore
@@ -128,6 +132,12 @@ class LandingViewController: UIViewController {
             let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+
+    func next() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     @IBAction func btnCheckTerms(_ sender: Any) {
@@ -162,6 +172,21 @@ extension LandingViewController: DialogCountlyConsentViewControllerDelegate {
             if let actionOnButton = actionOnButton {
                 onNext(actionOnButton)
             }
+        }
+    }
+}
+
+extension LandingViewController: DialogListViewControllerDelegate {
+    func didSelectRowAtIndex(_ index: Int) {
+        switch NetworkPrefs(rawValue: index) {
+        case .mainnet:
+            OnBoardManager.shared.params = OnBoardParams(network: AvailableNetworks.bitcoin.rawValue)
+            next()
+        case .testnet:
+            OnBoardManager.shared.params = OnBoardParams(network: AvailableNetworks.testnet.rawValue)
+            next()
+        case .none:
+            break
         }
     }
 }

@@ -57,11 +57,43 @@ class OnBoardInfoViewController: UIViewController {
         btnNext.setStyle(.primary)
     }
 
-    @IBAction func btnNext(_ sender: Any) {
-        print("Next")
+    func selectLength() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: NSLocalizedString("id_new_recovery_phrase", comment: ""), items: PhrasePrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+
     }
 
-    @IBAction func brnPrint(_ sender: Any) {
+    func next(_ lenght: MnemonicLengthOption) {
+//        switch securityOption {
+//        case .single:
+//            OnBoardManager.shared.params?.singleSig = true
+//        case .multi:
+//            OnBoardManager.shared.params?.singleSig = false
+//        default:
+//            break
+//        }
+//        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+//        let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
+//        navigationController?.pushViewController(vc, animated: true)
+
+        OnBoardManager.shared.params?.mnemonicSize = lenght.rawValue
+        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
+            vc.subAccountCreateMnemonicLength = lenght
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    @IBAction func btnNext(_ sender: Any) {
+        selectLength()
+    }
+
+    @IBAction func btnPrint(_ sender: Any) {
         print("Print")
     }
 }
@@ -171,6 +203,19 @@ extension OnBoardInfoViewController {
             let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
             section.backgroundColor = .clear
             return section
+        }
+    }
+}
+
+extension OnBoardInfoViewController: DialogListViewControllerDelegate {
+    func didSelectRowAtIndex(_ index: Int) {
+        switch PhrasePrefs(rawValue: index) {
+        case ._12:
+            next(._12)
+        case ._24:
+            next(._24)
+        case .none:
+            break
         }
     }
 }
