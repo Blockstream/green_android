@@ -699,7 +699,7 @@ class Countly constructor(
         const val PARAM_FLOW = "flow"
         const val PARAM_EPHEMERAL_BIP39 = "ephemeral_bip39"
 
-        const val PARAM_TRANSACTION_TYPE = "tx_type"
+        const val PARAM_TRANSACTION_TYPE = "transaction_type"
         const val PARAM_ADDRESS_INPUT = "address_input"
         const val PARAM_WITH_MEMO = "with_memo"
 
@@ -724,8 +724,8 @@ class Countly constructor(
         const val SPV = "spv"
         const val ENCHANCED_PRIVACY = "enhanced_privacy"
 
-        const val BLE = "ble"
-        const val USB = "usb"
+        const val BLE = "BLE"
+        const val USB = "USB"
 
         const val CREATE = "create"
         const val RESTORE = "restore"

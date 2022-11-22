@@ -6,9 +6,11 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.blockstream.gdk.data.Credentials
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.RecoveryPhraseFragmentBinding
+import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.RecoveryWordListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -28,10 +30,13 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
     menuRes = 0
 ) {
     private val args: RecoveryPhraseFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet!! }
+    override val walletOrNull by lazy { args.wallet }
 
     override val screenName = "RecoveryPhrase"
     override val segmentation: HashMap<String, Any>? = null
+
+    val credentials: Credentials
+        get() = args.credentials ?: session.getCredentials()
 
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory
@@ -39,9 +44,13 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
         WalletViewModel.provideFactory(viewModelFactory, wallet)
     }
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        val credentials = session.getCredentials()
+    override fun isSessionAndWalletRequired(): Boolean = walletOrNull != null
 
+    override fun getAppViewModel(): AppViewModel? = if(walletOrNull != null) super.getAppViewModel() else null
+
+    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
+
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         // Note that if a wallet has a bip39 passphrase,
         // we should never show the mnemonic without the passphrase,
         // since adding (or removing) the bip39 passphrase changes the seed, thus the addresses and thus is an entirely different wallet.
@@ -77,6 +86,4 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
             adapter = fastAdapter
         }
     }
-
-    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 }

@@ -710,14 +710,14 @@ class WalletSettingsFragment :
         )
     }
 
-    private fun enableBiometrics(){
+    private fun enableBiometrics(onlyDeviceCredentials: Boolean = false) {
 
         if(appKeystore.isBiometricsAuthenticationRequired()){
             authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    enableBiometrics()
+                    enableBiometrics(onlyDeviceCredentials = false)
                 }
-            })
+            }, onlyDeviceCredentials = onlyDeviceCredentials)
             return
         }
 

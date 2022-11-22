@@ -310,6 +310,12 @@
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet"
             app:nullable="true" />
+
+        <argument
+            android:name="credentials"
+            app:argType="com.blockstream.gdk.data.Credentials"
+            android:defaultValue="@null"
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -661,5 +667,6 @@
     <action
         android:id="@+id/action_global_aboutFragment"
         app:destination="@id/aboutFragment" />
+    <action android:id="@+id/action_global_recoveryPhraseFragment" app:destination="@id/recoveryPhraseFragment" />
 
 </navigation>

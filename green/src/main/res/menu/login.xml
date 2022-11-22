@@ -13,6 +13,10 @@
         android:title="@string/id_bip39_passphrase_login" />
 
     <item
+        android:id="@+id/show_recovery_phrase"
+        android:title="@string/id_show_recovery_phrase" />
+
+    <item
         android:id="@+id/rename"
         android:title="@string/id_rename_wallet" />
 

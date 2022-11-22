@@ -1133,4 +1133,7 @@
   <string name="id_you_will_be_asked_to_enter">You will be asked to enter your passphrase at every login.</string>
   <string name="id_the_qr_code_does_not_inlcude_the">The QR code does not include the BIP39 Passphrase</string>
   <string name="id_swap">Swap</string>
+  <string name="id_emergency_recovery_phrase_restore">Emergency Recovery Phrase Restore</string>
+  <string name="id_for_any_reason_you_cant">If for any reason you can\'t login into your wallet, you can recover your recovery phrase using your PIN/Biometrics.</string>
+  <string name="id_show_recovery_phrase">Show Recovery Phrase</string>
 </resources>

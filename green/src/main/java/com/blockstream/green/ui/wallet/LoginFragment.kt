@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.data.Credentials
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.data.NavigateEvent
@@ -31,6 +32,7 @@ import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenPinViewListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.UnrecoverableKeyException
 import javax.inject.Inject
@@ -48,6 +50,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     private var menuBip39Passphrase: MenuItem? = null
     private var menuRename: MenuItem? = null
     private var menuDelete: MenuItem? = null
+    private var menuShowRecoveryPhrase: MenuItem? = null
 
     @Inject
     lateinit var viewModelFactory: LoginViewModel.AssistedFactory
@@ -85,7 +88,13 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
         viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
             onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(it.data as Wallet))
+                if(it.data is Wallet) {
+                    logger.info { "Login successful" }
+                    navigate(LoginFragmentDirections.actionGlobalOverviewFragment(wallet = it.data))
+                }else if (it.data is Credentials){
+                    logger.info { "Emergency Recovery Phrase" }
+                    navigate(LoginFragmentDirections.actionGlobalRecoveryPhraseFragment(wallet = null, credentials = it.data))
+                }
             }
 
             onEvent.getContentIfNotHandledForType<LoginViewModel.LoginEvent.LaunchBiometrics>()?.let {
@@ -219,6 +228,10 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         binding.passphraseButton.setOnClickListener {
             Bip39PassphraseBottomSheetDialogFragment.show(childFragmentManager)
         }
+
+        binding.buttonEmergencyRecoveryPhrase.setOnClickListener {
+            viewModel.isEmergencyRecoveryPhrase.value = false
+        }
     }
 
     private fun updateMenu(){
@@ -226,6 +239,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         menuBip39Passphrase?.isVisible = !wallet.isHardware && !wallet.isWatchOnly
         menuRename?.isVisible = !wallet.isHardware
         menuDelete?.isVisible = !wallet.isHardware
+        menuShowRecoveryPhrase?.isVisible = !wallet.isHardware && !wallet.isWatchOnly
     }
 
     @Deprecated("Deprecated in Java")
@@ -235,6 +249,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         menuBip39Passphrase = menu.findItem(R.id.bip39_passphrase)
         menuRename = menu.findItem(R.id.rename)
         menuDelete = menu.findItem(R.id.delete)
+        menuShowRecoveryPhrase = menu.findItem(R.id.show_recovery_phrase)
         updateMenu()
     }
 
@@ -250,6 +265,17 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             R.id.rename -> {
                 RenameWalletBottomSheetDialogFragment.show(wallet, childFragmentManager)
             }
+            R.id.show_recovery_phrase -> {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.id_emergency_recovery_phrase_restore)
+                    .setMessage(R.string.id_for_any_reason_you_cant)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        viewModel.bip39Passphrase.value = ""
+                        viewModel.isEmergencyRecoveryPhrase.value = true
+                    }
+                    .show()
+            }
             R.id.help -> {
                 openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_MNEMONIC_BACKUP)
             }
@@ -257,7 +283,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         return super.onOptionsItemSelected(item)
     }
 
-    private fun launchBiometricPrompt(loginCredentials: LoginCredentials) {
+    private fun launchBiometricPrompt(loginCredentials: LoginCredentials, onlyDeviceCredentials: Boolean = false) {
         biometricPrompt?.cancelAuthentication()
 
         val isV4Authentication = loginCredentials.keystore.isNullOrBlank()
@@ -265,9 +291,11 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         if(isV4Authentication && appKeystore.isBiometricsAuthenticationRequired()){
             authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    launchBiometricPrompt(loginCredentials)
+                    // authenticateUserIfRequired = false prevent eternal loops
+                    launchBiometricPrompt(loginCredentials = loginCredentials, onlyDeviceCredentials = true)
+
                 }
-            })
+            }, onlyDeviceCredentials = onlyDeviceCredentials)
             return
         }
 

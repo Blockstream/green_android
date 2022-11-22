@@ -7,6 +7,7 @@ import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.data.Countly
+import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceResolver
@@ -367,15 +368,20 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = loginCredentialsParams)
         ).result<LoginData>().also {
-            var initAccountIndex = 0L
-
-            if(network.isElectrum){
-                // Create SegWit Account
-                initAccountIndex = createSubAccount(SubAccountParams("", AccountType.BIP84_SEGWIT)).pointer
-            }
-
-            onLoginSuccess(it, initAccountIndex = initAccountIndex, initializeSession = true)
+            onLoginSuccess(it, initAccountIndex = 0L, initializeSession = true)
         }
+    }
+
+    fun emergencyRestoreOfRecoveryPhrase(
+        wallet: Wallet,
+        pin: String,
+        loginCredentials: LoginCredentials,
+    ): Credentials {
+        connect(networkFromWallet(wallet))
+
+        return decryptCredentialsWithPin(
+            decryptWithPinParams = DecryptWithPinParams(pin = pin, pinData = loginCredentials.pinData),
+        )
     }
 
     fun loginWatchOnly(wallet: Wallet, username: String, password: String) {
@@ -428,22 +434,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = deviceParams, loginCredentialsParams = LoginCredentialsParams.empty)
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
-            var initAccountIndex = 0L
-            if(network.isElectrum){
-                // On Singlesig, check if there is a SegWit account already restored or create one
-                val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
-
-                var segWitAccount = subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT }
-                if(segWitAccount == null){
-                    // Create SegWit Account
-                    segWitAccount = createSubAccount(SubAccountParams("", AccountType.BIP84_SEGWIT), hardwareWalletResolver = hardwareWalletResolver)
-                }
-
-                // Default to SegWit Account
-                initAccountIndex = segWitAccount.pointer
-            }
-
-            onLoginSuccess(it, initAccountIndex = initAccountIndex, initializeSession = true)
+            onLoginSuccess(it, initAccountIndex = 0L, initializeSession = true)
         }
     }
 
@@ -460,22 +451,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = loginCredentialsParams)
         ).result<LoginData>().also {
-            var initAccountIndex = 0L
-            if (initializeSession && network.isElectrum) {
-                // On Singlesig, check if there is a SegWit account already restored or create one
-                val subAccounts = getSubAccounts(SubAccountsParams(refresh = true)).subaccounts
-
-                var segWitAccount = subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT }
-                if (segWitAccount == null) {
-                    // Create SegWit Account
-                    segWitAccount = createSubAccount(SubAccountParams("", AccountType.BIP84_SEGWIT))
-                }
-
-                // Default to SegWit Account
-                initAccountIndex = segWitAccount.pointer
-            }
-
-            onLoginSuccess(it, initAccountIndex = initAccountIndex, initializeSession = initializeSession)
+            onLoginSuccess(it, initAccountIndex = 0L, initializeSession = initializeSession)
         }
     }
 
@@ -519,12 +495,12 @@ class GreenSession constructor(
 
         // Check if active subaccount index was archived from 1) a different client (multisig) or 2) from cached Singlesig hww session
         // Expect refresh = true to be already called
-        getSubAccounts(params = SubAccountsParams()).let { subAccounts ->
-            if(subAccounts.subaccounts.find { it.pointer == initAccountIndex }?.hidden == true){
-                accountIndex = subAccounts.subaccounts.find { !it.hidden }?.pointer ?: 0
+        getSubAccounts(params = SubAccountsParams()).subaccounts.let { subAccounts ->
+            val foundActiveAccount = subAccounts.find { it.pointer == initAccountIndex }
+            if(foundActiveAccount == null || foundActiveAccount.hidden){
+                accountIndex = subAccounts.find { !it.hidden }?.pointer ?: 0
             }
         }
-
 
         // Update Liquid Assets from GDK before getting balances to sort them properly
         updateLiquidAssets()

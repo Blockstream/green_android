@@ -153,16 +153,38 @@
 
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/mainTitleTextView"
             isVisible="@{(vm.pinCredentials != null || vm.passwordCredentials != null) &amp;&amp; !vm.onProgress }"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
             android:text="@string/id_enter_your_pin"
+            android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonEmergencyRecoveryPhrase"
+            style="@style/Widget.Green.Button.Outlined.Tiny"
+            isVisible="@{vm.isEmergencyRecoveryPhrase &amp;&amp; !vm.onProgress }"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="32dp"
+            android:text="@string/id_emergency_recovery_phrase_restore"
+            app:icon="@drawable/ic_baseline_close_24"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            app:iconGravity="end"
+            app:iconPadding="6dp"
+            app:iconTint="@color/color_on_surface_emphasis_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mainTitleTextView" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/passphraseButton"
@@ -179,7 +201,7 @@
             app:iconTint="@color/color_on_surface_emphasis_medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/mainTitleTextView" />
 
         <com.blockstream.green.views.GreenPinView
             android:id="@+id/pinView"

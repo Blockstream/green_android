@@ -87,6 +87,8 @@ class LoginViewModel @AssistedInject constructor(
 
     var loginCredentialsInitialized = false
 
+    val isEmergencyRecoveryPhrase = MutableLiveData(false)
+
     init {
         if(session.isConnected){
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
@@ -146,7 +148,59 @@ class LoginViewModel @AssistedInject constructor(
         }
     }
 
+    private fun emergencyRecoveryPhrase(pin: String, loginCredentials: LoginCredentials) {
+        Single.just(session)
+            .subscribeOn(Schedulers.io())
+            .map {
+                it.emergencyRestoreOfRecoveryPhrase(
+                    wallet = wallet,
+                    pin = pin,
+                    loginCredentials = loginCredentials
+                ).also {
+                    session.disconnect()
+                }
+            }
+            .doOnError {
+                it.printStackTrace()
+                // isNotAuthorized only catches multisig/singlesig login errors, watchonly are not caught
+                // and the counter is not incremented
+                if (it.isNotAuthorized()) {
+                    loginCredentials.counter += 1
+
+                    if (loginCredentials.counter < 3) {
+                        walletRepository.updateLoginCredentialsSync(loginCredentials)
+                    } else {
+                        walletRepository.deleteLoginCredentialsSync(loginCredentials)
+                    }
+                } else {
+                    onErrorMessage.postValue(ConsumableEvent(it))
+                }
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                onProgress.postValue(true)
+            }
+            .doOnTerminate {
+                onProgress.postValue(false)
+            }
+            .subscribeBy(
+                onError = {
+                    onError.postValue(ConsumableEvent(it))
+                    countly.failedWalletLogin(session, it)
+                },
+                onSuccess = { credentials ->
+                    onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(credentials)))
+                    isEmergencyRecoveryPhrase.postValue(false)
+                }
+            )
+    }
+
     fun loginWithPin(pin: String, loginCredentials: LoginCredentials) {
+        if(isEmergencyRecoveryPhrase.value == true){
+            emergencyRecoveryPhrase(pin, loginCredentials)
+            return
+        }
+
         login(loginCredentials) {
             // if bip39 passphrase, don't initialize the session as we need to re-connect || initializeSession = bip39Passphrase.isNullOrBlank())
             session.loginWithPin(wallet, pin, loginCredentials.pinData!!, initializeSession = !isBip39Login)
@@ -166,6 +220,12 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     fun loginWithBiometrics(cipher: Cipher, loginCredentials: LoginCredentials) {
+        if(isEmergencyRecoveryPhrase.value == true){
+            val pin = String(appKeystore.decryptData(cipher, loginCredentials.encryptedData!!))
+            emergencyRecoveryPhrase(pin, loginCredentials)
+            return
+        }
+
         loginCredentials.encryptedData?.let { encryptedData ->
             login(loginCredentials) {
                 val pin = String(appKeystore.decryptData(cipher, encryptedData))
@@ -176,6 +236,14 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     fun loginWithBiometricsV3(cipher: Cipher, loginCredentials: LoginCredentials) {
+        if(isEmergencyRecoveryPhrase.value == true){
+            val decrypted = appKeystore.decryptData(cipher, loginCredentials.encryptedData!!)
+            // Migrated from v3
+            val pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15)
+            emergencyRecoveryPhrase(pin, loginCredentials)
+            return
+        }
+
         loginCredentials.encryptedData?.let { encryptedData ->
             login(loginCredentials) {
                 val decrypted = appKeystore.decryptData(cipher, encryptedData)

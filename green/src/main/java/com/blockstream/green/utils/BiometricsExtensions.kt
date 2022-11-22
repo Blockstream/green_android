@@ -9,13 +9,12 @@ import androidx.fragment.app.Fragment
 import com.blockstream.green.R
 import java.security.InvalidAlgorithmParameterException
 
-fun Fragment.authenticateWithBiometrics(callback : AuthenticationCallback){
+fun Fragment.authenticateWithBiometrics(callback : AuthenticationCallback, onlyDeviceCredentials: Boolean = false){
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle(getString(R.string.id_biometrics_authentication))
         .setDescription(getString(R.string.id_you_have_to_authenticate_using))
-        .setNegativeButtonText(getString(R.string.id_cancel))
-        .setConfirmationRequired(false)
-        .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+        .setAllowedAuthenticators(if (onlyDeviceCredentials) BiometricManager.Authenticators.DEVICE_CREDENTIAL else BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+
 
     val biometricPrompt = BiometricPrompt(
         this,
