@@ -122,6 +122,17 @@ class WalletManager {
             .compactMap { self.loadRegistry() }
     }
 
+    func create(_ credentials: Credentials) -> Promise<Void> {
+        let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
+        let btcSession = self.sessions[btcNetwork.rawValue]!
+        return Promise()
+            .then { btcSession.connect() }
+            .then { btcSession.registerSW(credentials) }
+            .then { btcSession.loginWithCredentials(credentials) }
+            .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
+            .asVoid()
+    }
+
     func restore(_ credentials: Credentials) -> Guarantee<Void> {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let btcSession = self.sessions[btcNetwork.rawValue]!

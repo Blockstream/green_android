@@ -75,12 +75,7 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
     }
 
     @objc func didPressCardNewPhrase() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogMnemonicLengthViewController") as? DialogMnemonicLengthViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            present(vc, animated: false, completion: nil)
-        }
+        next(.newPhrase)
     }
 
     @objc func didPressCardExistingPhrase() {
@@ -104,16 +99,10 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         switch recoveryKeyType {
         case .hw:
             DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
-        case .newPhrase(let length):
-            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController") as? RecoveryInstructionViewController {
-                if length == MnemonicLengthOption._24.rawValue {
-                    vc.subAccountCreateMnemonicLength = MnemonicLengthOption._24
-                } else {
-                    vc.subAccountCreateMnemonicLength = MnemonicLengthOption._12
-                }
-                navigationController?.pushViewController(vc, animated: true)
-            }
+        case .newPhrase:
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
+            navigationController?.pushViewController(vc, animated: true)
         case .existingPhrase:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
@@ -126,11 +115,5 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
-    }
-}
-
-extension AccountCreateRecoveryKeyViewController: DialogMnemonicLengthViewControllerDelegate {
-    func didSelect(_ option: MnemonicLengthOption) {
-        next(.newPhrase(lenght: option.rawValue))
     }
 }

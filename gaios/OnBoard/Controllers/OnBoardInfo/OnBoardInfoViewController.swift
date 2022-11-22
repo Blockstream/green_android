@@ -6,6 +6,11 @@ enum OnBoardInfoSection: Int, CaseIterable {
     case footer
 }
 
+enum OnBoardInfoFlowType: Int, CaseIterable {
+    case onboarding
+    case subaccount
+}
+
 class OnBoardInfoViewController: UIViewController {
 
     enum FooterType {
@@ -20,6 +25,7 @@ class OnBoardInfoViewController: UIViewController {
     private var footerH: CGFloat = 54.0
 
     var viewModel = OnBoardInfoViewModel()
+    static var flowType = OnBoardInfoFlowType.onboarding
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,22 +75,10 @@ class OnBoardInfoViewController: UIViewController {
     }
 
     func next(_ lenght: MnemonicLengthOption) {
-//        switch securityOption {
-//        case .single:
-//            OnBoardManager.shared.params?.singleSig = true
-//        case .multi:
-//            OnBoardManager.shared.params?.singleSig = false
-//        default:
-//            break
-//        }
-//        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-//        let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
-//        navigationController?.pushViewController(vc, animated: true)
-
         OnBoardManager.shared.params?.mnemonicSize = lenght.rawValue
         let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
-            vc.subAccountCreateMnemonicLength = lenght
+            vc.mnemonicLength = lenght
             navigationController?.pushViewController(vc, animated: true)
         }
     }

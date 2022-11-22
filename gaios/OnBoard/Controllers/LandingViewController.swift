@@ -6,6 +6,11 @@ enum OnBoardingFlowType {
     case watchonly
 }
 
+enum OnBoardingChainType {
+    case mainnet
+    case testnet
+}
+
 enum ActionOnButton {
     case new
     case restore
@@ -29,6 +34,7 @@ class LandingViewController: UIViewController {
     @IBOutlet weak var iconWatch: UIImageView!
 
     static var flowType: OnBoardingFlowType = .add
+    static var chainType: OnBoardingChainType = .mainnet
 
     var actionOnButton: ActionOnButton?
 
@@ -93,7 +99,6 @@ class LandingViewController: UIViewController {
     }
 
     func onNext(_ action: ActionOnButton) {
-
         if AnalyticsManager.shared.consent == .notDetermined {
             actionOnButton = action
 
@@ -105,27 +110,26 @@ class LandingViewController: UIViewController {
             }
             return
         }
-
+        
+        let settings = getUserNetworkSettings()
+        let testnetAvailable = settings["testnet"] as? Bool
         switch action {
         case .new:
             AnalyticsManager.shared.startCreateWallet()
             LandingViewController.flowType = .add
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
-            navigationController?.pushViewController(vc, animated: true)
-//            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-//                vc.delegate = self
-//                vc.viewModel = DialogListViewModel(title: "Select Network", items: NetworkPrefs.getItems())
-//                vc.modalPresentationStyle = .overFullScreen
-//                present(vc, animated: false, completion: nil)
-//            }
+            if testnetAvailable ?? false {
+                selectNetwork()
+            } else {
+                next()
+            }
         case .restore:
             AnalyticsManager.shared.startRestoreWallet()
             LandingViewController.flowType = .restore
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
-            navigationController?.pushViewController(vc, animated: true)
+            if testnetAvailable ?? false {
+                selectNetwork()
+            } else {
+                next()
+            }
         case .watchOnly:
             LandingViewController.flowType = .watchonly
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
@@ -133,11 +137,26 @@ class LandingViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    
+    func selectNetwork() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Select Network", items: NetworkPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
 
     func next() {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        if LandingViewController.flowType == .add {
+            let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        } else {
+            let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnCheckTerms(_ sender: Any) {
@@ -180,10 +199,10 @@ extension LandingViewController: DialogListViewControllerDelegate {
     func didSelectRowAtIndex(_ index: Int) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:
-            OnBoardManager.shared.params = OnBoardParams(network: AvailableNetworks.bitcoin.rawValue)
+            LandingViewController.chainType = .mainnet
             next()
         case .testnet:
-            OnBoardManager.shared.params = OnBoardParams(network: AvailableNetworks.testnet.rawValue)
+            LandingViewController.chainType = .testnet
             next()
         case .none:
             break

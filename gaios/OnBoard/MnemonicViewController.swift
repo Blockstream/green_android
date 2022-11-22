@@ -22,7 +22,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     var qrCodeReader: QRCodeReaderView?
     var viewModel = MnemonicViewModel()
 
-    var testnet = false
     var currIndexPath: IndexPath?
     var mnemonicActionType: MnemonicActionType = .recoverWallet
     var page = 0 // analytics, mnemonic fails counter
@@ -219,9 +218,10 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         self.stopLoader()
         switch self.mnemonicActionType {
         case .recoverWallet:
-           // recovery of existing wallet
+            // recovery of existing wallet
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+                vc.pinFlow = .onboard
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         case .addSubaccount:
@@ -234,52 +234,15 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             }
         }
     }
-/*
-    fileprivate func validate(mnemonic: String, password: String) {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
-            return Guarantee()
-        }.compactMap(on: bgq) {
-            guard try validateMnemonic(mnemonic: mnemonic) else {
-                throw LoginError.invalidMnemonic
-            }
-        }.ensure {
-            self.stopLoader()
-        }.done { _ in
-            switch self.mnemonicActionType {
-            case .recoverWallet:
-                OnBoardManager.shared.params?.mnemonic = mnemonic
-                OnBoardManager.shared.params?.mnemomicPassword = password
-
-               // recovery of existing wallet
-                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
-                self.navigationController?.pushViewController(vc, animated: true)
-            case .addSubaccount:
-                let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
-                    vc.accountType = .twoOfThree
-                    vc.recoveryKeyType = .existingPhrase
-                    vc.recoveryMnemonic = mnemonic
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            }
-        }.catch { error in
-
-            self.page += 1
-            AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardManager.shared.params, page: self.page)
-            DropAlert().error(message: NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
-        }
-    }*/
 
     @IBAction func doneButtonClicked(_ sender: Any) {
+        let testnet = LandingViewController.chainType == .testnet
         _ = getMnemonicString()
             .done {
                 self.startLoader()
                 switch self.mnemonicActionType {
                 case .recoverWallet:
-                    self.viewModel.restore(mnemonic: $0.0, password: $0.1, testnet: self.testnet)
+                    self.viewModel.restore(mnemonic: $0.0, password: $0.1, testnet: testnet)
                 case .addSubaccount:
                     self.viewModel.create(mnemonic: $0.0, network: .bitcoinMS)
                 }

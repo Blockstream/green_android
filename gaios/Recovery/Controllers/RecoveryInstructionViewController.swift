@@ -67,7 +67,6 @@ class RecoveryInstructionViewController: UIViewController {
     @IBAction func btnNext(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
-            vc.subAccountCreateMnemonicLength = subAccountCreateMnemonicLength
             navigationController?.pushViewController(vc, animated: true)
         }
     }

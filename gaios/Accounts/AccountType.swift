@@ -86,7 +86,7 @@ enum AccountType: String, CaseIterable, Codable, Comparable {
 
 enum RecoveryKeyType {
     case hw
-    case newPhrase(lenght: Int)
+    case newPhrase
     case existingPhrase
     case publicKey
 }
