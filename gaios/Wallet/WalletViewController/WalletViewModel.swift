@@ -45,9 +45,8 @@ class WalletViewModel {
         cachedSubaccounts = self.subaccounts
         wm.balances(subaccounts: self.subaccounts)
             .done { _ in
-                self.accountCellModels = self.subaccounts.map {
-                    AccountCellModel(subaccount: $0)
-                }
+                let models = self.subaccounts.map { AccountCellModel(subaccount: $0) }
+                if models.count > 0 { self.accountCellModels = models }
                 self.getAssets()
                 self.getTransactions(max: 10)
             }.catch { err in
