@@ -89,7 +89,7 @@ class RecoveryVerifyViewController: UIViewController {
             navigationController?.popViewController(animated: true)
         }
     }
-    
+
     func next() {
         if OnBoardInfoViewController.flowType == .onboarding {
             createWallet()

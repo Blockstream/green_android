@@ -2,6 +2,11 @@ import Foundation
 import UIKit
 import PromiseKit
 
+enum SecurityOption: String {
+    case single = "SingleSig"
+    case multi = "MultiSig"
+}
+
 class WatchOnlyViewController: KeyboardViewController {
 
     @IBOutlet weak var lblTitle: UILabel!

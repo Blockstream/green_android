@@ -110,34 +110,24 @@ class LandingViewController: UIViewController {
             }
             return
         }
-        
-        let settings = getUserNetworkSettings()
-        let testnetAvailable = settings["testnet"] as? Bool
         switch action {
         case .new:
             AnalyticsManager.shared.startCreateWallet()
             LandingViewController.flowType = .add
-            if testnetAvailable ?? false {
-                selectNetwork()
-            } else {
-                next()
-            }
         case .restore:
             AnalyticsManager.shared.startRestoreWallet()
             LandingViewController.flowType = .restore
-            if testnetAvailable ?? false {
-                selectNetwork()
-            } else {
-                next()
-            }
         case .watchOnly:
             LandingViewController.flowType = .watchonly
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
-            navigationController?.pushViewController(vc, animated: true)
+        }
+        let testnetAvailable = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
+        if testnetAvailable {
+            selectNetwork()
+        } else {
+            next()
         }
     }
-    
+
     func selectNetwork() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
@@ -150,11 +140,15 @@ class LandingViewController: UIViewController {
 
     func next() {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        if LandingViewController.flowType == .add {
+        switch LandingViewController.flowType {
+        case .add:
             let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
             navigationController?.pushViewController(vc, animated: true)
-        } else {
+        case .restore:
             let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        case .watchonly:
+            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
             navigationController?.pushViewController(vc, animated: true)
         }
     }
