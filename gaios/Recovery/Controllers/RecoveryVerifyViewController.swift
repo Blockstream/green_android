@@ -111,11 +111,12 @@ class RecoveryVerifyViewController: UIViewController {
         let wm = WalletManager.getOrAdd(for: account)
         let mnemonic = self.mnemonic.joined(separator: " ")
         let credentials = Credentials(mnemonic: mnemonic, password: "")
+        let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
             .compactMap { self.startLoader() }
-            .then { wm.create(credentials) }
+            .then(on: bgq) { wm.create(credentials) }
             .compactMap { AccountsManager.shared.current = account }
-            .then { wm.login(credentials) }
+            .then(on: bgq) { wm.login(credentials) }
             .ensure { self.stopLoader() }
             .done {
                 AnalyticsManager.shared.createWallet(account: AccountsManager.shared.current)

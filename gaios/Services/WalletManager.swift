@@ -130,6 +130,7 @@ class WalletManager {
             .then { btcSession.registerSW(credentials) }
             .then { btcSession.loginWithCredentials(credentials) }
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
+            .then { _ in btcSession.subaccounts() }
             .asVoid()
     }
 
@@ -141,6 +142,8 @@ class WalletManager {
             .then { _ in btcSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
             .then { $0.first?.bip44Discovered ?? false ? Promise().asVoid() :
                 btcSession.updateSubaccount(subaccount: $0.first?.pointer ?? 0, hidden: true) }
+            .then { _ in btcSession.subaccounts() }
+
         let liquidNetwork: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
         let liquidSession = self.sessions[liquidNetwork.rawValue]!
         let liquidRestore = Guarantee()
@@ -154,7 +157,7 @@ class WalletManager {
                     liquidSession.removeDatadir(credentials: credentials)
                 }
                 return Promise().asVoid()
-            }
+            }.then { _ in btcSession.subaccounts() }
         return when(resolved: [btcRestore, liquidRestore]).asVoid()
     }
 

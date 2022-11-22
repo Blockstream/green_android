@@ -1,4 +1,5 @@
 import Foundation
+import PromiseKit
 
 class MnemonicViewModel {
 
@@ -20,20 +21,26 @@ class MnemonicViewModel {
         let account = Account(name: name, network: testnet ? "testnet" : "mainnet", isSingleSig: true)
         let wm = WalletManager.getOrAdd(for: account)
         let credentials = Credentials(mnemonic: mnemonic, password: password)
-        wm.restore(credentials).compactMap {
-            AccountsManager.shared.current = account
-            AnalyticsManager.shared.restoreWallet(account: AccountsManager.shared.current)}
-        .then { wm.login(credentials) }
-        .done { self.success?() }
-        .catch { err in self.error?(err) }
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee()
+            .then(on: bgq) { wm.restore(credentials) }
+            .compactMap {
+                AccountsManager.shared.current = account
+                AnalyticsManager.shared.restoreWallet(account: AccountsManager.shared.current)}
+            .then(on: bgq) { wm.login(credentials) }
+            .done { self.success?() }
+            .catch { err in self.error?(err) }
     }
 
     func create(mnemonic: String, network: NetworkSecurityCase) {
         guard let wm = WalletManager.current else { return }
         let credentials = Credentials(mnemonic: mnemonic)
-        wm.restore(credentials).done {
-            AnalyticsManager.shared.createWallet(account: AccountsManager.shared.current)
-            self.success?()
-        }.catch { err in self.error?(err) }
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee()
+            .then(on: bgq) { wm.restore(credentials) }
+            .done {
+                AnalyticsManager.shared.createWallet(account: AccountsManager.shared.current)
+                self.success?()
+            }.catch { err in self.error?(err) }
     }
 }
