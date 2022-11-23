@@ -7,7 +7,8 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var effectView: UIView!
     @IBOutlet weak var innerEffectView: UIView!
     @IBOutlet weak var btcImg: UIImageView!
-    @IBOutlet weak var btnDisclose: UIButton!
+    @IBOutlet weak var btnSelect: UIButton!
+    @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnWarn: UIButton!
 
     @IBOutlet weak var imgMS: UIImageView!
@@ -24,6 +25,7 @@ class AccountCell: UITableViewCell {
     private var cIdx: Int = 0
     private var isLast: Bool = false
     private var onSelect: (() -> Void)?
+    private var onCopy: (() -> Void)?
     private let iconW: CGFloat = 24
     private var cColor: UIColor = .clear
 
@@ -35,12 +37,15 @@ class AccountCell: UITableViewCell {
         bg.cornerRadius = 5.0
         innerEffectView.layer.cornerRadius = 5.0
         innerEffectView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        btnDisclose.borderWidth = 1.0
-        btnDisclose.borderColor = .white
-        btnDisclose.cornerRadius = 3.0
         btnWarn.borderWidth = 1.0
         btnWarn.borderColor = .black
         btnWarn.cornerRadius = 16.0
+        [btnSelect, btnCopy].forEach {
+            $0.borderWidth = 1.0
+            $0.borderColor = .white
+            $0.cornerRadius = 3.0
+        }
+        btnCopy.setTitle("Copy ID", for: .normal)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -53,11 +58,13 @@ class AccountCell: UITableViewCell {
                    cIdx: Int,
                    sIdx: Int,
                    isLast: Bool,
-                   onSelect: (() -> Void)?) {
+                   onSelect: (() -> Void)?,
+                   onCopy: (() -> Void)?) {
         self.cIdx = cIdx
         self.sIdx = sIdx
         self.isLast = isLast
         self.onSelect = onSelect
+        self.onCopy = onCopy
 
         lblType.text = model.lblType
         lblName.text = model.name
@@ -73,7 +80,8 @@ class AccountCell: UITableViewCell {
         [bg, effectView, btnWarn].forEach {
             $0?.backgroundColor = cColor
         }
-        btnDisclose.isHidden = onSelect == nil
+        btnSelect.isHidden = onSelect == nil
+        btnCopy.isHidden = onCopy == nil
 
         for v in iconsStack.subviews {
             v.removeFromSuperview()
@@ -122,5 +130,9 @@ class AccountCell: UITableViewCell {
 
     @IBAction func btnSelect(_ sender: Any) {
         onSelect?()
+    }
+
+    @IBAction func btnCopy(_ sender: Any) {
+        onCopy?()
     }
 }

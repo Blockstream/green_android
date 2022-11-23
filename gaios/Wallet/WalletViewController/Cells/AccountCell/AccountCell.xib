@@ -120,22 +120,42 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uIG-Od-99L">
                                 <rect key="frame" x="0.0" y="64" width="364" height="116"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6PV-rS-zVe" userLabel="Btn Select">
-                                        <rect key="frame" x="304" y="56" width="50" height="50"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="3Uu-tM-Vqb"/>
-                                            <constraint firstAttribute="width" constant="50" id="tFe-c4-O7f"/>
-                                        </constraints>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="ic_arrow_card"/>
-                                        <connections>
-                                            <action selector="btnSelect:" destination="RmT-Op-ete" eventType="touchUpInside" id="b8Y-st-czj"/>
-                                        </connections>
-                                    </button>
+                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="yIz-0S-ufK">
+                                        <rect key="frame" x="200.5" y="56" width="153.5" height="50"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6PV-rS-zVe" userLabel="Btn Select">
+                                                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="3Uu-tM-Vqb"/>
+                                                    <constraint firstAttribute="width" constant="50" id="tFe-c4-O7f"/>
+                                                </constraints>
+                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" image="ic_arrow_card"/>
+                                                <connections>
+                                                    <action selector="btnSelect:" destination="RmT-Op-ete" eventType="touchUpInside" id="rXC-5K-dOS"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vh4-gu-LkL" userLabel="Btn Copy">
+                                                <rect key="frame" x="50" y="0.0" width="103.5" height="50"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="pw1-mM-ctU"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
+                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <inset key="contentEdgeInsets" minX="20" minY="0.0" maxX="20" maxY="0.0"/>
+                                                <inset key="imageEdgeInsets" minX="-5" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" title="Copy ID" image="ic_copy_new"/>
+                                                <connections>
+                                                    <action selector="btnCopy:" destination="RmT-Op-ete" eventType="touchUpInside" id="Rui-Ut-TYr"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ix7-gH-fab">
-                                        <rect key="frame" x="20" y="59" width="264" height="41"/>
+                                        <rect key="frame" x="20" y="59" width="170.5" height="41"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" alpha="0.60000002384185791" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_fiat" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="egw-Ns-Nw2">
                                                 <rect key="frame" x="0.0" y="0.0" width="44" height="17"/>
@@ -155,11 +175,11 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="ix7-gH-fab" secondAttribute="bottom" constant="16" id="Akw-ti-duO"/>
-                                    <constraint firstItem="6PV-rS-zVe" firstAttribute="top" secondItem="uIG-Od-99L" secondAttribute="top" constant="56" id="IX1-dK-6Bs"/>
-                                    <constraint firstAttribute="trailing" secondItem="6PV-rS-zVe" secondAttribute="trailing" constant="10" id="IiA-HJ-zej"/>
+                                    <constraint firstAttribute="trailing" secondItem="yIz-0S-ufK" secondAttribute="trailing" constant="10" id="GRp-uG-27q"/>
                                     <constraint firstItem="ix7-gH-fab" firstAttribute="leading" secondItem="uIG-Od-99L" secondAttribute="leading" constant="20" id="La9-1O-DqR"/>
-                                    <constraint firstAttribute="bottom" secondItem="6PV-rS-zVe" secondAttribute="bottom" constant="10" id="gtP-dH-FTI"/>
-                                    <constraint firstItem="6PV-rS-zVe" firstAttribute="leading" secondItem="ix7-gH-fab" secondAttribute="trailing" constant="20" id="k1N-ai-37P"/>
+                                    <constraint firstAttribute="bottom" secondItem="yIz-0S-ufK" secondAttribute="bottom" constant="10" id="cch-jt-z0b"/>
+                                    <constraint firstItem="yIz-0S-ufK" firstAttribute="top" secondItem="uIG-Od-99L" secondAttribute="top" constant="56" id="drU-QX-OCT"/>
+                                    <constraint firstItem="yIz-0S-ufK" firstAttribute="leading" secondItem="ix7-gH-fab" secondAttribute="trailing" constant="10" id="tN7-m8-Mwx"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -211,7 +231,8 @@
             <connections>
                 <outlet property="bg" destination="Fpf-9k-ypl" id="d6c-2l-6dW"/>
                 <outlet property="btcImg" destination="jDH-qe-0RU" id="idf-mL-BjE"/>
-                <outlet property="btnDisclose" destination="6PV-rS-zVe" id="Kuu-AY-Ps8"/>
+                <outlet property="btnCopy" destination="vh4-gu-LkL" id="Kdk-pR-dFg"/>
+                <outlet property="btnSelect" destination="6PV-rS-zVe" id="rC9-ra-pvg"/>
                 <outlet property="btnWarn" destination="zk2-bm-E2u" id="yBC-kx-KYH"/>
                 <outlet property="detailView" destination="uIG-Od-99L" id="AKD-jD-ZrA"/>
                 <outlet property="effectView" destination="r5L-uL-wdr" id="fD3-27-V9y"/>
@@ -232,6 +253,7 @@
     <resources>
         <image name="ic_arrow_card" width="16" height="15"/>
         <image name="ic_btc_outlined" width="154" height="180"/>
+        <image name="ic_copy_new" width="16.5" height="16.5"/>
         <image name="ic_key_ms" width="15" height="10"/>
         <image name="ic_key_ss" width="10" height="10"/>
         <image name="ic_triangle_warn" width="15" height="16"/>

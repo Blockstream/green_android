@@ -217,13 +217,15 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell {
+                
                 cell.configure(model: viewModel.accountCellModels[indexPath.row],
                                cIdx: indexPath.row,
                                sIdx: sIdx,
                                isLast: indexPath.row == viewModel.accountCellModels.count - 1,
                                onSelect: {[weak self] in
                     self?.accountDetail(model: self?.viewModel.accountCellModels[indexPath.row])
-                })
+                }, onCopy: nil
+                )
                 cell.selectionStyle = .none
                 return cell
             }

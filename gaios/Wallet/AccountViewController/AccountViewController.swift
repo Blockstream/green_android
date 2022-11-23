@@ -170,12 +170,18 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         switch AccountSection(rawValue: indexPath.section) {
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell {
+
+                var onCopy: (() -> Void)? = {[weak self] in
+                    print("do the copy or leave onCopy nil to hide the button")
+                }
+                onCopy = nil
                 let model = viewModel.accountCellModels[indexPath.row]
                 cell.configure(model: model,
                                cIdx: indexPath.row,
                                sIdx: sIdx,
                                isLast: true,
-                               onSelect: nil)
+                               onSelect: nil,
+                               onCopy: onCopy)
                 cell.selectionStyle = .none
                 return cell
             }
