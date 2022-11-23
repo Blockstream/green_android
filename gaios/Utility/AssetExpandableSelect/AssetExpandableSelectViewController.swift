@@ -49,19 +49,25 @@ class AssetExpandableSelectViewController: UIViewController {
     }
 
     @objc func triggerTextChange() {
+        viewModel.selectedSection = -1
         viewModel.search(searchField.text ?? "")
         tableView.reloadData()
     }
 
     func onCreate(asset: AssetInfo?) {
-        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-            var fixedPolicies: [PolicyCellType]?
-            if asset?.amp ?? false {
-                fixedPolicies = [.Amp]
+        if let assset = asset {
+            let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
+                var fixedPolicies: [PolicyCellType]?
+                if asset?.amp ?? false {
+                    fixedPolicies = [.Amp]
+                }
+                vc.viewModel = SecuritySelectViewModel(asset: asset?.assetId ?? "btc", fixedPolicies: fixedPolicies)
+                navigationController?.pushViewController(vc, animated: true)
             }
-            vc.viewModel = SecuritySelectViewModel(asset: asset?.assetId ?? "btc", fixedPolicies: fixedPolicies)
-            navigationController?.pushViewController(vc, animated: true)
+        } else {
+            /// handel nil -> anyAsset
+            print("AnyAsset")
         }
     }
 
@@ -74,11 +80,16 @@ class AssetExpandableSelectViewController: UIViewController {
 extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.assetSelectCellModelsFilter.count
+        let cnt = viewModel.assetSelectCellModelsFilter.count
+        return cnt > 0 ? cnt : 1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if viewModel.selectedSection != section {
+            return 0
+        }
+        let cnt = viewModel.assetSelectCellModelsFilter.count
+        if cnt == 0 && section == 0 {
             return 0
         }
         /// need value for specific asset
@@ -108,7 +119,26 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if let accountView = Bundle.main.loadNibNamed("AccountExpandableView", owner: self, options: nil)?.first as? AccountExpandableView {
+
+        let cnt = viewModel.assetSelectCellModelsFilter.count
+        if cnt == 0 && section == 0 {
+            if let accountView = Bundle.main.loadNibNamed("AnyAssetExpandableView", owner: self, options: nil)?.first as? AnyAssetExpandableView {
+                accountView.configure(open: viewModel.selectedSection == section,
+                                      onCreate: {[weak self] in
+                    self?.onCreate(asset: nil)
+                })
+
+                let handler = UIButton(frame: accountView.tapView.frame)
+                handler.tag = section
+                handler.borderColor = .red
+                handler.addTarget(self,
+                                        action: #selector(hideSection(sender:)),
+                                        for: .touchUpInside)
+                accountView.addSubview(handler)
+                return accountView
+            }
+        }
+        if let accountView = Bundle.main.loadNibNamed("AssetExpandableView", owner: self, options: nil)?.first as? AssetExpandableView {
             let cellModel = viewModel.assetSelectCellModelsFilter[section]
             accountView.configure(model: cellModel,
                                   hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
@@ -138,8 +168,13 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
             viewModel.selectedSection = -1
             tableView.reloadData()
             viewModel.selectedSection = section
-            if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
-                viewModel.loadAccountsForAsset(asset)
+            let cnt = viewModel.assetSelectCellModelsFilter.count
+            if cnt == 0 && section == 0 {
+
+            } else {
+                if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
+                    viewModel.loadAccountsForAsset(asset)
+                }
             }
         }
         tableView.reloadSections(IndexSet([section]), with: .automatic)

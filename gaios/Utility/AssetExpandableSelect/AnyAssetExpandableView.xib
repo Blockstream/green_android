@@ -10,42 +10,42 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="AccountExpandableView" customModule="gaios" customModuleProvider="target">
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="AnyAssetExpandableView" customModule="gaios" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="393" height="255"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PRd-IM-Tnc">
-                    <rect key="frame" x="25" y="10" width="343" height="177"/>
+                    <rect key="frame" x="25" y="10" width="343" height="171"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Kr-iX-IZh">
-                            <rect key="frame" x="0.0" y="0.0" width="343" height="64"/>
+                            <rect key="frame" x="0.0" y="0.0" width="343" height="58"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="zIw-bb-pWK">
-                                    <rect key="frame" x="15" y="15" width="34" height="34"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="34" id="sHE-4W-dG3"/>
-                                        <constraint firstAttribute="width" constant="34" id="syg-7Y-6ca"/>
-                                    </constraints>
-                                </imageView>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_asset" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l4y-wl-SE4">
-                                    <rect key="frame" x="64" y="23.666666666666664" width="264" height="17"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_any" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PgO-f1-3HX">
+                                    <rect key="frame" x="25" y="20.666666666666668" width="255" height="17.000000000000004"/>
                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_any_asset" translatesAutoresizingMaskIntoConstraints="NO" id="oa3-4L-gPw">
+                                    <rect key="frame" x="300" y="20" width="18" height="18"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="18" id="97A-15-AYN"/>
+                                        <constraint firstAttribute="width" constant="18" id="OoJ-mF-OL3"/>
+                                    </constraints>
+                                </imageView>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstItem="zIw-bb-pWK" firstAttribute="top" secondItem="5Kr-iX-IZh" secondAttribute="top" constant="15" id="Glr-8F-bFS"/>
-                                <constraint firstAttribute="trailing" secondItem="l4y-wl-SE4" secondAttribute="trailing" constant="15" id="P3Y-Ma-lbK"/>
-                                <constraint firstItem="l4y-wl-SE4" firstAttribute="leading" secondItem="zIw-bb-pWK" secondAttribute="trailing" constant="15" id="Xks-Gt-kQe"/>
-                                <constraint firstItem="zIw-bb-pWK" firstAttribute="leading" secondItem="5Kr-iX-IZh" secondAttribute="leading" constant="15" id="hK0-mx-KDK"/>
-                                <constraint firstAttribute="bottom" secondItem="zIw-bb-pWK" secondAttribute="bottom" constant="15" id="m2H-Kh-K9F"/>
-                                <constraint firstItem="l4y-wl-SE4" firstAttribute="centerY" secondItem="zIw-bb-pWK" secondAttribute="centerY" id="wxa-mR-tp4"/>
+                                <constraint firstItem="oa3-4L-gPw" firstAttribute="leading" secondItem="PgO-f1-3HX" secondAttribute="trailing" constant="20" id="AST-f2-XqG"/>
+                                <constraint firstItem="oa3-4L-gPw" firstAttribute="top" secondItem="5Kr-iX-IZh" secondAttribute="top" constant="20" id="C1t-FZ-fAN"/>
+                                <constraint firstItem="PgO-f1-3HX" firstAttribute="centerY" secondItem="5Kr-iX-IZh" secondAttribute="centerY" id="CbF-Y6-u4d"/>
+                                <constraint firstAttribute="bottom" secondItem="oa3-4L-gPw" secondAttribute="bottom" constant="20" id="ih4-KB-44x"/>
+                                <constraint firstAttribute="trailing" secondItem="oa3-4L-gPw" secondAttribute="trailing" constant="25" id="kCA-Aq-nbd"/>
+                                <constraint firstItem="PgO-f1-3HX" firstAttribute="leading" secondItem="5Kr-iX-IZh" secondAttribute="leading" constant="25" id="nT8-vS-AhE"/>
                             </constraints>
                         </view>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="5xI-m8-onu">
-                            <rect key="frame" x="0.0" y="64" width="343" height="113"/>
+                            <rect key="frame" x="0.0" y="58" width="343" height="113"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4ia-lx-PfZ">
                                     <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
@@ -57,7 +57,7 @@
                                                 <constraint firstAttribute="width" constant="16" id="EpW-Nl-DXY"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_amp_warn" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0iY-7M-acX">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_account_warn" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0iY-7M-acX">
                                             <rect key="frame" x="46" y="10" width="282" height="30"/>
                                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                                             <color key="textColor" name="gGreenMatrix"/>
@@ -182,23 +182,23 @@
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
-                <outlet property="ampTip" destination="4ia-lx-PfZ" id="BQ9-6Y-xKl"/>
+                <outlet property="accountTip" destination="4ia-lx-PfZ" id="Urc-dR-l8G"/>
                 <outlet property="bg" destination="PRd-IM-Tnc" id="bBU-LX-UzK"/>
                 <outlet property="btnDisclose" destination="tYz-UB-9J6" id="D7i-2X-Xrj"/>
                 <outlet property="createNew" destination="G9C-UF-frN" id="E0T-29-ufO"/>
-                <outlet property="icon" destination="zIw-bb-pWK" id="PyD-wE-Rto"/>
-                <outlet property="lblAmp" destination="0iY-7M-acX" id="Ako-fT-pE1"/>
+                <outlet property="icon" destination="0Nw-yZ-gqP" id="G60-Ap-x7z"/>
+                <outlet property="lblAccountTip" destination="0iY-7M-acX" id="lUJ-ZZ-qr8"/>
                 <outlet property="lblTitle" destination="1fs-ov-fjD" id="GEW-yz-DyL"/>
                 <outlet property="tapView" destination="5Kr-iX-IZh" id="dwg-jh-5N5"/>
-                <outlet property="title" destination="l4y-wl-SE4" id="snS-iR-4uK"/>
+                <outlet property="title" destination="PgO-f1-3HX" id="PWI-ia-rmQ"/>
             </connections>
             <point key="canvasLocation" x="29.770992366412212" y="91.197183098591552"/>
         </view>
     </objects>
     <resources>
         <image name="ic_amp_warn" width="15.333333015441895" height="16"/>
+        <image name="ic_any_asset" width="18" height="18.333333969116211"/>
         <image name="ic_arrow_card" width="16" height="15.333333015441895"/>
-        <image name="ntw_btc" width="60" height="61"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -206,7 +206,7 @@
             <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGreenMatrix">
-            <color red="0.0" green="0.71372549019607845" blue="0.43529411764705883" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

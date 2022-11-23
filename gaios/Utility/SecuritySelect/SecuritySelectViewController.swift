@@ -242,4 +242,9 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         viewModel?.asset = assetId
         reloadSections([.asset], animated: false)
     }
+
+    func didSelectAnyAsset() {
+        /// handle any asset case
+        print("didSelectAnyAsset")
+    }
 }

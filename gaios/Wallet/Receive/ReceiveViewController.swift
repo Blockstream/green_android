@@ -234,6 +234,11 @@ extension ReceiveViewController: AssetExpandableSelectViewControllerDelegate {
 }
 
 extension ReceiveViewController: AssetSelectViewControllerDelegate {
+    func didSelectAnyAsset() {
+        /// handle any asset case
+        print("didSelectAnyAsset")
+    }
+
     func didSelectAsset(_ assetId: String) {
         viewModel?.asset = assetId
         reload()
