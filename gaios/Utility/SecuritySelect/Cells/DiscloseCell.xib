@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="103" id="KGk-i7-Jjw" customClass="DiscloseCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="392" height="103"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="392" height="103"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n3K-Va-zHK">
+                        <rect key="frame" x="25" y="0.0" width="342" height="93"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="crp-7D-wpe">
+                                <rect key="frame" x="20" y="25" width="242" height="19.333333333333329"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_hint" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nRc-gZ-y5Q">
+                                <rect key="frame" x="20" y="54.333333333333336" width="242" height="14.333333333333336"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" white="1" alpha="0.70785361842105265" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NZH-10-Akw" userLabel="Btn Select">
+                                <rect key="frame" x="282" y="26.666666666666671" width="40" height="40"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="E3k-AN-6i6"/>
+                                    <constraint firstAttribute="height" constant="40" id="pJ7-mG-6WW"/>
+                                </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="ic_arrow_card"/>
+                                <connections>
+                                    <action selector="onTap:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="WzF-S2-Dux"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" name="gGrayCard"/>
+                        <constraints>
+                            <constraint firstItem="NZH-10-Akw" firstAttribute="leading" secondItem="nRc-gZ-y5Q" secondAttribute="trailing" constant="20" id="8PZ-9Q-enQ"/>
+                            <constraint firstAttribute="trailing" secondItem="NZH-10-Akw" secondAttribute="trailing" constant="20" id="8jv-m1-do3"/>
+                            <constraint firstItem="nRc-gZ-y5Q" firstAttribute="top" secondItem="crp-7D-wpe" secondAttribute="bottom" constant="10" id="H6b-ZC-0R1"/>
+                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="nRc-gZ-y5Q" secondAttribute="bottom" constant="20" id="NR8-bd-8EW"/>
+                            <constraint firstItem="crp-7D-wpe" firstAttribute="top" secondItem="n3K-Va-zHK" secondAttribute="top" constant="25" id="cdz-by-oUV"/>
+                            <constraint firstItem="NZH-10-Akw" firstAttribute="leading" secondItem="crp-7D-wpe" secondAttribute="trailing" constant="20" id="dch-z0-6mf"/>
+                            <constraint firstItem="crp-7D-wpe" firstAttribute="leading" secondItem="n3K-Va-zHK" secondAttribute="leading" constant="20" id="h1m-jB-Lq4"/>
+                            <constraint firstItem="NZH-10-Akw" firstAttribute="centerY" secondItem="n3K-Va-zHK" secondAttribute="centerY" id="sth-bU-iRX"/>
+                            <constraint firstItem="nRc-gZ-y5Q" firstAttribute="leading" secondItem="n3K-Va-zHK" secondAttribute="leading" constant="20" id="vI0-IR-JPI"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" name="gBlackBg"/>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="n3K-Va-zHK" secondAttribute="bottom" constant="10" id="V5n-wt-ZBA"/>
+                    <constraint firstItem="n3K-Va-zHK" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="d1I-af-QWj"/>
+                    <constraint firstItem="n3K-Va-zHK" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="isw-n9-Oq0"/>
+                    <constraint firstAttribute="trailing" secondItem="n3K-Va-zHK" secondAttribute="trailing" constant="25" id="xBb-cT-aAS"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="bg" destination="n3K-Va-zHK" id="ZnW-0C-fxU"/>
+                <outlet property="btnDisclose" destination="NZH-10-Akw" id="z2z-yd-FsR"/>
+                <outlet property="lblHint" destination="nRc-gZ-y5Q" id="ksX-oX-aTm"/>
+                <outlet property="lblTitle" destination="crp-7D-wpe" id="jTq-o2-fbq"/>
+            </connections>
+            <point key="canvasLocation" x="94.656488549618317" y="8.0985915492957758"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="ic_arrow_card" width="16" height="15.333333015441895"/>
+        <namedColor name="gBlackBg">
+            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGrayCard">
+            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

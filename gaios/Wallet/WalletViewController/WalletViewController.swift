@@ -217,7 +217,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell {
-                
+
                 cell.configure(model: viewModel.accountCellModels[indexPath.row],
                                cIdx: indexPath.row,
                                sIdx: sIdx,

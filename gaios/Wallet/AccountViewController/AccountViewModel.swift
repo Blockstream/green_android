@@ -16,6 +16,15 @@ class AccountViewModel {
             reloadSections?( [AccountSection.account], true )
         }
     }
+    var addingCellModels: [AddingCellModel] {
+        // return [AddingCellModel()]
+        return []
+    }
+
+    var discloseCellModels: [DiscloseCellModel] {
+        // return [DiscloseCellModel(title: "Learn more about AMP, the assets and your eligibility", hint: "Check our 6 easy steps to be able to send and receive AMP assets.")]
+        return []
+    }
 
     var txCellModels = [TransactionCellModel]() {
         didSet {

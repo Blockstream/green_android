@@ -3,6 +3,8 @@ import PromiseKit
 
 enum AccountSection: Int, CaseIterable {
     case account
+    case adding
+    case disclose
     case assets
     case transaction
     case footer
@@ -32,7 +34,7 @@ class AccountViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ["AccountCell", "WalletAssetCell", "TransactionCell"].forEach {
+        ["AccountCell", "WalletAssetCell", "TransactionCell", "AddingCell", "DiscloseCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 
@@ -156,6 +158,10 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         switch AccountSection(rawValue: section) {
         case .account:
             return viewModel.accountCellModels.count
+        case .adding:
+            return viewModel.addingCellModels.count
+        case .disclose:
+            return viewModel.discloseCellModels.count
         case .assets:
             return viewModel.assetCellModels.count
         case .transaction:
@@ -171,7 +177,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell {
 
-                var onCopy: (() -> Void)? = {[weak self] in
+                var onCopy: (() -> Void)? = { /* [weak self] */ () in
                     print("do the copy or leave onCopy nil to hide the button")
                 }
                 onCopy = nil
@@ -182,6 +188,24 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                                isLast: true,
                                onSelect: nil,
                                onCopy: onCopy)
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .adding:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AddingCell.identifier, for: indexPath) as? AddingCell, let viewModel = viewModel {
+                cell.configure(model: viewModel.addingCellModels[indexPath.row],
+                               onTap: { /* [weak self] */ () in
+                    print("handle tap")
+                })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .disclose:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: DiscloseCell.identifier, for: indexPath) as? DiscloseCell, let viewModel = viewModel {
+                cell.configure(model: viewModel.discloseCellModels[indexPath.row],
+                               onTap: { /* [weak self] */ () in
+                    print("handle disclose")
+                })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -252,10 +276,10 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch AccountSection(rawValue: indexPath.section) {
-        case .assets:
-            return nil
-        default:
+        case .transaction:
             return indexPath
+        default:
+            return nil
         }
     }
 
@@ -266,6 +290,10 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             sIdx = indexPath.row
             tableView.beginUpdates()
             tableView.endUpdates()
+        case .adding:
+            break
+        case .disclose:
+            break
         case .assets:
             break
         case .transaction:

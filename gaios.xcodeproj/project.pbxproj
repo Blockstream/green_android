@@ -217,6 +217,12 @@
 		34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6C292BD704007995D7 /* NetworkPrefs.swift */; };
 		34A75B6F292BD9FC007995D7 /* PhrasePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
+		34B170E3292E861E00A829B2 /* AddingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B170E2292E861E00A829B2 /* AddingCell.xib */; };
+		34B170E7292E864400A829B2 /* AddingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B170E6292E864400A829B2 /* AddingCell.swift */; };
+		34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B170E8292E865900A829B2 /* AddingCellModel.swift */; };
+		34B170ED292E872A00A829B2 /* DiscloseCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B170EC292E872A00A829B2 /* DiscloseCell.xib */; };
+		34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B170EE292E873900A829B2 /* DiscloseCellModel.swift */; };
+		34B170F1292E874E00A829B2 /* DiscloseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B170F0292E874E00A829B2 /* DiscloseCell.swift */; };
 		34B30F78277C693700D37A3C /* SendConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B30F77277C693700D37A3C /* SendConfirmViewController.swift */; };
 		34B30F7A277C730000D37A3C /* AddresseeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B30F79277C730000D37A3C /* AddresseeCell.swift */; };
 		34B826C42608827F00579C0B /* Recovery.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B826C32608827F00579C0B /* Recovery.storyboard */; };
@@ -640,6 +646,12 @@
 		34A75B6C292BD704007995D7 /* NetworkPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPrefs.swift; sourceTree = "<group>"; };
 		34A75B6E292BD9FC007995D7 /* PhrasePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhrasePrefs.swift; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
+		34B170E2292E861E00A829B2 /* AddingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AddingCell.xib; path = gaios/Wallet/AccountViewController/Cells/AddingCell/AddingCell.xib; sourceTree = SOURCE_ROOT; };
+		34B170E6292E864400A829B2 /* AddingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddingCell.swift; path = gaios/Wallet/AccountViewController/Cells/AddingCell/AddingCell.swift; sourceTree = SOURCE_ROOT; };
+		34B170E8292E865900A829B2 /* AddingCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddingCellModel.swift; path = gaios/Wallet/AccountViewController/Cells/AddingCell/AddingCellModel.swift; sourceTree = SOURCE_ROOT; };
+		34B170EC292E872A00A829B2 /* DiscloseCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DiscloseCell.xib; path = gaios/Utility/SecuritySelect/Cells/DiscloseCell.xib; sourceTree = SOURCE_ROOT; };
+		34B170EE292E873900A829B2 /* DiscloseCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DiscloseCellModel.swift; path = gaios/Utility/SecuritySelect/Cells/DiscloseCellModel.swift; sourceTree = SOURCE_ROOT; };
+		34B170F0292E874E00A829B2 /* DiscloseCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DiscloseCell.swift; path = gaios/Utility/SecuritySelect/Cells/DiscloseCell.swift; sourceTree = SOURCE_ROOT; };
 		34B30F77277C693700D37A3C /* SendConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirmViewController.swift; sourceTree = "<group>"; };
 		34B30F79277C730000D37A3C /* AddresseeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddresseeCell.swift; sourceTree = "<group>"; };
 		34B826C32608827F00579C0B /* Recovery.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Recovery.storyboard; sourceTree = "<group>"; };
@@ -1551,6 +1563,35 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		34B170E1292E85D900A829B2 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34B170EB292E86A500A829B2 /* DiscloseCell */,
+				34B170EA292E869600A829B2 /* AddingCell */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		34B170EA292E869600A829B2 /* AddingCell */ = {
+			isa = PBXGroup;
+			children = (
+				34B170E8292E865900A829B2 /* AddingCellModel.swift */,
+				34B170E6292E864400A829B2 /* AddingCell.swift */,
+				34B170E2292E861E00A829B2 /* AddingCell.xib */,
+			);
+			path = AddingCell;
+			sourceTree = "<group>";
+		};
+		34B170EB292E86A500A829B2 /* DiscloseCell */ = {
+			isa = PBXGroup;
+			children = (
+				34B170EE292E873900A829B2 /* DiscloseCellModel.swift */,
+				34B170F0292E874E00A829B2 /* DiscloseCell.swift */,
+				34B170EC292E872A00A829B2 /* DiscloseCell.xib */,
+			);
+			path = DiscloseCell;
+			sourceTree = "<group>";
+		};
 		34B826C2260881E000579C0B /* Recovery */ = {
 			isa = PBXGroup;
 			children = (
@@ -1684,6 +1725,7 @@
 		34F980A62913FFDD00C12D48 /* AccountViewController */ = {
 			isa = PBXGroup;
 			children = (
+				34B170E1292E85D900A829B2 /* Cells */,
 				34F980A7291400C700C12D48 /* AccountViewController.swift */,
 				34F980A92914286300C12D48 /* AccountViewModel.swift */,
 			);
@@ -2208,12 +2250,14 @@
 				3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */,
+				34B170ED292E872A00A829B2 /* DiscloseCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
 				34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */,
 				346752F7291E5D0100256132 /* AccountSelectCell.xib in Resources */,
 				340A5F5928E476C6003D56B1 /* About.storyboard in Resources */,
+				34B170E3292E861E00A829B2 /* AddingCell.xib in Resources */,
 				3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */,
 				34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */,
 				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
@@ -2378,6 +2422,7 @@
 				3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */,
 				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
 				346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */,
+				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
 				3418BAB6274285BD00F9B2D0 /* TransactionFeeCell.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */,
@@ -2400,6 +2445,7 @@
 				81683F9426BC088E0058982E /* WalletItem.swift in Sources */,
 				34C2464D2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
+				34B170E7292E864400A829B2 /* AddingCell.swift in Sources */,
 				8158974B2701980700DDF6D4 /* JadeError.swift in Sources */,
 				34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */,
 				343A697E27E08C29008D5F4C /* AssetDetailCell.swift in Sources */,
@@ -2615,6 +2661,7 @@
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
 				345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */,
 				6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */,
+				34B170F1292E874E00A829B2 /* DiscloseCell.swift in Sources */,
 				3457F4B22923988600EF33B5 /* DialogListCell.swift in Sources */,
 				6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */,
 				34440E7F28B37C2D006CD464 /* WalletListEmptyCell.swift in Sources */,
@@ -2636,6 +2683,7 @@
 				34237FD5276B693100618502 /* SendViewController.swift in Sources */,
 				34C3022826E88A1D00A3F910 /* OverviewTransactionCell.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
+				34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */,
 				81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */,
 				81683F9226BC02960058982E /* Transactions.swift in Sources */,
 				34019C1A28D1FC5100E64BEE /* Localizable.swift in Sources */,
