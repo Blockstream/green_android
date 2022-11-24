@@ -10,6 +10,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var attempts: UILabel!
     @IBOutlet weak var connectionSettingsButton: UIButton!
+    @IBOutlet weak var emergencyButton: UIButton!
 
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -35,7 +36,11 @@ class LoginViewController: UIViewController {
 
     private var pinCode = ""
     private let MAXATTEMPTS = 3
-    private var emergencyRestore = false
+    private var emergencyRestore = false {
+        didSet {
+            emergencyButton.isHidden = !emergencyRestore
+        }
+    }
 
     @IBOutlet weak var passphraseView: UIStackView!
     @IBOutlet weak var lblPassphrase: UILabel!
@@ -191,16 +196,16 @@ class LoginViewController: UIViewController {
 
     fileprivate func decryptMnemonic(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        var session: SessionManager? = SessionManager(account.gdkNetwork!)
+        var session = SessionManager(account.gdkNetwork!)
         firstly {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.then(on: bgq) {
-            session!.connect()
+            session.connect()
         }.compactMap {
             try self.account.auth(usingAuth)
         }.then(on: bgq) { pinData in
-            session!.decryptWithPin(pin: withPIN ?? "", pinData: pinData)
+            session.decryptWithPin(pin: withPIN ?? "", pinData: pinData)
         }.ensure {
             self.stopLoader()
         }.done { credentials in
@@ -209,6 +214,8 @@ class LoginViewController: UIViewController {
                 vc.credentials = credentials
                 self.navigationController?.pushViewController(vc, animated: true)
             }
+            self.pinCode = ""
+            self.reload()
         }.catch { err in
             self.errorLogin(error: err, usingAuth: usingAuth)
         }
@@ -285,7 +292,7 @@ class LoginViewController: UIViewController {
             self.errorLogin(error: error, usingAuth: usingAuth)
         }
     }
-    
+
     func errorLogin(error: Error, usingAuth: String? = nil) {
         var prettyError = "id_login_failed"
         self.stopLoader()
@@ -316,6 +323,10 @@ class LoginViewController: UIViewController {
         self.pinCode = ""
         self.reload()
         AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
+    }
+
+    @IBAction func emergencyClick(_ sender: Any) {
+        emergencyRestore = false
     }
 
     func wrongPin(_ usingAuth: String) {

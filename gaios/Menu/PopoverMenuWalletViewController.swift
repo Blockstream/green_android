@@ -2,9 +2,9 @@ import UIKit
 
 enum MenuWalletOption {
     case passphrase
+    case emergency
     case edit
     case delete
-    case emergency
 }
 
 extension MenuWalletOption: CaseIterable {}

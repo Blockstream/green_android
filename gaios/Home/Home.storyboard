@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pNH-gf-OFC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pNH-gf-OFC">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -263,6 +263,16 @@
                                                         <color key="textColor" red="0.91764705879999997" green="0.32156862749999998" blue="0.38431372549999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pfa-UG-SBc">
+                                                        <rect key="frame" x="1.5" y="85.5" width="324.5" height="0.0"/>
+                                                        <state key="normal" title="Button"/>
+                                                        <buttonConfiguration key="configuration" style="plain" image="cancel" imagePlacement="trailing" title="Emergency Recovery Phrase Restore" imagePadding="6" cornerStyle="small">
+                                                            <color key="baseForegroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        </buttonConfiguration>
+                                                        <connections>
+                                                            <action selector="emergencyClick:" destination="jB1-8d-0nD" eventType="touchUpInside" id="PSP-TL-HT3"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="xV3-4S-Ud9" userLabel="Stack View Column">
@@ -566,6 +576,7 @@
                         <outlet property="cardWalletLock" destination="3KP-bm-CE4" id="Kog-tu-7Yx"/>
                         <outlet property="connectionSettingsButton" destination="wMp-yl-7Kf" id="7D8-tj-Qri"/>
                         <outlet property="deleteButton" destination="IZ4-20-y34" id="nfO-Tb-wD9"/>
+                        <outlet property="emergencyButton" destination="Pfa-UG-SBc" id="C26-nl-4D1"/>
                         <outlet property="lblPassphrase" destination="A9q-2d-Bx7" id="C6q-rS-AeC"/>
                         <outlet property="lblTitle" destination="ITS-xt-sFy" id="9wh-nX-C1d"/>
                         <outlet property="lblWalletLockHint1" destination="0pT-pj-wRd" id="6Dd-Cp-Xg6"/>
