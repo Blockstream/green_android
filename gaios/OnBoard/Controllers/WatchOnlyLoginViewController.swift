@@ -207,6 +207,8 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
 extension WatchOnlyLoginViewController: PopoverMenuWalletDelegate {
     func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
         switch menuOption {
+        case .emergency:
+            break
         case .passphrase:
             break
         case .edit:

@@ -35,6 +35,7 @@ class LoginViewController: UIViewController {
 
     private var pinCode = ""
     private let MAXATTEMPTS = 3
+    private var emergencyRestore = false
 
     @IBOutlet weak var passphraseView: UIStackView!
     @IBOutlet weak var lblPassphrase: UILabel!
@@ -188,6 +189,30 @@ class LoginViewController: UIViewController {
         }
     }
 
+    fileprivate func decryptMnemonic(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
+        let bgq = DispatchQueue.global(qos: .background)
+        var session: SessionManager? = SessionManager(account.gdkNetwork!)
+        firstly {
+            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+            return Guarantee()
+        }.then(on: bgq) {
+            session!.connect()
+        }.compactMap {
+            try self.account.auth(usingAuth)
+        }.then(on: bgq) { pinData in
+            session!.decryptWithPin(pin: withPIN ?? "", pinData: pinData)
+        }.ensure {
+            self.stopLoader()
+        }.done { credentials in
+            let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController") as? ShowMnemonicsViewController {
+                vc.credentials = credentials
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        }.catch { err in
+            self.errorLogin(error: err, usingAuth: usingAuth)
+        }
+    }
     fileprivate func loginWithPin(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         var session: SessionManager? = SessionManager(account.gdkNetwork!)
@@ -257,36 +282,40 @@ class LoginViewController: UIViewController {
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
-            var prettyError = "id_login_failed"
-            self.stopLoader()
-            switch error {
-            case AuthenticationTypeHandler.AuthError.CanceledByUser:
-                return
-            case AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
-                return self.onBioAuthError(error.localizedDescription)
-            case LoginError.connectionFailed:
-                prettyError = "id_connection_failed"
-                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-            case LoginError.walletNotFound:
-                prettyError = "id_wallet_not_found"
-                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-            case GaError.NotAuthorizedError:
-                self.wrongPin(usingAuth)
-                prettyError = "NotAuthorizedError"
-            case TwoFactorCallError.failure(let localizedDescription):
-                if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
-                    prettyError = "id_invalid_pin"
-                    self.wrongPin(usingAuth)
-                } else {
-                    DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-                }
-            default:
+            self.errorLogin(error: error, usingAuth: usingAuth)
+        }
+    }
+    
+    func errorLogin(error: Error, usingAuth: String? = nil) {
+        var prettyError = "id_login_failed"
+        self.stopLoader()
+        switch error {
+        case AuthenticationTypeHandler.AuthError.CanceledByUser:
+            return
+        case AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
+            return self.onBioAuthError(error.localizedDescription)
+        case LoginError.connectionFailed:
+            prettyError = "id_connection_failed"
+            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+        case LoginError.walletNotFound:
+            prettyError = "id_wallet_not_found"
+            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+        case GaError.NotAuthorizedError:
+            self.wrongPin(usingAuth ?? "")
+            prettyError = "NotAuthorizedError"
+        case TwoFactorCallError.failure(let localizedDescription):
+            if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
+                prettyError = "id_invalid_pin"
+                self.wrongPin(usingAuth ?? "")
+            } else {
                 DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             }
-            self.pinCode = ""
-            self.reload()
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
+        default:
+            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
         }
+        self.pinCode = ""
+        self.reload()
+        AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
     }
 
     func wrongPin(_ usingAuth: String) {
@@ -337,6 +366,12 @@ class LoginViewController: UIViewController {
         guard pinCode.count == 6 else {
             return
         }
+        if emergencyRestore {
+            decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthKeyPIN,
+                            withPIN: pinCode,
+                            bip39passphrase: bip39passphare)
+            return
+        }
         loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN,
                      withPIN: pinCode,
                      bip39passphrase: bip39passphare)
@@ -384,6 +419,17 @@ class LoginViewController: UIViewController {
             vc.index = nil
             present(vc, animated: false, completion: nil)
         }
+    }
+
+    func showEmergencyDialog() {
+        let alert = UIAlertController(title: NSLocalizedString("Emergency Recovery Phrase Restore", comment: ""),
+                                      message: NSLocalizedString("If for any reason you can't login into your wallet, you can recover your recovery phrase using your PIN/Biometrics.", comment: ""),
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { (_: UIAlertAction) in
+            self.emergencyRestore = true
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func loginWithPassphrase(isAlwaysAsk: Bool) {
@@ -448,6 +494,8 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
 extension LoginViewController: PopoverMenuWalletDelegate {
     func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
         switch menuOption {
+        case .emergency:
+            showEmergencyDialog()
         case .passphrase:
             loginWithPassphrase(isAlwaysAsk: false)
         case .edit:

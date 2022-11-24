@@ -333,6 +333,20 @@ class SessionManager {
             .then(on: bgq) { self.loginUser(details: details ?? [:]) }
     }
 
+    func decryptWithPin(pin: String, pinData: PinData) -> Promise<Credentials> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let data = try? JSONEncoder().encode(pinData)
+        let pindata = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        return Guarantee()
+            .compactMap(on: bgq) { try self.session?.decryptWithPin(details: ["pin": pin, "pin_data": pindata ?? [:]]) }
+            .then(on: bgq) { $0.resolve(session: self) }
+            .compactMap { res in
+                let result = res["result"] as? [String: Any]
+                let json = try? JSONSerialization.data(withJSONObject: result, options: [])
+                return try? JSONDecoder().decode(Credentials.self, from: json ?? Data())
+            }
+    }
+
     func load(refreshSubaccounts: Bool = true) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
@@ -461,7 +475,7 @@ class SessionManager {
         try self.session?.convertAmount(input: input) ?? [:]
     }
 
-    func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) throws -> [String: Any]? {
+    func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) throws {
         try self.session?.refreshAssets(params: ["icons": icons, "assets": assets, "refresh": refresh])
     }
 

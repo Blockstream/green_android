@@ -6,14 +6,23 @@ class ShowMnemonicsViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     var items: [String] = []
     var bip39Passphrase: String?
+    var credentials: Credentials? {
+        didSet {
+            self.items = credentials?.mnemonic.split(separator: " ").map(String.init) ?? []
+            self.bip39Passphrase = credentials?.bip39Passphrase
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_recovery_phrase", comment: "")
 
+        if credentials != nil {
+            self.collectionView.reloadData()
+            return
+        }
         SessionsManager.current?.getCredentials(password: "").done {
-            self.items = $0.mnemonic.split(separator: " ").map(String.init)
-            self.bip39Passphrase = $0.bip39Passphrase
+            self.credentials = $0
             self.collectionView.reloadData()
         }.catch { err in
             print(err)

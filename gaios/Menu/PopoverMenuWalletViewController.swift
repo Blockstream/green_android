@@ -4,6 +4,7 @@ enum MenuWalletOption {
     case passphrase
     case edit
     case delete
+    case emergency
 }
 
 extension MenuWalletOption: CaseIterable {}
@@ -55,6 +56,8 @@ extension PopoverMenuWalletViewController: UITableViewDataSource, UITableViewDel
         if let cell = tableView.dequeueReusableCell(withIdentifier: "MenuOptionCell") {
             let option = menuOptions[indexPath.row]
             switch option {
+            case .emergency:
+                cell.textLabel?.text = NSLocalizedString("Show Recovery Phrase", comment: "")
             case .passphrase:
                 cell.textLabel?.text = NSLocalizedString("id_login_with_bip39_passphrase", comment: "")
             case .edit:
