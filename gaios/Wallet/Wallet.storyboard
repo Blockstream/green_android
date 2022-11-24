@@ -1418,17 +1418,84 @@
                                     <constraint firstItem="UTJ-vB-fLn" firstAttribute="leading" secondItem="WVX-Em-OBK" secondAttribute="leading" id="o8H-GV-yAc"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nZc-kR-2Ii">
+                                <rect key="frame" x="0.0" y="48" width="414" height="848"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lg4-SM-cHo">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="848"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_welcome_wallet" translatesAutoresizingMaskIntoConstraints="NO" id="OCh-lR-m3K">
+                                                <rect key="frame" x="35" y="200" width="344" height="179.5"/>
+                                            </imageView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="D2N-Uc-aV4">
+                                                <rect key="frame" x="35" y="409.5" width="344" height="48.5"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PHW-wa-vai">
+                                                        <rect key="frame" x="0.0" y="0.0" width="344" height="21.5"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mp9-mi-6Nb">
+                                                        <rect key="frame" x="0.0" y="31.5" width="344" height="17"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Kr-eh-Uy5" userLabel="Next">
+                                                <rect key="frame" x="130.5" y="478" width="153" height="50"/>
+                                                <color key="backgroundColor" name="gGreenMatrix"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="PlH-qV-l2Q"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                                <inset key="contentEdgeInsets" minX="30" minY="0.0" maxX="30" maxY="0.0"/>
+                                                <state key="normal" title="Create account">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="btnWelcomeCreate:" destination="cLb-Ee-a9U" eventType="touchUpInside" id="OR2-UY-kDU"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="0.89518914473684208" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="9Kr-eh-Uy5" firstAttribute="top" secondItem="D2N-Uc-aV4" secondAttribute="bottom" constant="20" id="8r2-VU-qWe"/>
+                                            <constraint firstItem="D2N-Uc-aV4" firstAttribute="leading" secondItem="lg4-SM-cHo" secondAttribute="leading" constant="35" id="ALl-Sg-Gud"/>
+                                            <constraint firstItem="OCh-lR-m3K" firstAttribute="leading" secondItem="lg4-SM-cHo" secondAttribute="leading" constant="35" id="CKI-kE-pkV"/>
+                                            <constraint firstItem="D2N-Uc-aV4" firstAttribute="top" secondItem="OCh-lR-m3K" secondAttribute="bottom" constant="30" id="cBZ-rO-nFF"/>
+                                            <constraint firstAttribute="trailing" secondItem="D2N-Uc-aV4" secondAttribute="trailing" constant="35" id="hUz-9e-CIb"/>
+                                            <constraint firstAttribute="trailing" secondItem="OCh-lR-m3K" secondAttribute="trailing" constant="35" id="i01-LB-clU"/>
+                                            <constraint firstItem="9Kr-eh-Uy5" firstAttribute="centerX" secondItem="lg4-SM-cHo" secondAttribute="centerX" id="xEW-3U-Rfr"/>
+                                            <constraint firstItem="OCh-lR-m3K" firstAttribute="top" secondItem="lg4-SM-cHo" secondAttribute="top" constant="200" id="xFY-wv-ccB"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="lg4-SM-cHo" secondAttribute="trailing" id="F6z-Hz-HjS"/>
+                                    <constraint firstItem="lg4-SM-cHo" firstAttribute="top" secondItem="nZc-kR-2Ii" secondAttribute="top" id="MCR-0x-E4F"/>
+                                    <constraint firstAttribute="bottom" secondItem="lg4-SM-cHo" secondAttribute="bottom" id="g4s-1E-Cb2"/>
+                                    <constraint firstItem="lg4-SM-cHo" firstAttribute="leading" secondItem="nZc-kR-2Ii" secondAttribute="leading" id="hIh-K0-4di"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Vl7-xU-5nh"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="Vl7-xU-5nh" firstAttribute="trailing" secondItem="WVX-Em-OBK" secondAttribute="trailing" constant="20" id="1xC-Ga-olW"/>
                             <constraint firstItem="5Yf-fL-SB2" firstAttribute="trailing" secondItem="NrC-4Y-Tjd" secondAttribute="trailing" id="2Hg-CD-ZKN"/>
+                            <constraint firstItem="nZc-kR-2Ii" firstAttribute="leading" secondItem="Vl7-xU-5nh" secondAttribute="leading" id="Plm-9q-miJ"/>
+                            <constraint firstItem="Vl7-xU-5nh" firstAttribute="trailing" secondItem="nZc-kR-2Ii" secondAttribute="trailing" id="Pvb-MB-vuf"/>
                             <constraint firstItem="WVX-Em-OBK" firstAttribute="leading" secondItem="Vl7-xU-5nh" secondAttribute="leading" constant="20" id="RZQ-qW-3Q1"/>
                             <constraint firstItem="5Yf-fL-SB2" firstAttribute="bottom" secondItem="NrC-4Y-Tjd" secondAttribute="bottom" id="TPd-Q1-HVB"/>
                             <constraint firstItem="Vl7-xU-5nh" firstAttribute="trailing" secondItem="NrC-4Y-Tjd" secondAttribute="trailing" id="ZPS-G3-Wh4"/>
                             <constraint firstItem="NrC-4Y-Tjd" firstAttribute="top" secondItem="Vl7-xU-5nh" secondAttribute="top" id="c3P-Dm-Jcz"/>
                             <constraint firstItem="NrC-4Y-Tjd" firstAttribute="leading" secondItem="Vl7-xU-5nh" secondAttribute="leading" id="cyF-Qa-mf6"/>
+                            <constraint firstAttribute="bottom" secondItem="nZc-kR-2Ii" secondAttribute="bottom" id="nfD-PI-NNR"/>
+                            <constraint firstItem="nZc-kR-2Ii" firstAttribute="top" secondItem="Vl7-xU-5nh" secondAttribute="top" id="pQG-kN-Mys"/>
                             <constraint firstItem="5Yf-fL-SB2" firstAttribute="leading" secondItem="NrC-4Y-Tjd" secondAttribute="leading" id="rPy-pv-2y3"/>
                             <constraint firstAttribute="bottom" secondItem="NrC-4Y-Tjd" secondAttribute="bottom" id="wNh-Fe-wOe"/>
                             <constraint firstItem="Vl7-xU-5nh" firstAttribute="bottom" secondItem="WVX-Em-OBK" secondAttribute="bottom" id="y7H-Qb-KV8"/>
@@ -1439,7 +1506,11 @@
                         <outlet property="actionsBg" destination="WVX-Em-OBK" id="mYe-5f-XV6"/>
                         <outlet property="btnReceive" destination="FGK-zB-bek" id="54l-ad-yQz"/>
                         <outlet property="btnSend" destination="cPw-Ra-UrJ" id="JC4-70-3zA"/>
+                        <outlet property="btnWelcomeCreate" destination="9Kr-eh-Uy5" id="ehb-PB-ese"/>
+                        <outlet property="lblWelcomeHint" destination="Mp9-mi-6Nb" id="hD1-Dc-NgE"/>
+                        <outlet property="lblWelcomeTitle" destination="PHW-wa-vai" id="1wD-Qm-4fW"/>
                         <outlet property="tableView" destination="NrC-4Y-Tjd" id="tHZ-40-4Y1"/>
+                        <outlet property="welcomeLayer" destination="nZc-kR-2Ii" id="RpW-Gw-eS5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UP2-jV-rC8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1671,6 +1742,7 @@
         <image name="ic_refresh_arrows" width="20" height="18"/>
         <image name="ic_search" width="17" height="17"/>
         <image name="ic_send" width="24" height="24"/>
+        <image name="ic_welcome_wallet" width="304.5" height="179.5"/>
         <image name="ntw_btc" width="60" height="61"/>
         <image name="receive" width="25" height="25"/>
         <image name="send" width="25" height="25"/>
@@ -1703,6 +1775,9 @@
         </namedColor>
         <namedColor name="gGrayCard">
             <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGreenMatrix">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gaiosBtn">
             <color red="0.1803921568627451" green="0.18823529411764706" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

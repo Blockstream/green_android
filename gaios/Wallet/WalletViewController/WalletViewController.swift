@@ -25,8 +25,12 @@ class WalletViewController: UIViewController {
     @IBOutlet weak var actionsBg: UIView!
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var btnReceive: UIButton!
+    @IBOutlet weak var welcomeLayer: UIView!
+    @IBOutlet weak var lblWelcomeTitle: UILabel!
+    @IBOutlet weak var lblWelcomeHint: UILabel!
+    @IBOutlet weak var btnWelcomeCreate: UIButton!
 
-//    var assetId: String?
+    //    var assetId: String?
 
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
@@ -41,6 +45,7 @@ class WalletViewController: UIViewController {
         }
     }
     private var sIdx: Int = 0
+    private var userWillLogout = false
 
     var viewModel: WalletViewModel = WalletViewModel()
 
@@ -56,10 +61,12 @@ class WalletViewController: UIViewController {
         viewModel.reloadSections = reloadSections
         setContent()
         setStyle()
+        welcomeLayer.isHidden = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if userWillLogout == true { return }
         viewModel.loadSubaccounts()
     }
 
@@ -74,10 +81,13 @@ class WalletViewController: UIViewController {
         if sections.contains(WalletSection.account) {
             tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
         }
+        welcomeLayer.isHidden = viewModel.accountCellModels.count > 0
     }
 
     func setContent() {
-
+        lblWelcomeTitle.text = "Welcome to your Wallet!"
+        lblWelcomeHint.text = "Create your first account to receive funds."
+        btnWelcomeCreate.setTitle("Create Account", for: .normal)
         let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: self, options: nil)![0] as? DrawerBarItem)!)
         drawerItem.configure {
             [weak self] () in
@@ -102,6 +112,7 @@ class WalletViewController: UIViewController {
 
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
+        btnWelcomeCreate.setStyle(.primary)
     }
 
     // tableview refresh gesture
@@ -167,6 +178,14 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func createAccount() {
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
+            vc.viewModel = SecuritySelectViewModel(asset: "btc")
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -175,6 +194,9 @@ class WalletViewController: UIViewController {
         receiveScreen()
     }
 
+    @IBAction func btnWelcomeCreate(_ sender: Any) {
+        createAccount()
+    }
 }
 
 extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
@@ -335,6 +357,7 @@ extension WalletViewController: DialogWalletNameViewControllerDelegate {
 
 extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
     func userLogout() {
+        userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {
             DispatchQueue.main.async {
                 if let account = AccountsManager.shared.current {
@@ -521,11 +544,7 @@ extension WalletViewController: DialogListViewControllerDelegate {
                 }
             }
         case .createAccount:
-            let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-                vc.viewModel = SecuritySelectViewModel(asset: "btc")
-                navigationController?.pushViewController(vc, animated: true)
-            }
+            createAccount()
 //        case .ArchivedAccounts:
 //            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
 //            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
