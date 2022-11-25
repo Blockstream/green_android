@@ -7,7 +7,7 @@ class AssetsManager {
     private let testnet: Bool
     private var infos = [String: AssetInfo]()
     private var icons = [String: String]()
-    private var session_: SessionManager?
+    private var session: SessionManager?
 
     init(testnet: Bool) {
         self.testnet = testnet
@@ -20,25 +20,12 @@ class AssetsManager {
         }
     }
 
-    var session: SessionManager {
-        let liquid: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
-        if let session = WalletManager.current?.sessions[liquid.rawValue], session.connected {
-            return session
-        }
-        guard let session = session_ else {
-            let session = SessionManager(getGdkNetwork(liquid.rawValue))
-            session_ = session
-            return session
-        }
-        return session
-    }
-
     var all: [AssetInfo] {
         return infos.map { $0.value }.sorted()
     }
 
     func info(for key: String) -> AssetInfo {
-        if infos[key] == nil {
+        if infos[key] == nil, let session = session {
             let infos = fetchAssets(session: session, assetsId: [key])
             self.infos.merge(infos, uniquingKeysWith: {_, new in new})
         }
@@ -52,7 +39,7 @@ class AssetsManager {
         if key == "btc" {
             return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc")
         }
-        if icons[key] == nil {
+        if icons[key] == nil, let session = session {
             let icons = fetchIcons(session: session, assetsId: [key])
             self.icons.merge(icons, uniquingKeysWith: {_, new in new})
         }
@@ -86,15 +73,18 @@ class AssetsManager {
         return icons ?? [:]
     }
 
-    func loadAsync() {
+    func loadAsync(session: SessionManager?) {
+        let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
+        let session = session ?? SessionManager(getGdkNetwork(liquidNetworks.first!.rawValue))
+        self.session = session
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
             .then(on: bgq) {
-                self.session.connect()
+                session.connect()
             }.compactMap(on: bgq) {
-                self.fetchFromCountly()
-                _ = try self.session.refreshAssets(icons: false, assets: true, refresh: true)
-                _ = try self.session.refreshAssets(icons: true, assets: false, refresh: true)
+                self.fetchFromCountly(session: session)
+                _ = try session.refreshAssets(icons: false, assets: true, refresh: true)
+                _ = try session.refreshAssets(icons: true, assets: false, refresh: true)
             }.done { _ in
                 let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
                 NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
@@ -110,7 +100,7 @@ class AssetsManager {
         return res ?? []
     }
 
-    func fetchFromCountly() {
+    func fetchFromCountly(session: SessionManager) {
         let assets = getAssetsFromCountly()
         let infos = fetchAssets(session: session, assetsId: assets.map { $0.id })
         self.infos.merge(infos, uniquingKeysWith: {_, new in new})

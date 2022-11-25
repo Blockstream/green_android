@@ -179,7 +179,15 @@ class WalletManager {
     }
 
     func loadRegistry() {
-        self.registry.loadAsync()
+        let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
+        let liquidSessions = sessions.filter { liquidNetworks.map { $0.rawValue }.contains($0.key) } ?? []
+        if let session = liquidSessions.filter({ $0.value.logged }).first?.value {
+            return registry.loadAsync(session: session)
+        } else if let session = liquidSessions.filter({ $0.value.connected }).first?.value {
+            return registry.loadAsync(session: session)
+        } else {
+            return registry.loadAsync(session: nil)
+        }
     }
 
     func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
