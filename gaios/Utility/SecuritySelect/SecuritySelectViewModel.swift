@@ -4,11 +4,11 @@ import PromiseKit
 
 enum PolicyCellType: String, CaseIterable {
     case Standard
-    case Instant
+    //case Instant
     case TwoFAProtected
     case TwoOfThreeWith2FA
     case NativeSegwit
-    case Taproot
+    //case Taproot
     case Amp
 }
 
@@ -52,7 +52,7 @@ class SecuritySelectViewModel {
             return policies.map { PolicyCellModel.from(policy: $0) }
         }
         let cells = PolicyCellType.allCases.map { PolicyCellModel.from(policy: $0) }
-        return showAll ? cells : Array(cells[0...2])
+        return showAll ? cells : Array(cells[0...1])
     }
 
     func create(policy: PolicyCellType, asset: String) {
@@ -75,8 +75,7 @@ class SecuritySelectViewModel {
         return Guarantee()
             .compactMap { self.wm.prominentSession }
             .then { $0.getCredentials(password: "") }
-            .get { session.registerSW($0).asVoid() }
-            .then { session.loginWithCredentials($0) }
+            .then { cred in session.registerSW(cred).then { session.loginWithCredentials(cred) } }
             .then { _ in session.subaccounts(true) }
             .then { self.isUsedDefaultAccount(for: session, account: $0.first) }
             .then { !$0 ? session.updateSubaccount(subaccount: 0, hidden: true).asVoid() : Promise().asVoid() }
@@ -142,16 +141,16 @@ class SecuritySelectViewModel {
 
     func getNetwork(for policy: PolicyCellType, liquid: Bool) -> NetworkSecurityCase? {
         let btc: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .bitcoinSS, .Instant: .bitcoinSS, .TwoFAProtected: .bitcoinMS,
+        [.Standard: .bitcoinSS, .TwoFAProtected: .bitcoinMS,
          .TwoOfThreeWith2FA: .bitcoinMS, .NativeSegwit: .bitcoinSS, .Amp: .bitcoinMS]
         let test: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .testnetSS, .Instant: .testnetSS, .TwoFAProtected: .testnetMS,
+        [.Standard: .testnetSS, .TwoFAProtected: .testnetMS,
          .TwoOfThreeWith2FA: .testnetMS, .NativeSegwit: .testnetSS, .Amp: .testnetMS]
         let lbtc: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .liquidSS, .Instant: .liquidSS, .TwoFAProtected: .liquidSS,
+        [.Standard: .liquidSS, .TwoFAProtected: .liquidSS,
          .TwoOfThreeWith2FA: .liquidMS, .NativeSegwit: .liquidSS, .Amp: .liquidMS]
         let ltest: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .testnetLiquidSS, .Instant: .testnetLiquidSS, .TwoFAProtected: .testnetLiquidSS,
+        [.Standard: .testnetLiquidSS, .TwoFAProtected: .testnetLiquidSS,
          .TwoOfThreeWith2FA: .testnetLiquidMS, .NativeSegwit: .testnetLiquidSS, .Amp: .testnetLiquidMS]
         if liquid && wm.testnet { return ltest[policy] }
         if liquid && !wm.testnet { return lbtc[policy] }
@@ -168,16 +167,12 @@ class SecuritySelectViewModel {
         case .Standard:
              // singlesig legacy segwit
             return .legacy
-        case .Instant:
-            return .legacy
         case .TwoFAProtected:
             return .standard
         case .TwoOfThreeWith2FA:
             return .twoOfThree
         case .NativeSegwit:
             return .segWit
-        case .Taproot:
-            return .taproot
         case .Amp:
             return .amp
         }
