@@ -72,7 +72,8 @@ class AccountCell: UITableViewCell {
         lblAmount.text = model.balanceStr
         imgSS.isHidden = !model.isSS
         imgMS.isHidden = model.isSS
-        btnWarn.isHidden = true
+        let enabled2FA = model.account.session?.twoFactorConfig?.anyEnabled ?? false
+        btnWarn.isHidden = model.isSS || enabled2FA
         btcImg.isHidden = model.isLiquid
         model.isTest ? (cColor = model.isLiquid ? UIColor.gAccountTestLightBlue() : UIColor.gAccountTestGray()) :
         (cColor = model.isLiquid ? UIColor.gAccountLightBlue() : UIColor.gAccountOrange())

@@ -28,7 +28,7 @@ class DiscloseCell: UITableViewCell {
     }
 
     func configure(model: DiscloseCellModel,
-                   onTap: (() -> Void)?) {
+                   onTap: (() -> Void)? = nil) {
         self.onTap = onTap
         self.lblTitle.text = model.title
         self.lblHint.text = model.hint

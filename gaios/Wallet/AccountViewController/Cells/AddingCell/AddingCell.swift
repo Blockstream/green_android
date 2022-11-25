@@ -15,7 +15,7 @@ class AddingCell: UITableViewCell {
     }
 
     func configure(model: AddingCellModel,
-                   onTap: (() -> Void)?) {
+                   onTap: (() -> Void)? = nil) {
         self.lblTitle.attributedText = model.title
         self.onTap = onTap
     }

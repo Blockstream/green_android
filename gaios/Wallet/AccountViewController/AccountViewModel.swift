@@ -17,12 +17,16 @@ class AccountViewModel {
         }
     }
     var addingCellModels: [AddingCellModel] {
-        // return [AddingCellModel()]
+        if account.type == .standard && !(account.session?.twoFactorConfig?.anyEnabled ?? false) {
+            return [AddingCellModel()]
+        }
         return []
     }
 
     var discloseCellModels: [DiscloseCellModel] {
-        // return [DiscloseCellModel(title: "Learn more about AMP, the assets and your eligibility", hint: "Check our 6 easy steps to be able to send and receive AMP assets.")]
+        if account.type == .amp {
+            return [DiscloseCellModel(title: "Learn more about AMP, the assets and your eligibility", hint: "Check our 6 easy steps to be able to send and receive AMP assets.")]
+        }
         return []
     }
 

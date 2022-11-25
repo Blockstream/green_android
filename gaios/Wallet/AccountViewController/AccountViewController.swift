@@ -176,12 +176,12 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         switch AccountSection(rawValue: indexPath.section) {
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell {
-
-                var onCopy: (() -> Void)? = { /* [weak self] */ () in
-                    print("do the copy or leave onCopy nil to hide the button")
-                }
-                onCopy = nil
                 let model = viewModel.accountCellModels[indexPath.row]
+
+                var onCopy: (() -> Void)? = {
+                    UIPasteboard.general.string = model.account.receivingId
+                    DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+                }
                 cell.configure(model: model,
                                cIdx: indexPath.row,
                                sIdx: sIdx,
@@ -192,36 +192,29 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case .adding:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: AddingCell.identifier, for: indexPath) as? AddingCell, let viewModel = viewModel {
-                cell.configure(model: viewModel.addingCellModels[indexPath.row],
-                               onTap: { /* [weak self] */ () in
-                    print("handle tap")
-                })
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AddingCell.identifier, for: indexPath) as? AddingCell {
+                cell.configure(model: viewModel.addingCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
         case .disclose:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: DiscloseCell.identifier, for: indexPath) as? DiscloseCell, let viewModel = viewModel {
-                cell.configure(model: viewModel.discloseCellModels[indexPath.row],
-                               onTap: { /* [weak self] */ () in
-                    print("handle disclose")
-                })
+            if let cell = tableView.dequeueReusableCell(withIdentifier: DiscloseCell.identifier, for: indexPath) as? DiscloseCell {
+                cell.configure(model: viewModel.discloseCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
         case .assets:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: WalletAssetCell.identifier, for: indexPath) as? WalletAssetCell, let viewModel = viewModel {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: WalletAssetCell.identifier, for: indexPath) as? WalletAssetCell {
                 cell.configure(model: viewModel.assetCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
         case .transaction:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell, let viewModel = viewModel {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
                 cell.configure(model: viewModel.txCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
-
         default:
             break
         }
@@ -293,7 +286,9 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .adding:
             break
         case .disclose:
-            break
+            if let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-") {
+                UIApplication.shared.open(url)
+            }
         case .assets:
             break
         case .transaction:
