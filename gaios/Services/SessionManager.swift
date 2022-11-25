@@ -308,8 +308,6 @@ class SessionManager {
                         .then(on: bgq) { self.createDefaultSubaccount(wallets: $0) }
                 }
                 return Promise<Void>().asVoid()
-            }.map(on: bgq) {
-                self.registry?.loadAsync(session: self)
             }.tapLogger()
     }
 
@@ -317,7 +315,6 @@ class SessionManager {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .then(on: bgq) { self.loginUser(details: ["username": username, "password": password]) }
-            .get { _ in self.registry?.loadAsync(session: self) }
     }
 
     func loginWithHW(_ hwDevice: HWDevice) -> Promise<String> {

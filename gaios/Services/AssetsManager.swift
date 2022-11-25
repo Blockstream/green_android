@@ -19,9 +19,12 @@ class AssetsManager {
         }
     }
 
-    var session: SessionManager? {
+    var session: SessionManager {
         let liquid: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
-        return WalletManager.current?.sessions[liquid.rawValue]
+        if let session = WalletManager.current?.sessions[liquid.rawValue] {
+            return session
+        }
+        return SessionManager(getGdkNetwork(liquid.rawValue))
     }
 
     var all: [AssetInfo] {
@@ -29,7 +32,7 @@ class AssetsManager {
     }
 
     func info(for key: String) -> AssetInfo {
-        if infos[key] == nil, let session = session {
+        if infos[key] == nil {
             let infos = fetchAssets(session: session, assetsId: [key])
             self.infos.merge(infos, uniquingKeysWith: {_, new in new})
         }
@@ -43,7 +46,7 @@ class AssetsManager {
         if key == "btc" {
             return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc")
         }
-        if icons[key] == nil, let session = session {
+        if icons[key] == nil {
             let icons = fetchIcons(session: session, assetsId: [key])
             self.icons.merge(icons, uniquingKeysWith: {_, new in new})
         }
@@ -77,18 +80,20 @@ class AssetsManager {
         return icons ?? [:]
     }
 
-    func loadAsync(session: SessionManager) {
+    func loadAsync() {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {
-            self.fetchFromCountly()
-            _ = try session.refreshAssets(icons: false, assets: true, refresh: true)
-            _ = try session.refreshAssets(icons: true, assets: false, refresh: true)
-        }.done { _ in
-            let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
-            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
-        }.catch { _ in
-            print("Asset registry loading failure")
-        }
+        Guarantee()
+            .then(on: bgq) { self.session.connect() }
+            .compactMap(on: bgq) {
+                self.fetchFromCountly()
+                _ = try self.session.refreshAssets(icons: false, assets: true, refresh: true)
+                _ = try self.session.refreshAssets(icons: true, assets: false, refresh: true)
+            }.done { _ in
+                let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
+                NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+            }.catch { _ in
+                print("Asset registry loading failure")
+            }
     }
 
     func getAssetsFromCountly() -> [EnrichedAsset] {
@@ -99,7 +104,6 @@ class AssetsManager {
     }
 
     func fetchFromCountly() {
-        guard let session = session else { return }
         let assets = getAssetsFromCountly()
         let infos = fetchAssets(session: session, assetsId: assets.map { $0.id })
         self.infos.merge(infos, uniquingKeysWith: {_, new in new})

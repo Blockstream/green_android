@@ -179,12 +179,7 @@ class WalletManager {
     }
 
     func loadRegistry() {
-        self.sessions.values
-            .filter { $0.logged && $0.gdkNetwork.liquid }
-            .first
-            .map {
-                self.registry.loadAsync(session: $0)
-            }
+        self.registry.loadAsync()
     }
 
     func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
