@@ -230,6 +230,7 @@ extension ReceiveViewController: AssetExpandableSelectViewControllerDelegate {
         viewModel?.asset = assetId
         viewModel?.account = account
         reload()
+        viewModel.newAddress()
     }
 }
 
@@ -242,12 +243,14 @@ extension ReceiveViewController: AssetSelectViewControllerDelegate {
     func didSelectAsset(_ assetId: String) {
         viewModel?.asset = assetId
         reload()
+        viewModel.newAddress()
     }
 }
 extension ReceiveViewController: AccountSelectViewControllerDelegate {
     func didSelectAccount(_ account: WalletItem) {
         viewModel?.account = account
         reload()
+        viewModel.newAddress()
     }
 }
 extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate {
