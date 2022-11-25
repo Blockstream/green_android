@@ -26,7 +26,8 @@ class SecuritySelectViewController: UIViewController {
         super.viewDidLoad()
 
         let reloadSections: (([SecuritySelectSection], Bool) -> Void)? = { [weak self] (sections, animated) in
-            self?.reloadSections(sections, animated: true)
+            //self?.reloadSections(sections, animated: true)
+            self?.tableView.reloadData()
         }
         viewModel.reloadSections = reloadSections
         viewModel.success = { [weak self] in
@@ -240,7 +241,6 @@ extension SecuritySelectViewController {
 extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     func didSelectAsset(_ assetId: String) {
         viewModel?.asset = assetId
-        reloadSections([.asset], animated: false)
     }
 
     func didSelectAnyAsset() {

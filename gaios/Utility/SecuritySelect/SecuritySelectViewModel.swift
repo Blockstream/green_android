@@ -18,14 +18,13 @@ class SecuritySelectViewModel {
     var asset: String {
         didSet {
             assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
+            reloadSections?([.asset], false)
         }
     }
-    var fixedPolicies: [PolicyCellType]?
     private var wm: WalletManager { WalletManager.current! }
 
-    init(asset: String, fixedPolicies: [PolicyCellType]? = nil) {
+    init(asset: String) {
         self.asset = asset
-        self.fixedPolicies = fixedPolicies
         self.assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
     }
 
@@ -48,11 +47,22 @@ class SecuritySelectViewModel {
 
     /// cell models
     func getPolicyCellModels() -> [PolicyCellModel] {
-        if let policies = fixedPolicies {
-            return policies.map { PolicyCellModel.from(policy: $0) }
+        let policies = policiesForAsset(for: asset, extended: showAll)
+        return policies.map { PolicyCellModel.from(policy: $0) }
+    }
+
+    func policiesForAsset(for assetId: String, extended: Bool) -> [PolicyCellType] {
+        let asset = WalletManager.current?.registry.info(for: asset)
+        if asset?.amp ?? false {
+            return [.Amp]
         }
-        let cells = PolicyCellType.allCases.map { PolicyCellModel.from(policy: $0) }
-        return showAll ? cells : Array(cells[0...1])
+        if !extended {
+            return [.Standard, .TwoFAProtected]
+        }
+        if AssetInfo.btcId == assetId {
+            return [.Standard, .TwoFAProtected, .TwoOfThreeWith2FA, .NativeSegwit]
+        }
+        return [.Standard, .TwoFAProtected, .Amp, .NativeSegwit]
     }
 
     func create(policy: PolicyCellType, asset: String) {

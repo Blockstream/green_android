@@ -55,19 +55,11 @@ class AssetExpandableSelectViewController: UIViewController {
     }
 
     func onCreate(asset: AssetInfo?) {
-        if let assset = asset {
-            let storyboard = UIStoryboard(name: "Utility", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-                var fixedPolicies: [PolicyCellType]?
-                if asset?.amp ?? false {
-                    fixedPolicies = [.Amp]
-                }
-                vc.viewModel = SecuritySelectViewModel(asset: asset?.assetId ?? "btc", fixedPolicies: fixedPolicies)
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        } else {
-            /// handel nil -> anyAsset
-            print("AnyAsset")
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
+            let asset = asset?.assetId ?? getGdkNetwork("liquid").getFeeAsset()
+            vc.viewModel = SecuritySelectViewModel(asset: asset)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
