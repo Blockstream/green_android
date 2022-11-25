@@ -195,8 +195,15 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .policy:
-            let cell = viewModel.getPolicyCellModels()[indexPath.row]
-            viewModel.create(policy: cell.policy, asset: viewModel.asset)
+            let policy = viewModel.getPolicyCellModels()[indexPath.row].policy
+            if policy == .TwoOfThreeWith2FA {
+                let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateRecoveryKeyViewController") as? AccountCreateRecoveryKeyViewController {
+                    navigationController?.pushViewController(vc, animated: true)
+                }
+            } else {
+                viewModel.create(policy: policy, asset: viewModel.asset)
+            }
         default:
             break
         }
