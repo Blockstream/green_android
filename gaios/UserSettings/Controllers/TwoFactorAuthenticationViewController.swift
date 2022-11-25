@@ -30,8 +30,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var lblRecoveryTool: UILabel!
     @IBOutlet weak var btnRecoveryTool: UIButton!
 
-    private var csvTypes = Settings.CsvTime.all()
-    private var csvValues = Settings.CsvTime.values()
+    private var csvTypes = [Settings.CsvTime]()
+    private var csvValues = [Int]()
     private var newCsv: Int?
     private var currentCsv: Int?
 
@@ -39,8 +39,13 @@ class TwoFactorAuthenticationViewController: UIViewController {
     private var connected = true
     private var updateToken: NSObjectProtocol?
     private var twoFactorConfig: TwoFactorConfig?
-    var session: SessionManager!
 
+    var session: SessionManager! {
+        didSet {
+            csvTypes = Settings.CsvTime.all(for: session.gdkNetwork)
+            csvValues = Settings.CsvTime.values(for: session.gdkNetwork) ?? []
+        }
+    }
     weak var delegate: TwoFactorAuthenticationViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -196,11 +201,12 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func setCsvTimeLock(csv: Settings.CsvTime) {
         let bgq = DispatchQueue.global(qos: .background)
+        let network = session.gdkNetwork
         firstly {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            self.session.setCSVTime(value: csv.value()!)
+            self.session.setCSVTime(value: csv.value(for: network)!)
         }.then(on: bgq) { _ in
             self.session.loadSettings()
         }.ensure {
@@ -208,7 +214,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         }.done { _ in
             // update values when change successful
             self.newCsv = nil
-            self.currentCsv = csv.value()
+            self.currentCsv = csv.value(for: network)
             DropAlert().success(message: String(format: "%@: %@", NSLocalizedString("id_twofactor_authentication_expiry", comment: ""), csv.label()))
             self.reloadData()
         }.catch { _ in
@@ -217,7 +223,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func didSelectCSV() {
-        if let csv = newCsv, let index = csvValues? .firstIndex(of: csv) {
+        if let csv = newCsv, let index = csvValues.firstIndex(of: csv) {
             if csv != currentCsv {
                 setCsvTimeLock(csv: csvTypes[index])
             } else {
@@ -308,7 +314,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
         } else if tableView == tableViewCsvTime {
             let item: Settings.CsvTime = csvTypes[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TwoFaCsvTimeCell") as? TwoFaCsvTimeCell {
-                cell.configure(item: item, current: currentCsv)
+                cell.configure(item: item, current: currentCsv, gdkNetwork: session.gdkNetwork)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -366,7 +372,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
             //AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
         } else if tableView == tableViewCsvTime {
             let selected = csvTypes[indexPath.row]
-            newCsv = selected.value()
+            newCsv = selected.value(for: session.gdkNetwork)
             didSelectCSV()
         }
     }

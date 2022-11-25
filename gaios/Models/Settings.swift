@@ -52,19 +52,17 @@ public enum TransactionPriority: Int, CaseIterable {
         return priority?.key ?? .Medium
     }
 
-    var time: String {
-        let network = AccountsManager.shared.current?.gdkNetwork
-        let isLiquid = network?.liquid ?? false
-        let blocksPerHour = isLiquid ? 60 : 6
+    func time(for gdkNetwork: GdkNetwork) -> String {
+        let blocksPerHour = gdkNetwork.liquid ? 60 : 6
         let blocks = self.rawValue
         let n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour)
         let time = NSLocalizedString((blocks % blocksPerHour) == 0 ? (blocks == blocksPerHour ? "id_hour" : "id_hours") : "id_minutes", comment: "")
         return String(format: "%d %@", n, time)
     }
 
-    var description: String {
+    func description(for gdkNetwork: GdkNetwork) -> String {
         let confirmationInBlocks = String(format: NSLocalizedString("id_confirmation_in_d_blocks", comment: ""), self.rawValue)
-        return confirmationInBlocks + ", " + time + " " + NSLocalizedString("id_on_average", comment: "")
+        return confirmationInBlocks + ", " + time(for: gdkNetwork) + " " + NSLocalizedString("id_on_average", comment: "")
     }
 
     static func getPreference() -> TransactionPriority? {
@@ -98,18 +96,20 @@ public enum DenominationType: String, CodingKey {
     static let denominationsLBTC: [DenominationType: String] = [ .BTC: "L-BTC", .MilliBTC: "L-mBTC", .MicroBTC: "L-µBTC", .Bits: "L-bits", .Sats: "L-sats"]
     static let denominationsTEST: [DenominationType: String] = [ .BTC: "TEST", .MilliBTC: "mTEST", .MicroBTC: "µTEST", .Bits: "bTEST", .Sats: "sTEST"]
     static let denominationsLTEST: [DenominationType: String] = [ .BTC: "L-TEST", .MilliBTC: "L-mTEST", .MicroBTC: "L-µTEST", .Bits: "L-TEST", .Sats: "L-TEST"]
-
-    static var denominations: [DenominationType: String] {
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
-        let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
-        if isLiquid {
-            return isMainnet ? DenominationType.denominationsLBTC : DenominationType.denominationsLTEST
-        }
-        return isMainnet ? DenominationType.denominationsBTC : DenominationType.denominationsTEST
+    
+    static func denominations(for gdkNetwork: GdkNetwork) -> [DenominationType: String] {
+        if gdkNetwork.liquid && gdkNetwork.mainnet { return DenominationType.denominationsLBTC }
+        else if gdkNetwork.liquid && !gdkNetwork.mainnet { return DenominationType.denominationsLTEST }
+        else if !gdkNetwork.liquid && gdkNetwork.mainnet { return DenominationType.denominationsBTC }
+        else { return DenominationType.denominationsTEST }
     }
 
-    var string: String {
-        return DenominationType.denominations.filter { $0.key == self }.first?.value ?? DenominationType.denominations[.BTC]!
+    func string(for gdkNetwork: GdkNetwork) -> String {
+        let denominations = DenominationType.denominations(for: gdkNetwork)
+        if let denom = denominations.filter({ $0.key == self }).first?.value {
+            return denom
+        }
+        return denominations[.BTC]!
     }
 
     var digits: UInt8 {
@@ -125,8 +125,12 @@ public enum DenominationType: String, CodingKey {
         }
     }
 
-    static func from(_ string: String) -> DenominationType {
-        return DenominationType.denominations.filter { $0.value == string }.first?.key ?? .BTC
+    static func from(_ string: String, for gdkNetwork: GdkNetwork) -> DenominationType {
+        let denominations = DenominationType.denominations(for: gdkNetwork)
+        if let denom = denominations.filter({ $0.value == string }).first?.key {
+            return denom
+        }
+        return .BTC
     }
 }
 
@@ -269,23 +273,21 @@ class Settings: Codable {
         case Medium
         case Long
 
-        static func all() -> [CsvTime] {
-            if let network = AccountsManager.shared.current?.gdkNetwork,
-               network.liquid {
+        static func all(for gdkNetwork: GdkNetwork) -> [CsvTime] {
+            if gdkNetwork.liquid {
                 return [Long]
             } else {
                 return [Short, Medium, Long]
             }
         }
 
-        static func values() -> [Int]? {
-            return AccountsManager.shared.current?.gdkNetwork?.csvBuckets
+        static func values(for gdkNetwork: GdkNetwork) -> [Int]? {
+            return gdkNetwork.csvBuckets
         }
 
-        func value() -> Int? {
-            let csvBuckets = CsvTime.values()
-            if let network = AccountsManager.shared.current?.gdkNetwork,
-               network.liquid {
+        func value(for gdkNetwork: GdkNetwork) -> Int? {
+            let csvBuckets = CsvTime.values(for: gdkNetwork)
+            if gdkNetwork.liquid {
                 return csvBuckets?[0]
             }
             switch self {

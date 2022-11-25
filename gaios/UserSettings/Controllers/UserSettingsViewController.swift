@@ -256,13 +256,14 @@ extension UserSettingsViewController {
     }
 
     func showBitcoinDenomination() {
-        let list = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats].map { DenominationType.denominations[$0]! }
-        guard let settings = session?.settings else { return }
-        let selected = settings.denomination.string
+        guard let session = session, let settings = session.settings else { return }
+        let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
+        let selected = settings.denomination
         let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
-        list.forEach { (item: String) in
-            alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
-                settings.denomination = DenominationType.from(item)
+        list.forEach { (item: DenominationType) in
+            let symbol = item.string(for: session.gdkNetwork)
+            alert.addAction(UIAlertAction(title: symbol, style: item == selected  ? .destructive : .default) { _ in
+                settings.denomination = item
                 self.changeSettings(settings)
                     .done {
                         self.viewModel.load()

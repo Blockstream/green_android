@@ -7,7 +7,7 @@ enum USSection: String, Codable, CaseIterable {
     case General = "id_general"
     case Security = "id_security"
     case Recovery = "id_recovery"
-    case Multisig = "id_multisig"
+    case Multisig = "Multisig"
     case About = "id_about"
 }
 
@@ -16,7 +16,7 @@ enum USItem: String, Codable, CaseIterable {
 
     case BitcoinDenomination = "id_bitcoin_denomination"
     case ReferenceExchangeRate = "id_reference_exchange_rate"
-    case ArchievedAccounts = "id_archieved_accounts"
+    case ArchievedAccounts = "Archieved accounts"
 
     case ChangePin = "id_change_pin"
     case LoginWithBiometrics = "id_login_with_biometrics"
@@ -24,8 +24,8 @@ enum USItem: String, Codable, CaseIterable {
 
     case BackUpRecoveryPhrase = "id_back_up_recovery_phrase"
 
-    case Bitcoin = "id_bitcoin"
-    case Liquid = "id_liquid"
+    case Bitcoin = "Bitcoin"
+    case Liquid = "Liquid"
 
     case Version = "id_version"
     case SupportID = "id_support"

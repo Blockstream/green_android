@@ -8,7 +8,8 @@ class UserSettingsViewModel {
     var wm: WalletManager { WalletManager.current! }
 
     // load wallet manager for current logged session
-    var settings: Settings? { wm.prominentSession?.settings }
+    var session: SessionManager? { wm.prominentSession }
+    var settings: Settings? { session?.settings }
 
     // reload all contents
     var reloadTableView: (() -> Void)?
@@ -54,7 +55,7 @@ class UserSettingsViewModel {
             section: .Security,
             type: .ChangePin)
         let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "") : NSLocalizedString("id_touchface_id_not_available", comment: "")
-        var bioSwitch: Bool? = nil
+        var bioSwitch: Bool?
         if AuthenticationTypeHandler.supportsBiometricAuthentication() {
             let account = AccountsManager.shared.current
             bioSwitch = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account?.keychain ?? "")
@@ -75,10 +76,10 @@ class UserSettingsViewModel {
     }
 
     func getGeneral() -> [UserSettingsItem] {
-        guard let settings = settings else { return [] }
+        guard let settings = settings, let session = session else { return [] }
         let bitcoinDenomination = UserSettingsItem(
             title: USItem.BitcoinDenomination.string,
-            subtitle: settings.denomination.string,
+            subtitle: settings.denomination.string(for: session.gdkNetwork),
             section: .General,
             type: .BitcoinDenomination)
         let referenceExchangeRate = UserSettingsItem(

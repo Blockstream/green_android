@@ -92,7 +92,7 @@ struct Balance: Codable {
         let denomination = Balance.session?.settings?.denomination ?? .BTC
         let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
         let value = res![denomination.rawValue] as? String
-        return (value?.localeFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string)
+        return (value?.localeFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string(for: Balance.session?.gdkNetwork ?? getGdkNetwork("electrum-mainnet")))
     }
 
     func toAssetValue() -> (String, String) {

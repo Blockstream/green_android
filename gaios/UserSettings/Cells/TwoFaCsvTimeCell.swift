@@ -21,10 +21,10 @@ class TwoFaCsvTimeCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    func configure(item: Settings.CsvTime, current: Int?) {
+    func configure(item: Settings.CsvTime, current: Int?, gdkNetwork: GdkNetwork) {
         self.lblTitle.text = item.label()
         self.lblHint.text = item.description()
-        if current == item.value() {
+        if current == item.value(for: gdkNetwork) {
             self.imgRadio?.image = UIImage(named: "selected_circle")!
         } else {
             self.imgRadio?.image = UIImage(named: "unselected_circle")!

@@ -106,11 +106,13 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     }
 
     func setButton() {
-        guard let settings = WalletManager.current?.prominentSession?.settings else {
+        guard let session = WalletManager.current?.prominentSession,
+                let settings = session.settings else {
             return
         }
         if selectedType == TransactionBaseType.BTC {
-            btnFiat.setTitle(settings.denomination.string, for: UIControl.State.normal)
+            let string = settings.denomination.string(for: session.gdkNetwork)
+            btnFiat.setTitle(string, for: UIControl.State.normal)
             btnFiat.backgroundColor = UIColor.customMatrixGreen()
             btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)
         } else {
