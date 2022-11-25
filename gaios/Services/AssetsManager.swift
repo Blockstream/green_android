@@ -7,6 +7,7 @@ class AssetsManager {
     private let testnet: Bool
     private var infos = [String: AssetInfo]()
     private var icons = [String: String]()
+    private var session_: SessionManager?
 
     init(testnet: Bool) {
         self.testnet = testnet
@@ -21,10 +22,15 @@ class AssetsManager {
 
     var session: SessionManager {
         let liquid: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
-        if let session = WalletManager.current?.sessions[liquid.rawValue] {
+        if let session = WalletManager.current?.sessions[liquid.rawValue], session.connected {
             return session
         }
-        return SessionManager(getGdkNetwork(liquid.rawValue))
+        guard let session = session_ else {
+            let session = SessionManager(getGdkNetwork(liquid.rawValue))
+            session_ = session
+            return session
+        }
+        return session
     }
 
     var all: [AssetInfo] {
@@ -83,8 +89,9 @@ class AssetsManager {
     func loadAsync() {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
-            .then(on: bgq) { self.session.connect() }
-            .compactMap(on: bgq) {
+            .then(on: bgq) {
+                self.session.connect()
+            }.compactMap(on: bgq) {
                 self.fetchFromCountly()
                 _ = try self.session.refreshAssets(icons: false, assets: true, refresh: true)
                 _ = try self.session.refreshAssets(icons: true, assets: false, refresh: true)
