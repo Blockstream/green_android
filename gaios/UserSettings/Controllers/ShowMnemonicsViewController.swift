@@ -8,7 +8,7 @@ class ShowMnemonicsViewController: UIViewController {
     var bip39Passphrase: String?
     var credentials: Credentials? {
         didSet {
-            self.items = credentials?.mnemonic.split(separator: " ").map(String.init) ?? []
+            self.items = credentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
             self.bip39Passphrase = credentials?.bip39Passphrase
         }
     }

@@ -194,7 +194,7 @@ class LoginViewController: UIViewController {
         }
     }
 
-    fileprivate func decryptMnemonic(usingAuth: String, withPIN: String?, bip39passphrase: String?) {
+    fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         var session = SessionManager(account.gdkNetwork!)
         firstly {
@@ -217,9 +217,10 @@ class LoginViewController: UIViewController {
             self.pinCode = ""
             self.reload()
         }.catch { err in
-            self.errorLogin(error: err, usingAuth: usingAuth)
+            self.errorLogin(error: err)
         }
     }
+
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         let wm = WalletManager.getOrAdd(for: account)
@@ -249,11 +250,11 @@ class LoginViewController: UIViewController {
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
-            self.errorLogin(error: error, usingAuth: usingAuth)
+            self.errorLogin(error: error)
         }
     }
 
-    func errorLogin(error: Error, usingAuth: String? = nil) {
+    func errorLogin(error: Error) {
         var prettyError = "id_login_failed"
         self.stopLoader()
         switch error {
@@ -268,39 +269,13 @@ class LoginViewController: UIViewController {
             prettyError = "id_wallet_not_found"
             DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
         case GaError.NotAuthorizedError:
-            self.wrongPin(usingAuth ?? "")
+            self.wrongPin()
             prettyError = "NotAuthorizedError"
         case TwoFactorCallError.failure(let localizedDescription):
             if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
                 prettyError = "id_invalid_pin"
-                self.wrongPin(usingAuth ?? "")
-            } else {
-=======
-            var prettyError = "id_login_failed"
-            self.stopLoader()
-            switch error {
-            case AuthenticationTypeHandler.AuthError.CanceledByUser:
-                return
-            case AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
-                return self.onBioAuthError(error.localizedDescription)
-            case LoginError.connectionFailed:
-                prettyError = "id_connection_failed"
-                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-            case LoginError.walletNotFound:
-                prettyError = "id_wallet_not_found"
-                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-            case GaError.NotAuthorizedError:
                 self.wrongPin()
-                prettyError = "NotAuthorizedError"
-            case TwoFactorCallError.failure(let localizedDescription):
-                if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
-                    prettyError = "id_invalid_pin"
-                    self.wrongPin()
-                } else {
-                    DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-                }
-            default:
->>>>>>> 27f4fcd6 (authenticator: add enum authentication type and watchonly password)
+            } else {
                 DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             }
         default:
@@ -363,17 +338,13 @@ class LoginViewController: UIViewController {
         guard pinCode.count == 6 else {
             return
         }
-<<<<<<< HEAD
         if emergencyRestore {
-            decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthKeyPIN,
+            decryptMnemonic(usingAuth: .AuthKeyPIN,
                             withPIN: pinCode,
                             bip39passphrase: bip39passphare)
             return
         }
-        loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN,
-=======
         loginWithPin(usingAuth: .AuthKeyPIN,
->>>>>>> 27f4fcd6 (authenticator: add enum authentication type and watchonly password)
                      withPIN: pinCode,
                      bip39passphrase: bip39passphare)
     }
