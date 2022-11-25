@@ -499,10 +499,10 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
     // accounts drawer: select another account
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
-//        if account.id == self.account?.id ?? "" {
-//            return
-//        }
-//        AccountNavigator.goLogin(account: account)
+        if account.id == AccountsManager.shared.current?.id ?? "" {
+            return
+        }
+        AccountNavigator.goLogin(account: account)
     }
 
     // accounts drawer: select hw account
