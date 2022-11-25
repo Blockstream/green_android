@@ -62,6 +62,7 @@ platform :ios do
     )
     upload_to_testflight(
       apple_id: '1402243590',
+      itc_provider: 'D9W37S9468',
       skip_waiting_for_build_processing: true
     )
   end
