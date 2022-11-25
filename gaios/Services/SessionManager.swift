@@ -349,6 +349,7 @@ class SessionManager {
         let data = try? JSONEncoder().encode(credentials)
         let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
+            .then(on: bgq) { self.connect() }
             .compactMap(on: bgq) { try self.session?.registerUser(details: details ?? [:], hw_device: [:]) }
             .then(on: bgq) { $0.resolve(session: self) }
             .tapLogger()
@@ -360,6 +361,7 @@ class SessionManager {
         let data = try? JSONEncoder().encode(hw)
         let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments)
         return Guarantee()
+            .then(on: bgq) { self.connect() }
             .compactMap(on: bgq) { try self.session?.registerUser(details: [:], hw_device: ["device": device ?? [:]]) }
             .then(on: bgq) { $0.resolve(session: self) }
             .tapLogger()

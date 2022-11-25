@@ -157,10 +157,10 @@ class SecuritySelectViewModel {
         [.Standard: .testnetSS, .TwoFAProtected: .testnetMS,
          .TwoOfThreeWith2FA: .testnetMS, .NativeSegwit: .testnetSS, .Amp: .testnetMS]
         let lbtc: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .liquidSS, .TwoFAProtected: .liquidSS,
+        [.Standard: .liquidSS, .TwoFAProtected: .liquidMS,
          .TwoOfThreeWith2FA: .liquidMS, .NativeSegwit: .liquidSS, .Amp: .liquidMS]
         let ltest: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .testnetLiquidSS, .TwoFAProtected: .testnetLiquidSS,
+        [.Standard: .testnetLiquidSS, .TwoFAProtected: .testnetLiquidMS,
          .TwoOfThreeWith2FA: .testnetLiquidMS, .NativeSegwit: .testnetLiquidSS, .Amp: .testnetLiquidMS]
         if liquid && wm.testnet { return ltest[policy] }
         if liquid && !wm.testnet { return lbtc[policy] }
