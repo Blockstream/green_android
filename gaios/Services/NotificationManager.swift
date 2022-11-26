@@ -65,8 +65,8 @@ class NotificationManager {
                 self.post(event: EventType.Network, data: data)
             }.catch { err in
                 print("Error on reconnected with hw: \(err.localizedDescription)")
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                appDelegate?.logout(with: false)
+                //let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                //appDelegate?.logout(with: false)
             }
         case .Tor:
             post(event: .Tor, data: data)
