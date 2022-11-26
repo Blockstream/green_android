@@ -7,7 +7,7 @@ class UserSettingsCellModel {
     var subtitle: String
     var disclosure: Bool = false
     var disclosureImage: UIImage?
-    var switcher: Bool? = nil
+    var switcher: Bool?
     var type: USItem?
 
     init(_ item: UserSettingsItem) {

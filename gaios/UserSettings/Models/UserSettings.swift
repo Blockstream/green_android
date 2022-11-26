@@ -38,5 +38,5 @@ struct UserSettingsItem {
     var subtitle: String
     var section: USSection
     var type: USItem
-    var switcher: Bool? = nil
+    var switcher: Bool?
 }

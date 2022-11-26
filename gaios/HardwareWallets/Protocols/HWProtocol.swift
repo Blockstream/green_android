@@ -24,7 +24,6 @@ protocol HWProtocol {
 
     func newReceiveAddress(network: GdkNetwork, wallet: WalletItem, path: [UInt32], csvBlocks: UInt32) -> Observable<String>
 
-    // swiftlint:disable inclusive_language
     func getMasterBlindingKey() -> Observable<String>
 
     // Liquid calls

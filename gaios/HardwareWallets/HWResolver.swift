@@ -168,7 +168,6 @@ class HWResolver {
         return Promise.chain(promises)
     }
 
-    // swiftlint:disable inclusive_language
     func getMasterBlindingKey(hw: HWProtocol) -> Promise<String> {
         return Promise { seal in
             _ = hw.getMasterBlindingKey()

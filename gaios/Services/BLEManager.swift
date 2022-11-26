@@ -324,7 +324,7 @@ class BLEManager {
                                         fmwVersion: self.fmwVersion ?? "")
                 return Observable<WalletManager>.create { observer in
                     wm.loginWithHW(device)
-                        .done { res in
+                        .done { _ in
                             observer.onNext(wm)
                             observer.onCompleted()
                         }.catch { err in

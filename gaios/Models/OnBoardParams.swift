@@ -12,5 +12,5 @@ struct OnBoardParams: Codable {
     var mnemomicPassword: String?
     var mnemonicSize = Constants.mnemonicSizeDefault
     var singleSig = false
-    var accountId: String? = nil
+    var accountId: String?
 }

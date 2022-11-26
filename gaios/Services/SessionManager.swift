@@ -298,7 +298,7 @@ class SessionManager {
             .then(on: bgq) { $0.resolve(session: self) }
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
-                let json = try? JSONSerialization.data(withJSONObject: result, options: [])
+                let json = try? JSONSerialization.data(withJSONObject: result ?? [:], options: [])
                 return try? JSONDecoder().decode(Credentials.self, from: json ?? Data())
             }
     }

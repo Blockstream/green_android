@@ -26,7 +26,9 @@ class MnemonicViewModel {
             .then(on: bgq) { wm.restore(credentials) }
             .compactMap {
                 AccountsManager.shared.current = account
-                AnalyticsManager.shared.restoreWallet(account: AccountsManager.shared.current)}
+                AnalyticsManager.shared.restoreWallet(account: account)
+                return ()
+            }
             .then(on: bgq) { wm.login(credentials) }
             .done { self.success?() }
             .catch { err in self.error?(err) }
