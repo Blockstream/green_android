@@ -1,7 +1,7 @@
 import UIKit
 
 class AccountCell: UITableViewCell {
-
+    
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var detailView: UIView!
     @IBOutlet weak var effectView: UIView!
@@ -10,7 +10,7 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var btnSelect: UIButton!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnWarn: UIButton!
-
+    
     @IBOutlet weak var imgMS: UIImageView!
     @IBOutlet weak var imgSS: UIImageView!
     @IBOutlet weak var lblType: UILabel!
@@ -20,7 +20,7 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var iconsView: UIView!
     @IBOutlet weak var iconsStack: UIStackView!
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
-
+    
     private var sIdx: Int = 0
     private var cIdx: Int = 0
     private var isLast: Bool = false
@@ -28,12 +28,12 @@ class AccountCell: UITableViewCell {
     private var onCopy: (() -> Void)?
     private let iconW: CGFloat = 24
     private var cColor: UIColor = .clear
-
+    
     static var identifier: String { return String(describing: self) }
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-
+        
         bg.cornerRadius = 5.0
         innerEffectView.layer.cornerRadius = 5.0
         innerEffectView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
@@ -47,13 +47,13 @@ class AccountCell: UITableViewCell {
         }
         btnCopy.setTitle("Copy ID", for: .normal)
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         select(selected)
     }
-
+    
     func configure(model: AccountCellModel,
                    cIdx: Int,
                    sIdx: Int,
@@ -65,7 +65,7 @@ class AccountCell: UITableViewCell {
         self.isLast = isLast
         self.onSelect = onSelect
         self.onCopy = onCopy
-
+        
         lblType.text = model.lblType
         lblName.text = model.name
         lblFiat.text = model.fiatStr
@@ -83,7 +83,7 @@ class AccountCell: UITableViewCell {
             $0?.backgroundColor = cColor
         }
         btnSelect.isHidden = onSelect == nil
-        btnCopy.isHidden = onCopy == nil
+        btnCopy.isHidden = onCopy == nil || model.account.type != .amp // only for amp
 
         for v in iconsStack.subviews {
             v.removeFromSuperview()
