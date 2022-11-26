@@ -107,6 +107,7 @@ class AccountViewController: UIViewController {
     func sendfromWallet() {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
+            vc.wallet = viewModel.account
             navigationController?.pushViewController(vc, animated: true)
         }
     }

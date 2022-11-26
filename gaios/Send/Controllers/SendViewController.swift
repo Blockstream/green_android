@@ -14,40 +14,27 @@ class SendViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnNext: UIButton!
 
-    var wallet = WalletManager.current?.currentSubaccount
+    var wallet: WalletItem!
+    var transaction: Transaction?
     var recipients: [Recipient] = []
     var inputType: InputType = .transaction
     var addressInputType: AnalyticsManager.AddressInputType = .paste
 
-    var transaction: Transaction?
     private var validateTask: ValidateTask?
+    private var transactionPriority: TransactionPriority = .High
+    private var customFee: UInt64 = 1000
+    private let activityIndicator = UIActivityIndicatorView(style: .white)
 
-    var transactionPriority: TransactionPriority = .High
-    var customFee: UInt64 = 1000
-    let activityIndicator = UIActivityIndicatorView(style: .white)
+    private var session: SessionManager { wallet.session! }
+    private var isLiquid: Bool { session.gdkNetwork.liquid }
+    private var isBtc: Bool { !session.gdkNetwork.liquid }
+    private var btc: String { session.gdkNetwork.getFeeAsset() }
 
-    var isLiquid: Bool {
-        get {
-            return AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
-        }
-    }
-
-    var isBtc: Bool {
-        get {
-            let ntw = AccountsManager.shared.current?.network
-            return ntw == "mainnet" || ntw == "testnet"
-        }
-    }
-
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-    }
-
-    private var feeEstimates: [UInt64?] = {
+    func feeEstimates() -> [UInt64?] {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
-        guard let estimates = WalletManager.current?.currentSession?.getFeeEstimates() else {
+        guard let estimates = session.getFeeEstimates() else {
             // We use the default minimum fee rates when estimates are not available
-            let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
+            let defaultMinFee = isLiquid ? 100 : 1000
             return [UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee)]
         }
         for (index, value) in [3, 12, 24, 0].enumerated() {
@@ -55,15 +42,17 @@ class SendViewController: KeyboardViewController {
         }
         feeEstimates[3] = nil
         return feeEstimates
-    }()
+    }
 
-    private var defaultTransactionPriority: TransactionPriority = {
-        guard let settings = WalletManager.current?.currentSession?.settings else { return .High }
+    func defaultTransactionPriority() -> TransactionPriority {
+        guard let settings = WalletManager.current?.prominentSession?.settings else {
+            return .High
+        }
         if let pref = TransactionPriority.getPreference() {
             settings.transactionPriority = pref
         }
         return settings.transactionPriority
-    }()
+    }
 
     private var remoteAlert: RemoteAlert?
 
@@ -95,7 +84,7 @@ class SendViewController: KeyboardViewController {
         setStyle()
         addRecipient()
         updateBtnNext()
-        transactionPriority = inputType == .bumpFee ? .High : defaultTransactionPriority
+        transactionPriority = inputType == .bumpFee ? .High : defaultTransactionPriority()
         activityIndicator.hidesWhenStopped = true
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
@@ -160,7 +149,7 @@ class SendViewController: KeyboardViewController {
         let recipient = recipients.first
         let addressInput: String = recipient?.address ?? ""
 
-        let network = AccountsManager.shared.current?.gdkNetwork
+        let network = session.gdkNetwork
         let policyAsset = recipient?.assetId
 
         let satoshi = recipient?.getSatoshi() ?? 0
@@ -169,7 +158,7 @@ class SendViewController: KeyboardViewController {
         addressee["address"] = addressInput
         addressee["satoshi"] = satoshi
 
-        if network?.liquid ?? false && !isBipAddress() && policyAsset != nil {
+        if network.liquid && !isBipAddress() && policyAsset != nil {
             addressee["asset_id"] = policyAsset!
         }
 
@@ -215,8 +204,9 @@ class SendViewController: KeyboardViewController {
 
         let subaccount = self.wallet!.pointer
 
-        feeEstimates[3] = customFee
-        guard let feeEstimate = feeEstimates[selectedFee()] else { return }
+        var estimates = feeEstimates()
+        estimates[3] = customFee
+        guard let feeEstimate = estimates[selectedFee()] else { return }
         let feeRate = feeEstimate
 
         switch inputType {
@@ -237,7 +227,7 @@ class SendViewController: KeyboardViewController {
         showIndicator()
         updateBtnNext()
         validateTask?.cancel()
-        validateTask = ValidateTask(details: details, inputType: inputType)
+        validateTask = ValidateTask(details: details, inputType: inputType, session: session)
         validateTask?.execute().get { tx in
             self.transaction = tx
         }.done { tx in
@@ -278,10 +268,10 @@ class SendViewController: KeyboardViewController {
         recipients.first?.txError = tx?.error ?? ""
         recipients.first?.assetId = asset
 
-        if !(AccountsManager.shared.current?.isSingleSig ?? false) && tx?.sendAll ?? false {
+        if !(session.gdkNetwork.electrum) && tx?.sendAll ?? false {
             value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        let assetInfo = WalletManager.current?.currentSession?.registry?.info(for: asset)
+        let assetInfo = WalletManager.current?.registry.info(for: asset)
         if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
             let (amount, _) = value == 0 ? ("", "") : balance.toValue()
             recipients.first?.amount = amount
@@ -457,8 +447,7 @@ extension SendViewController: DialogQRCodeScanViewControllerDelegate {
 
 extension SendViewController: DialogCustomFeeViewControllerDelegate {
     func didSave(fee: UInt64?) {
-        feeEstimates[3] = fee ?? 1000
-        customFee = feeEstimates[3] ?? 1000
+        customFee = fee ?? 1000
         transactionPriority = .Custom
         validateTransaction()
     }
@@ -527,7 +516,7 @@ extension SendViewController: FeeEditCellDelegate {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
-            vc.storedFeeRate = feeEstimates[3]
+            vc.storedFeeRate = feeEstimates()[3]
             present(vc, animated: false, completion: nil)
         }
     }

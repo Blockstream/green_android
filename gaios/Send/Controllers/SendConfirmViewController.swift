@@ -15,13 +15,13 @@ class SendConfirmViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var sliderView: SliderView!
 
-    var wallet: WalletItem?
+    var wallet: WalletItem!
     var transaction: Transaction?
     private var connected = true
     private var updateToken: NSObjectProtocol?
     var inputType: InputType = .transaction // for analytics
     var addressInputType: AnalyticsManager.AddressInputType = .paste // for analytics
-
+    private var session: SessionManager { wallet.session! }
     private var remoteAlert: RemoteAlert?
 
     override func viewDidLoad() {
@@ -79,9 +79,7 @@ class SendConfirmViewController: KeyboardViewController {
 
     func send() {
         let account = AccountsManager.shared.current
-
         guard let transaction = transaction else { return }
-        guard let session = WalletManager.current?.currentSession else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             sliderView.isUserInteractionEnabled = false
@@ -96,14 +94,14 @@ class SendConfirmViewController: KeyboardViewController {
             }
             return Guarantee()
         }.then(on: bgq) {
-            session.signTransaction(tx: transaction)
+            self.session.signTransaction(tx: transaction)
         }.then(on: bgq) { result -> Promise<Void> in
             if transaction.isSweep {
                 let tx = result["transaction"] as? String
-                return session.broadcastTransaction(txHex: tx ?? "")
+                return self.session.broadcastTransaction(txHex: tx ?? "")
             } else {
                 let tx = Transaction(result)
-                return session.sendTransaction(tx: tx)
+                return self.session.sendTransaction(tx: tx)
             }
         }.ensure {
             if account?.isHW ?? false {

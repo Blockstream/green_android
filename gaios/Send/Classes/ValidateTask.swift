@@ -12,8 +12,7 @@ class ValidateTask {
     private var cancelme = false
     private var task: DispatchWorkItem?
 
-    init(details: [String: Any], inputType: InputType) {
-        guard let session = WalletManager.current?.currentSession else { return }
+    init(details: [String: Any], inputType: InputType, session: SessionManager) {
         task = DispatchWorkItem {
             var details = details
             if inputType == .transaction && details["utxos"] == nil {
