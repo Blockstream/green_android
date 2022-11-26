@@ -80,11 +80,6 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
         if viewModel.selectedSection != section {
             return 0
         }
-        let cnt = viewModel.assetSelectCellModelsFilter.count
-        if cnt == 0 && section == 0 {
-            return 0
-        }
-        /// need value for specific asset
         return viewModel.accountSelectSubCellModels.count
     }
 
@@ -116,6 +111,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
         if cnt == 0 && section == 0 {
             if let accountView = Bundle.main.loadNibNamed("AnyAssetExpandableView", owner: self, options: nil)?.first as? AnyAssetExpandableView {
                 accountView.configure(open: viewModel.selectedSection == section,
+                                      hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
                                       onCreate: {[weak self] in
                     self?.onCreate(asset: nil)
                 })
@@ -162,7 +158,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
             viewModel.selectedSection = section
             let cnt = viewModel.assetSelectCellModelsFilter.count
             if cnt == 0 && section == 0 {
-
+                viewModel.loadAccountsForAsset(nil)
             } else {
                 if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
                     viewModel.loadAccountsForAsset(asset)
@@ -173,11 +169,15 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let asset = viewModel.assetSelectCellModelsFilter[indexPath.section].asset {
-            let account = viewModel.accountSelectSubCellModels[indexPath.row].account
-            delegate?.didSelectReceiver(assetId: asset.assetId, account: account)
-            navigationController?.popViewController(animated: true)
+        var assetId = AssetInfo.lbtcId
+        let cnt = viewModel.assetSelectCellModelsFilter.count
+        if !(cnt == 0 && indexPath.section == 0) {
+            if let asset = viewModel.assetSelectCellModelsFilter[indexPath.section].asset { assetId = asset.assetId
+            }
         }
+        let account = viewModel.accountSelectSubCellModels[indexPath.row].account
+        delegate?.didSelectReceiver(assetId: assetId, account: account)
+        navigationController?.popViewController(animated: true)
     }
 }
 

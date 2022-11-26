@@ -15,18 +15,20 @@ class AnyAssetExpandableView: UIView {
     var onCreate: (() -> Void)?
 
     func configure(open: Bool,
+                   hasAccounts: Bool,
                    onCreate: (() -> Void)?
     ) {
         title.text = "Receive any Liquid Asset"
 
-        lblAccountTip.text = "You need a liquid account in order to rceive it."
+        lblAccountTip.text = "You need a liquid account in order to receive it."
         accountTip.isHidden = !open
 
         createNew.isHidden = true
         if open {
             bg.borderWidth = 2.0
             bg.borderColor = UIColor.gGreenMatrix()
-            createNew.isHidden = false
+            createNew.isHidden = hasAccounts
+            accountTip.isHidden = hasAccounts
         } else {
             bg.borderWidth = 0.0
         }

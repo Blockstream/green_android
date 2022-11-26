@@ -32,7 +32,7 @@ class AssetExpandableSelectViewModel {
         }
     }
 
-    func loadAccountsForAsset(_ assetId: String) {
+    func loadAccountsForAsset(_ assetId: String?) {
         var accounts = wm.subaccounts
         if [AssetInfo.btcId, AssetInfo.testId].contains(assetId) {
             // for btc / test btc only
@@ -40,7 +40,7 @@ class AssetExpandableSelectViewModel {
         } else {
             // for liquid
             accounts.removeAll { $0.hidden ?? false || !$0.gdkNetwork.liquid }
-            if wm.registry.info(for: assetId).amp ?? false {
+            if let assetId = assetId, wm.registry.info(for: assetId).amp ?? false {
                 accounts.removeAll { $0.type != .amp }
             }
         }

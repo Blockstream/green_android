@@ -253,5 +253,6 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     func didSelectAnyAsset() {
         /// handle any asset case
         print("didSelectAnyAsset")
+        viewModel?.asset = AssetInfo.lbtcId
     }
 }
