@@ -88,21 +88,13 @@ class AccountCreateSetNameViewController: UIViewController {
 
     func dismiss() {
         DispatchQueue.main.async {
-            for controller in self.navigationController!.viewControllers as Array {
-                if controller.isKind(of: OverviewViewController.self) {
-                    if let vc = controller as? OverviewViewController {
-                        vc.onAccountChange()
-                    }
-                    self.navigationController!.popToViewController(controller, animated: true)
-                    break
-                }
-            }
+            self.navigationController!.popToViewController(self, animated: true)
         }
     }
 
     func createSubaccount(name: String, type: AccountType, recoveryMnemonic: String? = nil, recoveryXpub: String? = nil) {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession else { return }
+        guard let session = WalletManager.current?.prominentSession else { return }
         firstly {
             self.startAnimating()
             return Guarantee()

@@ -11,6 +11,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
 
     private var currencyList = [CurrencyItem]()
     private var searchCurrencyList = [CurrencyItem]()
+    private var session: SessionManager? { WalletManager.current?.prominentSession }
     weak var delegate: UserSettingsViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -39,7 +40,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func getCurrentRate() {
-        if let settings = WalletManager.current?.currentSession?.settings {
+        if let settings = session?.settings {
             currentCurrency.text = settings.pricing["currency"] ?? ""
             currentExchange.text = settings.pricing["exchange"]?.capitalized ?? ""
         }
@@ -84,8 +85,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func setExchangeRate(_ currency: CurrencyItem) {
-        guard let session = WalletManager.current?.currentSession else { return }
-        guard let settings = session.settings else { return }
+        guard let session = session, let settings = session.settings else { return }
         let bgq = DispatchQueue.global(qos: .background)
 
         var pricing = [String: String]()
@@ -106,7 +106,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
 
     func getExchangeRate() {
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = WalletManager.current?.currentSession else { return }
+        guard let session = session else { return }
         Guarantee().then(on: bgq) {
             session.getAvailableCurrencies()
         }.done { perExchange in

@@ -39,12 +39,6 @@ class WalletManager {
     }
 
     // Get active session of the active subaccount
-    var currentSession: SessionManager? {
-        let network = currentSubaccount?.network
-        return sessions[network ?? ""]
-    }
-
-    // Get active session of the active subaccount
     var prominentSession: SessionManager? {
         return sessions[prominentNetwork.rawValue]
     }
