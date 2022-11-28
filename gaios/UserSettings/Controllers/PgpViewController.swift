@@ -14,7 +14,7 @@ class PgpViewController: KeyboardViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_pgp_key", comment: "")
         subtitle.text = NSLocalizedString("id_enter_a_pgp_public_key_to_have", comment: "")
-        textarea.text = WalletManager.current?.currentSession?.settings?.pgp ?? ""
+        textarea.text = session.settings?.pgp ?? ""
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         btnSave.addTarget(self, action: #selector(save), for: .touchUpInside)
         setStyle()

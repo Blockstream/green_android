@@ -25,14 +25,15 @@ class DialogCustomFeeViewController: KeyboardViewController {
     weak var delegate: DialogCustomFeeViewControllerDelegate?
     var storedFeeRate: UInt64?
     var buttonConstraint: NSLayoutConstraint?
+    var account: WalletItem!
 
-    private var minFeeRate: UInt64 = {
-        guard let estimates = WalletManager.current?.currentSession?.getFeeEstimates() else {
-            let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
+    func minFeeRate() -> UInt64 {
+        guard let estimates = account.session?.getFeeEstimates() else {
+            let defaultMinFee = account.gdkNetwork.liquid ? 100 : 1000
             return UInt64(defaultMinFee)
         }
         return estimates[0]
-    }()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,12 +84,13 @@ class DialogCustomFeeViewController: KeyboardViewController {
     func validate() {
 
         var feeRate: UInt64
+        var minFeeRate = self.minFeeRate()
         if let storedFeeRate = storedFeeRate {
             feeRate = storedFeeRate
-        } else if let settings = WalletManager.current?.currentSession?.settings {
-            feeRate = UInt64(settings.customFeeRate ?? self.minFeeRate)
+        } else if let settings = account.session?.settings {
+            feeRate = UInt64(settings.customFeeRate ?? minFeeRate)
         } else {
-            feeRate = self.minFeeRate
+            feeRate = minFeeRate
         }
         guard var amountText = feeTextField.text else { return }
         amountText = amountText.isEmpty ? "0" : amountText
@@ -96,8 +98,8 @@ class DialogCustomFeeViewController: KeyboardViewController {
         guard let number = Double(amountText), number > 0 else { return }
         if 1000 * number >= Double(UInt64.max) { return }
         feeRate = UInt64(1000 * number)
-        if feeRate < self.minFeeRate {
-            DropAlert().warning(message: String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(self.minFeeRate)))
+        if feeRate < minFeeRate {
+            DropAlert().warning(message: String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(minFeeRate)))
             return
         }
         dismiss(.save, feeRate: feeRate)

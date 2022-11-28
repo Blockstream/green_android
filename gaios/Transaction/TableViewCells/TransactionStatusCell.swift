@@ -105,11 +105,15 @@ class TransactionStatusCell: UITableViewCell {
         if tx.blockHeight == 0 {
             return false
         }
-        if let notificationManager = WalletManager.current?.currentSession?.notificationManager,
+        if let account = subaccount(tx: tx), let notificationManager = account.session?.notificationManager,
            Int(notificationManager.blockHeight) - Int(tx.blockHeight) + 1 < 6 {
             return false
         }
         return true
+    }
+
+    func subaccount(tx: Transaction) -> WalletItem? {
+        return WalletManager.current?.subaccounts.filter { $0.hashValue == tx.subaccount }.first
     }
 
     func setSpvVerifyIcon(tx: Transaction) {

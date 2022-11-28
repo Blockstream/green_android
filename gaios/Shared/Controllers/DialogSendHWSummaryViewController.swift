@@ -28,18 +28,8 @@ class DialogSendHWSummaryViewController: UIViewController {
     @IBOutlet weak var lblChangeTitle: UILabel!
     @IBOutlet weak var lblChangeHint: UILabel!
 
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-    }
-
-    var network: String? {
-        get {
-            return AccountsManager.shared.current?.network
-        }
-    }
-
     var transaction: Transaction?
-
+    var account: WalletItem!
     var isLedger = false
 
     override func viewDidLoad() {
@@ -69,12 +59,11 @@ class DialogSendHWSummaryViewController: UIViewController {
 
             let addreessee = transaction.addressees.first
             var value = addreessee?.satoshi ?? 0
-            let network = AccountsManager.shared.current?.gdkNetwork
-            let assetId = (network?.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
-            if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
+            let assetId = (account.gdkNetwork.liquid ) ? addreessee?.assetId ?? "" : "btc"
+            if !account.gdkNetwork.electrum && transaction.sendAll {
                 value = transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
             }
-            let registry = WalletManager.current?.currentSession?.registry
+            let registry = WalletManager.current?.registry
             let info = registry?.info(for: assetId)
             if let balance = Balance.fromSatoshi(value, asset: info) {
                 let (value, ticker) = balance.toValue()
@@ -83,7 +72,7 @@ class DialogSendHWSummaryViewController: UIViewController {
                 lblDenomination.text = "\(ticker)"
                 lblFiat.text = "≈ \(fiat) \(fiatCurrency)"
             }
-            lblFiat.isHidden = network?.liquid ?? false
+            lblFiat.isHidden = account.gdkNetwork.liquid
             icon.image = registry?.image(for: assetId)
             lblFeeTitle.text = NSLocalizedString("id_fee", comment: "")
             if let balance = Balance.fromSatoshi(transaction.fee) {

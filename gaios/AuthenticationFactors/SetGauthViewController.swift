@@ -20,7 +20,7 @@ class SetGauthViewController: UIViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_authenticator_qr_code", comment: "")
 
-        guard let session = WalletManager.current?.currentSession?.session,
+        guard let session = session.session,
               let dataTwoFactorConfig = try? session.getTwoFactorConfig(),
               let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
         gauthData = twoFactorConfig.gauth.data

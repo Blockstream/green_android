@@ -148,7 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         WalletManager.wallets.forEach { _, wm in
             wm.resume()
         }
-        AnalyticsManager.shared.setupSession(session: WalletManager.current?.currentSession?.session)
+        AnalyticsManager.shared.setupSession(session: WalletManager.current?.prominentSession?.session)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

@@ -13,12 +13,6 @@ class AddresseeCell: UITableViewCell {
 
     var isFiat = false
 
-    var network: String? {
-        get {
-            return AccountsManager.shared.current?.network
-        }
-    }
-
     override func awakeFromNib() {
         super.awakeFromNib()
         setStyle()
@@ -33,19 +27,19 @@ class AddresseeCell: UITableViewCell {
     }
 
     func configure(transaction: Transaction, index: Int) {
+        let account = subaccount(from: transaction)
         let addressee = transaction.addressees[index]
         lblRecipientTitle.text = NSLocalizedString("id_recipient", comment: "")
         lblRecipientAddress.text = addressee.address
 
         let addreessee = transaction.addressees.first
         var value = addreessee?.satoshi ?? 0
-        let network = AccountsManager.shared.current?.gdkNetwork
-        let asset = (network?.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
+        let asset = (account?.gdkNetwork.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
         if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
             value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        let assetInfo = WalletManager.current?.currentSession?.registry?.info(for: asset)
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
+        let assetInfo = WalletManager.current?.registry.info(for: asset)
+        let feeAsset = account?.gdkNetwork.getFeeAsset()
         if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
             let (amount, ticker) = value == 0 ? ("", "") : balance.toValue()
             lblAmount.text = amount
@@ -56,7 +50,11 @@ class AddresseeCell: UITableViewCell {
             }
             lblFiat.isHidden = asset != feeAsset
         }
-        icon.image = WalletManager.current?.currentSession?.registry?.image(for: asset)
+        icon.image = WalletManager.current?.registry.image(for: asset)
+    }
+
+    func subaccount(from tx: Transaction) -> WalletItem? {
+        return WalletManager.current?.subaccounts.filter { $0.hashValue == tx.subaccount }.first
     }
 
     func setStyle() {

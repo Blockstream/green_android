@@ -33,7 +33,7 @@ class TransactionViewController: UIViewController {
     private var transactionToken: NSObjectProtocol?
     private var blockToken: NSObjectProtocol?
     private var cantBumpFees: Bool {
-            return WalletManager.current?.currentSession?.isResetActive ?? false ||
+        return wallet.session?.isResetActive ?? false ||
             !transaction.canRBF || account?.isWatchonly ?? false
     }
 
@@ -221,7 +221,7 @@ class TransactionViewController: UIViewController {
 
     func getFeeRate() -> UInt64 {
         var fee: UInt64 = self.transaction.feeRate
-        if let estimates = WalletManager.current?.currentSession?.getFeeEstimates(), estimates.count > 2 {
+        if let estimates = wallet.session?.getFeeEstimates(), estimates.count > 2 {
             fee = estimates[3]
         }
         return fee
@@ -229,7 +229,7 @@ class TransactionViewController: UIViewController {
 
     func increaseFeeTapped() {
         if self.cantBumpFees { return }
-        guard let session = WalletManager.current?.currentSession else { return }
+        guard let session = wallet.session else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -266,7 +266,7 @@ class TransactionViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
             let amount = transaction.amountsWithoutFees[index]
             vc.tag = amount.0
-            vc.asset = WalletManager.current?.currentSession?.registry?.info(for: amount.0)
+            vc.asset = wallet.session?.registry?.info(for: amount.0)
             vc.satoshi = wallet?.satoshi?[amount.0] ?? 0
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
@@ -430,7 +430,7 @@ extension TransactionViewController: DialogNoteViewControllerDelegate {
         self.startAnimating()
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) { _ in
-            try? WalletManager.current?.currentSession?.session?.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
+            try? self.wallet.session?.session?.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
             self.transaction.memo = note
             }.ensure {
                 self.stopAnimating()

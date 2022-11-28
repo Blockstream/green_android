@@ -51,7 +51,7 @@ class AccountArchiveCell: UITableViewCell {
         self.actionBtn.isHidden = false
 
         let assets = AssetAmountList(account.satoshi ?? [:]).sorted()
-        let registry = WalletManager.current?.currentSession?.registry
+        let registry = WalletManager.current?.registry
 
         for v in iconsStack.subviews {
             v.removeFromSuperview()

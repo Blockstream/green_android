@@ -195,7 +195,7 @@ class SendViewController: KeyboardViewController {
 
     func isBipAddress() -> Bool {
         let addressInput: String = recipients.first?.address ?? ""
-        return WalletManager.current?.currentSession?.validBip21Uri(uri: addressInput) ?? false
+        return wallet.session?.validBip21Uri(uri: addressInput) ?? false
     }
 
     func validateTransaction() {
@@ -534,6 +534,7 @@ extension SendViewController: FeeEditCellDelegate {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCustomFeeViewController") as? DialogCustomFeeViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
+            vc.account = wallet
             vc.storedFeeRate = feeEstimates()[3]
             present(vc, animated: false, completion: nil)
         }

@@ -89,6 +89,7 @@ class SendConfirmViewController: KeyboardViewController {
                     vc.modalPresentationStyle = .overFullScreen
                     vc.transaction = transaction
                     vc.isLedger = account?.isLedger ?? false
+                    vc.account = wallet
                     present(vc, animated: false, completion: nil)
                 }
             }

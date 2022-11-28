@@ -107,8 +107,8 @@ class RecipientCell: UITableViewCell {
         lblAddressHint.text = NSLocalizedString(inputType == .sweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
         iconAsset.image = UIImage(named: "default_asset_icon")!
         lblAssetName.text = NSLocalizedString("id_asset", comment: "")
-        iconAsset.image = WalletManager.current?.currentSession?.registry?.image(for: asset?.assetId ?? "")
-        lblAssetName.text = WalletManager.current?.currentSession?.registry?.info(for: asset?.assetId ?? "").name
+        iconAsset.image = WalletManager.current?.registry.image(for: asset?.assetId ?? "")
+        lblAssetName.text = WalletManager.current?.registry.info(for: asset?.assetId ?? "").name
         onChange()
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
         addressTextView.textContainer.maximumNumberOfLines = 10
@@ -231,7 +231,7 @@ class RecipientCell: UITableViewCell {
                 lblAvailableFunds.text = ""
                 amountTextField.text = ""
             } else {
-                iconAsset.image = WalletManager.current?.currentSession?.registry?.image(for: recipient?.assetId ?? "")
+                iconAsset.image = WalletManager.current?.registry.image(for: recipient?.assetId ?? "")
                 lblAssetName.text = getDenomination()
                 lblCurrency.text = getDenomination()
                 lblAvailableFunds.text = getBalance()
@@ -310,7 +310,7 @@ class RecipientCell: UITableViewCell {
     }
 
     func isBipAddress() -> Bool {
-        return WalletManager.current?.currentSession?.validBip21Uri(uri: addressTextView.text) ?? false
+        return wallet?.session?.validBip21Uri(uri: addressTextView.text) ?? false
     }
 
     @objc func triggerTextChange() {

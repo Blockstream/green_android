@@ -15,7 +15,7 @@ extension TwoFactorCall {
             return Guarantee().map(on: bgq) {
                 try self.getStatus()!
             }.then { json in
-                try self.resolving(json: json, connected: connected, session: (session ?? WalletManager.current?.currentSession)!).map { _ in json }
+                try self.resolving(json: json, connected: connected, session: (session ?? WalletManager.current?.prominentSession)!).map { _ in json }
             }.then(on: bgq) { json -> Promise<[String: Any]> in
                 guard let status = json["status"] as? String else { throw GaError.GenericError() }
                 if status == "done" {

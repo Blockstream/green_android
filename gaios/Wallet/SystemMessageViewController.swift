@@ -10,6 +10,7 @@ class SystemMessageViewController: UIViewController {
     @IBOutlet weak var cancelBtn: UIButton!
     @IBOutlet weak var confirmBtn: UIButton!
     var text: String?
+    var wallet: WalletItem!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,7 +51,7 @@ class SystemMessageViewController: UIViewController {
 
     @IBAction func confirmBtn(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap { WalletManager.current?.currentSession  }
+        Guarantee().compactMap { self.wallet.session  }
             .then(on: bgq) { $0.ackSystemMessage(message: self.text ?? "") }
             .done { _ in self.navigationController?.popViewController(animated: true) }
             .catch { _ in print("Error removing system message") }
