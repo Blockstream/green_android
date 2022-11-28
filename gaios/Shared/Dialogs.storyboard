@@ -22,6 +22,10 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h0A-Qd-ooD">
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="793"/>
                                         <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sNw-SD-2ti">
+                                                <rect key="frame" x="0.0" y="0.0" width="393" height="449.33333333333331"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OWz-mL-a0Z">
                                                 <rect key="frame" x="0.0" y="449.33333333333326" width="393" height="343.66666666666674"/>
                                                 <subviews>
@@ -40,7 +44,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="68.666666666666671"/>
                                                                 <subviews>
                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Npl-FG-bhB">
-                                                                        <rect key="frame" x="0.0" y="67.666666666666629" width="393" height="1"/>
+                                                                        <rect key="frame" x="0.0" y="67.666666666666657" width="393" height="1"/>
                                                                         <color key="backgroundColor" white="1" alpha="0.050000000000000003" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="height" constant="1" id="hiP-NP-Vvt"/>
@@ -101,8 +105,12 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstItem="OWz-mL-a0Z" firstAttribute="leading" secondItem="h0A-Qd-ooD" secondAttribute="leading" id="71U-0I-v6v"/>
+                                            <constraint firstAttribute="trailing" secondItem="sNw-SD-2ti" secondAttribute="trailing" id="AER-5e-ohu"/>
                                             <constraint firstAttribute="bottom" secondItem="OWz-mL-a0Z" secondAttribute="bottom" id="FQZ-Dx-ysQ"/>
+                                            <constraint firstItem="sNw-SD-2ti" firstAttribute="top" secondItem="h0A-Qd-ooD" secondAttribute="top" id="Ghg-Ch-T7T"/>
                                             <constraint firstAttribute="trailing" secondItem="OWz-mL-a0Z" secondAttribute="trailing" id="Rf3-SA-CaS"/>
+                                            <constraint firstItem="sNw-SD-2ti" firstAttribute="leading" secondItem="h0A-Qd-ooD" secondAttribute="leading" id="cyd-81-XPx"/>
+                                            <constraint firstItem="OWz-mL-a0Z" firstAttribute="top" secondItem="sNw-SD-2ti" secondAttribute="bottom" id="nky-vT-R2j"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -147,6 +155,7 @@
                         <outlet property="scrollView" destination="ILb-ZB-9NO" id="9OY-Tv-6yy"/>
                         <outlet property="tableHeight" destination="PiD-MR-sV2" id="DGv-2l-wgZ"/>
                         <outlet property="tableView" destination="rW2-Ix-rI1" id="gLS-EE-mZj"/>
+                        <outlet property="tappableBg" destination="sNw-SD-2ti" id="mqV-8l-pWA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VZC-eA-df0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

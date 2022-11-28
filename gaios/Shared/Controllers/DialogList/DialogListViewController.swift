@@ -7,6 +7,7 @@ protocol DialogListViewControllerDelegate: AnyObject {
 
 class DialogListViewController: UIViewController {
 
+    @IBOutlet weak var tappableBg: UIView!
     @IBOutlet weak var handle: UIView!
     @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var lblTitle: UILabel!
@@ -54,6 +55,8 @@ class DialogListViewController: UIViewController {
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
             swipeDown.direction = .down
             self.view.addGestureRecognizer(swipeDown)
+        let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
+            tappableBg.addGestureRecognizer(tapToClose)
     }
 
     @objc func didSwipe(gesture: UIGestureRecognizer) {
@@ -68,6 +71,11 @@ class DialogListViewController: UIViewController {
         }
     }
 
+    @objc func didTap(gesture: UIGestureRecognizer) {
+
+        dismiss(-1)
+    }
+
     func setContent() {
         lblTitle.text = viewModel?.title ?? ""
     }
@@ -75,6 +83,7 @@ class DialogListViewController: UIViewController {
     func setStyle() {
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        handle.cornerRadius = 1.5
     }
 
     override func viewDidAppear(_ animated: Bool) {
