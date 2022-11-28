@@ -250,6 +250,8 @@ class TransactionViewController: UIViewController {
                 vc.transaction = tx
                 vc.inputType = .bumpFee
                 vc.wallet = self?.wallet
+                vc.fixedWallet = true
+                vc.fixedAsset = true
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         }.catch { err in

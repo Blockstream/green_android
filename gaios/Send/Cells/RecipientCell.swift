@@ -49,6 +49,7 @@ class RecipientCell: UITableViewCell {
     var recipient: Recipient?
     var wallet: WalletItem?
     var inputType: InputType = .transaction
+    var walletItem: WalletItem?
 
     weak var delegate: RecipientCellDelegate?
     var index: Int?
@@ -61,27 +62,11 @@ class RecipientCell: UITableViewCell {
         return recipient?.isFiat ?? false
     }
 
-    var isLiquid: Bool {
-        get {
-            return AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
-        }
-    }
-
-    var network: String? {
-        get {
-            return AccountsManager.shared.current?.network
-        }
-    }
-
     private var asset: AssetInfo? {
         if let assetId = recipient?.assetId {
-            return WalletManager.current?.currentSession?.registry?.info(for: assetId)
+            return WalletManager.current?.registry.info(for: assetId)
         }
         return nil
-    }
-
-    private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {
@@ -113,6 +98,7 @@ class RecipientCell: UITableViewCell {
         self.amountTextField.delegate = self
         self.wallet = walletItem
         self.inputType = inputType
+        self.wallet = walletItem
 
         lblAddressError.isHidden = true
         lblAmountError.isHidden = true
@@ -311,7 +297,7 @@ class RecipientCell: UITableViewCell {
 
     func convertAmount() {
         if let assetId = recipient?.assetId,
-           assetId != btc {
+           assetId != wallet?.gdkNetwork.getFeeAsset() {
             return
         }
         let satoshi = getSatoshi() ?? 0
@@ -359,10 +345,8 @@ class RecipientCell: UITableViewCell {
     }
 
     @IBAction func btnChooseAsset(_ sender: Any) {
-        if isLiquid {
-            if let i = index {
-                delegate?.chooseAsset(i)
-            }
+        if let i = index {
+            delegate?.chooseAsset(i)
         }
     }
 

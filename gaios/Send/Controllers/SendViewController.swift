@@ -15,6 +15,8 @@ class SendViewController: KeyboardViewController {
     @IBOutlet weak var btnNext: UIButton!
 
     var wallet: WalletItem!
+    var fixedWallet: Bool = false
+    var fixedAsset: Bool = false
     var transaction: Transaction?
     var recipients: [Recipient] = []
     var inputType: InputType = .transaction
@@ -415,7 +417,7 @@ extension SendViewController: DialogRecipientDeleteViewControllerDelegate {
         reloadSections([SendSection.recipient], animated: true)
     }
 }
-
+/*
 extension SendViewController: AssetsListViewControllerDelegate {
     func didSelect(assetId: String, index: Int?) {
         if let index = index {
@@ -429,7 +431,7 @@ extension SendViewController: AssetsListViewControllerDelegate {
         }
     }
 }
-
+*/
 extension SendViewController: DialogQRCodeScanViewControllerDelegate {
     func didScan(value: String, index: Int?) {
         if let index = index {
@@ -475,12 +477,28 @@ extension SendViewController: RecipientCellDelegate {
     }
 
     func chooseAsset(_ index: Int) {
-        let storyboard = UIStoryboard(name: "Assets", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetsListViewController") as? AssetsListViewController {
-            vc.wallet = wallet
-            vc.index = index
-            vc.delegate = self
-            present(vc, animated: true, completion: nil)
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if fixedAsset {
+            return
+        } else if fixedWallet {
+            // from AccountViewController, show only assets selection
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
+                let assets = WalletManager.current?.registry.all.filter {
+                    wallet.type == .amp && $0.amp ?? false ||
+                    wallet.gdkNetwork.liquid && $0.assetId != AssetInfo.btc.assetId  ||
+                    !wallet.gdkNetwork.liquid && $0.assetId == AssetInfo.btc.assetId
+                }
+                vc.viewModel = AssetSelectViewModel(assets: assets ?? [])
+                vc.delegate = self
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        } else {
+            // show assets and account selection
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
+                vc.viewModel = AssetExpandableSelectViewModel()
+                vc.delegate = self
+                navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 
@@ -524,5 +542,33 @@ extension SendViewController: FeeEditCellDelegate {
     func updatePriority(_ priority: TransactionPriority) {
         transactionPriority = priority
         validateTransaction()
+    }
+}
+
+extension SendViewController: AssetSelectViewControllerDelegate {
+    func didSelectAnyAsset() {
+        let feeAsset = wallet.gdkNetwork.getFeeAsset()
+        selectAsset(assetId: feeAsset, index: nil)
+    }
+
+    func didSelectAsset(_ assetId: String) {
+        selectAsset(assetId: assetId, index: nil)
+    }
+
+    func selectAsset(assetId: String, index: Int?) {
+        let index = index ?? 0
+        transaction = nil
+        recipients[index].assetId = assetId
+        recipients[index].amount = nil
+        recipients[index].isFiat = false
+        recipients[index].isSendAll = false
+        reloadSections([SendSection.recipient], animated: false)
+        validateTransaction()
+    }
+}
+extension SendViewController: AssetExpandableSelectViewControllerDelegate {
+    func didSelectReceiver(assetId: String, account: WalletItem) {
+        wallet = account
+        selectAsset(assetId: assetId, index: nil)
     }
 }
