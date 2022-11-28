@@ -4,7 +4,7 @@ enum AlertCardType {
     case reset(Int)
     case dispute
     case reactivate
-    case systemMessage(String)
+    case systemMessage(SystemMessage)
     case fiatMissing
     case testnetNoValue
     case ephemeralWallet
@@ -21,8 +21,6 @@ class AlertCardCell: UITableViewCell {
     @IBOutlet weak var btnsContainer: UIView!
     @IBOutlet weak var iconWarn: UIImageView!
     @IBOutlet weak var btnDismiss: UIButton!
-
-    var type: AlertCardType?
 
     var onLeft:(() -> Void)?
     var onRight:(() -> Void)?
@@ -42,12 +40,11 @@ class AlertCardCell: UITableViewCell {
         btnLeft.isHidden = false
     }
 
-    func configure(_ type: AlertCardType,
+    func configure(_ model: AlertCardCellModel,
                    onLeft:(() -> Void)?,
                    onRight:(() -> Void)?,
                    onDismiss:(() -> Void)?
     ) {
-        self.type = type
         self.backgroundColor = UIColor.customTitaniumDark()
         bg.layer.cornerRadius = 6.0
 
@@ -59,7 +56,7 @@ class AlertCardCell: UITableViewCell {
         iconWarn.isHidden = true
         btnDismiss.isHidden = true
 
-        switch type {
+        switch model.type {
         case .reset(let resetDaysRemaining):
             lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
             lblHint.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), resetDaysRemaining)
@@ -75,10 +72,9 @@ class AlertCardCell: UITableViewCell {
             lblHint.text = "2FA protection on some of your funds has expired"
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.setTitle("Reactivate 2FA", for: .normal)
-        case .systemMessage(var text):
+        case .systemMessage(var system):
             lblTitle.text = NSLocalizedString("id_system_message", comment: "")
-            if text.count > 200 { text = text.prefix(200) + " ..." }
-            lblHint.text = text
+            lblHint.text = system.text.count > 200 ? system.text.prefix(200) + " ..." : system.text
             btnRight.setTitle(NSLocalizedString("id_accept", comment: ""), for: .normal)
             btnLeft.isHidden = true
         case .fiatMissing:

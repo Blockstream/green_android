@@ -338,7 +338,7 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.section {
         case SendSection.remoteAlerts.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
-                cell.configure(AlertCardType.remoteAlert(remoteAlert),
+                cell.configure(AlertCardCellModel(type: .remoteAlert(remoteAlert)),
                                    onLeft: nil,
                                    onRight: (remoteAlert.link ?? "" ).isEmpty ? nil : { () in
                     SafeNavigationManager.shared.navigate(remoteAlert.link)

@@ -386,6 +386,7 @@
 		81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C358291FDAF000B2196B /* DialogTableViewController.swift */; };
 		81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */; };
 		81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35C292041F800B2196B /* EnrichedAsset.swift */; };
+		81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */; };
 		81F72E0928904D3F00D4DEFF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F72E0828904D3F00D4DEFF /* Credentials.swift */; };
 		81F74BA52278857800A397C9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F74BA42278857800A397C9 /* Network.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
@@ -847,6 +848,7 @@
 		81E8C358291FDAF000B2196B /* DialogTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTableViewController.swift; sourceTree = "<group>"; };
 		81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveViewModel.swift; sourceTree = "<group>"; };
 		81E8C35C292041F800B2196B /* EnrichedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnrichedAsset.swift; sourceTree = "<group>"; };
+		81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlerCardCellModel.swift; sourceTree = "<group>"; };
 		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
@@ -1067,6 +1069,7 @@
 			children = (
 				34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */,
 				34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */,
+				81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */,
 			);
 			path = AlertCardCell;
 			sourceTree = "<group>";
@@ -2555,6 +2558,7 @@
 				816F0AF423E4713600569A5D /* UIViewController.swift in Sources */,
 				3423C6E927C39B38001D9E2C /* AccountCreatePublicKeyViewController.swift in Sources */,
 				8122D7292554848C003F2785 /* Promise.swift in Sources */,
+				81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */,
 				81DC54352885BD8400DC37C9 /* Balance.swift in Sources */,

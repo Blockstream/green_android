@@ -9,13 +9,12 @@ class SystemMessageViewController: UIViewController {
     @IBOutlet weak var acceptCheck: DesignableButton!
     @IBOutlet weak var cancelBtn: UIButton!
     @IBOutlet weak var confirmBtn: UIButton!
-    var text: String?
-    var wallet: WalletItem!
+    var msg: SystemMessage!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_system_message", comment: "")
-        textView.text = text
+        textView.text = msg.text
         acceptLabel.text = NSLocalizedString("id_i_confirm_i_have_read_and", comment: "")
         cancelBtn.setTitle(NSLocalizedString("id_later", comment: ""), for: .normal)
         confirmBtn.setTitle(NSLocalizedString("id_accept", comment: ""), for: .normal)
@@ -51,9 +50,10 @@ class SystemMessageViewController: UIViewController {
 
     @IBAction func confirmBtn(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap { self.wallet.session  }
-            .then(on: bgq) { $0.ackSystemMessage(message: self.text ?? "") }
+        let session = WalletManager.current?.sessions.filter { $0.key == msg.network }.values.first
+        Guarantee().compactMap { session }
+            .then(on: bgq) { $0.ackSystemMessage(message: self.msg.text) }
             .done { _ in self.navigationController?.popViewController(animated: true) }
-            .catch { _ in print("Error removing system message") }
+            .catch { _ in self.showError("Error removing system message") }
     }
 }

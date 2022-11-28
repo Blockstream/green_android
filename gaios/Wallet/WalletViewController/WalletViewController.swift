@@ -198,10 +198,10 @@ class WalletViewController: UIViewController {
     }
 
     // open system message view
-    func systemMessageScreen(text: String) {
+    func systemMessageScreen(msg: SystemMessage) {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SystemMessageViewController") as? SystemMessageViewController {
-            vc.text = text
+            vc.msg = msg
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -233,7 +233,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         case .account:
             return viewModel.accountCellModels.count
         case .card:
-            return viewModel.alertCards.count
+            return viewModel.alertCardCellModel.count
         case .transaction:
             return viewModel.txCellModels.count
         default:
@@ -273,10 +273,10 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .card:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
-                let alertCard = viewModel.alertCards[indexPath.row]
-                switch alertCard {
+                let alertCard = viewModel.alertCardCellModel[indexPath.row]
+                switch alertCard.type {
                 case .reset, .dispute, .reactivate:
-                    cell.configure(viewModel.alertCards[indexPath.row],
+                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: {[weak self] in
                         self?.performSegue(withIdentifier: "overviewReactivate2fa", sender: self)
                     },
@@ -284,30 +284,30 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                         self?.performSegue(withIdentifier: "overviewLeaarnMore2fa", sender: self)
                     },
                                    onDismiss: nil)
-                case .systemMessage(let text):
-                    cell.configure(viewModel.alertCards[indexPath.row],
+                case .systemMessage(let msg):
+                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: nil,
                                    onRight: {[weak self] in
-                        self?.systemMessageScreen(text: text)
+                        self?.systemMessageScreen(msg: msg)
                     },
                                    onDismiss: nil)
                 case .fiatMissing:
-                    cell.configure(viewModel.alertCards[indexPath.row],
+                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: nil,
                                    onRight: nil,
                                    onDismiss: nil)
                 case .testnetNoValue:
-                    cell.configure(viewModel.alertCards[indexPath.row],
+                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: nil,
                                    onRight: nil,
                                    onDismiss: nil)
                 case .ephemeralWallet:
-                    cell.configure(viewModel.alertCards[indexPath.row],
+                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: nil,
                                    onRight: nil,
                                    onDismiss: nil)
                 case .remoteAlert:
-                    cell.configure(viewModel.alertCards[indexPath.row],
+                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: nil,
                                    onRight: (viewModel.remoteAlert?.link ?? "" ).isEmpty ? nil : {[weak self] in
                         if let url = URL(string: self?.viewModel.remoteAlert?.link ?? "") {

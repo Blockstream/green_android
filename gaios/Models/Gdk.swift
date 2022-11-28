@@ -8,3 +8,13 @@ struct WalletIdentifier: Codable {
     let walletHashId: String
     let xpubHashId: String
 }
+
+
+struct SystemMessage: Codable {
+    enum CodingKeys: String, CodingKey {
+        case text
+        case network
+    }
+    let text: String
+    let network: String
+}

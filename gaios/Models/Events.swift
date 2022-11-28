@@ -13,10 +13,6 @@ struct TransactionEvent: Codable {
     let satoshi: UInt64
 }
 
-struct SystemMessage: Codable {
-    let text: String
-}
-
 protocol EventProtocol {
     func title() -> String
     func description(wallets: [WalletItem], twoFactorConfig: TwoFactorConfig?) -> String

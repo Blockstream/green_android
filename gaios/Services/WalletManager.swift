@@ -169,9 +169,18 @@ class WalletManager {
             .compactMap { self.loadRegistry() }
     }
 
+    func loadSystemMessages() -> Promise<[SystemMessage]> {
+        let promises: [Promise<SystemMessage>] = self.activeSessions.values
+            .compactMap { session in
+                let text = try? session.session?.getSystemMessage()
+                return SystemMessage(text: text ?? "", network: session.gdkNetwork.network)
+            }.compactMap { res in Promise() { seal in seal.fulfill(res)} }
+        return when(fulfilled: promises)
+    }
+
     func loadRegistry() {
         let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
-        let liquidSessions = sessions.filter { liquidNetworks.map { $0.rawValue }.contains($0.key) } ?? []
+        let liquidSessions = sessions.filter { liquidNetworks.map { $0.rawValue }.contains($0.key) }
         if let session = liquidSessions.filter({ $0.value.logged }).first?.value {
             return registry.loadAsync(session: session)
         } else if let session = liquidSessions.filter({ $0.value.connected }).first?.value {

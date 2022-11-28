@@ -41,7 +41,7 @@ class WalletViewModel {
             reloadSections?([WalletSection.balance], false)
         }
     }
-    var alertCards = [AlertCardType]() {
+    var alertCardCellModel = [AlertCardCellModel]() {
         didSet {
             reloadSections?([WalletSection.card], false)
         }
@@ -106,45 +106,47 @@ class WalletViewModel {
 
     func reloadAlertCards() {
         var cards: [AlertCardType] = []
-//        if session?.isResetActive ?? false {
-//            // Wallet in reset status
-//            if session?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
-//                cards.append(AlertCardType.dispute)
-//            } else {
-//                let resetDaysRemaining = session?.twoFactorConfig?.twofactorReset.daysRemaining
-//                cards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
-//            }
-//        }
-//        if account?.isEphemeral == true {
-//            // Bip39 ephemeral wallet
-//            cards.append(AlertCardType.ephemeralWallet)
-//        }
+        wm.sessions.values.forEach {
+            if $0.logged && $0.isResetActive ?? false {
+                if $0.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
+                    cards.append(AlertCardType.dispute)
+                } else {
+                    let resetDaysRemaining = session?.twoFactorConfig?.twofactorReset.daysRemaining
+                    cards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
+                }
+            }
+            if AccountsManager.shared.current?.isEphemeral ?? false {
+                // Bip39 ephemeral wallet
+                cards.append(AlertCardType.ephemeralWallet)
+            }
+        }
         if session?.gdkNetwork.mainnet == false {
             // Testnet wallet
             cards.append(AlertCardType.testnetNoValue)
         }
-//        if Balance.fromSatoshi(0)?.toFiat().0 == "n/a" {
-//            // Price provider not available
-//            cards.append(AlertCardType.fiatMissing)
-//        }
+        if Balance.fromSatoshi(0)?.toFiat().0 == "n/a" {
+            // Price provider not available
+            cards.append(AlertCardType.fiatMissing)
+        }
         /// countly alerts
         if let remoteAlert = remoteAlert {
             cards.append(AlertCardType.remoteAlert(remoteAlert))
         }
 
         /// load system messages
-        if let session = session {
-            let bgq = DispatchQueue.global(qos: .background)
-            Guarantee().then(on: bgq) {
-                session.loadSystemMessage()
-            }.done { text in
-                if let text = text, !text.isEmpty {
-                    cards.append(AlertCardType.systemMessage(text))
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee()
+            .then(on: bgq) { self.wm.loadSystemMessages() }
+            .done { (messages: [SystemMessage]) in
+                messages.forEach { msg in
+                    if !msg.text.isEmpty {
+                        cards.append(AlertCardType.systemMessage(msg))
+                    }
                 }
-                self.alertCards = cards
+                self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
             }.catch { err in
+                self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
                 print(err.localizedDescription)
             }
-        }
     }
 }

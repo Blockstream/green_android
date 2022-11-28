@@ -134,7 +134,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
         case HomeSection.remoteAlerts.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
-                cell.configure(AlertCardType.remoteAlert(remoteAlert),
+                cell.configure(AlertCardCellModel(type: .remoteAlert(remoteAlert)),
                                onLeft: nil,
                                onRight: (remoteAlert.link ?? "" ).isEmpty ? nil : {[weak self] in
                     self?.remoteAlertLink() // to solve cylomatic complexity
