@@ -88,7 +88,7 @@ cat > "${DEST}/manifest.plist" <<EOL
             <key>metadata</key>
             <dict>
                 <key>bundle-identifier</key>
-                <string>io.blockstream.green</string>
+                <string>io.blockstream.greendev</string>
                 <key>bundle-version</key>
                 <string>${LAST_TAG}</string>
                 <key>kind</key>

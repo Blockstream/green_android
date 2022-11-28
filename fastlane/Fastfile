@@ -23,8 +23,8 @@ platform :ios do
     )
   end
 
-  desc "Build signed adhoc release"
-  lane :build_signed_adhoc_release do
+  desc "Build dev release"
+  lane :build_dev_release do
     cocoapods()
     build_ios_app(
       configuration: "Staging",

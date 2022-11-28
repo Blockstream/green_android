@@ -25,8 +25,8 @@ Build unsigned debug
 ```
 fastlane ios build_signed_adhoc_release
 ```
-Build signed adhoc release
-### ios build_signed_prod_release
+Build dev release
+### ios build_dev_release
 ```
 fastlane ios build_signed_prod_release
 ```

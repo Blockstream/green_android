@@ -25,7 +25,7 @@ build_unsigned_debug:
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_unsigned_debug
 
-build_signed_adhoc_release:
+build_dev_release:
   stage: build
   tags:
     - fastosx
@@ -44,7 +44,7 @@ build_signed_adhoc_release:
     - echo $COUNTLY_APP_KEY
     - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
-    - fastlane build_signed_adhoc_release
+    - fastlane build_dev_release
     - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
     - ./Pods/Countly/countly_dsym_uploader.sh $COUNTLY_APP_HOST $COUNTLY_APP_KEY ./tmp/gaios.app.dSYM
     - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
@@ -105,4 +105,4 @@ cp_gcloud:
     - gsutil cp -r $CI_PROJECT_DIR/dev gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
     - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
   dependencies:
-    - build_signed_adhoc_release
+    - build_dev_release

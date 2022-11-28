@@ -2471,7 +2471,7 @@
 					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(GA_APP_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
@@ -2513,7 +2513,7 @@
 					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(GA_APP_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
@@ -2679,7 +2679,7 @@
 					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(GA_APP_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
