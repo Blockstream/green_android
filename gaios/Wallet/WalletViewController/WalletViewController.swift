@@ -2,9 +2,9 @@ import UIKit
 import PromiseKit
 
 enum WalletSection: Int, CaseIterable {
+    case card
     case balance
     case account
-    case card
     case transaction
     case footer
 }
