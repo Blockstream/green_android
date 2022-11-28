@@ -4,6 +4,7 @@ import PromiseKit
 enum WalletSection: Int, CaseIterable {
     case balance
     case account
+    case card
     case transaction
     case footer
 }
@@ -52,7 +53,7 @@ class WalletViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ["AccountCell", "BalanceCell", "TransactionCell" ].forEach {
+        ["AccountCell", "BalanceCell", "TransactionCell", "AlertCardCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         let reloadSections: (([WalletSection], Bool) -> Void)? = { [weak self] (sections, animated) in
@@ -68,6 +69,7 @@ class WalletViewController: UIViewController {
         super.viewWillAppear(animated)
         if userWillLogout == true { return }
         viewModel.loadSubaccounts()
+        viewModel.reloadAlertCards()
     }
 
     func reloadSections(_ sections: [WalletSection], animated: Bool) {
@@ -189,6 +191,21 @@ class WalletViewController: UIViewController {
         }
     }
 
+    // dismiss remote alert
+    func remoteAlertDismiss() {
+        viewModel.remoteAlert = nil
+        viewModel.reloadAlertCards()
+    }
+
+    // open system message view
+    func systemMessageScreen(text: String) {
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SystemMessageViewController") as? SystemMessageViewController {
+            vc.text = text
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -214,9 +231,9 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         case .balance:
             return viewModel.balanceCellModel == nil ? 0 : 1
         case .account:
-//            let num = viewModel.accountCellModels.count
-            return viewModel.accountCellModels.count //showAll ? num : ( num == 0 ? 0 : 1)
-//            return showAll ? viewModel.accountCellModels.count : 1
+            return viewModel.accountCellModels.count
+        case .card:
+            return viewModel.alertCards.count
         case .transaction:
             return viewModel.txCellModels.count
         default:
@@ -251,6 +268,56 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                     self?.accountDetail(model: self?.viewModel.accountCellModels[indexPath.row])
                 }, onCopy: nil
                 )
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .card:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
+                let alertCard = viewModel.alertCards[indexPath.row]
+                switch alertCard {
+                case .reset, .dispute, .reactivate:
+                    cell.configure(viewModel.alertCards[indexPath.row],
+                                   onLeft: {[weak self] in
+                        self?.performSegue(withIdentifier: "overviewReactivate2fa", sender: self)
+                    },
+                                   onRight: {[weak self] in
+                        self?.performSegue(withIdentifier: "overviewLeaarnMore2fa", sender: self)
+                    },
+                                   onDismiss: nil)
+                case .systemMessage(let text):
+                    cell.configure(viewModel.alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: {[weak self] in
+                        self?.systemMessageScreen(text: text)
+                    },
+                                   onDismiss: nil)
+                case .fiatMissing:
+                    cell.configure(viewModel.alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .testnetNoValue:
+                    cell.configure(viewModel.alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .ephemeralWallet:
+                    cell.configure(viewModel.alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
+                case .remoteAlert:
+                    cell.configure(viewModel.alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: (viewModel.remoteAlert?.link ?? "" ).isEmpty ? nil : {[weak self] in
+                        if let url = URL(string: self?.viewModel.remoteAlert?.link ?? "") {
+                            UIApplication.shared.open(url)
+                        }
+                    },
+                                   onDismiss: {[weak self] in
+                        self?.remoteAlertDismiss()
+                    })
+                }
                 cell.selectionStyle = .none
                 return cell
             }

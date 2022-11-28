@@ -1062,6 +1062,15 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		342F98082934F45A005876A8 /* AlertCardCell */ = {
+			isa = PBXGroup;
+			children = (
+				34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */,
+				34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */,
+			);
+			path = AlertCardCell;
+			sourceTree = "<group>";
+		};
 		343476642682298B00D7AD43 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
@@ -1182,6 +1191,7 @@
 		34475536290A5B3700B9C1AF /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				342F98082934F45A005876A8 /* AlertCardCell */,
 				34F980AB29151C1400C12D48 /* TransactionCell */,
 				3488FC67290AE25200122628 /* BalanceCell */,
 				3488FC66290AE23F00122628 /* AccountCell */,
@@ -1954,7 +1964,6 @@
 				3447553129098D7000B9C1AF /* WalletViewController */,
 				81ACC4B0227337F3004B1E92 /* Wallet.storyboard */,
 				81A3B5442244B2790091B6BC /* Views */,
-				81A3B5432244B23F0091B6BC /* TableViewCells */,
 				81FE672423EB1D22001B2E48 /* ContainerViewController.swift */,
 				3403BDAB2630282600118C64 /* Learn2faViewController.swift */,
 				34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */,
@@ -2003,15 +2012,6 @@
 				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
 			);
 			path = AuthenticationFactors;
-			sourceTree = "<group>";
-		};
-		81A3B5432244B23F0091B6BC /* TableViewCells */ = {
-			isa = PBXGroup;
-			children = (
-				34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */,
-				34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */,
-			);
-			path = TableViewCells;
 			sourceTree = "<group>";
 		};
 		81A3B5442244B2790091B6BC /* Views */ = {

@@ -6,6 +6,10 @@ class WalletViewModel {
 
     var wm: WalletManager { WalletManager.current! }
 
+    var session: SessionManager? {
+        return wm.prominentSession
+    }
+
     var isTxLoading = true // on init is always true
 
     /// load visible subaccounts
@@ -37,8 +41,18 @@ class WalletViewModel {
             reloadSections?([WalletSection.balance], false)
         }
     }
+    var alertCards = [AlertCardType]() {
+        didSet {
+            reloadSections?([WalletSection.card], false)
+        }
+    }
     var walletAssetCellModels: [WalletAssetCellModel] {
         return cachedBalance.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
+    }
+    var remoteAlert: RemoteAlert?
+
+    init() {
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountsManager.shared.current?.networkName)
     }
 
     func loadSubaccounts() {
@@ -88,5 +102,49 @@ class WalletViewModel {
             }.catch { err in
                 print(err)
             }
+    }
+
+    func reloadAlertCards() {
+        var cards: [AlertCardType] = []
+//        if session?.isResetActive ?? false {
+//            // Wallet in reset status
+//            if session?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
+//                cards.append(AlertCardType.dispute)
+//            } else {
+//                let resetDaysRemaining = session?.twoFactorConfig?.twofactorReset.daysRemaining
+//                cards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
+//            }
+//        }
+//        if account?.isEphemeral == true {
+//            // Bip39 ephemeral wallet
+//            cards.append(AlertCardType.ephemeralWallet)
+//        }
+        if session?.gdkNetwork.mainnet == false {
+            // Testnet wallet
+            cards.append(AlertCardType.testnetNoValue)
+        }
+//        if Balance.fromSatoshi(0)?.toFiat().0 == "n/a" {
+//            // Price provider not available
+//            cards.append(AlertCardType.fiatMissing)
+//        }
+        /// countly alerts
+        if let remoteAlert = remoteAlert {
+            cards.append(AlertCardType.remoteAlert(remoteAlert))
+        }
+
+        /// load system messages
+        if let session = session {
+            let bgq = DispatchQueue.global(qos: .background)
+            Guarantee().then(on: bgq) {
+                session.loadSystemMessage()
+            }.done { text in
+                if let text = text, !text.isEmpty {
+                    cards.append(AlertCardType.systemMessage(text))
+                }
+                self.alertCards = cards
+            }.catch { err in
+                print(err.localizedDescription)
+            }
+        }
     }
 }
