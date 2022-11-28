@@ -24,6 +24,7 @@ class WatchOnlyViewController: KeyboardViewController {
 
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
+    private var networks = [NetworkSecurityCase]()
 
     var network: AvailableNetworks?
     var watchOnlySecurityOption: SecurityOption = .multi
@@ -138,19 +139,34 @@ class WatchOnlyViewController: KeyboardViewController {
         })
     }
 
+    func selectNetwork() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            let testnet = LandingViewController.chainType == .testnet
+            networks = testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS]
+            let cells = networks.map { DialogListCellModel(title: $0.chain) }
+            vc.viewModel = DialogListViewModel(title: "Select Network", items: cells)
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @objc func click(_ sender: Any) {
-        guard let network = network else { return } //testnetSwitch.isOn ? "testnet" : "mainnet"
+        selectNetwork()
+    }
+
+    func login(for network: GdkNetwork) {
         let username = self.usernameTextField.text ?? ""
         let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
-        let gdknetwork = getGdkNetwork(network.rawValue)
 
         let name = AccountsManager.shared.getUniqueAccountName(
-            testnet: !gdknetwork.mainnet,
+            testnet: !network.mainnet,
             watchonly: true)
 
-        var account = Account(name: name, network: network.rawValue, username: username, isSingleSig: false)
+        var account = Account(name: name, network: network.network, username: username, isSingleSig: network.electrum)
         if self.rememberSwitch.isOn {
             account.password = password
         }
@@ -197,5 +213,11 @@ extension WatchOnlyViewController: WalletSettingsViewControllerDelegate {
     }
     func didSet(testnet: Bool) {
         // cardTestnet.isHidden = !testnet
+    }
+}
+
+extension WatchOnlyViewController: DialogListViewControllerDelegate {
+    func didSelectRowAtIndex(_ index: Int) {
+        login(for: getGdkNetwork(networks[index].rawValue))
     }
 }

@@ -271,8 +271,9 @@ class SessionManager {
                 self.session?.logged = true
                 let result = res["result"] as? [String: Any]
                 let hash = result?["wallet_hash_id"] as? String
-                if !self.gdkNetwork.electrum {
-                    return self.loadTwoFactorConfig().map { _ in hash }
+                let watchonly = details.keys.contains("username")
+                if !self.gdkNetwork.electrum && !watchonly {
+                    return self.loadTwoFactorConfig().asVoid().recover {_ in }.map { _ in hash }
                 }
                 return Promise().asVoid().map { hash }
             }.compactMap { $0 }
@@ -320,6 +321,7 @@ class SessionManager {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .then(on: bgq) { self.loginUser(details: ["username": username, "password": password]) }
+            .then(on: bgq) { res in self.subaccounts().compactMap { _ in res } }
     }
 
     func loginWithHW(_ hwDevice: HWDevice) -> Promise<String> {

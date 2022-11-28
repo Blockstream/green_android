@@ -148,7 +148,7 @@ class LandingViewController: UIViewController {
             let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController")
             navigationController?.pushViewController(vc, animated: true)
         case .watchonly:
-            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
+            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
             navigationController?.pushViewController(vc, animated: true)
         }
     }

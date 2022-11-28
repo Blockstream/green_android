@@ -95,10 +95,7 @@ class WalletManager {
         guard let mainSession = sessions[prominentNetwork.rawValue] else {
             fatalError()
         }
-        return Guarantee()
-            .then { mainSession.loginWatchOnly(username, password).asVoid() }
-            .compactMap { Credentials(username: username, password: password) }
-            .then { self.login($0) }
+        return mainSession.loginWatchOnly(username, password).asVoid()
     }
 
     func login(_ credentials: Credentials) -> Promise<Void> {
