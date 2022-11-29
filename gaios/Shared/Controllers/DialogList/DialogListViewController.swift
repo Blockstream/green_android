@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 protocol DialogListViewControllerDelegate: AnyObject {
-    func didSelectDialogIndex(_ index: Int, for sender: Int)
+    func didSelectIndex(_ index: Int, with type: DialogType)
 }
 
 class DialogListViewController: UIViewController {
@@ -106,7 +106,7 @@ class DialogListViewController: UIViewController {
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             if index > -1 {
-                self.delegate?.didSelectDialogIndex(index, for: vm.sender)
+                self.delegate?.didSelectIndex(index, with: vm.type)
             }
         })
     }

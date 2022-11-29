@@ -97,7 +97,7 @@ class AccountViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Account Preferences", items: AccountPrefs.getItems(), sender: 0)
+            vc.viewModel = DialogListViewModel(title: "Account Preferences", type: .accountPrefs, items: AccountPrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -355,7 +355,7 @@ extension AccountViewController {
 }
 
 extension AccountViewController: DialogListViewControllerDelegate {
-    func didSelectDialogIndex(_ index: Int, for sender: Int) {
+    func didSelectIndex(_ index: Int, with type: DialogType) {
         switch AccountPrefs(rawValue: index) {
         case .rename:
             rename()

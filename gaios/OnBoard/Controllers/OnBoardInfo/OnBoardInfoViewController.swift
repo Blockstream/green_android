@@ -67,7 +67,7 @@ class OnBoardInfoViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: NSLocalizedString("id_new_recovery_phrase", comment: ""), items: PhrasePrefs.getItems(), sender: 0)
+            vc.viewModel = DialogListViewModel(title: NSLocalizedString("id_new_recovery_phrase", comment: ""), type: .phrasePrefs, items: PhrasePrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -202,7 +202,7 @@ extension OnBoardInfoViewController {
 }
 
 extension OnBoardInfoViewController: DialogListViewControllerDelegate {
-    func didSelectDialogIndex(_ index: Int, for sender: Int) {
+    func didSelectIndex(_ index: Int, with type: DialogType) {
         switch PhrasePrefs(rawValue: index) {
         case ._12:
             next(._12)

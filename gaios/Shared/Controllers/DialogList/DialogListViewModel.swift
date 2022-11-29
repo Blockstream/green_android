@@ -1,6 +1,15 @@
 import Foundation
 import UIKit
 
+enum DialogType: CaseIterable {
+    case walletPrefs
+    case phrasePrefs
+    case accountPrefs
+    case networkPrefs
+    case enable2faPrefs
+    case watchOnlyPrefs
+}
+
 enum DialogCellType: CaseIterable {
     case list
     case enable2fa
@@ -14,11 +23,11 @@ class DialogListViewModel {
 
     var title: String
     var items: [DialogCellModel] = []
-    var sender: Int
+    var type: DialogType
 
-    init(title: String, items: [DialogCellModel], sender: Int) {
+    init(title: String, type: DialogType, items: [DialogCellModel] ) {
         self.title = title
         self.items = items
-        self.sender = sender
+        self.type = type
     }
 }

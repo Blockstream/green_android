@@ -139,7 +139,7 @@ class WalletViewController: UIViewController {
 //        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
 //        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
 //            vc.delegate = self
-//            vc.viewModel = DialogListViewModel(title: "Enable 2FA", items: Enable2faPrefs.getItems(), sender: 1)
+//            vc.viewModel = DialogListViewModel(title: "Enable 2FA", type: .enable2faPrefs, items: Enable2faPrefs.getItems())
 //            vc.modalPresentationStyle = .overFullScreen
 //            present(vc, animated: false, completion: nil)
 //        }
@@ -147,7 +147,7 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Wallet Preferences", items: WalletPrefs.getItems(), sender: 0)
+            vc.viewModel = DialogListViewModel(title: "Wallet Preferences", type: .walletPrefs, items: WalletPrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -621,10 +621,9 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 }
 
 extension WalletViewController: DialogListViewControllerDelegate {
-    func didSelectDialogIndex(_ index: Int, for sender: Int) {
-
-        switch sender {
-        case 0:
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch type {
+        case .walletPrefs:
             switch WalletPrefs(rawValue: index) {
             case .settings:
                 let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
@@ -646,7 +645,7 @@ extension WalletViewController: DialogListViewControllerDelegate {
             case .none:
                 break
             }
-        case 1:
+        case .enable2faPrefs:
             switch Enable2faPrefs(rawValue: index) {
             case .add:
                 print("handle action here")
