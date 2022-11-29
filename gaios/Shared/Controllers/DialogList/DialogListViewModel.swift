@@ -14,9 +14,11 @@ class DialogListViewModel {
 
     var title: String
     var items: [DialogCellModel] = []
+    var sender: Int
 
-    init(title: String, items: [DialogCellModel]) {
+    init(title: String, items: [DialogCellModel], sender: Int) {
         self.title = title
         self.items = items
+        self.sender = sender
     }
 }

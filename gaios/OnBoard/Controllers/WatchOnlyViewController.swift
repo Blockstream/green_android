@@ -147,7 +147,7 @@ class WatchOnlyViewController: KeyboardViewController {
             let cells = networks.map { DialogListCellModel(type: .list,
                                                            icon: nil,
                                                            title: $0.chain) }
-            vc.viewModel = DialogListViewModel(title: "Select Network", items: cells)
+            vc.viewModel = DialogListViewModel(title: "Select Network", items: cells, sender: 0)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
@@ -219,7 +219,7 @@ extension WatchOnlyViewController: WalletSettingsViewControllerDelegate {
 }
 
 extension WatchOnlyViewController: DialogListViewControllerDelegate {
-    func didSelectRowAtIndex(_ index: Int) {
+    func didSelectDialogIndex(_ index: Int, for sender: Int) {
         login(for: getGdkNetwork(networks[index].rawValue))
     }
 }

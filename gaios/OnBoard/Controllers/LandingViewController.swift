@@ -132,7 +132,7 @@ class LandingViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Select Network", items: NetworkPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: "Select Network", items: NetworkPrefs.getItems(), sender: 0)
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -190,7 +190,7 @@ extension LandingViewController: DialogCountlyConsentViewControllerDelegate {
 }
 
 extension LandingViewController: DialogListViewControllerDelegate {
-    func didSelectRowAtIndex(_ index: Int) {
+    func didSelectDialogIndex(_ index: Int, for sender: Int) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:
             LandingViewController.chainType = .mainnet

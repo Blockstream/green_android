@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 protocol DialogListViewControllerDelegate: AnyObject {
-    func didSelectRowAtIndex(_ index: Int)
+    func didSelectDialogIndex(_ index: Int, for sender: Int)
 }
 
 class DialogListViewController: UIViewController {
@@ -98,7 +98,7 @@ class DialogListViewController: UIViewController {
     }
 
     func dismiss(_ index: Int) {
-
+        guard let vm = viewModel else { return }
         anchorBottom.constant = -200
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
@@ -106,7 +106,7 @@ class DialogListViewController: UIViewController {
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             if index > -1 {
-                self.delegate?.didSelectRowAtIndex(index)
+                self.delegate?.didSelectDialogIndex(index, for: vm.sender)
             }
         })
     }

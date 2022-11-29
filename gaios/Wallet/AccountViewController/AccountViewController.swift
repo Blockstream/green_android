@@ -97,7 +97,7 @@ class AccountViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Account Preferences", items: AccountPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: "Account Preferences", items: AccountPrefs.getItems(), sender: 0)
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -180,7 +180,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell {
                 let model = viewModel.accountCellModels[indexPath.row]
 
-                var onCopy: (() -> Void)? = {
+                let onCopy: (() -> Void)? = {
                     UIPasteboard.general.string = model.account.receivingId
                     DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
                 }
@@ -355,7 +355,7 @@ extension AccountViewController {
 }
 
 extension AccountViewController: DialogListViewControllerDelegate {
-    func didSelectRowAtIndex(_ index: Int) {
+    func didSelectDialogIndex(_ index: Int, for sender: Int) {
         switch AccountPrefs(rawValue: index) {
         case .rename:
             rename()

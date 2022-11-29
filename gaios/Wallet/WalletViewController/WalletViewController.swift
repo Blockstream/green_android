@@ -139,7 +139,7 @@ class WalletViewController: UIViewController {
 //        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
 //        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
 //            vc.delegate = self
-//            vc.viewModel = DialogListViewModel(title: "Enable 2FA", items: Enable2faPrefs.getItems())
+//            vc.viewModel = DialogListViewModel(title: "Enable 2FA", items: Enable2faPrefs.getItems(), sender: 1)
 //            vc.modalPresentationStyle = .overFullScreen
 //            present(vc, animated: false, completion: nil)
 //        }
@@ -147,7 +147,7 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Wallet Preferences", items: WalletPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: "Wallet Preferences", items: WalletPrefs.getItems(), sender: 0)
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -621,26 +621,39 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 }
 
 extension WalletViewController: DialogListViewControllerDelegate {
-    func didSelectRowAtIndex(_ index: Int) {
-        switch WalletPrefs(rawValue: index) {
-        case .settings:
-            let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-            let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
-            if let nvc = nvc as? UINavigationController {
-                if let vc = nvc.viewControllers.first as? UserSettingsViewController {
-                    vc.delegate = self
-                    nvc.modalPresentationStyle = .fullScreen
-                    present(nvc, animated: true, completion: nil)
+    func didSelectDialogIndex(_ index: Int, for sender: Int) {
+
+        switch sender {
+        case 0:
+            switch WalletPrefs(rawValue: index) {
+            case .settings:
+                let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+                let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
+                if let nvc = nvc as? UINavigationController {
+                    if let vc = nvc.viewControllers.first as? UserSettingsViewController {
+                        vc.delegate = self
+                        nvc.modalPresentationStyle = .fullScreen
+                        present(nvc, animated: true, completion: nil)
+                    }
                 }
+            case .createAccount:
+                createAccount()
+    //        case .ArchivedAccounts:
+    //            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+    //            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
+    //                navigationController?.pushViewController(vc, animated: true)
+    //            }
+            case .none:
+                break
             }
-        case .createAccount:
-            createAccount()
-//        case .ArchivedAccounts:
-//            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
-//                navigationController?.pushViewController(vc, animated: true)
-//            }
-        case .none:
+        case 1:
+            switch Enable2faPrefs(rawValue: index) {
+            case .add:
+                print("handle action here")
+            default:
+                break
+            }
+        default:
             break
         }
     }
