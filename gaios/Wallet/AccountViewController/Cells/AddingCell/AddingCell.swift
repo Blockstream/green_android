@@ -5,8 +5,6 @@ class AddingCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblTitle: UILabel!
 
-    var onTap: (() -> Void)?
-
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
@@ -14,13 +12,11 @@ class AddingCell: UITableViewCell {
         bg.cornerRadius = 5.0
     }
 
-    func configure(model: AddingCellModel,
-                   onTap: (() -> Void)? = nil) {
-        self.lblTitle.attributedText = model.title
-        self.onTap = onTap
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
     }
 
-    @IBAction func onTap(_ sender: Any) {
-        onTap?()
+    func configure(model: AddingCellModel) {
+        self.lblTitle.attributedText = model.title
     }
 }

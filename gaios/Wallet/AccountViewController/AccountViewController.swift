@@ -101,6 +101,16 @@ class AccountViewController: UIViewController {
         }
     }
 
+    func twoFactorAuthenticatorDialog() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Enable 2FA", type: .enable2faPrefs, items: Enable2faPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     // open send flow
     func sendfromWallet() {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
@@ -281,24 +291,13 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         return nil
     }
 
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        switch AccountSection(rawValue: indexPath.section) {
-        case .transaction:
-            return indexPath
-        default:
-            return nil
-        }
-    }
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         switch AccountSection(rawValue: indexPath.section) {
         case .account:
-            sIdx = indexPath.row
-            tableView.beginUpdates()
-            tableView.endUpdates()
-        case .adding:
             break
+        case .adding:
+            twoFactorAuthenticatorDialog()
         case .disclose:
             if let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-") {
                 UIApplication.shared.open(url)
@@ -368,14 +367,40 @@ extension AccountViewController {
 
 extension AccountViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
-        switch AccountPrefs(rawValue: index) {
-        case .rename:
-            renameDialog()
-        case .archive:
-            archive()
-        case .enhanceSecurity:
-            break
-        case .none:
+        switch type {
+        case .accountPrefs:
+            switch AccountPrefs(rawValue: index) {
+            case .rename:
+                renameDialog()
+            case .archive:
+                archive()
+            //case .enhanceSecurity:
+            //    twoFactorAuthenticatorDialog()
+            case .none:
+                break
+            }
+        case .enable2faPrefs:
+            switch Enable2faPrefs(rawValue: index) {
+            case .add:
+                let session = viewModel.account.session
+                let enabled2FA = session?.twoFactorConfig?.anyEnabled ?? false
+                let isSS = session?.gdkNetwork.electrum ?? false
+                if isSS {
+                    showError("Two factor authentication is not availabled for singlesig account")
+                    return
+                } else if enabled2FA {
+                    showError("Two factor authentication is just enabled")
+                    return
+                }
+                let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "MultisigSettingsViewController") as? MultisigSettingsViewController {
+                    vc.session = viewModel.account.session
+                    navigationController?.pushViewController(vc, animated: true)
+                }
+            default:
+                break
+            }
+        default:
             break
         }
     }

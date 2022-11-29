@@ -3,7 +3,7 @@ import UIKit
 enum AccountPrefs: Int, CaseIterable {
     case rename = 0
     case archive = 1
-    case enhanceSecurity = 2
+    //case enhanceSecurity = 2
 
     var name: String {
         switch self {
@@ -11,8 +11,8 @@ enum AccountPrefs: Int, CaseIterable {
             return "Rename"
         case .archive:
             return "Archive"
-        case .enhanceSecurity:
-            return "Enhance Security"
+        //case .enhanceSecurity:
+        //    return "Enhance Security"
         }
     }
 
@@ -22,8 +22,8 @@ enum AccountPrefs: Int, CaseIterable {
             return UIImage(named: "ic_dialog_text_Aa")!
         case .archive:
             return UIImage(named: "ic_dialog_arrow_down")!
-        case .enhanceSecurity:
-            return UIImage(named: "ic_shield_check")!
+        //case .enhanceSecurity:
+        //    return UIImage(named: "ic_shield_check")!
         }
     }
 

@@ -37,9 +37,6 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="twX-ig-iAV">
                                 <rect key="frame" x="0.0" y="0.0" width="304" height="40"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <connections>
-                                    <action selector="onTap:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="6XY-bj-mlQ"/>
-                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.71372549019999998" blue="0.43529411759999997" alpha="0.19971804509999999" colorSpace="custom" customColorSpace="sRGB"/>

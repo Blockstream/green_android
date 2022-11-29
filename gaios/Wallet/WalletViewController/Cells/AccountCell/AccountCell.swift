@@ -10,7 +10,6 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var btnSelect: UIButton!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnWarn: UIButton!
-
     @IBOutlet weak var imgMS: UIImageView!
     @IBOutlet weak var imgSS: UIImageView!
     @IBOutlet weak var lblType: UILabel!
@@ -50,7 +49,6 @@ class AccountCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
         select(selected)
     }
 
@@ -74,7 +72,7 @@ class AccountCell: UITableViewCell {
         imgMS.isHidden = model.isSS
         let session = model.account.session
         let enabled2FA = session?.twoFactorConfig?.anyEnabled ?? false
-        btnWarn.isHidden = model.isSS || enabled2FA
+        btnWarn.isHidden = onSelect == nil || model.isSS || enabled2FA
         btcImg.isHidden = model.isLiquid
         model.isTest ? (cColor = model.isLiquid ? UIColor.gAccountTestLightBlue() : UIColor.gAccountTestGray()) :
         (cColor = model.isLiquid ? UIColor.gAccountLightBlue() : UIColor.gAccountOrange())
