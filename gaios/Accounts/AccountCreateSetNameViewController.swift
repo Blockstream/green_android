@@ -98,15 +98,8 @@ class AccountCreateSetNameViewController: UIViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.then(on: bgq) { () -> Promise<Void> in
-            var subaccount = ["name": name, "type": type.rawValue]
-            if let recoveryMnemonic = recoveryMnemonic {
-                subaccount["recovery_mnemonic"] = recoveryMnemonic
-            }
-            if let recoveryXpub = recoveryXpub {
-                subaccount["recovery_xpub"] = recoveryXpub
-            }
-            return session.createSubaccount(details: subaccount)
+        }.then(on: bgq) { _ in
+            return session.createSubaccount(CreateSubaccountParams(name: name, type: type, recoveryMnemonic: recoveryMnemonic, recoveryXpub: recoveryXpub))
         }.ensure {
             self.stopAnimating()
         }.done { _ in

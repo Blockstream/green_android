@@ -65,20 +65,19 @@ class SecuritySelectViewModel {
         return [.Standard, .TwoFAProtected, .Amp, .NativeSegwit]
     }
 
-    func create(policy: PolicyCellType, asset: String) {
+    func create(policy: PolicyCellType, asset: String) -> Promise<WalletItem> {
         guard
             let network = getNetwork(for: policy, liquid: asset != "btc"),
             let session = getSession(for: network) else {
-            self.error?(GaError.GenericError("Invalid session"))
-            return
+            return Promise(error: GaError.GenericError("Invalid session"))
         }
-        Guarantee()
+        let type = getAccountType(for: policy)
+        return Guarantee()
             .then { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
-            .then { self.createOrUnarchiveSubaccount(session: session, policy: policy) }
-            .then { self.wm.subaccounts() }
-            .asVoid()
-            .done { self.success?() }
-            .catch { err in self.error?(err) }
+            .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == type && $0.hidden ?? false } }
+            .then { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
+            .then { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, policy: policy) }
+            .then { res in self.wm.subaccounts().map { _ in res } }
     }
 
     func registerSession(session: SessionManager) -> Promise<Void> {
@@ -106,47 +105,39 @@ class SecuritySelectViewModel {
         return Promise() { $0.fulfill(account.bip44Discovered ?? false) }
     }
 
-    func createOrUnarchiveSubaccount(session: SessionManager, policy: PolicyCellType) -> Promise<Void> {
-        let type = getAccountType(for: policy)
-        let accounts = wm.subaccounts
-            .filter { $0.gdkNetwork == session.gdkNetwork && $0.type == type && $0.hidden ?? false }
-        return Guarantee()
-            .then { self.wm.transactions(subaccounts: accounts) }
-            .then { (txs: [Transaction]) -> Promise<Void> in
-                let items = accounts.map { account in
-                    (account, txs.filter { $0.subaccount == account.hashValue }.count)
+    func createOrUnarchiveSubaccount(session: SessionManager, accounts: [WalletItem], txs: [Transaction], policy: PolicyCellType) -> Promise<WalletItem> {
+        let items = accounts.map { account in
+            (account, txs.filter { $0.subaccount == account.hashValue }.count)
+        }
+        let unfunded = items.filter { $0.1 == 0 }.map { $0.0 }.first
+        if let unfunded = unfunded {
+            // automatically unarchive it
+            return session.updateSubaccount(subaccount: unfunded.pointer, hidden: false)
+                .then { session.subaccount(unfunded.pointer) }
+        }
+        let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
+        if let funded = funded, let dialog = self.unarchiveCreateDialog {
+            // ask user to unarchive o create a new one
+            return dialog().then { (create: Bool) -> Promise<WalletItem> in
+                if create {
+                    return self.createSubaccount(session: session, policy: policy)
+                } else {
+                    return session.updateSubaccount(subaccount: funded.pointer, hidden: false)
+                        .then { session.subaccount(funded.pointer) }
                 }
-                let unfunded = items.filter { $0.1 == 0 }.map { $0.0 }.first
-                if let unfunded = unfunded {
-                    // automatically unarchive it
-                    return session.updateSubaccount(subaccount: unfunded.pointer, hidden: false).asVoid()
-                }
-                let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
-                if let funded = funded, let dialog = self.unarchiveCreateDialog {
-                    // ask user to unarchive o create a new one
-                    return dialog().then { (create: Bool) -> Promise<Void> in
-                        if create {
-                            return self.createSubaccount(session: session, policy: policy)
-                        } else {
-                            return session.updateSubaccount(subaccount: funded.pointer, hidden: false).asVoid()
-                        }
-                    }
-                }
-
-                // automatically create a new account
-                return self.createSubaccount(session: session, policy: policy)
             }
+        }
+        // automatically create a new account
+        return self.createSubaccount(session: session, policy: policy)
     }
 
-    func createSubaccount(session: SessionManager, policy: PolicyCellType) -> Promise<Void> {
+    func createSubaccount(session: SessionManager, policy: PolicyCellType) -> Promise<WalletItem> {
         let cellModel = PolicyCellModel.from(policy: policy)
         let params = CreateSubaccountParams(name: cellModel.name,
                                type: getAccountType(for: policy),
                                recoveryMnemonic: nil,
                                recoveryXpub: nil)
-        let data = try? JSONEncoder().encode(params)
-        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        return session.createSubaccount(details: dict ?? [:]).asVoid()
+        return session.createSubaccount(params)
     }
 
     func getNetwork(for policy: PolicyCellType, liquid: Bool) -> NetworkSecurityCase? {

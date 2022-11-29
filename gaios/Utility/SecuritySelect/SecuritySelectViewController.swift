@@ -202,7 +202,13 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                     navigationController?.pushViewController(vc, animated: true)
                 }
             } else {
-                viewModel.create(policy: policy, asset: viewModel.asset)
+                firstly { self.startLoader(message: "Creating new account"); return Guarantee() }
+                    .then { self.viewModel.create(policy: policy, asset: self.viewModel.asset) }
+                    .ensure { self.stopLoader() }
+                    .done { wallet in
+                        DropAlert().success(message: "Account created")
+                        self.navigationController?.popViewController(animated: true)
+                    }.catch { err in self.showError(err)}
             }
         default:
             break

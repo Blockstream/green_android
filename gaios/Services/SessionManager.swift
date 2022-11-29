@@ -476,10 +476,8 @@ class SessionManager {
             .tapLogger()
     }
 
-    func createSubaccount(details: [String: Any]) -> Promise<Void> {
-        return Guarantee()
-            .compactMap { try self.session?.createSubaccount(details: details) }
-            .then { $0.resolve(session: self) }.asVoid()
+    func createSubaccount(_ details: CreateSubaccountParams) -> Promise<WalletItem> {
+        return wrapper(fun: self.session?.createSubaccount, params: details)
     }
 
     func renameSubaccount(subaccount: UInt32, newName: String) -> Promise<Void> {
