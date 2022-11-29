@@ -649,7 +649,6 @@ extension WalletViewController: DialogListViewControllerDelegate {
 }
 extension WalletViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
-        let accountCellModel = AccountCellModel(subaccount: wallet)
-        accountDetail(model: accountCellModel)
+        refresh()
     }
 }

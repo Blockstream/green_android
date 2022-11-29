@@ -226,12 +226,20 @@ extension AssetExpandableSelectViewController: UITextFieldDelegate {
 
 extension AssetExpandableSelectViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
-        let model = AccountCellModel(subaccount: wallet)
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
-            let assets = AssetAmountList(wallet.satoshi ?? [:]).sorted()
-            vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: assets)
-            navigationController?.pushViewController(vc, animated: true)
+        delegate?.didSelectReceiver(assetId: getAssetId(), account: wallet)
+        navigationController?.popViewController(animated: true)
+    }
+
+    func getAssetId() -> String {
+        let defaultAssetId = viewModel.wm.testnet ? AssetInfo.ltestId : AssetInfo.lbtcId
+        let cnt = viewModel.assetSelectCellModelsFilter.count
+        if cnt == 0 && viewModel.selectedSection == 0 && viewModel.enableAnyAsset {
+            return defaultAssetId
+        } else {
+            if let asset = viewModel.assetSelectCellModelsFilter[viewModel.selectedSection].asset?.assetId {
+                return asset
+            }
         }
+        return defaultAssetId
     }
 }
