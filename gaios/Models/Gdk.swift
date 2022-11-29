@@ -26,3 +26,12 @@ struct TwoFactorResetMessage: Codable {
     let twoFactorReset: TwoFactorReset
     let network: String
 }
+
+struct DecryptWithPinParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case pin
+        case pinData  = "pin_data"
+    }
+    let pin: String
+    let pinData: PinData
+}

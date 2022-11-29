@@ -290,18 +290,24 @@ class SessionManager {
             .then(on: bgq) { res in self.subaccounts(!initialized).compactMap { _ in res } }
     }
 
-    func decryptWithPin(pin: String, pinData: PinData) -> Promise<Credentials> {
+    typealias GdkFunc = ([String: Any]) throws -> TwoFactorCall
+
+    func wrapper<T: Codable, K: Codable>(fun: GdkFunc?, params: T) -> Promise<K> {
         let bgq = DispatchQueue.global(qos: .background)
-        let data = try? JSONEncoder().encode(pinData)
-        let pindata = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        let data = try? JSONEncoder().encode(params)
+        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
-            .compactMap(on: bgq) { try self.session?.decryptWithPin(details: ["pin": pin, "pin_data": pindata ?? [:]]) }
+            .compactMap(on: bgq) { try fun?(dict ?? [:]) }
             .then(on: bgq) { $0.resolve(session: self) }
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
                 let json = try? JSONSerialization.data(withJSONObject: result ?? [:], options: [])
-                return try? JSONDecoder().decode(Credentials.self, from: json ?? Data())
+                return try? JSONDecoder().decode(K.self, from: json ?? Data())
             }
+    }
+
+    func decryptWithPin(_ params: DecryptWithPinParams) -> Promise<Credentials> {
+        return wrapper(fun: self.session?.decryptWithPin, params: params)
     }
 
     func load(refreshSubaccounts: Bool = true) -> Promise<Void> {

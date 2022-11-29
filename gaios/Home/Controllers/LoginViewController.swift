@@ -204,8 +204,10 @@ class LoginViewController: UIViewController {
             session.connect()
         }.compactMap {
             try self.account.auth(usingAuth)
-        }.then(on: bgq) { pinData in
-            session.decryptWithPin(pin: withPIN ?? "", pinData: pinData)
+        }.compactMap {
+            DecryptWithPinParams(pin: withPIN ?? "", pinData: $0)
+        }.then(on: bgq) {
+            session.decryptWithPin($0)
         }.ensure {
             self.stopLoader()
         }.done { credentials in

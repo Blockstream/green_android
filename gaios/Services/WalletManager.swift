@@ -87,7 +87,8 @@ class WalletManager {
         }
         return Guarantee()
             .then { mainSession.connect() }
-            .then { _ in mainSession.decryptWithPin(pin: pin, pinData: pinData) }
+            .compactMap { DecryptWithPinParams(pin: pin, pinData: pinData)}
+            .then { mainSession.decryptWithPin($0) }
             .then { self.login($0) }
     }
 
