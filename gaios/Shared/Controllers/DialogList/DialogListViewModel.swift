@@ -1,12 +1,21 @@
 import Foundation
 import UIKit
 
+enum DialogCellType: CaseIterable {
+    case list
+    case enable2fa
+}
+
+protocol DialogCellModel: AnyObject {
+    var type: DialogCellType { get }
+}
+
 class DialogListViewModel {
 
     var title: String
-    var items: [DialogListCellModel] = []
+    var items: [DialogCellModel] = []
 
-    init(title: String, items: [DialogListCellModel]) {
+    init(title: String, items: [DialogCellModel]) {
         self.title = title
         self.items = items
     }

@@ -16,7 +16,8 @@ class DialogListCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(_ model: DialogListCellModel) {
+    func configure(_ model: DialogCellModel) {
+        guard let model = model as? DialogListCellModel else { return }
         icon.isHidden = true
         if let img = model.icon {
             icon.image = img

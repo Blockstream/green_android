@@ -25,7 +25,9 @@ enum NetworkPrefs: Int, CaseIterable {
     static func getItems() -> [DialogListCellModel] {
         var items: [DialogListCellModel] = []
         NetworkPrefs.allCases.forEach {
-            items.append(DialogListCellModel(icon: $0.icon, title: $0.name))
+            items.append(DialogListCellModel(type: .list,
+                                             icon: $0.icon,
+                                             title: $0.name))
         }
         return items
     }

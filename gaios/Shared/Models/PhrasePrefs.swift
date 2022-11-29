@@ -25,7 +25,9 @@ enum PhrasePrefs: Int, CaseIterable {
     static func getItems() -> [DialogListCellModel] {
         var items: [DialogListCellModel] = []
         PhrasePrefs.allCases.forEach {
-            items.append(DialogListCellModel(icon: $0.icon, title: $0.name))
+            items.append(DialogListCellModel(type: .list,
+                                             icon: $0.icon,
+                                             title: $0.name))
         }
         return items
     }

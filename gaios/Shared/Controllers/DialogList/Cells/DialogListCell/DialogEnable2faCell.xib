@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="253" id="KGk-i7-Jjw" customClass="DialogEnable2faCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="326" height="253"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="326" height="253"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2FA isn’t set up yet." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zSj-yD-OTJ">
+                        <rect key="frame" x="24" y="0.0" width="278" height="69.666666666666671"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="You can choose your favourite 2FA method among an authenticator app, email, SMS or a call." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tZa-nH-aCu">
+                        <rect key="frame" x="24" y="79.666666666666671" width="278" height="50.333333333333329"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aPa-vU-hEo">
+                        <rect key="frame" x="-1" y="154" width="324" height="1"/>
+                        <color key="backgroundColor" white="1" alpha="0.050000000000000003" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="sEj-Yu-VaX"/>
+                        </constraints>
+                    </view>
+                    <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7jv-l8-GMr" userLabel="Next">
+                        <rect key="frame" x="24" y="179" width="278" height="50"/>
+                        <color key="backgroundColor" name="customMatrixGreen"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="50" id="EJQ-QF-TKY"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                        <state key="normal" title="Next">
+                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </state>
+                    </button>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bo4-DR-ZLI">
+                        <rect key="frame" x="1" y="251" width="324" height="1"/>
+                        <color key="backgroundColor" white="1" alpha="0.050000000000000003" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="cXT-cP-hSU"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstItem="tZa-nH-aCu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="5Ld-c8-hyb"/>
+                    <constraint firstItem="7jv-l8-GMr" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="E0A-fh-e8v"/>
+                    <constraint firstItem="zSj-yD-OTJ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="JMp-8i-cPd"/>
+                    <constraint firstItem="aPa-vU-hEo" firstAttribute="top" secondItem="tZa-nH-aCu" secondAttribute="bottom" constant="24" id="JbH-ms-E6u"/>
+                    <constraint firstAttribute="trailing" secondItem="bo4-DR-ZLI" secondAttribute="trailing" constant="1" id="PYq-RC-324"/>
+                    <constraint firstAttribute="trailing" secondItem="zSj-yD-OTJ" secondAttribute="trailing" constant="24" id="Wky-qz-aEu"/>
+                    <constraint firstItem="zSj-yD-OTJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="Wlj-JW-1kq"/>
+                    <constraint firstItem="aPa-vU-hEo" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="-1" id="bED-9B-RMY"/>
+                    <constraint firstItem="bo4-DR-ZLI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="1" id="bVb-88-JU4"/>
+                    <constraint firstAttribute="trailing" secondItem="tZa-nH-aCu" secondAttribute="trailing" constant="24" id="dgH-O2-fMX"/>
+                    <constraint firstAttribute="bottom" secondItem="7jv-l8-GMr" secondAttribute="bottom" constant="24" id="hbT-lI-iAD"/>
+                    <constraint firstAttribute="trailing" secondItem="aPa-vU-hEo" secondAttribute="trailing" constant="3" id="i0u-Tu-rWN"/>
+                    <constraint firstAttribute="bottom" secondItem="bo4-DR-ZLI" secondAttribute="bottom" constant="1" id="sBK-KQ-E0M"/>
+                    <constraint firstItem="tZa-nH-aCu" firstAttribute="top" secondItem="zSj-yD-OTJ" secondAttribute="bottom" constant="10" id="uSU-Cj-h0U"/>
+                    <constraint firstAttribute="trailing" secondItem="7jv-l8-GMr" secondAttribute="trailing" constant="24" id="wVP-Vp-0NJ"/>
+                    <constraint firstItem="7jv-l8-GMr" firstAttribute="top" secondItem="aPa-vU-hEo" secondAttribute="bottom" constant="24" id="xzk-Rh-7pn"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="btnAction" destination="7jv-l8-GMr" id="9dq-IH-9O7"/>
+                <outlet property="lblHint" destination="tZa-nH-aCu" id="4un-Rx-W8k"/>
+                <outlet property="lblTitle" destination="zSj-yD-OTJ" id="P9q-Pp-DO0"/>
+            </connections>
+            <point key="canvasLocation" x="59.541984732824424" y="7.394366197183099"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

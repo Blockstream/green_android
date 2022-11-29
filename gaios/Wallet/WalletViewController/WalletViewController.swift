@@ -134,6 +134,16 @@ class WalletViewController: UIViewController {
 
     // open settings
     @objc func settingsBtnTapped(_ sender: Any) {
+
+        /// Usage example (current limitation: use one dialog per view controller)
+//        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+//            vc.delegate = self
+//            vc.viewModel = DialogListViewModel(title: "Enable 2FA", items: Enable2faPrefs.getItems())
+//            vc.modalPresentationStyle = .overFullScreen
+//            present(vc, animated: false, completion: nil)
+//        }
+
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self

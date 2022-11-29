@@ -45,7 +45,7 @@ class DialogListViewController: UIViewController {
         view.addSubview(blurredView)
         view.sendSubviewToBack(blurredView)
 
-        ["DialogListCell" ].forEach {
+        ["DialogListCell", "DialogEnable2faCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
 
@@ -89,6 +89,7 @@ class DialogListViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        tableHeight.constant = CGFloat( tableView.contentSize.height )
         anchorBottom.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
@@ -115,21 +116,33 @@ extension DialogListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let vm = viewModel else { return 0 }
-        tableHeight.constant = CGFloat( vm.items.count * 47 )
         return vm.items.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: DialogListCell.identifier, for: indexPath) as? DialogListCell, let vm = viewModel {
-            cell.configure(vm.items[indexPath.row])
-            cell.selectionStyle = .none
-            return cell
+        let modeType = viewModel?.items[indexPath.row].type
+        switch modeType {
+        case .list:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: DialogListCell.identifier, for: indexPath) as? DialogListCell, let vm = viewModel {
+                cell.configure(vm.items[indexPath.row])
+                cell.selectionStyle = .none
+                return cell
+            }
+        case.enable2fa:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: DialogEnable2faCell.identifier, for: indexPath) as? DialogEnable2faCell, let vm = viewModel {
+                cell.configure(vm.items[indexPath.row])
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .none:
+            break
         }
+
         return UITableViewCell()
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 47.0
+        return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
