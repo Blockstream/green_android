@@ -7,6 +7,10 @@ enum SecuritySelectSection: Int, CaseIterable {
     case footer
 }
 
+protocol SecuritySelectViewControllerDelegate: AnyObject {
+    func didCreatedWallet(_ wallet: WalletItem)
+}
+
 class SecuritySelectViewController: UIViewController {
 
     enum FooterType {
@@ -21,6 +25,7 @@ class SecuritySelectViewController: UIViewController {
     private var footerH: CGFloat = 54.0
 
     var viewModel: SecuritySelectViewModel!
+    weak var delegate: SecuritySelectViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -208,6 +213,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                     .done { wallet in
                         DropAlert().success(message: "Account created")
                         self.navigationController?.popViewController(animated: true)
+                        self.delegate?.didCreatedWallet(wallet)
                     }.catch { err in self.showError(err)}
             }
         default:

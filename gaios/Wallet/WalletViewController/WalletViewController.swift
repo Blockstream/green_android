@@ -185,7 +185,6 @@ class WalletViewController: UIViewController {
 
     func accountDetail(model: AccountCellModel?) {
         guard let model = model else { return }
-
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
             vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: viewModel.cachedBalance)
@@ -197,6 +196,7 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
             vc.viewModel = SecuritySelectViewModel(asset: "btc")
+            vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -643,5 +643,11 @@ extension WalletViewController: DialogListViewControllerDelegate {
         case .none:
             break
         }
+    }
+}
+extension WalletViewController: SecuritySelectViewControllerDelegate {
+    func didCreatedWallet(_ wallet: WalletItem) {
+        let accountCellModel = AccountCellModel(subaccount: wallet)
+        accountDetail(model: accountCellModel)
     }
 }

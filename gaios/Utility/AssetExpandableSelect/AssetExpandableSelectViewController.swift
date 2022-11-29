@@ -59,6 +59,7 @@ class AssetExpandableSelectViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
             let asset = asset?.assetId ?? getGdkNetwork("liquid").getFeeAsset()
             vc.viewModel = SecuritySelectViewModel(asset: asset)
+            vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -220,5 +221,17 @@ extension AssetExpandableSelectViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
+    }
+}
+
+extension AssetExpandableSelectViewController: SecuritySelectViewControllerDelegate {
+    func didCreatedWallet(_ wallet: WalletItem) {
+        let model = AccountCellModel(subaccount: wallet)
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
+            let assets = AssetAmountList(wallet.satoshi ?? [:]).sorted()
+            vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: assets)
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }

@@ -478,6 +478,7 @@ class SessionManager {
 
     func createSubaccount(_ details: CreateSubaccountParams) -> Promise<WalletItem> {
         return wrapper(fun: self.session?.createSubaccount, params: details)
+            .compactMap { (wallet: WalletItem) in wallet.network = self.gdkNetwork.network; return wallet }
     }
 
     func renameSubaccount(subaccount: UInt32, newName: String) -> Promise<Void> {
