@@ -202,7 +202,8 @@ class ReceiveViewController: UIViewController {
         if previousViewController is WalletViewController {
             // from WalletViewController, show assets and account selection
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
-                vc.viewModel = AssetExpandableSelectViewModel()
+                let assets = WalletManager.current?.registry.all
+                vc.viewModel = AssetExpandableSelectViewModel(assets: assets ?? [], enableAnyAsset: true, onlyFunded: false)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
@@ -217,7 +218,7 @@ class ReceiveViewController: UIViewController {
                     showLiquid && $0.assetId != AssetInfo.btc.assetId  ||
                     showBtc && $0.assetId == AssetInfo.btc.assetId
                 }
-                vc.viewModel = AssetSelectViewModel(assets: assets ?? [])
+                vc.viewModel = AssetSelectViewModel(assets: assets ?? [], enableAnyAsset: true)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }

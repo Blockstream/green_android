@@ -19,7 +19,7 @@ class AssetExpandableSelectViewController: UIViewController {
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
 
-    var viewModel = AssetExpandableSelectViewModel()
+    var viewModel: AssetExpandableSelectViewModel!
     weak var delegate: AssetExpandableSelectViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -108,7 +108,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        if cnt == 0 && section == 0 {
+        if cnt == 0 && section == 0 && viewModel.enableAnyAsset {
             if let accountView = Bundle.main.loadNibNamed("AnyAssetExpandableView", owner: self, options: nil)?.first as? AnyAssetExpandableView {
                 accountView.configure(open: viewModel.selectedSection == section,
                                       hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
@@ -157,7 +157,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
             tableView.reloadData()
             viewModel.selectedSection = section
             let cnt = viewModel.assetSelectCellModelsFilter.count
-            if cnt == 0 && section == 0 {
+            if cnt == 0 && section == 0 && viewModel.enableAnyAsset {
                 viewModel.loadAccountsForAsset(nil)
             } else {
                 if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
@@ -171,7 +171,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var assetId = AssetInfo.lbtcId
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        if !(cnt == 0 && indexPath.section == 0) {
+        if !(cnt == 0 && indexPath.section == 0 && viewModel.enableAnyAsset) {
             if let asset = viewModel.assetSelectCellModelsFilter[indexPath.section].asset { assetId = asset.assetId
             }
         }

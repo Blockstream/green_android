@@ -6,6 +6,8 @@ class AssetExpandableSelectViewModel {
 
     var selectedSection: Int = -1
     var allSections: [Int] = []
+    var enableAnyAsset = true
+    var onlyFunded = true
     var assets: [AssetInfo] = [] {
         didSet {
             for i in 0..<assets.count {
@@ -14,10 +16,16 @@ class AssetExpandableSelectViewModel {
         }
     }
     var accountSelectSubCellModels: [AccountSelectSubCellModel] = []
-    private var assetSelectCellModels: [AssetSelectCellModel] = []
+    var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
 
     let wm = WalletManager.current!
+
+    init(assets: [AssetInfo], enableAnyAsset: Bool, onlyFunded: Bool) {
+        self.assets = assets
+        self.enableAnyAsset = enableAnyAsset
+        self.onlyFunded = onlyFunded
+    }
 
     func search(_ txt: String?) {
         self.assetSelectCellModelsFilter = []
@@ -44,11 +52,16 @@ class AssetExpandableSelectViewModel {
                 accounts.removeAll { $0.type != .amp }
             }
         }
+        if onlyFunded {
+            accounts.removeAll { account in
+                account.satoshi?
+                    .filter { $0.key == assetId }.values.first ?? 0 == 0
+            }
+        }
         accountSelectSubCellModels = accounts.map { AccountSelectSubCellModel(account: $0) }
     }
 
     func loadAssets() {
-        assets = wm.registry.all
         assetSelectCellModels = assets.map { AssetSelectCellModel(assetId: $0.assetId, satoshi: 0) }
         assetSelectCellModelsFilter = assetSelectCellModels
     }

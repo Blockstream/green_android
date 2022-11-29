@@ -5,6 +5,7 @@ class AssetSelectViewModel {
 
     var assets = [AssetInfo]()
     var reload: (() -> Void)?
+    var enableAnyAsset: Bool
 
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
@@ -31,8 +32,9 @@ class AssetSelectViewModel {
         return nil
     }
 
-    init(assets: [AssetInfo]) {
+    init(assets: [AssetInfo], enableAnyAsset: Bool) {
         self.assets = assets
+        self.enableAnyAsset = enableAnyAsset
         assetSelectCellModels = assets.map { AssetSelectCellModel(assetId: $0.assetId, satoshi: 0) }
         assetSelectCellModelsFilter = assetSelectCellModels
         reload?()

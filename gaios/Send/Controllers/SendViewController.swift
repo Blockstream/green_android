@@ -480,22 +480,32 @@ extension SendViewController: RecipientCellDelegate {
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if fixedAsset {
             return
-        } else if fixedWallet {
+        }
+        let registry = WalletManager.current?.registry
+        if fixedWallet {
             // from AccountViewController, show only assets selection
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                let assets = WalletManager.current?.registry.all.filter {
-                    wallet.type == .amp && $0.amp ?? false ||
-                    wallet.gdkNetwork.liquid && $0.assetId != AssetInfo.btc.assetId  ||
-                    !wallet.gdkNetwork.liquid && $0.assetId == AssetInfo.btc.assetId
-                }
-                vc.viewModel = AssetSelectViewModel(assets: assets ?? [])
+                let assets = wallet.satoshi?.filter { $0.value > 0 }.keys.compactMap { registry?.info(for: $0) }
+                vc.viewModel = AssetSelectViewModel(assets: assets ?? [], enableAnyAsset: false)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
         } else {
             // show assets and account selection
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
-                vc.viewModel = AssetExpandableSelectViewModel()
+                var balance = [String: Int64]()
+                WalletManager.current?.subaccounts.forEach { subaccount in
+                    let satoshi = subaccount.satoshi ?? [:]
+                    satoshi.forEach {
+                        if let amount = balance[$0.0] {
+                            balance[$0.0] = amount + $0.1
+                        } else {
+                            balance[$0.0] = $0.1
+                        }
+                    }
+                }
+                let assets = balance.keys.compactMap { registry?.info(for: $0) }
+                vc.viewModel = AssetExpandableSelectViewModel(assets: assets, enableAnyAsset: false, onlyFunded: true)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
