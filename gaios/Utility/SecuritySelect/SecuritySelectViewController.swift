@@ -213,7 +213,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                 }
             } else {
                 firstly { self.startLoader(message: "Creating new account"); return Guarantee() }
-                    .then { self.viewModel.create(policy: policy, asset: self.viewModel.asset) }
+                    .then { self.viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) }
                     .ensure { self.stopLoader() }
                     .done { wallet in
                         DropAlert().success(message: "Account created")
@@ -224,6 +224,17 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         default:
             break
         }
+    }
+
+    func createSubaccount(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) {
+        firstly { self.startLoader(message: "Creating new account"); return Guarantee() }
+            .then { self.viewModel.create(policy: policy, asset: asset, params: params) }
+            .ensure { self.stopLoader() }
+            .done { wallet in
+                DropAlert().success(message: "Account created")
+                self.navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
+                self.delegate?.didCreatedWallet(wallet)
+            }.catch { err in self.showError(err)}
     }
 }
 
@@ -278,5 +289,31 @@ extension SecuritySelectViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
         self.navigationController?.popViewController(animated: true)
         self.delegate?.didCreatedWallet(wallet)
+    }
+}
+
+extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
+    func didPublicKey(_ key: String) {
+        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
+                               type: .twoOfThree,
+                               recoveryMnemonic: nil,
+                               recoveryXpub: key)
+        createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
+    }
+
+    func didNewRecoveryPhrase(_ mnemonic: String) {
+        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
+                                type: .twoOfThree,
+                                recoveryMnemonic: mnemonic,
+                                recoveryXpub: nil)
+        createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
+    }
+
+    func didExistingRecoveryPhrase(_ mnemonic: String) {
+        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
+                                type: .twoOfThree,
+                                recoveryMnemonic: mnemonic,
+                                recoveryXpub: nil)
+        createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
     }
 }

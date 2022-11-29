@@ -65,18 +65,22 @@ class SecuritySelectViewModel {
         return [.Standard, .TwoFAProtected, .Amp, .NativeSegwit]
     }
 
-    func create(policy: PolicyCellType, asset: String) -> Promise<WalletItem> {
+    func create(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) -> Promise<WalletItem> {
         guard
             let network = getNetwork(for: policy, liquid: asset != "btc"),
             let session = getSession(for: network) else {
             return Promise(error: GaError.GenericError("Invalid session"))
         }
-        let type = getAccountType(for: policy)
+        let cellModel = PolicyCellModel.from(policy: policy)
+        let params = params ?? CreateSubaccountParams(name: cellModel.name,
+                                   type: getAccountType(for: policy),
+                                   recoveryMnemonic: nil,
+                                   recoveryXpub: nil)
         return Guarantee()
             .then { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
-            .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == type && $0.hidden ?? false } }
+            .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden ?? false } }
             .then { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
-            .then { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, policy: policy) }
+            .then { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, params: params) }
             .then { res in self.wm.subaccounts().map { _ in res } }
     }
 
@@ -105,7 +109,7 @@ class SecuritySelectViewModel {
         return Promise() { $0.fulfill(account.bip44Discovered ?? false) }
     }
 
-    func createOrUnarchiveSubaccount(session: SessionManager, accounts: [WalletItem], txs: [Transaction], policy: PolicyCellType) -> Promise<WalletItem> {
+    func createOrUnarchiveSubaccount(session: SessionManager, accounts: [WalletItem], txs: [Transaction], params: CreateSubaccountParams) -> Promise<WalletItem> {
         let items = accounts.map { account in
             (account, txs.filter { $0.subaccount == account.hashValue }.count)
         }
@@ -120,7 +124,7 @@ class SecuritySelectViewModel {
             // ask user to unarchive o create a new one
             return dialog().then { (create: Bool) -> Promise<WalletItem> in
                 if create {
-                    return self.createSubaccount(session: session, policy: policy)
+                    return session.createSubaccount(params)
                 } else {
                     return session.updateSubaccount(subaccount: funded.pointer, hidden: false)
                         .then { session.subaccount(funded.pointer) }
@@ -128,15 +132,6 @@ class SecuritySelectViewModel {
             }
         }
         // automatically create a new account
-        return self.createSubaccount(session: session, policy: policy)
-    }
-
-    func createSubaccount(session: SessionManager, policy: PolicyCellType) -> Promise<WalletItem> {
-        let cellModel = PolicyCellModel.from(policy: policy)
-        let params = CreateSubaccountParams(name: cellModel.name,
-                               type: getAccountType(for: policy),
-                               recoveryMnemonic: nil,
-                               recoveryXpub: nil)
         return session.createSubaccount(params)
     }
 

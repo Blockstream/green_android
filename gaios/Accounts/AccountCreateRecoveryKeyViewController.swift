@@ -33,7 +33,7 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
 
     private var cards: [UIView] = []
     var session: SessionManager!
-    weak var delegate: SecuritySelectViewControllerDelegate?
+    weak var delegate: AccountCreateRecoveryKeyDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -112,60 +112,22 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController") as? OnBoardInfoViewController {
                 OnBoardInfoViewController.flowType = .subaccount
-                OnBoardInfoViewController.delegate = self
+                OnBoardInfoViewController.delegate = delegate
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .existingPhrase:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
                 vc.mnemonicActionType = .addSubaccount
-                vc.delegate = self
+                vc.delegate = delegate
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .publicKey:
             let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreatePublicKeyViewController") as? AccountCreatePublicKeyViewController {
-                vc.delegate = self
+                vc.delegate = delegate
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
-    }
-
-    func createSubaccount(_ params: CreateSubaccountParams) {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly { self.startLoader(message: "Creating new account"); return Guarantee() }
-            .then(on: bgq) { _ in return self.session.createSubaccount(params) }
-            .ensure { self.stopLoader() }
-            .done { (wallet: WalletItem) in
-                //AnalyticsManager.shared.createAccount(account: AccountsManager.shared.current, walletType: type)
-                DropAlert().success(message: "Account created")
-                self.navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
-                self.delegate?.didCreatedWallet(wallet)
-            }.catch { err in self.showError(err) }
-    }
-}
-extension AccountCreateRecoveryKeyViewController: AccountCreateRecoveryKeyDelegate {
-    func didPublicKey(_ key: String) {
-        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
-                               type: .twoOfThree,
-                               recoveryMnemonic: nil,
-                               recoveryXpub: key)
-        createSubaccount(params)
-    }
-
-    func didNewRecoveryPhrase(_ mnemonic: String) {
-        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
-                                type: .twoOfThree,
-                                recoveryMnemonic: mnemonic,
-                                recoveryXpub: nil)
-        createSubaccount(params)
-    }
-
-    func didExistingRecoveryPhrase(_ mnemonic: String) {
-        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
-                                type: .twoOfThree,
-                                recoveryMnemonic: mnemonic,
-                                recoveryXpub: nil)
-        createSubaccount(params)
     }
 }
