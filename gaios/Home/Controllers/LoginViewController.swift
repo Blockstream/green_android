@@ -432,8 +432,9 @@ class LoginViewController: UIViewController {
         LandingViewController.flowType = .restore
         OnBoardManager.shared.params = OnBoardParams(network: account?.network, walletName: account?.name, singleSig: account?.isSingleSig ?? false, accountId: account?.id ?? UUID().uuidString)
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func alertDismiss(_ sender: Any) {

@@ -160,7 +160,6 @@
 		3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */; };
 		3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */; };
 		3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */; };
-		34641F1D25F915B9002E6442 /* RecoveryPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */; };
 		346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752EA291E316E00256132 /* ReceiveViewModel.swift */; };
 		346752EF291E559900256132 /* AccountSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752EE291E559900256132 /* AccountSelectViewController.swift */; };
 		346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F0291E55A600256132 /* AccountSelectViewModel.swift */; };
@@ -585,7 +584,6 @@
 		3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
 		3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCell.swift; sourceTree = "<group>"; };
 		3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
-		34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhraseViewController.swift; sourceTree = "<group>"; };
 		346752EA291E316E00256132 /* ReceiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveViewModel.swift; sourceTree = "<group>"; };
 		346752EE291E559900256132 /* AccountSelectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectViewController.swift; sourceTree = "<group>"; };
 		346752F0291E55A600256132 /* AccountSelectViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectViewModel.swift; sourceTree = "<group>"; };
@@ -1488,7 +1486,6 @@
 				34A75B62292B6984007995D7 /* OnBoardInfo */,
 				3497935525F8B18C0029ECB1 /* LandingViewController.swift */,
 				3497935A25F8B18C0029ECB1 /* WalletSettingsViewController.swift */,
-				34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */,
 				341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */,
 				340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */,
 				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
@@ -2528,7 +2525,6 @@
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */,
 				34EB670128212EBA0036D615 /* AMEvents.swift in Sources */,
-				34641F1D25F915B9002E6442 /* RecoveryPhraseViewController.swift in Sources */,
 				81A062D224532454003464A0 /* HWProtocol.swift in Sources */,
 				34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */,
 				8169EBBD2445F16F0053BC73 /* Jade.swift in Sources */,
