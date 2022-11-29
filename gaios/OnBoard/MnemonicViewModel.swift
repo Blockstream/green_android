@@ -3,26 +3,21 @@ import PromiseKit
 
 class MnemonicViewModel {
 
-    // on success
-    var success: (() -> Void)?
-
-    // on errors
-    var error: ((Error) -> Void)?
-
-    func validateMnemonic(_ mnemonic: String) throws {
-        let validated = try? gaios.validateMnemonic(mnemonic: mnemonic)
-        if validated ?? false {
-            throw LoginError.invalidMnemonic()
+    func validateMnemonic(_ mnemonic: String) -> Promise<Void> {
+        if let validated = try? gaios.validateMnemonic(mnemonic: mnemonic),
+           validated {
+            return Promise().asVoid()
         }
+        return Promise(error: LoginError.invalidMnemonic())
     }
 
-    func restore(mnemonic: String, password: String, testnet: Bool) {
+    func restore(mnemonic: String, password: String, testnet: Bool) -> Promise<Void> {
         let name = AccountsManager.shared.getUniqueAccountName(testnet: testnet)
         let account = Account(name: name, network: testnet ? "testnet" : "mainnet", isSingleSig: true)
         let wm = WalletManager.getOrAdd(for: account)
         let credentials = Credentials(mnemonic: mnemonic, password: password)
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee()
+        return Guarantee()
             .then(on: bgq) { wm.restore(credentials) }
             .compactMap {
                 AccountsManager.shared.current = account
@@ -30,19 +25,6 @@ class MnemonicViewModel {
                 return ()
             }
             .then(on: bgq) { wm.login(credentials) }
-            .done { self.success?() }
-            .catch { err in self.error?(err) }
-    }
-
-    func create(mnemonic: String, network: NetworkSecurityCase) {
-        guard let wm = WalletManager.current else { return }
-        let credentials = Credentials(mnemonic: mnemonic)
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee()
-            .then(on: bgq) { wm.restore(credentials) }
-            .done {
-                AnalyticsManager.shared.createWallet(account: AccountsManager.shared.current)
-                self.success?()
-            }.catch { err in self.error?(err) }
+            .asVoid()
     }
 }

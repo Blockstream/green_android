@@ -26,6 +26,7 @@ class OnBoardInfoViewController: UIViewController {
 
     var viewModel = OnBoardInfoViewModel()
     static var flowType = OnBoardInfoFlowType.onboarding
+    static weak var delegate: AccountCreateRecoveryKeyDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()

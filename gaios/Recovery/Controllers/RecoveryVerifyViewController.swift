@@ -94,13 +94,8 @@ class RecoveryVerifyViewController: UIViewController {
         if OnBoardInfoViewController.flowType == .onboarding {
             createWallet()
         } else {
-            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
-                vc.accountType = .twoOfThree
-                vc.recoveryKeyType = .newPhrase
-                vc.recoveryMnemonic = self.mnemonic.joined(separator: " ")
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
+            self.navigationController?.popToViewController(ofClass: AccountCreateRecoveryKeyViewController.self, animated: false)
+            OnBoardInfoViewController.delegate?.didNewRecoveryPhrase(self.mnemonic.joined(separator: " "))
         }
     }
 

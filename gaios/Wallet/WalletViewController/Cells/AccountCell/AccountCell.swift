@@ -67,7 +67,7 @@ class AccountCell: UITableViewCell {
         self.onCopy = onCopy
 
         lblType.text = model.lblType
-        lblName.text = model.name
+        lblName.text = NSLocalizedString(model.name, comment: "")
         lblFiat.text = model.fiatStr
         lblAmount.text = model.balanceStr
         imgSS.isHidden = !model.isSS

@@ -14,6 +14,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
     @IBOutlet weak var btnQr: UIButton!
 
     @IBOutlet weak var btnNext: UIButton!
+    weak var delegate: AccountCreateRecoveryKeyDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,13 +68,8 @@ class AccountCreatePublicKeyViewController: UIViewController {
     }
 
     func next() {
-        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateSetNameViewController") as? AccountCreateSetNameViewController {
-            vc.accountType = .twoOfThree
-            vc.recoveryKeyType = .publicKey
-            vc.recoveryXpub = textViewKey.text ?? ""
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        navigationController?.popViewController(animated: true)
+        delegate?.didPublicKey(textViewKey.text ?? "")
     }
 
     @IBAction func btnCancel(_ sender: Any) {

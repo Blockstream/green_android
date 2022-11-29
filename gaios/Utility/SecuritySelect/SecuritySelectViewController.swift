@@ -204,7 +204,12 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
             if policy == .TwoOfThreeWith2FA {
                 let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateRecoveryKeyViewController") as? AccountCreateRecoveryKeyViewController {
-                    navigationController?.pushViewController(vc, animated: true)
+                    if let network = viewModel.getNetwork(for: policy, liquid: viewModel.asset != "btc"),
+                       let session = viewModel.getSession(for: network) {
+                        vc.session = session
+                        vc.delegate = self
+                        navigationController?.pushViewController(vc, animated: true)
+                    }
                 }
             } else {
                 firstly { self.startLoader(message: "Creating new account"); return Guarantee() }
@@ -266,5 +271,12 @@ extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
         /// handle any asset case
         print("didSelectAnyAsset")
         viewModel?.asset = AssetInfo.lbtcId
+    }
+}
+
+extension SecuritySelectViewController: SecuritySelectViewControllerDelegate {
+    func didCreatedWallet(_ wallet: WalletItem) {
+        self.navigationController?.popViewController(animated: true)
+        self.delegate?.didCreatedWallet(wallet)
     }
 }
