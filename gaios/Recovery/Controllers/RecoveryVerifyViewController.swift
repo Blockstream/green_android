@@ -108,7 +108,7 @@ class RecoveryVerifyViewController: UIViewController {
         let credentials = Credentials(mnemonic: mnemonic, password: "")
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
-            .compactMap { self.startLoader() }
+            .compactMap { self.startLoader(message: NSLocalizedString("id_creating_wallet", comment: "")) }
             .then(on: bgq) { wm.create(credentials) }
             .compactMap { AccountsManager.shared.current = account }
             .then(on: bgq) { wm.login(credentials) }
