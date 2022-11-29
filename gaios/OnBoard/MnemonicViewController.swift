@@ -214,16 +214,14 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     @IBAction func doneButtonClicked(_ sender: Any) {
         let testnet = LandingViewController.chainType == .testnet
-        _ = getMnemonicString()
-            .map {
-                self.startLoader(message: self.mnemonicActionType == .recoverWallet ? "Recovering wallet" : "")
-                return $0
-            }.then {
+        firstly { self.startLoader(message: self.mnemonicActionType == .recoverWallet ? "Recovering wallet" : ""); return Guarantee() }
+            .then { self.getMnemonicString() }
+            .then { (mnemonic: String, password: String) -> Promise<Void> in
                 switch self.mnemonicActionType {
                 case .recoverWallet:
-                    return self.viewModel.restore(mnemonic: $0.0, password: $0.1, testnet: testnet)
+                    return self.viewModel.restore(mnemonic: mnemonic, password: password, testnet: testnet)
                 case .addSubaccount:
-                    return self.viewModel.validateMnemonic($0.0)
+                    return self.viewModel.validateMnemonic(mnemonic)
                 }
             }.ensure {
                 self.stopLoader()
