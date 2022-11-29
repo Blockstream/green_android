@@ -9,12 +9,20 @@ struct WalletIdentifier: Codable {
     let xpubHashId: String
 }
 
-
 struct SystemMessage: Codable {
     enum CodingKeys: String, CodingKey {
         case text
         case network
     }
     let text: String
+    let network: String
+}
+
+struct TwoFactorResetMessage: Codable {
+    enum CodingKeys: String, CodingKey {
+        case twoFactorReset
+        case network
+    }
+    let twoFactorReset: TwoFactorReset
     let network: String
 }

@@ -1,8 +1,8 @@
 import UIKit
 
 enum AlertCardType {
-    case reset(Int)
-    case dispute
+    case reset(TwoFactorResetMessage)
+    case dispute(TwoFactorResetMessage)
     case reactivate
     case systemMessage(SystemMessage)
     case fiatMissing
@@ -57,12 +57,12 @@ class AlertCardCell: UITableViewCell {
         btnDismiss.isHidden = true
 
         switch model.type {
-        case .reset(let resetDaysRemaining):
+        case .reset(let message):
             lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
-            lblHint.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), resetDaysRemaining)
+            lblHint.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), message.twoFactorReset.daysRemaining)
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.isHidden = true
-        case .dispute:
+        case .dispute(_):
             lblTitle.text = NSLocalizedString("id_2fa_dispute_in_progress", comment: "")
             lblHint.text = NSLocalizedString("id_warning_wallet_locked_by", comment: "")
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)

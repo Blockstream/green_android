@@ -106,18 +106,19 @@ class WalletViewModel {
 
     func reloadAlertCards() {
         var cards: [AlertCardType] = []
-        wm.sessions.values.forEach {
-            if $0.logged && $0.isResetActive ?? false {
-                if $0.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
-                    cards.append(AlertCardType.dispute)
+        wm.sessions.values.forEach { session in
+            if session.logged && session.isResetActive ?? false,
+                let twoFaReset = session.twoFactorConfig?.twofactorReset {
+                let message = TwoFactorResetMessage(twoFactorReset: twoFaReset, network: session.gdkNetwork.network)
+                if twoFaReset.isDisputeActive {
+                    cards.append(.dispute(message))
                 } else {
-                    let resetDaysRemaining = session?.twoFactorConfig?.twofactorReset.daysRemaining
-                    cards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
+                    cards.append(.reset(message))
                 }
             }
             if AccountsManager.shared.current?.isEphemeral ?? false {
                 // Bip39 ephemeral wallet
-                cards.append(AlertCardType.ephemeralWallet)
+                cards.append(.ephemeralWallet)
             }
         }
         if session?.gdkNetwork.mainnet == false {

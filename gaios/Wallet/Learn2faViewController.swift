@@ -17,10 +17,11 @@ class Learn2faViewController: UIViewController {
     @IBOutlet weak var lblPermanentTitle: UILabel!
     @IBOutlet weak var lblPermanentHint: UILabel!
     @IBOutlet weak var btnUndoReset: UIButton!
-    var wallet: WalletItem!
 
+    var message: TwoFactorResetMessage!
     weak var delegate: Learn2faViewControllerDelegate?
-    var isDisputeActive: Bool { self.wallet.session?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false }
+    var session: SessionManager? { WalletManager.current?.sessions[message.network] }
+    var isDisputeActive: Bool { self.session?.twoFactorConfig?.twofactorReset.isDisputeActive ?? false }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +46,7 @@ class Learn2faViewController: UIViewController {
             btnUndoReset.setTitle(NSLocalizedString("id_undo_2fa_dispute", comment: ""), for: .normal)
             return
         }
-        let resetDaysRemaining = wallet.session?.twoFactorConfig?.twofactorReset.daysRemaining
+        let resetDaysRemaining = session?.twoFactorConfig?.twofactorReset.daysRemaining
         lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
         lblResetTitle.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), resetDaysRemaining ?? 0)
         lblResetHint.text = NSLocalizedString("id_the_waiting_period_is_necessary", comment: "")
@@ -59,10 +60,10 @@ class Learn2faViewController: UIViewController {
     }
 
     func canceltwoFactorReset() {
-        AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        //AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = wallet.session else { return }
+        guard let session = session else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -73,23 +74,18 @@ class Learn2faViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
-            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
-            self.dismiss(animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.delegate?.userLogout()
-                }
-            })
+            DropAlert().success(message: "Reset Cancelled")
+            self.dismiss(animated: true, completion: nil)
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
         }
     }
 
     func disputeReset(email: String) {
-        AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        //AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = wallet.session else { return }
+        guard let session = session else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -100,20 +96,18 @@ class Learn2faViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
-            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+            DropAlert().success(message: "Reset Disputed")
             self.dismiss(animated: true, completion: nil)
-            self.delegate?.userLogout()
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
         }
     }
 
     func undoReset(email: String) {
-        AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        //AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
 
         let bgq = DispatchQueue.global(qos: .background)
-        guard let session = wallet.session else { return }
+        guard let session = session else { return }
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -124,10 +118,8 @@ class Learn2faViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
-            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+            DropAlert().success(message: "Reset Undone")
             self.dismiss(animated: true, completion: nil)
-            self.delegate?.userLogout()
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
         }

@@ -215,6 +215,14 @@ class WalletViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    // open Learn 2fa controller for reset/dispute wallet
+    func twoFactorResetMessageScreen(msg: TwoFactorResetMessage) {
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "Learn2faViewController") as? Learn2faViewController {
+            vc.message = msg
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
@@ -285,21 +293,23 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell {
                 let alertCard = viewModel.alertCardCellModel[indexPath.row]
                 switch alertCard.type {
-                case .reset, .dispute, .reactivate:
+                case .reset(let msg), .dispute(let msg):
                     cell.configure(viewModel.alertCardCellModel[indexPath.row],
-                                   onLeft: {[weak self] in
-                        self?.performSegue(withIdentifier: "overviewReactivate2fa", sender: self)
-                    },
+                                   onLeft: nil,
                                    onRight: {[weak self] in
-                        self?.performSegue(withIdentifier: "overviewLeaarnMore2fa", sender: self)
-                    },
+                                        self?.twoFactorResetMessageScreen(msg: msg)
+                                    }, onDismiss: nil)
+                case .reactivate:
+                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil,
                                    onDismiss: nil)
                 case .systemMessage(let msg):
                     cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: nil,
                                    onRight: {[weak self] in
-                        self?.systemMessageScreen(msg: msg)
-                    },
+                                        self?.systemMessageScreen(msg: msg)
+                                    },
                                    onDismiss: nil)
                 case .fiatMissing:
                     cell.configure(viewModel.alertCardCellModel[indexPath.row],

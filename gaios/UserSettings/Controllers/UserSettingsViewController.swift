@@ -178,9 +178,9 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .AutoLogout:
             showAutoLogout()
         case .Bitcoin:
-            openMultisig(network: .bitcoin)
+            openMultisig(network: viewModel.wm.testnet ? .testnetMS : .bitcoinMS)
         case .Liquid:
-            openMultisig(network: .liquid)
+            openMultisig(network: viewModel.wm.testnet ? .testnetLiquidMS : .liquidMS)
         case .Version:
             break
         case .SupportID:
@@ -240,10 +240,7 @@ extension UserSettingsViewController {
         }
     }
 
-    func openMultisig(network: AvailableNetworks) {
-        guard network == .liquid || network == .bitcoin else {
-            return
-        }
+    func openMultisig(network: NetworkSecurityCase) {
         guard let session = WalletManager.current?.sessions[network.rawValue], session.logged else {
             showAlert(title: network.name(), message: "Multisig wallet not created or not logged")
             return
