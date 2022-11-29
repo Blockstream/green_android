@@ -43,8 +43,6 @@ class AccountViewController: UIViewController {
         tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
 
         viewModel?.reloadSections = reloadSections
-        viewModel.success = { self.reloadSections([.account], animated: false) }
-        viewModel.error = showError
         viewModel.getBalance()
         viewModel.getTransactions()
     }
@@ -124,7 +122,7 @@ class AccountViewController: UIViewController {
         }
     }
 
-    func rename() {
+    func renameDialog() {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -135,8 +133,22 @@ class AccountViewController: UIViewController {
         }
     }
 
+    func rename(name: String) {
+        firstly { self.startLoader(); return Guarantee() }
+            .then { self.viewModel.renameSubaccount(name: name) }
+            .ensure { self.stopLoader() }
+            .done { }
+            .catch { err in self.showError(err) }
+    }
+
     func archive() {
-        viewModel?.archiveSubaccount()
+        firstly { self.startLoader(message: "Archiving"); return Guarantee() }
+            .then { self.viewModel.archiveSubaccount() }
+            .ensure { self.stopLoader() }
+            .done {
+                DropAlert().success(message: "Account Archived")
+                self.navigationController?.popViewController(animated: true)
+            } .catch { err in self.showError(err) }
     }
 
     @IBAction func btnSend(_ sender: Any) {
@@ -358,7 +370,7 @@ extension AccountViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch AccountPrefs(rawValue: index) {
         case .rename:
-            rename()
+            renameDialog()
         case .archive:
             archive()
         case .enhanceSecurity:
@@ -371,7 +383,7 @@ extension AccountViewController: DialogListViewControllerDelegate {
 
 extension AccountViewController: DialogWalletNameViewControllerDelegate {
     func didRename(name: String, index: Int?) {
-        viewModel?.renameSubaccount(name: name)
+        rename(name: name)
     }
     func didCancel() {
     }

@@ -45,12 +45,6 @@ class AccountViewModel {
     /// reload by section with animation
     var reloadSections: (([AccountSection], Bool) -> Void)?
 
-    // on success
-    var success: (() -> Void)?
-
-    // on errors
-    var error: ((Error) -> Void)?
-
     init(model: AccountCellModel, account: WalletItem, cachedBalance: [(String, Int64)]) {
         self.accountCellModels = [model]
         self.account = account
@@ -97,29 +91,27 @@ class AccountViewModel {
         return 0
     }
 
-    func archiveSubaccount() {
+    func archiveSubaccount() -> Promise<Void> {
         guard let session = wm.sessions[account.gdkNetwork.network] else {
-            return
+            return Promise().asVoid()
         }
-        Guarantee()
+        return Guarantee()
             .then { session.updateSubaccount(subaccount: self.account.pointer, hidden: true) }
             .then { session.subaccount(self.account.pointer) }
             .compactMap { self.accountCellModels = [AccountCellModel(subaccount: $0)]}
             .then { self.wm.subaccounts() }
-            .done { _ in self.success?() }
-            .catch { err in self.error?(err) }
+            .asVoid()
     }
 
-    func renameSubaccount(name: String) {
+    func renameSubaccount(name: String) -> Promise<Void> {
         guard let session = wm.sessions[account.gdkNetwork.network] else {
-            return
+            return Promise().asVoid()
         }
-        Guarantee()
+        return Guarantee()
             .then { session.renameSubaccount(subaccount: self.account.pointer, newName: name) }
             .then { session.subaccount(self.account.pointer) }
             .compactMap { self.accountCellModels = [AccountCellModel(subaccount: $0)]}
             .then { self.wm.subaccounts() }
-            .done { _ in self.success?() }
-            .catch { err in self.error?(err) }
+            .asVoid()
     }
 }
