@@ -231,6 +231,22 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func navigateTo2fa(_ account: WalletItem) {
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "MultisigSettingsViewController") as? MultisigSettingsViewController {
+            vc.session = account.session
+            if let vc2 = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
+                vc2.delegate = vc
+                vc2.session = vc.session
+                if var viewControllers = navigationController?.viewControllers {
+                    viewControllers.append(vc)
+                    viewControllers.append(vc2)
+                    navigationController?.setViewControllers(viewControllers, animated: true)
+                }
+            }
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -670,11 +686,12 @@ extension WalletViewController: DialogListViewControllerDelegate {
                         showError("Two factor authentication is just enabled")
                         return
                     }
-                    let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-                    if let vc = storyboard.instantiateViewController(withIdentifier: "MultisigSettingsViewController") as? MultisigSettingsViewController {
-                        vc.session = account.session
-                        navigationController?.pushViewController(vc, animated: true)
-                    }
+                    navigateTo2fa(account)
+//                    let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+//                    if let vc = storyboard.instantiateViewController(withIdentifier: "MultisigSettingsViewController") as? MultisigSettingsViewController {
+//                        vc.session = account.session
+//                        navigationController?.pushViewController(vc, animated: true)
+//                    }
                 }
             default:
                 break
