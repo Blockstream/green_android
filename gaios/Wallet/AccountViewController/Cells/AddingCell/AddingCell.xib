@@ -34,20 +34,12 @@
                                 <color key="textColor" name="gGreenMatrix"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="twX-ig-iAV">
-                                <rect key="frame" x="0.0" y="0.0" width="304" height="40"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.71372549019999998" blue="0.43529411759999997" alpha="0.19971804509999999" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="twX-ig-iAV" firstAttribute="height" secondItem="esl-0x-eRT" secondAttribute="height" id="5a8-82-mv2"/>
-                            <constraint firstItem="twX-ig-iAV" firstAttribute="centerY" secondItem="esl-0x-eRT" secondAttribute="centerY" id="Ibv-YH-Mbc"/>
                             <constraint firstAttribute="bottom" secondItem="JXm-SC-IRE" secondAttribute="bottom" constant="16" id="IzU-03-10v"/>
                             <constraint firstItem="JXm-SC-IRE" firstAttribute="top" secondItem="esl-0x-eRT" secondAttribute="top" constant="16" id="VXc-73-OXH"/>
-                            <constraint firstItem="twX-ig-iAV" firstAttribute="width" secondItem="esl-0x-eRT" secondAttribute="width" id="Xue-9r-7mK"/>
                             <constraint firstItem="EzZ-4l-g5k" firstAttribute="leading" secondItem="esl-0x-eRT" secondAttribute="leading" constant="15" id="eI2-r5-fUi"/>
-                            <constraint firstItem="twX-ig-iAV" firstAttribute="centerX" secondItem="esl-0x-eRT" secondAttribute="centerX" id="mpf-u1-5Ve"/>
                             <constraint firstItem="JXm-SC-IRE" firstAttribute="leading" secondItem="EzZ-4l-g5k" secondAttribute="trailing" constant="15" id="ryL-un-dUc"/>
                             <constraint firstAttribute="trailing" secondItem="JXm-SC-IRE" secondAttribute="trailing" constant="15" id="w19-bS-MYq"/>
                             <constraint firstItem="EzZ-4l-g5k" firstAttribute="centerY" secondItem="esl-0x-eRT" secondAttribute="centerY" id="xr3-AM-la0"/>

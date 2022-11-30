@@ -291,6 +291,15 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         return nil
     }
 
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        switch AccountSection(rawValue: indexPath.section) {
+        case .account, .assets:
+            return nil
+        default:
+            return indexPath
+        }
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         switch AccountSection(rawValue: indexPath.section) {
@@ -311,11 +320,11 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                 vc.transaction = transaction
                 navigationController?.pushViewController(vc, animated: true)
             }
-            tableView.deselectRow(at: indexPath, animated: false)
-            tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
         default:
             break
         }
+        tableView.deselectRow(at: indexPath, animated: false)
+        tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
     }
 }
 
