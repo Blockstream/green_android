@@ -104,6 +104,9 @@ class ReceiveViewController: UIViewController {
             btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
             btnQRCode.imageView?.contentMode = .scaleAspectFit
             btnQRCode.layer.cornerRadius = 5.0
+            if let satoshi = self.satoshi, satoshi != 0 {
+                lblAddress.text = uri
+            }
         }
     }
 
