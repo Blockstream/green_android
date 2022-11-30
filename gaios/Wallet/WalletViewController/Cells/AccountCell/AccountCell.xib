@@ -35,6 +35,9 @@
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="ic_triangle_warn"/>
+                                        <connections>
+                                            <action selector="btnShield:" destination="RmT-Op-ete" eventType="touchUpInside" id="Z1J-Ap-iRy"/>
+                                        </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xbh-7r-XUy">
                                         <rect key="frame" x="20" y="0.0" width="291" height="64"/>
@@ -233,7 +236,7 @@
                 <outlet property="btcImg" destination="jDH-qe-0RU" id="idf-mL-BjE"/>
                 <outlet property="btnCopy" destination="vh4-gu-LkL" id="Kdk-pR-dFg"/>
                 <outlet property="btnSelect" destination="6PV-rS-zVe" id="rC9-ra-pvg"/>
-                <outlet property="btnWarn" destination="zk2-bm-E2u" id="yBC-kx-KYH"/>
+                <outlet property="btnShield" destination="zk2-bm-E2u" id="1TC-aq-BlA"/>
                 <outlet property="detailView" destination="uIG-Od-99L" id="AKD-jD-ZrA"/>
                 <outlet property="effectView" destination="r5L-uL-wdr" id="fD3-27-V9y"/>
                 <outlet property="iconsStack" destination="XVU-sN-nrB" id="7lB-k9-yhj"/>

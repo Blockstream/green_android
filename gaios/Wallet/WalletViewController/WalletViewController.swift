@@ -49,6 +49,7 @@ class WalletViewController: UIViewController {
     private var userWillLogout = false
 
     var viewModel: WalletViewModel = WalletViewModel()
+    var cachedAccount: WalletItem?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -214,6 +215,22 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func onShieldBtn(_ idx: Int) {
+        let account = viewModel.accountCellModels[safe: idx]?.account
+        cachedAccount = account
+        twoFactorAuthenticatorDialog()
+    }
+
+    func twoFactorAuthenticatorDialog() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Enable 2FA", type: .enable2faPrefs, items: Enable2faPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -268,13 +285,17 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AccountCell.identifier, for: indexPath) as? AccountCell {
 
+                let onShield: ((Int) -> Void)? = { [weak self] idx in
+                    self?.onShieldBtn(idx)
+                }
                 cell.configure(model: viewModel.accountCellModels[indexPath.row],
                                cIdx: indexPath.row,
                                sIdx: sIdx,
                                isLast: indexPath.row == viewModel.accountCellModels.count - 1,
                                onSelect: {[weak self] in
                     self?.accountDetail(model: self?.viewModel.accountCellModels[indexPath.row])
-                }, onCopy: nil
+                }, onCopy: nil,
+                               onShield: onShield
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -638,7 +659,23 @@ extension WalletViewController: DialogListViewControllerDelegate {
         case .enable2faPrefs:
             switch Enable2faPrefs(rawValue: index) {
             case .add:
-                print("handle action here")
+                if let account = cachedAccount {
+                    let session = account.session
+                    let enabled2FA = session?.twoFactorConfig?.anyEnabled ?? false
+                    let isSS = session?.gdkNetwork.electrum ?? false
+                    if isSS {
+                        showError("Two factor authentication is not availabled for singlesig account")
+                        return
+                    } else if enabled2FA {
+                        showError("Two factor authentication is just enabled")
+                        return
+                    }
+                    let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+                    if let vc = storyboard.instantiateViewController(withIdentifier: "MultisigSettingsViewController") as? MultisigSettingsViewController {
+                        vc.session = account.session
+                        navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
             default:
                 break
             }

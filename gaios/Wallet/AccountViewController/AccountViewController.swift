@@ -211,7 +211,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                                sIdx: sIdx,
                                isLast: true,
                                onSelect: nil,
-                               onCopy: onCopy)
+                               onCopy: onCopy,
+                               onShield: nil)
                 cell.selectionStyle = .none
                 return cell
             }

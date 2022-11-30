@@ -9,7 +9,7 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var btcImg: UIImageView!
     @IBOutlet weak var btnSelect: UIButton!
     @IBOutlet weak var btnCopy: UIButton!
-    @IBOutlet weak var btnWarn: UIButton!
+    @IBOutlet weak var btnShield: UIButton!
     @IBOutlet weak var imgMS: UIImageView!
     @IBOutlet weak var imgSS: UIImageView!
     @IBOutlet weak var lblType: UILabel!
@@ -25,6 +25,7 @@ class AccountCell: UITableViewCell {
     private var isLast: Bool = false
     private var onSelect: (() -> Void)?
     private var onCopy: (() -> Void)?
+    private var onShield: ((Int) -> Void)?
     private let iconW: CGFloat = 24
     private var cColor: UIColor = .clear
 
@@ -36,9 +37,9 @@ class AccountCell: UITableViewCell {
         bg.cornerRadius = 5.0
         innerEffectView.layer.cornerRadius = 5.0
         innerEffectView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        btnWarn.borderWidth = 1.0
-        btnWarn.borderColor = .black
-        btnWarn.cornerRadius = 16.0
+        btnShield.borderWidth = 1.0
+        btnShield.borderColor = .black
+        btnShield.cornerRadius = 16.0
         [btnSelect, btnCopy].forEach {
             $0?.borderWidth = 1.0
             $0?.borderColor = .white
@@ -57,12 +58,14 @@ class AccountCell: UITableViewCell {
                    sIdx: Int,
                    isLast: Bool,
                    onSelect: (() -> Void)?,
-                   onCopy: (() -> Void)?) {
+                   onCopy: (() -> Void)?,
+                   onShield: ((Int) -> Void)?) {
         self.cIdx = cIdx
         self.sIdx = sIdx
         self.isLast = isLast
         self.onSelect = onSelect
         self.onCopy = onCopy
+        self.onShield = onShield
 
         lblType.text = model.lblType
         lblName.text = NSLocalizedString(model.name, comment: "")
@@ -72,11 +75,11 @@ class AccountCell: UITableViewCell {
         imgMS.isHidden = model.isSS
         let session = model.account.session
         let enabled2FA = session?.twoFactorConfig?.anyEnabled ?? false
-        btnWarn.isHidden = onSelect == nil || model.isSS || enabled2FA
+        btnShield.isHidden = onSelect == nil || model.isSS || enabled2FA
         btcImg.isHidden = model.isLiquid
         model.isTest ? (cColor = model.isLiquid ? UIColor.gAccountTestLightBlue() : UIColor.gAccountTestGray()) :
         (cColor = model.isLiquid ? UIColor.gAccountLightBlue() : UIColor.gAccountOrange())
-        [bg, effectView, btnWarn].forEach {
+        [bg, effectView, btnShield].forEach {
             $0?.backgroundColor = cColor
         }
         btnSelect.isHidden = onSelect == nil
@@ -133,5 +136,9 @@ class AccountCell: UITableViewCell {
 
     @IBAction func btnCopy(_ sender: Any) {
         onCopy?()
+    }
+
+    @IBAction func btnShield(_ sender: Any) {
+        onShield?(cIdx)
     }
 }
