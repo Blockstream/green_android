@@ -26,6 +26,7 @@ class SecuritySelectViewController: UIViewController {
 
     var viewModel: SecuritySelectViewModel!
     weak var delegate: SecuritySelectViewControllerDelegate?
+    var visibilityState: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,7 +86,7 @@ class SecuritySelectViewController: UIViewController {
 
     func setContent() {
         title = "Create New Account"
-        btnAdvanced.setTitle("See Advanced Options", for: .normal)
+        btnAdvanced.setTitle( visibilityState ? "Hide Advanced Options" : "See Advanced Options", for: .normal)
     }
 
     func setStyle() {
@@ -93,6 +94,8 @@ class SecuritySelectViewController: UIViewController {
 
     @IBAction func btnAdvanced(_ sender: Any) {
         viewModel?.showAll.toggle()
+        visibilityState = !visibilityState
+        setContent()
     }
 }
 
