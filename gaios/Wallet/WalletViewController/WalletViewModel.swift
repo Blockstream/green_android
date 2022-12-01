@@ -116,10 +116,11 @@ class WalletViewModel {
                     cards.append(.reset(message))
                 }
             }
-            if AccountsManager.shared.current?.isEphemeral ?? false {
-                // Bip39 ephemeral wallet
-                cards.append(.ephemeralWallet)
-            }
+        }
+        // All sessions should login with the passphrase
+        if AccountsManager.shared.current?.isEphemeral ?? false {
+            // Bip39 ephemeral wallet
+            cards.append(.ephemeralWallet)
         }
         if session?.gdkNetwork.mainnet == false {
             // Testnet wallet
