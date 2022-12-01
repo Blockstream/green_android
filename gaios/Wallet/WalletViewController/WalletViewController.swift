@@ -291,6 +291,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                                hideBalance: hideBalance,
                                onHide: {[weak self] value in
                     self?.hideBalance = value
+
+                    self?.reloadSections([WalletSection.account], animated: false)
                 },
                                onAssets: {[weak self] in
                     self?.assetsScreen()
@@ -307,6 +309,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configure(model: viewModel.accountCellModels[indexPath.row],
                                cIdx: indexPath.row,
                                sIdx: sIdx,
+                               hideBalance: hideBalance,
                                isLast: indexPath.row == viewModel.accountCellModels.count - 1,
                                onSelect: {[weak self] in
                     self?.accountDetail(model: self?.viewModel.accountCellModels[indexPath.row])
@@ -434,7 +437,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch WalletSection(rawValue: indexPath.section) {
-        case .balance:
+        case .balance, .card, .footer:
             return nil
         default:
             return indexPath

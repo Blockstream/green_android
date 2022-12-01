@@ -31,6 +31,10 @@ class AccountViewController: UIViewController {
 
     var viewModel: AccountViewModel!
 
+    private var hideBalance: Bool {
+        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -225,6 +229,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configure(model: model,
                                cIdx: indexPath.row,
                                sIdx: sIdx,
+                               hideBalance: hideBalance,
                                isLast: true,
                                onSelect: nil,
                                onCopy: onCopy,

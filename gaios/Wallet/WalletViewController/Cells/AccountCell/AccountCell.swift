@@ -22,6 +22,7 @@ class AccountCell: UITableViewCell {
 
     private var sIdx: Int = 0
     private var cIdx: Int = 0
+    private var hideBalance: Bool = false
     private var isLast: Bool = false
     private var onSelect: (() -> Void)?
     private var onCopy: (() -> Void)?
@@ -56,12 +57,14 @@ class AccountCell: UITableViewCell {
     func configure(model: AccountCellModel,
                    cIdx: Int,
                    sIdx: Int,
+                   hideBalance: Bool,
                    isLast: Bool,
                    onSelect: (() -> Void)?,
                    onCopy: (() -> Void)?,
                    onShield: ((Int) -> Void)?) {
         self.cIdx = cIdx
         self.sIdx = sIdx
+        self.hideBalance = hideBalance
         self.isLast = isLast
         self.onSelect = onSelect
         self.onCopy = onCopy
@@ -71,6 +74,8 @@ class AccountCell: UITableViewCell {
         lblName.text = NSLocalizedString(model.name, comment: "")
         lblFiat.text = model.fiatStr
         lblAmount.text = model.balanceStr
+        lblFiat.isHidden = hideBalance
+        lblAmount.isHidden = hideBalance
         imgSS.isHidden = !model.isSS
         imgMS.isHidden = model.isSS
         let session = model.account.session
