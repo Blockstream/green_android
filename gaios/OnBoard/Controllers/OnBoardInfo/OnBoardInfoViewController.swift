@@ -58,6 +58,8 @@ class OnBoardInfoViewController: UIViewController {
         title = "Before You Backup"
         btnNext.setTitle("Show Recovery Phrase", for: .normal)
         btnPrint.setTitle("Print Backup Template", for: .normal)
+        // TODO: enable when an URL for a backup template is available
+        btnPrint.isHidden = true
     }
 
     func setStyle() {

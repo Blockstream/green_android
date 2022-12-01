@@ -3,7 +3,7 @@
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -23,7 +23,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kjq-28-aOv">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="417.5"/>
                                         <subviews>
-                                            <pageControl opaque="NO" enabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" currentPage="1" translatesAutoresizingMaskIntoConstraints="NO" id="a2g-ml-93v">
+                                            <pageControl opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" currentPage="1" translatesAutoresizingMaskIntoConstraints="NO" id="a2g-ml-93v">
                                                 <rect key="frame" x="102" y="0.0" width="116.5" height="26"/>
                                             </pageControl>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Write down the order and your recovery phrase" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VSw-06-66d">
@@ -39,7 +39,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="PgA-0n-Jaw">
-                                                <rect key="frame" x="36" y="234" width="248" height="143.5"/>
+                                                <rect key="frame" x="36" y="204" width="248" height="173.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8c8-2P-0Uz" userLabel="word1">
                                                         <rect key="frame" x="0.0" y="0.0" width="248" height="19.5"/>
@@ -48,31 +48,31 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o0n-U4-4DK" userLabel="word1">
-                                                        <rect key="frame" x="0.0" y="24" width="248" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="30" width="248" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SIr-jN-Crc" userLabel="word1">
-                                                        <rect key="frame" x="0.0" y="49" width="248" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="61" width="248" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nEZ-4U-I29" userLabel="word1">
-                                                        <rect key="frame" x="0.0" y="73.5" width="248" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="91.5" width="248" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NP4-N4-hD3" userLabel="word1">
-                                                        <rect key="frame" x="0.0" y="98.5" width="248" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="122.5" width="248" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t7P-42-Zsk" userLabel="word1">
-                                                        <rect key="frame" x="0.0" y="123" width="248" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="153" width="248" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -87,7 +87,7 @@
                                             <constraint firstAttribute="trailing" secondItem="PgA-0n-Jaw" secondAttribute="trailing" constant="36" id="JOd-ia-cGR"/>
                                             <constraint firstItem="VSw-06-66d" firstAttribute="leading" secondItem="Kjq-28-aOv" secondAttribute="leading" constant="36" id="ORM-IG-RWg"/>
                                             <constraint firstItem="A1p-oF-ppl" firstAttribute="trailing" secondItem="VSw-06-66d" secondAttribute="trailing" id="PuX-Td-WxF"/>
-                                            <constraint firstItem="PgA-0n-Jaw" firstAttribute="top" secondItem="A1p-oF-ppl" secondAttribute="bottom" constant="70" id="UIM-lP-iA5"/>
+                                            <constraint firstItem="PgA-0n-Jaw" firstAttribute="top" secondItem="A1p-oF-ppl" secondAttribute="bottom" constant="40" id="UIM-lP-iA5"/>
                                             <constraint firstItem="A1p-oF-ppl" firstAttribute="top" secondItem="VSw-06-66d" secondAttribute="bottom" constant="20" id="ggX-29-gzA"/>
                                             <constraint firstItem="PgA-0n-Jaw" firstAttribute="leading" secondItem="Kjq-28-aOv" secondAttribute="leading" constant="36" id="lij-No-HRt"/>
                                             <constraint firstItem="A1p-oF-ppl" firstAttribute="leading" secondItem="VSw-06-66d" secondAttribute="leading" id="nih-Rh-yuH"/>
@@ -191,7 +191,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a7L-nY-fqe">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="513.5"/>
                                         <subviews>
-                                            <pageControl opaque="NO" enabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" currentPage="1" translatesAutoresizingMaskIntoConstraints="NO" id="tUG-QF-tD3">
+                                            <pageControl opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" currentPage="1" translatesAutoresizingMaskIntoConstraints="NO" id="tUG-QF-tD3">
                                                 <rect key="frame" x="102" y="0.0" width="116.5" height="26"/>
                                             </pageControl>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recovery Phrase Check" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="frZ-9C-MWL">
