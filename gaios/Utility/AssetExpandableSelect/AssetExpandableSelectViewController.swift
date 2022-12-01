@@ -99,10 +99,23 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if viewModel.selectedSection == section {
+            return UITableView.automaticDimension
+        }
         return 0.1
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+
+        if viewModel.selectedSection == section {
+            let cellModel = viewModel.assetSelectCellModelsFilter[section]
+            if let createView = Bundle.main.loadNibNamed("AccountCreateFooterView", owner: self, options: nil)?.first as? AccountCreateFooterView {
+                createView.configure { [weak self] in
+                    self?.onCreate(asset: cellModel.asset)
+                }
+                return createView
+            }
+        }
         return nil
     }
 

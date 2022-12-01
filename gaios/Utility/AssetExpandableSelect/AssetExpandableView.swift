@@ -31,7 +31,8 @@ class AssetExpandableView: UIView {
         if open {
             bg.borderWidth = 2.0
             bg.borderColor = UIColor.gGreenMatrix()
-            createNew.isHidden = hasAccounts
+            // always closed, added action in section footer
+            createNew.isHidden = true // hasAccounts
         } else {
             bg.borderWidth = 0.0
         }

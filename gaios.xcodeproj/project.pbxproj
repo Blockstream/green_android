@@ -231,6 +231,8 @@
 		34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */; };
 		34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */; };
 		34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */; };
+		34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */; };
+		34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */; };
 		34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D12636A12700FB8011 /* HWWCell.swift */; };
 		34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D42636A12700FB8011 /* Enums.swift */; };
 		34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34BAD9D52636A12700FB8011 /* HWW.storyboard */; };
@@ -656,6 +658,8 @@
 		34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCreateViewController.swift; sourceTree = "<group>"; };
 		34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerifyViewController.swift; sourceTree = "<group>"; };
 		34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAlertManager.swift; sourceTree = "<group>"; };
+		34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AccountCreateFooterView.xib; path = gaios/Utility/AssetExpandableSelect/AccountCreateFooterView.xib; sourceTree = SOURCE_ROOT; };
+		34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountCreateFooterView.swift; path = gaios/Utility/AssetExpandableSelect/AccountCreateFooterView.swift; sourceTree = SOURCE_ROOT; };
 		34BAD9D12636A12700FB8011 /* HWWCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWCell.swift; sourceTree = "<group>"; };
 		34BAD9D42636A12700FB8011 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		34BAD9D52636A12700FB8011 /* HWW.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HWW.storyboard; sourceTree = "<group>"; };
@@ -994,6 +998,7 @@
 		3420470D291B913E00EDE945 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				34B8DA092938FAB1001DA9B9 /* AccountCreateFooterView */,
 				3457F4BB292408BE00EF33B5 /* AssetExpandableSelect */,
 				346752EC291E557000256132 /* AccountSelect */,
 				3420471E291C127E00EDE945 /* AssetSelect */,
@@ -1632,6 +1637,15 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		34B8DA092938FAB1001DA9B9 /* AccountCreateFooterView */ = {
+			isa = PBXGroup;
+			children = (
+				34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */,
+				34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */,
+			);
+			path = AccountCreateFooterView;
+			sourceTree = "<group>";
+		};
 		34BAD9CF2636A12700FB8011 /* HWW */ = {
 			isa = PBXGroup;
 			children = (
@@ -2244,6 +2258,7 @@
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
 				34A75B67292B6B78007995D7 /* OnBoardInfoCell.xib in Resources */,
+				34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */,
 				342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
@@ -2488,6 +2503,7 @@
 				81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */,
 				346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
+				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,
 				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */,
