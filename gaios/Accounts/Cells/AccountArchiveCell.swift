@@ -14,6 +14,7 @@ class AccountArchiveCell: UITableViewCell {
 
     var action: VoidToVoid?
     let iconW: CGFloat = 18
+    private var cColor: UIColor = .clear
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,9 +36,15 @@ class AccountArchiveCell: UITableViewCell {
         iconsView.isHidden = true
     }
 
-    func configure(account: WalletItem, action: VoidToVoid? = nil, color: UIColor, isLiquid: Bool) {
+    func configure(account: WalletItem, action: VoidToVoid? = nil) {
 
-        bg.backgroundColor = color
+        let isLiquid = account.gdkNetwork.liquid
+        let isTest = !account.gdkNetwork.mainnet
+
+        isTest ? (cColor = isLiquid ? UIColor.gAccountTestLightBlue() : UIColor.gAccountTestGray()) :
+        (cColor = isLiquid ? UIColor.gAccountLightBlue() : UIColor.gAccountOrange())
+
+        bg.backgroundColor = cColor
         self.lblAccountTitle.text = account.localizedName()
 
         if let converted = Balance.fromSatoshi(account.satoshi?["btc"] ?? 0) {

@@ -56,13 +56,6 @@ class AccountArchiveViewController: UIViewController {
         viewModel.reloadSections = reloadSections
     }
 
-    func getColor(_ account: WalletItem) -> UIColor {
-        if account.network == AvailableNetworks.bitcoin.rawValue { return AvailableNetworks.bitcoin.color() }
-        if account.network == AvailableNetworks.liquid.rawValue { return AvailableNetworks.liquid.color() }
-        if account.network == AvailableNetworks.testnet.rawValue { return AvailableNetworks.testnet.color() }
-        return AvailableNetworks.testnetLiquid.color()
-    }
-
     func presentUnarchiveMenu(frame: CGRect, index: Int) {
         let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
         if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuUnarchiveViewController") as? PopoverMenuUnarchiveViewController {
@@ -105,7 +98,7 @@ extension AccountArchiveViewController: UITableViewDelegate, UITableViewDataSour
                         self?.presentUnarchiveMenu(frame: cell.frame, index: indexPath.row)
                     }
                 let account = viewModel.subaccounts[indexPath.row]
-                cell.configure(account: account, action: action, color: getColor(account), isLiquid: account.gdkNetwork.liquid)
+                cell.configure(account: account, action: action)
                 cell.selectionStyle = .none
                 return cell
             }
