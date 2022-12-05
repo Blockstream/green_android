@@ -57,21 +57,21 @@
                                                 <constraint firstAttribute="height" constant="1" id="ZB6-uA-psR"/>
                                             </constraints>
                                         </view>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rdb-1o-RxB">
+                                        <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rdb-1o-RxB">
                                             <rect key="frame" x="0.0" y="61" width="343" height="2"/>
                                             <color key="backgroundColor" name="gGreenMatrix"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="2" id="hVG-fx-3LN"/>
                                             </constraints>
                                         </view>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hok-6R-fKT">
+                                        <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hok-6R-fKT">
                                             <rect key="frame" x="0.0" y="0.0" width="2" height="63"/>
                                             <color key="backgroundColor" name="gGreenMatrix"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="2" id="GwU-FG-ZZQ"/>
                                             </constraints>
                                         </view>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vJc-UQ-EoS">
+                                        <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vJc-UQ-EoS">
                                             <rect key="frame" x="341" y="0.0" width="2" height="63"/>
                                             <color key="backgroundColor" name="gGreenMatrix"/>
                                             <constraints>

@@ -40,6 +40,6 @@ class AccountSelectSubCell: UITableViewCell {
         lblType.text = security + " / " + type
         borderLeft.isHidden = false
         borderRight.isHidden = false
-        borderBottom.isHidden = isLast == false
+        borderBottom.isHidden = true // isLast == false
     }
 }

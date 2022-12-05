@@ -14,6 +14,11 @@ class AccountCreateFooterView: UIView {
         btnDisclose.cornerRadius = 4.0
         lblTitle.text = "Create new account"
         self.onTap = onTap
+
+        createNew.borderWidth = 2.0
+        createNew.borderColor = UIColor.gGreenMatrix()
+        createNew.layer.cornerRadius = 5
+        createNew.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
     }
 
     @IBAction func btnOnCreate(_ sender: Any) {

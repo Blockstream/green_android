@@ -27,6 +27,8 @@ class AnyAssetExpandableView: UIView {
         if open {
             bg.borderWidth = 2.0
             bg.borderColor = UIColor.gGreenMatrix()
+            bg.layer.cornerRadius = 5
+            bg.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
             // always closed, added action in section footer
             createNew.isHidden = true // hasAccounts
             accountTip.isHidden = hasAccounts
