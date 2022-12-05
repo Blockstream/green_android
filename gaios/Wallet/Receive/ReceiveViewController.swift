@@ -94,7 +94,7 @@ class ReceiveViewController: UIViewController {
     func reload() {
         iconAsset.image = viewModel.assetIcon()
         lblAsset.text = viewModel.assetName()
-        lblAccount.text = viewModel.accountType()
+        lblAccount.text = viewModel.accountType().uppercased()
         lblAddress.text = viewModel.address?.address
         btnEdit.isHidden = true //self.viewModel.account.gdkNetwork.liquid
         if let address = viewModel.address, !address.address.isEmpty {

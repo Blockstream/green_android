@@ -3,7 +3,7 @@ import UIKit
 class DropAlert: UIView {
 
     var delay: Double = 2.0
-    var height: CGFloat = 90
+    var height: CGFloat = 98
     var duration = 0.3
 
     var messageFont: UIFont = UIFont.boldSystemFont(ofSize: 16) {
@@ -107,7 +107,7 @@ class DropAlert: UIView {
                                          toItem: self,
                                          attribute: .bottom,
                                          multiplier: 1,
-                                         constant: -2))
+                                         constant: -10))
 
         addConstraint(NSLayoutConstraint(item: messageLabel,
                                          attribute: .trailing,

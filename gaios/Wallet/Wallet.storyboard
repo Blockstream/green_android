@@ -553,7 +553,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jtd-WH-ITk">
-                                        <rect key="frame" x="0.0" y="27" width="374" height="84"/>
+                                        <rect key="frame" x="0.0" y="27" width="374" height="104"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T7H-8v-ujw">
                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="84"/>
@@ -591,12 +591,9 @@
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                         <state key="normal" image="ic_pencil"/>
-                                                        <connections>
-                                                            <action selector="btnChangeReceiver:" destination="pu3-Id-NaL" eventType="touchUpInside" id="sof-3N-Nab"/>
-                                                        </connections>
                                                     </button>
                                                 </subviews>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <color key="backgroundColor" name="gGrayCard"/>
                                                 <constraints>
                                                     <constraint firstItem="xeJ-Ya-YAX" firstAttribute="centerY" secondItem="T7H-8v-ujw" secondAttribute="centerY" id="1Yz-bx-jq5"/>
                                                     <constraint firstAttribute="bottom" secondItem="T28-et-V70" secondAttribute="bottom" constant="25" id="9SH-gp-BYX"/>
@@ -608,23 +605,34 @@
                                                     <constraint firstItem="T28-et-V70" firstAttribute="leading" secondItem="T7H-8v-ujw" secondAttribute="leading" constant="16" id="vYD-tX-yhi"/>
                                                 </constraints>
                                             </view>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AaB-9N-DmV">
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="84"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <connections>
+                                                    <action selector="btnChangeReceiver:" destination="pu3-Id-NaL" eventType="touchUpInside" id="z0w-Op-FOX"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
-                                        <color key="backgroundColor" name="gGrayCard"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="bottom" secondItem="T7H-8v-ujw" secondAttribute="bottom" id="2Qq-2i-bL0"/>
+                                            <constraint firstAttribute="bottom" secondItem="T7H-8v-ujw" secondAttribute="bottom" constant="20" id="2Qq-2i-bL0"/>
                                             <constraint firstAttribute="trailing" secondItem="T7H-8v-ujw" secondAttribute="trailing" id="Ghh-Ja-fZd"/>
                                             <constraint firstItem="T7H-8v-ujw" firstAttribute="leading" secondItem="Jtd-WH-ITk" secondAttribute="leading" id="H2r-3Q-nvh"/>
+                                            <constraint firstItem="AaB-9N-DmV" firstAttribute="leading" secondItem="T7H-8v-ujw" secondAttribute="leading" id="JPs-Iw-OFk"/>
+                                            <constraint firstItem="AaB-9N-DmV" firstAttribute="top" secondItem="T7H-8v-ujw" secondAttribute="top" id="Oei-qq-CLj"/>
                                             <constraint firstItem="T7H-8v-ujw" firstAttribute="top" secondItem="Jtd-WH-ITk" secondAttribute="top" id="knk-P6-suY"/>
+                                            <constraint firstItem="AaB-9N-DmV" firstAttribute="trailing" secondItem="T7H-8v-ujw" secondAttribute="trailing" id="sAq-0m-515"/>
+                                            <constraint firstItem="AaB-9N-DmV" firstAttribute="bottom" secondItem="T7H-8v-ujw" secondAttribute="bottom" id="wMv-DO-ZtA"/>
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_address" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nnn-Rg-9pI">
-                                        <rect key="frame" x="0.0" y="121" width="374" height="17"/>
+                                        <rect key="frame" x="0.0" y="141" width="374" height="17"/>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="0.40318961466165415" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LJQ-ax-s3s">
-                                        <rect key="frame" x="0.0" y="148" width="374" height="386"/>
+                                        <rect key="frame" x="0.0" y="168" width="374" height="366"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ouH-Jn-1tH">
                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="283"/>
@@ -666,9 +674,9 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kpC-nD-tnO">
-                                                        <rect key="frame" x="105.5" y="29.5" width="143.5" height="37"/>
+                                                        <rect key="frame" x="107.5" y="29.5" width="139.5" height="37"/>
                                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                         <inset key="contentEdgeInsets" minX="20" minY="10" maxX="10" maxY="10"/>
                                                         <inset key="imageEdgeInsets" minX="-20" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                         <state key="normal" title="Copy Address" image="ic_copy_new">
@@ -703,7 +711,7 @@
                                                 </connections>
                                             </button>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="fC2-YC-JF4">
-                                                <rect key="frame" x="36" y="303" width="302" height="67"/>
+                                                <rect key="frame" x="36" y="303" width="302" height="47"/>
                                             </stackView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -732,7 +740,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="G5A-ix-HI1"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <inset key="imageEdgeInsets" minX="-5" minY="-5" maxX="4" maxY="-5"/>
                                         <state key="normal" title="btn_edit">
@@ -748,7 +756,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="772-5K-eav"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         <state key="normal" title="btn_share">
@@ -764,7 +772,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="WeK-kI-Nfo"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="btn_verify"/>
                                         <connections>
@@ -777,7 +785,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="rtN-8f-Pd9"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="more_options"/>
                                         <connections>
@@ -801,7 +809,7 @@
                     </navigationItem>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
-                        <outlet property="bgAssetCard" destination="Jtd-WH-ITk" id="Daj-Ca-W1Z"/>
+                        <outlet property="bgAssetCard" destination="T7H-8v-ujw" id="zFd-z9-mMb"/>
                         <outlet property="bgCardQR" destination="ouH-Jn-1tH" id="xb9-Cj-fug"/>
                         <outlet property="btnCopy" destination="kpC-nD-tnO" id="NcU-I3-8xP"/>
                         <outlet property="btnEdit" destination="WCx-Mp-7g0" id="gXf-BY-vPf"/>
