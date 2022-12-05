@@ -23,7 +23,7 @@ enum AccountPrefs: Int, CaseIterable {
         case .archive:
             return UIImage(named: "ic_dialog_arrow_down")!
         //case .enhanceSecurity:
-        //    return UIImage(named: "ic_shield_check")!
+        //    return UIImage(named: "ic_dialog_shield_check")!
         }
     }
 

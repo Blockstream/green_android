@@ -16,9 +16,9 @@ enum NetworkPrefs: Int, CaseIterable {
     var icon: UIImage {
         switch self {
         case .mainnet:
-            return UIImage(named: "ic_dialog_gear_six")!
+            return UIImage(named: "ic_dialog_sym_mainnet")!.maskWithColor(color: .white)
         case .testnet:
-            return UIImage(named: "ic_dialog_gear_six")!
+            return UIImage(named: "ic_dialog_sym_testnet")!.maskWithColor(color: .white)
         }
     }
 
