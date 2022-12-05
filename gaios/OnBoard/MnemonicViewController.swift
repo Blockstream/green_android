@@ -81,7 +81,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         helpButton.setImage(UIImage(named: "ic_help"), for: .normal)
         helpButton.addTarget(self, action: #selector(helpButtonTapped), for: .touchUpInside)
         let qrButton = UIButton(type: .system)
-        qrButton.setImage(UIImage(named: "ic_qr"), for: .normal)
+        qrButton.setImage(UIImage(named: "ic_any_asset"), for: .normal)
         qrButton.addTarget(self, action: #selector(qrButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: helpButton), UIBarButtonItem(customView: qrButton)]
     }
