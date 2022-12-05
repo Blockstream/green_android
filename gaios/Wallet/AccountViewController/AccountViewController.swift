@@ -18,12 +18,18 @@ enum AccountPreferences: String, CaseIterable {
 
 class AccountViewController: UIViewController {
 
+    enum FooterType {
+        case noTransactions
+        case none
+    }
+
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var actionsBg: UIView!
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var btnReceive: UIButton!
 
     private var headerH: CGFloat = 54.0
+    private var footerH: CGFloat = 54.0
     private var cardH: CGFloat = 64.0
     private var cardHc: CGFloat = 184.0
 
@@ -279,6 +285,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch AccountSection(rawValue: section) {
+        case .transaction:
+            return viewModel.cachedTransactions.count == 0 ? footerH : 1.0
         case .footer:
             return 100.0
         default:
@@ -309,8 +317,12 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-
-        return nil
+        switch AccountSection(rawValue: section) {
+        case .transaction:
+            return viewModel.cachedTransactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
+        default:
+            return footerView(.none)
+        }
     }
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
@@ -393,6 +405,59 @@ extension AccountViewController {
         ])
 
         return section
+    }
+
+    func footerView(_ type: FooterType) -> UIView {
+
+        switch type {
+        case .none:
+            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
+            section.backgroundColor = .clear
+            return section
+        case .noTransactions:
+            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
+            section.backgroundColor = .clear
+
+            let lblNoTransactions = UILabel(frame: .zero)
+            lblNoTransactions.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+            lblNoTransactions.textColor = UIColor.gGrayTxt()
+            lblNoTransactions.numberOfLines = 0
+            lblNoTransactions.textAlignment = .center
+            lblNoTransactions.text = NSLocalizedString("id_your_transactions_will_be_shown", comment: "")
+            lblNoTransactions.translatesAutoresizingMaskIntoConstraints = false
+            section.addSubview(lblNoTransactions)
+
+            NSLayoutConstraint.activate([
+                lblNoTransactions.topAnchor.constraint(equalTo: section.topAnchor, constant: 0.0),
+                lblNoTransactions.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: 0.0),
+                lblNoTransactions.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 40.0),
+                lblNoTransactions.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -40.0)
+            ])
+
+            if viewModel.fetchingTxs {
+                let loader = UIActivityIndicatorView(style: .white)
+                section.addSubview(loader)
+                loader.startAnimating()
+                loader.translatesAutoresizingMaskIntoConstraints = false
+                let horizontalConstraint = NSLayoutConstraint(item: loader,
+                                                              attribute: .left,
+                                                              relatedBy: .equal,
+                                                              toItem: section,
+                                                              attribute: .left,
+                                                              multiplier: 1,
+                                                              constant: 20.0)
+                let verticalConstraint = NSLayoutConstraint(item: loader,
+                                                            attribute: .centerY,
+                                                            relatedBy: .equal,
+                                                            toItem: lblNoTransactions,
+                                                            attribute: .centerY,
+                                                            multiplier: 1,
+                                                            constant: 0)
+                NSLayoutConstraint.activate([horizontalConstraint, verticalConstraint])
+            }
+            return section
+        }
+
     }
 }
 

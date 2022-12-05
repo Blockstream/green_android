@@ -64,13 +64,18 @@ class AccountViewModel {
                     self.txCellModels = []
                 }
                 print("-----------> \(self.page) \(txs.count)")
-                self.page += 1
-                self.cachedTransactions += txs
-                self.txCellModels += txs
-                    .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
-                    .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
+                if txs.count > 0 {
+                    self.page += 1
+                    self.cachedTransactions += txs
+                    self.txCellModels += txs
+                        .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
+                        .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
+                }
             }.ensure {
                 self.fetchingTxs = false
+                if self.txCellModels.count == 0 {
+                    self.reloadSections?( [AccountSection.transaction], true )
+                }
             }.catch { err in
                 print(err)
             }
