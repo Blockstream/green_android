@@ -391,6 +391,7 @@ class LoginViewController: UIViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.index = nil
+            vc.prefill = account.name
             present(vc, animated: false, completion: nil)
         }
     }

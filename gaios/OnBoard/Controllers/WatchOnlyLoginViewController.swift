@@ -135,6 +135,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.index = nil
             vc.delegate = self
+            vc.prefill = account.name
             present(vc, animated: false, completion: nil)
         }
     }

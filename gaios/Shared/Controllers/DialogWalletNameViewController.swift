@@ -29,6 +29,7 @@ class DialogWalletNameViewController: KeyboardViewController {
 
     var buttonConstraint: NSLayoutConstraint?
     var isAccountRename = false
+    var prefill: String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +45,7 @@ class DialogWalletNameViewController: KeyboardViewController {
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         btnSave.cornerRadius = 4.0
         nameTextField.placeholder = ""
+        nameTextField.text = prefill
         nameTextField.setLeftPaddingPoints(10.0)
         nameTextField.setRightPaddingPoints(10.0)
 
@@ -90,7 +92,7 @@ class DialogWalletNameViewController: KeyboardViewController {
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
             self.buttonConstraint?.isActive = false
             let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-            self.buttonConstraint = self.btnSave.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height)
+            self.buttonConstraint = self.btnSave.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height - 14.0)
             self.buttonConstraint?.isActive = true
         })
     }

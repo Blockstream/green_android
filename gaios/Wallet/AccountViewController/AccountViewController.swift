@@ -149,6 +149,7 @@ class AccountViewController: UIViewController {
             vc.isAccountRename = true
             vc.delegate = self
             vc.index = nil
+            vc.prefill = viewModel.account.localizedName()
             present(vc, animated: false, completion: nil)
         }
     }
@@ -276,7 +277,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch AccountSection(rawValue: section) {
-        case .transaction, .assets:
+        case .transaction: // , .assets:
             return headerH
         default:
             return 0.1
@@ -310,7 +311,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .transaction:
             return headerView( "Latest transactions" )
         case .assets:
-            return headerView( "Balance" )
+            return nil // headerView( "Balance" )
         default:
             return nil
         }
