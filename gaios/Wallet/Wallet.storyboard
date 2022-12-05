@@ -931,7 +931,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="848"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_welcome_wallet" translatesAutoresizingMaskIntoConstraints="NO" id="OCh-lR-m3K">
-                                                <rect key="frame" x="35" y="200" width="344" height="179.5"/>
+                                                <rect key="frame" x="22" y="200" width="357" height="179.5"/>
                                             </imageView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="D2N-Uc-aV4">
                                                 <rect key="frame" x="35" y="409.5" width="344" height="48.5"/>
@@ -970,7 +970,7 @@
                                         <constraints>
                                             <constraint firstItem="9Kr-eh-Uy5" firstAttribute="top" secondItem="D2N-Uc-aV4" secondAttribute="bottom" constant="20" id="8r2-VU-qWe"/>
                                             <constraint firstItem="D2N-Uc-aV4" firstAttribute="leading" secondItem="lg4-SM-cHo" secondAttribute="leading" constant="35" id="ALl-Sg-Gud"/>
-                                            <constraint firstItem="OCh-lR-m3K" firstAttribute="leading" secondItem="lg4-SM-cHo" secondAttribute="leading" constant="35" id="CKI-kE-pkV"/>
+                                            <constraint firstItem="OCh-lR-m3K" firstAttribute="leading" secondItem="lg4-SM-cHo" secondAttribute="leading" constant="22" id="CKI-kE-pkV"/>
                                             <constraint firstItem="D2N-Uc-aV4" firstAttribute="top" secondItem="OCh-lR-m3K" secondAttribute="bottom" constant="30" id="cBZ-rO-nFF"/>
                                             <constraint firstAttribute="trailing" secondItem="D2N-Uc-aV4" secondAttribute="trailing" constant="35" id="hUz-9e-CIb"/>
                                             <constraint firstAttribute="trailing" secondItem="OCh-lR-m3K" secondAttribute="trailing" constant="35" id="i01-LB-clU"/>
