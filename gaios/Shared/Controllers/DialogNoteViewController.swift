@@ -32,7 +32,7 @@ class DialogNoteViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = NSLocalizedString("id_my_notes", comment: "")
+        lblTitle.text = NSLocalizedString("id_my_notes", comment: "").lowercased().firstUppercased
 
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         btnSave.cornerRadius = 4.0
@@ -78,7 +78,7 @@ class DialogNoteViewController: KeyboardViewController {
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
             self.buttonConstraint?.isActive = false
             let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-            self.buttonConstraint = self.btnSave.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height)
+            self.buttonConstraint = self.btnSave.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height - 14.0)
             self.buttonConstraint?.isActive = true
         })
     }
