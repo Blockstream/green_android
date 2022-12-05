@@ -78,7 +78,7 @@
                             <constraint firstAttribute="width" constant="34" id="ovp-we-O4D"/>
                         </constraints>
                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                        <state key="normal" image="ic_eye_flat"/>
+                        <state key="normal" image="ic_eye_closed"/>
                         <connections>
                             <action selector="btnEye:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Jtr-vL-XmX"/>
                         </connections>
@@ -133,9 +133,9 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="ic_eye_flat" width="28.5" height="28"/>
+        <image name="ic_eye_closed" width="28" height="28"/>
         <namedColor name="gGreenMatrix">
-            <color red="0.0" green="0.71372549019607845" blue="0.43529411764705883" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
