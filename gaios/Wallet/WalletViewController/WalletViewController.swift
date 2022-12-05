@@ -523,7 +523,7 @@ extension WalletViewController {
 
         NSLayoutConstraint.activate([
             title.centerYAnchor.constraint(equalTo: section.centerYAnchor, constant: 10.0),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 20),
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 25),
             title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: 20)
         ])
 

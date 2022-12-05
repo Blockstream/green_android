@@ -23,6 +23,7 @@ class BalanceCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         lblBalanceTitle.text = "Total Balance"
+        lblBalanceTitle.font = .systemFont(ofSize: 18.0, weight: .heavy)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

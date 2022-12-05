@@ -19,16 +19,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="KrQ-SM-fsW">
-                        <rect key="frame" x="20" y="44.5" width="364" height="122.5"/>
+                        <rect key="frame" x="25" y="44.5" width="359" height="122.5"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="lbl_balance_value" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cwj-w8-ZQr">
-                                <rect key="frame" x="0.0" y="0.0" width="364" height="103"/>
+                                <rect key="frame" x="0.0" y="0.0" width="359" height="103"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="34"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_balance_fiat" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pwm-j0-vaS">
-                                <rect key="frame" x="0.0" y="103" width="364" height="19.5"/>
+                                <rect key="frame" x="0.0" y="103" width="359" height="19.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -42,17 +42,17 @@
                         </constraints>
                     </stackView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EqE-af-hKK">
-                        <rect key="frame" x="0.0" y="34.5" width="404" height="142.5"/>
+                        <rect key="frame" x="5" y="34.5" width="399" height="142.5"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_balance_title" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UWo-Pa-oSR">
-                        <rect key="frame" x="20" y="20" width="129.5" height="19.5"/>
+                        <rect key="frame" x="25" y="20" width="129.5" height="19.5"/>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                         <color key="textColor" white="1" alpha="0.40000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XZK-xt-jFK">
-                        <rect key="frame" x="20" y="177" width="22" height="22"/>
+                        <rect key="frame" x="25" y="177" width="22" height="22"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="-5" translatesAutoresizingMaskIntoConstraints="NO" id="q8A-6Q-39Y">
                                 <rect key="frame" x="2" y="2" width="18" height="18"/>
@@ -72,7 +72,7 @@
                         </constraints>
                     </view>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FAM-KX-0hP">
-                        <rect key="frame" x="159.5" y="13" width="34" height="34"/>
+                        <rect key="frame" x="164.5" y="13" width="34" height="34"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="34" id="HQ2-c8-rxC"/>
                             <constraint firstAttribute="width" constant="34" id="ovp-we-O4D"/>
@@ -84,7 +84,7 @@
                         </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kER-qn-FtF">
-                        <rect key="frame" x="52" y="172" width="332" height="32"/>
+                        <rect key="frame" x="57" y="172" width="327" height="32"/>
                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                         <state key="normal" title="btn_assets">
@@ -97,15 +97,15 @@
                 </subviews>
                 <color key="backgroundColor" red="0.074509803921568626" green="0.086274509803921567" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
-                    <constraint firstItem="UWo-Pa-oSR" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="4ID-P9-4uA"/>
+                    <constraint firstItem="UWo-Pa-oSR" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="4ID-P9-4uA"/>
                     <constraint firstAttribute="bottom" secondItem="XZK-xt-jFK" secondAttribute="bottom" constant="20" id="D7b-Rp-rni"/>
                     <constraint firstAttribute="trailing" secondItem="KrQ-SM-fsW" secondAttribute="trailing" constant="20" id="F1t-WS-GNd"/>
                     <constraint firstItem="FAM-KX-0hP" firstAttribute="centerY" secondItem="UWo-Pa-oSR" secondAttribute="centerY" id="G5R-Y0-d9L"/>
                     <constraint firstItem="EqE-af-hKK" firstAttribute="bottom" secondItem="KrQ-SM-fsW" secondAttribute="bottom" constant="10" id="GUu-lO-kXD"/>
-                    <constraint firstItem="KrQ-SM-fsW" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="Ltb-J2-zhc"/>
+                    <constraint firstItem="KrQ-SM-fsW" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="Ltb-J2-zhc"/>
                     <constraint firstItem="XZK-xt-jFK" firstAttribute="top" secondItem="KrQ-SM-fsW" secondAttribute="bottom" constant="10" id="MJN-pb-g01"/>
                     <constraint firstItem="EqE-af-hKK" firstAttribute="leading" secondItem="KrQ-SM-fsW" secondAttribute="leading" constant="-20" id="NIY-hy-MkF"/>
-                    <constraint firstItem="XZK-xt-jFK" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="NUT-e1-6Ux"/>
+                    <constraint firstItem="XZK-xt-jFK" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="NUT-e1-6Ux"/>
                     <constraint firstItem="EqE-af-hKK" firstAttribute="trailing" secondItem="KrQ-SM-fsW" secondAttribute="trailing" constant="20" id="eyb-Ax-cMZ"/>
                     <constraint firstItem="kER-qn-FtF" firstAttribute="centerY" secondItem="XZK-xt-jFK" secondAttribute="centerY" id="ezu-F3-bXK"/>
                     <constraint firstItem="UWo-Pa-oSR" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="fDe-qh-eCR"/>
