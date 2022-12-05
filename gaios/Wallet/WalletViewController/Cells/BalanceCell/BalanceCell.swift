@@ -98,7 +98,7 @@ class BalanceCell: UITableViewCell {
         if hideBalance {
             blurArea.subviews.forEach {$0.removeFromSuperview()}
             blurArea.addSubview(blurredView)
-            btnEye.setImage(UIImage(named: "ic_eye_closed"), for: .normal)
+            btnEye.setImage(UIImage(named: "ic_eye_flat"), for: .normal)
         } else {
             blurArea.subviews.forEach {$0.removeFromSuperview()}
             btnEye.setImage(UIImage(named: "ic_eye_closed"), for: .normal)
