@@ -72,7 +72,8 @@ class LandingViewController: UIViewController {
     }
 
     func updateUI() {
-        let isOn = btnCheckTerms.isSelected
+        let isOn = UserDefaults.standard.bool(forKey: AppStorage.userHasAgreedTerms)
+        btnCheckTerms.isSelected = isOn
         btnNewWallet.isEnabled = isOn
         btnRestoreWallet.isEnabled = isOn
         btnWatchOnly.isEnabled = isOn
@@ -154,6 +155,7 @@ class LandingViewController: UIViewController {
     }
 
     @IBAction func btnCheckTerms(_ sender: Any) {
+        UserDefaults.standard.set(btnCheckTerms.isSelected, forKey: AppStorage.userHasAgreedTerms)
         updateUI()
     }
 
