@@ -189,18 +189,19 @@ class RecoveryVerifyViewController: UIViewController {
             rangeEnd = questionPosition + 1
         }
 
-        let question = "  ______   "
+        let question = " ______   "
 //        var str = ""
         let attributedString = NSMutableAttributedString(string: "")
         for idx in rangeStart...rangeEnd {
+
+            let prefix = "\(idx + 1)."
             if mnemonic[questionPosition] == mnemonic[idx] {
-                attributedString.append(NSMutableAttributedString(string: question))
+                attributedString.append(NSMutableAttributedString(string: " \(prefix)\(question)"))
             } else {
-                let prefix = "\(idx + 1)."
                 attributedString.append(NSMutableAttributedString(string: "\(prefix) \(mnemonic[idx]) "))
-                attributedString.setColor(color: UIColor.customMatrixGreen(), forText: question)
-                attributedString.setColor(color: UIColor.customMatrixGreen(), forText: prefix)
             }
+            attributedString.setColor(color: UIColor.customMatrixGreen(), forText: question)
+            attributedString.setColor(color: UIColor.customMatrixGreen(), forText: prefix)
         }
         textLabel.attributedText = attributedString
         updateHint()
