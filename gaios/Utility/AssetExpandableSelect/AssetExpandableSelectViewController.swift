@@ -180,6 +180,12 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
             }
         }
         tableView.reloadSections(IndexSet([section]), with: .automatic)
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
+            if self.viewModel.accountSelectSubCellModels.count > 0 && self.viewModel.selectedSection > 0 {
+                self.tableView?.scrollToRow(at: IndexPath(row: 0, section: section), at: .middle, animated: true)
+            }
+        }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
