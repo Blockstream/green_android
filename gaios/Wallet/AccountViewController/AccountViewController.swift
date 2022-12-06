@@ -423,16 +423,22 @@ extension AccountViewController {
             lblNoTransactions.font = UIFont.systemFont(ofSize: 14, weight: .regular)
             lblNoTransactions.textColor = UIColor.gGrayTxt()
             lblNoTransactions.numberOfLines = 0
-            lblNoTransactions.textAlignment = .center
             lblNoTransactions.text = NSLocalizedString("id_your_transactions_will_be_shown", comment: "")
             lblNoTransactions.translatesAutoresizingMaskIntoConstraints = false
             section.addSubview(lblNoTransactions)
 
+            var padding: CGFloat = 50.0
+            lblNoTransactions.textAlignment = .left
+
+            if !viewModel.fetchingTxs {
+                padding = 25.0
+            }
+
             NSLayoutConstraint.activate([
                 lblNoTransactions.topAnchor.constraint(equalTo: section.topAnchor, constant: 0.0),
                 lblNoTransactions.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: 0.0),
-                lblNoTransactions.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 40.0),
-                lblNoTransactions.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -40.0)
+                lblNoTransactions.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: padding),
+                lblNoTransactions.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: 0.0)
             ])
 
             if viewModel.fetchingTxs {
