@@ -161,9 +161,11 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .BackUpRecoveryPhrase:
-            let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicAuthViewController")
-            navigationController?.pushViewController(vc, animated: true)
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController") as? OnBoardInfoViewController {
+                vc.isSettingDisplay = true
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .ChangePin:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {

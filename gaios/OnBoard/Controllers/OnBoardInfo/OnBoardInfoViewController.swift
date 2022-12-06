@@ -1,5 +1,6 @@
 import UIKit
 import PromiseKit
+import LocalAuthentication
 
 enum OnBoardInfoSection: Int, CaseIterable {
     case info
@@ -27,6 +28,8 @@ class OnBoardInfoViewController: UIViewController {
     var viewModel = OnBoardInfoViewModel()
     static var flowType = OnBoardInfoFlowType.onboarding
     static weak var delegate: AccountCreateRecoveryKeyDelegate?
+
+    var isSettingDisplay: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,8 +89,31 @@ class OnBoardInfoViewController: UIViewController {
         }
     }
 
+    func authenticated(successAction: @escaping () -> Void) {
+        let context = LAContext()
+        var error: NSError?
+        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authentication" ) { success, _ in
+                if success {
+                    successAction()
+                }
+            }
+        }
+    }
+
     @IBAction func btnNext(_ sender: Any) {
-        selectLength()
+        if isSettingDisplay {
+            self.authenticated {
+                DispatchQueue.main.async { [weak self] in
+                    
+                    let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+                    let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController")
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            }
+        } else {
+            selectLength()
+        }
     }
 
     @IBAction func btnPrint(_ sender: Any) {
