@@ -8,6 +8,7 @@ class AssetSelectCell: UITableViewCell {
     @IBOutlet weak var lblAsset: UILabel!
     @IBOutlet weak var ampSubview: UIView!
     @IBOutlet weak var lblAmp: UILabel!
+    @IBOutlet weak var iconEdit: UIImageView!
 
     class var identifier: String { return String(describing: self) }
 
@@ -18,7 +19,8 @@ class AssetSelectCell: UITableViewCell {
         assetSubview.cornerRadius = 5.0
     }
 
-    func configure(model: AssetSelectCellModel) {
+    func configure(model: AssetSelectCellModel,
+                   showEditIcon: Bool) {
         let name = model.asset?.name ?? model.asset?.assetId
         self.lblAsset.text = name
         self.imgView?.image = model.icon
@@ -32,5 +34,7 @@ class AssetSelectCell: UITableViewCell {
             assetSubview.borderWidth = 2.0
             assetSubview.borderColor = UIColor.gGreenMatrix()
         }
+
+        iconEdit.isHidden = !showEditIcon
     }
 }

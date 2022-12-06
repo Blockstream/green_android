@@ -70,7 +70,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
         } else {
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell {
                 let model = viewModel.assetSelectCellModelsFilter[indexPath.row]
-                cell.configure(model: model)
+                cell.configure(model: model, showEditIcon: false)
                 cell.selectionStyle = .none
                 return cell
             }

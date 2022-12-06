@@ -123,7 +123,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: AssetSelectCell.identifier, for: indexPath) as? AssetSelectCell,
                let model = viewModel?.assetCellModel {
-                cell.configure(model: model)
+                cell.configure(model: model, showEditIcon: true)
                 cell.selectionStyle = .none
                 return cell
             }
