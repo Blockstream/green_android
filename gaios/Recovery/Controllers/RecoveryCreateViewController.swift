@@ -51,8 +51,8 @@ class RecoveryCreateViewController: UIViewController {
     }
 
     func setContent() {
-        let title = "Write down the order and your recovery phrase"
-        let strs = ["order", "recovery phrase"]
+        let title = "Write down your recovery phrase in the correct order"
+        let strs = ["recovery phrase", "correct order"]
 
         let attributedText = NSMutableAttributedString.init(string: title)
         for str1 in strs {
