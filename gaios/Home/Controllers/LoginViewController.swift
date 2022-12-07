@@ -241,7 +241,13 @@ class LoginViewController: UIViewController {
             if withPIN != nil {
                 self.account.attempts = 0
             }
-            self.account.isEphemeral = ![nil, ""].contains(bip39passphrase)
+            if !bip39passphrase.isNilOrEmpty {
+                self.account =  Account(name: self.account.name,
+                                network: self.account.network,
+                                isSingleSig: self.account.isSingleSig,
+                                isEphemeral: true)
+                WalletManager.change(wm: wm, for: self.account)
+            }
             AccountsManager.shared.current = self.account
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
                                                 ephemeralBip39: self.account.isEphemeral,

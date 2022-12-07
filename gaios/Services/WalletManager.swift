@@ -89,7 +89,13 @@ class WalletManager {
             .then { mainSession.connect() }
             .compactMap { DecryptWithPinParams(pin: pin, pinData: pinData)}
             .then { mainSession.decryptWithPin($0) }
-            .then { self.login($0) }
+            .map { bip39passphrase.isNilOrEmpty ? $0 :Credentials(mnemonic: $0.mnemonic, bip39Passphrase: bip39passphrase) }
+            .then {
+                when(fulfilled: Guarantee.value($0), bip39passphrase.isNilOrEmpty ? Guarantee().asVoid() : self.restore($0))
+            }
+            .then { credentials, _ in
+                self.login(credentials)
+            }
     }
 
     func loginWatchOnly(_ username: String, _ password: String) -> Promise<Void> {
@@ -126,7 +132,7 @@ class WalletManager {
             .asVoid()
     }
 
-    func restore(_ credentials: Credentials) -> Guarantee<Void> {
+    func restore(_ credentials: Credentials) -> Promise<Void> {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let btcSession = self.sessions[btcNetwork.rawValue]!
         let btcRestore = Guarantee()
@@ -142,14 +148,14 @@ class WalletManager {
             .then { liquidSession.loginWithCredentials(credentials) }
             .then { _ in liquidSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
             .then { (accounts: [WalletItem]) -> Promise<Void> in
-                if accounts.first?.bip44Discovered ?? false {
+                if (accounts.first?.bip44Discovered ?? false) == false {
                     return liquidSession.updateSubaccount(subaccount: accounts.first?.pointer ?? 0, hidden: true)
                 }
                 if accounts.filter({ $0.bip44Discovered ?? false }).isEmpty {
                     liquidSession.removeDatadir(credentials: credentials)
                 }
                 return Promise().asVoid()
-            }.then { _ in btcSession.subaccounts() }
+            }.then { _ in liquidSession.subaccounts() }
         return when(resolved: [btcRestore, liquidRestore]).asVoid()
     }
 
@@ -319,5 +325,16 @@ extension WalletManager {
         if let account = account {
             delete(for: account.id)
         }
+    }
+
+    static func delete(for wm: WalletManager) {
+        if let index = wallets.firstIndex(where:  {$0.value === wm }) {
+            wallets.remove(at: index)
+        }
+    }
+    
+    static func change(wm: WalletManager, for account: Account) {
+        delete(for: wm)
+        add(for: account, wm: wm)
     }
 }

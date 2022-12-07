@@ -35,7 +35,7 @@ struct Account: Codable, Equatable {
     var askEphemeral: Bool?
     var ephemeralId: Int?
 
-    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool, isEphemeral: Bool = false, askEphemeral: Bool = false) {
+    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool?, isEphemeral: Bool = false, askEphemeral: Bool = false) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name

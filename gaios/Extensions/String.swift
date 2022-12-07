@@ -57,6 +57,15 @@ extension String {
     }
 }
 
+extension Optional where Wrapped == String {
+    var isNilOrEmpty: Bool {
+        if let strongSelf = self, !strongSelf.isEmpty {
+            return false
+        }
+        return true
+    }
+}
+
 extension NSMutableAttributedString {
 
     func setColor(color: UIColor, forText stringValue: String) {
