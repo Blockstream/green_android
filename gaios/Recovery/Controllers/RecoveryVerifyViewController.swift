@@ -29,6 +29,7 @@ class RecoveryVerifyViewController: UIViewController {
         expectedWordNumbers = generateExpectedWordNumbers()
         newRandomWords()
 
+        customBack()
         pageControl.numberOfPages = numberOfSteps
         updatePageControl()
         reload()
@@ -48,6 +49,20 @@ class RecoveryVerifyViewController: UIViewController {
         textLabel.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.quizLbl
 
         AnalyticsManager.shared.recordView(.recoveryCheck, sgmt: AnalyticsManager.shared.ntwSgmt(AccountsManager.shared.current))
+    }
+
+    func customBack() {
+        var arrow = UIImage.init(named: "backarrow")
+        if #available(iOS 13.0, *) {
+            arrow = UIImage(systemName: "chevron.backward")
+        }
+        let newBackButton = UIBarButtonItem(image: arrow, style: UIBarButtonItem.Style.plain, target: self, action: #selector(RecoveryVerifyViewController.back(sender:)))
+        navigationItem.leftBarButtonItem = newBackButton
+        navigationItem.hidesBackButton = true
+    }
+
+    @objc func back(sender: UIBarButtonItem) {
+        navigationController?.popViewController(animated: true)
     }
 
     override func viewWillAppear(_ animated: Bool) {

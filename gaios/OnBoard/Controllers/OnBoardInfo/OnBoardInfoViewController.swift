@@ -37,7 +37,7 @@ class OnBoardInfoViewController: UIViewController {
         ["OnBoardInfoCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
-
+        customBack()
         setContent()
         setStyle()
     }
@@ -45,6 +45,20 @@ class OnBoardInfoViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+    }
+
+    func customBack() {
+        var arrow = UIImage.init(named: "backarrow")
+        if #available(iOS 13.0, *) {
+            arrow = UIImage(systemName: "chevron.backward")
+        }
+        let newBackButton = UIBarButtonItem(image: arrow, style: UIBarButtonItem.Style.plain, target: self, action: #selector(OnBoardInfoViewController.back(sender:)))
+        navigationItem.leftBarButtonItem = newBackButton
+        navigationItem.hidesBackButton = true
+    }
+
+    @objc func back(sender: UIBarButtonItem) {
+        navigationController?.popViewController(animated: true)
     }
 
     func reloadSections(_ sections: [SecuritySelectSection], animated: Bool) {
@@ -105,7 +119,6 @@ class OnBoardInfoViewController: UIViewController {
         if isSettingDisplay {
             self.authenticated {
                 DispatchQueue.main.async { [weak self] in
-                    
                     let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
                     let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController")
                     self?.navigationController?.pushViewController(vc, animated: true)

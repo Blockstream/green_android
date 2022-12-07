@@ -41,6 +41,7 @@ class LandingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        customBack()
         setContent()
         setStyle()
         updateUI()
@@ -52,6 +53,20 @@ class LandingViewController: UIViewController {
         btnWatchOnly.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.watchOnlyWalletBtn
 
         AnalyticsManager.shared.recordView(.onBoardIntro)
+    }
+
+    func customBack() {
+        var arrow = UIImage.init(named: "backarrow")
+        if #available(iOS 13.0, *) {
+            arrow = UIImage(systemName: "chevron.backward")
+        }
+        let newBackButton = UIBarButtonItem(image: arrow, style: UIBarButtonItem.Style.plain, target: self, action: #selector(LandingViewController.back(sender:)))
+        navigationItem.leftBarButtonItem = newBackButton
+        navigationItem.hidesBackButton = true
+    }
+
+    @objc func back(sender: UIBarButtonItem) {
+        navigationController?.popViewController(animated: true)
     }
 
     func setContent() {

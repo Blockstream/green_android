@@ -32,10 +32,7 @@ class RecoveryCreateViewController: UIViewController {
 
         mnemonicCreate()
 
-        let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(RecoveryCreateViewController.back(sender:)))
-        navigationItem.leftBarButtonItem = newBackButton
-        navigationItem.hidesBackButton = true
-
+        customBack()
         setContent()
         setStyle()
         pageControl.numberOfPages = mnemonicSize / Constants.wordsPerPage
@@ -48,6 +45,25 @@ class RecoveryCreateViewController: UIViewController {
         word5.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word5Lbl
         word6.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.word6Lbl
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryCreateScreen.nextBtn
+    }
+
+    func customBack() {
+        var arrow = UIImage.init(named: "backarrow")
+        if #available(iOS 13.0, *) {
+            arrow = UIImage(systemName: "chevron.backward")
+        }
+        let newBackButton = UIBarButtonItem(image: arrow, style: UIBarButtonItem.Style.plain, target: self, action: #selector(RecoveryCreateViewController.back(sender:)))
+        navigationItem.leftBarButtonItem = newBackButton
+        navigationItem.hidesBackButton = true
+    }
+
+    @objc func back(sender: UIBarButtonItem) {
+        if pageCounter == 0 {
+            navigationController?.popViewController(animated: true)
+        } else {
+            pageCounter -= 1
+            loadWords()
+        }
     }
 
     func setContent() {
@@ -75,15 +91,6 @@ class RecoveryCreateViewController: UIViewController {
 
         pageCounter = 0
         loadWords()
-    }
-
-    @objc func back(sender: UIBarButtonItem) {
-        if pageCounter == 0 {
-            navigationController?.popViewController(animated: true)
-        } else {
-            pageCounter -= 1
-            loadWords()
-        }
     }
 
     func mnemonicCreate() {
