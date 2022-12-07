@@ -32,7 +32,7 @@ class AccountViewModel {
 
     var txCellModels = [TransactionCellModel]() {
         didSet {
-            reloadSections?( [AccountSection.transaction], true )
+            reloadSections?( [AccountSection.transaction], false )
         }
     }
 
@@ -56,7 +56,7 @@ class AccountViewModel {
             return
         }
         fetchingTxs = true
-        wm.transactions(subaccounts: [account], first: self.cachedTransactions.count)
+        wm.transactions(subaccounts: [account], first: (restart == true) ? 0 : self.cachedTransactions.count)
             .done { txs in
                 if restart {
                     self.page = 0

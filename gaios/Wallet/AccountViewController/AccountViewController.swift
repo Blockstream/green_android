@@ -72,6 +72,9 @@ class AccountViewController: UIViewController {
         if sections.contains(AccountSection.account) {
             tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
         }
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            self.tableView.refreshControl?.endRefreshing()
+        }
     }
 
     func setContent() {
@@ -88,7 +91,7 @@ class AccountViewController: UIViewController {
         tableView.prefetchDataSource = self
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
-        tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
+        tableView.refreshControl!.addTarget(self, action: #selector(callPullToRefresh(_:)), for: .valueChanged)
 
     }
 
@@ -97,7 +100,9 @@ class AccountViewController: UIViewController {
     }
 
     // tableview refresh gesture
-    @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
+    @objc func callPullToRefresh(_ sender: UIRefreshControl? = nil) {
+        viewModel?.getBalance()
+        viewModel.getTransactions(restart: true)
     }
 
     // open settings
