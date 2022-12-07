@@ -10,7 +10,6 @@ class BalanceCell: UITableViewCell {
     @IBOutlet weak var iconsStack: UIStackView!
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
     @IBOutlet weak var btnEye: UIButton!
-    @IBOutlet weak var blurArea: UIView!
 
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
@@ -29,20 +28,6 @@ class BalanceCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-
-    lazy var blurredView: UIView = {
-        let containerView = UIView()
-        let blurEffect = UIBlurEffect(style: .dark)
-        let customBlurEffectView = CustomVisualEffectView(effect: blurEffect, intensity: 0.4)
-        customBlurEffectView.frame = blurArea.bounds
-
-        let dimmedView = UIView()
-        dimmedView.backgroundColor = .black.withAlphaComponent(0.15)
-        dimmedView.frame = blurArea.bounds
-        containerView.addSubview(customBlurEffectView)
-        containerView.addSubview(dimmedView)
-        return containerView
-    }()
 
     func configure(model: BalanceCellModel,
                    hideBalance: Bool,
@@ -80,7 +65,7 @@ class BalanceCell: UITableViewCell {
         iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
         setImages(icons)
         iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
-        refreshBlur()
+        refreshVisibility()
     }
 
     func setImages(_ images: [UIImage]) {
@@ -94,13 +79,14 @@ class BalanceCell: UITableViewCell {
         }
     }
 
-    func refreshBlur() {
+    func refreshVisibility() {
         if hideBalance {
-            blurArea.subviews.forEach {$0.removeFromSuperview()}
-            blurArea.addSubview(blurredView)
+            lblBalanceValue.attributedText = Common.obfuscate(color: .white, size: 24, length: 5)
+            lblBalanceFiat.attributedText = Common.obfuscate(color: .gray, size: 12, length: 5)
             btnEye.setImage(UIImage(named: "ic_eye_closed"), for: .normal)
         } else {
-            blurArea.subviews.forEach {$0.removeFromSuperview()}
+            lblBalanceValue.text = self.model?.value
+            lblBalanceFiat.text = self.model?.valueFiat
             btnEye.setImage(UIImage(named: "ic_eye_flat"), for: .normal)
         }
     }
@@ -108,7 +94,7 @@ class BalanceCell: UITableViewCell {
     @IBAction func btnEye(_ sender: Any) {
         hideBalance = !hideBalance
         onHide?(hideBalance)
-        refreshBlur()
+        refreshVisibility()
     }
 
     @IBAction func btnAssets(_ sender: Any) {

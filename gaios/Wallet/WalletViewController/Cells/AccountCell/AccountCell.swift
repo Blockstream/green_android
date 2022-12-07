@@ -54,6 +54,19 @@ class AccountCell: UITableViewCell {
         select(selected)
     }
 
+    func stringForAttachment() -> NSAttributedString {
+        if #available(iOS 13.0, *) {
+            let attachment = NSTextAttachment()
+            let image = UIImage(systemName: "asterisk")?.withTintColor(.white)
+            attachment.image = image
+            let fullString = NSMutableAttributedString(string: "")
+            fullString.append(NSAttributedString(attachment: attachment))
+            return fullString
+        } else {
+            return NSAttributedString()
+        }
+    }
+
     func configure(model: AccountCellModel,
                    cIdx: Int,
                    sIdx: Int,
@@ -72,10 +85,14 @@ class AccountCell: UITableViewCell {
 
         lblType.text = model.lblType
         lblName.text = NSLocalizedString(model.name, comment: "")
-        lblFiat.text = model.fiatStr
-        lblAmount.text = model.balanceStr
-        lblFiat.isHidden = hideBalance
-        lblAmount.isHidden = hideBalance
+
+        if hideBalance {
+            lblFiat.attributedText = Common.obfuscate(color: .white, size: 12, length: 5)
+            lblAmount.attributedText = Common.obfuscate(color: .white, size: 16, length: 5)
+        } else {
+            lblFiat.text = model.fiatStr
+            lblAmount.text = model.balanceStr
+        }
         imgSS.isHidden = !model.isSS
         imgMS.isHidden = model.isSS
         let session = model.account.session

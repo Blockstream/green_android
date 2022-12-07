@@ -166,6 +166,7 @@
 		346752F3291E55BF00256132 /* AccountSelectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F2291E55BF00256132 /* AccountSelectCell.swift */; };
 		346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F4291E55CC00256132 /* AccountSelectCellModel.swift */; };
 		346752F7291E5D0100256132 /* AccountSelectCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 346752F6291E5D0100256132 /* AccountSelectCell.xib */; };
+		34675B0A29409D9900771D50 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34675B0929409D9900771D50 /* Common.swift */; };
 		3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346970192779A1F100796D37 /* DialogQRCodeScanViewController.swift */; };
 		3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */; };
 		3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2452887D23700B2F640 /* StoreReviewManager.swift */; };
@@ -592,6 +593,7 @@
 		346752F2291E55BF00256132 /* AccountSelectCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectCell.swift; sourceTree = "<group>"; };
 		346752F4291E55CC00256132 /* AccountSelectCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectCellModel.swift; sourceTree = "<group>"; };
 		346752F6291E5D0100256132 /* AccountSelectCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountSelectCell.xib; sourceTree = "<group>"; };
+		34675B0929409D9900771D50 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		346970192779A1F100796D37 /* DialogQRCodeScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogQRCodeScanViewController.swift; sourceTree = "<group>"; };
 		3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFeeViewController.swift; sourceTree = "<group>"; };
 		3469A2452887D23700B2F640 /* StoreReviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewManager.swift; sourceTree = "<group>"; };
@@ -911,6 +913,7 @@
 				34C9E10826B92F0B00200D2F /* DynamicTableView.swift */,
 				81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */,
 				3457F4AA292394DD00EF33B5 /* CustomVisualEffectView.swift */,
+				34675B0929409D9900771D50 /* Common.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -2594,6 +2597,7 @@
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */,
 				81DC54352885BD8400DC37C9 /* Balance.swift in Sources */,
+				34675B0A29409D9900771D50 /* Common.swift in Sources */,
 				34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */,
 				34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
