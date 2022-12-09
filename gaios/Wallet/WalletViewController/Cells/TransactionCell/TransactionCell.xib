@@ -19,7 +19,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PO2-Ak-rfF">
-                        <rect key="frame" x="20" y="5" width="355" height="106"/>
+                        <rect key="frame" x="25" y="5" width="345" height="106"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_tx_received" translatesAutoresizingMaskIntoConstraints="NO" id="Ac8-PC-sk1">
                                 <rect key="frame" x="20" y="41" width="24" height="24"/>
@@ -29,7 +29,7 @@
                                 </constraints>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="a7n-lN-ZsY">
-                                <rect key="frame" x="64" y="10" width="271" height="86"/>
+                                <rect key="frame" x="64" y="10" width="261" height="86"/>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
@@ -45,8 +45,8 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="PO2-Ak-rfF" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="1wq-ri-QKX"/>
-                    <constraint firstAttribute="trailing" secondItem="PO2-Ak-rfF" secondAttribute="trailing" constant="20" id="297-pT-NCu"/>
-                    <constraint firstItem="PO2-Ak-rfF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="dDO-op-uLX"/>
+                    <constraint firstAttribute="trailing" secondItem="PO2-Ak-rfF" secondAttribute="trailing" constant="25" id="297-pT-NCu"/>
+                    <constraint firstItem="PO2-Ak-rfF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="dDO-op-uLX"/>
                     <constraint firstAttribute="bottom" secondItem="PO2-Ak-rfF" secondAttribute="bottom" constant="5" id="rUR-zw-rRu"/>
                 </constraints>
             </tableViewCellContentView>
