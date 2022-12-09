@@ -37,9 +37,12 @@ class LandingViewController: UIViewController {
     static var chainType: OnBoardingChainType = .mainnet
 
     var actionOnButton: ActionOnButton?
+    var iAgree: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        iAgree = AccountsManager.shared.swAccounts.count > 0
 
         customBack()
         setContent()
@@ -87,13 +90,12 @@ class LandingViewController: UIViewController {
     }
 
     func updateUI() {
-        let isOn = UserDefaults.standard.bool(forKey: AppStorage.userHasAgreedTerms)
-        btnCheckTerms.isSelected = isOn
-        btnNewWallet.isEnabled = isOn
-        btnRestoreWallet.isEnabled = isOn
-        btnWatchOnly.isEnabled = isOn
+        btnCheckTerms.isSelected = iAgree
+        btnNewWallet.isEnabled = iAgree
+        btnRestoreWallet.isEnabled = iAgree
+        btnWatchOnly.isEnabled = iAgree
 
-        if isOn {
+        if iAgree {
             btnNewWallet.backgroundColor = UIColor.customMatrixGreen()
             btnRestoreWallet.backgroundColor = UIColor.customMatrixGreen()
             btnNewWallet.setTitleColor(.white, for: .normal)
@@ -170,7 +172,8 @@ class LandingViewController: UIViewController {
     }
 
     @IBAction func btnCheckTerms(_ sender: Any) {
-        UserDefaults.standard.set(btnCheckTerms.isSelected, forKey: AppStorage.userHasAgreedTerms)
+        print(btnCheckTerms.isSelected)
+        iAgree = btnCheckTerms.isSelected
         updateUI()
     }
 
