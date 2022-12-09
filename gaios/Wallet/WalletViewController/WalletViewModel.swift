@@ -51,6 +51,8 @@ class WalletViewModel {
     }
     var remoteAlert: RemoteAlert?
 
+    var balanceDisplayMode: BalanceDisplayMode = .denom
+
     init() {
         self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountsManager.shared.current?.networkName)
     }
@@ -98,10 +100,24 @@ class WalletViewModel {
             .done { amounts in
                 self.cachedBalance = AssetAmountList(amounts).sorted()
                 let total = amounts.filter({$0.0 == "btc"}).map {$0.1}.reduce(0, +)
-                self.balanceCellModel = BalanceCellModel(satoshi: total, numAssets: amounts.count, cachedBalance: self.cachedBalance)
+
+                self.balanceCellModel = BalanceCellModel(satoshi: total,
+                                                         numAssets: amounts.count,
+                                                         cachedBalance: self.cachedBalance,
+                                                         mode: self.balanceDisplayMode
+                )
             }.catch { err in
                 print(err)
             }
+    }
+
+    func rotateBalanceDisplayMode() {
+        var isBTC = false
+        if let session = self.session, let settings = session.settings {
+            isBTC = settings.denomination == .BTC
+        }
+        balanceDisplayMode = balanceDisplayMode.next(isBTC)
+        getAssets()
     }
 
     func reloadAlertCards() {

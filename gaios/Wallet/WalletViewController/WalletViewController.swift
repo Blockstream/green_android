@@ -302,6 +302,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 },
                                onAssets: {[weak self] in
                     self?.assetsScreen()
+                }, onConvert: { [weak self] in
+                    self?.viewModel.rotateBalanceDisplayMode()
                 })
                 cell.selectionStyle = .none
                 return cell

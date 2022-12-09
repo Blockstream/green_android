@@ -95,6 +95,13 @@ struct Balance: Codable {
         return (value?.localeFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string(for: Balance.session?.gdkNetwork ?? getGdkNetwork("electrum-mainnet")))
     }
 
+    func toBTC() -> (String, String) {
+        let denomination: DenominationType = .BTC
+        let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
+        let value = res![denomination.rawValue] as? String
+        return (value?.localeFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string(for: Balance.session?.gdkNetwork ?? getGdkNetwork("electrum-mainnet")))
+    }
+
     func toAssetValue() -> (String, String) {
         return (asset?.first?.value.localeFormattedString(Int(assetInfo?.precision ?? 8)) ?? "n/a", assetInfo?.ticker ?? "n/a")
     }

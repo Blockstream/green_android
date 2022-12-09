@@ -13,6 +13,7 @@ class BalanceCell: UITableViewCell {
 
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
+    private var onConvert: (() -> Void)?
     private var onHide: ((Bool) -> Void)?
     private let iconW: CGFloat = 18
     private var hideBalance = false
@@ -32,17 +33,19 @@ class BalanceCell: UITableViewCell {
     func configure(model: BalanceCellModel,
                    hideBalance: Bool,
                    onHide: ((Bool) -> Void)?,
-                   onAssets: (() -> Void)?) {
+                   onAssets: (() -> Void)?,
+                   onConvert:(() -> Void)?) {
         self.hideBalance = hideBalance
         self.model = model
         lblBalanceValue.text = model.value
-        lblBalanceFiat.text = model.valueFiat
+        lblBalanceFiat.text = model.valueChange
 
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
         let str = NSAttributedString(string: "\(model.numAssets) assets in total", attributes: uLineAttr)
         btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
         self.onHide = onHide
+        self.onConvert = onConvert
         let sorted = model.cachedBalance.sorted()
         var icons: [UIImage] = []
         for asset in sorted {
@@ -86,9 +89,13 @@ class BalanceCell: UITableViewCell {
             btnEye.setImage(UIImage(named: "ic_eye_closed"), for: .normal)
         } else {
             lblBalanceValue.text = self.model?.value
-            lblBalanceFiat.text = self.model?.valueFiat
+            lblBalanceFiat.text = self.model?.valueChange
             btnEye.setImage(UIImage(named: "ic_eye_flat"), for: .normal)
         }
+    }
+
+    @IBAction func onBalanceTap(_ sender: Any) {
+        onConvert?()
     }
 
     @IBAction func btnEye(_ sender: Any) {
