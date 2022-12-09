@@ -20,6 +20,25 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var iconsStack: UIStackView!
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
 
+    @IBOutlet weak var icC1: UIView!
+    @IBOutlet weak var icC2: UIView!
+    @IBOutlet weak var icC3: UIView!
+    @IBOutlet weak var icC4: UIView!
+    @IBOutlet weak var icC5: UIView!
+    @IBOutlet weak var icC6: UIView!
+    @IBOutlet weak var icC7: UIView!
+    @IBOutlet weak var icV1: UIImageView!
+    @IBOutlet weak var icV2: UIImageView!
+    @IBOutlet weak var icV3: UIImageView!
+    @IBOutlet weak var icV4: UIImageView!
+    @IBOutlet weak var icV5: UIImageView!
+    @IBOutlet weak var icV6: UIImageView!
+    @IBOutlet weak var icV7: UIImageView!
+
+    @IBOutlet weak var trailing2_1: NSLayoutConstraint!
+    @IBOutlet weak var trailing3_2: NSLayoutConstraint!
+    @IBOutlet weak var trailing4_3: NSLayoutConstraint!
+
     private var sIdx: Int = 0
     private var cIdx: Int = 0
     private var hideBalance: Bool = false
@@ -29,6 +48,14 @@ class AccountCell: UITableViewCell {
     private var onShield: ((Int) -> Void)?
     private let iconW: CGFloat = 24
     private var cColor: UIColor = .clear
+
+    var views: [UIView] {
+        return [icC1, icC2, icC3, icC4, icC5, icC6, icC7]
+    }
+
+    var imgs: [UIView] {
+        return [icV1, icV2, icV3, icV4, icV5, icV6, icV7]
+    }
 
     static var identifier: String { return String(describing: self) }
 
@@ -117,25 +144,82 @@ class AccountCell: UITableViewCell {
         assets.compactMap { registry?.image(for: $0.0) }
             .forEach { if !icons.contains($0) { icons += [$0] } }
 
-        iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 10.0
-        setImages(icons)
-        iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
-    }
+//        iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 10.0
+//        setImages(icons)
+//        iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
 
-    func setImages(_ images: [UIImage]) {
-        for img in images {
-            let imageView = UIImageView()
-            imageView.image = img
-            imageView.heightAnchor.constraint(equalToConstant: iconW).isActive = true
-            imageView.widthAnchor.constraint(equalToConstant: iconW).isActive = true
-            imageView.backgroundColor = cColor
-            imageView.borderWidth = 1.0
-            imageView.borderColor = UIColor.gBlackBg()
-            imageView.cornerRadius = iconW / 2.0
-            imageView.clipsToBounds = true
-            iconsStack.addArrangedSubview(imageView)
+        views.forEach {
+            $0.borderWidth = 1.0
+            $0.borderColor = UIColor.gBlackBg()
+            $0.cornerRadius = $0.frame.size.width / 2.0
+            $0.backgroundColor = cColor.darker(by: 10)
+        }
+        imgs.forEach {
+            $0.cornerRadius = $0.frame.size.width / 2.0
+            $0.clipsToBounds = true
+        }
+        views.forEach { $0.isHidden = true }
+        let padding: CGFloat = icons.count > 4 ? -20 : -10
+        [trailing2_1, trailing3_2, trailing4_3].forEach {
+            $0?.constant = padding
+        }
+        switch icons.count {
+        case 0:
+            break
+        case 1:
+            icC1.isHidden = false
+            icV1.image = icons[0]
+        case 2:
+            icC1.isHidden = false
+            icV1.image = icons[1]
+            icC2.isHidden = false
+            icV2.image = icons[0]
+        case 3:
+            icC1.isHidden = false
+            icV1.image = icons[2]
+            icC2.isHidden = false
+            icV2.image = icons[1]
+            icC3.isHidden = false
+            icV3.image = icons[0]
+        case 4:
+            icC1.isHidden = false
+            icV1.image = icons[3]
+            icC2.isHidden = false
+            icV2.image = icons[2]
+            icC3.isHidden = false
+            icV3.image = icons[1]
+            icC4.isHidden = false
+            icV4.image = icons[0]
+        default:
+            icC4.isHidden = false
+            icV4.image = icons[3]
+            icC5.isHidden = false
+            icV5.image = icons[2]
+            icC6.isHidden = false
+            icV6.image = icons[1]
+            icC7.isHidden = false
+            icV7.image = icons[0]
+        }
+
+        if icons.count > 4 {
+            views.forEach { $0.isHidden = false }
         }
     }
+
+//    func setImages(_ images: [UIImage]) {
+//        for img in images {
+//            let imageView = UIImageView()
+//            imageView.image = img
+//            imageView.heightAnchor.constraint(equalToConstant: iconW).isActive = true
+//            imageView.widthAnchor.constraint(equalToConstant: iconW).isActive = true
+//            imageView.backgroundColor = cColor
+//            imageView.borderWidth = 1.0
+//            imageView.borderColor = UIColor.gBlackBg()
+//            imageView.cornerRadius = iconW / 2.0
+//            imageView.clipsToBounds = true
+//            iconsStack.addArrangedSubview(imageView)
+//        }
+//    }
 
     func updateUI(_ value: Bool) {
         self.detailView.alpha = value ? 1.0 : 0.0

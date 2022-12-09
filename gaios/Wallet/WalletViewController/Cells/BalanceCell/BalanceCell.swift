@@ -65,6 +65,7 @@ class BalanceCell: UITableViewCell {
             v.removeFromSuperview()
         }
 
+        icons = Array(icons.prefix(10))
         iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
         setImages(icons)
         iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
