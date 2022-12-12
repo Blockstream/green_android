@@ -45,6 +45,15 @@ class SecuritySelectViewModel {
         }
     }
 
+    func isAdvancedEnable() -> Bool {
+        let asset = WalletManager.current?.registry.info(for: asset)
+        if asset?.amp ?? false {
+            return false
+        } else {
+            return true
+        }
+    }
+
     /// cell models
     func getPolicyCellModels() -> [PolicyCellModel] {
         let policies = policiesForAsset(for: asset, extended: showAll)
