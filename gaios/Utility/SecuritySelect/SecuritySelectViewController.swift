@@ -90,12 +90,6 @@ class SecuritySelectViewController: UIViewController {
     }
 
     func setStyle() {
-        if viewModel.isAdvancedEnable() {
-            btnAdvanced.setStyle(.inline)
-        } else {
-            btnAdvanced.setStyle(.inlineDisabled)
-        }
-
     }
 
     @IBAction func btnAdvanced(_ sender: Any) {
@@ -125,8 +119,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        /// refresh button advanced options
-        setStyle()
+        btnAdvanced.isHidden = !viewModel.isAdvancedEnable()
 
         switch SecuritySelectSection(rawValue: indexPath.section) {
         case .asset:
