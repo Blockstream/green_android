@@ -25,6 +25,9 @@ class WalletViewModel {
     /// reload by section with animation
     var reloadSections: (([WalletSection], Bool) -> Void)?
 
+    /// to avoid duplication of observers in account detail
+    var reloadAccountView: (() -> Void)?
+
     /// cell models
     var accountCellModels = [AccountCellModel]() {
         didSet {
@@ -53,8 +56,26 @@ class WalletViewModel {
 
     var balanceDisplayMode: BalanceDisplayMode = .denom
 
+    private var notificationObservers: [NSObjectProtocol] = []
+
     init() {
         self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountsManager.shared.current?.networkName)
+        [EventType.Transaction, .Block, .AssetsUpdated, .Network, .Settings, .Ticker, .TwoFactorReset].forEach {
+            let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
+                                                                  object: nil,
+                                                                  queue: .main,
+                                                                  using: { [weak self] data in
+                self?.handleEvent(data)
+            })
+            notificationObservers.append(observer)
+        }
+    }
+
+    deinit {
+        notificationObservers.forEach { observer in
+            NotificationCenter.default.removeObserver(observer)
+        }
+        notificationObservers = []
     }
 
     func loadSubaccounts() {
@@ -106,6 +127,7 @@ class WalletViewModel {
                                                          cachedBalance: self.cachedBalance,
                                                          mode: self.balanceDisplayMode
                 )
+                self.reloadAccountView?()
             }.catch { err in
                 print(err)
             }
@@ -166,5 +188,35 @@ class WalletViewModel {
                 self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
                 print(err.localizedDescription)
             }
+    }
+
+    func handleEvent(_ notification: Notification) {
+        guard let eventType = EventType(rawValue: notification.name.rawValue) else { return }
+
+        print("..... \(eventType.rawValue)")
+        switch eventType {
+        case .Transaction:
+            loadSubaccounts()
+        case .Block:
+//            if cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
+                loadSubaccounts()
+//            }
+        case .AssetsUpdated:
+            loadSubaccounts()
+        case .Network:
+            guard let dict = notification.userInfo as NSDictionary? else { return }
+            guard let connected = dict["connected"] as? Bool else { return }
+            guard let loginRequired = dict["login_required"] as? Bool else { return }
+            if connected == true && loginRequired == false {
+                DispatchQueue.main.async { [weak self] in
+                    self?.loadSubaccounts()
+                }
+            }
+        case .Settings, .Ticker, .TwoFactorReset:
+            loadSubaccounts()
+        default:
+            break
+        }
+        reloadAlertCards()
     }
 }

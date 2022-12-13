@@ -4,6 +4,8 @@ enum MultiLabelStyle: Int, CaseIterable {
     case simple
     case amountIn
     case amountOut
+    case unconfirmed
+    case pending
 }
 
 struct MultiLabelViewModel {

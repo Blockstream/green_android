@@ -61,6 +61,7 @@ class WalletViewController: UIViewController {
             self?.reloadSections(sections, animated: true)
         }
         viewModel.reloadSections = reloadSections
+        viewModel.reloadAccountView = reloadAccountView
         setContent()
         setStyle()
         welcomeLayer.isHidden = true
@@ -180,8 +181,17 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func reloadAccountView() {
+        guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
+        if let vc = navigationController?.viewControllers.last as? AccountViewController {
+            vc.reloadFromParent(model)
+        }
+    }
+
     func accountDetail(model: AccountCellModel?) {
         guard let model = model else { return }
+        print(sIdx)
+        print(model)
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
             vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: viewModel.cachedBalance)

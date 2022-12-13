@@ -1,6 +1,12 @@
 import Foundation
 import UIKit
 
+struct PendingStateUI {
+    var style: MultiLabelStyle
+    var label: String
+    var progress: Double?
+}
+
 class TransactionCellModel {
     var tx: Transaction
     var blockHeight: UInt32
@@ -20,33 +26,58 @@ class TransactionCellModel {
         if let subaccount = self.subaccount {
             self.amounts = amounts(self.tx, subaccount)
         }
-        let pending = TransactionCellModel.isPending(tx: tx, blockHeight: blockHeight)
 
         switch tx.type {
         case .redeposit:
             // For redeposits we show fees paid in btc
-            self.status = pending ? "Redepositing" : "Redeposited"
+            self.status = isPending() ? "Redepositing" : "Redeposited"
             icon = UIImage(named: "ic_tx_received")!
         case .incoming:
-            self.status = pending ? "Receiving" : "Received"
+            self.status = isPending() ? "Receiving" : "Received"
             icon = UIImage(named: "ic_tx_received")!
         case .outgoing:
-            self.status = pending ? "Sending" : "Sent"
+            self.status = isPending() ? "Sending" : "Sent"
             icon = UIImage(named: "ic_tx_sent")!
         case .mixed:
-            self.status = pending ? "Swaping" : "Swap"
+            self.status = isPending() ? "Swaping" : "Swap"
         }
     }
 
-    static func isPending(tx: Transaction, blockHeight: UInt32) -> Bool {
+    func isPending() -> Bool {
         if tx.blockHeight == 0 {
             return true
-        } else if tx.isLiquid && blockHeight < tx.blockHeight + 1 {
+        } else if tx.isLiquid && self.blockHeight < tx.blockHeight + 1 {
             return true
-        } else if !tx.isLiquid && blockHeight < tx.blockHeight + 5 {
+        } else if !tx.isLiquid && self.blockHeight < tx.blockHeight + 5 {
             return true
         } else {
             return false
+        }
+    }
+
+    func statusUI() -> PendingStateUI {
+        if tx.blockHeight == 0 {
+            return PendingStateUI(style: .unconfirmed,
+                                  label: NSLocalizedString("id_unconfirmed", comment: ""),
+                                  progress: nil)
+        } else if tx.isLiquid && self.blockHeight < tx.blockHeight + 1 {
+            return PendingStateUI(style: .pending,
+                                  label: NSLocalizedString("id_12_confirmations", comment: ""),
+                                  progress: 0.5)
+        } else if !tx.isLiquid && self.blockHeight < tx.blockHeight + 5 {
+            guard blockHeight >= tx.blockHeight else {
+                return PendingStateUI(style: .simple,
+                                      label: "",
+                                      progress: nil)
+            }
+            let confirmCount = (blockHeight - tx.blockHeight) + 1
+            return PendingStateUI(style: .pending,
+                                  label: String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount),
+                                  progress: Double(confirmCount) / 6.0)
+        } else {
+            return PendingStateUI(style: .simple,
+                                  label: date,
+                                  progress: nil)
         }
     }
 
@@ -64,4 +95,38 @@ class TransactionCellModel {
         }
         return amounts
     }
+
+//    func checkBlockHeight(transaction: Transaction, blockHeight: UInt32) {
+//        if transaction.blockHeight == 0 {
+//            setStatus(.unconfirmed, label: NSLocalizedString("id_unconfirmed", comment: ""))
+//        } else if transaction.isLiquid && blockHeight < transaction.blockHeight + 1 {
+//            setStatus(.holding, label: NSLocalizedString("id_12_confirmations", comment: ""))
+//        } else if !transaction.isLiquid && blockHeight < transaction.blockHeight + 5 {
+//            guard blockHeight >= transaction.blockHeight else {
+//                setStatus(.confirmed, label: "")
+//                return
+//            }
+//            let confirmCount = (blockHeight - transaction.blockHeight) + 1
+//            setStatus(.holding, label: String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount))
+//        } else {
+//            setStatus(.confirmed, label: "")
+//        }
+//    }
+
+//    private func setStatus(_ status: TransactionStatus, label: String) {
+//        lblDate.isHidden = true
+//        statusBadge.isHidden = false
+//        lblStatus.textColor = .white
+//        lblStatus.text = label
+//
+//        switch status {
+//        case .unconfirmed:
+//            statusBadge.backgroundColor = UIColor.warningYellow()
+//        case .holding:
+//            statusBadge.backgroundColor = .gray
+//        case .confirmed:
+//            statusBadge.isHidden = true
+//            lblDate.isHidden = false
+//        }
+//    }
 }

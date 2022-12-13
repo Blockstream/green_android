@@ -77,6 +77,12 @@ class AccountViewController: UIViewController {
         }
     }
 
+    func reloadFromParent(_ model: AccountCellModel) {
+        viewModel.accountCellModels = [model]
+        viewModel.getBalance()
+        viewModel.getTransactions(restart: true)
+    }
+
     func setContent() {
 
         // setup right menu bar: settings

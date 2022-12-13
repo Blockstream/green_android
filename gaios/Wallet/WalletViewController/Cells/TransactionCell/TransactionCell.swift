@@ -4,13 +4,17 @@ class TransactionCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var imgView: UIImageView!
+    @IBOutlet weak var progressBar: UIView!
     @IBOutlet weak var innerStack: UIStackView!
+    @IBOutlet weak var progressWidth: NSLayoutConstraint!
 
     class var identifier: String { return String(describing: self) }
 
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.cornerRadius = 5.0
+        progressBar.cornerRadius = 5.0
+        progressBar.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
     }
 
     override func prepareForReuse() {
@@ -44,7 +48,10 @@ class TransactionCell: UITableViewCell {
                 addStackRow(MultiLabelViewModel(txtLeft: txtLeft, txtRight: txtRight, style: amount.value > 0 ? .amountIn : .amountOut ))
             }
         }
-        addStackRow(MultiLabelViewModel(txtLeft: model.date, txtRight: model.subaccount?.localizedName() ?? "", style: .simple))
+        addStackRow(MultiLabelViewModel(txtLeft: model.statusUI().label,
+                                        txtRight: model.subaccount?.localizedName() ?? "",
+                                        style: model.statusUI().style))
+        progressWidth.constant = (UIScreen.main.bounds.width - 50.0) * (model.statusUI().progress ?? 0.0)
     }
 
     func addStackRow(_ model: MultiLabelViewModel) {

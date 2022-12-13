@@ -26,6 +26,20 @@ class MultiLabelView: UIView {
                 $0?.font = .boldSystemFont(ofSize: 14)
                 $0?.textColor = .white
             }
+        case .unconfirmed:
+            lblLeft.textColor = UIColor.warningYellow()
+            lblLeft.font = .systemFont(ofSize: 12)
+            [lblRight].forEach {
+                $0?.font = .systemFont(ofSize: 12)
+                $0?.textColor = UIColor.gGrayTxt()
+            }
+        case .pending:
+            lblLeft.textColor = UIColor.gGrayTxt()
+            lblLeft.font = .systemFont(ofSize: 12)
+            [lblRight].forEach {
+                $0?.font = .systemFont(ofSize: 12)
+                $0?.textColor = UIColor.gGrayTxt()
+            }
         }
     }
 }
