@@ -50,6 +50,7 @@ class WalletViewController: UIViewController {
 
     var viewModel: WalletViewModel = WalletViewModel()
     var cachedAccount: WalletItem?
+    private var notificationObservers: [NSObjectProtocol] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,9 +70,28 @@ class WalletViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         if userWillLogout == true { return }
         viewModel.loadSubaccounts()
         viewModel.reloadAlertCards()
+
+        [EventType.Transaction, .Block, .AssetsUpdated, .Network, .Settings, .Ticker, .TwoFactorReset].forEach {
+            let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
+                                                                  object: nil,
+                                                                  queue: .main,
+                                                                  using: { [weak self] data in
+                self?.viewModel.handleEvent(data)
+            })
+            notificationObservers.append(observer)
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        notificationObservers.forEach { observer in
+            NotificationCenter.default.removeObserver(observer)
+        }
+        notificationObservers = []
     }
 
     func reloadSections(_ sections: [WalletSection], animated: Bool) {

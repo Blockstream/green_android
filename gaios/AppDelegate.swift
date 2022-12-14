@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     vc.account = AccountsManager.shared.current
                     nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
-                    nav.pushViewController(vc, animated: false)
+//                    nav.pushViewController(vc, animated: false)
             }
         } else if account?.isHW ?? false {
             let homeS = UIStoryboard(name: "Home", bundle: nil)
@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     vc.jade = AccountsManager.shared.current?.isJade == true
                     nav.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
-                    nav.pushViewController(vc, animated: false)
+//                    nav.pushViewController(vc, animated: false)
             }
         } else {
             let homeS = UIStoryboard(name: "Home", bundle: nil)
@@ -58,7 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 vc.account = AccountsManager.shared.current
                 nav.pushViewController(vc, animated: false)
                 UIApplication.shared.keyWindow?.rootViewController = nav
-                nav.pushViewController(vc, animated: false)
+//                nav.pushViewController(vc, animated: false)
             }
         }
     }

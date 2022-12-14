@@ -4,17 +4,17 @@ import PromiseKit
 
 class WalletViewModel {
 
-    var wm: WalletManager { WalletManager.current! }
+    var wm: WalletManager? { WalletManager.current }
 
     var session: SessionManager? {
-        return wm.prominentSession
+        return wm?.prominentSession
     }
 
     var isTxLoading = true // on init is always true
 
     /// load visible subaccounts
     var subaccounts: [WalletItem] {
-        wm.subaccounts.filter { !($0.hidden ?? false) }
+        wm?.subaccounts.filter { !($0.hidden ?? false) } ?? []
     }
 
     /// Cached data
@@ -56,31 +56,13 @@ class WalletViewModel {
 
     var balanceDisplayMode: BalanceDisplayMode = .denom
 
-    private var notificationObservers: [NSObjectProtocol] = []
-
     init() {
         self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountsManager.shared.current?.networkName)
-        [EventType.Transaction, .Block, .AssetsUpdated, .Network, .Settings, .Ticker, .TwoFactorReset].forEach {
-            let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
-                                                                  object: nil,
-                                                                  queue: .main,
-                                                                  using: { [weak self] data in
-                self?.handleEvent(data)
-            })
-            notificationObservers.append(observer)
-        }
-    }
-
-    deinit {
-        notificationObservers.forEach { observer in
-            NotificationCenter.default.removeObserver(observer)
-        }
-        notificationObservers = []
     }
 
     func loadSubaccounts() {
         cachedSubaccounts = self.subaccounts
-        wm.balances(subaccounts: self.subaccounts)
+        wm?.balances(subaccounts: self.subaccounts)
             .done { _ in
                 let models = self.subaccounts.map { AccountCellModel(subaccount: $0) }
                 if models.count > 0 { self.accountCellModels = models }
@@ -94,7 +76,7 @@ class WalletViewModel {
     func getTransactions(subaccounts: [WalletItem]? = nil, max: Int? = nil) {
         let accounts = subaccounts != nil ? subaccounts : self.subaccounts
         isTxLoading = true
-        wm.transactions(subaccounts: accounts ?? [])
+        wm?.transactions(subaccounts: accounts ?? [])
             .done { txs in
                 self.isTxLoading = false
                 self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
@@ -107,9 +89,9 @@ class WalletViewModel {
     }
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
-        if let subaccount = self.wm.subaccounts.filter({ $0.hashValue == subaccountHash }).first,
+        if let subaccount = self.wm?.subaccounts.filter({ $0.hashValue == subaccountHash }).first,
             let network = subaccount.network,
-            let session = self.wm.sessions[network],
+            let session = self.wm?.sessions[network],
             let blockHeight = session.notificationManager?.blockHeight {
                 return blockHeight
         }
@@ -117,7 +99,7 @@ class WalletViewModel {
     }
 
     func getAssets() {
-        wm.balances(subaccounts: self.subaccounts)
+        wm?.balances(subaccounts: self.subaccounts)
             .done { amounts in
                 self.cachedBalance = AssetAmountList(amounts).sorted()
                 let total = amounts.filter({$0.0 == "btc"}).map {$0.1}.reduce(0, +)
@@ -144,6 +126,7 @@ class WalletViewModel {
 
     func reloadAlertCards() {
         var cards: [AlertCardType] = []
+        guard let wm = wm else { return }
         wm.sessions.values.forEach { session in
             if session.logged && session.isResetActive ?? false,
                 let twoFaReset = session.twoFactorConfig?.twofactorReset {
@@ -176,7 +159,7 @@ class WalletViewModel {
         /// load system messages
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
-            .then(on: bgq) { self.wm.loadSystemMessages() }
+            .then(on: bgq) { wm.loadSystemMessages() }
             .done { (messages: [SystemMessage]) in
                 messages.forEach { msg in
                     if !msg.text.isEmpty {
