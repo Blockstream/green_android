@@ -54,7 +54,8 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     // GDK returns non-confidential addresses for Liquid. Hide them for now
     override fun getAddress(index: Int): String? = when {
         session.isLiquid -> null
-        txType == Transaction.Type.IN || txType == Transaction.Type.OUT -> tx.outputs.filter { it.isRelevant == true }.getOrNull(index)?.address
+        txType == Transaction.Type.OUT -> tx.outputs.filter { !it.address.isNullOrBlank() && it.isRelevant == false }.getOrNull(index)?.address
+        txType == Transaction.Type.IN -> tx.outputs.filter { !it.address.isNullOrBlank() && it.isRelevant == true }.getOrNull(index)?.address
         else -> null
     }
 
@@ -142,7 +143,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
         binding.icon.setImageDrawable(getIcon(index, binding.icon.context))
         binding.icon.updateAssetPadding(session, assets.getOrNull(index)?.first ?: "-", 3)
 
-        if (hideSPVInAsset || tx.spv.disabledOrVerified()) {
+        if (hideSPVInAsset || tx.spv.disabledOrUnconfirmedOrVerified()) {
             binding.spv.isVisible = false
         } else {
             binding.spv.isVisible = true

@@ -48,6 +48,7 @@ data class Transaction(
         Disabled, InProgress, NotVerified, NotLongest, Unconfirmed, Verified;
 
         fun disabledOrVerified() = this == Disabled || this == Verified
+        fun disabledOrUnconfirmedOrVerified() = this == Disabled || this == Unconfirmed || this == Verified
         fun inProgress() = this == InProgress
         fun inProgressOrUnconfirmed() = this == InProgress || this == Unconfirmed
         fun unconfirmed() = this == Unconfirmed
