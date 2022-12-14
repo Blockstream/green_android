@@ -7,6 +7,7 @@ class TransactionCell: UITableViewCell {
     @IBOutlet weak var progressBar: UIView!
     @IBOutlet weak var innerStack: UIStackView!
     @IBOutlet weak var progressWidth: NSLayoutConstraint!
+    @IBOutlet weak var activity: UIActivityIndicatorView!
 
     class var identifier: String { return String(describing: self) }
 
@@ -52,6 +53,10 @@ class TransactionCell: UITableViewCell {
                                         txtRight: model.subaccount?.localizedName() ?? "",
                                         style: model.statusUI().style))
         progressWidth.constant = (UIScreen.main.bounds.width - 50.0) * (model.statusUI().progress ?? 0.0)
+        let unconf = model.statusUI().style == .unconfirmed
+        imgView.isHidden = unconf
+        activity.isHidden = !unconf
+        activity.startAnimating()
     }
 
     func addStackRow(_ model: MultiLabelViewModel) {

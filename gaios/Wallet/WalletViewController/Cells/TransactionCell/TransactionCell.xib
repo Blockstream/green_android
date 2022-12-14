@@ -36,16 +36,22 @@
                                     <constraint firstAttribute="width" constant="24" id="S0M-Dl-XMK"/>
                                 </constraints>
                             </imageView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="hPk-HP-ha5">
+                                <rect key="frame" x="22" y="43" width="20" height="20"/>
+                                <color key="color" name="gGreenMatrix"/>
+                            </activityIndicatorView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="a7n-lN-ZsY">
                                 <rect key="frame" x="64" y="10" width="261" height="86"/>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
+                            <constraint firstItem="hPk-HP-ha5" firstAttribute="centerX" secondItem="Ac8-PC-sk1" secondAttribute="centerX" id="2Tj-Yj-K8x"/>
                             <constraint firstItem="Ac8-PC-sk1" firstAttribute="centerY" secondItem="PO2-Ak-rfF" secondAttribute="centerY" id="2sW-as-t2I"/>
                             <constraint firstItem="a7n-lN-ZsY" firstAttribute="top" secondItem="PO2-Ak-rfF" secondAttribute="top" constant="10" id="I3S-TH-nww"/>
                             <constraint firstAttribute="bottom" secondItem="a7n-lN-ZsY" secondAttribute="bottom" constant="10" id="MfD-6z-9OS"/>
                             <constraint firstItem="tT2-ws-OQK" firstAttribute="leading" secondItem="PO2-Ak-rfF" secondAttribute="leading" id="VLD-hw-Bco"/>
+                            <constraint firstItem="hPk-HP-ha5" firstAttribute="centerY" secondItem="Ac8-PC-sk1" secondAttribute="centerY" id="b4x-O0-N6a"/>
                             <constraint firstItem="Ac8-PC-sk1" firstAttribute="leading" secondItem="PO2-Ak-rfF" secondAttribute="leading" constant="20" id="f9t-yt-W57"/>
                             <constraint firstAttribute="trailing" secondItem="a7n-lN-ZsY" secondAttribute="trailing" constant="20" id="kIp-bS-SED"/>
                             <constraint firstItem="a7n-lN-ZsY" firstAttribute="leading" secondItem="Ac8-PC-sk1" secondAttribute="trailing" constant="20" id="m4q-K2-Z27"/>
@@ -63,6 +69,7 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <color key="backgroundColor" name="gBlackBg"/>
             <connections>
+                <outlet property="activity" destination="hPk-HP-ha5" id="IFu-4k-9zb"/>
                 <outlet property="bg" destination="PO2-Ak-rfF" id="e2j-9X-FEl"/>
                 <outlet property="imgView" destination="Ac8-PC-sk1" id="Q7R-2L-4xf"/>
                 <outlet property="innerStack" destination="a7n-lN-ZsY" id="UUn-Wl-lor"/>
