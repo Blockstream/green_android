@@ -53,10 +53,11 @@ class TransactionCell: UITableViewCell {
                                         txtRight: model.subaccount?.localizedName() ?? "",
                                         style: model.statusUI().style))
         progressWidth.constant = (UIScreen.main.bounds.width - 50.0) * (model.statusUI().progress ?? 0.0)
-        let unconf = model.statusUI().style == .unconfirmed
-        imgView.isHidden = unconf
-        activity.isHidden = !unconf
-        activity.startAnimating()
+//        let unconf = model.statusUI().style == .unconfirmed
+//        imgView.isHidden = unconf
+//        activity.isHidden = !unconf
+//        activity.startAnimating()
+        activity.isHidden = true
     }
 
     func addStackRow(_ model: MultiLabelViewModel) {
