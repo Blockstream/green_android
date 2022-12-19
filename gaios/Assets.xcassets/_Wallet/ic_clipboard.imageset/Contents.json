@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Clipboard@3x.png",
+      "filename" : "Clipboard.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -11,7 +11,7 @@
       "scale" : "2x"
     },
     {
-      "filename" : "Clipboard.png",
+      "filename" : "Clipboard@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
