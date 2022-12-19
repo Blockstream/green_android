@@ -34,7 +34,8 @@ class AddresseeCell: UITableViewCell {
 
         let addreessee = transaction.addressees.first
         var value = addreessee?.satoshi ?? 0
-        let asset = (account?.gdkNetwork.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
+        //let asset = (account?.gdkNetwork.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
+        let asset = addreessee?.assetId ?? "btc"
         if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
             value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
