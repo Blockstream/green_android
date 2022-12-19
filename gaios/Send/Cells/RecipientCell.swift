@@ -24,11 +24,9 @@ class RecipientCell: UITableViewCell {
     @IBOutlet weak var btnPasteAddress: UIButton!
     @IBOutlet weak var lblAddressError: UILabel!
 
-    @IBOutlet weak var lblAssetHint: UILabel!
     @IBOutlet weak var iconAsset: UIImageView!
     @IBOutlet weak var lblAssetName: UILabel!
-    @IBOutlet weak var disclosureArrow: UIImageView!
-    @IBOutlet weak var assetBorder: UIView!
+    @IBOutlet weak var lblAccount: UILabel!
     @IBOutlet weak var btnChooseAsset: UIButton!
     @IBOutlet weak var assetBox: UIView!
 
@@ -113,6 +111,8 @@ class RecipientCell: UITableViewCell {
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
         addressTextView.textContainer.maximumNumberOfLines = 10
 
+        lblAccount.text = wallet?.localizedName().uppercased()
+
         btnPasteAddress.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.pasteAddressBtn
         amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.amountField
         btnChooseAsset.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.chooseAssetBtn
@@ -123,18 +123,20 @@ class RecipientCell: UITableViewCell {
         bg.cornerRadius = 8.0
         addressTextView.textContainer.heightTracksTextView = true
         addressTextView.isScrollEnabled = false
-        addressContainer.cornerRadius = 6.0
+        addressContainer.cornerRadius = 8.0
         addressContainer.borderWidth = 1.0
-        addressContainer.borderColor = UIColor.customTextFieldBg()
+        addressContainer.borderColor = UIColor.gGrayCard()
         amountContainer.borderWidth = 1.0
-        amountContainer.borderColor = UIColor.customTextFieldBg()
+        amountContainer.borderColor = UIColor.gGrayCard()
         btnSendAll.setStyle(.outlinedGray)
-        amountContainer.cornerRadius = 6.0
-        disclosureArrow.image = UIImage(named: "arrow_right")!.maskWithColor(color: UIColor.customTitaniumLight())
+        amountContainer.cornerRadius = 8.0
+
+        assetBox.cornerRadius = 8.0
+        assetBox.borderWidth = 1.0
+        assetBox.borderColor = UIColor.gGrayCard()
     }
 
     func setContent() {
-        lblAssetHint.text = NSLocalizedString("id_asset", comment: "")
         lblAvailableFunds.text = ""
         btnSendAll.setTitle(NSLocalizedString("id_send_all_funds", comment: ""), for: .normal)
         lblAmountHint.text = NSLocalizedString("id_amount", comment: "")
@@ -202,9 +204,9 @@ class RecipientCell: UITableViewCell {
     }
 
     func onTransactionValidate() {
-        addressContainer.borderColor = UIColor.customTextFieldBg()
-        amountContainer.borderColor = UIColor.customTextFieldBg()
-        assetBorder.backgroundColor = UIColor.customTitaniumLight()
+        addressContainer.borderColor = UIColor.gGrayCard()
+        amountContainer.borderColor = UIColor.gGrayCard()
+        assetBox.borderColor = UIColor.gGrayCard()
         lblAddressError.isHidden = true
         lblAmountError.isHidden = true
         lblAmountExchange.isHidden = true
@@ -218,7 +220,7 @@ class RecipientCell: UITableViewCell {
             lblAmountError.isHidden = false
             lblAmountError.text = NSLocalizedString(recipient?.txError ?? "Error", comment: "")
         } else if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
-            assetBorder.backgroundColor = UIColor.errorRed()
+            assetBox.borderColor = UIColor.errorRed()
         } else if !(recipient?.txError ?? "").isEmpty {
             print(recipient?.txError ?? "Error")
         }
