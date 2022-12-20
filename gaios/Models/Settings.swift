@@ -52,17 +52,17 @@ public enum TransactionPriority: Int, CaseIterable {
         return priority?.key ?? .Medium
     }
 
-    func time(for gdkNetwork: GdkNetwork) -> String {
-        let blocksPerHour = gdkNetwork.liquid ? 60 : 6
+    func time(isLiquid: Bool) -> String {
+        let blocksPerHour = isLiquid ? 60 : 6
         let blocks = self.rawValue
         let n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour)
         let time = NSLocalizedString((blocks % blocksPerHour) == 0 ? (blocks == blocksPerHour ? "id_hour" : "id_hours") : "id_minutes", comment: "")
         return String(format: "%d %@", n, time)
     }
 
-    func description(for gdkNetwork: GdkNetwork) -> String {
+    func description(isLiquid: Bool) -> String {
         let confirmationInBlocks = String(format: NSLocalizedString("id_confirmation_in_d_blocks", comment: ""), self.rawValue)
-        return confirmationInBlocks + ", " + time(for: gdkNetwork) + " " + NSLocalizedString("id_on_average", comment: "")
+        return confirmationInBlocks + ", " + time(isLiquid: isLiquid) + " " + NSLocalizedString("id_on_average", comment: "")
     }
 
     static func getPreference() -> TransactionPriority? {

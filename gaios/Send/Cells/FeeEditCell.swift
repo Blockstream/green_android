@@ -81,7 +81,8 @@ class FeeEditCell: UITableViewCell {
         lblFeeFiat.isHidden = true
         lblInvalidFee.isHidden = true
 
-        lblTimeHint.text = transactionPriority == .Custom ? NSLocalizedString("id_custom", comment: "") : "~ \(transactionPriority.time)"
+        let estimateConfirmTime = transactionPriority.time(isLiquid: AccountsManager.shared.current?.gdkNetwork?.liquid ?? false)
+        lblTimeHint.text = transactionPriority == .Custom ? NSLocalizedString("id_custom", comment: "") : "~ \(estimateConfirmTime)"
         feeSlider.value = Float(feeToSwitchIndex(transactionPriority))
 
         switch transactionPriority {
@@ -109,11 +110,6 @@ class FeeEditCell: UITableViewCell {
         }
         lblInvalidFee.isHidden = !(txError == "id_invalid_replacement_fee_rate")
         btnCustomFee.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.setCutomFeeBtn
-    }
-
-    func setPriority(_ switchIndex: Int) {
-        let tp = switchIndexToFee(switchIndex)
-        lblTimeHint.text = tp == .Custom ? NSLocalizedString("id_custom", comment: "") : "~ \(tp.time)"
     }
 
     func feeToSwitchIndex(_ fee: TransactionPriority) -> Int {
