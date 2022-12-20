@@ -50,7 +50,10 @@ class WalletViewModel {
         }
     }
     var walletAssetCellModels: [WalletAssetCellModel] {
-        return cachedBalance.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
+        return cachedBalance
+            .sorted()
+            .nonZero()
+            .map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
     }
     var remoteAlert: RemoteAlert?
 
@@ -105,7 +108,6 @@ class WalletViewModel {
                 let total = amounts.filter({$0.0 == "btc"}).map {$0.1}.reduce(0, +)
 
                 self.balanceCellModel = BalanceCellModel(satoshi: total,
-                                                         numAssets: amounts.count,
                                                          cachedBalance: self.cachedBalance,
                                                          mode: self.balanceDisplayMode
                 )

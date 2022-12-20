@@ -16,4 +16,8 @@ extension AssetAmountList {
             return registry.info(for: lhs.0) < registry.info(for: rhs.0)
         })
     }
+
+    func nonZero() -> [(String, Int64)] {
+        return self.filter { $0.1 != 0 }
+    }
 }

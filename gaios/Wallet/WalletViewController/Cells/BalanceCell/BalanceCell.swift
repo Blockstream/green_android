@@ -10,6 +10,7 @@ class BalanceCell: UITableViewCell {
     @IBOutlet weak var iconsStack: UIStackView!
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
     @IBOutlet weak var btnEye: UIButton!
+    @IBOutlet weak var assetsBox: UIView!
 
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
@@ -40,15 +41,17 @@ class BalanceCell: UITableViewCell {
         lblBalanceValue.text = model.value
         lblBalanceFiat.text = model.valueChange
 
+        let assets = model.cachedBalance.sorted().nonZero()
+        assetsBox.isHidden = assets.count < 2
+
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
-        let str = NSAttributedString(string: "\(model.numAssets) assets in total", attributes: uLineAttr)
+        let str = NSAttributedString(string: "\(assets.count) assets in total", attributes: uLineAttr)
         btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
         self.onHide = onHide
         self.onConvert = onConvert
-        let sorted = model.cachedBalance.sorted()
         var icons: [UIImage] = []
-        for asset in sorted {
+        for asset in assets {
             let tag = asset.0
             if let icon = WalletManager.current?.registry.image(for: tag) {
                 if icons.count > 0 {

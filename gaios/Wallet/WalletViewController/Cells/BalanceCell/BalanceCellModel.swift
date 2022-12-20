@@ -24,16 +24,13 @@ enum BalanceDisplayMode {
 class BalanceCellModel {
 
     var value: String
-    var numAssets: Int
     var valueChange: String
     var cachedBalance: [(String, Int64)]
 
     init(satoshi: Int64,
-         numAssets: Int,
          cachedBalance: [(String, Int64)],
          mode: BalanceDisplayMode) {
         self.cachedBalance = cachedBalance
-        self.numAssets = numAssets
         self.value = ""
         self.valueChange = ""
 
