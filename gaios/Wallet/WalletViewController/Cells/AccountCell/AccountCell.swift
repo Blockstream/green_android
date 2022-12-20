@@ -38,7 +38,8 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var trailing2_1: NSLayoutConstraint!
     @IBOutlet weak var trailing3_2: NSLayoutConstraint!
     @IBOutlet weak var trailing4_3: NSLayoutConstraint!
-
+    @IBOutlet weak var titlesTrailing: NSLayoutConstraint!
+    
     private var sIdx: Int = 0
     private var cIdx: Int = 0
     private var hideBalance: Bool = false
@@ -163,17 +164,23 @@ class AccountCell: UITableViewCell {
         [trailing2_1, trailing3_2, trailing4_3].forEach {
             $0?.constant = padding
         }
+
+        titlesTrailing.constant = 0.0
+        let width = icC1.frame.width
+
         switch icons.count {
         case 0:
             break
         case 1:
             icC1.isHidden = false
             icV1.image = icons[0]
+            titlesTrailing.constant = -width * 1.0 - 10.0
         case 2:
             icC1.isHidden = false
             icV1.image = icons[1]
             icC2.isHidden = false
             icV2.image = icons[0]
+            titlesTrailing.constant = -width * 2.0 - 10.0 + 10.0
         case 3:
             icC1.isHidden = false
             icV1.image = icons[2]
@@ -181,6 +188,7 @@ class AccountCell: UITableViewCell {
             icV2.image = icons[1]
             icC3.isHidden = false
             icV3.image = icons[0]
+            titlesTrailing.constant = -width * 3.0 - 10.0 + 20.0
         case 4:
             icC1.isHidden = false
             icV1.image = icons[3]
@@ -190,6 +198,7 @@ class AccountCell: UITableViewCell {
             icV3.image = icons[1]
             icC4.isHidden = false
             icV4.image = icons[0]
+            titlesTrailing.constant = -width * 4.0 - 10.0 + 30.0
         default:
             icC4.isHidden = false
             icV4.image = icons[3]
@@ -199,6 +208,7 @@ class AccountCell: UITableViewCell {
             icV6.image = icons[1]
             icC7.isHidden = false
             icV7.image = icons[0]
+            titlesTrailing.constant = -width * 4.0 - 10.0 + 30.0 - 30.0
         }
 
         if icons.count > 4 {
