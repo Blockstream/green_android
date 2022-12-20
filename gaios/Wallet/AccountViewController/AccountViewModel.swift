@@ -82,7 +82,10 @@ class AccountViewModel {
     }
 
     func getBalance() {
-        let assets = AssetAmountList(account.satoshi ?? [:]).sorted()
+        var assets = AssetAmountList(account.satoshi ?? [:]).sorted()
+        if assets.count == 1 {
+            assets = []
+        }
         self.assetCellModels = assets.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
     }
 
