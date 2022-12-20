@@ -179,7 +179,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
                 }
             }
         }
-        tableView.reloadSections(IndexSet([section]), with: .automatic)
+        tableView.reloadSections(IndexSet([section]), with: .fade)
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
             if self.viewModel.accountSelectSubCellModels.count > 0 && self.viewModel.selectedSection > 0 {
