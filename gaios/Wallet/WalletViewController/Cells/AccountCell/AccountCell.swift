@@ -39,7 +39,7 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var trailing3_2: NSLayoutConstraint!
     @IBOutlet weak var trailing4_3: NSLayoutConstraint!
     @IBOutlet weak var titlesTrailing: NSLayoutConstraint!
-    
+
     private var sIdx: Int = 0
     private var cIdx: Int = 0
     private var hideBalance: Bool = false
@@ -151,7 +151,7 @@ class AccountCell: UITableViewCell {
 
         views.forEach {
             $0.borderWidth = 1.0
-            $0.borderColor = UIColor.gBlackBg()
+            $0.borderColor = UIColor.white
             $0.cornerRadius = $0.frame.size.width / 2.0
             $0.backgroundColor = cColor.darker(by: 10)
         }
