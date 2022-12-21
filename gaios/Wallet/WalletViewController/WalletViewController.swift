@@ -493,6 +493,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
                 vc.transaction = transaction
+                vc.wallet = transaction.subaccountItem
                 navigationController?.pushViewController(vc, animated: true)
             }
             tableView.deselectRow(at: indexPath, animated: false)

@@ -362,8 +362,9 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .transaction:
             let transaction = viewModel?.cachedTransactions[indexPath.row]
             let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
+            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController, let account = transaction?.subaccountItem {
                 vc.transaction = transaction
+                vc.wallet = account
                 navigationController?.pushViewController(vc, animated: true)
             }
         default:
