@@ -108,8 +108,16 @@ class WalletViewModel {
         wm?.balances(subaccounts: self.subaccounts)
             .done { amounts in
                 self.cachedBalance = AssetAmountList(amounts).sorted()
-                let total = amounts.filter({$0.0 == "btc"}).map {$0.1}.reduce(0, +)
 
+                /// FIX total balance match
+                // let total = amounts.filter({$0.0 == "btc"}).map {$0.1}.reduce(0, +)
+                var total: Int64 = 0
+                for subacc in self.subaccounts {
+                    let satoshi = subacc.satoshi?[subacc.gdkNetwork.getFeeAsset()] ?? 0
+                    if let converted = Balance.fromSatoshi(satoshi) {
+                        total += converted.satoshi
+                    }
+                }
                 self.balanceCellModel = BalanceCellModel(satoshi: total,
                                                          cachedBalance: self.cachedBalance,
                                                          mode: self.balanceDisplayMode
