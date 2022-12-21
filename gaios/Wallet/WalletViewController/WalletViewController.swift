@@ -117,10 +117,9 @@ class WalletViewController: UIViewController {
         lblWelcomeHint.text = "Create your first account to receive funds."
         btnWelcomeCreate.setTitle("Create Account", for: .normal)
         let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: self, options: nil)![0] as? DrawerBarItem)!)
-        drawerItem.configure {
-            [weak self] () in
+        drawerItem.configure(img: viewModel.headerIcon, onTap: {[weak self] () in
                 self?.switchNetwork()
-        }
+        })
         let leftItem: UIBarButtonItem = UIBarButtonItem(customView: drawerItem)
         navigationItem.leftBarButtonItem = leftItem
 

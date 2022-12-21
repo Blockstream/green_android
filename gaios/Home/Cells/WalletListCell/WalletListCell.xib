@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,7 +18,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Swq-td-hT2">
-                        <rect key="frame" x="12" y="30" width="10" height="9"/>
+                        <rect key="frame" x="12" y="27.5" width="10" height="9"/>
                         <color key="tintColor" name="customMatrixGreen"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="10" id="f1x-qA-alq"/>
@@ -26,26 +26,26 @@
                         </constraints>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_keys_invert" translatesAutoresizingMaskIntoConstraints="NO" id="uow-48-Xrj">
-                        <rect key="frame" x="46" y="39.5" width="20" height="20"/>
+                        <rect key="frame" x="46" y="37" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="EE6-Va-Met"/>
                             <constraint firstAttribute="width" constant="20" id="K3B-HO-4to"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uqv-QH-tXw">
-                        <rect key="frame" x="79" y="21" width="226" height="27"/>
+                        <rect key="frame" x="74" y="16" width="231" height="32"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lblHint" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iXk-eb-CRC">
-                        <rect key="frame" x="79" y="50" width="226" height="13.5"/>
+                        <rect key="frame" x="74" y="50" width="231" height="13.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="7qG-DN-BDm">
-                        <rect key="frame" x="26" y="19.5" width="30" height="30"/>
+                        <rect key="frame" x="26" y="17" width="30" height="30"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="Sey-3W-KpO"/>
                             <constraint firstAttribute="width" constant="30" id="ZRt-79-dWA"/>
@@ -72,7 +72,7 @@
                 <constraints>
                     <constraint firstItem="rco-Sv-g0V" firstAttribute="centerY" secondItem="L58-cX-8T3" secondAttribute="centerY" id="1zz-5X-7pp"/>
                     <constraint firstAttribute="trailing" secondItem="uqv-QH-tXw" secondAttribute="trailing" constant="70" id="8LF-dw-OD9"/>
-                    <constraint firstItem="uqv-QH-tXw" firstAttribute="top" secondItem="L58-cX-8T3" secondAttribute="top" constant="21" id="AcE-B3-v7J"/>
+                    <constraint firstItem="uqv-QH-tXw" firstAttribute="top" secondItem="L58-cX-8T3" secondAttribute="top" constant="16" id="AcE-B3-v7J"/>
                     <constraint firstItem="iXk-eb-CRC" firstAttribute="top" secondItem="uqv-QH-tXw" secondAttribute="bottom" constant="2" id="DSQ-E7-kKq"/>
                     <constraint firstItem="7qG-DN-BDm" firstAttribute="leading" secondItem="Swq-td-hT2" secondAttribute="trailing" constant="4" id="EVu-WO-tG6"/>
                     <constraint firstItem="uow-48-Xrj" firstAttribute="centerX" secondItem="7qG-DN-BDm" secondAttribute="centerX" constant="15" id="Elu-ZI-8Vv"/>
@@ -82,7 +82,7 @@
                     <constraint firstItem="uow-48-Xrj" firstAttribute="centerY" secondItem="7qG-DN-BDm" secondAttribute="centerY" constant="15" id="Rij-b5-947"/>
                     <constraint firstItem="1TO-09-2v5" firstAttribute="centerY" secondItem="L58-cX-8T3" secondAttribute="centerY" id="RzJ-gU-VPw"/>
                     <constraint firstAttribute="trailing" secondItem="rco-Sv-g0V" secondAttribute="trailing" constant="16" id="bHd-eh-438"/>
-                    <constraint firstItem="uqv-QH-tXw" firstAttribute="leading" secondItem="7qG-DN-BDm" secondAttribute="trailing" constant="23" id="j0f-G5-lu7"/>
+                    <constraint firstItem="uqv-QH-tXw" firstAttribute="leading" secondItem="7qG-DN-BDm" secondAttribute="trailing" constant="18" id="j0f-G5-lu7"/>
                     <constraint firstItem="Swq-td-hT2" firstAttribute="leading" secondItem="L58-cX-8T3" secondAttribute="leading" constant="12" id="noH-dT-Mu8"/>
                     <constraint firstItem="Swq-td-hT2" firstAttribute="centerY" secondItem="7qG-DN-BDm" secondAttribute="centerY" id="xIt-jI-njK"/>
                     <constraint firstItem="7qG-DN-BDm" firstAttribute="centerY" secondItem="uqv-QH-tXw" secondAttribute="centerY" id="xtC-qS-dM7"/>
@@ -102,16 +102,16 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="circle.fill" catalog="system" width="128" height="121"/>
+        <image name="circle.fill" catalog="system" width="128" height="123"/>
         <image name="ic_hww_ledger" width="391" height="71"/>
         <image name="ic_keys_invert" width="60" height="60"/>
         <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>
         <image name="ntw_btc" width="60" height="61"/>
         <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
-            <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

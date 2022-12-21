@@ -32,18 +32,20 @@ class WalletListCell: UITableViewCell {
 
     func configure(item: Account, isSelected: Bool = false) {
         self.lblTitle.text = item.name
-        self.icon.image = item.icon
+
+        let img = UIImage(named: item.gdkNetwork?.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")
+        self.icon.image = img!.maskWithColor(color: .white)
         self.circleImageView.isHidden = !isSelected
 
-        self.iconSecurityType.image = UIImage(named: "ic_keys_invert")!
+        self.iconSecurityType.image = UIImage() // UIImage(named: "ic_keys_invert")!
 
-        if item.isSingleSig ?? false {
-            self.iconSecurityType.image = UIImage(named: "ic_key")!
-        }
-
-        if item.isWatchonly {
-            self.iconSecurityType.image = UIImage(named: "ic_eye")!
-        }
+//        if item.isSingleSig ?? false {
+//            self.iconSecurityType.image = UIImage(named: "ic_key")!
+//        }
+//
+//        if item.isWatchonly {
+//            self.iconSecurityType.image = UIImage(named: "ic_eye")!
+//        }
 
         lblHint.isHidden = !(item.isEphemeral || item.isHW)
 
