@@ -7,7 +7,7 @@ enum WalletPrefs: Int, CaseIterable {
     var name: String {
         switch self {
         case .settings:
-            return "Network Settings"
+            return "Settings"
         case .createAccount:
             return "Create Account"
         }
