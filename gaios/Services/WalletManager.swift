@@ -103,6 +103,8 @@ class WalletManager {
             fatalError()
         }
         return mainSession.loginWatchOnly(username, password).asVoid()
+            .then { self.subaccounts() }.asVoid()
+            .compactMap { self.loadRegistry() }
     }
 
     func login(_ credentials: Credentials) -> Promise<Void> {
