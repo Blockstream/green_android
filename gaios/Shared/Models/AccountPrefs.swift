@@ -29,10 +29,14 @@ enum AccountPrefs: Int, CaseIterable {
 
     static func getItems() -> [DialogListCellModel] {
         var items: [DialogListCellModel] = []
-        AccountPrefs.allCases.forEach {
-            items.append(DialogListCellModel(type: .list,
-                                             icon: $0.icon,
-                                             title: $0.name))
+        items += [DialogListCellModel(type: .list,
+                                      icon: AccountPrefs.rename.icon,
+                                      title: AccountPrefs.rename.name)]
+        if let subaccount = WalletManager.current?.subaccounts,
+           subaccount.filter({ !($0.hidden ?? false) }).count > 1 {
+            items += [DialogListCellModel(type: .list,
+                                          icon: AccountPrefs.archive.icon,
+                                          title: AccountPrefs.archive.name)]
         }
         return items
     }
