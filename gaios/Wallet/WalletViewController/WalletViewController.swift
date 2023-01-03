@@ -104,8 +104,8 @@ class WalletViewController: UIViewController {
         }
         if sections.contains(WalletSection.account) {
             tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
+            welcomeLayer.isHidden = viewModel.accountCellModels.count > 0
         }
-        welcomeLayer.isHidden = viewModel.accountCellModels.count > 0
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.tableView.refreshControl?.endRefreshing()

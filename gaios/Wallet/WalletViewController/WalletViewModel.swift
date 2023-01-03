@@ -71,7 +71,7 @@ class WalletViewModel {
         wm?.balances(subaccounts: self.subaccounts)
             .done { _ in
                 let models = self.subaccounts.map { AccountCellModel(subaccount: $0) }
-                if models.count > 0 { self.accountCellModels = models }
+                self.accountCellModels = models
                 self.getAssets()
                 self.getTransactions(max: 10)
             }.catch { err in
