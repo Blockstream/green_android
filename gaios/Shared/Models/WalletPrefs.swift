@@ -23,12 +23,10 @@ enum WalletPrefs: Int, CaseIterable {
     }
 
     static func getItems() -> [DialogListCellModel] {
-        var items: [DialogListCellModel] = []
-        WalletPrefs.allCases.forEach {
-            items.append(DialogListCellModel(type: .list,
-                                             icon: $0.icon,
-                                             title: $0.name))
-        }
-        return items
+        let isWatchOnly = AccountsManager.shared.current?.isWatchonly ?? false
+        let prefs: [WalletPrefs] = isWatchOnly ? [ .settings ] : [ .settings, .createAccount ]
+        return prefs.map { DialogListCellModel(type: .list,
+                                               icon: $0.icon,
+                                               title: $0.name) }
     }
 }

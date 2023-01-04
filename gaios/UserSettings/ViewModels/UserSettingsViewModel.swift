@@ -10,6 +10,7 @@ class UserSettingsViewModel {
     // load wallet manager for current logged session
     var session: SessionManager? { wm.prominentSession }
     var settings: Settings? { session?.settings }
+    var isWatchonly: Bool { AccountsManager.shared.current?.isWatchonly ?? false }
 
     // reload all contents
     var reloadTableView: (() -> Void)?
@@ -137,6 +138,10 @@ class UserSettingsViewModel {
             .Recovery: getRecovery(),
             .Multisig: getMultisig(),
             .About: getAbout()]
+        if isWatchonly {
+            sections = [ .Logout, .About ]
+            items = [ .Logout: getLogout(), .About: getAbout()]
+        }
         cellModels = items.mapValues { $0.map { UserSettingsCellModel($0) } }
     }
 }
