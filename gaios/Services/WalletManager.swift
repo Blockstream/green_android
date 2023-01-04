@@ -89,13 +89,9 @@ class WalletManager {
             .then { mainSession.connect() }
             .compactMap { DecryptWithPinParams(pin: pin, pinData: pinData)}
             .then { mainSession.decryptWithPin($0) }
-            .map { bip39passphrase.isNilOrEmpty ? $0 :Credentials(mnemonic: $0.mnemonic, bip39Passphrase: bip39passphrase) }
-            .then {
-                when(fulfilled: Guarantee.value($0), bip39passphrase.isNilOrEmpty ? Guarantee().asVoid() : self.restore($0))
-            }
-            .then { credentials, _ in
-                self.login(credentials)
-            }
+            .map { bip39passphrase.isNilOrEmpty ? $0 : Credentials(mnemonic: $0.mnemonic, bip39Passphrase: bip39passphrase) }
+            .then { when(fulfilled: Guarantee.value($0), !bip39passphrase.isNilOrEmpty && !mainSession.existDatadir(credentials: $0) ? self.restore($0) : Guarantee().asVoid()) }
+            .then { credentials, _ in self.login(credentials) }
     }
 
     func loginWatchOnly(_ username: String, _ password: String) -> Promise<Void> {
@@ -111,7 +107,7 @@ class WalletManager {
         return when(guarantees: self.sessions.values
                 .filter { !$0.logged }
                 .map { session in
-                    if session.gdkNetwork.electrum && !session.existDatadir(credentials: credentials) {
+                    if session.gdkNetwork.electrum && credentials.bip39Passphrase == nil && !session.existDatadir(credentials: credentials) {
                         return Guarantee().asVoid()
                     }
                     return session.loginWithCredentials(credentials)
@@ -130,8 +126,6 @@ class WalletManager {
             .then { btcSession.registerSW(credentials) }
             .then { btcSession.loginWithCredentials(credentials) }
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
-            .then { _ in btcSession.subaccounts() }
-            .asVoid()
     }
 
     func restore(_ credentials: Credentials) -> Promise<Void> {
@@ -140,25 +134,25 @@ class WalletManager {
         let btcRestore = Guarantee()
             .then { btcSession.loginWithCredentials(credentials) }
             .then { _ in btcSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
-            .then { $0.first?.bip44Discovered ?? false ? Promise().asVoid() :
-                btcSession.updateSubaccount(subaccount: $0.first?.pointer ?? 0, hidden: true) }
-            .then { _ in btcSession.subaccounts() }
+            .compactMap { $0.filter({ $0.pointer == 0 }).first }
+            .then { credentials.bip39Passphrase.isNilOrEmpty && !($0.bip44Discovered ?? false) ? btcSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
 
         let liquidNetwork: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
         let liquidSession = self.sessions[liquidNetwork.rawValue]!
         let liquidRestore = Guarantee()
             .then { liquidSession.loginWithCredentials(credentials) }
             .then { _ in liquidSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
-            .then { (accounts: [WalletItem]) -> Promise<Void> in
-                if (accounts.first?.bip44Discovered ?? false) == false {
-                    return liquidSession.updateSubaccount(subaccount: accounts.first?.pointer ?? 0, hidden: true)
-                }
-                if accounts.filter({ $0.bip44Discovered ?? false }).isEmpty {
+            .compactMap { $0.filter({ $0.pointer == 0 }).first }
+            .then { !($0.bip44Discovered ?? false) ? liquidSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
+            .then { _ in liquidSession.subaccounts() }
+            .compactMap { subaccounts in
+                if subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty {
                     liquidSession.removeDatadir(credentials: credentials)
+                    liquidSession.session?.logged = false
+                    return
                 }
-                return Promise().asVoid()
-            }.then { _ in liquidSession.subaccounts() }
-        return when(resolved: [btcRestore, liquidRestore]).asVoid()
+            }
+        return when(fulfilled: [btcRestore, liquidRestore])
     }
 
     func loginWithHW(_ device: HWDevice) -> Promise<Void> {

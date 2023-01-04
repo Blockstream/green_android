@@ -25,7 +25,7 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     var recoveryPubKey: String?
     let bip44Discovered: Bool?
     let recoveryXpub: String?
-    let hidden: Bool?
+    let hidden: Bool
     var network: String?
 
     var gdkNetwork: GdkNetwork { getGdkNetwork(network!)}
