@@ -14,7 +14,11 @@ class WalletViewModel {
 
     /// load visible subaccounts
     var subaccounts: [WalletItem] {
-        wm?.subaccounts.filter { !($0.hidden ?? false) } ?? []
+        wm?.subaccounts.filter { !($0.hidden) } ?? []
+    }
+
+    var watchOnly: Bool {
+        AccountsManager.shared.current?.isWatchonly ?? false
     }
 
     var headerIcon: UIImage {

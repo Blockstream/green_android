@@ -132,6 +132,11 @@ class WalletViewController: UIViewController {
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
 
+        if viewModel.watchOnly {
+            btnSend.setTitle( "id_sweep".localized, for: .normal )
+            btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
+        }
+
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(callPullToRefresh(_:)), for: .valueChanged)
@@ -177,6 +182,7 @@ class WalletViewController: UIViewController {
             let model = viewModel.accountCellModels[sIdx]
             vc.wallet = model.account
             vc.fixedWallet = false
+            vc.inputType = viewModel.watchOnly ? .sweep : .transaction
             navigationController?.pushViewController(vc, animated: true)
         }
     }

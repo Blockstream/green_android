@@ -52,7 +52,7 @@ class AccountViewController: UIViewController {
         setStyle()
         tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
 
-        viewModel?.reloadSections = reloadSections
+        viewModel.reloadSections = reloadSections
         viewModel.getBalance()
         viewModel.getTransactions()
     }
@@ -93,6 +93,11 @@ class AccountViewController: UIViewController {
 
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
+
+        if viewModel.watchOnly {
+            btnSend.setTitle( "id_sweep".localized, for: .normal )
+            btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
+        }
 
         tableView.prefetchDataSource = self
         tableView.refreshControl = UIRefreshControl()
@@ -138,6 +143,7 @@ class AccountViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
             vc.wallet = viewModel.account
             vc.fixedWallet = true
+            vc.inputType = viewModel.watchOnly ? .sweep : .transaction
             navigationController?.pushViewController(vc, animated: true)
         }
     }

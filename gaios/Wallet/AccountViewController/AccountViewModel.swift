@@ -11,13 +11,19 @@ class AccountViewModel {
     var page = 0
     var fetchingTxs = false
 
+    var watchOnly: Bool {
+        AccountsManager.shared.current?.isWatchonly ?? false
+    }
+
     var accountCellModels: [AccountCellModel] {
         didSet {
             reloadSections?( [AccountSection.account], true )
         }
     }
     var addingCellModels: [AddingCellModel] {
-        if account.type == .standard && !(account.session?.twoFactorConfig?.anyEnabled ?? false) {
+        let watchOnly = AccountsManager.shared.current?.isWatchonly ?? false
+        let enabled2fa = account.session?.twoFactorConfig?.anyEnabled ?? false
+        if account.type == .standard && !enabled2fa && !watchOnly {
             return [AddingCellModel()]
         }
         return []
