@@ -187,14 +187,14 @@ class WatchOnlyViewController: KeyboardViewController {
             AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsManager.shared.current)
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
-            var prettyError: String?
+            var prettyError = "id_login_failed"
             switch error {
+            case TwoFactorCallError.failure(let localizedDescription):
+                prettyError = localizedDescription
             case LoginError.connectionFailed:
-                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
                 prettyError = "id_connection_failed"
             default:
-                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
-                prettyError = "id_login_failed"
+                break
             }
             AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
         }
