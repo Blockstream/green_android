@@ -117,7 +117,6 @@ class WalletManager {
                     .asVoid()
                     .recover { err in
                         self.failureSessions[session.gdkNetwork.network] = err
-                        return Guarantee().asVoid()
                     }
                 })
             .then { self.subaccounts() }.asVoid()
@@ -330,11 +329,11 @@ extension WalletManager {
     }
 
     static func delete(for wm: WalletManager) {
-        if let index = wallets.firstIndex(where:  {$0.value === wm }) {
+        if let index = wallets.firstIndex(where: { $0.value === wm }) {
             wallets.remove(at: index)
         }
     }
-    
+
     static func change(wm: WalletManager, for account: Account) {
         delete(for: wm)
         add(for: account, wm: wm)
