@@ -52,7 +52,7 @@
                         </constraints>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_passphrase" translatesAutoresizingMaskIntoConstraints="NO" id="1TO-09-2v5">
-                        <rect key="frame" x="343" y="28" width="16" height="16"/>
+                        <rect key="frame" x="343" y="24" width="16" height="16"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="3NN-Py-1S2"/>
@@ -60,7 +60,7 @@
                         </constraints>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_hww_ledger" translatesAutoresizingMaskIntoConstraints="NO" id="rco-Sv-g0V">
-                        <rect key="frame" x="309" y="24" width="50" height="24"/>
+                        <rect key="frame" x="309" y="20" width="50" height="24"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="24" id="wE3-vv-V53"/>
@@ -70,17 +70,17 @@
                 </subviews>
                 <color key="backgroundColor" name="customTitaniumDark"/>
                 <constraints>
-                    <constraint firstItem="rco-Sv-g0V" firstAttribute="centerY" secondItem="L58-cX-8T3" secondAttribute="centerY" id="1zz-5X-7pp"/>
                     <constraint firstAttribute="trailing" secondItem="uqv-QH-tXw" secondAttribute="trailing" constant="70" id="8LF-dw-OD9"/>
                     <constraint firstItem="uqv-QH-tXw" firstAttribute="top" secondItem="L58-cX-8T3" secondAttribute="top" constant="16" id="AcE-B3-v7J"/>
                     <constraint firstItem="iXk-eb-CRC" firstAttribute="top" secondItem="uqv-QH-tXw" secondAttribute="bottom" constant="2" id="DSQ-E7-kKq"/>
                     <constraint firstItem="7qG-DN-BDm" firstAttribute="leading" secondItem="Swq-td-hT2" secondAttribute="trailing" constant="4" id="EVu-WO-tG6"/>
                     <constraint firstItem="uow-48-Xrj" firstAttribute="centerX" secondItem="7qG-DN-BDm" secondAttribute="centerX" constant="15" id="Elu-ZI-8Vv"/>
                     <constraint firstAttribute="bottom" secondItem="uqv-QH-tXw" secondAttribute="bottom" constant="24" id="FMU-sf-3sE"/>
+                    <constraint firstItem="1TO-09-2v5" firstAttribute="centerY" secondItem="uqv-QH-tXw" secondAttribute="centerY" id="Fmc-ou-VCH"/>
                     <constraint firstAttribute="trailing" secondItem="1TO-09-2v5" secondAttribute="trailing" constant="16" id="GXS-xa-lRe"/>
                     <constraint firstItem="iXk-eb-CRC" firstAttribute="trailing" secondItem="uqv-QH-tXw" secondAttribute="trailing" id="Hcb-LS-7mD"/>
+                    <constraint firstItem="rco-Sv-g0V" firstAttribute="centerY" secondItem="uqv-QH-tXw" secondAttribute="centerY" id="QKM-Tm-Q7h"/>
                     <constraint firstItem="uow-48-Xrj" firstAttribute="centerY" secondItem="7qG-DN-BDm" secondAttribute="centerY" constant="15" id="Rij-b5-947"/>
-                    <constraint firstItem="1TO-09-2v5" firstAttribute="centerY" secondItem="L58-cX-8T3" secondAttribute="centerY" id="RzJ-gU-VPw"/>
                     <constraint firstAttribute="trailing" secondItem="rco-Sv-g0V" secondAttribute="trailing" constant="16" id="bHd-eh-438"/>
                     <constraint firstItem="uqv-QH-tXw" firstAttribute="leading" secondItem="7qG-DN-BDm" secondAttribute="trailing" constant="18" id="j0f-G5-lu7"/>
                     <constraint firstItem="Swq-td-hT2" firstAttribute="leading" secondItem="L58-cX-8T3" secondAttribute="leading" constant="12" id="noH-dT-Mu8"/>
