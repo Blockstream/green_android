@@ -34,19 +34,19 @@ class WalletListCell: UITableViewCell {
         lblTitle.text = item.name
         lblHint.text = ""
 
-        let img = UIImage(named: item.gdkNetwork?.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")
+        let img: UIImage? = {
+            if item.isWatchonly {
+                return UIImage(named: "ic_eye_flat")
+            } else if item.gdkNetwork?.mainnet ?? true {
+                return UIImage(named: "ic_wallet")
+            } else {
+                return UIImage(named: "ic_wallet_testnet")
+            }
+        }()
         self.icon.image = img!.maskWithColor(color: .white)
         self.circleImageView.isHidden = !isSelected
 
         self.iconSecurityType.image = UIImage() // UIImage(named: "ic_keys_invert")!
-
-//        if item.isSingleSig ?? false {
-//            self.iconSecurityType.image = UIImage(named: "ic_key")!
-//        }
-//
-//        if item.isWatchonly {
-//            self.iconSecurityType.image = UIImage(named: "ic_eye")!
-//        }
 
         lblHint.isHidden = !(item.isEphemeral || item.isHW)
 
