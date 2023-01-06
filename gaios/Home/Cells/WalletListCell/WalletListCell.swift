@@ -31,7 +31,8 @@ class WalletListCell: UITableViewCell {
     }
 
     func configure(item: Account, isSelected: Bool = false) {
-        self.lblTitle.text = item.name
+        lblTitle.text = item.name
+        lblHint.text = ""
 
         let img = UIImage(named: item.gdkNetwork?.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")
         self.icon.image = img!.maskWithColor(color: .white)
@@ -54,10 +55,6 @@ class WalletListCell: UITableViewCell {
             iconPassphrase.image = UIImage(named: "ic_passphrase")!
         }
         if item.isHW {
-            if let ntw = AvailableNetworks(rawValue: item.network) {
-                lblTitle.text = (item.isSingleSig ?? false ? "SingleSig" : "Multisig") + " " + ntw.name()
-            }
-            lblHint.text = item.name
             if item.isJade {
                 iconHW.image = UIImage(named: "ic_hww_jade")!
             }
