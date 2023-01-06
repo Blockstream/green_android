@@ -201,6 +201,9 @@ class AccountCell: UITableViewCell {
             icV4.image = icons[0]
             titlesTrailing.constant = -width * 4.0 - 10.0 + 30.0
         default:
+            icV1.image = UIImage()
+            icV2.image = UIImage()
+            icV3.image = UIImage()
             icC4.isHidden = false
             icV4.image = icons[3]
             icC5.isHidden = false
