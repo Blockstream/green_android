@@ -410,6 +410,11 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                                    onDismiss: {[weak self] in
                         self?.remoteAlertDismiss()
                     })
+                case .login:
+                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil,
+                                   onDismiss: nil)
                 }
                 cell.selectionStyle = .none
                 return cell

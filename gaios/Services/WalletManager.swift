@@ -77,6 +77,8 @@ class WalletManager {
         self.sessions.filter { $0.1.logged }
     }
 
+    var failureSessions = [String: Error]()
+
     var logged: Bool {
         activeSessions.count > 0
     }
@@ -104,6 +106,7 @@ class WalletManager {
     }
 
     func login(_ credentials: Credentials) -> Promise<Void> {
+        self.failureSessions = [:]
         return when(guarantees: self.sessions.values
                 .filter { !$0.logged }
                 .map { session in
@@ -112,7 +115,10 @@ class WalletManager {
                     }
                     return session.loginWithCredentials(credentials)
                     .asVoid()
-                    .recover { _ in return Guarantee().asVoid() }
+                    .recover { err in
+                        self.failureSessions[session.gdkNetwork.network] = err
+                        return Guarantee().asVoid()
+                    }
                 })
             .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }

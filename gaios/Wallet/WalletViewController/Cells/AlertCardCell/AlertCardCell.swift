@@ -9,6 +9,7 @@ enum AlertCardType {
     case testnetNoValue
     case ephemeralWallet
     case remoteAlert(RemoteAlert)
+    case login(String, Error)
 }
 
 class AlertCardCell: UITableViewCell {
@@ -110,6 +111,24 @@ class AlertCardCell: UITableViewCell {
             if remoteAlert.dismissable ?? false {
                 btnDismiss.isHidden = false
             }
+        case .login(let network, let error):
+            lblTitle.text = NSLocalizedString("id_warning", comment: "")
+            let errorString: String = {
+                switch error {
+                case LoginError.connectionFailed(let txt), LoginError.walletNotFound(let txt):
+                    return txt ?? ""
+                case TwoFactorCallError.failure(let txt), TwoFactorCallError.cancel(let txt):
+                    return txt
+                default:
+                    return error.localizedDescription
+                }
+            }()
+            let networkName = getGdkNetwork(network).name
+            let errText = NSLocalizedString(errorString, comment: "")
+            lblHint.text = "Login failure in network \(networkName): \(errText)"
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
         }
     }
 

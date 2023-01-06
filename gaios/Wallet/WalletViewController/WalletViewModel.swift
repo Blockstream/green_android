@@ -172,8 +172,10 @@ class WalletViewModel {
         if let remoteAlert = remoteAlert {
             cards.append(AlertCardType.remoteAlert(remoteAlert))
         }
+        // Failure login session
+        cards += wm.failureSessions.map { AlertCardType.login($0.key, $0.value) }
 
-        /// load system messages
+        // load system messages
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
             .then(on: bgq) { wm.loadSystemMessages() }
