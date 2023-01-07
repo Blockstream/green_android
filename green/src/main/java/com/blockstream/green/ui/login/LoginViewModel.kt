@@ -257,7 +257,7 @@ class LoginViewModel @AssistedInject constructor(
         loginCredentials: LoginCredentials? = null,
         isWatchOnly: Boolean = false,
         updateWatchOnlyPassword: Boolean = false,
-        logInMethod: (GdkSession) -> Unit
+        logInMethod: suspend (GdkSession) -> Unit
     ) {
 
         doUserAction({

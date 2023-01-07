@@ -4,66 +4,78 @@ import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.blockstream.DeviceBrand
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
+import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.Device
+import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.QATester
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.kotlin.addTo
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 class DeviceListViewModel @AssistedInject constructor(
     countly: Countly,
-    val deviceManager: DeviceManager,
-    @Assisted deviceBrand: DeviceBrand?
-) : AppViewModel(countly) {
+    sessionManager: SessionManager,
+    walletRepository: WalletRepository,
+    deviceManager: DeviceManager,
+    qaTester: QATester,
+    @Assisted val isJade: Boolean
+) : AbstractDeviceViewModel(sessionManager, walletRepository, deviceManager, qaTester, countly, null) {
 
     val devices = MutableLiveData(listOf<Device>())
-    val bleAdapterState = deviceManager.bleAdapterState
-    val hasBleConnectivity = deviceBrand == null || deviceBrand.hasBleConnectivity
+    val hasBleConnectivity = true // deviceBrand == null || deviceBrand.hasBleConnectivity
 
     var onSuccess: (() -> Unit)? = null
 
     val canEnableBluetooth = MutableLiveData(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
 
+    override val device: Device? = null
+
+    override val deviceConnectionManagerOrNull: DeviceConnectionManager? = null
+
     init {
         deviceManager
-            .getDevices()
-            .map { devices ->
-                deviceBrand?.let { devices.filter { it.deviceBrand == deviceBrand } } ?: devices
+            .devicesStateFlow.map { devices ->
+                devices.filter {
+                    (it.deviceBrand == DeviceBrand.Blockstream && isJade) || (it.deviceBrand != DeviceBrand.Blockstream && !isJade)
+                }
             }
-            .subscribe(devices::postValue)
-            .addTo(disposables)
+            .onEach {
+                devices.value = it
+            }.launchIn(viewModelScope)
     }
 
     fun askForPermissionOrBond(device: Device) {
-        onSuccess = {
+        device.askForPermissionOrBond(onSuccess = {
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
-        }
-
-        device.askForPermissionOrBond(onSuccess!!) {
-            onError.postValue(ConsumableEvent(it))
-        }
+        }, onError = {error ->
+            error?.also { onError.postValue(ConsumableEvent(it)) }
+        })
     }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            deviceBrand: DeviceBrand?
+            isJade: Boolean
         ): DeviceListViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            deviceBrand: DeviceBrand?
+            isJade: Boolean
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(deviceBrand) as T
+                return assistedFactory.create(isJade) as T
             }
         }
     }

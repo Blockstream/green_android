@@ -3,16 +3,19 @@ package com.blockstream.green.ui.intro
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.IntroFragmentBinding
+import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.ui.wallet.AbstractWalletsFragment
 import com.blockstream.green.ui.wallet.WalletsViewModel
-import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.views.GreenAlertView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 
 @AndroidEntryPoint
@@ -28,6 +31,18 @@ class IntroFragment : AbstractWalletsFragment<IntroFragmentBinding>(R.layout.int
 
         binding.vm = viewModel
 
+        init(binding.common, viewModel)
+
+        walletRepository.getAllWalletsFlow().onEach {
+            if(it.isEmpty()){
+                navigate(R.id.action_global_introSetupNewWalletFragment)
+            }
+        }.launchIn(lifecycleScope)
+
+        binding.buttonSetupWallet.setOnClickListener {
+            navigate(NavGraphDirections.actionGlobalSetupNewWalletFragment())
+        }
+
         binding.buttonAppSettings.setOnClickListener {
             AppSettingsDialogFragment.show(childFragmentManager)
         }
@@ -41,8 +56,6 @@ class IntroFragment : AbstractWalletsFragment<IntroFragmentBinding>(R.layout.int
         binding.buttonAbout.setOnClickListener {
             navigate(NavGraphDirections.actionGlobalAboutFragment())
         }
-
-        init(binding.common, viewModel)
     }
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner

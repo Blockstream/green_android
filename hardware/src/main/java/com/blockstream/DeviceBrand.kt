@@ -19,6 +19,13 @@ enum class DeviceBrand {
             Trezor -> R.drawable.ic_trezor
         }
 
+    val deviceIcon
+        get() = when (this) {
+            Blockstream -> R.drawable.blockstream_jade_device
+            Ledger -> R.drawable.ledger_device
+            Trezor -> R.drawable.trezor_device
+        }
+
     val hasBleConnectivity
         get() = this != Trezor
 }

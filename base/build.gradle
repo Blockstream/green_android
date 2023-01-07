@@ -62,4 +62,9 @@ dependencies {
     api "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
     api "androidx.lifecycle:lifecycle-process:2.5.1"
     /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Logging ---------------------------------------------------------------------------- */
+    api "org.slf4j:slf4j-simple:$slf4j_android"
+    api "io.github.microutils:kotlin-logging-jvm:$kotlin_logging"
+    /** ----------------------------------------------------------------------------------------- */
 }

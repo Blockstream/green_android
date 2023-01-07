@@ -88,7 +88,7 @@ class NotificationManager constructor(
 
             applicationScope.launch(context = logException(countly)) {
 
-                (session.ephemeralWallet ?: sessionManager.getWalletIdFromSession(session)?.let { walletId -> walletRepository.getWallet(walletId) })?.let { wallet ->
+                session.getWallet(walletRepository)?.also { wallet ->
                     if (session.isConnected) {
                         val sessionTimeout =
                             if (isForeground) 0 else (session.getSettings(null)?.altimeout ?: 1) * 60 * 1000L

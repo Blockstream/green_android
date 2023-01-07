@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.data.Device
+import com.blockstream.green.BuildConfig
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Banner
 import com.blockstream.green.data.Countly
@@ -117,6 +118,9 @@ open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, Lif
         },
         onSuccess: (T) -> Unit,
         onError: ((Throwable) -> Unit) = {
+            if (BuildConfig.DEBUG) {
+                it.printStackTrace()
+            }
             this.onError.value = ConsumableEvent(it)
         }
     ) {

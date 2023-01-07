@@ -30,14 +30,58 @@ fun View.shake() {
     }
 }
 
-fun View.pulse() {
+fun View.fadeIn(duration: Long = 1000, skipIfAnimated: Boolean = true) {
+    if(skipIfAnimated && this.alpha == 1.0f) return
+
+    ObjectAnimator.ofFloat(
+        this,
+        "alpha",
+        0f,
+        1f
+    ).apply {
+        this.duration = duration
+        this.start()
+    }
+}
+
+fun View.fadeOut(duration: Long = 1000, skipIfAnimated: Boolean = true) {
+    if(skipIfAnimated && this.alpha == 0.0f) return
+
+    ObjectAnimator.ofFloat(
+        this,
+        "alpha",
+        1f,
+        0f
+    ).apply {
+        this.duration = duration
+        this.start()
+    }
+}
+
+fun View.pulse(repeat: Boolean = false) {
     AnimatorSet().also {
         it.playTogether(
-            ObjectAnimator.ofFloat(this, "scaleY", 1f, 1.05f, 1f),
-            ObjectAnimator.ofFloat(this, "scaleX", 1f, 1.05f, 1f),
+            listOf(ObjectAnimator.ofFloat(this, "scaleY", 1f, 1.05f, 1f),
+            ObjectAnimator.ofFloat(this, "scaleX", 1f, 1.05f, 1f)).onEach { obj ->
+                if(repeat){
+                    obj.repeatMode = ValueAnimator.RESTART
+                    obj.repeatCount = ValueAnimator.INFINITE
+                }
+            },
         )
         it.duration = 400
         it.start()
+    }
+}
+
+fun View.alphaPulse(repeat: Boolean = false) {
+    ObjectAnimator.ofFloat(this, "alpha", 1f, 0.6f, 1f).apply {
+        duration = 1000
+        if(repeat){
+            repeatMode = ValueAnimator.RESTART
+            repeatCount = ValueAnimator.INFINITE
+        }
+        start()
     }
 }
 

@@ -30,6 +30,11 @@ class DrawerFragment : AbstractWalletsFragment<DrawerFragmentBinding>(R.layout.d
 
         init(binding.common, viewModel)
 
+        binding.buttonSetupWallet.setOnClickListener {
+            navigate(NavGraphDirections.actionGlobalSetupNewWalletFragment())
+            closeDrawer()
+        }
+
         binding.buttonAppSettings.setOnClickListener {
             closeDrawer()
             AppSettingsDialogFragment.show(childFragmentManager)

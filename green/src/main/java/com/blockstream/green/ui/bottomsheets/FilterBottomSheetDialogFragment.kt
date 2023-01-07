@@ -40,7 +40,6 @@ open class FilterBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Fi
         binding.showLoader = false
         binding.showSearch = withSearch
 
-
         // Keep the height of the window always constant
         makeItConstant()
 

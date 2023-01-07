@@ -96,4 +96,11 @@
     <style name="TextAppearance.Green.Overline" parent="TextAppearance.Green.LabelMedium">
         <item name="android:textColor">@color/color_on_surface_emphasis_medium</item>
     </style>
+
+    <style name="TextAppearance.Green.Subtitle" parent="TextAppearance.Green.BodyMedium">
+        <item name="lineHeight">22sp</item>
+        <item name="android:lineHeight" tools:targetApi="p">22sp</item>
+    </style>
+
+
 </resources>

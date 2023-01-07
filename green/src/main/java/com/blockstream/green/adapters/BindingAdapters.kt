@@ -12,14 +12,23 @@ import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.data.Banner
-import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.extensions.errorFromResourcesAndGDK
 import com.blockstream.green.extensions.fromHtml
+import com.blockstream.green.gdk.getIcon
+import com.blockstream.green.utils.alphaPulse
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenContentCardView
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
+
+@BindingAdapter("alphaPulse")
+fun bindAlphaPulse(view: View, isVisible: Boolean) {
+    bindIsVisible(view, isVisible)
+    if(isVisible){
+        view.alphaPulse(repeat = true)
+    }
+}
 
 @BindingAdapter("isVisible")
 fun bindIsVisible(view: View, isVisible: Boolean) {

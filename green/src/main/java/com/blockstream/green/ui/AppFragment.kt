@@ -17,6 +17,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.BannerView
@@ -69,6 +70,9 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     @Inject
     internal lateinit var countly: Countly
+
+    @Inject
+    internal lateinit var gdkBridge: GdkBridge
 
     @Inject
     internal lateinit var sessionManager: SessionManager
@@ -139,14 +143,6 @@ abstract class AppFragment<T : ViewDataBinding>(
                 result?.let {
                     clearNavigationResult(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)
                     getAppViewModel()?.requestPinPassphraseEmitter?.complete(result)
-                }
-            }
-
-            // Register listener for Passphrase cancel result as empty string is a valid passphrase
-            getNavigationResult<Boolean>(PassphraseBottomSheetDialogFragment.PASSPHRASE_CANCEL_RESULT)?.observe(viewLifecycleOwner) { result ->
-                result?.let {
-                    clearNavigationResult(PassphraseBottomSheetDialogFragment.PASSPHRASE_CANCEL_RESULT)
-                    getAppViewModel()?.requestPinPassphraseEmitter?.completeExceptionally(Exception("id_action_canceled"))
                 }
             }
 

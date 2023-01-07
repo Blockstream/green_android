@@ -130,16 +130,6 @@
         <action
             android:id="@+id/action_addWalletFragment_to_chooseWatchOnlyFragment"
             app:destination="@id/chooseWatchOnlyFragment" />
-        <argument
-            android:name="deviceId"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="network"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
         <action
             android:id="@+id/action_addWalletFragment_to_recoveryIntroFragment"
             app:destination="@id/recoveryIntroFragment" />
@@ -368,9 +358,6 @@
             android:id="@+id/action_recoveryCheckFragment_to_setPinFragment"
             app:destination="@id/setPinFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_addWalletFragment"
-        app:destination="@id/addWalletFragment" />
 
     <fragment
         android:id="@+id/overviewFragment"
@@ -572,13 +559,18 @@
     <fragment
         android:id="@+id/deviceListFragment"
         android:name="com.blockstream.green.ui.devices.DeviceListFragment"
-        tools:layout="@layout/device_list_fragment">
+        tools:layout="@layout/device_list_fragment"
+        android:label="">
         <action
             android:id="@+id/action_deviceListFragment_to_deviceInfoFragment"
             app:destination="@id/deviceInfoFragment" />
         <argument
-            android:name="deviceBrand"
-            app:argType="com.blockstream.DeviceBrand" />
+            android:name="isJade"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <action
+            android:id="@+id/action_deviceListFragment_to_jadeGuideFragment"
+            app:destination="@id/jadeGuideFragment" />
     </fragment>
     <fragment
         android:id="@+id/deviceInfoFragment"
@@ -596,6 +588,9 @@
             android:name="autoLogin"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_deviceInfoFragment_to_jadeGuideFragment"
+            app:destination="@id/jadeGuideFragment" />
     </fragment>
 
     <action
@@ -784,15 +779,36 @@
     <fragment
         android:id="@+id/deviceScanFragment"
         android:name="com.blockstream.green.ui.devices.DeviceScanFragment"
-        android:label="DeviceScanFragment"
+        android:label=""
         tools:layout="@layout/device_scan_fragment">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
-        <action
-            android:id="@+id/action_deviceScanFragment_to_deviceInfoFragment"
-            app:destination="@id/deviceInfoFragment" />
     </fragment>
     <action android:id="@+id/action_global_deviceScanFragment" app:destination="@id/deviceScanFragment"/>
+    <fragment
+        android:id="@+id/setupNewWalletFragment"
+        android:name="com.blockstream.green.ui.onboarding.SetupNewWalletFragment"
+        android:label=""
+        tools:layout="@layout/setup_new_wallet_fragment"/>
+    <fragment
+        android:id="@+id/introSetupNewWalletFragment"
+        android:name="com.blockstream.green.ui.intro.IntroSetupNewWalletFragment"
+        android:label=""
+        tools:layout="@layout/setup_new_wallet_fragment"/>
+    <action android:id="@+id/action_global_setupNewWalletFragment" app:destination="@id/setupNewWalletFragment" />
+    <fragment
+        android:id="@+id/useHardwareDeviceFragment"
+        android:name="com.blockstream.green.ui.onboarding.UseHardwareDeviceFragment"
+        android:label=""
+        tools:layout="@layout/use_hardware_device_fragment"/>
+    <fragment
+        android:id="@+id/jadeGuideFragment"
+        android:name="com.blockstream.green.ui.devices.JadeGuideFragment"
+        android:label="@string/id_setup_guide"
+        tools:layout="@layout/jade_guide_fragment"/>
+    <action android:id="@+id/action_global_introSetupNewWalletFragment" app:destination="@id/introSetupNewWalletFragment" />
+    <action android:id="@+id/action_global_addWalletFragment" app:destination="@id/addWalletFragment" />
+    <action android:id="@+id/action_global_useHardwareDeviceFragment" app:destination="@id/useHardwareDeviceFragment" />
 
 </navigation>

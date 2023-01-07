@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.text.Spannable
 import android.text.Spanned
+import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.View
@@ -17,6 +18,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
+import androidx.core.text.inSpans
 import androidx.core.text.toSpanned
 import androidx.fragment.app.Fragment
 import com.blockstream.green.BuildConfig
@@ -198,6 +200,41 @@ fun Context.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
             }
         }.toSpanned()
     }catch (e: Exception){
+        whiteString.toSpanned()
+    }
+}
+
+fun Context.linkedText(whiteText: Int, links: List<Pair<Int, ClickableSpan>>): Spanned {
+    val whiteString = getString(whiteText)
+
+    return try {
+        buildSpannedString {
+            color(ContextCompat.getColor(this@linkedText, R.color.white)) {
+                append(whiteString)
+            }
+
+            links.onEach { link ->
+                val text = getString(link.first).lowercase()
+                val start = whiteString.lowercase().indexOf(text)
+
+                listOf(
+                    ForegroundColorSpan(
+                        ContextCompat.getColor(
+                            this@linkedText,
+                            R.color.brand_green
+                        )
+                    ), link.second
+                ).onEach {
+                    setSpan(
+                        it,
+                        start,
+                        start + text.length,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+        }.toSpanned()
+    } catch (e: Exception) {
         whiteString.toSpanned()
     }
 }

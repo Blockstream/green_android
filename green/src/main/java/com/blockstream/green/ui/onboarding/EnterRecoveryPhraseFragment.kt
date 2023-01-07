@@ -11,7 +11,6 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
@@ -47,9 +46,6 @@ class EnterRecoveryPhraseFragment :
 
     override val screenName = "OnBoardEnterRecovery"
     override val segmentation: HashMap<String, Any>? = null
-
-    @Inject
-    lateinit var gdkBridge: GdkBridge
 
     @Inject
     lateinit var assistedFactory: EnterRecoveryPhraseViewModel.AssistedFactory

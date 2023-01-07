@@ -1,47 +1,42 @@
 package com.blockstream.green.ui.devices
 
-import android.Manifest
-import android.bluetooth.BluetoothAdapter
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.result.ActivityResultLauncher
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.DeviceBrand
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.blockstream.base.Urls
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.DeviceListFragmentBinding
+import com.blockstream.green.databinding.HwConnectStepBinding
+import com.blockstream.green.databinding.JadeConnectStepBinding
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.DeviceListItem
-import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.utils.observeList
 import com.blockstream.green.utils.openBrowser
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import mu.KLogging
 import javax.inject.Inject
-import javax.inject.Provider
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 
 @AndroidEntryPoint
-class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
+class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
     layout = R.layout.device_list_fragment,
     menuRes = 0
 ) {
@@ -52,30 +47,20 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     @Inject
     lateinit var viewModelFactory: DeviceListViewModel.AssistedFactory
 
-    val viewModel: DeviceListViewModel by viewModels {
+    override val viewModel: DeviceListViewModel by viewModels {
         DeviceListViewModel.provideFactory(
             viewModelFactory,
-            args.deviceBrand
+            args.isJade
         )
     }
 
     @Inject
     lateinit var deviceManager: DeviceManager
 
-    @Inject
-    lateinit var bluetoothAdapterProvider: Provider<BluetoothAdapter?>
-
-    private val bluetoothAdapter get() = bluetoothAdapterProvider.get()
+    private var changeStepJob: Job? = null
 
     override val title: String
-        get() = if (args.deviceBrand != DeviceBrand.Blockstream) args.deviceBrand.brand else ""
-
-    var requestPermission: ActivityResultLauncher<Array<String>> = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        // Nothing to do here, it's already handled by DeviceManager
-    }
-
+        get() = if (args.isJade) "Blockstream Jade" else ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -109,46 +94,27 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
             layoutManager = LinearLayoutManager(context)
             itemAnimator = SlideDownAlphaAnimator()
             adapter = fastAdapter
-            addItemDecoration(
-                MaterialDividerItemDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL
-                )
-            )
-
             isNestedScrollingEnabled = false
         }
 
         binding.buttonEnableBluetooth.setOnClickListener {
-            if (bluetoothAdapter?.isEnabled == false && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                bluetoothAdapter?.enable()
-            }
+            enableBluetooth()
         }
 
         binding.buttonRequestPermission.setOnClickListener {
-            // Also RxBleClient.getRecommendedScanRuntimePermissions can be used
-            requestPermission.launch(BLE_LOCATION_PERMISSION)
+            requestLocationPermission()
         }
 
         binding.buttonEnableLocationService.setOnClickListener {
-            MaterialAlertDialogBuilder(
-                requireContext(),
-                R.style.ThemeOverlay_Green_MaterialAlertDialog
-            )
-                .setMessage(R.string.id_location_services_are_disabled)
-                .setPositiveButton(R.string.id_enable) { _: DialogInterface, _: Int ->
-                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                }
-                .setNegativeButton(R.string.id_cancel, null)
-                .show()
+            enableLocationService()
         }
 
         binding.buttonLocationServiceMoreInfo.setOnClickListener {
-            openBrowser(settingsManager.getApplicationSettings(), Urls.BLUETOOTH_PERMISSIONS)
+            openBrowser(Urls.BLUETOOTH_PERMISSIONS)
+        }
+
+        binding.buttonTroubleshoot.setOnClickListener {
+            openBrowser(Urls.JADE_TROUBLESHOOT)
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
@@ -157,36 +123,46 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
             }
         }
 
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
-            }
-        }
-
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.swipeRefreshLayout.isRefreshing = false
             deviceManager.refreshDevices()
+        }
+
+
+        binding.viewPager.adapter = PagerAdapter(isJade = args.isJade, fragment =this)
+
+        binding.viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                changeStep()
+            }
+        })
+    }
+
+    private fun changeStep() {
+        changeStepJob?.cancel()
+
+        val itemCount = binding.viewPager.adapter?.itemCount ?: 1
+
+        if (itemCount < 2) {
+            return
+        }
+
+        changeStepJob = lifecycleScope.launchWhenResumed {
+            delay(5.toDuration(DurationUnit.SECONDS))
+
+            binding.viewPager.setCurrentItem((binding.viewPager.currentItem + 1).takeIf {
+                it < itemCount
+            } ?: 0, true)
         }
     }
 
     override fun updateToolbar() {
         super.updateToolbar()
 
-        if (args.deviceBrand == DeviceBrand.Blockstream) {
-            toolbar.logo = ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.blockstream_jade_logo
-            )
-            toolbar.setButton(button = getString(R.string.id_get_jade)) {
-                openBrowser(settingsManager.getApplicationSettings(), Urls.JADE_STORE)
-            }
-        } else {
-            toolbar.logo = ContextCompat.getDrawable(
-                requireContext(),
-                args.deviceBrand.icon
-            )
-            toolbar.setButton(button = getString(R.string.id_blockstream_store)) {
-                openBrowser(settingsManager.getApplicationSettings(), Urls.HARDWARE_STORE)
+        if (args.isJade) {
+            toolbar.setButton(button = getString(R.string.id_setup_guide)) {
+                navigate(DeviceListFragmentDirections.actionDeviceListFragmentToJadeGuideFragment())
             }
         }
     }
@@ -194,19 +170,71 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     private fun selectDevice(device: Device) {
         navigate(DeviceListFragmentDirections.actionDeviceListFragmentToDeviceInfoFragment(deviceId = device.id))
     }
+}
+
+class JadePageFragment : Fragment() {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+
+        return JadeConnectStepBinding.inflate(layoutInflater).also {
+            requireArguments().getInt(PAGE, 0).also { page ->
+                it.step.text = "${getString(R.string.id_step)} ${page + 1}".uppercase()
+
+                when (page) {
+                    0 -> {
+                        it.title.setText(R.string.id_power_on_jade)
+                        it.subtitle.setText(R.string.id_hold_the_green_button_on_the_bottom_of_jade)
+                        it.imageView.setImageResource(R.drawable.jade_power)
+                    }
+
+                    1 -> {
+                        it.title.setText(R.string.id_follow_the_instructions_on_jade)
+                        it.subtitle.setText(R.string.id_select_initialize_to_create_a_new_wallet)
+                        it.imageView.setImageResource(R.drawable.jade_button)
+                    }
+
+                    else -> {
+                        it.title.setText(R.string.id_connect_using_usb_or_bluetooth)
+                        it.subtitle.setText(R.string.id_choose_a_usb_or_bluetooth_connection)
+                        it.imageView.setImageResource(R.drawable.jade_rotate)
+                    }
+                }
+            }
+        }.also {
+            it.lifecycleOwner = viewLifecycleOwner
+        }.root
+    }
 
     companion object : KLogging() {
-        // NOTE: BLE_LOCATION_PERMISSION should be set to FINE for Android 10 and above, or COARSE for 9 and below
-        // See: https://developer.android.com/about/versions/10/privacy/changes#location-telephony-bluetooth-wifi
-        val BLE_LOCATION_PERMISSION =
-            when {
-                Build.VERSION.SDK_INT > Build.VERSION_CODES.R -> listOf(
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                )
+        private const val PAGE = "PAGE"
 
-                Build.VERSION.SDK_INT > Build.VERSION_CODES.P -> listOf(Manifest.permission.ACCESS_FINE_LOCATION)
-                else -> listOf(Manifest.permission.ACCESS_COARSE_LOCATION)
-            }.toTypedArray()
+        fun newInstance(page: Int): JadePageFragment {
+            return JadePageFragment().also {
+                it.arguments = Bundle().also { bundle ->
+                    bundle.putInt(PAGE, page)
+                }
+            }
+        }
     }
+}
+
+class HWPageFragment : Fragment() {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return HwConnectStepBinding.inflate(layoutInflater).also {
+            it.lifecycleOwner = viewLifecycleOwner
+        }.root
+    }
+}
+
+class PagerAdapter constructor(val isJade: Boolean, fragment: Fragment) : FragmentStateAdapter(fragment) {
+    override fun getItemCount(): Int = if (isJade) 3 else 1
+    override fun createFragment(position: Int): Fragment =
+        if (isJade) JadePageFragment.newInstance(position) else HWPageFragment()
 }

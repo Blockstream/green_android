@@ -97,6 +97,17 @@
         <item name="strokeColor">@color/red</item>
     </style>
 
+    <style name="Widget.Green.Button.White" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
+        <item name="android:textColor">@color/button_white</item>
+        <item name="strokeColor">@color/button_white</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.Green.Button.White.Big" parent="Widget.Green.Button.White">
+        <item name="android:height">60dp</item>
+    </style>
+
     <style name="Widget.Green.Button.Text" parent="Widget.Material3.Button.TextButton">
         <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
     </style>

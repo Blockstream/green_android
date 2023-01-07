@@ -5,16 +5,15 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.databinding.Account2of3FragmentBinding
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.gdk.network
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.items.ContentCardListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
@@ -39,9 +38,6 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
 
     override val toolbarIcon: Int?
         get() = args.layer.network(session)?.getNetworkIcon()
-
-    @Inject
-    lateinit var gdkBridge: GdkBridge
 
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory

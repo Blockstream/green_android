@@ -31,12 +31,7 @@ import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
 import com.blockstream.green.views.GreenAlertView
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -432,8 +427,12 @@ class Countly constructor(
         events.recordEvent(Events.HWW_CONNECT.toString(), deviceSegmentation(device))
     }
 
-    fun jadeInitialize(session: GdkSession) {
-        events.recordEvent(Events.JADE_INITIALIZE.toString(), sessionSegmentation(session))
+    fun hardwareConnected(device: Device) {
+        events.recordEvent(Events.HWW_CONNECTED.toString(), deviceSegmentation(device))
+    }
+
+    fun jadeInitialize() {
+        events.recordEvent(Events.JADE_INITIALIZE.toString())
     }
 
     fun addWallet() {
@@ -648,14 +647,16 @@ class Countly constructor(
                 else -> CREATE
             },
         ).also {
-            it[PARAM_MAINNET] = (onboardingOptions.isTestnet == true).toString()
+            it[PARAM_MAINNET] = (onboardingOptions.isTestnet != true).toString()
         } as HashMap<String, Any>
     }
 
-    fun deviceSegmentation(device: Device, segmentation: HashMap<String, Any> = hashMapOf()): HashMap<String, Any> {
+    private fun deviceSegmentation(device: Device, segmentation: HashMap<String, Any> = hashMapOf()): HashMap<String, Any>{
         device.deviceBrand.brand.let { segmentation[PARAM_BRAND] = it }
-        device.hwWallet?.firmwareVersion?.let { segmentation[PARAM_FIRMWARE] = it }
-        device.hwWallet?.model?.let { segmentation[PARAM_MODEL] = it }
+        device.hwWallet?.also {
+            segmentation[PARAM_FIRMWARE] = it.firmwareVersion ?: ""
+            segmentation[PARAM_MODEL] = it.model
+        }
         segmentation[PARAM_CONNECTION] = if (device.isUsb) USB else BLE
 
         return segmentation
@@ -664,7 +665,7 @@ class Countly constructor(
     fun sessionSegmentation(session: GdkSession): HashMap<String, Any> =
         networkSegmentation(session)
             .also { segmentation ->
-                session.device?.let { device ->
+                session.device?.also { device ->
                     deviceSegmentation(device, segmentation)
                 }
 
@@ -674,7 +675,7 @@ class Countly constructor(
                     }
                 }
 
-                appSettingsAsString?.let {
+                appSettingsAsString?.also {
                     segmentation[USER_PROPERTY_APP_SETTINGS] = it
                 }
             }
@@ -764,6 +765,7 @@ class Countly constructor(
 
     enum class Events(val event: String) {
         HWW_CONNECT("hww_connect"),
+        HWW_CONNECTED("hww_connected"),
         JADE_INITIALIZE("jade_initialize"),
 
         WALLET_ADD("wallet_add"),

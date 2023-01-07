@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
@@ -17,7 +16,6 @@ import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChooseMainnetFragment :
@@ -25,9 +23,6 @@ class ChooseMainnetFragment :
         R.layout.choose_network_fragment,
         menuRes = 0
     ) {
-
-    @Inject
-    lateinit var gdkBridge: GdkBridge
 
     private val args: ChooseMainnetFragmentArgs by navArgs()
 

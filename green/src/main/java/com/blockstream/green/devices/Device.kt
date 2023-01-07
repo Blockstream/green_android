@@ -5,9 +5,10 @@ import android.hardware.usb.UsbDevice
 import android.os.ParcelUuid
 import android.os.SystemClock
 import com.blockstream.DeviceBrand
+import com.blockstream.green.BuildConfig
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.jade.JadeBleImpl
+import com.blockstream.jade.JadeBleImpl
 import com.polidea.rxandroidble2.RxBleDevice
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -83,12 +84,9 @@ class Device constructor(
         isJade || isTrezor
     }
 
-    fun askForPermissionOrBond(onSuccess: (() -> Unit), onError: ((throwable: Throwable) -> Unit)) {
+    fun askForPermissionOrBond(onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null) {
         usbDevice?.let {
-            deviceManager.askForPermissions(it) {
-                // deviceState.postValue(DeviceState.CONNECTED)
-                onSuccess.invoke()
-            }
+            deviceManager.askForPermissions(device = it, onError = onError, onSuccess = onSuccess)
         }
 
         bleDevice?.let {
@@ -96,7 +94,7 @@ class Device constructor(
                 // deviceState.postValue(DeviceState.CONNECTED)
                 onSuccess.invoke()
             }, {
-                onError.invoke(it)
+                onError?.invoke(it)
             })
         }
     }
@@ -112,7 +110,9 @@ class Device constructor(
         get() = try {
             (if(isBle) name else usbDevice?.serialNumber) ?: hashCode().toString(10)
         }catch (e: Exception){
-            e.printStackTrace()
+            if(BuildConfig.DEBUG) {
+                e.printStackTrace()
+            }
             hashCode().toString(10)
         }
 
@@ -157,6 +157,10 @@ class Device constructor(
         } else {
             isBonded()
         }
+    }
+
+    fun needsUsbPermissionsToIdentify(): Boolean {
+        return isUsb && !hasPermissions()
     }
 
     fun handleBondingByHwwImplementation(): Boolean {

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.gdk.AssetQATester
 import com.blockstream.gdk.data.Notification
-import com.greenaddress.greenapi.HardwareQATester
+import com.blockstream.HardwareQATester
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

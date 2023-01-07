@@ -1,10 +1,10 @@
 package com.greenaddress.greenapi;
 
+import com.blockstream.HardwareQATester;
 import com.blockstream.gdk.data.Account;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
-import com.blockstream.gdk.data.SubAccount;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Map;

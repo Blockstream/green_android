@@ -37,10 +37,12 @@ fun <T> Fragment.setNavigationResult(
 fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isLogout: Boolean = false, optionsBuilder: NavOptions.Builder? = null) {
     val navOptionsBuilder = optionsBuilder ?: NavOptions.Builder()
 
+    val currentDestinationId = navController.currentDestination?.id
     // Don't animate on overview change
     val animate =
-        !(navController.currentDestination?.id == R.id.walletOverviewFragment && resId == R.id.action_global_walletOverviewFragment)
-                && !(navController.currentDestination?.id == R.id.loginFragment && (resId == R.id.action_global_loginFragment))
+        !(currentDestinationId == R.id.walletOverviewFragment && resId == R.id.action_global_walletOverviewFragment)
+                && !(currentDestinationId == R.id.loginFragment && resId == R.id.action_global_loginFragment)
+                && !(currentDestinationId == R.id.introFragment && resId == R.id.action_global_introSetupNewWalletFragment)
 
     if (animate) {
         navOptionsBuilder.setEnterAnim(R.anim.nav_enter_anim)
@@ -58,9 +60,17 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
         // Allow only one Login screen
         navOptionsBuilder.setPopUpTo(R.id.loginFragment, true)
         navOptionsBuilder.setLaunchSingleTop(true)
-    }else if (resId == R.id.action_global_addWalletFragment){
+    } else if (resId == R.id.action_global_deviceScanFragment) {
+        // Allow only one Login screen
+        navOptionsBuilder.setPopUpTo(R.id.deviceScanFragment, true)
+        navOptionsBuilder.setLaunchSingleTop(true)
+    } else if (resId == R.id.action_global_introSetupNewWalletFragment) {
+        // Allow only one Login screen
+        navOptionsBuilder.setPopUpTo(R.id.introFragment, true)
+        navOptionsBuilder.setLaunchSingleTop(true)
+    } else if (resId == R.id.action_global_setupNewWalletFragment){
         // Allow a single onboarding path
-        navOptionsBuilder.setPopUpTo(R.id.addWalletFragment, true)
+        navOptionsBuilder.setPopUpTo(R.id.setupNewWalletFragment, true)
     }
 
     try{

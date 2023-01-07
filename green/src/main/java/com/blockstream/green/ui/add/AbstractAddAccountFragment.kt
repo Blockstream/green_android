@@ -6,24 +6,19 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.fragment.findNavController
-import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.extensions.setNavigationResult
-import javax.inject.Inject
 
 abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
     @LayoutRes layout: Int,
     @MenuRes menuRes: Int
 ): AbstractWalletFragment<T>(layout, menuRes) {
-    @Inject
-    lateinit var gdkBridge: GdkBridge
-
     open val network: Network? = null
 
     override val title: String?

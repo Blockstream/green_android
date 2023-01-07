@@ -79,7 +79,7 @@
 
         <Button
             android:id="@+id/button"
-            style="@style/Widget.Green.Button.Tiny"
+            style="@style/Widget.Green.Button.Text.Tiny"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"

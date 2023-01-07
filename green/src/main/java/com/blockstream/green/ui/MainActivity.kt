@@ -45,6 +45,8 @@ import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.fadeIn
+import com.blockstream.green.utils.fadeOut
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.snackbar.Snackbar
@@ -230,7 +232,7 @@ class MainActivity : AppActivity() {
         navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.introFragment),
+            setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.introFragment, R.id.introSetupNewWalletFragment),
             binding.drawerLayout
         )
 
@@ -275,7 +277,7 @@ class MainActivity : AppActivity() {
             }
         }.launchIn(lifecycleScope)
 
-        navController.addOnDestinationChangedListener { _, _, _ ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             getVisibleFragment()?.let {
                 if(it is ScreenView){
                     // Mark it as not recorded
@@ -285,6 +287,12 @@ class MainActivity : AppActivity() {
 
             // Make sure the app bar layout is visible between navigation (only SetPin & WalletOverview hides it)
             setToolbarVisibility(true)
+
+            if (destination.id == R.id.setupNewWalletFragment || destination.id == R.id.deviceListFragment || destination.id == R.id.deviceScanFragment) {
+                binding.backgroundWithLines.fadeIn(duration = 500, skipIfAnimated = true)
+            } else {
+                binding.backgroundWithLines.fadeOut(duration = 250, skipIfAnimated = true)
+            }
         }
 
         // Set version into the main VM

@@ -109,9 +109,17 @@ fun ViewParent.findTextInputLayoutParent(maxDepth: Int): TextInputLayout? {
     return null
 }
 
-fun <E: View> Collection<E>.setOnClickListener(onClickListener: (e: View) -> Unit) {
+fun <E: View> Collection<E>.setOnClickListener(onClickListener: (v: View) -> Unit) {
     this.forEach {
         it.setOnClickListener(onClickListener)
+    }
+}
+
+fun <E: View> Collection<E>.setOnClickListenerIndexed(onClickListener: (i: Int, v: View) -> Unit) {
+    this.forEachIndexed { i, e ->
+        e.setOnClickListener {
+            onClickListener.invoke(i, e)
+        }
     }
 }
 

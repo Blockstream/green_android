@@ -177,6 +177,12 @@ fun Fragment.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
     }
 }
 
+fun Fragment.errorSnackbar(throwable: Throwable, duration: Int = Snackbar.LENGTH_SHORT) {
+    view?.let {
+        Snackbar.make(it, errorFromResourcesAndGDK(throwable), duration).show()
+    }
+}
+
 fun View.snackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
     Snackbar.make(this, resId, duration).show()
 }

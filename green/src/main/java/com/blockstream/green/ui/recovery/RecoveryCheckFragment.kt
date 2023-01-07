@@ -7,18 +7,17 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.RecoveryCheckFragmentBinding
+import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.isDevelopmentFlavor
-import com.blockstream.green.extensions.snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -43,9 +42,6 @@ class RecoveryCheckFragment : AbstractWalletFragment<RecoveryCheckFragmentBindin
     @Inject
     lateinit var viewModelFactory: RecoveryCheckViewModel.AssistedFactory
 
-    @Inject
-    lateinit var gdkBridge: GdkBridge
-
     private val viewModel: RecoveryCheckViewModel by viewModels {
         RecoveryCheckViewModel.provideFactory(
             viewModelFactory,
@@ -56,7 +52,7 @@ class RecoveryCheckFragment : AbstractWalletFragment<RecoveryCheckFragmentBindin
 
     @Inject
     lateinit var walletViewModelFactory: WalletViewModel.AssistedFactory
-    val walletViewModel: WalletViewModel by viewModels {
+    private val walletViewModel: WalletViewModel by viewModels {
         WalletViewModel.provideFactory(walletViewModelFactory, args.wallet!!)
     }
 

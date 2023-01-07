@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.blockstream.green.ui.MainActivityViewModel" />
@@ -20,9 +21,9 @@
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:id="@+id/coordinator"
+                isVisible="@{!vm.lockScreen}"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                isVisible="@{!vm.lockScreen}">
+                android:layout_height="match_parent">
 
                 <com.google.android.material.appbar.AppBarLayout
                     android:id="@+id/appBarLayout"
@@ -35,6 +36,16 @@
                         android:layout_height="?attr/actionBarSize" />
 
                 </com.google.android.material.appbar.AppBarLayout>
+
+                <ImageView
+                    android:id="@+id/background_with_lines"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:cropToPadding="false"
+                    android:layout_gravity="bottom"
+                    android:alpha="0.0"
+                    android:src="@drawable/background_with_lines" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/nav_host_fragment"
@@ -59,17 +70,17 @@
 
             <FrameLayout
                 android:id="@+id/screenLock"
+                isVisible="@{vm.lockScreen}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                isVisible="@{vm.lockScreen}"
                 tools:visibility="gone">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="70dp"
+                    android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
-                    android:layout_gravity="center"
                     app:srcCompat="@drawable/brand" />
 
                 <Button
@@ -79,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|bottom"
                     android:layout_margin="24dp"
-                    android:text="@string/id_unlock"/>
+                    android:text="@string/id_unlock" />
             </FrameLayout>
 
         </FrameLayout>

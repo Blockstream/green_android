@@ -5,6 +5,8 @@ buildscript {
         kotlinx_coroutines_version = '1.6.4'
         kotlinx_serialization_version = '1.4.1'
         hilt_version = '2.44.2'
+        slf4j_android = '2.0.3'
+        kotlin_logging = '3.0.5'
     }
     repositories {
         mavenCentral()

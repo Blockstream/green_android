@@ -819,7 +819,6 @@
   <string name="id_reference_exchange_rate">Reference exchange rate</string>
   <string name="id_refresh">Refresh</string>
   <string name="id_reload">Reload</string>
-  <string name="id_remember_device">Remember device</string>
   <string name="id_remember_me">Remember me</string>
   <string name="id_remember_my_device">Remember my Device</string>
   <string name="id_remove">Remove</string>
@@ -1235,4 +1234,60 @@
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.</string>
   <string name="id_not_now">Not Now</string>
+  <string name="id_simple_and_secure_self_custody">Simple &amp; Secure Self-Custody</string>
+  <string name="id_everything_you_need_to_take_control_of_your_bitcoin">Everything you need to take control of your bitcoin.</string>
+  <string name="id_use_hardware_device">Use Hardware Device</string>
+  <string name="id_i_agree_to_the_terms_of_service_and_privacy_policy">I agree to the Terms of Service and Privacy Policy</string>
+
+  <string name="id_welcome_to_blockstream_jade">Welcome to Blockstream Jade</string>
+  <string name="id_jade_is_a_specialized_device_designed_to">Jade is a specialized device designed to securely store the keys needed to spend your bitcoin.</string>
+  <string name="id_dont_have_a_jade_check_our_store">Don’t have a Jade? Check our store</string>
+  <string name="id_connect_a_different_hardware_device">Connect a different Hardware Device</string>
+  <string name="id_connect_jade">Connect Jade</string>
+
+  <string name="id_setup_a_new_wallet">Setup a New Wallet</string>
+  <string name="id_take_control_your_keys_your_bitcoin">Take Control: Your Keys, Your Bitcoin</string>
+  <string name="id_your_keys_secure_your_coins_on_the_blockchain">Your keys secure your coins on the blockchain</string>
+
+  <string name="id_hardware_security">Hardware Security</string>
+  <string name="id_your_bitcoin_and_liquid_assets_are_store_on_the_blockchain">Your bitcoin and Liquid assets are stored on the blockchain, and can only be spent using the keys stored on Jade.</string>
+
+  <string name="id_offline_key_storage">Offline Key Storage</string>
+  <string name="id_jade_is_an_isolated_device_not_connected_to_the_internet">Jade is an isolated device not connected to the internet, which means your funds are protected from a hacked or compromised phone.</string>
+
+  <string name="id_looking_for_device">Looking for device...</string>
+
+  <string name="id_step">Step</string>
+  <string name="id_power_on_jade">Power on Jade</string>
+  <string name="id_follow_the_instructions_on_jade">Follow the instructions on Jade</string>
+  <string name="id_connect_using_usb_or_bluetooth">Connect using USB or Bluetooth</string>
+
+  <string name="id_hold_the_green_button_on_the_bottom_of_jade">Hold the green button on the bottom of Jade until it boots up</string>
+  <string name="id_select_initialize_to_create_a_new_wallet">Select Initalize to create a New Wallet then backup and verify your recovery phrase</string>
+  <string name="id_choose_a_usb_or_bluetooth_connection">Choose a USB or Bluetooth connection on Jade after verifying your recovery phrase</string>
+
+  <string name="id_setup_guide">Setup Guide</string>
+  <string name="id_exit_guide">Exit Guide</string>
+
+  <string name="id_initialize_and_create_wallet">Initialize and Create wallet</string>
+  <string name="id_select_initialize_and_choose_to_create">Select Initialize and choose to create a New wallet</string>
+
+  <string name="id_write_down_your_recovery_phrase_keep_it">Write down your recovery phrase. Keep it somewhere safe!</string>
+
+  <string name="id_verify_recovery_phrase">Verify Recovery Phrase</string>
+  <string name="id_use_the_jog_wheel_to_select_the_word">Use the jog-wheel to select the word that matches your recovery phrase.</string>
+
+  <string name="id_connect_usb_cable_or_enable_bluetooth">Connect USB cable or enable Bluetooth in the Advanced menu</string>
+  <string name="id_unlock_your_device_to_continue">Unlock your Device to continue</string>
+  <string name="id_troubleshoot">Troubleshoot</string>
+  <string name="id_follow_the_instructions_of_your_hardware">Follow the instructions of your hardware wallet before continuing.</string>
+  <string name="id_firmware_upgrade">Firmware Upgrade</string>
+  <string name="id_confirm_version_on_jade">Confirm version on Jade</string>
+  <string name="id_firmware_version_s">Firmware Version: %s</string>
+  <string name="id_hash_s">Hash: %s</string>
+  <string name="id_remember_device_connection">Remember device connection</string>
+  <string name="id_setup_your_jade">Setup your Jade</string>
+  <string name="id_create_a_pin">Create a PIN</string>
+  <string name="id_enter_and_confirm_a_unique_pin">Enter and confirm a unique PIN that will be entered to unlock Jade.</string>
+  <string name="id_you_have_to_manually_enable_bluetooth">You have to manually enable Bluetooth</string>
 </resources>

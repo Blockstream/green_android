@@ -184,7 +184,7 @@ open class OnboardingViewModel constructor(
                 if (restoreWallet == null) {
                     // Check if wallet already exists
                     it.walletHashId.let { walletHashId ->
-                        walletRepository.getWalletWithHashId(walletHashId, false)
+                        walletRepository.getWalletWithHashId(walletHashId, isTestnet, false)
                             ?.let { wallet ->
                                 throw Exception("id_wallet_already_restored:${wallet.name}")
                             }

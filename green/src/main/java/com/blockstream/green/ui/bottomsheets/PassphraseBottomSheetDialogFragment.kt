@@ -20,14 +20,8 @@ class PassphraseBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Pas
         super.onViewCreated(view, savedInstanceState)
 
         binding.passphrase = ""
-        binding.passphraseConfirm = ""
 
         isCancelable = false
-
-        binding.buttonCancel.setOnClickListener {
-            setNavigationResult(result = true, key = PASSPHRASE_CANCEL_RESULT, destinationId = findNavController().currentDestination?.id)
-            dismiss()
-        }
 
         binding.buttonContinue.setOnClickListener {
             setNavigationResult(result = binding.passphrase?.trim(), key = PASSPHRASE_RESULT, destinationId = findNavController().currentDestination?.id)
@@ -37,7 +31,6 @@ class PassphraseBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Pas
 
     companion object : KLogging() {
         const val PASSPHRASE_RESULT = "PASSPHRASE_RESULT"
-        const val PASSPHRASE_CANCEL_RESULT = "PASSPHRASE_CANCEL_RESULT"
 
         fun show(fragmentManager: FragmentManager){
             show(PassphraseBottomSheetDialogFragment(), fragmentManager)

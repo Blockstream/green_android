@@ -6,10 +6,6 @@
 
     <data>
 
-        <variable
-            name="vm"
-            type="com.blockstream.green.ui.onboarding.AddWalletViewModel" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,128 +13,110 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/hwBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/hw_matrix_bg"
+            app:layout_constraintBottom_toTopOf="@+id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/phone_keys"
+            app:layout_constraintTop_toTopOf="@id/hwBackground"
+            app:layout_constraintBottom_toBottomOf="@id/hwBackground"
+            app:layout_constraintEnd_toEndOf="@+id/hwBackground"
+            app:layout_constraintStart_toStartOf="@+id/hwBackground" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/id_blockstream_greennsimple_and"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:text="@string/id_simple_and_secure_self_custody"
+            android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceDisplayMedium"
+            app:layout_constraintBottom_toTopOf="@+id/subtitle"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <TextView
             android:id="@+id/subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/id_well_get_you_set_up_in_no_time"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            isGone="@{vm.isDeviceOnboarding}"
+            android:layout_marginBottom="32dp"
+            android:text="@string/id_your_keys_secure_your_coins_on_the_blockchain"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.Green.Subtitle"
+            android:textColor="@color/color_on_surface_emphasis_medium"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="@+id/title"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/title"
             app:layout_constraintTop_toBottomOf="@+id/title" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/device_and_keys"
-            app:layout_constraintBottom_toTopOf="@+id/termsCheckbox"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subtitle" />
-
-        <CheckBox
-            android:id="@+id/termsCheckbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:paddingEnd="3dp"
-            android:checked="@={vm.termsChecked}"
-            android:text="@string/id_i_agree_to_the"
-            app:layout_constraintBottom_toTopOf="@+id/wrapButtons"
-            app:layout_constraintEnd_toStartOf="@+id/termsLink"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="RtlSymmetry" />
-
-        <TextView
-            android:id="@+id/termsLink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="@string/id_terms_of_service"
-            android:textColor="@color/brand_green"
-            app:layout_constraintBaseline_toBaselineOf="@+id/termsCheckbox"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/termsCheckbox" />
 
         <com.blockstream.green.views.GappedLinearLayout
             android:id="@+id/wrapButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="8dp"
             android:orientation="vertical"
             app:gap="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline"
+            app:layout_constraintVertical_bias="0.0">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonContinueHardware"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="@{vm.termsChecked}"
-                isVisible="@{vm.isDeviceOnboarding}"
-                android:text="@string/id_continue" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonNewWallet"
+                style="@style/Widget.Green.Button.Big"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="@{vm.termsChecked}"
-                isVisible="@{!vm.isDeviceOnboarding}"
-                android:text="@string/id_new_wallet"
-                app:icon="@drawable/ic_plus_18"
-                app:iconGravity="start"
-                app:iconPadding="-18dp" />
+                android:text="@string/id_new_wallet" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonRestoreWallet"
+                style="@style/Widget.Green.Button.Big"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="@{vm.termsChecked}"
-                isVisible="@{!vm.isDeviceOnboarding}"
-                android:text="@string/id_restore_a_wallet"
-                app:icon="@drawable/ic_recycle_18"
-                app:iconGravity="start"
-                app:iconPadding="-18dp" />
+                android:text="@string/id_restore_a_wallet" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonWatchOnly"
-                style="@style/Widget.Green.Button.Outlined"
-                isVisible="@{!vm.isDeviceOnboarding}"
+                style="@style/Widget.Green.Button.White.Big"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="@{vm.termsChecked}"
-                android:text="@string/id_watchonly_wallet"
-                app:icon="@drawable/ic_watch_18"
-                app:iconGravity="start"
-                app:iconPadding="-18dp" />
+                android:text="@string/id_watchonly_wallet" />
 
         </com.blockstream.green.views.GappedLinearLayout>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

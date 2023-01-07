@@ -1,223 +1,197 @@
 package com.blockstream.green.ui.devices
 
-import android.annotation.SuppressLint
 import android.content.Context
-import androidx.arch.core.util.Function
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
-import com.blockstream.DeviceBrand
+import androidx.lifecycle.*
+import com.blockstream.JadeHWWallet
 import com.blockstream.gdk.GdkBridge
-import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
+import com.blockstream.green.database.DeviceIdentifier
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.Device
+import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.devices.HardwareConnect
 import com.blockstream.green.devices.HardwareConnectInteraction
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.extensions.boolean
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
-import com.blockstream.green.utils.isDevelopmentFlavor
-import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.runBlocking
+import dagger.hilt.android.qualifiers.ApplicationContext
 import mu.KLogging
 
 class DeviceInfoViewModel @AssistedInject constructor(
-    val sessionManager: SessionManager,
-    val deviceManager: DeviceManager,
-    val qaTester: QATester,
+    @ApplicationContext val context: Context,
+    sessionManager: SessionManager,
+    walletRepository: WalletRepository,
+    deviceManager: DeviceManager,
+    qaTester: QATester,
     val gdkBridge: GdkBridge,
+    val settingsManager: SettingsManager,
     countly: Countly,
-    @SuppressLint("StaticFieldLeak")
-    @Assisted val applicationContext: Context,
-    @Assisted val device: Device,
-    @Assisted val wallet: Wallet?
-) : AppViewModel(countly), HardwareConnectInteraction {
+    @Assisted override val device: Device,
+) : AbstractDeviceViewModel(sessionManager, walletRepository, deviceManager, qaTester, countly, null), HardwareConnectInteraction {
 
-    sealed class DeviceInfoEvent : AppEvent {
-        data class RequestPin(val deviceBrand: DeviceBrand) : DeviceInfoEvent()
-        data class AskForFirmwareUpgrade(
-            val request: FirmwareUpgradeRequest,
-            val callback: Function<Int?, Void>
-        ) : DeviceInfoEvent()
-    }
+    // Don't use onProgress for this screen as is not turned off for animation reasons
+    val navigationLock = MutableLiveData(false)
 
-    val rememberDevice = MutableLiveData(false)
+    val rememberDevice = MutableLiveData(true)
 
-    var requestPinEmitter: CompletableDeferred<String>? = null
-
-    private val hardwareConnect = HardwareConnect(qaTester, isDevelopmentFlavor)
-
-    val error = MutableLiveData<ConsumableEvent<String>>()
-    val instructions = MutableLiveData<ConsumableEvent<Int>>()
-
-    var session = sessionManager.getOnBoardingSession()
+    val jadeIsUninitialized = MutableLiveData(false)
 
     val deviceState = device.deviceState.asLiveData()
 
+    override val deviceConnectionManagerOrNull = DeviceConnectionManager(
+        makeDeviceReady = false,
+        countly = countly,
+        gdkBridge = gdkBridge,
+        settingsManager = settingsManager,
+        httpRequestProvider = sessionManager.httpRequestProvider,
+        interaction = this,
+        qaTester = qaTester
+    )
+
     init {
-        if(wallet != null){
-            connectDeviceToNetwork(wallet.activeNetwork)
+        if(device.hwWallet == null){
+            unlockDevice(context)
+        }else{
+            // TODO get the operating network
         }
     }
 
-    fun connectDeviceToNetwork(network: String) {
-        // Pause BLE scanning as can make unstable the connection to a ble device
-        deviceManager.pauseBluetoothScanning()
-
-        // Device is unlocked
-        if (device.hwWallet != null) {
-            if (device.isLedger) {
-                // Ledger only operates on a single network
-                sessionManager.getDeviceSessionForNetworkAllPolicies(device, gdkBridge.networks.getNetworkById(network))
-            } else {
-                sessionManager.getDeviceSessionForEnviroment(device, gdkBridge.networks.getNetworkById(network).isTestnet)
-            }?.also {
-                switchSessions(it)
-            } ?: run {
-                // This is needed only if the device can operate on mainnet/testnet simultaneously
-                connectOnNetwork(network)
-            }
-
-        } else {
-            unlockDeviceAndConnect(network)
-        }
-    }
-
-    private fun switchSessions(session: GdkSession){
-        onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(session.ephemeralWallet)))
-    }
-
-    private fun connectOnNetwork(network: String){
-        session = sessionManager.getOnBoardingSession()
-
+    fun upgradeFirmware(jadeFirmwareManager: JadeFirmwareManager) {
         doUserAction({
-            session.disconnect()
-            session.ephemeralWallet = wallet ?: Wallet.createEphemeralWallet(
-                ephemeralId = 0,
-                networkId = network,
-                name = device.name,
-                isHardware = true,
-                isTestnet = session.networks.getNetworkById(network).isTestnet
-            )
+            (device.hwWallet as? JadeHWWallet)?.upgradeFirmware(jadeFirmwareManager)
         }, onSuccess = {
-            onDeviceReady()
-        })
-    }
-
-    private fun unlockDeviceAndConnect(network: String){
-        session = sessionManager.getOnBoardingSession()
-
-        doUserAction({
-            // Disconnect any previous hww connection
-            session.disconnect()
-            session.ephemeralWallet = wallet ?: Wallet.createEphemeralWallet(
-                ephemeralId = 0,
-                networkId = network,
-                name = device.name,
-                isHardware = true,
-                isTestnet = session.networks.getNetworkById(network).isTestnet
-            )
-            hardwareConnect.connectDevice(this, session, device)
-        }, postAction = null, onSuccess = {
 
         })
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        hardwareConnect.onDestroy()
-    }
-
-    override fun context() = applicationContext
-
-    override fun showInstructions(resId: Int) {
-        logger.info { "Show instructions $resId" }
-        instructions.postValue(ConsumableEvent(resId))
-    }
-
-    override fun getGreenSession(): GdkSession {
-        return session
-    }
-
-    override fun onJadeInitialization(session: GdkSession) {
-        countly.jadeInitialize(session)
-    }
-
-    override fun getConnectionNetwork() = getGreenSession().prominentNetwork(getGreenSession().ephemeralWallet!!)
-
-    override fun showError(err: String) {
-        logger.info { "Shown error $err" }
-        error.postValue(ConsumableEvent(err))
-    }
-
-    override fun onDeviceReady() {
-        onProgress.postValue(false)
-
-        session.ephemeralWallet?.let {
-            sessionManager.upgradeOnBoardingSessionToWallet(it)
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
-        }
-
+    private fun unlockDevice(context: Context) {
+        onProgress.value = true
+        navigationLock.value = true
+        deviceConnectionManager.connectDevice(context, device)
         countly.hardwareConnect(device)
     }
 
-    override fun onDeviceFailed() {
+    fun authenticateAndContinue(){
+        val hwWallet = device.hwWallet ?: return
+
+        doUserAction({
+            // Authenticate device if needed
+            deviceConnectionManager.authenticateDeviceIfNeeded(hwWallet)
+
+            val network = deviceConnectionManager.getOperatingNetwork(hwWallet)
+            val isEphemeral = !rememberDevice.boolean()
+
+            var previousSession = (if(device.isLedger){
+                sessionManager.getDeviceSessionForNetworkAllPolicies(device, network, isEphemeral)
+            }else{
+                sessionManager.getDeviceSessionForEnvironment(device, network.isTestnet, isEphemeral)
+            })
+
+            if(previousSession != null){
+                // Session already setup
+                previousSession.getWallet(walletRepository)?.also {
+                    return@doUserAction it
+                }
+            }
+
+            if (device.isJade && jadeIsUninitialized.value == true && !(device.hwWallet as JadeHWWallet).isUninitialized) {
+                countly.jadeInitialize()
+            }
+
+            var session = sessionManager.getOnBoardingSession().also {
+                // Disconnect any previous hww connection
+                it.disconnect()
+            }
+
+            val walletHashId = session.getWalletIdentifier(
+                network = network, // xPub generation is network agnostic
+                hwWallet = device.hwWallet,
+                hwWalletBridge = this
+            ).walletHashId
+
+            val wallet: Wallet
+            if (isEphemeral) {
+                wallet = Wallet.createEphemeralWallet(
+                    ephemeralId = 0,
+                    networkId = network.id,
+                    name = device.name,
+                    isHardware = true,
+                    isTestnet = network.isTestnet
+                ).also {
+                    session.ephemeralWallet = it
+                }
+
+                sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+            } else {
+                // Persist wallet and device identifier
+                wallet = walletRepository.getWalletWithHashId(
+                    walletHashId = walletHashId,
+                    isTestnet = network.isTestnet,
+                    isHardware = true
+                ) ?: Wallet(
+                    walletHashId = walletHashId,
+                    name = device.name,
+                    activeNetwork = network.id,
+                    activeAccount = 0,
+                    isRecoveryPhraseConfirmed = true,
+                    isHardware = true,
+                    isTestnet = network.isTestnet
+                )
+
+                wallet.deviceIdentifiers = ((wallet.deviceIdentifiers ?: listOf()) + listOf(
+                    DeviceIdentifier(
+                        name = device.name,
+                        uniqueIdentifier = device.uniqueIdentifier,
+                        brand = device.deviceBrand,
+                        connectionType = device.type
+                    )
+                )).toSet().toList() // Make it unique
+
+                // Get ID from Room
+                wallet.id = walletRepository.insertOrReplaceWallet(wallet)
+
+                session = sessionManager.getWalletSession(wallet)
+
+                countly.importWallet(session)
+            }
+            
+            wallet
+        }, postAction = {
+            navigationLock.value = false
+            onProgress.value = it == null
+        }, onSuccess = { wallet: Wallet ->
+            proceedToLogin = true
+
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
+        })
+    }
+
+    override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
         onProgress.postValue(false)
+        navigationLock.postValue(false)
+
+        countly.hardwareConnected(device)
+
+        jadeIsUninitialized.postValue(isJadeUninitialized == true)
     }
 
-    override fun askForFirmwareUpgrade(
-        firmwareUpgradeRequest: FirmwareUpgradeRequest,
-        callback: Function<Int?, Void>
-    ) {
-        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.AskForFirmwareUpgrade(firmwareUpgradeRequest, callback)))
-    }
-
-    override fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean) {
-        if(requireBleRebonding){
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(REQUIRE_REBONDING)))
-        }else if(requireReconnection) {
-            // on firmware update, navigate to device list
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
-        }
-    }
-
-    override fun requestPin(deviceBrand: DeviceBrand): CompletableDeferred<String> {
-        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPin(deviceBrand)))
-        return CompletableDeferred<String>().also {
-            requestPinEmitter = it
-        }
-    }
-
-    override fun requestPinBlocking(deviceBrand: DeviceBrand): String {
-        return requestPin(deviceBrand).let {
-            runBlocking { it.await() }
-        }
-    }
-
-    override fun getAntiExfilCorruptionForMessageSign() = qaTester.getAntiExfilCorruptionForMessageSign()
-    override fun getAntiExfilCorruptionForTxSign() = qaTester.getAntiExfilCorruptionForTxSign()
-    override fun getFirmwareCorruption() = qaTester.getFirmwareCorruption()
-
-    fun setJadeFirmwareManager(jadeFirmwareManager: JadeFirmwareManager) {
-        hardwareConnect.setJadeFirmwareManager(jadeFirmwareManager)
+    override fun onDeviceFailed(device: Device) {
+        super.onDeviceFailed(device)
+        onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
+        navigationLock.postValue(false)
     }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            applicationContext: Context,
-            device: Device,
-            wallet: Wallet?
+            device: Device
         ): DeviceInfoViewModel
     }
 
@@ -226,13 +200,11 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            applicationContext: Context,
-            device: Device,
-            wallet: Wallet?
+            device: Device
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(applicationContext, device, wallet) as T
+                return assistedFactory.create(device) as T
             }
         }
     }

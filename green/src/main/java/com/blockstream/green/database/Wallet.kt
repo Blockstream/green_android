@@ -44,6 +44,9 @@ data class Wallet constructor(
     @ColumnInfo(name = "active_account")
     var activeAccount: Long = 0,
 
+    @ColumnInfo(name = "device_identifiers")
+    var deviceIdentifiers: List<DeviceIdentifier>? = null,
+
     @ColumnInfo(name = "order")
     val order: Int = 0,
 
@@ -66,6 +69,7 @@ data class Wallet constructor(
         isTestnet: Boolean,
         activeNetwork: String,
         activeAccount: Long,
+        deviceIdentifiers: List<DeviceIdentifier>?,
         order: Int,
     ) : this(
         id,
@@ -78,6 +82,7 @@ data class Wallet constructor(
         isTestnet,
         activeNetwork,
         activeAccount,
+        deviceIdentifiers,
         order,
         false,
         0L

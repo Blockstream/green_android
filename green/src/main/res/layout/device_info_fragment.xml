@@ -19,40 +19,49 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/deviceLogo"
-            greenDevice="@{vm.device}"
+            android:id="@+id/hwBackground"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
-            android:cropToPadding="false"
-            android:scaleType="fitCenter"
-            tools:src="@drawable/blockstream_jade_device"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/hw_matrix_bg"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/deviceLogo"
+            greenDevice="@{vm.device}"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:cropToPadding="false"
+            android:scaleType="centerInside"
+            app:layout_constraintBottom_toBottomOf="@+id/hwBackground"
+            app:layout_constraintEnd_toEndOf="@+id/hwBackground"
+            app:layout_constraintStart_toStartOf="@+id/hwBackground"
+            app:layout_constraintTop_toTopOf="@+id/hwBackground"
+            tools:src="@drawable/blockstream_jade_device" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.2" />
+            app:layout_constraintGuide_percent="0.5" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearLayoutCompat2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"
             tools:text="Blockstream Jade">
 
             <TextView
@@ -75,43 +84,29 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <Button
-            android:id="@+id/buttonLoginWithDevice"
-            isVisible="@{!vm.onProgress &amp;&amp; (vm.device.isJade || vm.device.isTrezor)}"
+            android:id="@+id/buttonContinue"
+            isVisible="@{!vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@string/id_log_in"
-            app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
+            android:text="@string/id_continue"
+            app:layout_constraintBottom_toTopOf="@+id/rememberDevice"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat2" />
+            app:layout_constraintStart_toStartOf="parent" />
 
-<!--        isVisible="@{!vm.onProgress}"-->
-        <com.google.android.material.checkbox.MaterialCheckBox
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/rememberDevice"
+            isVisible="@{!vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@string/id_remember_device"
-            android:visibility="gone"
             android:checked="@={vm.rememberDevice}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonLoginWithDevice" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler"
-            isVisible="@{!vm.onProgress &amp;&amp; vm.device.isLedger}"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="40dp"
-            android:overScrollMode="never"
+            android:text="@string/id_remember_device_connection"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat2" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
@@ -137,6 +132,61 @@
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/jadeUninitialized"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            isVisible="@{!vm.onProgress &amp;&amp; vm.jadeIsUninitialized}"
+            app:layout_constraintBottom_toTopOf="@+id/buttonContinue"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline3"
+            app:strokeColor="@color/brand_green"
+            app:strokeWidth="2dp">
+
+            <com.blockstream.green.views.GappedLinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="24dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="16dp"
+                app:gap="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_setup_your_jade"
+                    android:textAlignment="center"
+                    android:textAllCaps="true"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/brand_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_create_a_pin"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_enter_and_confirm_a_unique_pin"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.Green.Subtitle"
+                    android:textColor="@color/color_on_surface_emphasis_medium" />
+
+            </com.blockstream.green.views.GappedLinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

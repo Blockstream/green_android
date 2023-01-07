@@ -1,57 +1,167 @@
 package com.blockstream.green.ui.devices
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import android.content.Context
+import android.os.Build
+import androidx.lifecycle.*
+import com.blockstream.gdk.GdkBridge
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.Device
+import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.QATester
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.kotlin.addTo
-import io.reactivex.rxjava3.kotlin.subscribeBy
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class DeviceScanViewModel @AssistedInject constructor(
-    val deviceManager: DeviceManager,
+    @ApplicationContext val context: Context,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    deviceManager: DeviceManager,
+    qaTester: QATester,
     countly: Countly,
+    gdkBridge: GdkBridge,
+    settingsManager: SettingsManager,
     @Assisted wallet: Wallet
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
+) : AbstractDeviceViewModel(sessionManager, walletRepository, deviceManager, qaTester, countly, wallet) {
+    val wallet get() = walletOrNull!!
 
-    var onSuccess: (() -> Unit)? = null
+    val hasBleConnectivity = wallet.deviceIdentifiers?.any { it.connectionType == Device.ConnectionType.BLUETOOTH } ?: false
+    val canEnableBluetooth = MutableLiveData(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+
+    private val _deviceLiveData = MutableLiveData<Device?>(null)
+    val deviceLiveData: LiveData<Device?> get() = _deviceLiveData
+    override var device: Device?
+        get() = deviceLiveData.value
+        set(value) {
+            _deviceLiveData.postValue(value)
+        }
+
+    override val deviceConnectionManagerOrNull = DeviceConnectionManager(
+        makeDeviceReady = true,
+        countly = countly,
+        gdkBridge = gdkBridge,
+        settingsManager = settingsManager,
+        httpRequestProvider = sessionManager.httpRequestProvider,
+        interaction = this,
+        qaTester = qaTester
+    )
+    val session get() = sessionManager.getWalletSession(wallet)
 
     init {
-        deviceManager
-            .getDevices()
-            .subscribeBy(
-                onError = { e ->
-                    e.printStackTrace()
-                },
-                onNext = { devices ->
-                    devices.firstOrNull { device ->
-                        // wallet.deviceIdentifiers?.any {  it.uniqueIdentifier == device.uniqueIdentifier} == true
-                        false
-                    }?.also {
-                        onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
+        session.device.takeIf { session.isConnected }?.also { device ->
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
+        } ?: run {
+            deviceManager.devicesStateFlow.onEach { devices ->
+                var foundDevice = devices.firstOrNull { device ->
+                    wallet.deviceIdentifiers?.any { it.uniqueIdentifier == device.uniqueIdentifier } == true
+                }
+
+                if(device == null) {
+
+                    // Find a BLE device or request a usb authentication
+                    foundDevice = foundDevice ?: devices.firstOrNull {
+                        it.needsUsbPermissionsToIdentify()
+                    }
+
+                    if(foundDevice != null){
+                        if(foundDevice.isBle) {
+                            // Found device, pause ble scanning to increase connectivity success
+                            deviceManager.pauseBluetoothScanning()
+                        }
+
+                        device = foundDevice
+                        selectDevice(foundDevice)
                     }
                 }
-            ).addTo(disposables)
+            }.launchIn(viewModelScope)
+        }
     }
 
-    fun askForPermissionOrBond(device: Device) {
-        onSuccess = {
+    private fun selectDevice(device: Device) {
+        if (device.hwWallet != null) {
+            // Device is unlocked
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
+        } else if (device.hasPermissionsOrIsBonded() || device.handleBondingByHwwImplementation()) {
+            doUserAction({
+                session.disconnect()
+                deviceConnectionManager.connectDevice(
+                    context,
+                    device
+                )
+            }, postAction = null, onSuccess = {
+                countly.hardwareConnect(device)
+            })
+        } else {
+            askForPermissionOrBond(device)
         }
+    }
 
-        device.askForPermissionOrBond(onSuccess!!) {
-            onError.postValue(ConsumableEvent(it))
-        }
+    private fun askForPermissionOrBond(device: Device) {
+        device.askForPermissionOrBond(onError = {
+            onDeviceFailed(device)
+        }, onSuccess = {
+            // Check again if it's valid (after authentication we can get the usb serial id
+            if(wallet.deviceIdentifiers?.any { it.uniqueIdentifier == device.uniqueIdentifier } == true){
+                selectDevice(device)
+            }else{
+                onDeviceFailed(device)
+            }
+        })
+    }
+
+    override fun onDeviceFailed(device: Device) {
+        super.onDeviceFailed(device)
+        this.device = null
+        deviceManager.startBluetoothScanning()
+    }
+
+    override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
+
+        doUserAction({
+            val hwWallet = device.hwWallet ?: throw Exception("Not HWWallet initiated")
+
+            deviceConnectionManager.authenticateDeviceIfNeeded(hwWallet)
+
+            val network = deviceConnectionManager.getOperatingNetworkForEnviroment(hwWallet, wallet.isTestnet)
+
+            if(wallet.isTestnet != network.isTestnet){
+                throw Exception("The device is operating on the wrong Environment")
+            }
+
+            if(device.isLedger){
+                // Change network based on user applet
+                wallet.activeNetwork = network.id
+            }
+
+            // Check wallet hash id
+            val walletHashId = session.getWalletIdentifier(
+                network = network,
+                hwWallet = device.hwWallet,
+                hwWalletBridge = this
+            ).walletHashId
+
+            if (wallet.walletHashId.isNotBlank() && wallet.walletHashId != walletHashId) {
+                // wallet is different
+                throw Exception("This is not the same Wallet")
+            }
+
+        }, onError = {
+            onDeviceFailed(device)
+            onError.value = ConsumableEvent(it)
+        }, onSuccess = {
+            proceedToLogin = true
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
+            countly.hardwareConnected(device)
+        })
     }
 
     @dagger.assisted.AssistedFactory

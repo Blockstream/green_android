@@ -13,7 +13,7 @@ import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.managers.SessionManager
 import com.btchip.comm.LedgerDeviceBLE
-import com.greenaddress.jade.JadeBleImpl
+import com.blockstream.jade.JadeBleImpl
 import com.polidea.rxandroidble2.RxBleClient
 import com.polidea.rxandroidble2.scan.ScanCallbackType
 import com.polidea.rxandroidble2.scan.ScanFilter
@@ -26,6 +26,8 @@ import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import mu.KLogging
 import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
@@ -38,16 +40,13 @@ class DeviceManager constructor(
     private val rxBleClient: RxBleClient
 ) {
     private var onPermissionSuccess: WeakReference<(() -> Unit)>? = null
-    private var onPermissionError: WeakReference<((throwable: Throwable) -> Unit)>? = null
+    private var onPermissionError: WeakReference<((throwable: Throwable?) -> Unit)>? = null
 
-    private val usbDevicesSubject = BehaviorSubject.createDefault<List<Device>>(listOf())
-    private val bluetoothDevicesSubject = BehaviorSubject.createDefault<List<Device>>(listOf())
+    private val _usbDevicesStateFlow = MutableStateFlow<List<Device>>(listOf())
+    private val _bluetoothDevicesStateFlow = MutableStateFlow<List<Device>>(listOf())
 
-    private val devicesSubject = BehaviorSubject.combineLatest(
-        usbDevicesSubject,
-        bluetoothDevicesSubject
-    ) { usb: List<Device>, bluetooth: List<Device> ->
-        bluetooth + usb
+    val devicesStateFlow = combine(_bluetoothDevicesStateFlow, _usbDevicesStateFlow) { ble, usb ->
+        ble + usb
     }
 
     var bleAdapterState = MutableLiveData(rxBleClient.state)
@@ -74,6 +73,7 @@ class DeviceManager constructor(
                     }
                 } else {
                     logger.info { "Permission denied for device $device" }
+                    onPermissionError?.get()?.invoke(null)
                 }
             }else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED == intent.action){
                 val bondedDevice  = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
@@ -131,10 +131,9 @@ class DeviceManager constructor(
             .doOnNext { addBleConnectedDevices() }
             .map { SystemClock.elapsedRealtimeNanos() - 5000000000 } // 5 seconds
             .subscribe{ ts ->
-                bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value?.filter {
+                _bluetoothDevicesStateFlow.value = _bluetoothDevicesStateFlow.value.filter {
                     !it.isOffline && (it.timeout == 0L || it.timeout > ts)
-                } ?: listOf())
-
+                }
             }.addTo(bleScanDisposable)
 
         rxBleClient
@@ -172,7 +171,7 @@ class DeviceManager constructor(
                     logger.info { "BLE - is not ready" }
 
                     // Empty BLE devices
-                    bluetoothDevicesSubject.onNext(listOf())
+                    _bluetoothDevicesStateFlow.value = listOf()
                     return@switchMap Observable.empty()
                 }
             }
@@ -196,22 +195,22 @@ class DeviceManager constructor(
                         addBluetoothDevice(device)
 
                     } else if (it.callbackType == ScanCallbackType.CALLBACK_TYPE_MATCH_LOST) {
-                        bluetoothDevicesSubject.onNext(bluetoothDevicesSubject.value?.filter { dev ->
+                        _bluetoothDevicesStateFlow.value = _bluetoothDevicesStateFlow.value.filter { dev ->
                             dev.id != device.id
-                        } ?: listOf())
+                        }
                     }
                 }
             ).addTo(bleScanDisposable)
     }
 
     private fun addBluetoothDevice(newDevice: Device){
-        bluetoothDevicesSubject.value?.find { it.id == newDevice.id }?.also { oldDevice ->
+        _bluetoothDevicesStateFlow.value.find { it.id == newDevice.id }?.also { oldDevice ->
             newDevice.bleDevice?.let{
                 oldDevice.updateFromScan(it)
             }
         } ?: run {
             // Add it if new
-            bluetoothDevicesSubject.onNext((bluetoothDevicesSubject.value ?: listOf()) + newDevice)
+            _bluetoothDevicesStateFlow.value = (_bluetoothDevicesStateFlow.value ?: listOf()) + newDevice
         }
     }
 
@@ -230,12 +229,11 @@ class DeviceManager constructor(
         }
     }
 
-    fun getDevices(): Observable<List<Device>> = devicesSubject.hide()
-
     fun hasPermissions(device: UsbDevice) = usbManager.hasPermission(device)
 
-    fun askForPermissions(device: UsbDevice, onSuccess: (() -> Unit)) {
+    fun askForPermissions(device: UsbDevice, onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null) {
         onPermissionSuccess = WeakReference(onSuccess)
+        onPermissionError = onError?.let { WeakReference(it) }
         val permissionIntent = PendingIntent.getBroadcast(context, 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE)
         usbManager.requestPermission(device, permissionIntent)
     }
@@ -243,7 +241,7 @@ class DeviceManager constructor(
     fun refreshDevices(){
         logger.info { "Refresh device list" }
 
-        bluetoothDevicesSubject.onNext(listOf())
+        _bluetoothDevicesStateFlow.value = listOf()
         scanDevices()
     }
 
@@ -253,7 +251,7 @@ class DeviceManager constructor(
         val newUsbDevices = usbManager.deviceList.values
 
         // Disconnect devices
-        val oldDevices = usbDevicesSubject.value?.filter {
+        val oldDevices = _usbDevicesStateFlow.value.filter {
             if(newUsbDevices.contains(it.usbDevice)){
                 true
             }else{
@@ -271,13 +269,13 @@ class DeviceManager constructor(
             }
         }
 
-        usbDevicesSubject.onNext(oldDevices + newDevices)
+        _usbDevicesStateFlow.value = oldDevices + newDevices
     }
 
     fun bondDevice(
         device: Device,
         onSuccess: (() -> Unit),
-        onError: ((throwable: Throwable) -> Unit)
+        onError: ((throwable: Throwable?) -> Unit)
     ){
         device.bleDevice?.let {
 
@@ -296,7 +294,7 @@ class DeviceManager constructor(
     }
 
     fun getDevice(deviceId: String?): Device? {
-        return usbDevicesSubject.value?.find { it.id == deviceId } ?: bluetoothDevicesSubject.value?.find { it.id == deviceId }
+        return _usbDevicesStateFlow.value.find { it.id == deviceId } ?: _bluetoothDevicesStateFlow.value.find { it.id == deviceId }
     }
 
     companion object : KLogging() {

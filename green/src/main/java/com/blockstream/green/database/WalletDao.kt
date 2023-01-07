@@ -9,6 +9,9 @@ interface WalletDao {
     @Insert
     suspend fun insertWallet(wallet: Wallet) : Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplaceWallet(wallet: Wallet) : Long
+
     @Delete
     suspend fun deleteWallet(wallet: Wallet)
 
@@ -37,8 +40,8 @@ interface WalletDao {
     @Query("SELECT * FROM wallets WHERE id = :id")
     suspend fun getWallet(id: WalletId): Wallet?
 
-    @Query("SELECT * FROM wallets WHERE wallet_hash_id = :walletHashId AND is_hardware = :isHardware LIMIT 1")
-    suspend fun getWalletWithHashId(walletHashId: String, isHardware: Boolean): Wallet?
+    @Query("SELECT * FROM wallets WHERE wallet_hash_id = :walletHashId AND is_testnet = :isTestnet AND is_hardware = :isHardware LIMIT 1")
+    suspend fun getWalletWithHashId(walletHashId: String, isTestnet: Boolean, isHardware: Boolean): Wallet?
 
     @Query("SELECT * FROM wallets WHERE is_hardware = 0")
     fun getSoftwareWalletsLiveData(): LiveData<List<Wallet>>
@@ -52,6 +55,9 @@ interface WalletDao {
 
     @Query("SELECT * FROM wallets")
     suspend fun getAllWallets(): List<Wallet>
+
+    @Query("SELECT * FROM wallets")
+    fun getAllWalletsFlow(): Flow<List<Wallet>>
 
     @Query("SELECT * FROM wallets WHERE is_hardware = 0")
     suspend fun getSoftwareWallets(): List<Wallet>

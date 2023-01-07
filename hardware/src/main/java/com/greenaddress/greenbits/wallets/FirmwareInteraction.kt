@@ -1,14 +1,23 @@
 package com.greenaddress.greenbits.wallets;
 
-import androidx.arch.core.util.Function
 import com.blockstream.DeviceBrand
-import com.greenaddress.greenapi.HardwareQATester
+import com.blockstream.HardwareQATester
+import kotlinx.coroutines.Deferred
 
 interface FirmwareInteraction: HardwareQATester {
     fun askForFirmwareUpgrade(
-        firmwareUpgradeRequest: FirmwareUpgradeRequest,
-        callback: Function<Int?, Void>
-    )
+        firmwareUpgradeRequest: FirmwareUpgradeRequest
+    ): Deferred<Int?>
+
+    fun askForFirmwareUpgradeSync(
+        firmwareUpgradeRequest: FirmwareUpgradeRequest
+    ): Int?
+
+    fun firmwarePushedToDevice(firmwareFileData: FirmwareFileData, hash: String)
+
+    fun firmwareProgress(written: Int, totalSize: Int)
+
+    fun firmwareComplete(success: Boolean)
 
     fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean)
 }

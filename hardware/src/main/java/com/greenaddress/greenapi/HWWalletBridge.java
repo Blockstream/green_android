@@ -3,6 +3,7 @@ package com.greenaddress.greenapi;
 import androidx.annotation.Nullable;
 
 import com.blockstream.DeviceBrand;
+import com.blockstream.gdk.data.Network;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;

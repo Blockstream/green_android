@@ -476,7 +476,7 @@ class WalletSettingsFragment :
                 // Security
                 list += TitleListItem(StringHolder(R.string.id_security))
 
-                if (!wallet.isEphemeral) {
+                if (!wallet.isEphemeral && !wallet.isHardware) {
                     list += changePinPreference
                     list += biometricsPreference
                 }

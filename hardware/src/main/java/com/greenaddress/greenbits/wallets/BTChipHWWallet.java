@@ -50,12 +50,16 @@ public class BTChipHWWallet extends HWWallet {
     private final Map<String, String> mUserXPubs = new HashMap<>();
     private final PublishSubject<Boolean> mBleDisconnectEvent;
 
+    protected Network mNetwork;
+
     public BTChipHWWallet(final BTChipDongle dongle, final String pin,
+                          final Network network,
                           @Nullable final Device device,
                           final String firmwareVersion,
                           PublishSubject<Boolean> bleDisconnectEvent) {
         mDongle = dongle;
         mPin = pin;
+        mNetwork = network;
         mDevice = device;
         if(dongle.getTransport().isUsb()){
             if(dongle.getTransport() instanceof BTChipTransportAndroidHID){
@@ -100,7 +104,7 @@ public class BTChipHWWallet extends HWWallet {
         // No-op
     }
 
-    public List<String> getXpubs(final Network network, final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public synchronized List<String> getXpubs(final Network network, final HWWalletBridge parent, final List<List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
         try {
             for (final List<Integer> path : paths) {
@@ -150,7 +154,7 @@ public class BTChipHWWallet extends HWWallet {
         }
     }
 
-    private static List<Integer> getIntegerPath(final List<Long> unsigned) {
+    private synchronized static List<Integer> getIntegerPath(final List<Long> unsigned) {
         //return unsigned.stream().map(Long::intValue).collect(Collectors.toList());
         final List<Integer> signed = new ArrayList<>(unsigned.size());
         for (final Long n : unsigned) {
@@ -592,6 +596,10 @@ public class BTChipHWWallet extends HWWallet {
     private ByteArrayOutputStream putVarInt(final ByteArrayOutputStream os, final long v) {
         VarintUtils.write(os, v);
         return os;
+    }
+
+    public Network getNetwork() {
+        return mNetwork;
     }
 
     public int getIconResourceId() {

@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.base.Urls
-import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.data.Credentials
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
@@ -25,15 +24,15 @@ import com.blockstream.green.databinding.LoginFragmentBinding
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.extensions.AuthenticationCallback
 import com.blockstream.green.extensions.authenticateWithBiometrics
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.errorSnackbar
+import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.ui.bottomsheets.Bip39PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.extensions.errorSnackbar
-import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenPinViewListener
@@ -65,9 +64,6 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
 
     @Inject
     lateinit var walletRepository: WalletRepository
-
-    @Inject
-    lateinit var gdkBridge: GdkBridge
 
     var biometricPrompt : BiometricPrompt? = null
 

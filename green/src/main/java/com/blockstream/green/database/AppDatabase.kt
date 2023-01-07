@@ -16,7 +16,7 @@ import kotlinx.serialization.encodeToString
 
 @Database(
     entities = [Wallet::class, LoginCredentials::class],
-    version = 4,
+    version = 5,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun walletDao(): WalletDao
@@ -43,6 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
             builder.addMigrations(MIGRATION_1_2).build()
             builder.addMigrations(MIGRATION_2_3).build()
             builder.addMigrations(MIGRATION_3_4).build()
+            builder.addMigrations(MIGRATION_4_5).build()
 
             if (isDevelopmentFlavor) {
                  // builder.fallbackToDestructiveMigration()

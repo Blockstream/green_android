@@ -2,7 +2,6 @@
 <resources>
     <item name="fastadapter_wallet_item_id" type="id" />
     <item name="fastadapter_device_item_id" type="id" />
-    <item name="fastadapter_device_brand_item_id" type="id" />
     <item name="fastadapter_transaction_item_id" type="id" />
     <item name="fastadapter_help_item_id" type="id" />
     <item name="fastadapter_title_item_id" type="id" />

@@ -14,9 +14,11 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
     fun getWalletFlow(id: WalletId) = walletDao.getWalletFlow(id)
     suspend fun getWallet(id: WalletId) = walletDao.getWallet(id)
 
-    suspend fun getWalletWithHashId(walletHashId: String, isHardware: Boolean) = walletDao.getWalletWithHashId(walletHashId, isHardware)
+    suspend fun getWalletWithHashId(walletHashId: String, isTestnet: Boolean, isHardware: Boolean) = walletDao.getWalletWithHashId(walletHashId, isTestnet, isHardware)
 
     suspend fun insertWallet(wallet: Wallet) = walletDao.insertWallet(wallet)
+
+    suspend fun insertOrReplaceWallet(wallet: Wallet) = walletDao.insertOrReplaceWallet(wallet)
 
     suspend fun insertOrReplaceLoginCredentials(loginCredentials: LoginCredentials) = walletDao.insertOrReplaceLoginCredentials(loginCredentials)
     suspend fun updateLoginCredentials(vararg loginCredentials: LoginCredentials) = walletDao.updateLoginCredentials(*loginCredentials)
@@ -36,5 +38,7 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
     fun getSoftwareWalletsFlow(): Flow<List<Wallet>> = walletDao.getSoftwareWalletsFlow()
     fun getHardwareWalletsFlow(): Flow<List<Wallet>> = walletDao.getHardwareWalletsFlow()
     suspend fun getAllWallets(): List<Wallet> = walletDao.getAllWallets()
+
+    fun getAllWalletsFlow(): Flow<List<Wallet>> = walletDao.getAllWalletsFlow()
     suspend fun getSoftwareWallets(): List<Wallet> = walletDao.getSoftwareWallets()
 }

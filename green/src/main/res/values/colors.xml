@@ -91,6 +91,7 @@
     <color name="text_shadow">#50000000</color>
 
     <color name="switch_thumb_disabled">#c1c1c1</color>
+    <color name="button_disabled">#41ffffff</color>
 
     <color name="color_on_surface_divider">#22ffffff</color>
     <color name="color_on_surface_emphasis_disabled">#20ffffff</color>

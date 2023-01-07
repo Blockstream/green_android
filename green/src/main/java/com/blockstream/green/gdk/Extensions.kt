@@ -252,8 +252,9 @@ fun Wallet.iconResource(session: GdkSession) = when {
     isWatchOnly -> R.drawable.ic_regular_eye_24
     isTestnet -> R.drawable.ic_regular_flask_24
     isBip39Ephemeral -> R.drawable.ic_regular_wallet_passphrase_24
-    isHardware && session.device != null -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
-    session.gdkSessions.size == 1 -> if (session.mainAssetNetwork.isElectrum) R.drawable.ic_singlesig else R.drawable.ic_multisig
+    isHardware -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
+    // isHardware && session.device != null -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
+    // session.gdkSessions.size == 1 -> if (session.mainAssetNetwork.isElectrum) R.drawable.ic_singlesig else R.drawable.ic_multisig
     else -> R.drawable.ic_regular_wallet_24
 }
 

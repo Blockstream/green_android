@@ -34,9 +34,11 @@ kotlin {
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
     implementation project(':crypto')
+    implementation project(':jade')
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinx_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
     /** ----------------------------------------------------------------------------------------- */
@@ -68,13 +70,9 @@ dependencies {
     api 'com.polidea.rxandroidble2:rxandroidble:1.13.1'
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- USB -------------------------------------------------------------------------------- */
-    implementation 'com.github.felHR85:UsbSerial:6.0.6'
-    /** ----------------------------------------------------------------------------------------- */
-
     /**  --- Logging ---------------------------------------------------------------------------- */
-    implementation 'org.slf4j:slf4j-android:1.7.30'
-    implementation 'io.github.microutils:kotlin-logging:1.12.0'
+    implementation "org.slf4j:slf4j-simple:$slf4j_android"
+    implementation "io.github.microutils:kotlin-logging-jvm:$kotlin_logging"
     /** ----------------------------------------------------------------------------------------- */
 
     testImplementation fileTree(dir: 'libs', include: ['.jar', '.so'])

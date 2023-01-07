@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.onboarding.AddWalletFragment">
+
+    <data>
+
+        <variable
+            name="step"
+            type="Integer" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+
+        <ImageView
+            android:id="@+id/hwBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/hw_matrix_bg"
+            app:layout_constraintBottom_toTopOf="@+id/steps1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/jade_button"
+            app:layout_constraintBottom_toBottomOf="@+id/hwBackground"
+            app:layout_constraintEnd_toEndOf="@+id/hwBackground"
+            app:layout_constraintStart_toStartOf="@+id/hwBackground"
+            app:layout_constraintTop_toTopOf="@+id/hwBackground" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:alpha="0.0"
+            android:scaleType="centerInside"
+            android:src="@drawable/notepad"
+            app:layout_constraintBottom_toBottomOf="@+id/hwBackground"
+            app:layout_constraintEnd_toEndOf="@+id/hwBackground"
+            app:layout_constraintStart_toStartOf="@+id/hwBackground"
+            app:layout_constraintTop_toTopOf="@+id/hwBackground" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:alpha="0.0"
+            android:scaleType="centerInside"
+            android:src="@drawable/jade_rotate"
+            app:layout_constraintBottom_toBottomOf="@+id/hwBackground"
+            app:layout_constraintEnd_toEndOf="@+id/hwBackground"
+            app:layout_constraintStart_toStartOf="@+id/hwBackground"
+            app:layout_constraintTop_toTopOf="@+id/hwBackground" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/steps1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/steps2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView1"
+            app:strokeColor="@color/brand_green"
+            app:strokeWidth="2dp">
+
+            <com.blockstream.green.views.GappedLinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:alpha="@{step == 0 ? 1.0f : 0.7f}"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="24dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="16dp"
+                app:gap="4dp">
+
+                <TextView
+                    android:id="@+id/step1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_step"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/brand_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_initialize_and_create_wallet"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+                <TextView
+                    isVisible="@{step == 0}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minLines="2"
+                    android:text="@string/id_select_initialize_and_choose_to_create"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.Green.Subtitle"
+                    android:textColor="@color/color_on_surface_emphasis_medium" />
+
+            </com.blockstream.green.views.GappedLinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/steps2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/steps3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/steps1"
+            app:strokeColor="@color/brand_green"
+            app:strokeWidth="2dp">
+
+            <com.blockstream.green.views.GappedLinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:alpha="@{step == 1 ? 1.0f : 0.7f}"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="24dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="16dp"
+                app:gap="4dp">
+
+                <TextView
+                    android:id="@+id/step2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_step"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/brand_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_backup_recovery_phrase"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+                <TextView
+                    isVisible="@{step == 1}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minLines="2"
+                    android:text="@string/id_write_down_your_recovery_phrase_keep_it"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.Green.Subtitle"
+                    android:textColor="@color/color_on_surface_emphasis_medium" />
+
+            </com.blockstream.green.views.GappedLinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/steps3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonExit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/steps2"
+            app:strokeColor="@color/brand_green"
+            app:strokeWidth="2dp">
+
+            <com.blockstream.green.views.GappedLinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:alpha="@{step == 2 ? 1.0f : 0.7f}"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="24dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="16dp"
+                app:gap="4dp">
+
+                <TextView
+                    android:id="@+id/step3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_step"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/brand_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_verify_recovery_phrase"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+                <TextView
+                    isVisible="@{step == 2}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minLines="2"
+                    android:text="@string/id_use_the_jog_wheel_to_select_the_word"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.Green.Subtitle"
+                    android:textColor="@color/color_on_surface_emphasis_medium" />
+
+            </com.blockstream.green.views.GappedLinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonExit"
+            style="@style/Widget.Green.Button.White.Big"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/id_exit_guide"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
