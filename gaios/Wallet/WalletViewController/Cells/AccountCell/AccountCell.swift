@@ -245,9 +245,13 @@ class AccountCell: UITableViewCell {
     }
 
     func select(_ value: Bool) {
-        UIView.animate(withDuration: 0.3, animations: {
+        if cIdx == sIdx {
             self.updateUI(value)
-        })
+        } else {
+            UIView.animate(withDuration: 0.3, animations: {
+                self.updateUI(value)
+            })
+        }
     }
 
     @IBAction func btnSelect(_ sender: Any) {
