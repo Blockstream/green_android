@@ -116,7 +116,12 @@ class WalletManager {
                     return session.loginWithCredentials(credentials)
                     .asVoid()
                     .recover { err in
-                        self.failureSessions[session.gdkNetwork.network] = err
+                        switch err {
+                        case TwoFactorCallError.failure(_):
+                            break
+                        default:
+                            self.failureSessions[session.gdkNetwork.network] = err
+                        }
                     }
                 })
             .then { self.subaccounts() }.asVoid()
