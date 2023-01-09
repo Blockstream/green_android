@@ -74,7 +74,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VJN-Iq-Dad">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VJN-Iq-Dad">
                                 <rect key="frame" x="25" y="69" width="343" height="54"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="XYH-uP-gAo">
@@ -111,8 +111,8 @@
                                     <constraint firstItem="XYH-uP-gAo" firstAttribute="leading" secondItem="VJN-Iq-Dad" secondAttribute="leading" constant="20" id="pte-zl-Tv8"/>
                                 </constraints>
                             </view>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="GuF-d8-9Ci">
-                                <rect key="frame" x="0.0" y="143" width="393" height="675"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="GuF-d8-9Ci">
+                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="yqs-9C-Wtl" id="MF6-d6-QAL"/>
@@ -127,8 +127,8 @@
                             <constraint firstItem="FAt-P6-ev1" firstAttribute="trailing" secondItem="VJN-Iq-Dad" secondAttribute="trailing" constant="25" id="SEX-Xe-ax2"/>
                             <constraint firstItem="VJN-Iq-Dad" firstAttribute="leading" secondItem="FAt-P6-ev1" secondAttribute="leading" constant="25" id="VTB-Rc-J70"/>
                             <constraint firstItem="GuF-d8-9Ci" firstAttribute="leading" secondItem="FAt-P6-ev1" secondAttribute="leading" id="dQQ-ly-2et"/>
-                            <constraint firstItem="GuF-d8-9Ci" firstAttribute="top" secondItem="VJN-Iq-Dad" secondAttribute="bottom" constant="20" id="gSW-jh-iaR"/>
                             <constraint firstItem="FAt-P6-ev1" firstAttribute="trailing" secondItem="GuF-d8-9Ci" secondAttribute="trailing" id="j3g-C4-whU"/>
+                            <constraint firstItem="GuF-d8-9Ci" firstAttribute="top" secondItem="FAt-P6-ev1" secondAttribute="top" id="uL5-sA-1pN"/>
                             <constraint firstItem="VJN-Iq-Dad" firstAttribute="top" secondItem="FAt-P6-ev1" secondAttribute="top" constant="10" id="vXR-YS-c3z"/>
                         </constraints>
                     </view>
@@ -248,7 +248,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Chj-4e-TQB">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Chj-4e-TQB">
                                 <rect key="frame" x="25" y="69" width="343" height="54"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eZk-JQ-Fia">
@@ -286,7 +286,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="mnF-r3-Jbd">
-                                <rect key="frame" x="0.0" y="143" width="393" height="675"/>
+                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="X77-bL-K6T" id="NP9-6n-uxF"/>
@@ -297,13 +297,13 @@
                         <viewLayoutGuide key="safeArea" id="cHa-ON-0ZZ"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
-                            <constraint firstItem="mnF-r3-Jbd" firstAttribute="top" secondItem="Chj-4e-TQB" secondAttribute="bottom" constant="20" id="ENG-Ez-FrR"/>
                             <constraint firstItem="Chj-4e-TQB" firstAttribute="top" secondItem="cHa-ON-0ZZ" secondAttribute="top" constant="10" id="HaP-rX-xq9"/>
                             <constraint firstItem="mnF-r3-Jbd" firstAttribute="leading" secondItem="cHa-ON-0ZZ" secondAttribute="leading" id="UYD-0e-43t"/>
                             <constraint firstItem="Chj-4e-TQB" firstAttribute="leading" secondItem="cHa-ON-0ZZ" secondAttribute="leading" constant="25" id="Xbp-fQ-ODQ"/>
                             <constraint firstItem="cHa-ON-0ZZ" firstAttribute="trailing" secondItem="mnF-r3-Jbd" secondAttribute="trailing" id="jcs-Cw-xOa"/>
                             <constraint firstItem="cHa-ON-0ZZ" firstAttribute="trailing" secondItem="Chj-4e-TQB" secondAttribute="trailing" constant="25" id="pza-S2-iEs"/>
                             <constraint firstItem="cHa-ON-0ZZ" firstAttribute="bottom" secondItem="mnF-r3-Jbd" secondAttribute="bottom" id="qc1-rA-TKf"/>
+                            <constraint firstItem="mnF-r3-Jbd" firstAttribute="top" secondItem="cHa-ON-0ZZ" secondAttribute="top" id="vDG-8s-pfy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Hac-es-gma">
@@ -332,7 +332,7 @@
             <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGreenMatrix">
-            <color red="0.0" green="0.71372549019607845" blue="0.43529411764705883" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

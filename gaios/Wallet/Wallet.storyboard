@@ -1039,7 +1039,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T0g-6A-VkJ">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T0g-6A-VkJ">
                                 <rect key="frame" x="25" y="58" width="364" height="54"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="t2c-M7-4JF">
@@ -1076,8 +1076,8 @@
                                     <constraint firstItem="t2c-M7-4JF" firstAttribute="leading" secondItem="T0g-6A-VkJ" secondAttribute="leading" constant="20" id="tdw-Jz-mJl"/>
                                 </constraints>
                             </view>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="avR-ss-lhe">
-                                <rect key="frame" x="0.0" y="132" width="414" height="730"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="avR-ss-lhe">
+                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="gnE-WD-5sv" id="peI-eZ-ci1"/>
@@ -1091,7 +1091,7 @@
                             <constraint firstItem="I5b-ua-lFN" firstAttribute="trailing" secondItem="T0g-6A-VkJ" secondAttribute="trailing" constant="25" id="BYd-QQ-1dq"/>
                             <constraint firstItem="T0g-6A-VkJ" firstAttribute="leading" secondItem="I5b-ua-lFN" secondAttribute="leading" constant="25" id="C0h-XM-Eeh"/>
                             <constraint firstItem="I5b-ua-lFN" firstAttribute="trailing" secondItem="avR-ss-lhe" secondAttribute="trailing" id="Hip-LZ-mtw"/>
-                            <constraint firstItem="avR-ss-lhe" firstAttribute="top" secondItem="T0g-6A-VkJ" secondAttribute="bottom" constant="20" id="VyQ-ag-NkG"/>
+                            <constraint firstItem="avR-ss-lhe" firstAttribute="top" secondItem="I5b-ua-lFN" secondAttribute="top" id="Quw-l1-9a8"/>
                             <constraint firstItem="T0g-6A-VkJ" firstAttribute="top" secondItem="I5b-ua-lFN" secondAttribute="top" constant="10" id="cOM-re-iQc"/>
                             <constraint firstItem="avR-ss-lhe" firstAttribute="leading" secondItem="I5b-ua-lFN" secondAttribute="leading" id="g6d-lj-ksm"/>
                             <constraint firstItem="I5b-ua-lFN" firstAttribute="bottom" secondItem="avR-ss-lhe" secondAttribute="bottom" id="hYc-YB-RwI"/>
