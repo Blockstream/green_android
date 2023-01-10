@@ -16,24 +16,9 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var lblFiat: UILabel!
     @IBOutlet weak var lblAmount: UILabel!
-    @IBOutlet weak var iconsView: UIView!
-    @IBOutlet weak var iconsStack: UIStackView!
-    @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
 
-    @IBOutlet weak var icC1: UIView!
-    @IBOutlet weak var icC2: UIView!
-    @IBOutlet weak var icC3: UIView!
-    @IBOutlet weak var icC4: UIView!
-    @IBOutlet weak var icC5: UIView!
-    @IBOutlet weak var icC6: UIView!
-    @IBOutlet weak var icC7: UIView!
-    @IBOutlet weak var icV1: UIImageView!
-    @IBOutlet weak var icV2: UIImageView!
-    @IBOutlet weak var icV3: UIImageView!
-    @IBOutlet weak var icV4: UIImageView!
-    @IBOutlet weak var icV5: UIImageView!
-    @IBOutlet weak var icV6: UIImageView!
-    @IBOutlet weak var icV7: UIImageView!
+    @IBOutlet var icContainers: [UIView]!
+    @IBOutlet var icImgViews: [UIImageView]!
 
     @IBOutlet weak var trailing2_1: NSLayoutConstraint!
     @IBOutlet weak var trailing3_2: NSLayoutConstraint!
@@ -49,14 +34,6 @@ class AccountCell: UITableViewCell {
     private var onShield: ((Int) -> Void)?
     private let iconW: CGFloat = 24
     private var cColor: UIColor = .clear
-
-    var views: [UIView] {
-        return [icC1, icC2, icC3, icC4, icC5, icC6, icC7]
-    }
-
-    var imgs: [UIView] {
-        return [icV1, icV2, icV3, icV4, icV5, icV6, icV7]
-    }
 
     static var identifier: String { return String(describing: self) }
 
@@ -136,104 +113,49 @@ class AccountCell: UITableViewCell {
         btnSelect.isHidden = onSelect == nil
         btnCopy.isHidden = onCopy == nil || model.account.type != .amp // only for amp
 
-        for v in iconsStack.subviews {
-            v.removeFromSuperview()
-        }
-
         let assets = AssetAmountList(model.account.satoshi ?? [:]).sorted()
         let registry = WalletManager.current?.registry
         var icons = [UIImage]()
         assets.compactMap { registry?.image(for: $0.0) }
             .forEach { if !icons.contains($0) { icons += [$0] } }
 
-//        iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 10.0
-//        setImages(icons)
-//        iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
-
-        views.forEach {
+        icContainers.forEach {
             $0.borderWidth = 1.0
             $0.borderColor = UIColor.white
             $0.cornerRadius = $0.frame.size.width / 2.0
             $0.backgroundColor = cColor.darker(by: 10)
         }
-        imgs.forEach {
+        icImgViews.forEach {
             $0.cornerRadius = $0.frame.size.width / 2.0
             $0.clipsToBounds = true
         }
-        views.forEach { $0.isHidden = true }
+        icContainers.forEach { $0.isHidden = true }
         let padding: CGFloat = icons.count > 4 ? -20 : -10
         [trailing2_1, trailing3_2, trailing4_3].forEach {
             $0?.constant = padding
         }
 
         titlesTrailing.constant = 0.0
-        let width = icC1.frame.width
-
-        switch icons.count {
-        case 0:
-            break
-        case 1:
-            icC1.isHidden = false
-            icV1.image = icons[0]
-            titlesTrailing.constant = -width * 1.0 - 10.0
-        case 2:
-            icC1.isHidden = false
-            icV1.image = icons[1]
-            icC2.isHidden = false
-            icV2.image = icons[0]
-            titlesTrailing.constant = -width * 2.0 - 10.0 + 10.0
-        case 3:
-            icC1.isHidden = false
-            icV1.image = icons[2]
-            icC2.isHidden = false
-            icV2.image = icons[1]
-            icC3.isHidden = false
-            icV3.image = icons[0]
-            titlesTrailing.constant = -width * 3.0 - 10.0 + 20.0
-        case 4:
-            icC1.isHidden = false
-            icV1.image = icons[3]
-            icC2.isHidden = false
-            icV2.image = icons[2]
-            icC3.isHidden = false
-            icV3.image = icons[1]
-            icC4.isHidden = false
-            icV4.image = icons[0]
-            titlesTrailing.constant = -width * 4.0 - 10.0 + 30.0
-        default:
-            icV1.image = UIImage()
-            icV2.image = UIImage()
-            icV3.image = UIImage()
-            icC4.isHidden = false
-            icV4.image = icons[3]
-            icC5.isHidden = false
-            icV5.image = icons[2]
-            icC6.isHidden = false
-            icV6.image = icons[1]
-            icC7.isHidden = false
-            icV7.image = icons[0]
-            titlesTrailing.constant = -width * 4.0 - 10.0 + 30.0 - 30.0
-        }
+        let width = icContainers[0].frame.width
 
         if icons.count > 4 {
-            views.forEach { $0.isHidden = false }
+            icImgViews[0].image = UIImage()
+            icImgViews[1].image = UIImage()
+            icImgViews[2].image = UIImage()
+            for n in 3..<7 {
+                icContainers[n].isHidden = false
+                icImgViews[n].image = icons[7 - 1 - n]
+            }
+            titlesTrailing.constant = -width * 4.0 - 10.0 + 30.0 - 30.0
+            icContainers.forEach { $0.isHidden = false }
+        } else {
+            for n in 0..<icons.count {
+                icContainers[n].isHidden = false
+                icImgViews[n].image = icons[(icons.count - 1) - n]
+            }
+            titlesTrailing.constant = -width * CGFloat(icons.count) - 10.0 + CGFloat(icons.count - 1) * 10.0
         }
     }
-
-//    func setImages(_ images: [UIImage]) {
-//        for img in images {
-//            let imageView = UIImageView()
-//            imageView.image = img
-//            imageView.heightAnchor.constraint(equalToConstant: iconW).isActive = true
-//            imageView.widthAnchor.constraint(equalToConstant: iconW).isActive = true
-//            imageView.backgroundColor = cColor
-//            imageView.borderWidth = 1.0
-//            imageView.borderColor = UIColor.gBlackBg()
-//            imageView.cornerRadius = iconW / 2.0
-//            imageView.clipsToBounds = true
-//            iconsStack.addArrangedSubview(imageView)
-//        }
-//    }
 
     func updateUI(_ value: Bool) {
         self.detailView.alpha = value ? 1.0 : 0.0

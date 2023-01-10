@@ -88,26 +88,6 @@
                                             <constraint firstItem="qb7-rm-jm5" firstAttribute="leading" secondItem="Xbh-7r-XUy" secondAttribute="leading" id="wVT-21-jF0"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JB9-rO-hab">
-                                        <rect key="frame" x="316" y="18" width="28" height="28"/>
-                                        <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="-10" translatesAutoresizingMaskIntoConstraints="NO" id="XVU-sN-nrB">
-                                                <rect key="frame" x="2" y="2" width="24" height="24"/>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="24" id="102-Y2-6Yz"/>
-                                                    <constraint firstAttribute="height" constant="24" id="O87-sg-XPk"/>
-                                                </constraints>
-                                            </stackView>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstItem="XVU-sN-nrB" firstAttribute="leading" secondItem="JB9-rO-hab" secondAttribute="leading" constant="2" id="0kS-dh-mmq"/>
-                                            <constraint firstAttribute="bottom" secondItem="XVU-sN-nrB" secondAttribute="bottom" constant="2" id="UCg-Kk-1O8"/>
-                                            <constraint firstAttribute="trailing" secondItem="XVU-sN-nrB" secondAttribute="trailing" constant="2" id="eGe-NT-RDa"/>
-                                            <constraint firstItem="XVU-sN-nrB" firstAttribute="top" secondItem="JB9-rO-hab" secondAttribute="top" constant="2" id="wKx-4z-fol"/>
-                                        </constraints>
-                                    </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UzI-sm-7wI">
                                         <rect key="frame" x="194" y="17" width="150" height="30"/>
                                         <subviews>
@@ -269,7 +249,6 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="JB9-rO-hab" firstAttribute="centerY" secondItem="spA-04-Kff" secondAttribute="centerY" id="3jW-eo-aHs"/>
                                     <constraint firstItem="Xbh-7r-XUy" firstAttribute="trailing" secondItem="UzI-sm-7wI" secondAttribute="trailing" id="8Zc-RF-5kn"/>
                                     <constraint firstAttribute="height" constant="64" id="LPq-jb-T7n"/>
                                     <constraint firstItem="UzI-sm-7wI" firstAttribute="centerY" secondItem="spA-04-Kff" secondAttribute="centerY" id="Law-Tb-DJm"/>
@@ -277,7 +256,6 @@
                                     <constraint firstAttribute="trailing" secondItem="UzI-sm-7wI" secondAttribute="trailing" constant="20" id="cVN-fa-ZU6"/>
                                     <constraint firstItem="Xbh-7r-XUy" firstAttribute="top" secondItem="spA-04-Kff" secondAttribute="top" id="gvD-Es-uqd"/>
                                     <constraint firstItem="zk2-bm-E2u" firstAttribute="leading" secondItem="spA-04-Kff" secondAttribute="leading" constant="-17" id="sc9-KC-0TD"/>
-                                    <constraint firstAttribute="trailing" secondItem="JB9-rO-hab" secondAttribute="trailing" constant="20" id="wiZ-af-lE0"/>
                                     <constraint firstItem="Xbh-7r-XUy" firstAttribute="leading" secondItem="spA-04-Kff" secondAttribute="leading" constant="20" id="ydG-Lq-q7r"/>
                                 </constraints>
                             </view>
@@ -400,23 +378,6 @@
                 <outlet property="btnShield" destination="zk2-bm-E2u" id="1TC-aq-BlA"/>
                 <outlet property="detailView" destination="uIG-Od-99L" id="AKD-jD-ZrA"/>
                 <outlet property="effectView" destination="r5L-uL-wdr" id="fD3-27-V9y"/>
-                <outlet property="icC1" destination="bSR-Fk-iaD" id="x86-Re-tdv"/>
-                <outlet property="icC2" destination="eCn-Lv-oQs" id="3og-R3-ACs"/>
-                <outlet property="icC3" destination="CxA-DQ-dFy" id="kCq-mb-CAP"/>
-                <outlet property="icC4" destination="HgO-JV-3l9" id="KQs-Yd-exD"/>
-                <outlet property="icC5" destination="D7n-7B-eGa" id="YbJ-rK-Fy9"/>
-                <outlet property="icC6" destination="Qfi-pr-SJH" id="mNK-M7-8Uv"/>
-                <outlet property="icC7" destination="m42-HE-jdl" id="ZWZ-Fd-Nz2"/>
-                <outlet property="icV1" destination="6S1-20-lcd" id="29P-em-sHw"/>
-                <outlet property="icV2" destination="hPZ-cK-tYe" id="rpu-ir-xa4"/>
-                <outlet property="icV3" destination="nFf-w7-hTr" id="vhM-eW-b4I"/>
-                <outlet property="icV4" destination="dxp-1m-6Y8" id="KQx-as-pHr"/>
-                <outlet property="icV5" destination="4i9-L2-4da" id="mSV-c4-NR9"/>
-                <outlet property="icV6" destination="YrJ-hq-BD9" id="eVi-DA-KmW"/>
-                <outlet property="icV7" destination="OTU-bV-pZO" id="5pf-GH-nRB"/>
-                <outlet property="iconsStack" destination="XVU-sN-nrB" id="7lB-k9-yhj"/>
-                <outlet property="iconsStackWidth" destination="102-Y2-6Yz" id="WeT-gO-0Du"/>
-                <outlet property="iconsView" destination="JB9-rO-hab" id="83Y-Xk-9QF"/>
                 <outlet property="imgMS" destination="Bfp-Gy-3jx" id="rPu-SU-23V"/>
                 <outlet property="imgSS" destination="RpR-KU-xLK" id="PYE-xN-TVi"/>
                 <outlet property="innerEffectView" destination="R9W-eu-p2j" id="AvY-XX-NSS"/>
@@ -428,6 +389,20 @@
                 <outlet property="trailing2_1" destination="osu-b0-QRK" id="dkU-56-R3d"/>
                 <outlet property="trailing3_2" destination="9XV-cr-8oX" id="fHy-f6-nWJ"/>
                 <outlet property="trailing4_3" destination="r98-V0-Co1" id="Mi3-bU-jCy"/>
+                <outletCollection property="icContainers" destination="bSR-Fk-iaD" collectionClass="NSMutableArray" id="GHU-3m-4j8"/>
+                <outletCollection property="icContainers" destination="eCn-Lv-oQs" collectionClass="NSMutableArray" id="SAq-hd-2Sj"/>
+                <outletCollection property="icContainers" destination="CxA-DQ-dFy" collectionClass="NSMutableArray" id="B8s-oQ-NmQ"/>
+                <outletCollection property="icContainers" destination="HgO-JV-3l9" collectionClass="NSMutableArray" id="9fq-bW-J4N"/>
+                <outletCollection property="icContainers" destination="D7n-7B-eGa" collectionClass="NSMutableArray" id="BZY-hp-gml"/>
+                <outletCollection property="icContainers" destination="Qfi-pr-SJH" collectionClass="NSMutableArray" id="hIq-co-3Ow"/>
+                <outletCollection property="icContainers" destination="m42-HE-jdl" collectionClass="NSMutableArray" id="Ieg-06-lMG"/>
+                <outletCollection property="icImgViews" destination="6S1-20-lcd" collectionClass="NSMutableArray" id="j9e-tD-2li"/>
+                <outletCollection property="icImgViews" destination="hPZ-cK-tYe" collectionClass="NSMutableArray" id="FtH-AF-IRb"/>
+                <outletCollection property="icImgViews" destination="nFf-w7-hTr" collectionClass="NSMutableArray" id="5QZ-o8-nDH"/>
+                <outletCollection property="icImgViews" destination="dxp-1m-6Y8" collectionClass="NSMutableArray" id="407-VH-rec"/>
+                <outletCollection property="icImgViews" destination="4i9-L2-4da" collectionClass="NSMutableArray" id="gdd-1d-nx0"/>
+                <outletCollection property="icImgViews" destination="YrJ-hq-BD9" collectionClass="NSMutableArray" id="d1U-qp-574"/>
+                <outletCollection property="icImgViews" destination="OTU-bV-pZO" collectionClass="NSMutableArray" id="YEG-TU-iaT"/>
             </connections>
             <point key="canvasLocation" x="108.69565217391305" y="-96.428571428571431"/>
         </tableViewCell>
