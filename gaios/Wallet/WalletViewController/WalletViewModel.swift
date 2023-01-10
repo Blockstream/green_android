@@ -35,6 +35,9 @@ class WalletViewModel {
     /// to avoid duplication of observers in account detail
     var reloadAccountView: (() -> Void)?
 
+    /// if no accounts show the layer
+    var welcomeLayerVisibility: (() -> Void)?
+
     /// cell models
     var accountCellModels = [AccountCellModel]() {
         didSet {
@@ -75,7 +78,10 @@ class WalletViewModel {
         wm?.balances(subaccounts: self.subaccounts)
             .done { _ in
                 let models = self.subaccounts.map { AccountCellModel(subaccount: $0) }
-                self.accountCellModels = models
+                if models.count > 0 {
+                    self.accountCellModels = models
+                }
+                self.welcomeLayerVisibility?()
                 self.getAssets()
                 self.getTransactions(max: 10)
             }.catch { err in

@@ -63,6 +63,7 @@ class WalletViewController: UIViewController {
         }
         viewModel.reloadSections = reloadSections
         viewModel.reloadAccountView = reloadAccountView
+        viewModel.welcomeLayerVisibility = welcomeLayerVisibility
         setContent()
         setStyle()
         welcomeLayer.isHidden = true
@@ -104,7 +105,6 @@ class WalletViewController: UIViewController {
         }
         if sections.contains(WalletSection.account) {
             tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
-            welcomeLayer.isHidden = viewModel.accountCellModels.count > 0
         }
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
@@ -211,6 +211,10 @@ class WalletViewController: UIViewController {
         if let vc = navigationController?.viewControllers.last as? AccountViewController {
             vc.reloadFromParent(model)
         }
+    }
+
+    func welcomeLayerVisibility() {
+        welcomeLayer.isHidden = viewModel.accountCellModels.count > 0
     }
 
     func accountDetail(model: AccountCellModel?) {
