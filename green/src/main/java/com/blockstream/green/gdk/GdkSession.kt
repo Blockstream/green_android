@@ -417,27 +417,27 @@ class GdkSession constructor(
         )
     }
 
-    fun networks(isTestnet: Boolean, isHardware: Boolean): List<Network> {
+    fun networks(isTestnet: Boolean): List<Network> {
         return if (isTestnet) {
             listOfNotNull(
                 networks.testnetBitcoinElectrum,
                 networks.testnetBitcoinGreen,
-                networks.testnetLiquidElectrum.takeIf { !isHardware },
+                networks.testnetLiquidElectrum,
                 networks.testnetLiquidGreen
             )
         } else {
             listOfNotNull(
                 networks.bitcoinElectrum,
                 networks.bitcoinGreen,
-                networks.liquidElectrum.takeIf { !isHardware }, // Liquid electrum is not yet supported for hww
+                networks.liquidElectrum,
                 networks.liquidGreen
             )
         }
     }
 
-    private fun initGdkSessions(initNetworks: List<Network>?, isHardware: Boolean) {
+    private fun initGdkSessions(initNetworks: List<Network>?) {
         if (initNetworks.isNullOrEmpty()) {
-            networks(isTestnet, isHardware).forEach {
+            networks(isTestnet).forEach {
                 gdkSession(it)
             }
         } else {
@@ -448,12 +448,12 @@ class GdkSession constructor(
         }
     }
 
-    fun connect(network: Network, initNetworks: List<Network>? = null, isHardware: Boolean = false): List<Network> {
+    fun connect(network: Network, initNetworks: List<Network>? = null): List<Network> {
         defaultNetworkOrNull = network
 
         disconnect()
 
-        initGdkSessions(initNetworks = initNetworks, isHardware = isHardware)
+        initGdkSessions(initNetworks = initNetworks)
 
         return runBlocking {
             gdkSessions.map {
@@ -840,26 +840,15 @@ class GdkSession constructor(
     ): LoginData {
         val lastUsedNetwork = networks.getNetworkById(wallet.activeNetwork)
 
-        val initNetworks = if(device.isTrezor){
-            if(wallet.isTestnet){
-                listOf(networks.testnetBitcoinElectrum, networks.testnetBitcoinGreen)
-            }else{
-                listOf(networks.bitcoinElectrum, networks.bitcoinGreen)
-            }
+        val supportedNetworks = networks(wallet.isTestnet)
+
+        val initNetworks = if (device.isTrezor) {
+            supportedNetworks.filter { it.isBitcoin }
+        } else if (device.isLedger) {
+            // Ledger can operate only into a single network but both policies are supported
+            supportedNetworks.filter { it.isBitcoin == lastUsedNetwork.isBitcoin && !(it.isSinglesig && it.isLiquid) }
         } else {
-            // Jade or Ledger
-            if(wallet.isTestnet){
-                listOf(networks.testnetBitcoinElectrum, networks.testnetBitcoinGreen, networks.testnetLiquidGreen)
-            }else{
-                listOf(networks.bitcoinElectrum, networks.bitcoinGreen, networks.liquidGreen)
-            }.let {
-                if(device.isLedger){
-                    // Ledger can operate only into a single network but both policies are supported
-                    it.filter { it.isBitcoin == lastUsedNetwork.isBitcoin }
-                }else{
-                    it
-                }
-            }
+            supportedNetworks
         }
 
         return loginWithLoginCredentials(
@@ -896,7 +885,6 @@ class GdkSession constructor(
         val connectedNetworks = connect(
             network = prominentNetwork,
             initNetworks = initNetworks,
-            isHardware = hardwareWalletResolver != null
         )
 
         device?.deviceState?.onEach {

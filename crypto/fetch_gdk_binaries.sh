@@ -21,9 +21,9 @@ _EOF_
 NAME="gdk-android-jni"
 TARBALL="${NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.0.58.post2"
+TAGNAME="release_0.0.59"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="44ee148c37b24ae8f0d1853b1c071cca9cc03a4856ef270573c28e2e263bf85b"
+SHA256="99a45f1544e7da77631f5dd6a69d371f925f311dba9e061cbc3a68c3d85e0bcc"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
@@ -104,8 +104,8 @@ rm ${TARBALL}
 
 # Move the libraries and Java wrapper where we need them
 mv ${NAME}/lib/ ${CRYPTO_MODULE_ROOT}/src/main/jniLibs/
-mv ${NAME}/java/com/blockstream/libgreenaddress/GDK.java ${GDK_JAVA_DIR}/libgreenaddress/GDK.java
-mv ${NAME}/java/com/blockstream/libwally/Wally.java ${GDK_JAVA_DIR}/libwally/Wally.java
+mv ${NAME}/share/java/com/blockstream/libgreenaddress/GDK.java ${GDK_JAVA_DIR}/libgreenaddress/GDK.java
+mv ${NAME}/share/java/com/blockstream/libwally/Wally.java ${GDK_JAVA_DIR}/libwally/Wally.java
 
 # Cleanup
 rm -fr $NAME

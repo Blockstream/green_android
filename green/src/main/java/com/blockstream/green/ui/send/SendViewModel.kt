@@ -351,7 +351,7 @@ class SendViewModel @AssistedInject constructor(
     }
 
     // This method helps between differences between multisig/singlesig returned values
-    private fun getSendAmountCompat(index: Int, assetId: String, tx: CreateTransaction) = if (network.isSinglesig) tx.addressees[index].satoshi else tx.satoshi[assetId]
+    private fun getSendAmountCompat(index: Int, assetId: String, tx: CreateTransaction) = tx.satoshi[assetId]
 
 
     private fun checkTransaction(userInitiated: Boolean = false, finalCheckBeforeContinue: Boolean = false) {

@@ -65,7 +65,7 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
             val isBitcoin = assetId == BTC_POLICY_ASSET
 
             // Check if singlesig networks are available in this session
-            if (!isAmp && ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null && !wallet.isHardware))) {
+            if (!isAmp && ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null))) {
                 list += AccountTypeListItem(AccountType.BIP49_SEGWIT_WRAPPED)
 
                 if (showAdvanced) {

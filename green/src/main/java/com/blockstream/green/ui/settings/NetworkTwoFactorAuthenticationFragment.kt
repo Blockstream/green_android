@@ -186,7 +186,11 @@ class NetworkTwoFactorAuthenticationFragment :
             }
 
         fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
+            // Recovery tool
             if(session.walletExistsAndIsUnlocked(network)){
+                openBrowser(settingsManager.getApplicationSettings(), Urls.RECOVERY_TOOL)
+            }else{
+                // 2FA Reset
                 session.getTwoFactorReset(network)?.also {
                     TwoFactorResetBottomSheetDialogFragment.show(
                         network,
@@ -194,8 +198,6 @@ class NetworkTwoFactorAuthenticationFragment :
                         childFragmentManager
                     )
                 }
-            }else{
-                openBrowser(settingsManager.getApplicationSettings(), Urls.RECOVERY_TOOL)
             }
         }
 

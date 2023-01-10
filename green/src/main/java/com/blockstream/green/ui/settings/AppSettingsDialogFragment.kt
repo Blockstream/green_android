@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.settings
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +7,10 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
+import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
-import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.utils.isDevelopmentFlavor
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
@@ -22,15 +19,11 @@ import mu.KLogging
 class AppSettingsDialogFragment : AbstractBottomSheetDialogFragment<DialogAppSettingsBottomSheetBinding>() {
     override val screenName = "AppSettings"
 
+    override val expanded: Boolean = true
+
     private val viewModel: AppSettingsViewModel by viewModels()
 
     override fun inflate(layoutInflater: LayoutInflater) = DialogAppSettingsBottomSheetBinding.inflate(layoutInflater)
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
-        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        return dialog
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

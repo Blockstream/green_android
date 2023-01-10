@@ -71,7 +71,11 @@ class GdkBridge constructor(
     init {
         gdk.init(
             JsonConverter(isDevelopment, !BuildConfig.DEBUG, extraLogger),
-            InitConfig(datadir = dataDir.absolutePath, logLevel = if (BuildConfig.DEBUG) "debug" else "none")
+            InitConfig(
+                datadir = dataDir.absolutePath,
+                logLevel = if (BuildConfig.DEBUG) "debug" else "none",
+                enableSinglesigLiquidHWW = true
+            )
         )
         wally.init(0, randomBytes(KotlinWally.WALLY_SECP_RANDOMIZE_LEN))
 

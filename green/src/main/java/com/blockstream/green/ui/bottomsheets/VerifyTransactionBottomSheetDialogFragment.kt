@@ -17,6 +17,8 @@ class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragmen
 
     override val screenName = "VerifyTransaction"
 
+    override val expanded: Boolean = true
+
     override fun inflate(layoutInflater: LayoutInflater) = TransactionVerifyAddressBottomSheetBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

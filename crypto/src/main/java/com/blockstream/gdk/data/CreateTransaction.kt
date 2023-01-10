@@ -4,8 +4,6 @@ import com.blockstream.gdk.GAJson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
 
 @Serializable
 data class CreateTransaction constructor(
@@ -25,31 +23,19 @@ data class CreateTransaction constructor(
 ) : GAJson<CreateTransaction>() {
     override val keepJsonElement = true
 
-    fun utxoViews(network: Network, showChangeOutputs: Boolean): List<UtxoView> {
+    fun utxoViews(showChangeOutputs: Boolean): List<UtxoView> {
         val outputs = outputs.filter {
             !it.address.isNullOrBlank()
         }
 
-        return if(network.isMultisig || (network.isSinglesig && network.isBitcoin)) {
-            outputs.filter {
-                if (showChangeOutputs || isSweep) {
-                    true
-                } else {
-                    !it.isChange
-                }
-            }.map {
-                UtxoView.fromOutput(it)
+        return outputs.filter {
+            if (showChangeOutputs || isSweep) {
+                true
+            } else {
+                !it.isChange
             }
-        }else{
-            // Temp until create_tx singlesig/electrum issues will be addressed by !980
-            addressees.map {
-                UtxoView(
-                    address = it.address,
-                    assetId = it.assetId,
-                    satoshi = it.satoshi,
-                    isChange = false,
-                )
-            }
+        }.map {
+            UtxoView.fromOutput(it)
         }
     }
 
