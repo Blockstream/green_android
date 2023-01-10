@@ -345,7 +345,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch AccountSection(rawValue: indexPath.section) {
-        case .account, .assets:
+        case .account:
             return nil
         default:
             return indexPath
@@ -364,7 +364,16 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                 UIApplication.shared.open(url)
             }
         case .assets:
-            break
+            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
+                if let model = viewModel?.assetCellModels[indexPath.row] {
+                    vc.asset = model.asset
+                    vc.tag = model.asset?.assetId ?? ""
+                    vc.satoshi = model.satoshi
+                }
+                vc.modalPresentationStyle = .overFullScreen
+                present(vc, animated: false, completion: nil)
+            }
         case .transaction:
             let transaction = viewModel?.cachedTransactions[indexPath.row]
             let storyboard = UIStoryboard(name: "Transaction", bundle: nil)

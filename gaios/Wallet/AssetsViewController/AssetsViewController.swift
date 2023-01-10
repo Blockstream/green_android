@@ -86,11 +86,16 @@ extension AssetsViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if let asset = vm.getAsset(at: indexPath) {
-//            // pass back the value
-//            delegate?.didSelectAsset(asset)
-//            dismiss(animated: true)
-//        }
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
+            if let model = viewModel?.assetCellModelsFilter[indexPath.row] {
+                vc.asset = model.asset
+                vc.tag = model.asset?.assetId ?? ""
+                vc.satoshi = model.satoshi
+            }
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
     }
 }
 
