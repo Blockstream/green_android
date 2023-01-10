@@ -64,6 +64,9 @@ class WalletViewController: UIViewController {
         viewModel.reloadSections = reloadSections
         viewModel.reloadAccountView = reloadAccountView
         viewModel.welcomeLayerVisibility = welcomeLayerVisibility
+        viewModel.preselectAccount = {[weak self] idx in
+            self?.sIdx = idx
+        }
         setContent()
         setStyle()
         welcomeLayer.isHidden = true
@@ -765,6 +768,7 @@ extension WalletViewController: DialogListViewControllerDelegate {
 }
 extension WalletViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
-        refresh()
+        viewModel.onCreateAccount(wallet)
+        // refresh sIdx -> new value
     }
 }

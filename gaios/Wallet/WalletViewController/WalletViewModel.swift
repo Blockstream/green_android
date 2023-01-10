@@ -38,6 +38,9 @@ class WalletViewModel {
     /// if no accounts show the layer
     var welcomeLayerVisibility: (() -> Void)?
 
+    /// expandNewAccount
+    var preselectAccount: ((Int) -> Void)?
+
     /// cell models
     var accountCellModels = [AccountCellModel]() {
         didSet {
@@ -73,12 +76,17 @@ class WalletViewModel {
         self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountsManager.shared.current?.networkName)
     }
 
-    func loadSubaccounts() {
+    func loadSubaccounts(_ newAccount: WalletItem? = nil) {
         cachedSubaccounts = self.subaccounts
         wm?.balances(subaccounts: self.subaccounts)
             .done { _ in
                 let models = self.subaccounts.map { AccountCellModel(subaccount: $0) }
                 if models.count > 0 {
+                    if let newAccount = newAccount {
+                        if let idx = models.firstIndex(where: {$0.account == newAccount}) {
+                            self.preselectAccount?(idx)
+                        }
+                    }
                     self.accountCellModels = models
                 }
                 self.welcomeLayerVisibility?()
@@ -226,5 +234,9 @@ class WalletViewModel {
             break
         }
         reloadAlertCards()
+    }
+
+    func onCreateAccount(_ wallet: WalletItem) {
+        loadSubaccounts(wallet)
     }
 }
