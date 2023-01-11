@@ -715,7 +715,7 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KnB-mU-ZyA" userLabel="Next">
-                                <rect key="frame" x="20" y="1261" width="374" height="50"/>
+                                <rect key="frame" x="25" y="1261" width="364" height="50"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="WDb-hS-pjI"/>
@@ -734,8 +734,8 @@
                         <constraints>
                             <constraint firstItem="Rd6-4C-EXh" firstAttribute="bottom" secondItem="KnB-mU-ZyA" secondAttribute="bottom" constant="20" id="8dG-KR-iCp"/>
                             <constraint firstItem="KnB-mU-ZyA" firstAttribute="top" secondItem="hyj-q6-LHm" secondAttribute="bottom" constant="20" id="Kcv-7b-TiM"/>
-                            <constraint firstItem="KnB-mU-ZyA" firstAttribute="leading" secondItem="Rd6-4C-EXh" secondAttribute="leading" constant="20" id="UI8-lH-aDr"/>
-                            <constraint firstItem="Rd6-4C-EXh" firstAttribute="trailing" secondItem="KnB-mU-ZyA" secondAttribute="trailing" constant="20" id="iWU-z2-RTM"/>
+                            <constraint firstItem="KnB-mU-ZyA" firstAttribute="leading" secondItem="Rd6-4C-EXh" secondAttribute="leading" constant="25" id="UI8-lH-aDr"/>
+                            <constraint firstItem="Rd6-4C-EXh" firstAttribute="trailing" secondItem="KnB-mU-ZyA" secondAttribute="trailing" constant="25" id="iWU-z2-RTM"/>
                             <constraint firstItem="hyj-q6-LHm" firstAttribute="top" secondItem="Rd6-4C-EXh" secondAttribute="top" id="lN9-fj-dcO"/>
                             <constraint firstItem="Rd6-4C-EXh" firstAttribute="trailing" secondItem="hyj-q6-LHm" secondAttribute="trailing" id="rI5-kd-MIr"/>
                             <constraint firstItem="hyj-q6-LHm" firstAttribute="leading" secondItem="Rd6-4C-EXh" secondAttribute="leading" id="wdP-Oz-ylZ"/>
