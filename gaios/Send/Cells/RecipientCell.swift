@@ -185,7 +185,7 @@ class RecipientCell: UITableViewCell {
         if inputType == .sweep {
             lblAvailableFunds.isHidden = true
             btnSendAll.isHidden = true
-            btnConvert.isHidden = true
+//            btnConvert.isHidden = true
             btnPasteAmount.isUserInteractionEnabled = false
             btnCancelAmount.isUserInteractionEnabled = false
             amountFieldIsEnabled(false)
