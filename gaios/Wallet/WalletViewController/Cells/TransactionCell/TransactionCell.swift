@@ -52,6 +52,13 @@ class TransactionCell: UITableViewCell {
         addStackRow(MultiLabelViewModel(txtLeft: model.statusUI().label,
                                         txtRight: model.subaccount?.localizedName() ?? "",
                                         style: model.statusUI().style))
+
+        if !model.tx.memo.isEmpty {
+            addStackRow(MultiLabelViewModel(txtLeft: model.tx.memo,
+                                            txtRight: "",
+                                            style: .simple))
+        }
+
         progressWidth.constant = (UIScreen.main.bounds.width - 50.0) * (model.statusUI().progress ?? 0.0)
 //        let unconf = model.statusUI().style == .unconfirmed
 //        imgView.isHidden = unconf

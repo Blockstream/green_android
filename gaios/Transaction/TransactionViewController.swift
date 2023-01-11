@@ -8,9 +8,15 @@ enum TransactionSection: Int, CaseIterable {
     case detail = 3
 }
 
+protocol TransactionViewControllerDelegate: AnyObject {
+    func onMemoEdit()
+}
+
 class TransactionViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
+
+    weak var delegate: TransactionViewControllerDelegate?
 
     var wallet: WalletItem!
     var transaction: Transaction!
@@ -432,6 +438,7 @@ extension TransactionViewController: DialogNoteViewControllerDelegate {
         Guarantee().map(on: bgq) { _ in
             try? self.wallet.session?.session?.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
             self.transaction.memo = note
+            self.delegate?.onMemoEdit()
             }.ensure {
                 self.stopAnimating()
             }.done {

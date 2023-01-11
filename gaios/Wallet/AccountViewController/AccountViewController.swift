@@ -380,6 +380,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController, let account = transaction?.subaccountItem {
                 vc.transaction = transaction
                 vc.wallet = account
+                vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
         default:
@@ -542,5 +543,11 @@ extension AccountViewController: DialogWalletNameViewControllerDelegate {
         rename(name: name)
     }
     func didCancel() {
+    }
+}
+
+extension AccountViewController: TransactionViewControllerDelegate {
+    func onMemoEdit() {
+        viewModel.getTransactions(restart: true)
     }
 }
