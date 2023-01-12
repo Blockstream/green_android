@@ -2,6 +2,7 @@ import UIKit
 
 class WalletListCell: UITableViewCell {
 
+    @IBOutlet weak var bg: UIView!
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var iconSecurityType: UIImageView!
@@ -12,7 +13,7 @@ class WalletListCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        bg.cornerRadius = 7.0
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

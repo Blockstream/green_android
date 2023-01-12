@@ -69,7 +69,7 @@
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="mwS-yc-07h"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="UTQ-Qj-0YR" firstAttribute="top" secondItem="aed-43-hVZ" secondAttribute="bottom" constant="10" id="Byf-Jo-FKA"/>
                             <constraint firstItem="aed-43-hVZ" firstAttribute="top" secondItem="xqN-bP-Poi" secondAttribute="bottom" constant="60" id="C5u-j2-G4U"/>
@@ -638,10 +638,13 @@
         <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>
         <image name="logo_big" width="90" height="110"/>
         <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
-            <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gBlackBg">
+            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
