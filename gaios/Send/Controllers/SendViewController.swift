@@ -15,6 +15,7 @@ class SendViewController: KeyboardViewController {
     @IBOutlet weak var btnNext: UIButton!
 
     var wallet: WalletItem!
+    var accounts: [WalletItem]?
     var fixedWallet: Bool = false
     var fixedAsset: Bool = false
     var transaction: Transaction?
@@ -491,24 +492,30 @@ extension SendViewController: RecipientCellDelegate {
                 navigationController?.pushViewController(vc, animated: true)
             }
         } else {
-            // show assets and account selection
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
-                var balance = [String: Int64]()
-                WalletManager.current?.subaccounts.forEach { subaccount in
-                    let satoshi = subaccount.satoshi ?? [:]
-                    satoshi.forEach {
-                        if let amount = balance[$0.0] {
-                            balance[$0.0] = amount + $0.1
-                        } else {
-                            balance[$0.0] = $0.1
-                        }
-                    }
-                }
-                let assets = balance.keys.compactMap { registry?.info(for: $0) }
-                vc.viewModel = AssetExpandableSelectViewModel(assets: assets, enableAnyAsset: false, onlyFunded: true)
+            guard let accounts = accounts else { return }
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountAssetViewController") as? AccountAssetViewController {
+                vc.viewModel = AccountAssetViewModel(accounts: accounts)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
+//            // show assets and account selection
+//            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
+//                var balance = [String: Int64]()
+//                WalletManager.current?.subaccounts.forEach { subaccount in
+//                    let satoshi = subaccount.satoshi ?? [:]
+//                    satoshi.forEach {
+//                        if let amount = balance[$0.0] {
+//                            balance[$0.0] = amount + $0.1
+//                        } else {
+//                            balance[$0.0] = $0.1
+//                        }
+//                    }
+//                }
+//                let assets = balance.keys.compactMap { registry?.info(for: $0) }
+//                vc.viewModel = AssetExpandableSelectViewModel(assets: assets, enableAnyAsset: false, onlyFunded: true)
+//                vc.delegate = self
+//                navigationController?.pushViewController(vc, animated: true)
+//            }
         }
     }
 
@@ -581,5 +588,11 @@ extension SendViewController: AssetExpandableSelectViewControllerDelegate {
     func didSelectReceiver(assetId: String, account: WalletItem) {
         wallet = account
         selectAsset(assetId: assetId, index: nil)
+    }
+}
+extension SendViewController: AccountAssetViewControllerDelegate {
+    func didSelectAccountAsset(account: WalletItem, asset: AssetInfo) {
+        wallet = account
+        selectAsset(assetId: asset.assetId, index: nil)
     }
 }

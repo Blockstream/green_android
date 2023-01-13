@@ -320,6 +320,43 @@
             </objects>
             <point key="canvasLocation" x="3185" y="2240"/>
         </scene>
+        <!--Account Asset View Controller-->
+        <scene sceneID="uGZ-NQ-Mac">
+            <objects>
+                <viewController storyboardIdentifier="AccountAssetViewController" id="Px9-eu-6YL" customClass="AccountAssetViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Nhk-N8-NYW">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="BxQ-fP-LmZ">
+                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="Px9-eu-6YL" id="htU-NB-DmI"/>
+                                    <outlet property="delegate" destination="Px9-eu-6YL" id="ZdJ-xR-yW9"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="q1W-f8-me2"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
+                        <constraints>
+                            <constraint firstItem="BxQ-fP-LmZ" firstAttribute="leading" secondItem="q1W-f8-me2" secondAttribute="leading" id="204-Lu-1vH"/>
+                            <constraint firstItem="q1W-f8-me2" firstAttribute="bottom" secondItem="BxQ-fP-LmZ" secondAttribute="bottom" id="3UI-9d-hnC"/>
+                            <constraint firstItem="BxQ-fP-LmZ" firstAttribute="top" secondItem="q1W-f8-me2" secondAttribute="top" id="4QB-aU-Rsp"/>
+                            <constraint firstItem="q1W-f8-me2" firstAttribute="trailing" secondItem="BxQ-fP-LmZ" secondAttribute="trailing" id="Wvy-bo-iCy"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="9eh-or-4oW">
+                        <barButtonItem key="backBarButtonItem" title=" " id="9lx-sS-00g"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="BxQ-fP-LmZ" id="iF6-7e-Czf"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zht-uU-fz6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3869" y="2239"/>
+        </scene>
     </scenes>
     <resources>
         <image name="bg_actions" width="375" height="192"/>

@@ -17,6 +17,7 @@ class RecipientCell: UITableViewCell {
     @IBOutlet weak var removeRecipientView: UIView!
     @IBOutlet weak var lblRecipientNum: UILabel!
 
+    @IBOutlet weak var lblAccountAsset: UILabel!
     @IBOutlet weak var lblAddressHint: UILabel!
     @IBOutlet weak var addressContainer: UIView!
     @IBOutlet weak var addressTextView: UITextView!
@@ -88,6 +89,7 @@ class RecipientCell: UITableViewCell {
     ) {
         lblRecipientNum.text = "#\(index + 1)"
         removeRecipientView.isHidden = !isMultiple
+        lblAccountAsset.text = "Asset & Account"
         self.index = index
         self.recipient = recipient
         self.addressTextView.text = recipient.address

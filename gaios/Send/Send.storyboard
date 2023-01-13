@@ -67,8 +67,14 @@
                                                                 </view>
                                                             </subviews>
                                                         </stackView>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_account_asset" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CEI-Ji-czX">
+                                                            <rect key="frame" x="0.0" y="50" width="364" height="17"/>
+                                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                                            <color key="textColor" white="1" alpha="0.40882871240000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="e2E-tA-U3u">
-                                                            <rect key="frame" x="0.0" y="55.000000000000007" width="364" height="72.666666666666686"/>
+                                                            <rect key="frame" x="0.0" y="74" width="364" height="72.666666666666686"/>
                                                             <subviews>
                                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ro3-97-Fy7">
                                                                     <rect key="frame" x="72" y="19.999999999999996" width="242" height="32.666666666666657"/>
@@ -132,7 +138,7 @@
                                                             </constraints>
                                                         </view>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aE9-Ho-Ddo">
-                                                            <rect key="frame" x="0.0" y="150.33333333333334" width="364" height="111.00000000000003"/>
+                                                            <rect key="frame" x="0.0" y="169.33333333333334" width="364" height="111.00000000000003"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_recipient_address" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gaa-pN-xMe">
                                                                     <rect key="frame" x="0.0" y="10" width="364" height="17"/>
@@ -207,7 +213,7 @@
                                                                     </constraints>
                                                                 </view>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_address_error" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QRe-0Q-BLp">
-                                                                    <rect key="frame" x="0.0" y="95" width="364" height="14.333333333333329"/>
+                                                                    <rect key="frame" x="0.0" y="94.999999999999972" width="364" height="14.333333333333329"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                                     <color key="textColor" name="errorRed"/>
                                                                     <nil key="highlightedColor"/>
@@ -228,7 +234,7 @@
                                                             </constraints>
                                                         </view>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WeS-5F-sjN">
-                                                            <rect key="frame" x="0.0" y="271.33333333333331" width="364" height="109"/>
+                                                            <rect key="frame" x="0.0" y="290.33333333333331" width="364" height="109"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_amount" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bl3-Lb-I1r">
                                                                     <rect key="frame" x="0.0" y="0.0" width="78" height="17"/>
@@ -347,16 +353,16 @@
                                                             </constraints>
                                                         </view>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QHL-Va-Ceo">
-                                                            <rect key="frame" x="0.0" y="380.33333333333331" width="364" height="70.333333333333314"/>
+                                                            <rect key="frame" x="0.0" y="399.33333333333331" width="364" height="51.333333333333314"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_available_funds" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eRn-3E-vJK">
-                                                                    <rect key="frame" x="0.0" y="26.666666666666686" width="127.66666666666667" height="17"/>
+                                                                    <rect key="frame" x="0.0" y="17" width="127.66666666666667" height="17"/>
                                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                                     <color key="textColor" white="1" alpha="0.41245888157894739" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="THB-xG-rQM">
-                                                                    <rect key="frame" x="255" y="21" width="109" height="28"/>
+                                                                    <rect key="frame" x="255" y="11.666666666666686" width="109" height="28"/>
                                                                     <inset key="contentEdgeInsets" minX="10" minY="5" maxX="10" maxY="5"/>
                                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                     <state key="normal" title="btn_send_all"/>
@@ -382,16 +388,19 @@
                                                     <constraints>
                                                         <constraint firstAttribute="bottom" secondItem="QHL-Va-Ceo" secondAttribute="bottom" constant="6.5" id="1Dl-O8-YpJ"/>
                                                         <constraint firstItem="aE9-Ho-Ddo" firstAttribute="top" secondItem="e2E-tA-U3u" secondAttribute="bottom" constant="22.5" id="2Zp-Kl-u53"/>
+                                                        <constraint firstItem="CEI-Ji-czX" firstAttribute="leading" secondItem="ipc-a1-bzl" secondAttribute="leading" id="6oP-Tk-ZIv"/>
                                                         <constraint firstItem="e2E-tA-U3u" firstAttribute="leading" secondItem="ipc-a1-bzl" secondAttribute="leading" id="DR4-hi-Gmm"/>
                                                         <constraint firstItem="PsX-S4-Hib" firstAttribute="leading" secondItem="ipc-a1-bzl" secondAttribute="leading" id="MJT-EF-dBN"/>
                                                         <constraint firstItem="PsX-S4-Hib" firstAttribute="top" secondItem="ipc-a1-bzl" secondAttribute="top" constant="15" id="OII-hh-zhF"/>
-                                                        <constraint firstItem="e2E-tA-U3u" firstAttribute="top" secondItem="PsX-S4-Hib" secondAttribute="bottom" constant="10" id="Olx-KW-Wqm"/>
                                                         <constraint firstAttribute="trailing" secondItem="QHL-Va-Ceo" secondAttribute="trailing" id="PUn-oS-uGu"/>
                                                         <constraint firstItem="WeS-5F-sjN" firstAttribute="top" secondItem="aE9-Ho-Ddo" secondAttribute="bottom" constant="10" id="aOd-LN-GRA"/>
+                                                        <constraint firstItem="CEI-Ji-czX" firstAttribute="top" secondItem="PsX-S4-Hib" secondAttribute="bottom" constant="5" id="axF-ho-MvB"/>
                                                         <constraint firstItem="aE9-Ho-Ddo" firstAttribute="leading" secondItem="ipc-a1-bzl" secondAttribute="leading" id="bhU-i5-Sg9"/>
+                                                        <constraint firstItem="e2E-tA-U3u" firstAttribute="top" secondItem="CEI-Ji-czX" secondAttribute="bottom" constant="7" id="gWr-6l-fvG"/>
                                                         <constraint firstItem="WeS-5F-sjN" firstAttribute="leading" secondItem="ipc-a1-bzl" secondAttribute="leading" id="iOs-kU-R6s"/>
                                                         <constraint firstAttribute="trailing" secondItem="WeS-5F-sjN" secondAttribute="trailing" id="l5I-z8-4kg"/>
                                                         <constraint firstItem="QHL-Va-Ceo" firstAttribute="top" secondItem="WeS-5F-sjN" secondAttribute="bottom" id="m2A-8G-2x1"/>
+                                                        <constraint firstAttribute="trailing" secondItem="CEI-Ji-czX" secondAttribute="trailing" id="oQl-A1-r4A"/>
                                                         <constraint firstAttribute="trailing" secondItem="PsX-S4-Hib" secondAttribute="trailing" id="sPu-q8-ysh"/>
                                                         <constraint firstItem="QHL-Va-Ceo" firstAttribute="leading" secondItem="ipc-a1-bzl" secondAttribute="leading" id="suB-vd-pI9"/>
                                                         <constraint firstAttribute="trailing" secondItem="aE9-Ho-Ddo" secondAttribute="trailing" id="tT9-iq-azO"/>
@@ -425,6 +434,7 @@
                                             <outlet property="btnSendAll" destination="THB-xG-rQM" id="O0b-RQ-e0l"/>
                                             <outlet property="iconAsset" destination="Vrt-eJ-FXV" id="BBu-6i-OzM"/>
                                             <outlet property="lblAccount" destination="y3c-QA-td0" id="KtR-8E-ZIC"/>
+                                            <outlet property="lblAccountAsset" destination="CEI-Ji-czX" id="yg9-DI-Hnp"/>
                                             <outlet property="lblAddressError" destination="QRe-0Q-BLp" id="oAg-BN-hhR"/>
                                             <outlet property="lblAddressHint" destination="gaa-pN-xMe" id="vXJ-yz-Jwf"/>
                                             <outlet property="lblAmountError" destination="vJe-SN-eWL" id="OL7-4J-dBd"/>
