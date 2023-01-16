@@ -182,7 +182,7 @@ class WalletViewController: UIViewController {
     func sendfromWallet() {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            let model = viewModel.accountCellModels[sIdx]
+            guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
             vc.wallet = model.account
             vc.fixedWallet = false
             vc.inputType = viewModel.watchOnly ? .sweep : .transaction
@@ -194,7 +194,7 @@ class WalletViewController: UIViewController {
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveViewController") as? ReceiveViewController {
-            let model = viewModel.accountCellModels[sIdx]
+            guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
             vc.viewModel = ReceiveViewModel(account: model.account,
                                             accounts: viewModel.subaccounts)
             navigationController?.pushViewController(vc, animated: true)
@@ -227,6 +227,7 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
             vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: viewModel.cachedBalance)
+            vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -769,6 +770,10 @@ extension WalletViewController: DialogListViewControllerDelegate {
 extension WalletViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
         viewModel.onCreateAccount(wallet)
-        // refresh sIdx -> new value
+    }
+}
+extension WalletViewController: AccountViewControllerDelegate {
+    func didArchiveAccount() {
+        sIdx = 0
     }
 }

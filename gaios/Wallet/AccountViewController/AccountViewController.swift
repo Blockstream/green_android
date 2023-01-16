@@ -16,6 +16,10 @@ enum AccountPreferences: String, CaseIterable {
     case EnhanceSecurity = "Enhance Security"
 }
 
+protocol AccountViewControllerDelegate: AnyObject {
+    func didArchiveAccount();
+}
+
 class AccountViewController: UIViewController {
 
     enum FooterType {
@@ -32,6 +36,8 @@ class AccountViewController: UIViewController {
     private var footerH: CGFloat = 54.0
     private var cardH: CGFloat = 64.0
     private var cardHc: CGFloat = 184.0
+
+    weak var delegate: AccountViewControllerDelegate?
 
     private var sIdx: Int = 0
 
@@ -185,6 +191,7 @@ class AccountViewController: UIViewController {
             .ensure { self.stopLoader() }
             .done {
                 DropAlert().success(message: "Account Archived")
+                self.delegate?.didArchiveAccount()
                 self.navigationController?.popViewController(animated: true)
             } .catch { err in self.showError(err) }
     }
