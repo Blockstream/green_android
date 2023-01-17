@@ -74,9 +74,9 @@ enum AccountType: String, CaseIterable, Codable, Comparable {
     }
 
     static func < (a: AccountType, b: AccountType) -> Bool {
-        if a == .segWit {
+        if a == .legacy || a == .standard {
             return true
-        } else if b == .segWit {
+        } else if b == .legacy || b == .standard {
             return false
         } else {
            return a.rawValue < b.rawValue
