@@ -28,6 +28,18 @@ class AccountAssetViewModel {
                 }
             }
         }
-        self.accountAssetCellModels = models
+        self.accountAssetCellModels = sort(models)
+    }
+
+    func sort(_ models: [AccountAssetCellModel]) -> [AccountAssetCellModel] {
+        var oModels = models
+        guard let registry = registry else { return oModels }
+        oModels = models.sorted { (lhs, rhs) in
+            if registry.info(for: lhs.asset.assetId) == registry.info(for: rhs.asset.assetId) {
+                return lhs.account < rhs.account
+            }
+            return registry.info(for: lhs.asset.assetId) < registry.info(for: rhs.asset.assetId)
+        }
+        return oModels
     }
 }
