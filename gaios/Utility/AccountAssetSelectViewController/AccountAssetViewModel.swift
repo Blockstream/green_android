@@ -14,14 +14,17 @@ class AccountAssetViewModel {
         var models: [AccountAssetCellModel] = []
 
         accounts.forEach { subaccount in
-            var balance = [String: Int64]()
             let satoshi = subaccount.satoshi ?? [:]
             satoshi.forEach {
+                var balance = [String: Int64]()
                 balance[$0.0] = $0.1
                 let assets: [AssetInfo] = balance.keys.compactMap { registry?.info(for: $0) }
 
                 for asset in assets {
-                    models.append(AccountAssetCellModel(account: subaccount, asset: asset))
+                    models.append(AccountAssetCellModel(account: subaccount,
+                                                        asset: asset,
+                                                        balance: (balance.filter { $0.key == asset.assetId }))
+                    )
                 }
             }
         }

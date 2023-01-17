@@ -45,7 +45,7 @@ class AccountAssetCell: UITableViewCell {
         // isLiquid = account.gdkNetwork.liquid
         // isTest = !account.gdkNetwork.mainnet
 
-        let satoshi = model.account.satoshi?[model.account.gdkNetwork.getFeeAsset()] ?? 0
+        let satoshi = model.balance.first?.value ?? 0
         if let balance = Balance.fromSatoshi(satoshi, asset: model.asset)?.toValue() {
             lblAmount.text = "\(balance.0) \(balance.1)"
         }
