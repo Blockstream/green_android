@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.core.content.edit
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
@@ -24,11 +25,15 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.settings.ApplicationSettings
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppActivity
+import com.blockstream.green.ui.dialogs.CountlyNpsDialogFragment
+import com.blockstream.green.ui.dialogs.CountlySurveyDialogFragment
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
 import com.blockstream.green.utils.toList
 import com.blockstream.green.views.GreenAlertView
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
@@ -39,6 +44,8 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import ly.count.android.sdk.Countly
 import ly.count.android.sdk.CountlyConfig
+import ly.count.android.sdk.ModuleFeedback
+import ly.count.android.sdk.ModuleFeedback.CountlyFeedbackWidget
 import ly.count.android.sdk.RemoteConfigCallback
 import mu.NamedKLogging
 import java.net.URLDecoder
@@ -113,6 +120,7 @@ class Countly constructor(
     private val userProfile = countly.userProfile()
     private val remoteConfig = countly.remoteConfig()
     private val attribution = countly.attribution()
+    private val feedback = countly.feedback()
 
     private var analyticsConsent : Boolean by Delegates.observable(settingsManager.getApplicationSettings().analytics) { _, oldValue, newValue ->
         if(oldValue != newValue){
@@ -179,6 +187,40 @@ class Countly constructor(
                     putString(REFERRER_KEY, referrer)
                 }
             }
+        }
+        updateFeedbackWidget()
+    }
+
+    private val _feedbackWidgetStateFlow = MutableStateFlow<CountlyFeedbackWidget?>(null)
+    val feedbackWidgetStateFlow get() = _feedbackWidgetStateFlow.asStateFlow()
+    val feedbackWidget get() = _feedbackWidgetStateFlow.value
+
+    fun sendFeedbackWidgetData(widget: CountlyFeedbackWidget, data: Map<String, Any>?){
+        feedback.reportFeedbackWidgetManually(widget, null, data)
+        // can't use updateFeedback() as the data are sent async
+        _feedbackWidgetStateFlow.value = null
+    }
+
+    fun getFeedbackWidgetData(widget: CountlyFeedbackWidget, callback: (CountlyWidget?) -> Unit){
+        countly.feedback().getFeedbackWidgetData(widget) { data, _ ->
+            try{
+                callback.invoke(GreenWallet.JsonDeserializer.decodeFromString<CountlyWidget>(data.toString()).also{
+                    it.widget = widget
+                })
+
+                // Set it to null to hide it from UI, this way user can know that this is a temporary FAB
+                _feedbackWidgetStateFlow.value = null
+            }catch (e: Exception){
+                logger.info { data.toString() }
+                e.printStackTrace()
+                callback.invoke(null)
+            }
+        }
+    }
+
+    private fun updateFeedbackWidget(){
+        countly.feedback().getAvailableFeedbackWidgets { countlyFeedbackWidgets, _ ->
+            _feedbackWidgetStateFlow.value = countlyFeedbackWidgets?.firstOrNull()
         }
     }
 

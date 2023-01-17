@@ -1,7 +1,11 @@
 package com.blockstream.green.utils
 
 
+import android.app.Activity
 import android.graphics.drawable.Drawable
+import android.os.Build
+import android.text.Html
+import android.text.Spanned
 import android.text.TextUtils
 import android.util.SparseArray
 import android.view.View
@@ -13,9 +17,13 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
+fun Activity.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
+    Snackbar.make(findViewById(android.R.id.content), text, duration).show()
+}
 
 fun TextInputLayout.endIconCopyMode(pasteListener: (() -> Unit)? = null ) {
     endIconMode = TextInputLayout.END_ICON_CUSTOM
@@ -82,5 +90,14 @@ fun MutableLiveData<Boolean>.boolean() : Boolean = value ?: false
 // Helper fn for Data Binding as the original fn is InlineOnly
 fun String?.isBlank() = isNullOrBlank()
 fun String?.isNotBlank() = !isNullOrBlank()
+
+fun String.fromHtml(): Spanned {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT)
+    } else {
+        @Suppress("DEPRECATION")
+        Html.fromHtml(this)
+    }
+}
 
 inline fun <reified V> SparseArray<V>.toList() = valueIterator().asSequence().toList()

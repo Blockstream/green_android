@@ -34,17 +34,33 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.ui.devices.DeviceInfoBottomSheetDialogFragment
+import com.blockstream.green.ui.dialogs.CountlyNpsDialogFragment
+import com.blockstream.green.ui.dialogs.CountlySurveyDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragment
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.utils.AuthenticationCallback
+import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.getVersionName
+import com.blockstream.green.utils.handleException
+import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.utils.navigate
 import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import ly.count.android.sdk.ModuleFeedback
 import mu.KLogging
 import javax.inject.Inject
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 
 @AndroidEntryPoint
@@ -209,6 +225,25 @@ class MainActivity : AppActivity() {
         binding.buttonUnlock.setOnClickListener {
             showUnlockPrompt()
         }
+
+        combine(countly.feedbackWidgetStateFlow, navController.currentBackStackEntryFlow) { feedback, currentBackStackEntry ->
+             (feedback != null && currentBackStackEntry.destination.id == R.id.overviewFragment)
+        }.distinctUntilChanged().onEach {showDialog ->
+            if(showDialog) {
+                lifecycleScope.launchWhenResumed {
+                    // Delay a bit
+                    delay(1.toDuration(DurationUnit.SECONDS))
+
+                    countly.feedbackWidget?.type.also { type ->
+                        if(type == ModuleFeedback.FeedbackWidgetType.nps){
+                            CountlyNpsDialogFragment.show(supportFragmentManager)
+                        }else if(type == ModuleFeedback.FeedbackWidgetType.survey){
+                            CountlySurveyDialogFragment.show(supportFragmentManager)
+                        }
+                    }
+                }
+            }
+        }.launchIn(lifecycleScope)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
 

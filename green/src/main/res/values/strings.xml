@@ -1136,4 +1136,6 @@
   <string name="id_emergency_recovery_phrase_restore">Emergency Recovery Phrase Restore</string>
   <string name="id_for_any_reason_you_cant">If for any reason you can\'t login into your wallet, you can recover your recovery phrase using your PIN/Biometrics.</string>
   <string name="id_show_recovery_phrase">Show Recovery Phrase</string>
+  <string name="id_submit">Submit</string>
+  <string name="id_not_now">Not Now</string>
 </resources>
