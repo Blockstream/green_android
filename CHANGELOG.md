@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.9.2] - 2023-01-17
+
+### Added
+- Added CSAT forms
+
 ## [3.9.1] - 2022-12-15
 
 ### Fixed
