@@ -193,6 +193,11 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             }.catch { _ in }
         case .ArchievedAccounts:
             openArchivedAccounts()
+        case .WatchOnly:
+            let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlySettingsViewController") as? WatchOnlySettingsViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
         case .none:
             break
         }

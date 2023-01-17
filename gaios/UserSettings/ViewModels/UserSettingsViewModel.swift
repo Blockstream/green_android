@@ -93,7 +93,12 @@ class UserSettingsViewModel {
             subtitle: "",
             section: .General,
             type: .ArchievedAccounts)
-        return [bitcoinDenomination, referenceExchangeRate, archievedAccounts]
+        let watchOnly = UserSettingsItem(
+            title: USItem.WatchOnly.string,
+            subtitle: "",
+            section: .General,
+            type: .WatchOnly)
+        return [bitcoinDenomination, referenceExchangeRate, archievedAccounts, watchOnly]
     }
 
     func getRecovery() -> [UserSettingsItem] {

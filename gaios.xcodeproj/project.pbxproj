@@ -335,6 +335,11 @@
 		8122D7292554848C003F2785 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8122D7282554848C003F2785 /* Promise.swift */; };
 		8124524225D6B0DD00537238 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8124524125D6B0DD00537238 /* Address.swift */; };
 		81268E7C291BC8190079C13D /* AssetAmountList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81268E7B291BC8190079C13D /* AssetAmountList.swift */; };
+		812DBDBA29724E8C002992D6 /* WatchOnlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDB929724E8C002992D6 /* WatchOnlySettings.swift */; };
+		812DBDBC29724F69002992D6 /* WatchOnlySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDBB29724F69002992D6 /* WatchOnlySettingsViewController.swift */; };
+		812DBDBE2972509A002992D6 /* WatchOnlySettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDBD2972509A002992D6 /* WatchOnlySettingsViewModel.swift */; };
+		812DBDC029725F8A002992D6 /* WatchOnlySettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDBF29725F8A002992D6 /* WatchOnlySettingsCellModel.swift */; };
+		812DBDC2297261F1002992D6 /* WatchOnlySettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC1297261F1002992D6 /* WatchOnlySettingsCell.swift */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
 		8158974B2701980700DDF6D4 /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
@@ -780,6 +785,11 @@
 		8122D7282554848C003F2785 /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
 		8124524125D6B0DD00537238 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		81268E7B291BC8190079C13D /* AssetAmountList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAmountList.swift; sourceTree = "<group>"; };
+		812DBDB929724E8C002992D6 /* WatchOnlySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettings.swift; sourceTree = "<group>"; };
+		812DBDBB29724F69002992D6 /* WatchOnlySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettingsViewController.swift; sourceTree = "<group>"; };
+		812DBDBD2972509A002992D6 /* WatchOnlySettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettingsViewModel.swift; sourceTree = "<group>"; };
+		812DBDBF29725F8A002992D6 /* WatchOnlySettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettingsCellModel.swift; sourceTree = "<group>"; };
+		812DBDC1297261F1002992D6 /* WatchOnlySettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettingsCell.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
 		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
@@ -1378,6 +1388,7 @@
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				81837789224E6D4700DC0FB1 /* PgpViewController.swift */,
 				20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */,
+				812DBDBB29724F69002992D6 /* WatchOnlySettingsViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1394,6 +1405,8 @@
 				34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */,
 				81A591A029157B1E001D1A65 /* MultisigSettingsCell.swift */,
 				81A591A229157B32001D1A65 /* MultisigSettingsCellModel.swift */,
+				812DBDC1297261F1002992D6 /* WatchOnlySettingsCell.swift */,
+				812DBDBF29725F8A002992D6 /* WatchOnlySettingsCellModel.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -2101,6 +2114,7 @@
 			children = (
 				81A5919A29156011001D1A65 /* MultisigSettingsViewModel.swift */,
 				81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */,
+				812DBDBD2972509A002992D6 /* WatchOnlySettingsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -2110,6 +2124,7 @@
 			children = (
 				81A5919C2915772E001D1A65 /* MultisigSettings.swift */,
 				3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */,
+				812DBDB929724E8C002992D6 /* WatchOnlySettings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2532,6 +2547,7 @@
 				3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
 				346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */,
+				812DBDBC29724F69002992D6 /* WatchOnlySettingsViewController.swift in Sources */,
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
 				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
 				34477D322771D2600021698B /* RecipientCell.swift in Sources */,
@@ -2561,6 +2577,7 @@
 				345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */,
 				34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */,
 				34A75B64292B6A1E007995D7 /* OnBoardInfoViewModel.swift in Sources */,
+				812DBDBE2972509A002992D6 /* WatchOnlySettingsViewModel.swift in Sources */,
 				34B30F78277C693700D37A3C /* SendConfirmViewController.swift in Sources */,
 				34C67E722924D1B000A50F89 /* AssetExpandableView.swift in Sources */,
 				FF29CA7222374E8B0035F95A /* URL.swift in Sources */,
@@ -2601,6 +2618,7 @@
 				8111485F287891F500C6F030 /* JadeOTA.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
+				812DBDC029725F8A002992D6 /* WatchOnlySettingsCellModel.swift in Sources */,
 				34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */,
 				3420471A291B9AA700EDE945 /* PolicyCellModel.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
@@ -2610,6 +2628,7 @@
 				34204711291B919600EDE945 /* SecuritySelectViewController.swift in Sources */,
 				3491C9942912B4C70063C055 /* AssetsViewModel.swift in Sources */,
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
+				812DBDBA29724E8C002992D6 /* WatchOnlySettings.swift in Sources */,
 				34F980B129151C7500C12D48 /* TransactionCellModel.swift in Sources */,
 				34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */,
 				3447553329098DA000B9C1AF /* WalletViewController.swift in Sources */,
@@ -2655,6 +2674,7 @@
 				FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */,
 				342F98102935145A005876A8 /* DialogEnable2faCellModel.swift in Sources */,
 				3457F4BD2924090400EF33B5 /* AssetExpandableSelectViewController.swift in Sources */,
+				812DBDC2297261F1002992D6 /* WatchOnlySettingsCell.swift in Sources */,
 				81E0B4D725531AD6001C8544 /* TxInputLiquid.swift in Sources */,
 				6DAB5F97235A244B007637CF /* ProgressIndicator.swift in Sources */,
 				81BF4E3222E9E9EA005A04C6 /* LedgerWrapper.swift in Sources */,

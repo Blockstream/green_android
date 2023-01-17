@@ -17,6 +17,7 @@ enum USItem: String, Codable, CaseIterable {
     case BitcoinDenomination = "id_bitcoin_denomination"
     case ReferenceExchangeRate = "id_reference_exchange_rate"
     case ArchievedAccounts = "Archieved accounts"
+    case WatchOnly = "id_watchonly"
 
     case ChangePin = "id_change_pin"
     case LoginWithBiometrics = "id_login_with_biometrics"

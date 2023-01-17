@@ -11,9 +11,12 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
         case satoshi
         case recoveryChainCode = "recovery_chain_code"
         case recoveryPubKey = "recovery_pub_key"
-        case bip44Discovered = "bip44_discovered"
         case recoveryXpub = "recovery_xpub"
         case hidden
+        case bip44Discovered = "bip44_discovered"
+        case coreDescriptors = "core_descriptors"
+        case extendedPubkey = "slip132_extended_pubkey"
+        case userPath = "user_path"
     }
 
     private let name: String
@@ -27,6 +30,9 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     let recoveryXpub: String?
     let hidden: Bool
     var network: String?
+    let coreDescriptors: [String]?
+    let extendedPubkey: String?
+    let userPath: [Int]?
 
     var gdkNetwork: GdkNetwork { getGdkNetwork(network!)}
     var session: SessionManager? { WalletManager.current?.sessions[network ?? ""] }
@@ -37,10 +43,10 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
         }
         switch type {
         case .legacy, .segwitWrapped, .segWit, .taproot:
-            if accountNumber() == 1 {
-                return "\(NSLocalizedString(type.shortNameStringId, comment: "")) Account \(accountNumber())"
+            if accountNumber == 1 {
+                return "\(NSLocalizedString(type.shortNameStringId, comment: "")) Account \(accountNumber)"
             } else {
-                return "\(NSLocalizedString(type.shortNameStringId, comment: "")) \(accountNumber())"
+                return "\(NSLocalizedString(type.shortNameStringId, comment: "")) \(accountNumber)"
             }
         default:
             if pointer == 0 {
@@ -51,16 +57,7 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     }
 
     func localizedHint() -> String {
-        return "\((NSLocalizedString(type.typeStringId, comment: "")).uppercased()) #\(self.accountNumber())"
-    }
-
-    func accountNumber() -> UInt32 {
-        switch type {
-        case .legacy, .segwitWrapped, .segWit, .taproot:
-            return (self.pointer / 16) + 1
-        default:
-            return self.pointer + 1
-        }
+        return "\((NSLocalizedString(type.typeStringId, comment: "")).uppercased()) #\(self.accountNumber)"
     }
 
     var btc: Int64 {
@@ -72,6 +69,17 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
         }
     }
 
+    var bip32Pointer: UInt32 {
+        switch type {
+        case .legacy, .segwitWrapped, .segWit, .taproot:
+            return pointer / 16
+        default:
+            return pointer
+        }
+    }
+
+    var accountNumber: UInt32 { bip32Pointer + 1 }
+    
     static func == (lhs: WalletItem, rhs: WalletItem) -> Bool {
         return lhs.network == rhs.network &&
             lhs.name == rhs.name &&
