@@ -81,13 +81,13 @@ class SecuritySelectViewModel {
             return Promise(error: GaError.GenericError("Invalid session"))
         }
         let cellModel = PolicyCellModel.from(policy: policy)
-        let params = params ?? CreateSubaccountParams(name: cellModel.name,
+        let params = params ?? CreateSubaccountParams(name: uniqueName(cellModel.name),
                                    type: getAccountType(for: policy),
                                    recoveryMnemonic: nil,
                                    recoveryXpub: nil)
         return Guarantee()
             .then { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
-            .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden ?? false } }
+            .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden} }
             .then { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
             .then { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, params: params) }
             .then { res in self.wm.subaccounts().map { _ in res } }
@@ -181,6 +181,12 @@ class SecuritySelectViewModel {
         case .Amp:
             return .amp
         }
+    }
+
+    func uniqueName(_ name: String) -> String {
+        return AccountsManager.shared
+            .getUniqueSubAccountName(subaccounts: wm.subaccounts,
+                                     name: name)
     }
 }
 

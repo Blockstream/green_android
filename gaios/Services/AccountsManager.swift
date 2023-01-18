@@ -183,4 +183,16 @@ class AccountsManager {
         }
         return baseName
     }
+
+    func getUniqueSubAccountName(subaccounts: [WalletItem], name: String) -> String {
+        let baseName = name
+        for num in 0...999 {
+            let name = num == 0 ? baseName : "\(baseName) \(num + 1)"
+            if (subaccounts.filter { $0.localizedName().lowercased().hasPrefix(name.lowercased()) }.count) > 0 {
+            } else {
+                return name
+            }
+        }
+        return baseName
+    }
 }

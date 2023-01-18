@@ -299,26 +299,29 @@ extension SecuritySelectViewController: SecuritySelectViewControllerDelegate {
 
 extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
     func didPublicKey(_ key: String) {
-        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
-                               type: .twoOfThree,
-                               recoveryMnemonic: nil,
-                               recoveryXpub: key)
+        let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
+        let params = CreateSubaccountParams(name: viewModel.uniqueName(cellModel.name),
+                                            type: .twoOfThree,
+                                            recoveryMnemonic: nil,
+                                            recoveryXpub: key)
         createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
     }
 
     func didNewRecoveryPhrase(_ mnemonic: String) {
-        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
-                                type: .twoOfThree,
-                                recoveryMnemonic: mnemonic,
-                                recoveryXpub: nil)
+        let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
+        let params = CreateSubaccountParams(name: viewModel.uniqueName(cellModel.name),
+                                            type: .twoOfThree,
+                                            recoveryMnemonic: mnemonic,
+                                            recoveryXpub: nil)
         createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
     }
 
     func didExistingRecoveryPhrase(_ mnemonic: String) {
-        let params = CreateSubaccountParams(name: AccountType.twoOfThree.nameStringId,
-                                type: .twoOfThree,
-                                recoveryMnemonic: mnemonic,
-                                recoveryXpub: nil)
+        let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
+        let params = CreateSubaccountParams(name: viewModel.uniqueName(cellModel.name),
+                                            type: .twoOfThree,
+                                            recoveryMnemonic: mnemonic,
+                                            recoveryXpub: nil)
         createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
     }
 }

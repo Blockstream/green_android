@@ -17,7 +17,7 @@ enum AccountPreferences: String, CaseIterable {
 }
 
 protocol AccountViewControllerDelegate: AnyObject {
-    func didArchiveAccount();
+    func didArchiveAccount()
 }
 
 class AccountViewController: UIViewController {
