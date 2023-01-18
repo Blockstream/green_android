@@ -136,7 +136,7 @@ class UserSettingsViewModel {
     }
 
     func load() {
-        sections = [ .Logout, .General, .Security, .Recovery, .Multisig, .About ]
+        sections = [ .Logout, .General, .Security, .Recovery, .About ]
         items = [
             .Logout: getLogout(),
             .General: getGeneral(),

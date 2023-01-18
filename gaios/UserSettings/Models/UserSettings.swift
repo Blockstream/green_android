@@ -7,7 +7,6 @@ enum USSection: String, Codable, CaseIterable {
     case General = "id_general"
     case Security = "id_security"
     case Recovery = "id_recovery"
-    case Multisig = "Multisig"
     case About = "id_about"
 }
 

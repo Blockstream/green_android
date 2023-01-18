@@ -11,7 +11,7 @@ class WatchOnlySettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "id_watch_only".localized
+        title = "id_watchonly".localized
         view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
 
         AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))

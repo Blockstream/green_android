@@ -16,7 +16,7 @@ class UserSettingsCellModel {
         type = item.type
         switcher = item.switcher
         switch type {
-        case .Logout, .ArchievedAccounts, .ChangePin, .BackUpRecoveryPhrase, .TwoFactorAuthication, .RecoveryTransactions:
+        case .Logout, .ArchievedAccounts, .ChangePin, .BackUpRecoveryPhrase, .TwoFactorAuthication, .RecoveryTransactions, .WatchOnly :
             disclosure = true
             disclosureImage = UIImage(named: "rightArrow")?.maskWithColor(color: .white)
         case .SupportID:
