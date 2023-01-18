@@ -21,10 +21,14 @@ class AccountAssetViewModel {
                 let assets: [AssetInfo] = balance.keys.compactMap { registry?.info(for: $0) }
 
                 for asset in assets {
-                    models.append(AccountAssetCellModel(account: subaccount,
-                                                        asset: asset,
-                                                        balance: (balance.filter { $0.key == asset.assetId }))
-                    )
+                    let assetBalance = balance.filter { $0.key == asset.assetId }
+                    let satoshi = assetBalance.first?.value ?? 0
+                    if satoshi > 0 {
+                        models.append(AccountAssetCellModel(account: subaccount,
+                                                            asset: asset,
+                                                            balance: assetBalance)
+                                      )
+                    }
                 }
             }
         }
