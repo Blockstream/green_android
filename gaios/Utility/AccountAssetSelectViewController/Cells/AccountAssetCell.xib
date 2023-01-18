@@ -50,18 +50,18 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Wz1-Rf-ajy">
                                 <rect key="frame" x="64" y="15" width="191" height="51"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="lu0-pq-gWX">
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Dei-fL-BzX">
                                         <rect key="frame" x="0.0" y="0.0" width="191" height="19.333333333333332"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_asset" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sgt-61-vN6">
-                                                <rect key="frame" x="0.0" y="0.0" width="95.666666666666671" height="19.333333333333332"/>
-                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_asset" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yxd-AL-3th">
+                                                <rect key="frame" x="0.0" y="0.0" width="88.333333333333329" height="19.333333333333332"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_amount" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rfw-9L-l08">
-                                                <rect key="frame" x="95.666666666666657" y="0.0" width="95.333333333333343" height="19.333333333333332"/>
-                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_amount" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="frk-1I-iZA">
+                                                <rect key="frame" x="88.333333333333343" y="0.0" width="102.66666666666666" height="19.333333333333332"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -70,21 +70,21 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="5Nk-2t-5cZ">
                                         <rect key="frame" x="0.0" y="19.333333333333336" width="191" height="16.333333333333336"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_account" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tf6-zM-F9a">
-                                                <rect key="frame" x="0.0" y="0.0" width="95.666666666666671" height="16.333333333333332"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_account" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tf6-zM-F9a">
+                                                <rect key="frame" x="0.0" y="0.0" width="119.66666666666667" height="16.333333333333332"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                                                 <color key="textColor" white="1" alpha="0.71834468984962407" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_fiat" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gkn-3L-TaA">
-                                                <rect key="frame" x="95.666666666666657" y="0.0" width="95.333333333333343" height="16.333333333333332"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_fiat" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gkn-3L-TaA">
+                                                <rect key="frame" x="119.66666666666666" y="0.0" width="71.333333333333343" height="16.333333333333332"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                                                 <color key="textColor" white="1" alpha="0.71834468984962407" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
                                     </stackView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_type" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rgd-Dy-Bba">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_type" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rgd-Dy-Bba">
                                         <rect key="frame" x="0.0" y="35.666666666666664" width="191" height="15.333333333333336"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                         <color key="textColor" white="1" alpha="0.71834468984962407" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -124,8 +124,8 @@
                 <outlet property="imgSS" destination="JEx-rm-j2f" id="Ib7-4d-rVW"/>
                 <outlet property="imgView" destination="vYM-M0-7w9" id="8m2-K6-ZGP"/>
                 <outlet property="lblAccount" destination="Tf6-zM-F9a" id="OYq-8Z-ezL"/>
-                <outlet property="lblAmount" destination="Rfw-9L-l08" id="b9x-32-Vy0"/>
-                <outlet property="lblAsset" destination="sgt-61-vN6" id="vLJ-86-mSo"/>
+                <outlet property="lblAmount" destination="frk-1I-iZA" id="S6J-JJ-V4M"/>
+                <outlet property="lblAsset" destination="Yxd-AL-3th" id="BEu-AG-YzO"/>
                 <outlet property="lblFiat" destination="gkn-3L-TaA" id="eAp-v3-WMm"/>
                 <outlet property="lblType" destination="rgd-Dy-Bba" id="M8e-lc-nLG"/>
             </connections>
