@@ -158,6 +158,7 @@ class RecipientCell: UITableViewCell {
         btnChooseAsset.isUserInteractionEnabled = true
         assetBox.alpha = 1.0
         amountBox.alpha = 1.0
+        btnConvert.alpha = 1.0
 
         if isSendAll {
             btnSendAll.setStyle(.primary)
@@ -173,11 +174,13 @@ class RecipientCell: UITableViewCell {
         btnPasteAmount.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
         btnCancelAmount.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
 
-        btnConvert.isHidden = !(recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset)
+        // btnConvert.isHidden = !(recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset)
+        btnConvert.isUserInteractionEnabled = (recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset)
+        btnConvert.alpha = (recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset) ? 1.0 : 0.6
 
         if isBipAddress() {
             btnSendAll.isHidden = true
-            btnConvert.isHidden = true
+            btnConvert.isUserInteractionEnabled = false
             btnPasteAmount.isUserInteractionEnabled = false
             btnCancelAmount.isUserInteractionEnabled = false
             btnChooseAsset.isUserInteractionEnabled = false
