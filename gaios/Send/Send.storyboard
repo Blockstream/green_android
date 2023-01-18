@@ -870,7 +870,7 @@
                                                             </constraints>
                                                         </view>
                                                     </subviews>
-                                                    <color key="backgroundColor" name="customModalBlueDark"/>
+                                                    <color key="backgroundColor" name="gGrayCard"/>
                                                     <constraints>
                                                         <constraint firstAttribute="bottom" secondItem="FHJ-bC-cjg" secondAttribute="bottom" constant="15" id="1ji-gJ-CoN"/>
                                                         <constraint firstItem="FHJ-bC-cjg" firstAttribute="top" secondItem="05I-3n-P1t" secondAttribute="top" id="bnf-y6-T9d"/>
@@ -1063,7 +1063,7 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                             </subviews>
-                                                            <color key="backgroundColor" name="customModalBlueDark"/>
+                                                            <color key="backgroundColor" name="gGrayCard"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="trailing" secondItem="MeA-c9-953" secondAttribute="trailing" constant="20" id="IOK-Fv-Nbm"/>
                                                                 <constraint firstItem="MeA-c9-953" firstAttribute="top" secondItem="e3S-aw-6ti" secondAttribute="top" constant="20" id="Sca-cq-w6z"/>
@@ -1164,9 +1164,6 @@
         <image name="ic_refresh_arrows" width="19.666666030883789" height="18"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customModalBlueDark">
-            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
