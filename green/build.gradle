@@ -32,8 +32,8 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 392
-        versionName "3.9.2"
+        versionCode 393
+        versionName "4.0.0-beta1"
         setProperty("archivesBaseName", "BlockstreamGreen" + "-v" + versionName)
 
         // Export schemas
