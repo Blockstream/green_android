@@ -68,12 +68,22 @@ class UserSettingsViewModel {
             type: .LoginWithBiometrics,
             switcher: bioSwitch
         )
+        let twoFactorAuth = UserSettingsItem(
+            title: USItem.TwoFactorAuthication.string,
+            subtitle: "",
+            section: .Security,
+            type: .TwoFactorAuthication)
+        let pgpKey = UserSettingsItem(
+            title: USItem.PgpKey.string,
+            subtitle: "",
+            section: .Security,
+            type: .PgpKey)
         let autolock = UserSettingsItem(
             title: USItem.AutoLogout.string,
             subtitle: (settings?.autolock ?? .fiveMinutes).string,
             section: .Security,
             type: .AutoLogout)
-        return [changePin, loginWithBiometrics, autolock]
+        return [changePin, loginWithBiometrics, twoFactorAuth, pgpKey, autolock]
     }
 
     func getGeneral() -> [UserSettingsItem] {
@@ -103,25 +113,16 @@ class UserSettingsViewModel {
 
     func getRecovery() -> [UserSettingsItem] {
         let recovery = UserSettingsItem(
-            title: String(format: USItem.BackUpRecoveryPhrase.string, getNetwork()).localizedCapitalized,
-            subtitle: "",
+            title: USItem.BackUpRecoveryPhrase.string,
+            subtitle: "id_touch_to_display".localized,
             section: .Recovery,
             type: .BackUpRecoveryPhrase)
-        return [recovery]
-    }
-
-    func getMultisig() -> [UserSettingsItem] {
-        let bitcoin = UserSettingsItem(
-            title: String(format: USItem.Bitcoin.string, getNetwork()).localizedCapitalized,
-            subtitle: "",
-            section: .Multisig,
-            type: .Bitcoin)
-        let liquid = UserSettingsItem(
-            title: String(format: USItem.Liquid.string, getNetwork()).localizedCapitalized,
-            subtitle: "",
-            section: .Multisig,
-            type: .Liquid)
-        return [bitcoin, liquid]
+        let recoveryTxs = UserSettingsItem(
+            title: USItem.RecoveryTransactions.string,
+            subtitle: "id_legacy_script_coins".localized,
+            section: .Recovery,
+            type: .RecoveryTransactions)
+        return [recovery, recoveryTxs]
     }
 
     func getLogout() -> [UserSettingsItem] {
@@ -141,7 +142,6 @@ class UserSettingsViewModel {
             .General: getGeneral(),
             .Security: getSecurity(),
             .Recovery: getRecovery(),
-            .Multisig: getMultisig(),
             .About: getAbout()]
         if isWatchonly {
             sections = [ .Logout, .About ]

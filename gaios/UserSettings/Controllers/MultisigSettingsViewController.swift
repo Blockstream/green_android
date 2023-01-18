@@ -97,7 +97,6 @@ extension MultisigSettingsViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
             navigationController?.pushViewController(vc, animated: true)
             vc.delegate = self
-            vc.session = session
         }
     }
 

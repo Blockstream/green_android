@@ -340,6 +340,9 @@
 		812DBDBE2972509A002992D6 /* WatchOnlySettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDBD2972509A002992D6 /* WatchOnlySettingsViewModel.swift */; };
 		812DBDC029725F8A002992D6 /* WatchOnlySettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDBF29725F8A002992D6 /* WatchOnlySettingsCellModel.swift */; };
 		812DBDC2297261F1002992D6 /* WatchOnlySettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC1297261F1002992D6 /* WatchOnlySettingsCell.swift */; };
+		812DBDC42977EE7F002992D6 /* TwoFactorSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC32977EE7F002992D6 /* TwoFactorSettingsViewModel.swift */; };
+		812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC52977FAC4002992D6 /* TwoFactorSettingsCell.swift */; };
+		812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
 		8158974B2701980700DDF6D4 /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
@@ -790,6 +793,9 @@
 		812DBDBD2972509A002992D6 /* WatchOnlySettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettingsViewModel.swift; sourceTree = "<group>"; };
 		812DBDBF29725F8A002992D6 /* WatchOnlySettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettingsCellModel.swift; sourceTree = "<group>"; };
 		812DBDC1297261F1002992D6 /* WatchOnlySettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySettingsCell.swift; sourceTree = "<group>"; };
+		812DBDC32977EE7F002992D6 /* TwoFactorSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSettingsViewModel.swift; sourceTree = "<group>"; };
+		812DBDC52977FAC4002992D6 /* TwoFactorSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSettingsCell.swift; sourceTree = "<group>"; };
+		812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSettingsCellModel.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
 		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
@@ -1407,6 +1413,8 @@
 				81A591A229157B32001D1A65 /* MultisigSettingsCellModel.swift */,
 				812DBDC1297261F1002992D6 /* WatchOnlySettingsCell.swift */,
 				812DBDBF29725F8A002992D6 /* WatchOnlySettingsCellModel.swift */,
+				812DBDC52977FAC4002992D6 /* TwoFactorSettingsCell.swift */,
+				812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -2112,6 +2120,7 @@
 		81A5919E29157AD2001D1A65 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				812DBDC32977EE7F002992D6 /* TwoFactorSettingsViewModel.swift */,
 				81A5919A29156011001D1A65 /* MultisigSettingsViewModel.swift */,
 				81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */,
 				812DBDBD2972509A002992D6 /* WatchOnlySettingsViewModel.swift */,
@@ -2557,6 +2566,7 @@
 				346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,
+				812DBDC42977EE7F002992D6 /* TwoFactorSettingsViewModel.swift in Sources */,
 				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */,
@@ -2716,6 +2726,7 @@
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
 				34BAD9DD2636A12700FB8011 /* HWWConnectViewController.swift in Sources */,
 				81D671F126C80D4E00682508 /* Connection.swift in Sources */,
+				812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */,
 				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */,
@@ -2727,6 +2738,7 @@
 				6D8099DB23021D0F0069A69F /* PopoverMenuViewController.swift in Sources */,
 				34F9809F2913A72600C12D48 /* WalletAssetCellModel.swift in Sources */,
 				3469A2482887D56E00B2F640 /* Date.swift in Sources */,
+				812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */,
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,

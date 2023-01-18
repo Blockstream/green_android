@@ -29,23 +29,16 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var tableViewCsvTime: DynamicTableView!
     @IBOutlet weak var lblRecoveryTool: UILabel!
     @IBOutlet weak var btnRecoveryTool: UIButton!
-
-    private var csvTypes = [Settings.CsvTime]()
-    private var csvValues = [Int]()
-    private var newCsv: Int?
-    private var currentCsv: Int?
-
-    fileprivate var factors = [TwoFactorItem]()
+    @IBOutlet weak var networkSegmentedControl: UISegmentedControl!
+    @IBOutlet weak var expiryView: UIStackView!
+    
+    private let viewModel = TwoFactorSettingsViewModel()
+    private var factors = [TwoFactorItem]()
     private var connected = true
     private var updateToken: NSObjectProtocol?
-    private var twoFactorConfig: TwoFactorConfig?
-
-    var session: SessionManager! {
-        didSet {
-            csvTypes = Settings.CsvTime.all(for: session.gdkNetwork)
-            csvValues = Settings.CsvTime.values(for: session.gdkNetwork) ?? []
-        }
-    }
+    private var session: SessionManager { viewModel.sessions[networkSegmentedControl.selectedSegmentIndex] }
+    private var csvTypes: [Settings.CsvTime] { Settings.CsvTime.all(for: session.gdkNetwork) }
+    private var csvValues: [Int] { Settings.CsvTime.values(for: session.gdkNetwork) ?? [] }
     weak var delegate: TwoFactorAuthenticationViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -54,18 +47,6 @@ class TwoFactorAuthenticationViewController: UIViewController {
         title = "2FA"
         setContent()
         setStyle()
-
-        currentCsv = session.settings?.csvtime
-        tableViewCsvTime.estimatedRowHeight = 80
-        tableViewCsvTime.rowHeight = UITableView.automaticDimension
-
-        if session.gdkNetwork.liquid {
-            lbl2faExpiryTitle.isHidden = true
-            lbl2faExpiryHint.isHidden = true
-            tableViewCsvTime.isHidden = true
-            lblRecoveryTool.isHidden = true
-            reset2faView.isHidden = true
-        }
 
         AnalyticsManager.shared.recordView(.walletSettings2FA, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
@@ -84,6 +65,10 @@ class TwoFactorAuthenticationViewController: UIViewController {
         btnRecoveryTool.setTitle(NSLocalizedString("id_recovery_tool", comment: ""), for: .normal)
         lblReset2faTitle.text = NSLocalizedString("id_request_twofactor_reset", comment: "")
         lblReset2faCardTitle.text = NSLocalizedString("id_i_lost_my_2fa", comment: "")
+        viewModel.networks.enumerated().forEach { (i, net) in
+            let title = getGdkNetwork(net).name
+            networkSegmentedControl.setTitle(title, forSegmentAt: i)
+        }
     }
 
     func setStyle() {
@@ -121,6 +106,10 @@ class TwoFactorAuthenticationViewController: UIViewController {
         reloadData()
     }
 
+    @IBAction func changeNetwork(_ sender: Any) {
+        reloadData()
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let token = updateToken {
@@ -129,22 +118,31 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func reloadData() {
-        guard let dataTwoFactorConfig = try? session.session?.getTwoFactorConfig() else { return }
-        guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return }
-        self.twoFactorConfig = twoFactorConfig
-        factors.removeAll()
-        factors.append(TwoFactorItem(name: NSLocalizedString("id_email", comment: ""), enabled: twoFactorConfig.email.enabled && twoFactorConfig.email.confirmed, maskedData: twoFactorConfig.email.data, type: .email))
-        factors.append(TwoFactorItem(name: NSLocalizedString("id_sms", comment: ""), enabled: twoFactorConfig.sms.enabled && twoFactorConfig.sms.confirmed, maskedData: twoFactorConfig.sms.data, type: .sms))
-        factors.append(TwoFactorItem(name: NSLocalizedString("id_call", comment: ""), enabled: twoFactorConfig.phone.enabled && twoFactorConfig.phone.confirmed, maskedData: twoFactorConfig.phone.data, type: .phone))
-        factors.append(TwoFactorItem(name: NSLocalizedString("id_authenticator_app", comment: ""), enabled: twoFactorConfig.gauth.enabled && twoFactorConfig.gauth.confirmed, type: .gauth))
-        tableView2faMethods.reloadData()
+        let liquid = session.gdkNetwork.liquid
+        tableViewCsvTime.estimatedRowHeight = 80
+        tableViewCsvTime.rowHeight = UITableView.automaticDimension
         tableViewCsvTime.reloadData()
+        tableViewCsvTime.isHidden = !session.logged || liquid
+        lbl2faExpiryTitle.isHidden = !session.logged
+        lbl2faExpiryHint.isHidden = !session.logged
+        btnRecoveryTool.isHidden = !session.logged
+        lblRecoveryTool.isHidden = !session.logged
+        tableViewCsvTime.isHidden = !session.logged || liquid
+        reset2faView.isHidden = !session.logged || liquid
+        thresholdView.isHidden = !session.logged || liquid
+        expiryView.isHidden = !session.logged
+        viewModel.getTwoFactors(session: session)
+            .done { factors in
+                self.factors = factors
+                self.tableView2faMethods.reloadData()
+                self.reloadThreshold()
+            }.catch { err in print(err) }
+    }
 
-        thresholdView.isHidden = true
-        if self.twoFactorConfig?.anyEnabled ?? false,
-            let settings = session.settings,
-            let twoFactorConfig = self.twoFactorConfig {
-
+    func reloadThreshold() {
+        if let twoFactorConfig = viewModel.twoFactorConfig,
+            twoFactorConfig.anyEnabled,
+            let settings = session.settings {
             let limits = twoFactorConfig.limits
             var (amount, den) = ("", "")
             if limits.isFiat {
@@ -156,7 +154,6 @@ class TwoFactorAuthenticationViewController: UIViewController {
                 (amount, den) = balance?.toFiat() ?? ("", "")
             }
             let thresholdValue = String(format: "%@ %@", amount, den)
-            thresholdView.isHidden = false
             lbl2faThresholdCardTitle.text = NSLocalizedString("id_twofactor_threshold", comment: "")
             lbl2faThresholdCardHint.text = String(format: NSLocalizedString(thresholdValue == "" ? "" : "%@", comment: ""), thresholdValue)
         }
@@ -171,65 +168,44 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func disable(_ type: TwoFactorType) {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap {
-            TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
-        }.then(on: bgq) { config in
-            self.session.changeSettingsTwoFactor(method: type, config: config)
-        }.then(on: bgq) { _ in
-            self.session.loadTwoFactorConfig()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.reloadData()
-            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
-            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
-        }.catch { error in
-            if let twofaError = error as? TwoFactorCallError {
-                switch twofaError {
-                case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    DropAlert().error(message: localizedDescription)
+        self.startLoader()
+        firstly { Guarantee() }
+            .then { self.viewModel.disable(session: self.session, type: type) }
+            .ensure { self.stopLoader() }
+            .done { _ in
+                self.reloadData()
+                let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
+                NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+            }.catch { error in
+                if let twofaError = error as? TwoFactorCallError {
+                    switch twofaError {
+                    case .failure(let localizedDescription), .cancel(let localizedDescription):
+                        DropAlert().error(message: localizedDescription)
+                    }
+                } else {
+                    DropAlert().error(message: error.localizedDescription)
                 }
-            } else {
-                DropAlert().error(message: error.localizedDescription)
             }
-        }
     }
 
     func setCsvTimeLock(csv: Settings.CsvTime) {
-        let bgq = DispatchQueue.global(qos: .background)
-        let network = session.gdkNetwork
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            self.session.setCSVTime(value: csv.value(for: network)!)
-        }.then(on: bgq) { _ in
-            self.session.loadSettings()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            // update values when change successful
-            self.newCsv = nil
-            self.currentCsv = csv.value(for: network)
-            DropAlert().success(message: String(format: "%@: %@", NSLocalizedString("id_twofactor_authentication_expiry", comment: ""), csv.label()))
-            self.reloadData()
-        }.catch { _ in
-            DropAlert().error(message: "Error changing csv time")
-        }
-    }
-
-    func didSelectCSV() {
-        if let csv = newCsv, let index = csvValues.firstIndex(of: csv) {
-            if csv != currentCsv {
-                setCsvTimeLock(csv: csvTypes[index])
-            } else {
-                self.showAlert(title: NSLocalizedString("Error", comment: ""), message: "Select a new value to change csv")
+        self.startLoader()
+        firstly { Guarantee() }
+            .then { self.viewModel.setCsvTimeLock(session: self.session, csv: csv) }
+            .ensure { self.stopLoader() }
+            .done { _ in
+                self.reloadData()
+                DropAlert().success(message: String(format: "%@: %@", NSLocalizedString("id_twofactor_authentication_expiry", comment: ""), csv.label()))
+            }.catch { error in
+                if let twofaError = error as? TwoFactorCallError {
+                    switch twofaError {
+                    case .failure(let localizedDescription), .cancel(let localizedDescription):
+                        DropAlert().error(message: localizedDescription)
+                    }
+                } else {
+                    DropAlert().error(message: "Error changing csv time")
+                }
             }
-        }
     }
 
     func showResetTwoFactor() {
@@ -250,32 +226,26 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func resetTwoFactor(email: String) {
         //AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
-
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            self.session.resetTwoFactor(email: email, isDispute: false)
-        }.then(on: bgq) {_ in
-            self.session.loadTwoFactorConfig()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            DropAlert().success(message: NSLocalizedString("id_2fa_reset_in_progress", comment: ""))
-            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
-            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
-            self.delegate?.userLogout()
-        }.catch { error in
-            var text: String
-            if let error = error as? TwoFactorCallError {
-                switch error {
-                case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    text = localizedDescription
+        self.startLoader()
+        firstly { Guarantee() }
+            .then { self.viewModel.resetTwoFactor(session: self.session, email: email) }
+            .ensure { self.stopLoader() }
+            .done { _ in
+                self.reloadData()
+                DropAlert().success(message: NSLocalizedString("id_2fa_reset_in_progress", comment: ""))
+                let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
+                NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+                self.delegate?.userLogout()
+            }.catch { error in
+                if let twofaError = error as? TwoFactorCallError {
+                    switch twofaError {
+                    case .failure(let localizedDescription), .cancel(let localizedDescription):
+                        self.showError(localizedDescription)
+                    }
+                } else {
+                    DropAlert().error(message: error.localizedDescription)
                 }
-                self.showError(text)
             }
-        }
     }
 
     @IBAction func btnReset2fa(_ sender: Any) {
@@ -314,7 +284,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
         } else if tableView == tableViewCsvTime {
             let item: Settings.CsvTime = csvTypes[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TwoFaCsvTimeCell") as? TwoFaCsvTimeCell {
-                cell.configure(item: item, current: currentCsv, gdkNetwork: session.gdkNetwork)
+                cell.configure(item: item, current: session.settings?.csvtime, gdkNetwork: session.gdkNetwork)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -372,8 +342,13 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
             //AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
         } else if tableView == tableViewCsvTime {
             let selected = csvTypes[indexPath.row]
-            newCsv = selected.value(for: session.gdkNetwork)
-            didSelectCSV()
+            if let newCsv = selected.value(for: session.gdkNetwork),
+               let index = csvValues.firstIndex(of: newCsv),
+               newCsv != session.settings?.csvtime ?? 0 {
+                setCsvTimeLock(csv: csvTypes[index])
+            } else {
+                self.showAlert(title: NSLocalizedString("Error", comment: ""), message: "Select a new value to change csv")
+            }
         }
     }
 

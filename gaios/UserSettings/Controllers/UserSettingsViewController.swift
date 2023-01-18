@@ -89,37 +89,6 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         }
         return UITableViewCell()
     }
-    /*
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let item = viewModel.getCellModelsForSection(at: section)
-
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "UserSettingsCell") as? UserSettingsCell {
-            cell.configure(item)
-
-            // customize single cells
-            if item.type == .LoginWithBiometrics {
-                cell.selectionStyle = .none
-                cell.actionSwitch.isHidden = false
-                cell.actionSwitch.isEnabled = AuthenticationTypeHandler.supportsBiometricAuthentication()
-                cell.actionSwitch.isOn = getSwitchValue()
-                cell.onActionSwitch = { [weak self] in
-                    self?.onBiometricSwitch(cell.actionSwitch.isOn)
-                }
-            } else if item.type == .Version {
-                cell.selectionStyle = .none
-                cell.actionSwitch.isHidden = true
-            } else {
-                cell.actionSwitch.isHidden = true
-                let selectedView = UIView()
-                selectedView.backgroundColor = UIColor.customModalDark()
-                cell.selectedBackgroundView = selectedView
-            }
-            return cell
-        }
-
-        return UITableViewCell()
-    }*/
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
@@ -179,10 +148,12 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             }
         case .AutoLogout:
             showAutoLogout()
-        case .Bitcoin:
-            openMultisig(network: viewModel.wm.testnet ? .testnetMS : .bitcoinMS)
-        case .Liquid:
-            openMultisig(network: viewModel.wm.testnet ? .testnetLiquidMS : .liquidMS)
+        case .TwoFactorAuthication:
+            openTwoFactorAuthentication()
+        case .PgpKey:
+            openPgp()
+        case .RecoveryTransactions:
+            break
         case .Version:
             break
         case .SupportID:
@@ -240,6 +211,14 @@ extension UserSettingsViewController {
         }
     }
 
+    func openPgp() {
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "PgpViewController") as? PgpViewController {
+            vc.session = session
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     func openArchivedAccounts() {
         let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
@@ -247,14 +226,9 @@ extension UserSettingsViewController {
         }
     }
 
-    func openMultisig(network: NetworkSecurityCase) {
-        guard let session = WalletManager.current?.sessions[network.rawValue], session.logged else {
-            showAlert(title: network.name(), message: "Multisig wallet not created or not logged")
-            return
-        }
+    func openTwoFactorAuthentication() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "MultisigSettingsViewController") as? MultisigSettingsViewController {
-            vc.session = session
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }

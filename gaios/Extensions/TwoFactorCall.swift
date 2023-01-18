@@ -50,6 +50,7 @@ extension TwoFactorCall {
                     .map { method in sender?.startAnimating(); return method }
                     .then(on: bgq) { code in self.waitConnection(connected).map { return code} }
                     .map(on: bgq) { method in try self.requestCode(method: method) }
+                    .map { sender?.stopAnimating() }
             } else {
                 return Promise().map(on: bgq) { try self.requestCode(method: methods[0]) }
             }
@@ -74,9 +75,8 @@ extension TwoFactorCall {
                 .then { popup.code(method) }
                 .map { code in sender?.startAnimating(); return code }
                 .then(on: bgq) { code in self.waitConnection(connected).map { return code} }
-                .compactMap(on: bgq) { code in
-                    try self.resolveCode(code: code)
-                }
+                .compactMap(on: bgq) { code in try self.resolveCode(code: code) }
+                .map { sender?.stopAnimating() }
         default:
             return Guarantee().asVoid()
         }

@@ -287,7 +287,6 @@ class WalletViewController: UIViewController {
             vc.session = account.session
             if let vc2 = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
                 vc2.delegate = vc
-                vc2.session = vc.session
                 if var viewControllers = navigationController?.viewControllers {
                     viewControllers.append(vc)
                     viewControllers.append(vc2)
