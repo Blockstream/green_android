@@ -92,7 +92,8 @@ class WatchOnlySettingsViewModel {
                 WatchOnlySettingsCellModel(
                     title: $0.localizedName(),
                     subtitle: $0.extendedPubkey ?? "",
-                    network: $0.gdkNetwork.network)
+                    network: $0.gdkNetwork.network,
+                    isExtended: true)
             }
         }
     }

@@ -40,6 +40,15 @@ class WatchOnlySettingsViewController: UIViewController {
     @objc func close() {
         dismiss(animated: true, completion: nil)
     }
+
+    func showQR(_ item: QRDialogInfo) {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogShowQRViewController") as? DialogShowQRViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.qrDialogInfo = item
+            present(vc, animated: false, completion: nil)
+        }
+    }
 }
 
 extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataSource {
@@ -57,7 +66,10 @@ extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataS
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return headerView(NSLocalizedString(viewModel.sections[section].rawValue, comment: ""))
+        return headerView(
+            txt: NSLocalizedString(viewModel.sections[section].rawValue, comment: ""),
+            img: viewModel.sections[section].icon
+        )
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -71,7 +83,15 @@ extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataS
             }
         } else if vm?.network != nil {
             if let cell = tableView.dequeueReusableCell(withIdentifier: WatchOnlySinglesigSettingsCell.identifier) as? WatchOnlySinglesigSettingsCell {
-                cell.viewModel = vm
+                cell.configure(viewModel: vm, onCopy: { item in
+                    if !item.isEmpty {
+                        UIPasteboard.general.string = item
+                        DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    }
+                }, onQR: {[weak self] item in
+                    self?.showQR(item)
+                })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -104,21 +124,33 @@ extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataS
         }
     }
 
-    func headerView(_ txt: String) -> UIView {
+    func headerView(txt: String, img: UIImage) -> UIView {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
         section.backgroundColor = UIColor.customTitaniumDark()
+
+        let icon = UIImageView(frame: .zero)
+        icon.image = img
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        section.addSubview(icon)
+
+        NSLayoutConstraint.activate([
+            icon.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            icon.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 16),
+            icon.widthAnchor.constraint(equalToConstant: 24.0),
+            icon.heightAnchor.constraint(equalToConstant: 24.0)
+        ])
+
         let title = UILabel(frame: .zero)
-        title.font = .systemFont(ofSize: 20.0, weight: .heavy)
+        title.font = .systemFont(ofSize: 21.0, weight: .heavy)
         title.text = txt
         title.textColor = .white
         title.numberOfLines = 0
-
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)
 
         NSLayoutConstraint.activate([
-            title.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: -10),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 24),
+            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 24 + 20),
             title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
         ])
 
