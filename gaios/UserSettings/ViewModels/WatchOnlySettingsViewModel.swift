@@ -44,7 +44,7 @@ class WatchOnlySettingsViewModel {
             .filter { ["bitcoin", "testnet"].contains($0.key) }
             .first?.value
         let liquidSession = wm.sessions
-            .filter { ["liquid", "liquid-testnet"].contains($0.key) }
+            .filter { ["liquid", "testnet-liquid"].contains($0.key) }
             .first?.value
         if let session = bitcoinSession {
             self.loadWOSession(session)

@@ -10,7 +10,7 @@ class TwoFactorSettingsViewModel {
     // current multisig session
     var sessionBitcoin: SessionManager? { wm.sessions["mainnet"] }
     var sessionLiquid: SessionManager? { wm.sessions["liquid"] }
-    var networks: [String] { wm.testnet ? ["testnet", "liquid-testnet"] : ["mainnet", "liquid"] }
+    var networks: [String] { wm.testnet ? ["testnet", "testnet-liquid"] : ["mainnet", "liquid"] }
     var sessions: [SessionManager] { networks.compactMap { wm.sessions[$0] }}
 
     private let bgq = DispatchQueue.global(qos: .background)
