@@ -10,63 +10,21 @@ enum AccountType: String, CaseIterable, Codable, Comparable {
     case segWit = "p2wpkh"
     case taproot = "p2tr"
 
-    var typeStringId: String {
+    var string: String {
         get {
             switch self {
             case .standard:
-                return "id_standard"
+                return "2FA Protected"
             case .amp:
-                return "id_amp"
+                return "AMP"
             case .twoOfThree:
-                return "id_2of3"
-            case .legacy:
-                return "id_legacy_bip44"
-            case .segwitWrapped:
-                return "id_legacy_segwit_bip49"
-            case .segWit:
-                return "id_segwit_bip84"
-            case .taproot:
-                return "id_taproot_bip86"
-            }
-        }
-    }
-
-    var nameStringId: String {
-        get {
-            switch self {
-            case .standard:
-                return "id_standard_account"
-            case .amp:
-                return "id_amp_account"
-            case .twoOfThree:
-                return "id_2of3_account"
-            case .legacy:
-                return "id_legacy_segwit_account"
-            case .segwitWrapped:
-                return "id_legacy_segwit_account"
-            case .segWit:
-                return "id_segwit_account"
-            case .taproot:
-                return "id_taproot_account"
-            }
-        }
-    }
-
-    var shortNameStringId: String {
-        get {
-            switch self {
-            case .standard:
-                return "id_standard"
-            case .amp:
-                return "id_amp"
-            case .twoOfThree:
-                return "id_2of3"
+                return "2of3 with 2FA Protected"
             case .legacy:
                 return "Legacy"
             case .segwitWrapped:
-                return "Legacy SegWit"
+                return "Standard"
             case .segWit:
-                return "SegWit"
+                return "Native SegWit"
             case .taproot:
                 return "Taproot"
             }

@@ -41,23 +41,11 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
         if !name.isEmpty {
             return name
         }
-        switch type {
-        case .legacy, .segwitWrapped, .segWit, .taproot:
-            if accountNumber == 1 {
-                return "\(NSLocalizedString(type.shortNameStringId, comment: "")) Account \(accountNumber)"
-            } else {
-                return "\(NSLocalizedString(type.shortNameStringId, comment: "")) \(accountNumber)"
-            }
-        default:
-            if pointer == 0 {
-                return NSLocalizedString("id_main_account", comment: "")
-            }
-            return NSLocalizedString("id_account", comment: "") + " \(pointer)"
-        }
+        return "\(NSLocalizedString(type.string, comment: "")) \(accountNumber)"
     }
 
     func localizedHint() -> String {
-        return "\((NSLocalizedString(type.typeStringId, comment: "")).uppercased()) #\(self.accountNumber)"
+        return "\((NSLocalizedString(type.string, comment: "")).uppercased()) #\(self.accountNumber)"
     }
 
     var btc: Int64 {
@@ -69,17 +57,27 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
         }
     }
 
-    var bip32Pointer: UInt32 {
+    var bip32Pointer: UInt32 { isSinglesig ? pointer / 16 : pointer}
+    var accountNumber: UInt32 { bip32Pointer + 1 }
+
+    var isMultisig: Bool {
         switch type {
-        case .legacy, .segwitWrapped, .segWit, .taproot:
-            return pointer / 16
+        case .standard, .amp, .twoOfThree:
+            return true
         default:
-            return pointer
+            return false
         }
     }
 
-    var accountNumber: UInt32 { bip32Pointer + 1 }
-    
+    var isSinglesig: Bool {
+        switch type {
+        case .legacy, .segwitWrapped, .segWit, .taproot:
+            return true
+        default:
+            return false
+        }
+    }
+
     static func == (lhs: WalletItem, rhs: WalletItem) -> Bool {
         return lhs.network == rhs.network &&
             lhs.name == rhs.name &&

@@ -171,7 +171,7 @@ class SecuritySelectViewModel {
         switch policy {
         case .Standard:
              // singlesig legacy segwit
-            return .legacy
+            return .segwitWrapped
         case .TwoFAProtected:
             return .standard
         case .TwoOfThreeWith2FA:

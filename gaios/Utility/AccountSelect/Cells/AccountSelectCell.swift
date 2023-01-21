@@ -28,7 +28,7 @@ class AccountSelectCell: UITableViewCell {
 
     func configure(model: AccountSelectCellModel) {
         let name = model.account.localizedName()
-        let type = model.account.type.typeStringId.localized.uppercased()
+        let type = model.account.localizedHint().uppercased()
         let isSS = getGdkNetwork(model.account.network ?? "mainnet").electrum ? true : false
         let security = (isSS ? "Singlesig" : "Multisig").uppercased()
 
