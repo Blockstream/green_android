@@ -46,12 +46,12 @@ class WatchOnlySettingsViewModel {
         let liquidSession = wm.sessions
             .filter { ["liquid", "testnet-liquid"].contains($0.key) }
             .first?.value
-        if let session = bitcoinSession {
+        if let session = bitcoinSession, session.logged {
             self.loadWOSession(session)
                 .done { self.multisigCellModels += [$0] }
                 .catch { err in self.error?(err.localizedDescription) }
         }
-        if let session = liquidSession {
+        if let session = liquidSession, session.logged {
             self.loadWOSession(session)
                 .done { self.multisigCellModels += [$0] }
                 .catch { err in self.error?(err.localizedDescription) }
@@ -60,16 +60,9 @@ class WatchOnlySettingsViewModel {
             title: "Extended Public Keys",
             subtitle: "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet",
             network: nil)
-        let cellHeaderDescriptors = WatchOnlySettingsCellModel(
-            title: "Output Descriptors",
-            subtitle: "",
-            network: nil)
         self.singlesigCellModels = [cellHeaderPubKeys]
         Promise()
             .then { self.loadWOExtendedPubKeys() }
-            .map { self.singlesigCellModels += $0 }
-            .map { self.singlesigCellModels += [cellHeaderDescriptors] }
-            .then { self.loadWOOutputDescriptors() }
             .done { self.singlesigCellModels += $0 }
             .catch { err in self.error?(err.localizedDescription) }
     }
