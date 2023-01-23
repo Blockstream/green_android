@@ -19,7 +19,6 @@ class SetPhoneViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         headerTitle.text = NSLocalizedString("id_enter_phone_number", comment: "")
-        countryCodeField.becomeFirstResponder()
         countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
@@ -32,6 +31,11 @@ class SetPhoneViewController: KeyboardViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        countryCodeField.becomeFirstResponder()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
