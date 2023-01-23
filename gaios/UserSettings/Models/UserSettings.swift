@@ -18,7 +18,7 @@ enum USItem: String, Codable, CaseIterable {
     case WatchOnly = "id_watchonly"
     case ChangePin = "id_change_pin"
     case LoginWithBiometrics = "id_login_with_biometrics"
-    case TwoFactorAuthication = "id_two_factor_authentication"
+    case TwoFactorAuthication = "id_twofactor_authentication"
     case PgpKey = "id_pgp_key"
     case AutoLogout = "id_auto_logout_timeout"
     case BackUpRecoveryPhrase = "id_back_up_recovery_phrase"
