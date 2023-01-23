@@ -101,6 +101,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
         networkSegmentedControl.setTitleTextAttributes (
             [NSAttributedString.Key.foregroundColor: UIColor.black], for: .selected)
+        networkSegmentedControl.setTitleTextAttributes (
+            [NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {
