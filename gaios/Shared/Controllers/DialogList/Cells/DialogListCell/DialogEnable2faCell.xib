@@ -19,20 +19,20 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2FA isn’t set up yet." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zSj-yD-OTJ">
-                        <rect key="frame" x="24" y="0.0" width="278" height="69.666666666666671"/>
+                        <rect key="frame" x="24" y="0.0" width="278" height="93.666666666666671"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="You can choose your favourite 2FA method among an authenticator app, email, SMS or a call." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tZa-nH-aCu">
-                        <rect key="frame" x="24" y="79.666666666666671" width="278" height="50.333333333333329"/>
+                        <rect key="frame" x="24" y="103.66666666666667" width="278" height="50.333333333333329"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aPa-vU-hEo">
-                        <rect key="frame" x="-1" y="154" width="324" height="1"/>
-                        <color key="backgroundColor" white="1" alpha="0.050000000000000003" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <rect key="frame" x="-1" y="166" width="324" height="1"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="1" id="sEj-Yu-VaX"/>
                         </constraints>
@@ -50,7 +50,7 @@
                     </button>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bo4-DR-ZLI">
                         <rect key="frame" x="1" y="251" width="324" height="1"/>
-                        <color key="backgroundColor" white="1" alpha="0.050000000000000003" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="1" id="cXT-cP-hSU"/>
                         </constraints>
@@ -61,7 +61,7 @@
                     <constraint firstItem="tZa-nH-aCu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="5Ld-c8-hyb"/>
                     <constraint firstItem="7jv-l8-GMr" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="E0A-fh-e8v"/>
                     <constraint firstItem="zSj-yD-OTJ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="JMp-8i-cPd"/>
-                    <constraint firstItem="aPa-vU-hEo" firstAttribute="top" secondItem="tZa-nH-aCu" secondAttribute="bottom" constant="24" id="JbH-ms-E6u"/>
+                    <constraint firstItem="aPa-vU-hEo" firstAttribute="top" secondItem="tZa-nH-aCu" secondAttribute="bottom" constant="12" id="JbH-ms-E6u"/>
                     <constraint firstAttribute="trailing" secondItem="bo4-DR-ZLI" secondAttribute="trailing" constant="1" id="PYq-RC-324"/>
                     <constraint firstAttribute="trailing" secondItem="zSj-yD-OTJ" secondAttribute="trailing" constant="24" id="Wky-qz-aEu"/>
                     <constraint firstItem="zSj-yD-OTJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="Wlj-JW-1kq"/>
@@ -73,7 +73,7 @@
                     <constraint firstAttribute="bottom" secondItem="bo4-DR-ZLI" secondAttribute="bottom" constant="1" id="sBK-KQ-E0M"/>
                     <constraint firstItem="tZa-nH-aCu" firstAttribute="top" secondItem="zSj-yD-OTJ" secondAttribute="bottom" constant="10" id="uSU-Cj-h0U"/>
                     <constraint firstAttribute="trailing" secondItem="7jv-l8-GMr" secondAttribute="trailing" constant="24" id="wVP-Vp-0NJ"/>
-                    <constraint firstItem="7jv-l8-GMr" firstAttribute="top" secondItem="aPa-vU-hEo" secondAttribute="bottom" constant="24" id="xzk-Rh-7pn"/>
+                    <constraint firstItem="7jv-l8-GMr" firstAttribute="top" secondItem="aPa-vU-hEo" secondAttribute="bottom" constant="12" id="xzk-Rh-7pn"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
