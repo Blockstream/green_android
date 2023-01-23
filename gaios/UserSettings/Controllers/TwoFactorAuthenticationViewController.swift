@@ -31,7 +31,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var btnRecoveryTool: UIButton!
     @IBOutlet weak var networkSegmentedControl: UISegmentedControl!
     @IBOutlet weak var expiryView: UIStackView!
-    
+
     private let viewModel = TwoFactorSettingsViewModel()
     private var factors = [TwoFactorItem]()
     private var connected = true
@@ -98,6 +98,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
         lblReset2faTitle.font = UIFont.systemFont(ofSize: 20.0, weight: .heavy)
         lblReset2faCardTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
         reset2faCardDisclosure.image = UIImage(named: "rightArrow")?.maskWithColor(color: .white)
+
+        networkSegmentedControl.setTitleTextAttributes (
+            [NSAttributedString.Key.foregroundColor: UIColor.black], for: .selected)
     }
 
     override func viewWillAppear(_ animated: Bool) {

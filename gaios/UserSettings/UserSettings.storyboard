@@ -775,7 +775,7 @@
                                                     <segment title="First"/>
                                                     <segment title="Second"/>
                                                 </segments>
-                                                <color key="selectedSegmentTintColor" name="accountLightBlue"/>
+                                                <color key="selectedSegmentTintColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <action selector="changeNetwork:" destination="0uw-wQ-klq" eventType="valueChanged" id="yuR-Zl-9ss"/>
                                                 </connections>
@@ -1625,9 +1625,6 @@
         <image name="rightArrow" width="9" height="14"/>
         <image name="search" width="75" height="75"/>
         <image name="unselected_circle" width="21" height="21"/>
-        <namedColor name="accountLightBlue">
-            <color red="0.27450980392156865" green="0.74509803921568629" blue="0.68235294117647061" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customLowerBar">
             <color red="0.097999997437000275" green="0.13300000131130219" blue="0.17299999296665192" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
