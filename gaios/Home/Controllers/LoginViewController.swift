@@ -276,7 +276,7 @@ class LoginViewController: UIViewController {
         case LoginError.walletNotFound:
             prettyError = "id_wallet_not_found"
             DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-        case GaError.NotAuthorizedError:
+        case GaError.NotAuthorizedError(_):
             self.wrongPin()
             prettyError = "NotAuthorizedError"
         case TwoFactorCallError.failure(let localizedDescription):

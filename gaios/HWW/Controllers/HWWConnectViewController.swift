@@ -33,7 +33,6 @@ class HWWConnectViewController: UIViewController {
     private var headerH2: CGFloat = 64.0
     private var openAdditionalNetworks = false
     private var resetBle = false
-    private var network = getGdkNetwork("mainnet")
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -193,17 +192,16 @@ class HWWConnectViewController: UIViewController {
         reloadData()
     }
 
-    func connect(_ peripheral: Peripheral, network: String) {
+    func connect(_ peripheral: Peripheral) {
         hwwState = .connecting
-        self.network = getGdkNetwork(network)
         // connect Ledger X
         if BLEManager.shared.isLedger(peripheral) {
-            BLEManager.shared.connect(peripheral, network: self.network)
+            BLEManager.shared.connect(peripheral)
             return
         }
         // keep open connection with device, if connected
         if peripheral.isConnected && !resetBle {
-            BLEManager.shared.connect(peripheral, network: self.network)
+            BLEManager.shared.connect(peripheral)
             return
         }
         // start a new connection with jade
@@ -216,7 +214,7 @@ class HWWConnectViewController: UIViewController {
             after(seconds: 1)
         }.done { _ in
             self.hwwState = .followDevice
-            BLEManager.shared.connect(peripheral, network: self.network)
+            BLEManager.shared.connect(peripheral)
         }
     }
 
@@ -322,7 +320,7 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
         if let section = NetworkSection(rawValue: indexPath.section),
             let networkSection = networks[section] {
             let item: NetworkSecurityCase = networkSection[indexPath.row]
-            connect(peripheral, network: item.network)
+            connect(peripheral)
         }
     }
 }
@@ -388,23 +386,16 @@ extension HWWConnectViewController: BLEManagerDelegate {
     }
 
     func onPrepare( _ p: Peripheral, reset: Bool = false) {
-        if BLEManager.shared.isJade(peripheral) {
-            connect(p, network: "mainnet")
-            return
-        }
-        DispatchQueue.main.async {
-            self.hwwState = .selectNetwork
-            self.resetBle = reset
-        }
+        connect(p)
     }
 
-    func onAuthenticate(_ peripheral: Peripheral, network: GdkNetwork, firstInitialization: Bool) {
+    func onAuthenticate(_ peripheral: Peripheral, firstInitialization: Bool) {
         DispatchQueue.main.async {
             if firstInitialization {
                 self.hwwState = .initialized
             }
             self.hwwState = .connected
-            BLEManager.shared.loginJade(peripheral)
+            BLEManager.shared.login(peripheral)
         }
     }
 
