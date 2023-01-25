@@ -19,7 +19,6 @@ class SetEmailViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         headerTitle.text = NSLocalizedString("id_enter_your_email_address", comment: "")
-        textField.becomeFirstResponder()
         textField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                              attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
@@ -40,6 +39,11 @@ class SetEmailViewController: KeyboardViewController {
         if let token = updateToken {
             NotificationCenter.default.removeObserver(token)
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        textField.becomeFirstResponder()
     }
 
     override func keyboardWillShow(notification: Notification) {
