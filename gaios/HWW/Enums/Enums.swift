@@ -1,6 +1,7 @@
 import UIKit
 
 enum HWWState {
+    case prepared
     case connecting
     case connected
     case connectFailed

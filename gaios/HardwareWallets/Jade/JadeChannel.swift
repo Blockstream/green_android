@@ -19,11 +19,10 @@ class JadeChannel: HWChannelProtocol {
     func open(_ peripheral: Peripheral) -> Observable<Data> {
         self.peripheral = peripheral
         print("Max MTU supported: \(peripheral.maximumWriteValueLength(for: .withResponse))")
-        return Observable.concat(setupWrite(), setupNotify()).reduce([], accumulator: { result, element in
-                return result + [element]
-        }).flatMap { _ in
-            return Observable.just(Data())
-        }
+        return setupNotify()
+            .flatMap { _ in self.setupWrite() }
+            .delay(3, scheduler: MainScheduler.instance)
+            .flatMap { _ in  return Observable.just(Data())}
     }
 
     func close() -> Observable<Data> {
@@ -104,6 +103,7 @@ class JadeChannel: HWChannelProtocol {
             .flatMap { Observable.from($0) }
             .flatMap { characteristic -> Observable<Characteristic> in
                 self.characteristicWrite = characteristic
+                //self.characteristicWrite.setNotificationAndMonitorUpdates()
                 return Observable.just(characteristic)
             }
     }

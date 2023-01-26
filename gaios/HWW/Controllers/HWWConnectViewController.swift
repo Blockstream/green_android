@@ -143,6 +143,9 @@ class HWWConnectViewController: UIViewController {
         btnSettings.isHidden = true
 
         switch hwwState {
+        case .prepared:
+            btnLogin.isHidden = false
+            lblStateHint.text = NSLocalizedString("id_connecting_to_your_device", comment: "")
         case .connecting:
             showLoader()
             lblStateHint.text = NSLocalizedString("id_connecting_to_your_device", comment: "")
@@ -206,16 +209,16 @@ class HWWConnectViewController: UIViewController {
         }
         // start a new connection with jade
         let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            BLEManager.shared.dispose()
-            BLEManager.shared.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
-            return Guarantee()
-        }.then(on: bgq) {
-            after(seconds: 1)
-        }.done { _ in
-            self.hwwState = .followDevice
-            BLEManager.shared.connect(peripheral)
-        }
+        after(seconds: 1)
+            .compactMap(on: bgq) {
+                BLEManager.shared.dispose()
+                BLEManager.shared.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
+            }.then(on: bgq) {
+                after(seconds: 1)
+            }.done { _ in
+                self.hwwState = .followDevice
+                BLEManager.shared.connect(peripheral)
+            }
     }
 
     @IBAction func btnTryAgain(_ sender: Any) {
@@ -233,6 +236,10 @@ class HWWConnectViewController: UIViewController {
     }
 
     @IBAction func btnLogin(_ sender: Any) {
+        if hwwState == .prepared {
+            connect(peripheral)
+            return
+        }
         if hwwState == .upgradedFirmware {
             hwwState = .connecting
             BLEManager.shared.dispose()
@@ -386,7 +393,9 @@ extension HWWConnectViewController: BLEManagerDelegate {
     }
 
     func onPrepare( _ p: Peripheral, reset: Bool = false) {
-        connect(p)
+        DispatchQueue.main.async {
+            self.hwwState = .prepared
+        }
     }
 
     func onAuthenticate(_ peripheral: Peripheral, firstInitialization: Bool) {
@@ -435,8 +444,9 @@ extension HWWConnectViewController: BLEManagerDelegate {
                     if required {
                         BLEManager.shared.dispose()
                         self?.onError(BLEManagerError.genericErr(txt: NSLocalizedString("id_new_jade_firmware_required", comment: "")))
+                        return
                     }
-                    BLEManager.shared.loginJade(peripheral)
+                    BLEManager.shared.loginJade(peripheral, checkFirmware: false)
                 }
             }
             present(vc, animated: false, completion: nil)

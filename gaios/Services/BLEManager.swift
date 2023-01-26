@@ -72,6 +72,7 @@ class BLEManager {
     init() {
         manager = CentralManager(queue: queue, options: nil)
         Jade.shared.gdkRequestDelegate = self
+        RxBluetoothKitLog.setLogLevel(.debug)
     }
 
     func start() {
