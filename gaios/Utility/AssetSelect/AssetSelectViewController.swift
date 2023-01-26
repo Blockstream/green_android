@@ -105,8 +105,8 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
             navigationController?.popViewController(animated: true)
             return
         }
-        guard let assetCellModel = viewModel?.assetSelectCellModelsFilter[indexPath.row] as? AssetSelectCellModel else { return }
-        let asset = assetCellModel.asset?.assetId
+        let assetCellModel = viewModel?.assetSelectCellModelsFilter[indexPath.row] as? AssetSelectCellModel
+        let asset = assetCellModel?.asset?.assetId
         delegate?.didSelectAsset(asset ?? "")
         navigationController?.popViewController(animated: true)
     }

@@ -209,15 +209,13 @@ class HWWConnectViewController: UIViewController {
         }
         // start a new connection with jade
         let bgq = DispatchQueue.global(qos: .background)
-        after(seconds: 1)
+        _ = after(seconds: 1)
             .compactMap(on: bgq) {
                 BLEManager.shared.dispose()
                 BLEManager.shared.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
-            }.then(on: bgq) {
-                after(seconds: 1)
             }.done { _ in
                 self.hwwState = .followDevice
-                BLEManager.shared.connect(peripheral)
+                after(seconds: 1).done { BLEManager.shared.connect(peripheral) }
             }
     }
 
