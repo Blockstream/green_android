@@ -11,8 +11,10 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
     @IBOutlet weak var bgLayer: UIView!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var lblAddress: UILabel!
 
     var isLedger = false
+    var address = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +28,7 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
         } else {
             icWallet.image = UIImage(named: "ic_hww_jade")
         }
+        lblAddress.text = address
 
         AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }

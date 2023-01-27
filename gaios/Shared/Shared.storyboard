@@ -1214,19 +1214,29 @@
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_address" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GUq-zI-7BF">
+                                                        <rect key="frame" x="36" y="192" width="342" height="18"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                 </subviews>
                                                 <color key="backgroundColor" name="customModalBlueDark"/>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="uWg-8K-XTs" secondAttribute="trailing" constant="90" id="6Mt-gb-iYJ"/>
+                                                    <constraint firstItem="GUq-zI-7BF" firstAttribute="top" secondItem="G7g-9T-JQJ" secondAttribute="bottom" constant="10" id="7T2-4y-DxP"/>
                                                     <constraint firstItem="uWg-8K-XTs" firstAttribute="top" secondItem="Nz3-bb-vmV" secondAttribute="top" constant="80" id="DAc-Yr-q2W"/>
                                                     <constraint firstItem="jmH-VR-Blq" firstAttribute="top" secondItem="Nz3-bb-vmV" secondAttribute="top" constant="16" id="E6J-J9-ERf"/>
+                                                    <constraint firstItem="GUq-zI-7BF" firstAttribute="leading" secondItem="Nz3-bb-vmV" secondAttribute="leading" constant="36" id="Pfd-7C-Q6z"/>
                                                     <constraint firstItem="uWg-8K-XTs" firstAttribute="leading" secondItem="Nz3-bb-vmV" secondAttribute="leading" constant="90" id="QCX-Qm-IrX"/>
                                                     <constraint firstAttribute="trailing" secondItem="jmH-VR-Blq" secondAttribute="trailing" constant="20" id="dII-xl-4la"/>
                                                     <constraint firstItem="8bR-HR-Dej" firstAttribute="top" secondItem="Nz3-bb-vmV" secondAttribute="top" constant="10" id="ib6-eE-zXr"/>
+                                                    <constraint firstAttribute="bottom" secondItem="GUq-zI-7BF" secondAttribute="bottom" constant="16" id="kNp-sE-en7"/>
                                                     <constraint firstItem="8bR-HR-Dej" firstAttribute="centerX" secondItem="Nz3-bb-vmV" secondAttribute="centerX" id="lGk-5y-Xoj"/>
                                                     <constraint firstAttribute="trailing" secondItem="G7g-9T-JQJ" secondAttribute="trailing" constant="36" id="pU6-vD-HC1"/>
                                                     <constraint firstItem="G7g-9T-JQJ" firstAttribute="top" secondItem="uWg-8K-XTs" secondAttribute="bottom" constant="24" id="rGz-uh-49c"/>
                                                     <constraint firstItem="G7g-9T-JQJ" firstAttribute="leading" secondItem="Nz3-bb-vmV" secondAttribute="leading" constant="36" id="tk4-5k-ZVJ"/>
+                                                    <constraint firstAttribute="trailing" secondItem="GUq-zI-7BF" secondAttribute="trailing" constant="36" id="zcD-jS-Kn3"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
@@ -1255,7 +1265,6 @@
                         <constraints>
                             <constraint firstItem="xSA-KK-LYA" firstAttribute="top" secondItem="p87-tg-duf" secondAttribute="top" id="A83-zP-yPV"/>
                             <constraint firstAttribute="bottom" secondItem="p87-tg-duf" secondAttribute="bottom" id="HTk-hS-esM"/>
-                            <constraint firstItem="xSA-KK-LYA" firstAttribute="bottom" secondItem="G7g-9T-JQJ" secondAttribute="bottom" constant="10" id="IZu-cq-m15"/>
                             <constraint firstAttribute="bottom" secondItem="vgW-O5-9Eb" secondAttribute="bottom" id="JOA-YW-UJu"/>
                             <constraint firstItem="xSA-KK-LYA" firstAttribute="trailing" secondItem="p87-tg-duf" secondAttribute="trailing" id="Qzb-TN-2sZ"/>
                             <constraint firstItem="xSA-KK-LYA" firstAttribute="trailing" secondItem="vgW-O5-9Eb" secondAttribute="trailing" id="a1d-Lb-Tej"/>
@@ -1271,6 +1280,7 @@
                         <outlet property="cardView" destination="Nz3-bb-vmV" id="RaF-yx-QFK"/>
                         <outlet property="icArrow" destination="8bR-HR-Dej" id="7KU-h3-hGh"/>
                         <outlet property="icWallet" destination="uWg-8K-XTs" id="Avo-vl-Jgd"/>
+                        <outlet property="lblAddress" destination="GUq-zI-7BF" id="2FB-cP-hjX"/>
                         <outlet property="lblVerify" destination="G7g-9T-JQJ" id="sYJ-1W-KgV"/>
                         <outlet property="scrollView" destination="p87-tg-duf" id="4Ih-09-fSR"/>
                     </connections>

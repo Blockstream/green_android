@@ -186,6 +186,7 @@ class ReceiveViewController: UIViewController {
         validate()
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveVerifyAddressViewController") as? DialogReceiveVerifyAddressViewController {
+            vc.address = viewModel.address?.address ?? ""
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
