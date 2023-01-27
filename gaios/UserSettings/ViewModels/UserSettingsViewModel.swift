@@ -83,6 +83,10 @@ class UserSettingsViewModel {
             subtitle: (settings?.autolock ?? .fiveMinutes).string,
             section: .Security,
             type: .AutoLogout)
+        
+        if AccountsManager.shared.current?.isHW ?? false {
+            return [twoFactorAuth, pgpKey, autolock]
+        }
         return [changePin, loginWithBiometrics, twoFactorAuth, pgpKey, autolock]
     }
 
