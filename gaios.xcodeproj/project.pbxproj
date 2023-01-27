@@ -209,6 +209,10 @@
 		34DEF5212729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */; };
 		34DEF5232729969F008C38EA /* DialogReceiveRequestAmountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF5222729969F008C38EA /* DialogReceiveRequestAmountViewController.swift */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
+		34E0CA8C2981395600695304 /* Survey.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34E0CA8B2981395600695304 /* Survey.storyboard */; };
+		34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8D298139B200695304 /* SurveyViewController.swift */; };
+		34E0CA9029817CE400695304 /* CountlyWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8F29817CE400695304 /* CountlyWidget.swift */; };
+		34E0CA9229829C2A00695304 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA9129829C2A00695304 /* Collection.swift */; };
 		34EB670128212EBA0036D615 /* AMEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670028212EBA0036D615 /* AMEvents.swift */; };
 		34EB6703282138710036D615 /* AMSegmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB6702282138710036D615 /* AMSegmentation.swift */; };
 		34EB670528213A8A0036D615 /* AMConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670428213A8A0036D615 /* AMConstants.swift */; };
@@ -560,6 +564,10 @@
 		34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveMoreOptionsViewController.swift; sourceTree = "<group>"; };
 		34DEF5222729969F008C38EA /* DialogReceiveRequestAmountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveRequestAmountViewController.swift; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
+		34E0CA8B2981395600695304 /* Survey.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Survey.storyboard; sourceTree = "<group>"; };
+		34E0CA8D298139B200695304 /* SurveyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyViewController.swift; sourceTree = "<group>"; };
+		34E0CA8F29817CE400695304 /* CountlyWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountlyWidget.swift; sourceTree = "<group>"; };
+		34E0CA9129829C2A00695304 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		34EB670028212EBA0036D615 /* AMEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMEvents.swift; sourceTree = "<group>"; };
 		34EB6702282138710036D615 /* AMSegmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMSegmentation.swift; sourceTree = "<group>"; };
 		34EB670428213A8A0036D615 /* AMConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMConstants.swift; sourceTree = "<group>"; };
@@ -1318,6 +1326,15 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		34E0CA8A2981391200695304 /* Survey */ = {
+			isa = PBXGroup;
+			children = (
+				34E0CA8B2981395600695304 /* Survey.storyboard */,
+				34E0CA8D298139B200695304 /* SurveyViewController.swift */,
+			);
+			path = Survey;
+			sourceTree = "<group>";
+		};
 		34EB66FF28212E9C0036D615 /* AnalyticsManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -1365,6 +1382,7 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
+				34E0CA8A2981391200695304 /* Survey */,
 				340A5F5728E475EF003D56B1 /* About */,
 				34BAD9CF2636A12700FB8011 /* HWW */,
 				34DDD0A7260A484E00020380 /* Shared */,
@@ -1590,6 +1608,7 @@
 				81D671F226C80D6B00682508 /* TorNotification.swift */,
 				815D4A9F28638A56004DC015 /* PinData.swift */,
 				81F72E0828904D3F00D4DEFF /* Credentials.swift */,
+				34E0CA8F29817CE400695304 /* CountlyWidget.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1663,6 +1682,7 @@
 				344F1C0D26B7FDDE009293E6 /* UIApplication.swift */,
 				34580EB026FCB78D00D3BEFC /* UITableView.swift */,
 				3469A2472887D56E00B2F640 /* Date.swift */,
+				34E0CA9129829C2A00695304 /* Collection.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1804,6 +1824,7 @@
 				34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
+				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
@@ -2069,6 +2090,7 @@
 				34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */,
 				81F72E0928904D3F00D4DEFF /* Credentials.swift in Sources */,
 				349C75242796DBB90046DA59 /* AssetCell.swift in Sources */,
+				34E0CA9029817CE400695304 /* CountlyWidget.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				8111485F287891F500C6F030 /* JadeOTA.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
@@ -2103,6 +2125,7 @@
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				34FB694F27FD782F00A13197 /* PopoverMenuAccountViewController.swift in Sources */,
 				34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */,
+				34E0CA9229829C2A00695304 /* Collection.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,
 				34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */,
 				34C2464F2670ECE0009E8FCE /* AccountType.swift in Sources */,
@@ -2169,6 +2192,7 @@
 				345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */,
 				81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */,
 				81A062D0245322B0003464A0 /* HWResolver.swift in Sources */,
+				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
 				347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */,
 				34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */,
 				81BF4E3022E9E9EA005A04C6 /* LedgerChannel.swift in Sources */,

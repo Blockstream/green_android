@@ -109,6 +109,23 @@ class OverviewViewController: UIViewController {
 
         startAnimating()
         AnalyticsManager.shared.recordView(.overview, sgmt: AnalyticsManager.shared.sessSgmt(account))
+
+        AnalyticsManager.shared.getSurvey { [weak self] widget in
+            if let widget = widget {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
+                    self?.surveyUI(widget)
+                }
+            }
+        }
+    }
+
+    func surveyUI(_ widget: CountlyWidget) {
+        let storyboard = UIStoryboard(name: "Survey", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SurveyViewController") as? SurveyViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.widget = widget
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     func reloadSections(_ sections: [OverviewSection], animated: Bool) {

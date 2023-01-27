@@ -87,6 +87,8 @@ class AnalyticsManager {
     // not ignorable exception counter
     var exceptionCounter = 0
 
+    var countlyFeedbackWidget: CountlyFeedbackWidget?
+
     func invalidateAnalyticsUUID() {
         UserDefaults.standard.removeObject(forKey: AppStorage.analyticsUUID)
     }
@@ -249,6 +251,44 @@ class AnalyticsManager {
     func userPropertiesDidChange() {
         guard consent != .notDetermined else { return }
         updateUserProperties()
+    }
+
+    func getSurvey(completion: @escaping (CountlyWidget?) -> Void) {
+        guard consent != .notDetermined else {
+            completion(nil)
+            return
+        }
+        Countly.sharedInstance().getFeedbackWidgets({ [weak self] widgets, error in
+            if error == nil, let widget = (widgets?.filter { $0.type == .NPS || $0.type == .survey })?.first {
+                widget.getData { wData, error in
+
+                    if error == nil, let data = wData {
+                        let w = CountlyWidget.build(data)
+                        self?.countlyFeedbackWidget = widget
+                        completion(w)
+                    } else {
+                        completion(nil)
+                    }
+                }
+            } else {
+                completion(nil)
+            }
+        })
+    }
+
+    func submitSurvey(_ result: [AnyHashable: Any]) {
+        guard let widget = countlyFeedbackWidget else { return }
+        widget.recordResult(result)
+    }
+
+    func submitNPS(_ result: [AnyHashable: Any]) {
+        guard let widget = countlyFeedbackWidget else { return }
+        widget.recordResult(result)
+    }
+
+    func submitExclude() {
+        guard let widget = countlyFeedbackWidget else { return }
+        widget.recordResult(nil)
     }
 
     func recordException(_ msg: String) {
