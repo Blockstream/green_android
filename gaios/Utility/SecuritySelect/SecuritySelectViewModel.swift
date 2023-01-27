@@ -85,8 +85,10 @@ class SecuritySelectViewModel {
                                    type: getAccountType(for: policy),
                                    recoveryMnemonic: nil,
                                    recoveryXpub: nil)
+        let hw = AccountsManager.shared.current?.isHW ?? false
+        let register = { [self] in hw ? registerSessionHW(session: session) : registerSession(session: session)}
         return Guarantee()
-            .then { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
+            .then { !session.logged ? register() : Promise().asVoid() }
             .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden} }
             .then { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
             .then { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, params: params) }
@@ -102,6 +104,17 @@ class SecuritySelectViewModel {
             .then { self.isUsedDefaultAccount(for: session, account: $0.first) }
             .then { !$0 ? session.updateSubaccount(subaccount: 0, hidden: true).asVoid() : Promise().asVoid() }
             .then { self.wm.subaccounts() }
+            .asVoid()
+    }
+
+    func registerSessionHW(session: SessionManager) -> Promise<Void> {
+        if session.gdkNetwork.liquid && session.gdkNetwork.electrum {
+            return Promise() { seal in seal.reject(GaError.GenericError("Liquid singlesig not available"))}
+        }
+        return Guarantee()
+            .compactMap { BLEManager.shared.device }
+            .then { hw in session.registerHW(hw: hw).then { session.loginWithHW(hw) } }
+            .then { _ in session.subaccounts(true) }
             .asVoid()
     }
 

@@ -67,6 +67,7 @@ class BLEManager {
     weak var scanDelegate: BLEManagerScanDelegate?
     var fmwVersion: String?
     var boardType: String?
+    var device: HWDevice?
     private var session: SessionManager?
 
     init() {
@@ -254,37 +255,18 @@ class BLEManager {
         }
     }
 
-    func device(isJade: Bool, fmwVersion: String) -> HWDevice {
-        if !isJade {
-            return HWDevice(name: "Ledger",
-                     supportsArbitraryScripts: true,
-                     supportsLowR: false,
-                     supportsLiquid: 0,
-                     supportsAntiExfilProtocol: 0,
-                     supportsHostUnblinding: false)
-        }
-        // Host Unblinding enabled by default on 0.1.27
-        let supportUnblinding = fmwVersion >= "0.1.27"
-        return HWDevice(name: "Jade",
-                         supportsArbitraryScripts: true,
-                         supportsLowR: true,
-                         supportsLiquid: 1,
-                         supportsAntiExfilProtocol: 1,
-                         supportsHostUnblinding: supportUnblinding)
-    }
-
     func login(_ p: Peripheral, network: NetworkSecurityCase? = nil) {
         isJade(p) ? loginJade(p) : loginLedger(p)
     }
 
     func loginJade(_ p: Peripheral, checkFirmware: Bool = true) {
-        let device = self.device(isJade: self.isJade(p), fmwVersion: self.fmwVersion ?? "")
+        self.device = HWDevice.defaultJade(fmwVersion: self.fmwVersion ?? "")
         _ = Observable.just(p)
             .flatMap { checkFirmware ? self.checkFirmware($0) : Observable.just($0) }
             .flatMap { _ in Jade.shared.version() }
             .compactMap { $0.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS }
             .compactMap { WalletManager(prominentNetwork: $0) }
-            .flatMap { wm in self.loginDevice(wm: wm, device: device) }
+            .flatMap { wm in self.loginDevice(wm: wm, device: self.device!) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 self.delegate?.onLogin(p, account: $0)
@@ -322,12 +304,12 @@ class BLEManager {
     }
 
     func loginLedger(_ p: Peripheral) {
-        let device = self.device(isJade: self.isJade(p), fmwVersion: self.fmwVersion ?? "")
+        self.device = HWDevice.defaultLedger()
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in self.getLedgerNetwork(p) }
             .compactMap { WalletManager(prominentNetwork: $0) }
-            .flatMap { wm in self.loginDevice(wm: wm, device: device) }
+            .flatMap { wm in self.loginDevice(wm: wm, device: self.device!) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 self.delegate?.onLogin(p, account: $0)

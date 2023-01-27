@@ -22,4 +22,23 @@ struct HWDevice: Codable {
     var isJade: Bool { "jade" == name.lowercased() }
     var isTrezor: Bool { "trezor" == name.lowercased() }
     var isLedger: Bool { "ledger" == name.lowercased() }
+
+    static func defaultLedger() -> HWDevice {
+        return HWDevice(name: "Ledger",
+                        supportsArbitraryScripts: true,
+                        supportsLowR: false,
+                        supportsLiquid: 0,
+                        supportsAntiExfilProtocol: 0,
+                        supportsHostUnblinding: false)
+    }
+
+    static func defaultJade(fmwVersion: String) -> HWDevice {
+        let supportUnblinding = fmwVersion >= "0.1.27"
+        return HWDevice(name: "Jade",
+                        supportsArbitraryScripts: true,
+                        supportsLowR: true,
+                        supportsLiquid: 1,
+                        supportsAntiExfilProtocol: 1,
+                        supportsHostUnblinding: supportUnblinding)
+    }
 }
