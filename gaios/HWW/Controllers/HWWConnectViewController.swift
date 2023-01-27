@@ -144,8 +144,12 @@ class HWWConnectViewController: UIViewController {
 
         switch hwwState {
         case .prepared:
+            hideLoader()
             btnLogin.isHidden = false
             lblStateHint.text = NSLocalizedString("id_connecting_to_your_device", comment: "")
+            if BLEManager.shared.isLedger(peripheral) {
+                lblStateHint.text = String(format: "id_select_the_s_app_on_your_ledger".localized, "bitcoin")
+            }
         case .connecting:
             showLoader()
             lblStateHint.text = NSLocalizedString("id_connecting_to_your_device", comment: "")
