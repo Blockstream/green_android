@@ -122,6 +122,9 @@ class UserSettingsViewModel {
             subtitle: "id_legacy_script_coins".localized,
             section: .Recovery,
             type: .RecoveryTransactions)
+        if AccountsManager.shared.current?.isHW ?? false {
+            return [recoveryTxs]
+        }
         return [recovery, recoveryTxs]
     }
 
