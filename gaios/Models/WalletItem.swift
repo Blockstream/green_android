@@ -41,7 +41,8 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
         if !name.isEmpty {
             return name
         }
-        return "\(NSLocalizedString(type.string, comment: "")) \(accountNumber)"
+        let number = accountNumber > 1 ? String(accountNumber) : nil
+        return "\(NSLocalizedString(type.string, comment: "")) \(number ?? "")"
     }
 
     func localizedHint() -> String {
