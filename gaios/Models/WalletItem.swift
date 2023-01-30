@@ -41,8 +41,12 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
         if !name.isEmpty {
             return name
         }
-        let number = accountNumber > 1 ? String(accountNumber) : nil
-        return "\(NSLocalizedString(type.string, comment: "")) \(number ?? "")"
+        let subaccounts = WalletManager.current?.subaccounts ?? []
+        let counter = subaccounts.filter { $0.pointer < self.pointer && $0.type == self.type && $0.network == self.network }.count
+        if counter > 0 {
+            return "\(type.string.localized) \(counter)"
+        }
+        return "\(type.string.localized)"
     }
 
     func localizedHint() -> String {

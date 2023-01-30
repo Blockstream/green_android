@@ -300,7 +300,8 @@ extension SecuritySelectViewController: SecuritySelectViewControllerDelegate {
 extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
     func didPublicKey(_ key: String) {
         let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
-        let params = CreateSubaccountParams(name: viewModel.uniqueName(cellModel.name),
+        let name = viewModel.uniqueName(cellModel.accountType, liquid: viewModel.asset != "btc")
+        let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
                                             recoveryMnemonic: nil,
                                             recoveryXpub: key)
@@ -309,7 +310,8 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
 
     func didNewRecoveryPhrase(_ mnemonic: String) {
         let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
-        let params = CreateSubaccountParams(name: viewModel.uniqueName(cellModel.name),
+        let name = viewModel.uniqueName(cellModel.accountType, liquid: viewModel.asset != "btc")
+        let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
@@ -318,7 +320,8 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
 
     func didExistingRecoveryPhrase(_ mnemonic: String) {
         let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
-        let params = CreateSubaccountParams(name: viewModel.uniqueName(cellModel.name),
+        let name = viewModel.uniqueName(cellModel.accountType, liquid: viewModel.asset != "btc")
+        let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)

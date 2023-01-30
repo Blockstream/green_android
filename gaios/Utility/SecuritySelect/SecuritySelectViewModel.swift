@@ -81,7 +81,7 @@ class SecuritySelectViewModel {
             return Promise(error: GaError.GenericError("Invalid session"))
         }
         let cellModel = PolicyCellModel.from(policy: policy)
-        let params = params ?? CreateSubaccountParams(name: uniqueName(cellModel.name),
+        let params = params ?? CreateSubaccountParams(name: uniqueName(cellModel.accountType, liquid: asset != "btc"),
                                    type: getAccountType(for: policy),
                                    recoveryMnemonic: nil,
                                    recoveryXpub: nil)
@@ -183,10 +183,12 @@ class SecuritySelectViewModel {
         }
     }
 
-    func uniqueName(_ name: String) -> String {
-        return AccountsManager.shared
-            .getUniqueSubAccountName(subaccounts: wm.subaccounts,
-                                     name: name)
+    func uniqueName(_ type: AccountType, liquid: Bool) -> String {
+        let counter = wm.subaccounts.filter { $0.type == type && $0.gdkNetwork.liquid == liquid }.count
+        if counter > 0 {
+            return "\(type.string) \(counter)"
+        }
+        return "\(type.string)"
     }
 }
 
