@@ -41,7 +41,7 @@ class WatchOnlySettingsViewModel {
     func load() {
         self.multisigCellModels = []
         let bitcoinSession = wm.sessions
-            .filter { ["bitcoin", "testnet"].contains($0.key) }
+            .filter { ["mainnet", "testnet"].contains($0.key) }
             .first?.value
         let liquidSession = wm.sessions
             .filter { ["liquid", "testnet-liquid"].contains($0.key) }
