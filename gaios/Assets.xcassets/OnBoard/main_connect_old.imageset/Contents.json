@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "Illustration Control.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Illustration Control@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Illustration Control@3x.png",
+      "filename" : "qrScanCopy2@2x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
