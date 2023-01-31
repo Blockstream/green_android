@@ -19,33 +19,33 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="635-L7-ihQ">
-                        <rect key="frame" x="25" y="0.0" width="270" height="58"/>
+                        <rect key="frame" x="25" y="0.0" width="270" height="64"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6tO-qa-i0y">
-                                <rect key="frame" x="0.0" y="0.0" width="270" height="58"/>
+                                <rect key="frame" x="0.0" y="0.0" width="270" height="64"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_any" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sgt-61-vN6">
-                                        <rect key="frame" x="20" y="20.666666666666668" width="202" height="17.000000000000004"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_asset_icon" translatesAutoresizingMaskIntoConstraints="NO" id="vYM-M0-7w9">
+                                        <rect key="frame" x="15" y="15" width="34" height="34"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="34" id="2ht-eJ-SbZ"/>
+                                            <constraint firstAttribute="width" constant="34" id="3tS-rT-0R4"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_any" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sgt-61-vN6">
+                                        <rect key="frame" x="64" y="23.666666666666671" width="191" height="17"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_any_asset" translatesAutoresizingMaskIntoConstraints="NO" id="vYM-M0-7w9">
-                                        <rect key="frame" x="232" y="20" width="18" height="18"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="18" id="2ht-eJ-SbZ"/>
-                                            <constraint firstAttribute="width" constant="18" id="3tS-rT-0R4"/>
-                                        </constraints>
-                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="sgt-61-vN6" firstAttribute="leading" secondItem="6tO-qa-i0y" secondAttribute="leading" constant="20" id="7Bj-tj-ZuJ"/>
-                                    <constraint firstAttribute="trailing" secondItem="vYM-M0-7w9" secondAttribute="trailing" constant="20" id="BOo-5P-5i3"/>
-                                    <constraint firstAttribute="bottom" secondItem="vYM-M0-7w9" secondAttribute="bottom" constant="20" id="Qjv-PI-mRq"/>
-                                    <constraint firstItem="vYM-M0-7w9" firstAttribute="top" secondItem="6tO-qa-i0y" secondAttribute="top" constant="20" id="lzz-PJ-EpV"/>
+                                    <constraint firstAttribute="bottom" secondItem="vYM-M0-7w9" secondAttribute="bottom" constant="15" id="Qjv-PI-mRq"/>
+                                    <constraint firstItem="vYM-M0-7w9" firstAttribute="leading" secondItem="6tO-qa-i0y" secondAttribute="leading" constant="15" id="br0-gV-upY"/>
+                                    <constraint firstAttribute="trailing" secondItem="sgt-61-vN6" secondAttribute="trailing" constant="15" id="kQu-5T-WCn"/>
+                                    <constraint firstItem="vYM-M0-7w9" firstAttribute="top" secondItem="6tO-qa-i0y" secondAttribute="top" constant="15" id="lzz-PJ-EpV"/>
                                     <constraint firstItem="sgt-61-vN6" firstAttribute="centerY" secondItem="6tO-qa-i0y" secondAttribute="centerY" id="mX9-Y9-CJ1"/>
-                                    <constraint firstItem="vYM-M0-7w9" firstAttribute="leading" secondItem="sgt-61-vN6" secondAttribute="trailing" constant="10" id="wwP-9T-gNX"/>
+                                    <constraint firstItem="sgt-61-vN6" firstAttribute="leading" secondItem="vYM-M0-7w9" secondAttribute="trailing" constant="15" id="may-bS-5U9"/>
                                     <constraint firstItem="sgt-61-vN6" firstAttribute="centerY" secondItem="vYM-M0-7w9" secondAttribute="centerY" id="yMb-vd-0gd"/>
                                 </constraints>
                             </view>
@@ -78,7 +78,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="ic_any_asset" width="18" height="18.333333969116211"/>
+        <image name="default_asset_icon" width="49" height="49"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

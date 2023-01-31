@@ -15,37 +15,37 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PRd-IM-Tnc">
-                    <rect key="frame" x="25" y="10" width="343" height="171"/>
+                    <rect key="frame" x="25" y="10" width="343" height="177"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Kr-iX-IZh">
-                            <rect key="frame" x="0.0" y="0.0" width="343" height="58"/>
+                            <rect key="frame" x="0.0" y="0.0" width="343" height="64"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_any" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PgO-f1-3HX">
-                                    <rect key="frame" x="25" y="20.666666666666668" width="255" height="17.000000000000004"/>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_asset_icon" translatesAutoresizingMaskIntoConstraints="NO" id="oa3-4L-gPw">
+                                    <rect key="frame" x="15" y="15" width="34" height="34"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="34" id="97A-15-AYN"/>
+                                        <constraint firstAttribute="width" constant="34" id="OoJ-mF-OL3"/>
+                                    </constraints>
+                                </imageView>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="lbl_any" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PgO-f1-3HX">
+                                    <rect key="frame" x="64" y="23.666666666666664" width="264" height="17"/>
                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_any_asset" translatesAutoresizingMaskIntoConstraints="NO" id="oa3-4L-gPw">
-                                    <rect key="frame" x="300" y="20" width="18" height="18"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="18" id="97A-15-AYN"/>
-                                        <constraint firstAttribute="width" constant="18" id="OoJ-mF-OL3"/>
-                                    </constraints>
-                                </imageView>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstItem="oa3-4L-gPw" firstAttribute="leading" secondItem="PgO-f1-3HX" secondAttribute="trailing" constant="20" id="AST-f2-XqG"/>
-                                <constraint firstItem="oa3-4L-gPw" firstAttribute="top" secondItem="5Kr-iX-IZh" secondAttribute="top" constant="20" id="C1t-FZ-fAN"/>
+                                <constraint firstItem="oa3-4L-gPw" firstAttribute="top" secondItem="5Kr-iX-IZh" secondAttribute="top" constant="15" id="C1t-FZ-fAN"/>
                                 <constraint firstItem="PgO-f1-3HX" firstAttribute="centerY" secondItem="5Kr-iX-IZh" secondAttribute="centerY" id="CbF-Y6-u4d"/>
-                                <constraint firstAttribute="bottom" secondItem="oa3-4L-gPw" secondAttribute="bottom" constant="20" id="ih4-KB-44x"/>
-                                <constraint firstAttribute="trailing" secondItem="oa3-4L-gPw" secondAttribute="trailing" constant="25" id="kCA-Aq-nbd"/>
-                                <constraint firstItem="PgO-f1-3HX" firstAttribute="leading" secondItem="5Kr-iX-IZh" secondAttribute="leading" constant="25" id="nT8-vS-AhE"/>
+                                <constraint firstItem="PgO-f1-3HX" firstAttribute="leading" secondItem="oa3-4L-gPw" secondAttribute="trailing" constant="15" id="RBu-Gg-bVL"/>
+                                <constraint firstItem="oa3-4L-gPw" firstAttribute="leading" secondItem="5Kr-iX-IZh" secondAttribute="leading" constant="15" id="VFQ-mU-IyD"/>
+                                <constraint firstAttribute="trailing" secondItem="PgO-f1-3HX" secondAttribute="trailing" constant="15" id="i5h-RW-LcO"/>
+                                <constraint firstAttribute="bottom" secondItem="oa3-4L-gPw" secondAttribute="bottom" constant="15" id="ih4-KB-44x"/>
                             </constraints>
                         </view>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="5xI-m8-onu">
-                            <rect key="frame" x="0.0" y="58" width="343" height="113"/>
+                            <rect key="frame" x="0.0" y="64" width="343" height="113"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4ia-lx-PfZ">
                                     <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
@@ -196,8 +196,8 @@
         </view>
     </objects>
     <resources>
+        <image name="default_asset_icon" width="49" height="49"/>
         <image name="ic_amp_warn" width="15.333333015441895" height="16"/>
-        <image name="ic_any_asset" width="18" height="18.333333969116211"/>
         <image name="ic_arrow_card" width="16" height="15.333333015441895"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

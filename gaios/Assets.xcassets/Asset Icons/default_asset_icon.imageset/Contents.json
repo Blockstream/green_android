@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "asset_unknown.pdf",
-      "idiom" : "universal"
+      "filename" : "fe8065b1c196b414d2e21edb4b5a9075e8165a37734bfaeadbb52ee8e91012b1.png",
+      "idiom" : "iphone",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "fe8065b1c196b414d2e21edb4b5a9075e8165a37734bfaeadbb52ee8e91012b1@2x.png",
+      "idiom" : "iphone",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "fe8065b1c196b414d2e21edb4b5a9075e8165a37734bfaeadbb52ee8e91012b1@3x.png",
+      "idiom" : "iphone",
+      "scale" : "3x"
     }
   ],
   "info" : {
