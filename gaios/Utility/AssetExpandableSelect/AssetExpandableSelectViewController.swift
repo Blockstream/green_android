@@ -74,7 +74,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     func numberOfSections(in tableView: UITableView) -> Int {
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        return cnt > 0 ? cnt : 1
+        return cnt + 1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -107,11 +107,17 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
 
+        var assetInfo = AssetInfo.lbtc
         if viewModel.selectedSection == section {
-            let cellModel = viewModel.assetSelectCellModelsFilter[section]
+            let cnt = viewModel.assetSelectCellModelsFilter.count
+            if cnt == section && viewModel.enableAnyAsset {
+            } else {
+                let cellModel = viewModel.assetSelectCellModelsFilter[section]
+                assetInfo = cellModel.asset ?? AssetInfo.lbtc
+            }
             if let createView = Bundle.main.loadNibNamed("AccountCreateFooterView", owner: self, options: nil)?.first as? AccountCreateFooterView {
                 createView.configure { [weak self] in
-                    self?.onCreate(asset: cellModel.asset)
+                    self?.onCreate(asset: assetInfo)
                 }
                 return createView
             }
@@ -122,7 +128,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        if cnt == 0 && section == 0 && viewModel.enableAnyAsset {
+        if cnt == section && viewModel.enableAnyAsset {
             if let accountView = Bundle.main.loadNibNamed("AnyAssetExpandableView", owner: self, options: nil)?.first as? AnyAssetExpandableView {
                 accountView.configure(open: viewModel.selectedSection == section,
                                       hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
@@ -171,7 +177,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
             tableView.reloadData()
             viewModel.selectedSection = section
             let cnt = viewModel.assetSelectCellModelsFilter.count
-            if cnt == 0 && section == 0 && viewModel.enableAnyAsset {
+            if cnt == section && viewModel.enableAnyAsset {
                 viewModel.loadAccountsForAsset(nil)
             } else {
                 if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
@@ -191,8 +197,9 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var assetId = AssetInfo.lbtcId
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        if !(cnt == 0 && indexPath.section == 0 && viewModel.enableAnyAsset) {
-            if let asset = viewModel.assetSelectCellModelsFilter[indexPath.section].asset { assetId = asset.assetId
+        if !(cnt == indexPath.section && viewModel.enableAnyAsset) {
+            if let asset = viewModel.assetSelectCellModelsFilter[indexPath.section].asset {
+                assetId = asset.assetId
             }
         }
         let account = viewModel.accountSelectSubCellModels[indexPath.row].account

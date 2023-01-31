@@ -56,12 +56,12 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        return  cnt > 0 ? cnt : 1
+        return  cnt + 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        if cnt == 0 {
+        if cnt == indexPath.row {
             if let cell = tableView.dequeueReusableCell(withIdentifier: AnyAssetCell.identifier, for: indexPath) as? AnyAssetCell {
                 cell.configure()
                 cell.selectionStyle = .none
@@ -100,7 +100,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        if cnt == 0 && indexPath.row == 0 {
+        if cnt == indexPath.row {
             delegate?.didSelectAnyAsset()
             navigationController?.popViewController(animated: true)
             return
