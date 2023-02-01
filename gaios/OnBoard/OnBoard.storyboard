@@ -36,7 +36,7 @@
                                         <rect key="frame" x="28" y="186" width="318.33333333333331" height="222"/>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hod-w2-Zgk">
-                                        <rect key="frame" x="43" y="428" width="288.66666666666669" height="44"/>
+                                        <rect key="frame" x="63.999999999999986" y="428" width="246.66666666666663" height="44"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Ou-4p-Myn" customClass="CheckButton" customModule="gaios" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="10" width="24" height="24"/>
@@ -54,7 +54,7 @@
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JLH-nV-dPg">
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JLH-nV-dPg">
                                                 <rect key="frame" x="130.66666666666666" y="7" width="116" height="30"/>
                                                 <color key="tintColor" name="customMatrixGreen"/>
                                                 <state key="normal" title="Terms of Service"/>
@@ -71,7 +71,7 @@
                                             <constraint firstItem="3Ou-4p-Myn" firstAttribute="top" secondItem="hod-w2-Zgk" secondAttribute="top" constant="10" id="WQ3-j9-0c8"/>
                                             <constraint firstItem="3Ou-4p-Myn" firstAttribute="leading" secondItem="hod-w2-Zgk" secondAttribute="leading" id="d0C-gr-OVq"/>
                                             <constraint firstItem="Hog-Jp-Aud" firstAttribute="leading" secondItem="3Ou-4p-Myn" secondAttribute="trailing" constant="16" id="kdy-YY-qK3"/>
-                                            <constraint firstAttribute="trailing" secondItem="JLH-nV-dPg" secondAttribute="trailing" constant="42" id="nfw-rJ-brS"/>
+                                            <constraint firstAttribute="trailing" secondItem="JLH-nV-dPg" secondAttribute="trailing" id="nfw-rJ-brS"/>
                                             <constraint firstItem="JLH-nV-dPg" firstAttribute="centerY" secondItem="Hog-Jp-Aud" secondAttribute="centerY" id="uXw-ra-RGG"/>
                                         </constraints>
                                     </view>
@@ -148,7 +148,6 @@
                                     <constraint firstItem="579-ag-LjF" firstAttribute="centerY" secondItem="88a-ng-k7N" secondAttribute="centerY" id="EL7-Tj-KjS"/>
                                     <constraint firstItem="4c3-fJ-IXe" firstAttribute="leading" secondItem="ZhA-dQ-4CX" secondAttribute="leading" constant="36" id="EOh-r9-ovP"/>
                                     <constraint firstItem="7gd-7b-ogH" firstAttribute="centerY" secondItem="4c3-fJ-IXe" secondAttribute="centerY" id="EZx-Kq-lDC"/>
-                                    <constraint firstItem="hod-w2-Zgk" firstAttribute="width" relation="lessThanOrEqual" secondItem="ZhA-dQ-4CX" secondAttribute="width" multiplier="0.9" id="GN3-5k-qMw"/>
                                     <constraint firstItem="zE5-gL-Bez" firstAttribute="leading" secondItem="ZhA-dQ-4CX" secondAttribute="leading" constant="36" id="IxH-Qm-fBl"/>
                                     <constraint firstItem="4c3-fJ-IXe" firstAttribute="top" secondItem="88a-ng-k7N" secondAttribute="bottom" constant="10" id="J4X-rW-A1k"/>
                                     <constraint firstItem="hod-w2-Zgk" firstAttribute="top" secondItem="qcB-d4-9Se" secondAttribute="bottom" constant="20" id="J9B-aO-98y"/>
@@ -169,6 +168,7 @@
                                     <constraint firstItem="b5z-iW-byq" firstAttribute="top" secondItem="hod-w2-Zgk" secondAttribute="bottom" constant="30" id="ttz-TW-jvG"/>
                                     <constraint firstItem="Akr-0E-7Dy" firstAttribute="centerY" secondItem="b5z-iW-byq" secondAttribute="centerY" id="vag-hF-BBw"/>
                                     <constraint firstAttribute="trailing" secondItem="b5z-iW-byq" secondAttribute="trailing" constant="36" id="ySY-54-vfU"/>
+                                    <constraint firstItem="hod-w2-Zgk" firstAttribute="width" relation="lessThanOrEqual" secondItem="ZhA-dQ-4CX" secondAttribute="width" multiplier="0.85" id="zLy-Sm-y0s"/>
                                 </constraints>
                             </view>
                         </subviews>
