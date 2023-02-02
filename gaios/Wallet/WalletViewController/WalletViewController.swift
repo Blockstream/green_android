@@ -528,6 +528,9 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {
+            if AccountsManager.shared.current?.isHW ?? false {
+                BLEManager.shared.dispose()
+            }
             DispatchQueue.main.async {
                 if let account = AccountsManager.shared.current {
                     WalletManager.delete(for: account.id)
