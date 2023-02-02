@@ -105,6 +105,17 @@ class WalletManager {
             .compactMap { self.loadRegistry() }
     }
 
+    func loginWithHW(_ device: HWDevice, masterXpub: String) -> Promise<Void> {
+        guard let mainSession = sessions[prominentNetwork.rawValue] else {
+            fatalError()
+        }
+        return Guarantee()
+            .compactMap { mainSession.existDatadir(masterXpub: masterXpub) }
+            .then { !$0 ? self.restore(hw: device) : Guarantee().asVoid() }
+            .then { self.loginHW(device) }
+            .asVoid()
+    }
+
     func login(_ credentials: Credentials) -> Promise<Void> {
         self.failureSessions = [:]
         return when(guarantees: self.sessions.values
@@ -133,22 +144,27 @@ class WalletManager {
         let btcSession = self.sessions[btcNetwork.rawValue]!
         return Promise()
             .then { btcSession.connect() }
-            .then { btcSession.registerSW(credentials) }
+            .then { btcSession.register(credentials: credentials) }
             .then { btcSession.loginWithCredentials(credentials) }
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
     }
 
-    func restore(_ credentials: Credentials) -> Promise<Void> {
+    func restore(_ credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let btcSession = self.sessions[btcNetwork.rawValue]!
         let btcRestore = Guarantee()
-            .then { btcSession.loginWithCredentials(credentials) }
+            .then { btcSession.login(credentials: credentials, hw: hw) }
             .then { _ in btcSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
             .compactMap { $0.filter({ $0.pointer == 0 }).first }
-            .then { credentials.bip39Passphrase.isNilOrEmpty && !($0.bip44Discovered ?? false) ? btcSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
-
+            .then { credentials?.bip39Passphrase.isNilOrEmpty ?? true && !($0.bip44Discovered ?? false) ? btcSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
+        guard let credentials = credentials else {
+            // Liquid singlesig not yet available
+            return btcRestore
+        }
         let liquidNetwork: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
-        let liquidSession = self.sessions[liquidNetwork.rawValue]!
+        guard let liquidSession = self.sessions[liquidNetwork.rawValue] else {
+            return btcRestore
+        }
         let liquidRestore = Guarantee()
             .then { liquidSession.loginWithCredentials(credentials) }
             .then { _ in liquidSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
@@ -161,11 +177,11 @@ class WalletManager {
                     liquidSession.session?.logged = false
                     return
                 }
-            }
+            }.asVoid()
         return when(fulfilled: [btcRestore, liquidRestore])
     }
 
-    func loginWithHW(_ device: HWDevice) -> Promise<Void> {
+    func loginHW(_ device: HWDevice) -> Promise<Void> {
         var iterator = self.sessions.values
             .filter { !$0.logged }
             .filter { $0.gdkNetwork.network != "electrum-liquid" }

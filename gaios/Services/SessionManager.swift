@@ -153,18 +153,40 @@ class SessionManager {
         return hash
     }
 
-    func existDatadir(credentials: Credentials) -> Bool {
+    func walletIdentifier(_ network: String, masterXpub: String) -> WalletIdentifier? {
+        let details = ["master_xpub": masterXpub]
+        let res = try? self.session?.getWalletIdentifier(net_params: networkParams(network), details: details)
+        let json = try? JSONSerialization.data(withJSONObject: res ?? [:], options: [])
+        let hash = try? JSONDecoder().decode(WalletIdentifier.self, from: json ?? Data())
+        return hash
+    }
+
+    func existDatadir(credentials: Credentials? = nil, masterXpub: String? = nil) -> Bool {
         if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
-            let hashes = walletIdentifier(gdkNetwork.network, credentials: credentials)
+            let hashes: WalletIdentifier? = {
+                if let masterXpub = masterXpub {
+                    return walletIdentifier(gdkNetwork.network, masterXpub: masterXpub)
+                } else if let credentials = credentials {
+                    return walletIdentifier(gdkNetwork.network, credentials: credentials)
+                }
+                return nil
+            }()
             let dir = url.appendingPathComponent("state/\(hashes?.walletHashId ?? "")", isDirectory: true)
             return FileManager.default.fileExists(atPath: dir.relativePath)
         }
         return false
     }
 
-    func removeDatadir(credentials: Credentials) {
+    func removeDatadir(credentials: Credentials? = nil, masterXpub: String? = nil) {
         if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
-            let hashes = walletIdentifier(gdkNetwork.network, credentials: credentials)
+            let hashes: WalletIdentifier? = {
+                if let masterXpub = masterXpub {
+                    return walletIdentifier(gdkNetwork.network, masterXpub: masterXpub)
+                } else if let credentials = credentials {
+                    return walletIdentifier(gdkNetwork.network, credentials: credentials)
+                }
+                return nil
+            }()
             let dir = url.appendingPathComponent(hashes?.walletHashId ?? "", isDirectory: true)
             try? FileManager.default.removeItem(at: dir)
         }
@@ -331,13 +353,19 @@ class SessionManager {
     }
 
     func loginWithHW(_ hwDevice: HWDevice) -> Promise<String> {
-        let bgq = DispatchQueue.global(qos: .background)
         let data = try? JSONEncoder().encode(hwDevice)
         let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        return Guarantee()
-            .then(on: bgq) { self.connect() }
-            .then(on: bgq) { self.registerHW(hw: hwDevice) }
-            .then(on: bgq) { self.loginUser(hwDevice: ["device": device ?? [:]]) }
+        return self.loginUser(hwDevice: ["device": device ?? [:]])
+    }
+
+    func login(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<String> {
+        if let credentials = credentials {
+            return loginWithCredentials(credentials)
+        } else if let hw = hw {
+            return loginWithHW(hw)
+        } else {
+            return Promise<String>() { seal in seal.reject(GaError.GenericError("No login method specified")) }
+        }
     }
 
     func getCredentials(password: String) -> Promise<Credentials> {
@@ -352,25 +380,15 @@ class SessionManager {
             }.tapLogger()
     }
 
-    func registerSW(_ credentials: Credentials) -> Promise<Void> {
+    func register(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         let data = try? JSONEncoder().encode(credentials)
         let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        let dataHw = try? JSONEncoder().encode(hw)
+        let device = try? JSONSerialization.jsonObject(with: dataHw ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
             .then(on: bgq) { self.connect() }
-            .compactMap(on: bgq) { try self.session?.registerUser(details: details ?? [:], hw_device: [:]) }
-            .then(on: bgq) { $0.resolve(session: self) }
-            .tapLogger()
-            .asVoid()
-    }
-
-    func registerHW(hw: HWDevice) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        let data = try? JSONEncoder().encode(hw)
-        let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments)
-        return Guarantee()
-            .then(on: bgq) { self.connect() }
-            .compactMap(on: bgq) { try self.session?.registerUser(details: [:], hw_device: ["device": device ?? [:]]) }
+            .compactMap(on: bgq) { try self.session?.registerUser(details: details ?? [:], hw_device: ["device": device ?? [:]]) }
             .then(on: bgq) { $0.resolve(session: self) }
             .tapLogger()
             .asVoid()

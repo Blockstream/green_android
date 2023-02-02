@@ -54,6 +54,6 @@ class SystemMessageViewController: UIViewController {
         Guarantee().compactMap { session }
             .then(on: bgq) { $0.ackSystemMessage(message: self.msg.text) }
             .done { _ in self.navigationController?.popViewController(animated: true) }
-            .catch { _ in self.showError("Error removing system message") }
+            .catch { _ in self.showError("Error on system message") }
     }
 }

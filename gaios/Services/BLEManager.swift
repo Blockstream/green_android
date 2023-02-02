@@ -145,14 +145,14 @@ class BLEManager {
         return Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p in Ledger.shared.open(p) }
-            .flatMap { _ in self.getLedgerNetwork(p) }
+            .flatMap { _ in self.getLedgerNetwork() }
             .compactMap { self.session = SessionManager(getGdkNetwork($0.network)) }
             .compactMap { try? self.session?.connect().wait() }
             .compactMap { _ in return true }
     }
 
-    func getLedgerNetwork(_ p: Peripheral) -> Observable<NetworkSecurityCase> {
-        return Observable.just(p)
+    func getLedgerNetwork() -> Observable<NetworkSecurityCase> {
+        return Observable.just(true)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Ledger.shared.application() }
             .compactMap { $0["name"] as? String ?? "" }
@@ -163,6 +163,15 @@ class BLEManager {
                 let network = name.lowercased() == "bitcoin test" ? "testnet" : "mainnet"
                 return NetworkSecurityCase(rawValue: network)
             }
+    }
+
+    func getMasterXpub(_ device: HWDevice, wm: WalletManager) -> Observable<String> {
+        let network = wm.prominentNetwork.gdkNetwork?.chain ?? "mainnet"
+        if device.isJade {
+            return Jade.shared.xpubs(network: network, path: [])
+        }
+        return getLedgerNetwork()
+            .flatMap { Ledger.shared.xpubs(network: $0.network, path: []) }
     }
 
     func connectJade(_ p: Peripheral) -> Observable<Bool> {
@@ -265,8 +274,7 @@ class BLEManager {
             .flatMap { checkFirmware ? self.checkFirmware($0) : Observable.just($0) }
             .flatMap { _ in Jade.shared.version() }
             .compactMap { $0.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS }
-            .compactMap { WalletManager(prominentNetwork: $0) }
-            .flatMap { wm in self.loginDevice(wm: wm, device: self.device!) }
+            .flatMap { self.loginDevice(network: $0, device: self.device!) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 self.delegate?.onLogin(p, account: $0)
@@ -280,36 +288,39 @@ class BLEManager {
             })
     }
 
-    func loginDevice(wm: WalletManager, device: HWDevice) -> Observable<Account> {
-        return Observable<WalletManager>.create { observer in
-            wm.loginWithHW(device)
-                .done { _ in
-                    observer.onNext(wm)
-                    observer.onCompleted()
-                }.catch { err in
-                    observer.onError(err)
+    private func loginDevice(network: NetworkSecurityCase, device: HWDevice) -> Observable<Account> {
+        let wm = WalletManager(prominentNetwork: network)
+        return getMasterXpub(device, wm: wm)
+            .flatMap { masterXpub in
+                return Observable<WalletManager>.create { observer in
+                    wm.loginWithHW(device, masterXpub: masterXpub)
+                        .done { _ in
+                            observer.onNext(wm)
+                            observer.onCompleted()
+                        }.catch { err in
+                            observer.onError(err)
+                        }
+                    return Disposables.create { }
                 }
-            return Disposables.create { }
-        }.compactMap { wm in
-            let network = wm.prominentNetwork
-            let account = Account(name: device.name,
-                                 network: network.chain,
-                                  isJade: device.isJade,
-                                 isLedger: device.isLedger,
-                                 isSingleSig: network.gdkNetwork?.electrum ?? true)
-            AccountsManager.shared.current = account
-            WalletManager.add(for: account, wm: wm)
-            return account
-        }
+            }.compactMap { wm in
+                let network = wm.prominentNetwork
+                let account = Account(name: device.name,
+                                     network: network.chain,
+                                      isJade: device.isJade,
+                                     isLedger: device.isLedger,
+                                     isSingleSig: network.gdkNetwork?.electrum ?? true)
+                AccountsManager.shared.current = account
+                WalletManager.add(for: account, wm: wm)
+                return account
+            }
     }
 
     func loginLedger(_ p: Peripheral) {
         self.device = HWDevice.defaultLedger()
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { _ in self.getLedgerNetwork(p) }
-            .compactMap { WalletManager(prominentNetwork: $0) }
-            .flatMap { wm in self.loginDevice(wm: wm, device: self.device!) }
+            .flatMap { _ in self.getLedgerNetwork() }
+            .flatMap { self.loginDevice(network: $0, device: self.device!) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 self.delegate?.onLogin(p, account: $0)
