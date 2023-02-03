@@ -31,13 +31,13 @@ final class Jade: JadeOTA, HWProtocol {
             }
     }
 
-    func httpRequest<T: Codable, K: Codable>(_ httpRequest: JadeHttpRequest<T>) -> K {
-        let encoded = try? JSONEncoder().encode(httpRequest.params)
-        let serialized = try? JSONSerialization.jsonObject(with: encoded!, options: .allowFragments) as? [String: Any]
+    func httpRequest<T: Codable, K: Codable>(_ httpRequest: JadeHttpRequest<T>) throws -> K {
+        let encoded = try JSONEncoder().encode(httpRequest.params)
+        let serialized = try JSONSerialization.jsonObject(with: encoded, options: .allowFragments) as? [String: Any]
         let httpResponse = gdkRequestDelegate?.httpRequest(params: serialized ?? [:])
         let httpResponseBody = httpResponse?["body"] as? [String: Any]
-        let deserialized = try? JSONSerialization.data(withJSONObject: httpResponseBody ?? [:], options: .fragmentsAllowed)
-        return try! JSONDecoder().decode(K.self, from: deserialized!)
+        let deserialized = try JSONSerialization.data(withJSONObject: httpResponseBody ?? [:], options: .fragmentsAllowed)
+        return try JSONDecoder().decode(K.self, from: deserialized)
     }
 
     func unlock(network: String) -> Observable<Bool> {
@@ -62,13 +62,13 @@ final class Jade: JadeOTA, HWProtocol {
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { (res: JadeResponse<JadeAuthResponse<String>>) -> Observable<JadeResponse<JadeAuthResponse<JadeHandshakeComplete>>> in
                 let request: JadeHttpRequest<String> = res.result!.httpRequest
-                let cmd: JadeHandshakeInit = self.httpRequest(request)
+                let cmd: JadeHandshakeInit = try self.httpRequest(request)
                 let jadePackage = JadeRequest<JadeHandshakeInit>(method: res.result?.httpRequest.onReply ?? "",
                                                                 params: cmd)
                 return self.exchange(jadePackage)
             }.flatMap { (res: JadeResponse<JadeAuthResponse<JadeHandshakeComplete>>) -> Observable<JadeResponse<Bool>> in
                 let request: JadeHttpRequest<JadeHandshakeComplete> = res.result!.httpRequest
-                let package: JadeHandshakeCompleteReply = self.httpRequest(request)
+                let package: JadeHandshakeCompleteReply = try self.httpRequest(request)
                 let jadePackage = JadeRequest<JadeHandshakeCompleteReply>(method: res.result?.httpRequest.onReply ?? "",
                                                                         params: package)
                 return self.exchange(jadePackage)
