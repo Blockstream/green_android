@@ -32,7 +32,6 @@ class HWWConnectViewController: UIViewController {
     private var headerH: CGFloat = 44.0
     private var headerH2: CGFloat = 64.0
     private var openAdditionalNetworks = false
-    private var resetBle = false
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -203,11 +202,6 @@ class HWWConnectViewController: UIViewController {
         hwwState = .connecting
         // connect Ledger X
         if BLEManager.shared.isLedger(peripheral) {
-            BLEManager.shared.connect(peripheral)
-            return
-        }
-        // keep open connection with device, if connected
-        if peripheral.isConnected && !resetBle {
             BLEManager.shared.connect(peripheral)
             return
         }
