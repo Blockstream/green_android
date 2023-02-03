@@ -60,7 +60,8 @@ class BLEManager {
     var peripherals = [Peripheral]()
 
     var scanningDispose: Disposable?
-    var enstablishDispose: Disposable?
+    var prepareDispose: Disposable?
+    var connectDispose: Disposable?
     var statusDispose: Disposable?
 
     weak var delegate: BLEManagerDelegate?
@@ -122,7 +123,8 @@ class BLEManager {
     func dispose() {
         disposeScan()
         statusDispose?.dispose()
-        enstablishDispose?.dispose()
+        prepareDispose?.dispose()
+        connectDispose?.dispose()
     }
 
     func disposeScan() {
@@ -212,7 +214,7 @@ class BLEManager {
             connection = connection
                 .flatMap { $0.establishConnection() }
         }
-        enstablishDispose = connection
+        connectDispose = connection
             .flatMap { _ in self.isJade(p) ? self.connectJade(p) : self.connectLedger(p) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { hasPin in
@@ -251,7 +253,8 @@ class BLEManager {
             .flatMap {  Jade.shared.updateFirmware($0, fmw) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.enstablishDispose?.dispose()
+                self.prepareDispose?.dispose()
+                self.connectDispose?.dispose()
                 self.delegate?.onUpdateFirmware(p, version: fmw.version, prevVersion: currentVersion)
             }, onError: { err in
                 self.onError(err, network: nil)
@@ -387,7 +390,7 @@ class BLEManager {
         }
 
         // dummy 1st connection for jade
-        enstablishDispose = Observable.just(peripheral)
+        prepareDispose = Observable.just(peripheral)
             .timeoutIfNoEvent(RxTimeInterval.seconds(20))
             .flatMap { $0.establishConnection() }
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
