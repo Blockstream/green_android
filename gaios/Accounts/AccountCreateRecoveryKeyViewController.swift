@@ -50,7 +50,7 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = NSLocalizedString("id_advanced_options_for_your_third", comment: "")
+        lblTitle.text = NSLocalizedString("id_select_your_recovery_key", comment: "")
         lblHWTitle.text = NSLocalizedString("id_hardware_wallet", comment: "")
         lblHWHint.text = NSLocalizedString("id_use_a_hardware_wallet_as_your", comment: "")
         lblNewPhraseTitle.text = NSLocalizedString("id_new_recovery_phrase", comment: "")

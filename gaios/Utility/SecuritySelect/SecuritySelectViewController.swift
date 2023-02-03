@@ -27,6 +27,7 @@ class SecuritySelectViewController: UIViewController {
     var viewModel: SecuritySelectViewModel!
     weak var delegate: SecuritySelectViewControllerDelegate?
     var visibilityState: Bool = false
+    var dialogJadeCheckViewController: DialogJadeCheckViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -231,10 +232,22 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         }
     }
 
+    func showHWCheckDialog() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogJadeCheckViewController") as? DialogJadeCheckViewController {
+            dialogJadeCheckViewController = vc
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     func createSubaccount(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) {
+        if AccountsManager.shared.current?.isHW ?? false {
+            showHWCheckDialog()
+        }
         firstly { self.startLoader(message: "Creating new account"); return Guarantee() }
             .then { self.viewModel.create(policy: policy, asset: asset, params: params) }
-            .ensure { self.stopLoader() }
+            .ensure { self.stopLoader(); self.dialogJadeCheckViewController?.dismiss()}
             .done { wallet in
                 DropAlert().success(message: "Account created")
                 self.navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)

@@ -357,6 +357,7 @@
 		81683F9226BC02960058982E /* Transactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9126BC02960058982E /* Transactions.swift */; };
 		81683F9426BC088E0058982E /* WalletItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9326BC088E0058982E /* WalletItem.swift */; };
 		8169EBBD2445F16F0053BC73 /* Jade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8169EBBC2445F16F0053BC73 /* Jade.swift */; };
+		816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */; };
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
 		816F0AF623E47E1E00569A5D /* Wally.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF523E47E1E00569A5D /* Wally.swift */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
@@ -811,6 +812,7 @@
 		81683F9126BC02960058982E /* Transactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transactions.swift; sourceTree = "<group>"; };
 		81683F9326BC088E0058982E /* WalletItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletItem.swift; sourceTree = "<group>"; };
 		8169EBBC2445F16F0053BC73 /* Jade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jade.swift; sourceTree = "<group>"; };
+		816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogJadeCheckViewController.swift; sourceTree = "<group>"; };
 		816F0AF323E4713600569A5D /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
 		817417362236E85500A28E36 /* ScreenLockWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockWindow.swift; sourceTree = "<group>"; };
@@ -1789,6 +1791,7 @@
 				340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */,
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				34A862A02979432C0018E636 /* DialogShowQRViewController.swift */,
+				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
 				3457F4AC2923978600EF33B5 /* DialogList */,
 			);
 			path = Controllers;
@@ -2628,6 +2631,7 @@
 				81F72E0928904D3F00D4DEFF /* Credentials.swift in Sources */,
 				349C75242796DBB90046DA59 /* AssetCell.swift in Sources */,
 				34E0CA9029817CE400695304 /* CountlyWidget.swift in Sources */,
+				816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				8111485F287891F500C6F030 /* JadeOTA.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
