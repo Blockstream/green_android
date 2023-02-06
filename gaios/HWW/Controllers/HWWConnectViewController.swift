@@ -222,8 +222,7 @@ class HWWConnectViewController: UIViewController {
 
     @IBAction func btnLogin(_ sender: Any) {
         if hwwState == .prepared {
-            hwwState = .connecting
-            connect(peripheral)
+            acceptTerms()
             return
         }
         if hwwState == .upgradedFirmware {
@@ -278,35 +277,37 @@ extension HWWConnectViewController {
 extension HWWConnectViewController: BLEManagerDelegate {
 
     func onError(_ error: BLEManagerError) {
-        hideLoader()
-        hwwState = .connectFailed
-        switch error {
-        case .powerOff(let txt):
-            lblStateHint.text = txt
-        case .notReady(let txt):
-            lblStateHint.text = txt
-        case .scanErr(let txt):
-            lblStateHint.text = txt
-        case .bleErr(let txt):
-            lblStateHint.text = txt
-        case .timeoutErr(let txt):
-            lblStateHint.text = txt
-        case .dashboardErr(let txt):
-            lblStateHint.text = txt
-        case .outdatedAppErr(let txt):
-            lblStateHint.text = txt
-        case .wrongAppErr(let txt):
-            lblStateHint.text = txt
-        case .authErr(let txt):
-            lblStateHint.text = txt
-        case .swErr(let txt):
-            lblStateHint.text = txt
-        case .genericErr(let txt):
-            lblStateHint.text = txt
-        case .firmwareErr(txt: let txt):
-            lblStateHint.text = txt
-        case .unauthorized(txt: let txt):
-            lblStateHint.text = txt
+        DispatchQueue.main.async {
+            self.hideLoader()
+            self.hwwState = .connectFailed
+            switch error {
+            case .powerOff(let txt):
+                self.lblStateHint.text = txt
+            case .notReady(let txt):
+                self.lblStateHint.text = txt
+            case .scanErr(let txt):
+                self.lblStateHint.text = txt
+            case .bleErr(let txt):
+                self.lblStateHint.text = txt
+            case .timeoutErr(let txt):
+                self.lblStateHint.text = txt
+            case .dashboardErr(let txt):
+                self.lblStateHint.text = txt
+            case .outdatedAppErr(let txt):
+                self.lblStateHint.text = txt
+            case .wrongAppErr(let txt):
+                self.lblStateHint.text = txt
+            case .authErr(let txt):
+                self.lblStateHint.text = txt
+            case .swErr(let txt):
+                self.lblStateHint.text = txt
+            case .genericErr(let txt):
+                self.lblStateHint.text = txt
+            case .firmwareErr(txt: let txt):
+                self.lblStateHint.text = txt
+            case .unauthorized(txt: let txt):
+                self.lblStateHint.text = txt
+            }
         }
     }
 
@@ -453,5 +454,27 @@ extension HWWConnectViewController: DialogListViewControllerDelegate {
         case .none:
             break
         }
+    }
+}
+extension HWWConnectViewController: LandingViewControllerDelegate {
+    func acceptTerms() {
+        let isAcceptTerms = UserDefaults.standard.bool(forKey: AppStorage.acceptedTerms)
+        if isAcceptTerms {
+            hwwState = .connecting
+            connect(peripheral)
+            return
+        }
+        let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = onBoardS.instantiateViewController(withIdentifier: "LandingViewController") as? LandingViewController {
+            vc.landingScope = .hwTerms
+            vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    func didPressContinue() {
+        navigationController?.popViewController(animated: true)
+        UserDefaults.standard.set(true, forKey: AppStorage.acceptedTerms)
+        hwwState = .connecting
+        connect(peripheral)
     }
 }

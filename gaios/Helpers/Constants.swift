@@ -34,6 +34,7 @@ enum AppStorage {
     static let alwaysAskPassphrase = "always_ask_passphrase"
     static let storeReviewDate = "store_review_date"
     static let hideBalance = "hide_balance"
+    static let acceptedTerms = "accepted_terms"
 }
 
 enum ExternalUrls {
