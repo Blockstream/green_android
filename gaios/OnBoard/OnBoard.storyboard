@@ -33,10 +33,10 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="main_connect" translatesAutoresizingMaskIntoConstraints="NO" id="qcB-d4-9Se">
-                                        <rect key="frame" x="28" y="186" width="318.33333333333331" height="222"/>
+                                        <rect key="frame" x="28" y="186" width="318.33333333333331" height="177"/>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hod-w2-Zgk">
-                                        <rect key="frame" x="63.999999999999986" y="428" width="246.66666666666663" height="44"/>
+                                        <rect key="frame" x="63.999999999999986" y="383" width="246.66666666666663" height="44"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Ou-4p-Myn" customClass="CheckButton" customModule="gaios" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="10" width="24" height="24"/>
@@ -49,7 +49,7 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I agree to the" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hog-Jp-Aud">
-                                                <rect key="frame" x="40.000000000000007" y="13.666666666666629" width="85.666666666666686" height="17"/>
+                                                <rect key="frame" x="40.000000000000007" y="13.666666666666686" width="85.666666666666686" height="17"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
@@ -75,64 +75,83 @@
                                             <constraint firstItem="JLH-nV-dPg" firstAttribute="centerY" secondItem="Hog-Jp-Aud" secondAttribute="centerY" id="uXw-ra-RGG"/>
                                         </constraints>
                                     </view>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b5z-iW-byq">
-                                        <rect key="frame" x="36" y="502" width="302.66666666666669" height="50"/>
-                                        <color key="backgroundColor" name="customMatrixGreen"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="Ggg-DX-gqz"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                        <state key="normal" title="New Wallet">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="btnNewWallet:" destination="fPK-fB-0Wm" eventType="touchUpInside" id="yzV-k8-dLg"/>
-                                        </connections>
-                                    </button>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="FFT-KF-RIS">
+                                        <rect key="frame" x="36" y="447" width="302.66666666666669" height="230"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b5z-iW-byq">
+                                                <rect key="frame" x="0.0" y="0.0" width="302.66666666666669" height="50"/>
+                                                <color key="backgroundColor" name="customMatrixGreen"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="Ggg-DX-gqz"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                                <state key="normal" title="New Wallet">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="btnNewWallet:" destination="fPK-fB-0Wm" eventType="touchUpInside" id="yzV-k8-dLg"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="88a-ng-k7N">
+                                                <rect key="frame" x="0.0" y="60" width="302.66666666666669" height="50"/>
+                                                <color key="backgroundColor" name="customMatrixGreen"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="hkh-Fp-IYP"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                                <state key="normal" title="Restore a Wallet">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="btnRestoreWallet:" destination="fPK-fB-0Wm" eventType="touchUpInside" id="don-gC-V2u"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4c3-fJ-IXe" userLabel="Watch Only">
+                                                <rect key="frame" x="0.0" y="120" width="302.66666666666669" height="50"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="zdl-gU-lUI"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                                <state key="normal" title="Watch-only Wallet">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="btnWatchOnly:" destination="fPK-fB-0Wm" eventType="touchUpInside" id="mjl-fw-hLX"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8oT-iv-UKs">
+                                                <rect key="frame" x="0.0" y="180" width="302.66666666666669" height="50"/>
+                                                <color key="backgroundColor" name="customMatrixGreen"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="Qtf-mV-45Y"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                                <state key="normal" title="Continue">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="btnContinue:" destination="fPK-fB-0Wm" eventType="touchUpInside" id="bih-4A-gdf"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_plus" translatesAutoresizingMaskIntoConstraints="NO" id="Akr-0E-7Dy">
-                                        <rect key="frame" x="51" y="517" width="20" height="20"/>
+                                        <rect key="frame" x="51" y="462" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="20" id="Kdx-q6-sVY"/>
                                             <constraint firstAttribute="height" constant="20" id="V1R-c6-Xoh"/>
                                         </constraints>
                                     </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="88a-ng-k7N">
-                                        <rect key="frame" x="36" y="562" width="302.66666666666669" height="50"/>
-                                        <color key="backgroundColor" name="customMatrixGreen"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="hkh-Fp-IYP"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                        <state key="normal" title="Restore a Wallet">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="btnRestoreWallet:" destination="fPK-fB-0Wm" eventType="touchUpInside" id="don-gC-V2u"/>
-                                        </connections>
-                                    </button>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_restore" translatesAutoresizingMaskIntoConstraints="NO" id="579-ag-LjF">
-                                        <rect key="frame" x="51" y="577" width="20" height="20"/>
+                                        <rect key="frame" x="51" y="522" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="Toj-vq-U9p"/>
                                             <constraint firstAttribute="width" constant="20" id="pzB-AE-NnM"/>
                                         </constraints>
                                     </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4c3-fJ-IXe" userLabel="Watch Only">
-                                        <rect key="frame" x="36" y="622" width="302.66666666666669" height="50"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="zdl-gU-lUI"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                        <state key="normal" title="Watch-only Wallet">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="btnWatchOnly:" destination="fPK-fB-0Wm" eventType="touchUpInside" id="mjl-fw-hLX"/>
-                                        </connections>
-                                    </button>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_eye" translatesAutoresizingMaskIntoConstraints="NO" id="7gd-7b-ogH">
-                                        <rect key="frame" x="51" y="637" width="20" height="20"/>
+                                        <rect key="frame" x="51" y="582" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="20" id="4k0-En-S8J"/>
                                             <constraint firstAttribute="height" constant="20" id="uuz-uO-nte"/>
@@ -141,33 +160,27 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="FFT-KF-RIS" secondAttribute="bottom" constant="10" id="42J-X3-aT0"/>
                                     <constraint firstItem="R41-BU-hQX" firstAttribute="top" secondItem="zE5-gL-Bez" secondAttribute="bottom" constant="20" id="5Yk-Pe-E9y"/>
-                                    <constraint firstItem="b5z-iW-byq" firstAttribute="leading" secondItem="ZhA-dQ-4CX" secondAttribute="leading" constant="36" id="7oD-Qj-VDS"/>
+                                    <constraint firstItem="FFT-KF-RIS" firstAttribute="top" secondItem="hod-w2-Zgk" secondAttribute="bottom" constant="20" id="9ne-VO-wdq"/>
                                     <constraint firstItem="R41-BU-hQX" firstAttribute="leading" secondItem="zE5-gL-Bez" secondAttribute="leading" id="BeY-KP-ufT"/>
                                     <constraint firstItem="qcB-d4-9Se" firstAttribute="top" secondItem="R41-BU-hQX" secondAttribute="bottom" constant="20" id="CXi-Dc-Nkj"/>
-                                    <constraint firstItem="579-ag-LjF" firstAttribute="centerY" secondItem="88a-ng-k7N" secondAttribute="centerY" id="EL7-Tj-KjS"/>
-                                    <constraint firstItem="4c3-fJ-IXe" firstAttribute="leading" secondItem="ZhA-dQ-4CX" secondAttribute="leading" constant="36" id="EOh-r9-ovP"/>
-                                    <constraint firstItem="7gd-7b-ogH" firstAttribute="centerY" secondItem="4c3-fJ-IXe" secondAttribute="centerY" id="EZx-Kq-lDC"/>
+                                    <constraint firstItem="579-ag-LjF" firstAttribute="leading" secondItem="88a-ng-k7N" secondAttribute="leading" constant="15" id="Cxm-JP-AiQ"/>
+                                    <constraint firstItem="7gd-7b-ogH" firstAttribute="centerY" secondItem="4c3-fJ-IXe" secondAttribute="centerY" id="Esm-rR-OTj"/>
                                     <constraint firstItem="zE5-gL-Bez" firstAttribute="leading" secondItem="ZhA-dQ-4CX" secondAttribute="leading" constant="36" id="IxH-Qm-fBl"/>
-                                    <constraint firstItem="4c3-fJ-IXe" firstAttribute="top" secondItem="88a-ng-k7N" secondAttribute="bottom" constant="10" id="J4X-rW-A1k"/>
                                     <constraint firstItem="hod-w2-Zgk" firstAttribute="top" secondItem="qcB-d4-9Se" secondAttribute="bottom" constant="20" id="J9B-aO-98y"/>
+                                    <constraint firstItem="579-ag-LjF" firstAttribute="centerY" secondItem="88a-ng-k7N" secondAttribute="centerY" id="JkD-g3-uId"/>
                                     <constraint firstItem="qcB-d4-9Se" firstAttribute="width" secondItem="ZhA-dQ-4CX" secondAttribute="width" multiplier="0.85" id="MGX-Ef-810"/>
-                                    <constraint firstAttribute="bottom" secondItem="4c3-fJ-IXe" secondAttribute="bottom" constant="15" id="NY7-6e-e9e"/>
-                                    <constraint firstItem="88a-ng-k7N" firstAttribute="leading" secondItem="ZhA-dQ-4CX" secondAttribute="leading" constant="36" id="O7B-V0-FHQ"/>
-                                    <constraint firstItem="7gd-7b-ogH" firstAttribute="leading" secondItem="4c3-fJ-IXe" secondAttribute="leading" constant="15" id="PTD-hH-yFo"/>
-                                    <constraint firstItem="Akr-0E-7Dy" firstAttribute="leading" secondItem="b5z-iW-byq" secondAttribute="leading" constant="15" id="Tqp-du-cQj"/>
-                                    <constraint firstAttribute="trailing" secondItem="4c3-fJ-IXe" secondAttribute="trailing" constant="36" id="VpG-c3-VQI"/>
+                                    <constraint firstAttribute="trailing" secondItem="FFT-KF-RIS" secondAttribute="trailing" constant="36" id="ThP-sU-dCS"/>
+                                    <constraint firstItem="7gd-7b-ogH" firstAttribute="leading" secondItem="4c3-fJ-IXe" secondAttribute="leading" constant="15" id="Ymb-Pz-dKy"/>
                                     <constraint firstItem="qcB-d4-9Se" firstAttribute="centerX" secondItem="ZhA-dQ-4CX" secondAttribute="centerX" id="abn-mB-1bk"/>
-                                    <constraint firstItem="579-ag-LjF" firstAttribute="leading" secondItem="88a-ng-k7N" secondAttribute="leading" constant="15" id="b1N-Be-bcS"/>
-                                    <constraint firstItem="88a-ng-k7N" firstAttribute="top" secondItem="b5z-iW-byq" secondAttribute="bottom" constant="10" id="dga-He-biU"/>
+                                    <constraint firstItem="FFT-KF-RIS" firstAttribute="leading" secondItem="ZhA-dQ-4CX" secondAttribute="leading" constant="36" id="akM-AZ-hnv"/>
+                                    <constraint firstItem="Akr-0E-7Dy" firstAttribute="leading" secondItem="b5z-iW-byq" secondAttribute="leading" constant="15" id="cvd-vQ-iDl"/>
                                     <constraint firstItem="zE5-gL-Bez" firstAttribute="top" secondItem="ZhA-dQ-4CX" secondAttribute="top" constant="36" id="fR5-z3-25q"/>
+                                    <constraint firstItem="Akr-0E-7Dy" firstAttribute="centerY" secondItem="b5z-iW-byq" secondAttribute="centerY" id="nFB-Iu-Bce"/>
                                     <constraint firstItem="hod-w2-Zgk" firstAttribute="centerX" secondItem="ZhA-dQ-4CX" secondAttribute="centerX" id="nkv-fS-Puv"/>
                                     <constraint firstAttribute="trailing" secondItem="zE5-gL-Bez" secondAttribute="trailing" constant="36" id="oWR-tL-HvN"/>
                                     <constraint firstItem="R41-BU-hQX" firstAttribute="trailing" secondItem="zE5-gL-Bez" secondAttribute="trailing" id="s8z-4d-ugO"/>
-                                    <constraint firstAttribute="trailing" secondItem="88a-ng-k7N" secondAttribute="trailing" constant="36" id="siM-Qn-c6b"/>
-                                    <constraint firstItem="b5z-iW-byq" firstAttribute="top" secondItem="hod-w2-Zgk" secondAttribute="bottom" constant="30" id="ttz-TW-jvG"/>
-                                    <constraint firstItem="Akr-0E-7Dy" firstAttribute="centerY" secondItem="b5z-iW-byq" secondAttribute="centerY" id="vag-hF-BBw"/>
-                                    <constraint firstAttribute="trailing" secondItem="b5z-iW-byq" secondAttribute="trailing" constant="36" id="ySY-54-vfU"/>
                                     <constraint firstItem="hod-w2-Zgk" firstAttribute="width" relation="lessThanOrEqual" secondItem="ZhA-dQ-4CX" secondAttribute="width" multiplier="0.85" id="zLy-Sm-y0s"/>
                                 </constraints>
                             </view>
@@ -186,6 +199,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="btnCheckTerms" destination="3Ou-4p-Myn" id="sZA-oP-dU4"/>
+                        <outlet property="btnContinue" destination="8oT-iv-UKs" id="cPM-Sr-Ql7"/>
                         <outlet property="btnNewWallet" destination="b5z-iW-byq" id="xy8-Wi-DVt"/>
                         <outlet property="btnRestoreWallet" destination="88a-ng-k7N" id="pKl-hs-GMi"/>
                         <outlet property="btnTerms" destination="JLH-nV-dPg" id="IFi-uA-5Tj"/>

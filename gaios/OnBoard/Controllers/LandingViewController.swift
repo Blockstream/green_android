@@ -17,6 +17,15 @@ enum ActionOnButton {
     case watchOnly
 }
 
+enum LandingScope {
+    case onBoard
+    case hwTerms
+}
+
+protocol LandingViewControllerDelegate: AnyObject {
+    func didPressContinue()
+}
+
 class LandingViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -28,6 +37,7 @@ class LandingViewController: UIViewController {
     @IBOutlet weak var btnNewWallet: UIButton!
     @IBOutlet weak var btnRestoreWallet: UIButton!
     @IBOutlet weak var btnWatchOnly: UIButton!
+    @IBOutlet weak var btnContinue: UIButton!
 
     @IBOutlet weak var iconPlus: UIImageView!
     @IBOutlet weak var iconRestore: UIImageView!
@@ -38,9 +48,20 @@ class LandingViewController: UIViewController {
 
     var actionOnButton: ActionOnButton?
     var iAgree: Bool = false
+    var landingScope: LandingScope = .onBoard
+
+    weak var delegate: LandingViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        switch landingScope {
+        case .onBoard:
+            btnContinue.isHidden = true
+        case .hwTerms:
+            [btnNewWallet, btnRestoreWallet, btnWatchOnly, iconPlus, iconRestore, iconWatch]
+                .forEach { $0?.alpha = 0.0}
+        }
 
         iAgree = AccountsManager.shared.swAccounts.count > 0
 
@@ -55,7 +76,9 @@ class LandingViewController: UIViewController {
         btnRestoreWallet.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.restoreWalletBtn
         btnWatchOnly.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.watchOnlyWalletBtn
 
-        AnalyticsManager.shared.recordView(.onBoardIntro)
+        if landingScope == .onBoard {
+            AnalyticsManager.shared.recordView(.onBoardIntro)
+        }
     }
 
     func customBack() {
@@ -79,6 +102,7 @@ class LandingViewController: UIViewController {
         btnNewWallet.setTitle(NSLocalizedString("id_new_wallet", comment: ""), for: .normal)
         btnRestoreWallet.setTitle(NSLocalizedString("id_restore_wallet", comment: ""), for: .normal)
         btnWatchOnly.setTitle(NSLocalizedString("id_watchonly", comment: ""), for: .normal)
+        btnContinue.setTitle("Continue", for: .normal)
     }
 
     func setStyle() {
@@ -87,6 +111,7 @@ class LandingViewController: UIViewController {
         btnWatchOnly.cornerRadius = 4.0
         btnWatchOnly.borderWidth = 1.0
         btnWatchOnly.borderColor = UIColor.customGrayLight()
+        btnContinue.setStyle(.primaryDisabled)
     }
 
     func updateUI() {
@@ -104,6 +129,7 @@ class LandingViewController: UIViewController {
             iconPlus.image = iconPlus.image?.maskWithColor(color: .white)
             iconRestore.image = iconRestore.image?.maskWithColor(color: .white)
             iconWatch.image = iconWatch.image?.maskWithColor(color: UIColor.customMatrixGreen())
+            btnContinue.setStyle(.primary)
         } else {
             btnNewWallet.backgroundColor = UIColor.customBtnOff()
             btnRestoreWallet.backgroundColor = UIColor.customBtnOff()
@@ -113,6 +139,7 @@ class LandingViewController: UIViewController {
             iconPlus.image = iconPlus.image?.maskWithColor(color: UIColor.customGrayLight())
             iconRestore.image = iconRestore.image?.maskWithColor(color: UIColor.customGrayLight())
             iconWatch.image = iconWatch.image?.maskWithColor(color: UIColor.customGrayLight())
+            btnContinue.setStyle(.primaryDisabled)
         }
     }
 
@@ -193,6 +220,10 @@ class LandingViewController: UIViewController {
 
     @IBAction func btnWatchOnly(_ sender: Any) {
         onNext(.watchOnly)
+    }
+
+    @IBAction func btnContinue(_ sender: Any) {
+        delegate?.didPressContinue()
     }
 }
 
