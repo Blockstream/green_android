@@ -155,6 +155,9 @@ class HWWConnectViewController: UIViewController {
         case .connected:
             showLoader()
             lblStateHint.text = NSLocalizedString("id_logging_in", comment: "")
+        case .authenticated:
+            showLoader()
+            lblStateHint.text = NSLocalizedString("id_logging_in", comment: "")
         case .connectFailed:
             hideLoader()
             navigationItem.setHidesBackButton(false, animated: true)
@@ -179,7 +182,7 @@ class HWWConnectViewController: UIViewController {
             navigationItem.setHidesBackButton(false, animated: true)
         case .initialized:
             lblStateHint.text = NSLocalizedString("id_ready_to_start", comment: "")
-            btnLogin.isHidden = false
+            btnLogin.isHidden = true
         case .upgradedFirmware:
             lblStateHint.text = NSLocalizedString("id_firmware_update_completed", comment: "")
             btnLogin.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
@@ -198,7 +201,7 @@ class HWWConnectViewController: UIViewController {
         reloadData()
     }
 
-    func connect(_ peripheral: Peripheral) {
+    func connect(_ peripheral: Peripheral, testnet: Bool? = nil) {
         hwwState = .connecting
         // connect Ledger X
         if BLEManager.shared.isLedger(peripheral) {
@@ -233,6 +236,7 @@ class HWWConnectViewController: UIViewController {
 
     @IBAction func btnLogin(_ sender: Any) {
         if hwwState == .prepared {
+            hwwState = .connecting
             connect(peripheral)
             return
         }
@@ -242,8 +246,13 @@ class HWWConnectViewController: UIViewController {
             navigationController?.popViewController(animated: true)
             return
         }
-        hwwState = .connected
-        BLEManager.shared.loginJade(peripheral)
+        if hwwState == .connected {
+            hwwState = .connecting
+            BLEManager.shared.auth(peripheral)
+            return
+        }
+        hwwState = .connecting
+        BLEManager.shared.login(peripheral)
     }
 
     @IBAction func btnSettings(_ sender: Any) {
@@ -388,18 +397,31 @@ extension HWWConnectViewController: BLEManagerDelegate {
         }
     }
 
-    func onPrepare( _ p: Peripheral, reset: Bool = false) {
+    func onPrepared( _ p: Peripheral) {
         DispatchQueue.main.async {
             self.hwwState = .prepared
         }
     }
 
-    func onAuthenticate(_ peripheral: Peripheral, firstInitialization: Bool) {
+    func onConnected(_ peripheral: Peripheral, firstInitialization: Bool) {
         DispatchQueue.main.async {
+            self.hwwState = .followDevice
+            // if hw unitialized and testnet available on settings,
+            // allow network selection testnet / mainnet
+            let testnetAvailable = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
             if firstInitialization {
-                self.hwwState = .initialized
+                if testnetAvailable {
+                    self.selectNetwork()
+                    return
+                }
             }
-            self.hwwState = .connected
+            BLEManager.shared.auth(peripheral)
+        }
+    }
+
+    func onAuthenticated(_ peripheral: Peripheral) {
+        DispatchQueue.main.async {
+            self.hwwState = .authenticated
             BLEManager.shared.login(peripheral)
         }
     }
@@ -579,5 +601,31 @@ extension HWWConnectViewController {
             toggleBtn.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20.0)
         ])
         return section
+    }
+}
+
+extension HWWConnectViewController: DialogListViewControllerDelegate {
+
+    func selectNetwork() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Select Network", type: .networkPrefs, items: NetworkPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch NetworkPrefs(rawValue: index) {
+        case .mainnet:
+            LandingViewController.chainType = .mainnet
+            BLEManager.shared.auth(peripheral, testnet: false)
+        case .testnet:
+            LandingViewController.chainType = .testnet
+            BLEManager.shared.auth(peripheral, testnet: true)
+        case .none:
+            break
+        }
     }
 }

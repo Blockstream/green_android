@@ -32,8 +32,9 @@ protocol BLEManagerScanDelegate: AnyObject {
 }
 
 protocol BLEManagerDelegate: AnyObject {
-    func onPrepare(_: Peripheral, reset: Bool)
-    func onAuthenticate(_: Peripheral, firstInitialization: Bool)
+    func onPrepared(_: Peripheral)
+    func onConnected(_: Peripheral, firstInitialization: Bool)
+    func onAuthenticated(_: Peripheral)
     func onLogin(_: Peripheral, account: Account)
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
@@ -177,17 +178,27 @@ class BLEManager {
     }
 
     func connectJade(_ p: Peripheral) -> Observable<Bool> {
-        var hasPin = false
         return Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p in Jade.shared.open(p) }
             .flatMap { _ in Jade.shared.addEntropy() }
             .flatMap { _ in Jade.shared.version() }
+            .compactMap { $0.jadeHasPin }
+    }
+
+    func auth(_ p: Peripheral, testnet: Bool? = nil) {
+        if isLedger(p) {
+            delegate?.onAuthenticated(p)
+            return
+        }
+        _ = Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { _ in Jade.shared.version() }
             .flatMap { version -> Observable<Bool> in
-                hasPin = version.jadeHasPin
                 self.fmwVersion = version.jadeVersion
                 self.boardType = version.boardType
-                let networkType: NetworkSecurityCase = version.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS
+                let isTestnet = (testnet == true && version.jadeNetworks == "ALL") || version.jadeNetworks == "TEST"
+                let networkType: NetworkSecurityCase = isTestnet ? .testnetSS : .bitcoinSS
                 let chain = networkType.chain
                 // connect to network pin server
                 self.session = SessionManager(getGdkNetwork(networkType.network))
@@ -203,7 +214,12 @@ class BLEManager {
                     return Jade.shared.auth(network: chain)
                             .retry(3)
                 }
-            }.compactMap { _ in return hasPin }
+            }.subscribeOn(MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                self.delegate?.onAuthenticated(p)
+            }, onError: { error in
+                self.onError(error, network: "")
+            })
     }
 
     func connect(_ p: Peripheral) {
@@ -218,7 +234,7 @@ class BLEManager {
             .flatMap { _ in self.isJade(p) ? self.connectJade(p) : self.connectLedger(p) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { hasPin in
-                self.delegate?.onAuthenticate(p, firstInitialization: !hasPin)
+                self.delegate?.onConnected(p, firstInitialization: !hasPin)
             }, onError: { err in
                 self.onError(err, network: "")
             })
@@ -267,7 +283,7 @@ class BLEManager {
         }
     }
 
-    func login(_ p: Peripheral, network: NetworkSecurityCase? = nil) {
+    func login(_ p: Peripheral) {
         isJade(p) ? loginJade(p) : loginLedger(p)
     }
 
@@ -382,10 +398,10 @@ class BLEManager {
 
     func prepare(_ peripheral: Peripheral) {
         if peripheral.isConnected {
-            self.delegate?.onPrepare(peripheral, reset: false)
+            self.delegate?.onPrepared(peripheral)
             return
         } else if isLedger(peripheral) {
-            self.delegate?.onPrepare(peripheral, reset: false)
+            self.delegate?.onPrepared(peripheral)
             return
         }
 
@@ -397,7 +413,7 @@ class BLEManager {
             .compactMap { _ in sleep(3) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onPrepare(peripheral, reset: true)
+                self.delegate?.onPrepared(peripheral)
             }, onError: { err in
                 self.onError(err, network: nil)
         })

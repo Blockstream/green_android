@@ -4,6 +4,7 @@ enum HWWState {
     case prepared
     case connecting
     case connected
+    case authenticated
     case connectFailed
     case selectNetwork
     case followDevice
