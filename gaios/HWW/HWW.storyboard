@@ -331,10 +331,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HuK-YR-FjH" userLabel="LogIn">
-                                <rect key="frame" x="36" y="492" width="248" height="40"/>
+                                <rect key="frame" x="36" y="508" width="248" height="50"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="2HL-ci-YAG"/>
+                                    <constraint firstAttribute="height" constant="50" id="2HL-ci-YAG"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                 <state key="normal" title="btn_login">
@@ -345,10 +345,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UrZ-GE-NqN" userLabel="TryAgain">
-                                <rect key="frame" x="36" y="442" width="248" height="40"/>
+                                <rect key="frame" x="36" y="448" width="248" height="50"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="u7G-J8-hUQ"/>
+                                    <constraint firstAttribute="height" constant="50" id="u7G-J8-hUQ"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                 <state key="normal" title="btn_try_again">
@@ -359,10 +359,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B6p-dQ-103" userLabel="NeedHelp">
-                                <rect key="frame" x="36" y="492" width="248" height="40"/>
+                                <rect key="frame" x="36" y="508" width="248" height="50"/>
                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="c0g-kE-bvu"/>
+                                    <constraint firstAttribute="height" constant="50" id="c0g-kE-bvu"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                 <state key="normal" title="btn_need_help">
@@ -378,13 +378,13 @@
                         <constraints>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="4wr-jd-S1t" secondAttribute="trailing" constant="36" id="00r-m6-1e0"/>
                             <constraint firstItem="wsg-i1-SUm" firstAttribute="centerX" secondItem="fgq-lv-tEf" secondAttribute="centerX" id="02x-nS-bu4"/>
-                            <constraint firstItem="fgq-lv-tEf" firstAttribute="bottom" secondItem="HuK-YR-FjH" secondAttribute="bottom" constant="36" id="3RT-lu-e0q"/>
+                            <constraint firstItem="fgq-lv-tEf" firstAttribute="bottom" secondItem="HuK-YR-FjH" secondAttribute="bottom" constant="10" id="3RT-lu-e0q"/>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="mgy-f1-SHM" secondAttribute="trailing" id="4PZ-Qh-rqV"/>
                             <constraint firstItem="SaN-aG-aqb" firstAttribute="centerX" secondItem="wsg-i1-SUm" secondAttribute="centerX" id="4nV-za-miS"/>
                             <constraint firstItem="mgy-f1-SHM" firstAttribute="top" secondItem="wsg-i1-SUm" secondAttribute="bottom" constant="50" id="7YQ-aQ-3Ds"/>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="bottom" secondItem="d8v-I3-wLb" secondAttribute="bottom" constant="10" id="9h1-dL-x5A"/>
                             <constraint firstItem="mgy-f1-SHM" firstAttribute="height" secondItem="L7G-pK-rAm" secondAttribute="height" multiplier="0.09" id="A1v-NL-qlR"/>
-                            <constraint firstItem="fgq-lv-tEf" firstAttribute="bottom" secondItem="B6p-dQ-103" secondAttribute="bottom" constant="36" id="A6X-4g-NTR"/>
+                            <constraint firstItem="fgq-lv-tEf" firstAttribute="bottom" secondItem="B6p-dQ-103" secondAttribute="bottom" constant="10" id="A6X-4g-NTR"/>
                             <constraint firstItem="aUt-wd-yuI" firstAttribute="centerX" secondItem="wsg-i1-SUm" secondAttribute="centerX" id="DKS-YJ-1Qb"/>
                             <constraint firstItem="HuK-YR-FjH" firstAttribute="leading" secondItem="fgq-lv-tEf" secondAttribute="leading" constant="36" id="Ea2-wG-Apf"/>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="SaN-aG-aqb" secondAttribute="trailing" constant="36" id="G86-2o-StB"/>
