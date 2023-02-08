@@ -80,16 +80,16 @@ class SendViewModel {
 
     func loadRecipient() {
         var recipient = RecipientCellModel(account: account, inputType: inputType)
+        recipient.assetId = account.gdkNetwork.getFeeAsset()
         if inputType == .bumpFee {
             let addressee = transaction?.addressees.first
             recipient.address = addressee?.address
             if let satoshi = addressee?.satoshi {
-                let (amount, _) = satoshi == 0 ? ("", "") : Balance.fromSatoshi(satoshi)?.toDenom() ?? ("", "")
+                let (amount, _) = satoshi == 0 ? ("", "") : Balance.fromSatoshi(satoshi, assetId: recipient.assetId!)?.toDenom() ?? ("", "")
                 recipient.amount = amount
             }
             recipient.txError = transaction?.error ?? ""
         }
-        recipient.assetId = account.gdkNetwork.liquid ? nil : AssetInfo.btcId
         recipientCellModels.append(recipient)
     }
 
@@ -156,8 +156,7 @@ class SendViewModel {
                 if !session.gdkNetwork.electrum {
                     value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
                 }
-                let assetInfo = WalletManager.current?.registry.info(for: asset)
-                if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
+                if let balance = Balance.fromSatoshi(value, assetId: asset) {
                     let (amount, _) = value == 0 ? ("", "") : balance.toValue()
                     recipientCellModels[0].amount = amount
                 }

@@ -72,7 +72,7 @@ struct AssetInfo: Codable, Comparable {
         return AssetInfo(assetId: lbtcId,
                          name: "Liquid Bitcoin",
                          precision: denom.digits,
-                         ticker: DenominationType.denominationsBTC[denom])
+                         ticker: DenominationType.denominationsLBTC[denom])
     }
 
     static var ltest: AssetInfo {

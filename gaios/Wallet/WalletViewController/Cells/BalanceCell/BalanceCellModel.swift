@@ -39,27 +39,22 @@ class BalanceCellModel {
     }
 
     func getValues(satoshi: Int64, mode: BalanceDisplayMode) -> (String, String) {
-
+        let balance = Balance.fromSatoshi(satoshi, assetId: "btc")
         var valueToBTC = "--"
         var valueToDenom = "--"
         var valueToFiat = "--"
 
-        if let balance = Balance.fromSatoshi(satoshi)?.toDenom() {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: "btc")?.toDenom() {
             valueToDenom = "\(balance.0) \(balance.1)"
         }
 
-        if let balance = Balance.fromSatoshi(satoshi)?.toFiat() {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: "btc")?.toFiat() {
             valueToFiat = "\(balance.0) \(balance.1)"
         }
 
-        if let balance = Balance.fromSatoshi(satoshi)?.toBTC() {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: "btc")?.toBTC() {
             valueToBTC = "\(balance.0) \(balance.1)"
         }
-
-        print(mode)
-        print(valueToDenom)
-        print(valueToFiat)
-        print(valueToBTC)
 
         switch mode {
         case .btc:

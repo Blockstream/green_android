@@ -24,14 +24,12 @@ class AssetAmountView: UIView {
     }
 
     func setup(tx: Transaction, satoshi: Int64, assetId: String) {
-        let registry = WalletManager.current?.registry
-        let asset = registry?.info(for: assetId)
-        if let balance = Balance.fromSatoshi(satoshi, asset: asset) {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (value, denom) = balance.toValue()
             lblAmount.text = String(format: "%@%@", satoshi > 0 ? "+" : "", value)
             lblDenom.text = "\(denom)"
         }
-        icon.image = registry?.image(for: assetId)
+        icon.image = WalletManager.current?.registry.image(for: assetId)
         lblAmount.textColor = satoshi > 0 ? .customMatrixGreen() : .white
         setSpvVerifyIcon(tx: tx)
     }

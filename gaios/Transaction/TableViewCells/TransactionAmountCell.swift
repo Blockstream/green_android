@@ -53,10 +53,9 @@ class TransactionAmountCell: UITableViewCell {
         lblFiat.isHidden = id != tx.feeAsset
 
         let registry = WalletManager.current?.registry
-        let asset = registry?.info(for: id)
         icon.image =  registry?.image(for: id)
 
-        if let balance = Balance.fromSatoshi(value, asset: asset) {
+        if let balance = Balance.fromSatoshi(value, assetId: id) {
             let (amount, denom) = balance.toValue()
             lblAmount.text = amount
             lblAsset.text = denom

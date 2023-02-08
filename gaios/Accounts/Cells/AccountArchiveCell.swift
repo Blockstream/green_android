@@ -47,7 +47,8 @@ class AccountArchiveCell: UITableViewCell {
         bg.backgroundColor = cColor
         self.lblAccountTitle.text = account.localizedName()
 
-        if let converted = Balance.fromSatoshi(account.satoshi?["btc"] ?? 0) {
+        let assetId = account.gdkNetwork.getFeeAsset()
+        if let converted = Balance.fromSatoshi(account.satoshi?[assetId] ?? 0, assetId: assetId) {
             let (amount, denom) = converted.toDenom()
             lblBalance.text = "\(denom) \(amount)"
             lblBalance.isHidden = false

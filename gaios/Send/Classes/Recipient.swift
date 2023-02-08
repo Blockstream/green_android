@@ -23,10 +23,9 @@ class Recipient: Codable {
         if isFiat {
             return Balance.fromFiat(amountText)?.satoshi
         } else if assetId == nil || assetId == btc {
-            return Balance.fromDenomination(amountText)?.satoshi
+            return Balance.fromDenomination(amountText, assetId: assetId ?? btc)?.satoshi
         } else {
-            let asset = WalletManager.current?.registry.info(for: assetId ?? btc)
-            return Balance.fromValue(amountText, asset: asset)?.satoshi
+            return Balance.fromValue(amountText, assetId: assetId ?? btc)?.satoshi
         }
     }
 }

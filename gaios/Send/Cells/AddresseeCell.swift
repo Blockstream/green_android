@@ -39,9 +39,8 @@ class AddresseeCell: UITableViewCell {
         if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
             value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
         }
-        let assetInfo = WalletManager.current?.registry.info(for: asset)
         let feeAsset = account?.gdkNetwork.getFeeAsset()
-        if let balance = Balance.fromSatoshi(value, asset: assetInfo) {
+        if let balance = Balance.fromSatoshi(value, assetId: asset) {
             let (amount, ticker) = value == 0 ? ("", "") : balance.toValue()
             lblAmount.text = amount
             lblDenomination.text = ticker

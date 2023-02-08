@@ -42,7 +42,7 @@ class TransactionFeeCell: UITableViewCell {
         btnFee.setStyle(.primary)
         self.feeAction = feeAction
 
-        if let balance = Balance.fromSatoshi(transaction.fee) {
+        if let balance = Balance.fromSatoshi(transaction.fee, assetId: transaction.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc") {
             let (amount, denom) = balance.toValue()
             let (fiat, fiatCurrency) = balance.toFiat()
             lblValue.text = "\(amount) \(denom)"

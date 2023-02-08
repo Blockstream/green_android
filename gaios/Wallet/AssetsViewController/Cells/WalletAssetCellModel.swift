@@ -13,10 +13,10 @@ class WalletAssetCellModel {
         icon = WalletManager.current?.registry.image(for: assetId)
         self.satoshi = satoshi
 
-        if let balance = Balance.fromSatoshi(satoshi, asset: asset)?.toValue() {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: assetId)?.toValue() {
             self.value = "\(balance.0) \(balance.1)"
         }
-        if let balance = Balance.fromSatoshi(satoshi, asset: asset)?.toFiat() {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: assetId)?.toFiat() {
             self.fiat = "\(balance.0) \(balance.1)"
         }
     }

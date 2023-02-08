@@ -28,7 +28,7 @@ class FeeSummaryCell: UITableViewCell {
     }
 
     func configure(_ tx: Transaction) {
-        if let balance = Balance.fromSatoshi(tx.fee) {
+        if let balance = Balance.fromSatoshi(tx.fee, assetId: btc) {
             let (amount, denom) = balance.toDenom()
             lblFeeAmount.text = "\(amount) \(denom)"
             let (fiat, fiatCurrency) = balance.toFiat()

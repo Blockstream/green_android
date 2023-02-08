@@ -42,7 +42,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         view.alpha = 0.0
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
         if let satoshi = prefill {
-            if let (amount, _) = Balance.fromSatoshi(satoshi)?.toValue() {
+            if let (amount, _) = Balance.fromSatoshi(satoshi, assetId: wallet!.gdkNetwork.getFeeAsset())?.toValue() {
                 amountTextField.text = "\(amount)"
             }
         }
@@ -96,11 +96,12 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     func updateEstimate() {
         let satoshi = getSatoshi() ?? 0
         let tag = selectedType == TransactionBaseType.BTC ? "fiat": "btc"
+        let assetId = wallet!.gdkNetwork.getFeeAsset()
         if selectedType == TransactionBaseType.BTC {
-            let (amount, denom) = Balance.fromSatoshi(satoshi)?.toFiat() ?? ("", "")
+            let (amount, denom) = Balance.fromSatoshi(satoshi, assetId: assetId)?.toFiat() ?? ("", "")
             lblHint.text = "≈ \(amount) \(denom)"
         } else {
-            let (amount, denom) = Balance.fromSatoshi(satoshi)?.toValue() ?? ("", "")
+            let (amount, denom) = Balance.fromSatoshi(satoshi, assetId: assetId)?.toValue() ?? ("", "")
             lblHint.text = "≈ \(amount) \(denom)"
         }
     }
@@ -129,7 +130,8 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
         if selectedType == TransactionBaseType.BTC {
-            return Balance.fromDenomination(amountText)?.satoshi
+            let assetId = wallet!.gdkNetwork.getFeeAsset()
+            return Balance.fromDenomination(amountText, assetId: assetId)?.satoshi
         } else {
             return Balance.fromFiat(amountText)?.satoshi
         }
@@ -172,7 +174,8 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
 
     @IBAction func btnFiat(_ sender: Any) {
         let satoshi = getSatoshi() ?? 0
-        if let balance = Balance.fromSatoshi(satoshi) {
+        let assetId = wallet!.gdkNetwork.getFeeAsset()
+        if let balance = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, _) = selectedType == TransactionBaseType.BTC ? balance.toDenom() : balance.toFiat()
             if amount == nil {
                 showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
@@ -184,7 +187,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         } else {
             selectedType = TransactionBaseType.BTC
         }
-        if let balance = Balance.fromSatoshi(satoshi) {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amountStr, _) = selectedType == TransactionBaseType.BTC ? balance.toDenom() : balance.toFiat()
             let amount = Double(amountStr)
             amountTextField.text = amountStr

@@ -64,8 +64,7 @@ class DialogSendHWSummaryViewController: UIViewController {
                 value = transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
             }
             let registry = WalletManager.current?.registry
-            let info = registry?.info(for: assetId)
-            if let balance = Balance.fromSatoshi(value, asset: info) {
+            if let balance = Balance.fromSatoshi(value, assetId: assetId) {
                 let (value, ticker) = balance.toValue()
                 let (fiat, fiatCurrency) = balance.toFiat()
                 lblAmount.text = value
@@ -75,7 +74,7 @@ class DialogSendHWSummaryViewController: UIViewController {
             lblFiat.isHidden = account.gdkNetwork.liquid
             icon.image = registry?.image(for: assetId)
             lblFeeTitle.text = NSLocalizedString("id_fee", comment: "")
-            if let balance = Balance.fromSatoshi(transaction.fee) {
+            if let balance = Balance.fromSatoshi(transaction.fee, assetId: account.gdkNetwork.getFeeAsset()) {
                 let (amount, denom) = balance.toDenom()
                 let (fiat, fiatCurrency) = balance.toFiat()
                 lblFeeAmount.text = "\(amount) \(denom)"

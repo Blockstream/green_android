@@ -97,7 +97,7 @@ class FeeEditCell: UITableViewCell {
         }
 
         if ((txError ?? "").isEmpty || txError == "id_invalid_replacement_fee_rate"), let fee = fee, let feeRate = feeRate {
-            if let balance = Balance.fromSatoshi(fee) {
+            if let balance = Balance.fromSatoshi(fee, assetId: btc) {
                 let (amount, denom) = balance.toDenom()
                 lblFeeValue.text = "\(amount) \(denom)"
                 let (fiat, fiatCurrency) = balance.toFiat()

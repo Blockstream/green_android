@@ -135,7 +135,7 @@ class WalletViewModel {
                 var total: Int64 = 0
                 for subacc in self.subaccounts {
                     let satoshi = subacc.satoshi?[subacc.gdkNetwork.getFeeAsset()] ?? 0
-                    if let converted = Balance.fromSatoshi(satoshi) {
+                    if let converted = Balance.fromSatoshi(satoshi, assetId: subacc.gdkNetwork.getFeeAsset()) {
                         total += converted.satoshi
                     }
                 }
@@ -181,7 +181,7 @@ class WalletViewModel {
             // Testnet wallet
             cards.append(AlertCardType.testnetNoValue)
         }
-        if Balance.fromSatoshi(0)?.toFiat().0 == "n/a" {
+        if Balance.fromSatoshi(0, assetId: session!.gdkNetwork.getFeeAsset())?.toFiat().0 == "n/a" {
             // Price provider not available
             cards.append(AlertCardType.fiatMissing)
         }

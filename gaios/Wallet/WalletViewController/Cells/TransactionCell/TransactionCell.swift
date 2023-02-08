@@ -34,7 +34,7 @@ class TransactionCell: UITableViewCell {
         let registry = WalletManager.current?.registry
         for (idx, amount) in model.amounts.enumerated() {
             let asset = registry?.info(for: amount.key)
-            if let balance = Balance.fromSatoshi(amount.value, asset: asset) {
+            if let balance = Balance.fromSatoshi(amount.value, assetId: amount.key) {
                 let (value, denom) = balance.toValue()
                 let txtRight = "\(value) \(denom)"
                 var txtLeft = ""

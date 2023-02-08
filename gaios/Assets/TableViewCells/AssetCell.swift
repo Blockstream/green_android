@@ -21,7 +21,7 @@ class AssetCell: UITableViewCell {
     }
 
     func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: Int64, negative: Bool = false, isTransaction: Bool = false, sendAll: Bool = false) {
-        if let balance = Balance.fromSatoshi(satoshi, asset: info) {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: info?.assetId ?? btc) {
             let (amount, denom) = balance.toValue()
             let amountTxt = sendAll ? NSLocalizedString("id_all", comment: "") : amount
             amountTickerLabel.text = "\(negative ? "-": "")\(amountTxt) \(denom)"

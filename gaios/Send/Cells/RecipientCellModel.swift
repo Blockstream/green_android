@@ -28,29 +28,43 @@ struct RecipientCellModel {
         return account.session?.validBip21Uri(uri: address ?? "") ?? false
     }
 
+    var id: String { assetId ?? account.gdkNetwork.getFeeAsset() }
+
     var balance: String {
-        let satoshi = account.satoshi?[assetId ?? ""] ?? 0
-        if let balance = Balance.fromSatoshi(satoshi, asset: asset) {
-            let (amount, denom) = isFiat ? balance.toFiat() : balance.toValue()
+        let satoshi = account.satoshi?[id] ?? 0
+        if let (amount, denom) = convert(satoshi) {
             return "\(amount) \(denom)"
         }
         return ""
     }
 
     var ticker: String {
-        let satoshi = account.satoshi?[assetId ?? ""] ?? 0
-        if let balance = Balance.fromSatoshi(satoshi, asset: asset) {
-            let (_, ticker) = isFiat ? balance.toFiat() : balance.toValue()
-            return "\(ticker)"
-        }
-        return ""
+        let satoshi = account.satoshi?[id] ?? 0
+        return convert(satoshi)?.1 ?? ""
     }
 
     mutating func fromSatoshi(_ satoshi: Int64) {
+        amount = convert(satoshi)?.0 ?? ""
+    }
+
+    func convert(_ satoshi: Int64) -> (String, String)? {
+        let balance = Balance.fromSatoshi(satoshi, assetId: id)
         if isFiat {
-            amount = Balance.fromSatoshi(satoshi, asset: asset)?.toFiat().0
+            return balance?.toFiat()
+        } else if isBtc {
+            return balance?.toDenom()
         } else {
-            amount = Balance.fromSatoshi(satoshi, asset: asset)?.toValue().0
+            return balance?.toValue()
+        }
+    }
+
+    func convert(_ amount: String) -> Balance? {
+        if isFiat {
+            return Balance.fromFiat(amount)
+        } else if isBtc {
+            return Balance.fromDenomination(amount, assetId: id)
+        } else {
+            return Balance.fromValue(amount, assetId: id)
         }
     }
 
@@ -58,15 +72,6 @@ struct RecipientCellModel {
         var amountText = (amount ?? "").isEmpty ? "0" : amount ?? "0"
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
-        let balance: Balance? = {
-            if isFiat {
-                return Balance.fromFiat(amountText)
-            } else if isBtc {
-                return Balance.fromDenomination(amountText)
-            } else {
-                return Balance.fromValue(amountText, asset: asset)
-            }
-        }()
-        return balance?.satoshi
+        return convert(amountText)?.satoshi
     }
 }

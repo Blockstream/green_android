@@ -115,7 +115,7 @@ extension DialogAssetDetailViewController: UITableViewDelegate, UITableViewDataS
             case .identifier:
                 cell.configure(NSLocalizedString("id_asset_id", comment: ""), tag)
             case .amount:
-                let balance = Balance.fromSatoshi(satoshi ?? 0, asset: asset)
+                let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset!.assetId)
                 cell.configure(NSLocalizedString("id_total_balance", comment: ""), balance?.toValue().0 ?? "")
             case .precision:
                 cell.configure(NSLocalizedString("id_precision", comment: ""), isLBTC ? "8" : String(asset?.precision ?? 0))

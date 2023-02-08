@@ -46,10 +46,10 @@ class AccountAssetCell: UITableViewCell {
         // isTest = !account.gdkNetwork.mainnet
 
         let satoshi = model.balance.first?.value ?? 0
-        if let balance = Balance.fromSatoshi(satoshi, asset: model.asset)?.toValue() {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: model.asset.assetId)?.toValue() {
             lblAmount.text = "\(balance.0) \(balance.1)"
         }
-        if let balance = Balance.fromSatoshi(satoshi, asset: model.asset)?.toFiat() {
+        if let balance = Balance.fromSatoshi(satoshi, assetId: model.asset.assetId)?.toFiat() {
             lblFiat.text = "\(balance.0) \(balance.1)"
         }
     }

@@ -155,7 +155,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
                 (amount, den) = balance?.toDenom() ?? ("", "")
             } else {
                 let denom = settings.denomination.rawValue
-                let balance = Balance.fromDenomination(limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!) ?? "0")
+                let assetId = session.gdkNetwork.getFeeAsset()
+                let balance = Balance.fromDenomination(limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!) ?? "0", assetId: assetId)
                 (amount, den) = balance?.toFiat() ?? ("", "")
             }
             let thresholdValue = String(format: "%@ %@", amount, den)
