@@ -160,9 +160,10 @@ class AccountViewController: UIViewController {
     func sendfromWallet() {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            vc.wallet = viewModel.account
+            vc.viewModel = SendViewModel(account: viewModel.account,
+                                         inputType: viewModel.watchOnly ? .sweep : .transaction,
+                                         transaction: nil)
             vc.fixedWallet = true
-            vc.inputType = viewModel.watchOnly ? .sweep : .transaction
             navigationController?.pushViewController(vc, animated: true)
         }
     }

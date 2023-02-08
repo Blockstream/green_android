@@ -189,10 +189,9 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
             guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
-            vc.wallet = model.account
+            vc.viewModel = SendViewModel(account: model.account, inputType: .transaction, transaction: nil)
             vc.accounts = viewModel.cachedSubaccounts
             vc.fixedWallet = false
-            vc.inputType = viewModel.watchOnly ? .sweep : .transaction
             navigationController?.pushViewController(vc, animated: true)
         }
     }

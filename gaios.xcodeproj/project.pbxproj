@@ -361,6 +361,8 @@
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
 		816F0AF623E47E1E00569A5D /* Wally.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF523E47E1E00569A5D /* Wally.swift */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
+		81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B322992BC9800F05BF2 /* RecipientCellModel.swift */; };
+		81772B352992EDEA00F05BF2 /* SendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B342992EDE900F05BF2 /* SendViewModel.swift */; };
 		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
 		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
@@ -816,6 +818,8 @@
 		816F0AF323E4713600569A5D /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
 		817417362236E85500A28E36 /* ScreenLockWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockWindow.swift; sourceTree = "<group>"; };
+		81772B322992BC9800F05BF2 /* RecipientCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientCellModel.swift; sourceTree = "<group>"; };
+		81772B342992EDE900F05BF2 /* SendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendViewModel.swift; sourceTree = "<group>"; };
 		818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuthenticatorFactors.storyboard; sourceTree = "<group>"; };
 		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
 		8187B47D21E9026900235A35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1090,6 +1094,7 @@
 				34477D332771D3380021698B /* Classes */,
 				34477D302771CAC00021698B /* Cells */,
 				34237FD3276B691B00618502 /* Controllers */,
+				81772B362992EDF800F05BF2 /* Models */,
 			);
 			path = Send;
 			sourceTree = "<group>";
@@ -1271,6 +1276,7 @@
 				34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */,
 				34BD7E79278C93F3004AEC6F /* NoteCell.swift */,
 				349C75042791BCA60046DA59 /* ChangeCell.swift */,
+				81772B322992BC9800F05BF2 /* RecipientCellModel.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -2029,6 +2035,14 @@
 			path = Jade;
 			sourceTree = "<group>";
 		};
+		81772B362992EDF800F05BF2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				81772B342992EDE900F05BF2 /* SendViewModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		818EE78126A5C429008CD09E /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -2572,6 +2586,7 @@
 				81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */,
 				346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
+				81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */,
 				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,
 				812DBDC42977EE7F002992D6 /* TwoFactorSettingsViewModel.swift in Sources */,
 				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
@@ -2687,6 +2702,7 @@
 				81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */,
 				34E0CA9229829C2A00695304 /* Collection.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,
+				81772B352992EDEA00F05BF2 /* SendViewModel.swift in Sources */,
 				34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */,
 				34C2464F2670ECE0009E8FCE /* AccountType.swift in Sources */,
 				FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */,

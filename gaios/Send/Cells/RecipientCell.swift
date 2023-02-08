@@ -45,28 +45,10 @@ class RecipientCell: UITableViewCell {
     @IBOutlet weak var lblAvailableFunds: UILabel!
     @IBOutlet weak var btnSendAll: UIButton!
 
-    var recipient: Recipient?
-    var wallet: WalletItem?
-    var inputType: InputType = .transaction
-    var walletItem: WalletItem?
-
     weak var delegate: RecipientCellDelegate?
+    var updateModel: ((RecipientCellModel?) -> Void)?
     var index: Int?
-
-    var isSendAll: Bool {
-        return recipient?.isSendAll == true
-    }
-
-    var isFiat: Bool {
-        return recipient?.isFiat ?? false
-    }
-
-    private var asset: AssetInfo? {
-        if let assetId = recipient?.assetId {
-            return WalletManager.current?.registry.info(for: assetId)
-        }
-        return nil
-    }
+    var model: RecipientCellModel?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -81,40 +63,20 @@ class RecipientCell: UITableViewCell {
     override func prepareForReuse() {
     }
 
-    func configure(recipient: Recipient,
+    func configure(cellModel: RecipientCellModel,
                    index: Int,
-                   isMultiple: Bool,
-                   walletItem: WalletItem?,
-                   inputType: InputType
-    ) {
+                   isMultiple: Bool) {
         lblRecipientNum.text = "#\(index + 1)"
         removeRecipientView.isHidden = !isMultiple
-        lblAccountAsset.text = "Asset & Account"
+        model = cellModel
+        addressTextView.delegate = self
+        amountTextField.delegate = self
         self.index = index
-        self.recipient = recipient
-        self.addressTextView.text = recipient.address
-        self.addressTextView.delegate = self
-        self.amountTextField.text = recipient.amount
-        self.amountTextField.delegate = self
-        self.wallet = walletItem
-        self.inputType = inputType
-        self.wallet = walletItem
+        reload()
+        onTransactionValidate()
 
-        lblAddressError.isHidden = true
-        lblAmountError.isHidden = true
-        lblAmountExchange.isHidden = true
-
-        lblAddressHint.text = NSLocalizedString(inputType == .sweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
-        iconAsset.image = UIImage(named: "default_asset_icon")!
-        lblAssetName.text = NSLocalizedString("id_asset", comment: "")
-        iconAsset.image = WalletManager.current?.registry.image(for: asset?.assetId ?? "")
-        lblAssetName.text = WalletManager.current?.registry.info(for: asset?.assetId ?? "").name
-        onChange()
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
         addressTextView.textContainer.maximumNumberOfLines = 10
-
-        lblAccount.text = wallet?.localizedName().uppercased()
-
         btnPasteAddress.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.pasteAddressBtn
         amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.amountField
         btnChooseAsset.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.chooseAssetBtn
@@ -140,45 +102,51 @@ class RecipientCell: UITableViewCell {
 
     func setContent() {
         lblAvailableFunds.text = ""
-        btnSendAll.setTitle(NSLocalizedString("id_send_all_funds", comment: ""), for: .normal)
-        lblAmountHint.text = NSLocalizedString("id_amount", comment: "")
+        btnSendAll.setTitle("id_send_all_funds".localized, for: .normal)
+        lblAmountHint.text = "id_amount".localized
         lblCurrency.text = ""
         lblRecipientNum.text = "#"
     }
 
-    func onChange() {
-        recipient?.address = addressTextView.text
+    func reload() {
+        guard let model = model else { return }
+         // from model to view
+        lblAccountAsset.text = "Asset & Account".localized
+        addressTextView.text = model.address ?? ""
+        amountTextField.text = model.amount ?? ""
+        lblAssetName.text = "id_asset".localized
+        iconAsset.image = model.assetImage ?? UIImage(named: "default_asset_icon")!
+        lblAssetName.text = model.asset?.ticker ?? model.assetId ?? "id_asset".localized
+        lblAccount.text = model.account.localizedName()
+        lblAddressHint.text = model.inputType == .sweep ? "id_enter_a_private_key_to_sweep".localized : "id_enter_an_address".localized
+
         btnCancelAddress.isHidden = !(addressTextView.text.count > 0)
         btnPasteAddress.isHidden = (addressTextView.text.count > 0)
         btnCancelAmount.isHidden = !(amountTextField.text?.count ?? 0 > 0)
         btnPasteAmount.isHidden = (amountTextField.text?.count ?? 0 > 0)
-        lblCurrency.text = getDenomination()
-        lblAvailableFunds.text = getBalance()
-        btnSendAll.isHidden = recipient?.assetId == nil
+        lblCurrency.text = model.ticker
+        lblAvailableFunds.text = model.balance
+        btnSendAll.isHidden = !model.isBtc
         btnChooseAsset.isUserInteractionEnabled = true
         assetBox.alpha = 1.0
         amountBox.alpha = 1.0
         btnConvert.alpha = 1.0
 
-        if isSendAll {
+        if model.isSendAll {
             btnSendAll.setStyle(.primary)
-            recipient?.amount = nil
             amountTextField.text = ""
             amountBox.alpha = 0.6
         } else {
             btnSendAll.setStyle(.outlinedGray)
-            recipient?.amount = amountTextField.text
         }
-        amountFieldIsEnabled(!isSendAll && recipient?.assetId != nil)
-        btnConvert.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
-        btnPasteAmount.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
-        btnCancelAmount.isUserInteractionEnabled = !isSendAll && recipient?.assetId != nil
+        amountFieldIsEnabled(!model.isSendAll)
+        btnConvert.isUserInteractionEnabled = !model.isSendAll && model.isBtc
+        btnPasteAmount.isUserInteractionEnabled = !model.isSendAll && model.isBtc
+        btnCancelAmount.isUserInteractionEnabled = !model.isSendAll && model.isBtc
+        btnConvert.isUserInteractionEnabled = model.isBtc
+        btnConvert.alpha = model.isBtc ? 1.0 : 0.6
 
-        // btnConvert.isHidden = !(recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset)
-        btnConvert.isUserInteractionEnabled = (recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset)
-        btnConvert.alpha = (recipient?.assetId == "btc" || recipient?.assetId == getGdkNetwork("liquid").policyAsset) ? 1.0 : 0.6
-
-        if isBipAddress() {
+        if model.isBipAddress() {
             btnSendAll.isHidden = true
             btnConvert.isUserInteractionEnabled = false
             btnPasteAmount.isUserInteractionEnabled = false
@@ -187,19 +155,17 @@ class RecipientCell: UITableViewCell {
             assetBox.alpha = 0.6
             amountFieldIsEnabled(false)
         }
-        if inputType == .sweep {
+        if model.inputType == .sweep {
             lblAvailableFunds.isHidden = true
             btnSendAll.isHidden = true
-//            btnConvert.isHidden = true
             btnPasteAmount.isUserInteractionEnabled = false
             btnCancelAmount.isUserInteractionEnabled = false
             amountFieldIsEnabled(false)
         }
-        if inputType == .bumpFee {
+        if model.inputType == .bumpFee {
             isUserInteractionEnabled = false
             bg.alpha = 0.6
         }
-
         delegate?.needRefresh()
     }
 
@@ -209,6 +175,7 @@ class RecipientCell: UITableViewCell {
     }
 
     func onTransactionValidate() {
+        guard let model = model else { return }
         addressContainer.borderColor = UIColor.gGrayCard()
         amountContainer.borderColor = UIColor.gGrayCard()
         assetBox.borderColor = UIColor.gGrayCard()
@@ -216,44 +183,44 @@ class RecipientCell: UITableViewCell {
         lblAmountError.isHidden = true
         lblAmountExchange.isHidden = true
 
-        if recipient?.txError == "id_invalid_address" || recipient?.txError == "id_invalid_private_key" {
+        if model.txError == "id_invalid_address" || model.txError == "id_invalid_private_key" {
             addressContainer.borderColor = UIColor.errorRed()
             lblAddressError.isHidden = false
-            lblAddressError.text = NSLocalizedString(recipient?.txError ?? "Error", comment: "")
-        } else if recipient?.txError == "id_invalid_amount" || recipient?.txError == "id_insufficient_funds" {
+            lblAddressError.text = NSLocalizedString(model.txError, comment: "")
+        } else if model.txError == "id_invalid_amount" || model.txError == "id_insufficient_funds" {
             amountContainer.borderColor = UIColor.errorRed()
             lblAmountError.isHidden = false
-            lblAmountError.text = NSLocalizedString(recipient?.txError ?? "Error", comment: "")
-        } else if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
+            lblAmountError.text = NSLocalizedString(model.txError, comment: "")
+        } else if model.txError == "id_invalid_payment_request_assetid" || model.txError == "id_invalid_asset_id" {
             assetBox.borderColor = UIColor.errorRed()
-        } else if !(recipient?.txError ?? "").isEmpty {
-            print(recipient?.txError ?? "Error")
+        } else if !(model.txError).isEmpty {
+            print(model.txError)
         }
 
-        if isBipAddress() {
-            if recipient?.txError == "id_invalid_payment_request_assetid" || recipient?.txError == "id_invalid_asset_id" {
+        if model.isBipAddress() {
+            if model.txError == "id_invalid_payment_request_assetid" || model.txError == "id_invalid_asset_id" {
                 iconAsset.image = UIImage(named: "default_asset_icon")
                 lblAssetName.text = NSLocalizedString("id_asset", comment: "")
                 lblCurrency.text = ""
                 lblAvailableFunds.text = ""
                 amountTextField.text = ""
             } else {
-                iconAsset.image = WalletManager.current?.registry.image(for: recipient?.assetId ?? "")
-                lblAssetName.text = getDenomination()
-                lblCurrency.text = getDenomination()
-                lblAvailableFunds.text = getBalance()
-                updateAmountTextField()
+                iconAsset.image = model.assetImage
+                lblAssetName.text = model.ticker
+                lblCurrency.text = model.ticker
+                lblAvailableFunds.text = model.balance
+                amountTextField.text = model.amount
             }
         }
-        if inputType == .sweep || isSendAll {
-            updateAmountTextField()
+        if model.inputType == .sweep || model.isSendAll == true {
+            amountTextField.text = model.amount
         }
 
-        if let satoshi = getSatoshi(), (recipient?.txError ?? "").isEmpty, let asset = recipient?.assetId {
-            if asset == "btc" || asset == getGdkNetwork("liquid").policyAsset,
+        /*if let satoshi = getSatoshi(), model.txError.isEmpty {
+            if model.isBtc,
                 let balance = Balance.fromSatoshi(satoshi) {
                 lblAmountExchange.isHidden = false
-                if isFiat {
+                if model.isFiat {
                     let (fiat, fiatCurrency) = balance.toValue()
                     lblAmountExchange.text = "≈ \(fiat) \(fiatCurrency)"
                 } else {
@@ -261,67 +228,13 @@ class RecipientCell: UITableViewCell {
                     lblAmountExchange.text = "≈ \(fiat) \(fiatCurrency)"
                 }
             }
-        }
-    }
-
-    func updateAmountTextField() {
-        amountTextField.text = recipient?.amount
-    }
-
-    func getBalance() -> String {
-        guard let assetId = recipient?.assetId else {
-            return ""
-        }
-        let satoshi = wallet!.satoshi?[assetId] ?? 0
-        if let balance = Balance.fromSatoshi(satoshi, asset: asset) {
-            let (amount, denom) = isFiat ? balance.toFiat() : balance.toValue()
-            return "\(amount) \(denom)"
-        }
-        return ""
-    }
-
-    func getDenomination() -> String {
-        guard let assetId = recipient?.assetId else {
-            return ""
-        }
-        let satoshi = wallet!.satoshi?[assetId] ?? 0
-        if let balance = Balance.fromSatoshi(satoshi, asset: asset) {
-            let (_, denom) = isFiat ? balance.toFiat() : balance.toValue()
-            return "\(denom)"
-        }
-        return ""
-    }
-
-    func getSatoshi() -> Int64? {
-        var amountText = amountTextField.text ?? ""
-        amountText = amountText.isEmpty ? "0" : amountText
-        amountText = amountText.unlocaleFormattedString(8)
-        guard let number = Double(amountText), number > 0 else { return nil }
-        let balance = isFiat ? Balance.fromFiat(amountText) :
-            Balance.fromDenomination(amountText)
-        return balance?.satoshi
-    }
-
-    func convertAmount() {
-        if let assetId = recipient?.assetId,
-           assetId != wallet?.gdkNetwork.getFeeAsset() {
-            return
-        }
-        let satoshi = getSatoshi() ?? 0
-        recipient?.isFiat = !isFiat
-        if isFiat {
-            amountTextField.text = Balance.fromSatoshi(satoshi, asset: asset)?.toFiat().0
-        } else {
-            amountTextField.text = Balance.fromSatoshi(satoshi, asset: asset)?.toValue().0
-        }
-    }
-
-    func isBipAddress() -> Bool {
-        return wallet?.session?.validBip21Uri(uri: addressTextView.text) ?? false
+        }*/
     }
 
     @objc func triggerTextChange() {
-        onChange()
+        model?.amount = amountTextField.text
+        model?.address = addressTextView.text
+        updateModel?(model)
         delegate?.validateTx()
     }
 
@@ -332,17 +245,19 @@ class RecipientCell: UITableViewCell {
     }
 
     @IBAction func btnCancelAddress(_ sender: Any) {
-        addressTextView.text = ""
-        onChange()
+        model?.address = nil
+        reload()
+        updateModel?(model)
         delegate?.validateTx()
     }
 
     @IBAction func btnPasteAddress(_ sender: Any) {
         if let txt = UIPasteboard.general.string {
-            addressTextView.text = txt
+            model?.address = txt
+            reload()
+            updateModel?(model)
+            delegate?.validateTx()
         }
-        onChange()
-        delegate?.validateTx()
     }
 
     @IBAction func btnQr(_ sender: Any) {
@@ -358,33 +273,32 @@ class RecipientCell: UITableViewCell {
     }
 
     @IBAction func btnSendAll(_ sender: Any) {
-        recipient?.isSendAll.toggle()
+        model?.isSendAll.toggle()
+        model?.amount = nil
+        reload()
+        updateModel?(model)
         delegate?.tapSendAll()
-        if isFiat == true {
-            convertAmount()
-        }
-        amountTextField.text = ""
-        onChange()
         delegate?.validateTx()
     }
 
     @IBAction func btnCancelAmount(_ sender: Any) {
-        amountTextField.text = ""
-        onChange()
-        delegate?.validateTx()
+        model?.amount = nil
+        updateModel?(model)
     }
 
     @IBAction func btnPasteAmount(_ sender: Any) {
         if let txt = UIPasteboard.general.string {
-            amountTextField.text = txt
+            model?.amount = txt
+            reload()
+            updateModel?(model)
+            delegate?.validateTx()
         }
-        onChange()
-        delegate?.validateTx()
     }
 
     @IBAction func btnConvert(_ sender: Any) {
-        convertAmount()
-        onChange()
+        model?.isFiat.toggle()
+        reload()
+        updateModel?(model)
         delegate?.validateTx()
     }
 

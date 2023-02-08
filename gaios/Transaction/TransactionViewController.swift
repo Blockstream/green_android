@@ -250,15 +250,13 @@ class TransactionViewController: UIViewController {
             session.createTransaction(tx: Transaction(details))
         }.ensure {
             self.stopAnimating()
-        }.done { [weak self] tx in
+        }.done { tx in
             let storyboard = UIStoryboard(name: "Send", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-                vc.transaction = tx
-                vc.inputType = .bumpFee
-                vc.wallet = self?.wallet
+                vc.viewModel = SendViewModel(account: self.wallet, inputType: .bumpFee, transaction: tx)
                 vc.fixedWallet = true
                 vc.fixedAsset = true
-                self?.navigationController?.pushViewController(vc, animated: true)
+                self.navigationController?.pushViewController(vc, animated: true)
             }
         }.catch { err in
             print(err.localizedDescription)
