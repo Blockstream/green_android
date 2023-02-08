@@ -75,4 +75,21 @@ extension AnalyticsManager {
     static let maxOffsetDevelopment = 30 * 60 * 1000 // 30 mins
 
     static let ratingWidgetId = "5f15c01425f83c169c33cb65"
+
+    enum NtwTypeDescriptor: String {
+        /// mainnet / liquid / mainnet-mixed / testnet / testnet-liquid / testnet-mixed
+        case mainnet
+        case liquid
+        case mainnetMixed = "mainnet-mixed"
+        case testnet
+        case testnetLiquid = "testnet-liquid"
+        case testnetMixed = "testnet-mixed"
+    }
+
+    enum SecTypeDescriptor: String {
+        /// security: singlesig / multisig / lightning / single-multi / single-light / multi-light / single-multi-light
+        case singlesig
+        case multisig
+        case singleMulti = "single-multi"
+    }
 }

@@ -5,6 +5,7 @@ class AccountNavigator {
 
     // redirect to create/restore flow
     static func goCreateRestore() {
+        AnalyticsManager.shared.addWallet()
         let homeS = UIStoryboard(name: "Home", bundle: nil)
         let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
         if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,

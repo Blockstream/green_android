@@ -45,6 +45,7 @@ class OnBoardInfoViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        AnalyticsManager.shared.recordView(.recoveryIntro, sgmt: AnalyticsManager.shared.ntwSgmtUnified())
     }
 
     func customBack() {

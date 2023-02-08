@@ -43,6 +43,11 @@ class WalletManager {
         return sessions[prominentNetwork.rawValue]
     }
 
+    // For Countly
+    var activeNetworks: [NetworkSecurityCase] {
+        return activeSessions.keys.compactMap { NetworkSecurityCase(rawValue: $0) }
+    }
+
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
 

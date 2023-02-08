@@ -72,8 +72,10 @@ class WalletViewModel {
 
     var balanceDisplayMode: BalanceDisplayMode = .denom
 
+    var analyticsDone = false
+
     init() {
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .overview, network: AccountsManager.shared.current?.networkName)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .walletOverview, network: AccountsManager.shared.current?.networkName)
     }
 
     func loadSubaccounts(_ newAccount: WalletItem? = nil) {
@@ -92,6 +94,7 @@ class WalletViewModel {
                 self.welcomeLayerVisibility?()
                 self.getAssets()
                 self.getTransactions(max: 10)
+                self.callAnalytics()
             }.catch { err in
                 print(err)
             }
@@ -237,6 +240,31 @@ class WalletViewModel {
     }
 
     func onCreateAccount(_ wallet: WalletItem) {
+        analyticsDone = false
         loadSubaccounts(wallet)
+    }
+
+    func callAnalytics() {
+
+        if analyticsDone == true { return }
+        analyticsDone = true
+
+        var accountsFunded: Int = 0
+        subaccounts.forEach { item in
+            let assets = item.satoshi ?? [:]
+            for (_, value) in assets where value > 0 {
+                    accountsFunded += 1
+                    break
+            }
+        }
+        let walletFunded: Bool = accountsFunded > 0
+        let accounts: Int = subaccounts.count
+        let accountsTypes: String = Array(Set(subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
+
+        AnalyticsManager.shared.activeWallet(account: AccountsManager.shared.current,
+                                             walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
+                                                                                     accountsFunded: accountsFunded,
+                                                                                     accounts: accounts,
+                                                                                     accountsTypes: accountsTypes))
     }
 }

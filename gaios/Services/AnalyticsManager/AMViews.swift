@@ -1,7 +1,12 @@
 enum AnalyticsViewName: String {
     case home = "Home"
     case login = "Login"
-    case overview = "Overview"
+
+    //    case overview = "Overview"
+    case walletOverview = "WalletOverview"
+    case accountOverview = "AccountOverview"
+    case assets = "Assets"
+
     case transactionDetails = "TransactionDetails"
     case assetDetails = "AssetDetails"
     case receive = "Receive"

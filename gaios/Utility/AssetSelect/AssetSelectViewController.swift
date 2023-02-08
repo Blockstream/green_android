@@ -99,6 +99,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        AnalyticsManager.shared.selectAsset(account: AccountsManager.shared.current)
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
         if cnt == indexPath.row {
             delegate?.didSelectAnyAsset()

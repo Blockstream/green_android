@@ -61,6 +61,8 @@ class AccountViewController: UIViewController {
         viewModel.reloadSections = reloadSections
         viewModel.getBalance()
         viewModel.getTransactions()
+
+        AnalyticsManager.shared.recordView(.accountOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     override func viewWillAppear(_ animated: Bool) {

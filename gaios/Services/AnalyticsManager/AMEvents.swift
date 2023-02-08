@@ -15,6 +15,15 @@ enum AnalyticsEventName: String {
     case failedRecoveryPhraseCheck = "failed_recovery_phrase_check"
     case failedTransaction = "failed_transaction"
     case appReview = "app_review"
+
+    case walletAdd = "wallet_add"
+    case walletNew = "wallet_new"
+    case accountFirst = "account_first"
+    case balanceConvert = "balance_convert"
+    case assetChange = "asset_change"
+    case assetSelect = "asset_select"
+    case accountSelect = "account_select"
+    case accountNew = "account_new"
 }
 
 extension AnalyticsManager {
@@ -53,11 +62,6 @@ extension AnalyticsManager {
         }
     }
 
-    func startSendTransaction() {
-        cancelEvent(.sendTransaction)
-        startEvent(.sendTransaction)
-    }
-
     func sendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
 
         if var s = subAccSeg(account, walletType: walletItem?.type) {
@@ -75,31 +79,21 @@ extension AnalyticsManager {
             // s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
             s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
 
-            endEvent(.sendTransaction, sgmt: s)
+            recordEvent(.sendTransaction, sgmt: s)
         }
-    }
-
-    func startCreateWallet() {
-        cancelEvent(.walletCreate)
-        startEvent(.walletCreate)
     }
 
     func createWallet(account: Account?) {
         if let s = sessSgmt(account) {
             AnalyticsManager.shared.userPropertiesDidChange()
-            endEvent(.walletCreate, sgmt: s)
+            recordEvent(.walletCreate, sgmt: s)
         }
-    }
-
-    func startRestoreWallet() {
-        cancelEvent(.walletRestore)
-        startEvent(.walletRestore)
     }
 
     func restoreWallet(account: Account?) {
         if let s = sessSgmt(account) {
             AnalyticsManager.shared.userPropertiesDidChange()
-            endEvent(.walletRestore, sgmt: s)
+            recordEvent(.walletRestore, sgmt: s)
         }
     }
 
@@ -157,6 +151,50 @@ extension AnalyticsManager {
     func appReview(account: Account?, walletType: AccountType?) {
         if let s = subAccSeg(account, walletType: walletType) {
             recordEvent(.appReview, sgmt: s)
+        }
+    }
+
+    func addWallet() {
+        recordEvent(.walletAdd)
+    }
+
+    func newWallet() {
+        recordEvent(.walletNew)
+    }
+
+    func onAccountFirst(account: Account?) {
+        if let s = sessSgmt(account) {
+            recordEvent(.accountFirst, sgmt: s)
+        }
+    }
+
+    func convertBalance(account: Account?) {
+        if let s = sessSgmt(account) {
+            recordEvent(.balanceConvert, sgmt: s)
+        }
+    }
+
+    func changeAsset(account: Account?) {
+        if let s = sessSgmt(account) {
+            recordEvent(.assetChange, sgmt: s)
+        }
+    }
+
+    func selectAsset(account: Account?) {
+        if let s = sessSgmt(account) {
+            recordEvent(.assetSelect, sgmt: s)
+        }
+    }
+
+    func selectAccount(account: Account?, walletType: AccountType?) {
+        if let s = subAccSeg(account, walletType: walletType) {
+            recordEvent(.accountSelect, sgmt: s)
+        }
+    }
+
+    func newAccount(account: Account?) {
+        if let s = sessSgmt(account) {
+            recordEvent(.accountNew, sgmt: s)
         }
     }
 }

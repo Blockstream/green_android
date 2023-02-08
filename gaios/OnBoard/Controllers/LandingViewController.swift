@@ -157,10 +157,8 @@ class LandingViewController: UIViewController {
         }
         switch action {
         case .new:
-            AnalyticsManager.shared.startCreateWallet()
             LandingViewController.flowType = .add
         case .restore:
-            AnalyticsManager.shared.startRestoreWallet()
             LandingViewController.flowType = .restore
         case .watchOnly:
             LandingViewController.flowType = .watchonly
@@ -211,6 +209,7 @@ class LandingViewController: UIViewController {
     }
 
     @IBAction func btnNewWallet(_ sender: Any) {
+        AnalyticsManager.shared.newWallet()
         onNext(.new)
     }
 

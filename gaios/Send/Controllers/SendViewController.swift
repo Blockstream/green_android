@@ -98,7 +98,6 @@ class SendViewController: KeyboardViewController {
         self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .send, network: AccountsManager.shared.current?.networkName)
 
         AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
-        AnalyticsManager.shared.startSendTransaction()
     }
 
     func setContent() {

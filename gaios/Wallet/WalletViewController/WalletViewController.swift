@@ -70,6 +70,8 @@ class WalletViewController: UIViewController {
         setContent()
         setStyle()
         welcomeLayer.isHidden = true
+
+        AnalyticsManager.shared.recordView(.walletOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -297,6 +299,7 @@ class WalletViewController: UIViewController {
     }
 
     @IBAction func btnWelcomeCreate(_ sender: Any) {
+        AnalyticsManager.shared.onAccountFirst(account: AccountsManager.shared.current)
         createAccount()
     }
 }
@@ -724,6 +727,7 @@ extension WalletViewController: DialogListViewControllerDelegate {
                     }
                 }
             case .createAccount:
+                AnalyticsManager.shared.newAccount(account: AccountsManager.shared.current)
                 createAccount()
     //        case .ArchivedAccounts:
     //            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
@@ -759,6 +763,8 @@ extension WalletViewController: DialogListViewControllerDelegate {
 }
 extension WalletViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
+
+        AnalyticsManager.shared.createAccount(account: AccountsManager.shared.current, walletType: wallet.type)
         viewModel.onCreateAccount(wallet)
     }
 }

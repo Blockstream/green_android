@@ -113,6 +113,38 @@ class AnalyticsManager {
 
     weak var delegate: AnalyticsManagerDelegate?
 
+    var analyticsNtw: AnalyticsManager.NtwTypeDescriptor? {
+        if let account = AccountsManager.shared.current {
+            let activeNetworks: [NetworkSecurityCase] = WalletManager.get(for: account.id)?.activeNetworks ?? []
+
+            let bitcoinNtws = activeNetworks.filter { $0 == .bitcoinSS || $0 == .bitcoinMS }
+            let liquidNtws = activeNetworks.filter { $0 == .liquidSS || $0 == .liquidMS }
+            let testnetNtws = activeNetworks.filter { $0 == .testnetSS || $0 == .testnetMS }
+            let testnetLiquidNtws = activeNetworks.filter { $0 == .testnetLiquidSS || $0 == .testnetLiquidMS }
+
+            if bitcoinNtws.count > 0 && liquidNtws.count > 0 { return AnalyticsManager.NtwTypeDescriptor.mainnetMixed }
+            if bitcoinNtws.count > 0 { return AnalyticsManager.NtwTypeDescriptor.mainnet }
+            if liquidNtws.count > 0 { return AnalyticsManager.NtwTypeDescriptor.liquid }
+            if testnetNtws.count > 0 && testnetLiquidNtws.count > 0 { return AnalyticsManager.NtwTypeDescriptor.testnetMixed }
+            if testnetNtws.count > 0 { return AnalyticsManager.NtwTypeDescriptor.testnet }
+            if testnetLiquidNtws.count > 0 { return AnalyticsManager.NtwTypeDescriptor.testnetLiquid }
+        }
+        return nil
+    }
+
+    var analyticsSec: SecTypeDescriptor? {
+        if let account = AccountsManager.shared.current {
+            let activeNetworks: [NetworkSecurityCase] = WalletManager.get(for: account.id)?.activeNetworks ?? []
+
+            let ssNtws = activeNetworks.filter { [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS].contains($0) }
+            let msNtws = activeNetworks.filter { [.bitcoinMS, .liquidMS, .testnetMS, .testnetLiquidMS].contains($0) }
+            if ssNtws.count > 0 && msNtws.count > 0 { return .singleMulti }
+            if ssNtws.count > 0 { return .singlesig }
+            if msNtws.count > 0 { return .multisig }
+        }
+        return nil
+    }
+
     func secureRandom(max: Int) -> UInt {
         // SystemRandomNumberGenerator is automatically seeded, is safe to use in multiple threads
         // and uses a cryptographically secure algorithm whenever possible.

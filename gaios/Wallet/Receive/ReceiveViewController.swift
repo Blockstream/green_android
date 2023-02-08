@@ -201,6 +201,7 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func btnChangeReceiver(_ sender: Any) {
+        AnalyticsManager.shared.changeAsset(account: AccountsManager.shared.current)
         let previousViewController = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if previousViewController is WalletViewController {

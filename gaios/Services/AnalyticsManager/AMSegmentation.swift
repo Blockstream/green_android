@@ -14,26 +14,34 @@ extension AnalyticsManager {
         return nil
     }
 
-    func ntwSgmt(_ account: Account?) -> Sgmt? {
-        if let network = account?.network {
+//    func ntwSgmt(_ account: Account?) -> Sgmt? {
+//        if let network = account?.network {
+//            var s = Sgmt()
+//            s[AnalyticsManager.strNetwork] = network
+//            s[AnalyticsManager.strSecurity] = account?.isSingleSig == true ? AnalyticsManager.strSinglesig : AnalyticsManager.strMultisig
+//            return s
+//        }
+//        return nil
+//    }
+
+    func ntwSgmtUnified() -> Sgmt? {
+        if let analyticsNtw = analyticsNtw, let analyticsSec = analyticsSec {
             var s = Sgmt()
-            s[AnalyticsManager.strNetwork] = network
-            s[AnalyticsManager.strSecurity] = account?.isSingleSig == true ? AnalyticsManager.strSinglesig : AnalyticsManager.strMultisig
+            s[AnalyticsManager.strNetwork] = analyticsNtw.rawValue
+            s[AnalyticsManager.strSecurity] = analyticsSec.rawValue
             return s
         }
         return nil
     }
 
-    func onBoardSgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
-        if var s = ntwSgmt(onBoardParams) {
-            s[AnalyticsManager.strFlow] = flow.rawValue
-            return s
-        }
-        return nil
+    func onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
+        var s = Sgmt()
+        s[AnalyticsManager.strFlow] = flow.rawValue
+        return s
     }
 
     func sessSgmt(_ account: Account?) -> Sgmt? {
-        if var s = ntwSgmt(account) {
+        if var s = ntwSgmtUnified() {
 
             if account?.isJade ?? false {
                 s[AnalyticsManager.strBrand] = "Blockstream"
@@ -90,29 +98,29 @@ extension AnalyticsManager {
 
 extension AnalyticsManager {
     // these need a custom dictionary
-    func chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
-        var s = Sgmt()
-        s[AnalyticsManager.strFlow] = flow.rawValue
-        return s
-    }
+//    func chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
+//        var s = Sgmt()
+//        s[AnalyticsManager.strFlow] = flow.rawValue
+//        return s
+//    }
 
-    func chooseSecuritySgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
-        if let network = onBoardParams?.network {
-            var s = Sgmt()
-            s[AnalyticsManager.strNetwork] = network
-            s[AnalyticsManager.strFlow] = flow.rawValue
-            return s
-        }
-        return nil
-    }
-
-    func chooseRecoverySgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
-        if let network = onBoardParams?.network {
-            var s = Sgmt()
-            s[AnalyticsManager.strNetwork] = network
-            s[AnalyticsManager.strFlow] = flow.rawValue
-            return s
-        }
-        return nil
-    }
+//    func chooseSecuritySgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
+//        if let network = onBoardParams?.network {
+//            var s = Sgmt()
+//            s[AnalyticsManager.strNetwork] = network
+//            s[AnalyticsManager.strFlow] = flow.rawValue
+//            return s
+//        }
+//        return nil
+//    }
+//
+//    func chooseRecoverySgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
+//        if let network = onBoardParams?.network {
+//            var s = Sgmt()
+//            s[AnalyticsManager.strNetwork] = network
+//            s[AnalyticsManager.strFlow] = flow.rawValue
+//            return s
+//        }
+//        return nil
+//    }
 }

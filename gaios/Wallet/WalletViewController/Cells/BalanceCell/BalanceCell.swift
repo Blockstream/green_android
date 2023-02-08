@@ -99,6 +99,7 @@ class BalanceCell: UITableViewCell {
     }
 
     @IBAction func onBalanceTap(_ sender: Any) {
+        AnalyticsManager.shared.convertBalance(account: AccountsManager.shared.current)
         onConvert?()
     }
 
