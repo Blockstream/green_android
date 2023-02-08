@@ -218,12 +218,12 @@ class ReceiveViewController: UIViewController {
                 let showAmp = viewModel.accounts.filter { $0.type == .amp }.count > 0
                 let showLiquid = viewModel.accounts.filter { $0.gdkNetwork.liquid }.count > 0
                 let showBtc = viewModel.accounts.filter { !$0.gdkNetwork.liquid }.count > 0
-                let assets = WalletManager.current?.registry.all.filter {
-                    showAmp && $0.amp ?? false ||
-                    showLiquid && $0.assetId != AssetInfo.btc.assetId  ||
-                    showBtc && $0.assetId == AssetInfo.btc.assetId
-                }
-                vc.viewModel = AssetSelectViewModel(assets: assets ?? [], enableAnyAsset: true)
+                let assets: AssetAmountList? = WalletManager.current?.registry.all.filter {
+                    (showAmp && $0.amp ?? false) ||
+                    (showLiquid && $0.assetId != AssetInfo.btcId) ||
+                    (showBtc && $0.assetId == AssetInfo.btcId)
+                }.map { ($0.assetId, 0) }
+                vc.viewModel = AssetSelectViewModel(assets: assets ?? AssetAmountList(), enableAnyAsset: true)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }

@@ -56,7 +56,7 @@ extension AssetSelectViewController: UITableViewDelegate, UITableViewDataSource 
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let cnt = viewModel?.assetSelectCellModelsFilter.count ?? 0
-        return  cnt + 1
+        return cnt + (viewModel?.enableAnyAsset ?? false ? 1 : 0)
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

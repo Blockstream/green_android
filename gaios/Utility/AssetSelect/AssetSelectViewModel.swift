@@ -3,7 +3,7 @@ import PromiseKit
 
 class AssetSelectViewModel {
 
-    var assets = [AssetInfo]()
+    var assets = AssetAmountList()
     var reload: (() -> Void)?
     var enableAnyAsset: Bool
 
@@ -32,10 +32,11 @@ class AssetSelectViewModel {
         return nil
     }
 
-    init(assets: [AssetInfo], enableAnyAsset: Bool) {
-        self.assets = assets
+    init(assets: AssetAmountList, enableAnyAsset: Bool) {
+        self.assets = assets.sorted()
         self.enableAnyAsset = enableAnyAsset
-        assetSelectCellModels = assets.map { AssetSelectCellModel(assetId: $0.assetId, satoshi: 0) }
+        assetSelectCellModels = self.assets
+            .map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) }
         assetSelectCellModelsFilter = assetSelectCellModels
         reload?()
     }

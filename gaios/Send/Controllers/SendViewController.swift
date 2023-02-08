@@ -315,40 +315,11 @@ extension SendViewController: RecipientCellDelegate {
         if fixedAsset {
             return
         }
-        let registry = WalletManager.current?.registry
-        if fixedWallet {
-            // from AccountViewController, show only assets selection
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                let assets = viewModel.account.satoshi?.filter { $0.value > 0 }.keys.compactMap { registry?.info(for: $0) }
-                vc.viewModel = AssetSelectViewModel(assets: assets ?? [], enableAnyAsset: false)
-                vc.delegate = self
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        } else {
-            guard let accounts = accounts else { return }
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountAssetViewController") as? AccountAssetViewController {
-                vc.viewModel = AccountAssetViewModel(accounts: accounts)
-                vc.delegate = self
-                navigationController?.pushViewController(vc, animated: true)
-            }
-//            // show assets and account selection
-//            if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
-//                var balance = [String: Int64]()
-//                WalletManager.current?.subaccounts.forEach { subaccount in
-//                    let satoshi = subaccount.satoshi ?? [:]
-//                    satoshi.forEach {
-//                        if let amount = balance[$0.0] {
-//                            balance[$0.0] = amount + $0.1
-//                        } else {
-//                            balance[$0.0] = $0.1
-//                        }
-//                    }
-//                }
-//                let assets = balance.keys.compactMap { registry?.info(for: $0) }
-//                vc.viewModel = AssetExpandableSelectViewModel(assets: assets, enableAnyAsset: false, onlyFunded: true)
-//                vc.delegate = self
-//                navigationController?.pushViewController(vc, animated: true)
-//            }
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountAssetViewController") as? AccountAssetViewController {
+            let accounts = fixedWallet ? [viewModel.account] :  accounts ?? []
+            vc.viewModel = AccountAssetViewModel(accounts: accounts)
+            vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
