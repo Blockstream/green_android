@@ -144,19 +144,28 @@ class SendViewModel {
 
     func updateRecipientFromTx(tx: Transaction?) {
         transaction = tx
-        let addreessee = tx?.addressees.first
-        let asset = isLiquid ? addreessee?.assetId ?? "" : "btc"
-        if recipientCellModels.first != nil {
-            recipientCellModels[0].txError = tx?.error ?? ""
-            //recipientCellModels[0].assetId = asset
-            //recipientCellModels[0].amount = nil
-            recipientCellModels[0].isSendAll = tx?.sendAll ?? isSendAll
-            if tx?.sendAll ?? false {
+        if let tx = tx, recipientCellModels.first != nil {
+            let addreessee = tx.addressees.first
+            recipientCellModels[0].txError = tx.error
+            // update asset + address + amount, for bip21 url
+            if let address = addreessee?.address, recipientCellModels[0].address != address {
+                recipientCellModels[0].address = address
+            }
+            if let assetId = addreessee?.assetId, recipientCellModels[0].assetId != assetId {
+                recipientCellModels[0].assetId = assetId
+            }
+            if let satoshi = addreessee?.satoshi, recipientCellModels[0].satoshi() != satoshi {
+                recipientCellModels[0].fromSatoshi(satoshi)
+            }
+            // update amount, for send all tx
+            recipientCellModels[0].isSendAll = tx.sendAll
+            if tx.sendAll {
+                let assetId = addreessee?.assetId ?? tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? ""
                 var value = addreessee?.satoshi ?? 0
                 if !session.gdkNetwork.electrum {
-                    value = tx?.amounts.filter({$0.key == asset}).first?.value ?? 0
+                    value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
                 }
-                if let balance = Balance.fromSatoshi(value, assetId: asset) {
+                if let balance = Balance.fromSatoshi(value, assetId: assetId) {
                     let (amount, _) = value == 0 ? ("", "") : balance.toValue()
                     recipientCellModels[0].amount = amount
                 }

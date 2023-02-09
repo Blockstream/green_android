@@ -104,6 +104,7 @@ class SendViewController: KeyboardViewController {
             vc.forEach({ item in
                 if let cell = item as? RecipientCell {
                     cell.model = self.viewModel.recipient
+                    cell.reload()
                     cell.onTransactionValidate()
                 }})
             self.updateBtnNext()
