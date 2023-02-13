@@ -76,6 +76,7 @@ class RecipientCell: UITableViewCell {
         onTransactionValidate()
 
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
+        addressTextView.addDoneButtonToKeyboard(myAction: #selector(self.addressTextView.resignFirstResponder))
         addressTextView.textContainer.maximumNumberOfLines = 10
         btnPasteAddress.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.pasteAddressBtn
         amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.amountField

@@ -130,6 +130,7 @@
 		3453C73626A5A1A100451FB3 /* DrawerMenuUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */; };
 		3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73726A5A41A00451FB3 /* Drawer.swift */; };
 		3453C74226A6BD7E00451FB3 /* HWWScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C74126A6BD7E00451FB3 /* HWWScan.swift */; };
+		3456AF12299A78BE00C1BCA6 /* UITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456AF11299A78BE00C1BCA6 /* UITextView.swift */; };
 		34574C61283FB8670068212F /* DialogAnalyticsConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */; };
 		3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3457F4A62923943C00EF33B5 /* Dialogs.storyboard */; };
 		3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457F4A82923947A00EF33B5 /* DialogListViewController.swift */; };
@@ -574,6 +575,7 @@
 		3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerMenuUITests.swift; sourceTree = "<group>"; };
 		3453C73726A5A41A00451FB3 /* Drawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawer.swift; sourceTree = "<group>"; };
 		3453C74126A6BD7E00451FB3 /* HWWScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWWScan.swift; sourceTree = "<group>"; };
+		3456AF11299A78BE00C1BCA6 /* UITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextView.swift; sourceTree = "<group>"; };
 		34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAnalyticsConsent.swift; sourceTree = "<group>"; };
 		3457F4A62923943C00EF33B5 /* Dialogs.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Dialogs.storyboard; sourceTree = "<group>"; };
 		3457F4A82923947A00EF33B5 /* DialogListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogListViewController.swift; sourceTree = "<group>"; };
@@ -2193,6 +2195,7 @@
 				34E0CA9129829C2A00695304 /* Collection.swift */,
 				34019C1928D1FC5100E64BEE /* Localizable.swift */,
 				3498079E291CF05600F8DB95 /* Collection.swift */,
+				3456AF11299A78BE00C1BCA6 /* UITextView.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2565,6 +2568,7 @@
 				34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */,
 				3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */,
 				346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */,
+				3456AF12299A78BE00C1BCA6 /* UITextView.swift in Sources */,
 				34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */,
 				34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */,
 				34BBCEFA297151C50057DF4A /* AssetAssetCellModel.swift in Sources */,
