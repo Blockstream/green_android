@@ -217,9 +217,9 @@ class RecipientCell: UITableViewCell {
             amountTextField.text = model.amount
         }
 
-        /*if let satoshi = getSatoshi(), model.txError.isEmpty {
+        if let satoshi = model.amount, model.txError.isEmpty {
             if model.isBtc,
-                let balance = Balance.fromSatoshi(satoshi) {
+               let balance = Balance.fromSatoshi(satoshi, assetId: model.account.gdkNetwork.getFeeAsset()) {
                 lblAmountExchange.isHidden = false
                 if model.isFiat {
                     let (fiat, fiatCurrency) = balance.toValue()
@@ -228,8 +228,10 @@ class RecipientCell: UITableViewCell {
                     let (fiat, fiatCurrency) = balance.toFiat()
                     lblAmountExchange.text = "≈ \(fiat) \(fiatCurrency)"
                 }
+            } else {
+                lblAmountExchange.isHidden = true
             }
-        }*/
+        }
     }
 
     @objc func triggerTextChange() {
