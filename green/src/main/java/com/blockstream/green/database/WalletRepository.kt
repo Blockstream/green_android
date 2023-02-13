@@ -16,6 +16,8 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
 
     suspend fun getWalletWithHashId(walletHashId: String, isTestnet: Boolean, isHardware: Boolean) = walletDao.getWalletWithHashId(walletHashId, isTestnet, isHardware)
 
+    suspend fun getWatchOnlyWalletWithHashId(walletHashId: String, network: String, isHardware: Boolean) = walletDao.getWatchOnlyWalletWithHashId(walletHashId, network, isHardware)
+
     suspend fun insertWallet(wallet: Wallet) = walletDao.insertWallet(wallet)
 
     suspend fun insertOrReplaceWallet(wallet: Wallet) = walletDao.insertOrReplaceWallet(wallet)

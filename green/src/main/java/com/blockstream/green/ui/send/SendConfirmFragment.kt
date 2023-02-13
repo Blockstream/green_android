@@ -181,7 +181,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             network = network,
             session = session,
             transaction = transaction,
-            showChangeOutputs = isAddressVerificationOnDevice && (session.device?.isLedger == true || (session.device?.isTrezor == true && session.hwWallet?.model != "Trezor One" && network.isMultisig)),
+            showChangeOutputs = isAddressVerificationOnDevice && (session.device?.isLedger == true || session.device?.isTrezor == true),
             isAddressVerificationOnDevice = isAddressVerificationOnDevice
         )
 

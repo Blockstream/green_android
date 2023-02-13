@@ -215,44 +215,6 @@
 
         </LinearLayout>
 
-        <!--            <com.google.android.material.textfield.TextInputLayout-->
-        <!--                android:id="@+id/addressInputLayout"-->
-        <!--                gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) ? vm.transactionError : null}"-->
-        <!--                android:layout_width="0dp"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginTop="16dp"-->
-        <!--                android:layout_weight="@integer/material_motion_duration_long_1"-->
-        <!--                android:enabled="@{!vm.isBump}"-->
-        <!--                android:hint="@{vm.isSweep ? @string/id_private_key : @string/id_recipient_address}"-->
-        <!--                app:layout_constraintEnd_toStartOf="@+id/buttonScan"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@+id/accountAssetMaterialCardView">-->
-
-        <!--                <com.google.android.material.textfield.TextInputEditText-->
-        <!--                    android:id="@+id/addressInputEditText"-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:inputType="textMultiLine|textNoSuggestions"-->
-        <!--                    android:text="@={liveData.address}"-->
-        <!--                    tools:text="bc1addressqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm" />-->
-
-        <!--            </com.google.android.material.textfield.TextInputLayout>-->
-
-        <!--            <ImageButton-->
-        <!--                android:id="@+id/buttonScan"-->
-        <!--                isVisible="@{!vm.isBump}"-->
-        <!--                android:layout_width="54dp"-->
-        <!--                android:layout_height="54dp"-->
-        <!--                android:layout_marginTop="2dp"-->
-        <!--                android:adjustViewBounds="true"-->
-        <!--                android:background="?attr/selectableItemBackgroundBorderless"-->
-        <!--                android:padding="10dp"-->
-        <!--                android:scaleType="centerInside"-->
-        <!--                android:src="@drawable/ic_qr_code"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />-->
-
-
         <LinearLayout
             android:id="@+id/amountLinearLayout"
             isVisible="@{!vm.isBump}"
@@ -290,7 +252,7 @@
                         android:layout_marginBottom="16dp"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:enabled="@{liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
                         android:fontFamily="monospace"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
@@ -307,6 +269,8 @@
                         android:text="@{amountCurrency}"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textStyle="bold"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError)}"
+                        android:textColor="@color/selector_image_button"
                         tools:text="BTC" />
 
                     <ImageButton
@@ -317,7 +281,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{liveData.amountBip21 == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; vm.isBumpOrSweep == false}"
                         android:paddingTop="12dp"
                         android:paddingEnd="6dp"
                         android:paddingBottom="12dp"
@@ -336,7 +300,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
                         android:paddingTop="12dp"
                         android:paddingEnd="6dp"
                         android:paddingBottom="12dp"
@@ -354,7 +318,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{liveData.amountBip21 == false  &amp;&amp; !vm.isBumpOrSweep &amp;&amp; canConvert}"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false  &amp;&amp; !vm.isBumpOrSweep &amp;&amp; canConvert}"
                         android:scaleType="centerInside"
                         android:paddingTop="12dp"
                         android:paddingEnd="12dp"
@@ -440,7 +404,7 @@
                         style="@style/Widget.Green.Button.Outlined.Tiny"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:enabled="@{assetSatoshi != 0 &amp;&amp; liveData.amountBip21 == false}"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; assetSatoshi != 0 &amp;&amp; liveData.amountBip21 == false}"
                         android:text="@string/id_send_all_funds" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>

@@ -40,8 +40,12 @@ interface WalletDao {
     @Query("SELECT * FROM wallets WHERE id = :id")
     suspend fun getWallet(id: WalletId): Wallet?
 
-    @Query("SELECT * FROM wallets WHERE wallet_hash_id = :walletHashId AND is_testnet = :isTestnet AND is_hardware = :isHardware LIMIT 1")
+    @Query("SELECT * FROM wallets WHERE wallet_hash_id = :walletHashId AND is_testnet = :isTestnet AND watch_only_username == NULL AND is_hardware = :isHardware LIMIT 1")
     suspend fun getWalletWithHashId(walletHashId: String, isTestnet: Boolean, isHardware: Boolean): Wallet?
+
+    // Not currently used, but is here not to miss that getWalletWithHashId returns no wo wallets
+    @Query("SELECT * FROM wallets WHERE wallet_hash_id = :walletHashId AND network = :network AND watch_only_username != NULL AND is_hardware = :isHardware LIMIT 1")
+    suspend fun getWatchOnlyWalletWithHashId(walletHashId: String, network: String, isHardware: Boolean): Wallet?
 
     @Query("SELECT * FROM wallets WHERE is_hardware = 0")
     fun getSoftwareWalletsLiveData(): LiveData<List<Wallet>>

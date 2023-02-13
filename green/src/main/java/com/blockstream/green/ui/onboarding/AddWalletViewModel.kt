@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.extensions.logException
+import com.blockstream.green.managers.SessionManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
@@ -22,7 +22,6 @@ class AddWalletViewModel @AssistedInject constructor(
 ) : OnboardingViewModel(sessionManager, walletRepository, countly, null) {
     val termsChecked = MutableLiveData(false)
     val device = MutableLiveData(deviceManager.getDevice(deviceId))
-    val isDeviceOnboarding = MutableLiveData(deviceId != null)
 
     init {
         // If you have already agreed, check by default

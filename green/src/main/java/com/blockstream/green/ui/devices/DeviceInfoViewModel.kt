@@ -101,7 +101,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
                 }
             }
 
-            if (device.isJade && jadeIsUninitialized.value == true && !(device.hwWallet as JadeHWWallet).isUninitialized) {
+            if (device.isJade && jadeIsUninitialized.value == true && (device.hwWallet as? JadeHWWallet)?.isReady == true) {
                 countly.jadeInitialize()
             }
 

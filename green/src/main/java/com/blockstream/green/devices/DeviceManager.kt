@@ -284,7 +284,7 @@ class DeviceManager constructor(
             pendingBleBonding = device
 
             if(it.bluetoothDevice.createBond()){
-                // Extend timeout for a minute until paired
+                // Extend timeout for 30 seconds until paired
                 // BLE when connected is not advertised, so it will remain visible for 30"
                 device.timeout += 30000000000 // 30 extra seconds to pair
             }else{

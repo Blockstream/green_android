@@ -70,7 +70,12 @@ class SendViewModel @AssistedInject constructor(
     private var checkedTransaction: CreateTransaction? = null
     val transactionError: MutableLiveData<String?> = MutableLiveData("") // empty string as an initial error to disable next button
 
-    val handledGdkErrors = listOf("id_insufficient_funds", "id_invalid_private_key", "id_invalid_address", "id_invalid_amount", "id_invalid_asset_id",)
+    val handledGdkErrors = listOfNotNull(
+        "id_invalid_private_key",
+        "id_invalid_address",
+        "id_invalid_amount",
+        "id_invalid_asset_id",
+    ) + if(!isBump) "id_insufficient_funds" else null // On Bump, show fee error on errorTextView
 
     private val checkTransactionMutex = Mutex()
 

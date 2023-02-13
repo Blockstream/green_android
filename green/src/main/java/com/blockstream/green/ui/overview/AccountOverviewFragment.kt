@@ -175,9 +175,10 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
     override fun onPrepareMenu(menu: Menu) {
         // Prevent from archiving all your accounts
-        menu.findItem(R.id.archive).isVisible = viewModel.accounts.size > 1
+        menu.findItem(R.id.archive).isVisible = !session.isWatchOnly && viewModel.accounts.size > 1
         menu.findItem(R.id.help).isVisible = account.isAmp && viewModel.assets.isNotEmpty()
-        menu.findItem(R.id.enhance_security).isVisible = account.needs2faActivation(session)
+        menu.findItem(R.id.enhance_security).isVisible = !session.isWatchOnly && account.needs2faActivation(session)
+        menu.findItem(R.id.rename).isVisible = !session.isWatchOnly
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

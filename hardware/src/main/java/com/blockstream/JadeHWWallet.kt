@@ -26,6 +26,9 @@ class JadeHWWallet(
     val isUninitialized: Boolean
         get() = getVersionInfo().jadeState.let { it == JadeState.UNINIT || it == JadeState.UNSAVED }
 
+    val isReady: Boolean
+        get() = getVersionInfo().jadeState == JadeState.READY
+
     // Authenticate Jade with pinserver and check firmware version with fw-server
     suspend fun authenticate(hwWalletLogin: HwWalletLogin,
                              jadeFirmwareManager: JadeFirmwareManager): Boolean {
