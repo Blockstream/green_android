@@ -116,10 +116,11 @@ class SendViewController: KeyboardViewController {
         DropAlert().error(message: msg)
     }
 
-    override func keyboardWillShow(notification: Notification) {
-    }
-
     override func keyboardWillHide(notification: Notification) {
+        if keyboardDismissGesture != nil {
+            view.removeGestureRecognizer(keyboardDismissGesture!)
+            keyboardDismissGesture = nil
+        }
         tableView.setContentOffset(CGPoint(x: 0.0, y: 0.0), animated: true)
     }
 
