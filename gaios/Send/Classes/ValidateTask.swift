@@ -12,15 +12,18 @@ class ValidateTask {
     private var cancelme = false
     private var task: DispatchWorkItem?
 
-    init(details: [String: Any], inputType: InputType, session: SessionManager) {
+    init(details: [String: Any], inputType: InputType, session: SessionManager, account: WalletItem) {
         task = DispatchWorkItem {
             var details = details
+            let subaccount = details["subaccount"] as? UInt32
             if inputType == .transaction && details["utxos"] == nil {
-                let subaccount = details["subaccount"] as? UInt32
                 let unspent = try? session.getUnspentOutputs(subaccount: subaccount ?? 0, numConfs: 0).wait()
                 details["utxos"] = unspent ?? [:]
             }
-            self.tx = try? session.createTransaction(tx: Transaction(details)).wait()
+            let inputTx = Transaction(details, subaccount: account.hashValue)
+            var tx = try? session.createTransaction(tx: inputTx).wait()
+            tx?.subaccount = account.hashValue
+            self.tx = tx
         }
     }
 

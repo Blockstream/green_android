@@ -71,7 +71,7 @@ class SendViewModel {
             details["fee_rate"] = feeRate
         }
         validateTask?.cancel()
-        validateTask = ValidateTask(details: details, inputType: inputType, session: session)
+        validateTask = ValidateTask(details: details, inputType: inputType, session: session, account: account)
         return Promise.value(validateTask)
             .compactMap { $0 }
             .then { $0.execute() }
@@ -154,7 +154,7 @@ class SendViewModel {
             if let assetId = addreessee?.assetId, recipientCellModels[0].assetId != assetId {
                 recipientCellModels[0].assetId = assetId
             }
-            if let satoshi = addreessee?.satoshi, recipientCellModels[0].satoshi() != satoshi {
+            if let satoshi = addreessee?.satoshi, satoshi != 0 && recipientCellModels[0].satoshi() != satoshi {
                 recipientCellModels[0].fromSatoshi(satoshi)
             }
             // update amount, for send all tx

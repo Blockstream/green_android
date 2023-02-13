@@ -101,7 +101,7 @@ class SendConfirmViewController: KeyboardViewController {
                 let tx = result["transaction"] as? String
                 return self.session.broadcastTransaction(txHex: tx ?? "")
             } else {
-                let tx = Transaction(result)
+                let tx = Transaction(result, subaccount: self.wallet?.hashValue)
                 return self.session.sendTransaction(tx: tx)
             }
         }.ensure {

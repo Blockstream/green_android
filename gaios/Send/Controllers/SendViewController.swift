@@ -252,21 +252,6 @@ extension SendViewController: DialogRecipientDeleteViewControllerDelegate {
         reloadSections([SendSection.recipient], animated: true)
     }
 }
-/*
-extension SendViewController: AssetsListViewControllerDelegate {
-    func didSelect(assetId: String, index: Int?) {
-        if let index = index {
-            transaction = nil
-            recipients[index].assetId = assetId
-            recipients[index].amount = nil
-            recipients[index].isFiat = false
-            recipients[index].isSendAll = false
-            reloadSections([SendSection.recipient], animated: false)
-            validateTransaction()
-        }
-    }
-}
-*/
 extension SendViewController: DialogQRCodeScanViewControllerDelegate {
     func didScan(value: String, index: Int?) {
         if let index = index {

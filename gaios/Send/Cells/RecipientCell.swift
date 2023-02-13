@@ -283,7 +283,9 @@ class RecipientCell: UITableViewCell {
 
     @IBAction func btnCancelAmount(_ sender: Any) {
         model?.amount = nil
+        reload()
         updateModel?(model)
+        delegate?.validateTx()
     }
 
     @IBAction func btnPasteAmount(_ sender: Any) {

@@ -69,7 +69,7 @@ struct RecipientCellModel {
     }
 
     func satoshi() -> Int64? {
-        var amountText = (amount ?? "").isEmpty ? "0" : amount ?? "0"
+        var amountText = (amount ?? "").isEmpty ? "" : amount ?? ""
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
         return convert(amountText)?.satoshi
