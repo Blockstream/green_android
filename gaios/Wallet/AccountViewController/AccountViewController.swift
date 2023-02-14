@@ -93,11 +93,15 @@ class AccountViewController: UIViewController {
 
     func setContent() {
 
+        navigationItem.rightBarButtonItems = []
+
         // setup right menu bar: settings
         let settingsBtn = UIButton(type: .system)
         settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
         settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn)]
+        if !viewModel.watchOnly {
+            navigationItem.rightBarButtonItems?.append( UIBarButtonItem(customView: settingsBtn) )
+        }
 
         let ampHelpBtn = UIButton(type: .system)
         ampHelpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
