@@ -12,6 +12,7 @@ import mu.KLogging
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+
 class JadeAPI private constructor(
     jade: JadeInterface,
     requestProvider: HttpRequestProvider,
@@ -60,9 +61,29 @@ class JadeAPI private constructor(
         return runBlocking { connect() }
     }
 
+    fun disconnect() {
+        logout()
+        jade.disconnect()
+        efusemac = null
+    }
+
+    fun logout(): Boolean {
+        // Command added in fw 1.1.44
+        // Gracefully fail if not supported by device
+        try {
+            val result = this.jadeRpc(METHOD_LOGOUT, TIMEOUT_AUTONOMOUS)
+            // return value always true
+            return result.asBoolean()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return true
+    }
+
     companion object : KLogging() {
 
         const val METHOD_GET_VERSION_INFO = "get_version_info"
+        const val METHOD_LOGOUT = "logout"
 
         fun createSerial(
             requestProvider: HttpRequestProvider,

@@ -73,10 +73,6 @@ public abstract class JadeAPIJava {
     // Get version information from the jade
     abstract public VersionInfo getVersionInfo();
 
-    public void disconnect() {
-        this.jade.disconnect();
-        this.efusemac = null;
-    }
 
     // Helper to create single-parameter object
     private static ObjectNode makeParams(final String name, final Object val) {

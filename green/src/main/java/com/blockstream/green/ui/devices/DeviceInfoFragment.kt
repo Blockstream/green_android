@@ -135,7 +135,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.updateFirmware).isVisible = viewModel.onProgress.value == true && isDevelopmentFlavor && device.isJade == true
+        menu.findItem(R.id.updateFirmware).isVisible = isDevelopmentFlavor && device.isJade == true
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -152,14 +152,12 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
                     .setTitle("Select Firmware Channel")
                     .setItems(channels.toTypedArray()){ _: DialogInterface, i: Int ->
                         // Update
-                        viewModel.upgradeFirmware(
-                            JadeFirmwareManager(
-                                viewModel,
-                                sessionManager.httpRequestProvider,
-                                channels[i],
-                                true
-                            )
-                        )
+                        viewModel.authenticateAndContinue(jadeFirmwareManager = JadeFirmwareManager(
+                            viewModel,
+                            sessionManager.httpRequestProvider,
+                            channels[i],
+                            true
+                        ))
                     }
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()

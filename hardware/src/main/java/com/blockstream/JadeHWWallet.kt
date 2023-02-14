@@ -65,8 +65,4 @@ class JadeHWWallet(
             )
         }
     }
-
-    suspend fun upgradeFirmware(jadeFirmwareManager: JadeFirmwareManager){
-        jadeFirmwareManager.checkFirmware(jade = jadeApi, onlyIfUninitialized = false, onlyIfNotMinimum = false)
-    }
 }

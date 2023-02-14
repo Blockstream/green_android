@@ -64,11 +64,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     fun upgradeFirmware(jadeFirmwareManager: JadeFirmwareManager) {
-        doUserAction({
-            (device.hwWallet as? JadeHWWallet)?.upgradeFirmware(jadeFirmwareManager)
-        }, onSuccess = {
-
-        })
+        authenticateAndContinue(jadeFirmwareManager = jadeFirmwareManager)
     }
 
     private fun unlockDevice(context: Context) {
@@ -78,12 +74,12 @@ class DeviceInfoViewModel @AssistedInject constructor(
         countly.hardwareConnect(device)
     }
 
-    fun authenticateAndContinue(){
+    fun authenticateAndContinue(jadeFirmwareManager: JadeFirmwareManager? = null){
         val hwWallet = device.hwWallet ?: return
 
         doUserAction({
             // Authenticate device if needed
-            deviceConnectionManager.authenticateDeviceIfNeeded(hwWallet)
+            deviceConnectionManager.authenticateDeviceIfNeeded(hwWallet = hwWallet, jadeFirmwareManager = jadeFirmwareManager)
 
             val network = deviceConnectionManager.getOperatingNetwork(hwWallet)
             val isEphemeral = !rememberDevice.boolean()

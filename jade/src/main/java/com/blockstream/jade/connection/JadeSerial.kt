@@ -48,7 +48,6 @@ class JadeSerial(private val usbManager: UsbManager, private val usbDevice: UsbD
     }
 
     override fun disconnect() {
-        // TODO send disconnect packet
         usbSerialDevice?.close()
         usbSerialDevice = null
     }
