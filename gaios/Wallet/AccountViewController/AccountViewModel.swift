@@ -2,6 +2,12 @@ import Foundation
 import UIKit
 import PromiseKit
 
+enum AmpEducationalMode {
+    case table
+    case header
+    case hidden
+}
+
 class AccountViewModel {
 
     var wm: WalletManager { WalletManager.current! }
@@ -30,10 +36,25 @@ class AccountViewModel {
     }
 
     var discloseCellModels: [DiscloseCellModel] {
-        if account.type == .amp {
+        switch ampEducationalMode {
+        case .table:
             return [DiscloseCellModel(title: "Learn more about AMP, the assets and your eligibility", hint: "Check our 6 easy steps to be able to send and receive AMP assets.")]
+        default:
+            return []
         }
-        return []
+    }
+
+    var ampEducationalMode: AmpEducationalMode {
+        if account.type != .amp {
+            return .hidden
+        } else {
+            let satoshi = account.satoshi?[account.gdkNetwork.getFeeAsset()] ?? 0
+            if satoshi > 0 {
+                return .header
+            } else {
+                return .table
+            }
+        }
     }
 
     var txCellModels = [TransactionCellModel]() {

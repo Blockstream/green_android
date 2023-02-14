@@ -97,7 +97,14 @@ class AccountViewController: UIViewController {
         let settingsBtn = UIButton(type: .system)
         settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
         settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: settingsBtn)]
+
+        let ampHelpBtn = UIButton(type: .system)
+        ampHelpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
+        ampHelpBtn.addTarget(self, action: #selector(ampHelp), for: .touchUpInside)
+        if viewModel.ampEducationalMode == .header {
+            navigationItem.rightBarButtonItems?.append( UIBarButtonItem(customView: ampHelpBtn) )
+        }
 
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
@@ -202,6 +209,12 @@ class AccountViewController: UIViewController {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
             self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    @objc func ampHelp() {
+        if let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-") {
+            UIApplication.shared.open(url)
         }
     }
 
@@ -360,9 +373,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .adding:
             twoFactorAuthenticatorDialog()
         case .disclose:
-            if let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-") {
-                UIApplication.shared.open(url)
-            }
+            ampHelp()
         case .assets:
             let storyboard = UIStoryboard(name: "Shared", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
