@@ -127,7 +127,7 @@ class RecipientCell: UITableViewCell {
         btnPasteAmount.isHidden = (amountTextField.text?.count ?? 0 > 0)
         lblCurrency.text = model.ticker
         lblAvailableFunds.text = model.balance
-        btnSendAll.isHidden = !model.isBtc
+        btnSendAll.isHidden = false
         btnChooseAsset.isUserInteractionEnabled = true
         assetBox.alpha = 1.0
         amountBox.alpha = 1.0
