@@ -22,7 +22,7 @@ class WalletViewModel {
     }
 
     var headerIcon: UIImage {
-        return UIImage(named: wm?.currentSubaccount?.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
+        return UIImage(named: wm?.prominentNetwork.gdkNetwork?.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
     }
     /// Cached data
     var cachedSubaccounts = [WalletItem]()
