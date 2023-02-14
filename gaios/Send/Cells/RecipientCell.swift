@@ -311,8 +311,8 @@ class RecipientCell: UITableViewCell {
                 let (amount, _) = balance.toFiat()
                 model?.amount = amount
             }
-            model?.isFiat.toggle()
         }
+        model?.isFiat.toggle()
         reload()
         updateModel?(model)
         delegate?.validateTx()
