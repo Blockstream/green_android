@@ -59,7 +59,7 @@
             android:id="@+id/subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/id_jade_is_an_isolated_device_not_connected_to_the_internet"
+            android:text="@string/id_jade_is_an_isolated_device_not"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.Green.Subtitle"
             android:textColor="@color/color_on_surface_emphasis_medium"

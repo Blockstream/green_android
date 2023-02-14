@@ -62,7 +62,7 @@ open class SetupNewWalletFragment : AbstractOnboardingFragment<SetupNewWalletFra
         binding.terms.linksClickable = true
         binding.terms.isClickable = true
         binding.terms.text = requireContext().linkedText(
-            R.string.id_i_agree_to_the_terms_of_service_and_privacy_policy,
+            R.string.id_i_agree_to_the_terms_of_service,
             listOf(
                 R.string.id_terms_of_service to object : ClickableSpan() {
                     override fun onClick(widget: View) {

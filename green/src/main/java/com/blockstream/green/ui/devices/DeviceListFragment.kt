@@ -186,19 +186,19 @@ class JadePageFragment : Fragment() {
                 when (page) {
                     0 -> {
                         it.title.setText(R.string.id_power_on_jade)
-                        it.subtitle.setText(R.string.id_hold_the_green_button_on_the_bottom_of_jade)
+                        it.subtitle.setText(R.string.id_hold_the_green_button_on_the)
                         it.imageView.setImageResource(R.drawable.jade_power)
                     }
 
                     1 -> {
                         it.title.setText(R.string.id_follow_the_instructions_on_jade)
-                        it.subtitle.setText(R.string.id_select_initialize_to_create_a_new_wallet)
+                        it.subtitle.setText(R.string.id_select_initialize_and_choose_to)
                         it.imageView.setImageResource(R.drawable.jade_button)
                     }
 
                     else -> {
                         it.title.setText(R.string.id_connect_using_usb_or_bluetooth)
-                        it.subtitle.setText(R.string.id_choose_a_usb_or_bluetooth_connection)
+                        it.subtitle.setText(R.string.id_choose_a_usb_or_bluetooth)
                         it.imageView.setImageResource(R.drawable.jade_rotate)
                     }
                 }

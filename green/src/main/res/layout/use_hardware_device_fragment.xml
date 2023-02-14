@@ -62,7 +62,7 @@
                 style="@style/Widget.Green.Button.White.Big"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/id_connect_a_different_hardware_device" />
+                android:text="@string/id_connect_a_different_hardware" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonStore"

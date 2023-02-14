@@ -60,17 +60,17 @@ class PageFragment : Fragment() {
             when (requireArguments().getInt(PAGE, 0)) {
                 0 -> {
                     it.title.setText(R.string.id_welcome_to_blockstream_jade)
-                    it.subtitle.setText(R.string.id_jade_is_a_specialized_device_designed_to)
+                    it.subtitle.setText(R.string.id_jade_is_a_specialized_device)
                     it.imageView.setImageResource(R.drawable.jade_welcome)
                 }
                 1 -> {
                     it.title.setText(R.string.id_hardware_security)
-                    it.subtitle.setText(R.string.id_your_bitcoin_and_liquid_assets_are_store_on_the_blockchain)
+                    it.subtitle.setText(R.string.id_your_bitcoin_and_liquid_assets)
                     it.imageView.setImageResource(R.drawable.hardware_security)
                 }
                 else -> {
                     it.title.setText(R.string.id_offline_key_storage)
-                    it.subtitle.setText(R.string.id_jade_is_an_isolated_device_not_connected_to_the_internet)
+                    it.subtitle.setText(R.string.id_jade_is_an_isolated_device_not)
                     it.imageView.setImageResource(R.drawable.offline_key_storage)
                 }
             }

@@ -65,7 +65,7 @@
                     alphaPulse="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.BLUETOOTH_NOT_ENABLED &amp;&amp; !vm.canEnableBluetooth }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/id_you_have_to_manually_enable_bluetooth"
+                    android:text="@string/id_enable_bluetooth_from_system"
                     android:textAlignment="center"
                     android:textAppearance="?attr/textAppearanceLabelLarge"
                     android:textColor="@color/color_on_surface_emphasis_high"

@@ -80,7 +80,7 @@
                     android:id="@+id/subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/id_hold_the_green_button_on_the_bottom_of_jade"
+                    android:text="@string/id_hold_the_green_button_on_the"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.Green.Subtitle"
                     android:textColor="@color/color_on_surface_emphasis_medium" />
