@@ -26,35 +26,14 @@ class AddresseeCell: UITableViewCell {
     override func prepareForReuse() {
     }
 
-    func configure(transaction: Transaction, index: Int) {
-        let account = subaccount(from: transaction)
-        let addressee = transaction.addressees[index]
+    func configure(cellModel: AddresseeCellModel) {
         lblRecipientTitle.text = NSLocalizedString("id_recipient", comment: "")
-        lblRecipientAddress.text = addressee.address
-
-        let addreessee = transaction.addressees.first
-        var value = addreessee?.satoshi ?? 0
-        //let asset = (account?.gdkNetwork.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
-        let asset = addreessee?.assetId ?? "btc"
-        if !(AccountsManager.shared.current?.isSingleSig ?? false) && transaction.sendAll {
-            value = transaction.amounts.filter({$0.key == asset}).first?.value ?? 0
-        }
-        let feeAsset = account?.gdkNetwork.getFeeAsset()
-        if let balance = Balance.fromSatoshi(value, assetId: asset) {
-            let (amount, ticker) = value == 0 ? ("", "") : balance.toValue()
-            lblAmount.text = amount
-            lblDenomination.text = ticker
-            if asset == feeAsset {
-                let (fiat, fiatCurrency) = balance.toFiat()
-                lblFiat.text = "≈ \(fiat) \(fiatCurrency)"
-            }
-            lblFiat.isHidden = asset != feeAsset
-        }
-        icon.image = WalletManager.current?.registry.image(for: asset)
-    }
-
-    func subaccount(from tx: Transaction) -> WalletItem? {
-        return WalletManager.current?.subaccounts.filter { $0.hashValue == tx.subaccount }.first
+        lblRecipientAddress.text = cellModel.addreessee.address
+        lblAmount.text = cellModel.amount
+        lblDenomination.text = cellModel.ticker
+        lblFiat.isHidden = !cellModel.showFiat
+        lblFiat.text = cellModel.fiat
+        icon.image = WalletManager.current?.registry.image(for: cellModel.assetId)
     }
 
     func setStyle() {

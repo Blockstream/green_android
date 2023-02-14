@@ -129,9 +129,9 @@ class SendViewController: KeyboardViewController {
             addressInputType = .bip21 //analytics only
         }
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController {
-            vc.wallet = viewModel.account
-            vc.transaction = viewModel.transaction
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController, let tx = viewModel.transaction {
+            vc.viewModel = SendConfirmViewModel(account: viewModel.account,
+                                                tx: tx)
             vc.inputType = viewModel.inputType
             vc.addressInputType = addressInputType
             navigationController?.pushViewController(vc, animated: true)

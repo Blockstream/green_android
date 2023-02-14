@@ -14,14 +14,13 @@ class SendConfirmViewController: KeyboardViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var sliderView: SliderView!
+    
+    var viewModel: SendConfirmViewModel!
 
-    var wallet: WalletItem!
-    var transaction: Transaction?
     private var connected = true
     private var updateToken: NSObjectProtocol?
     var inputType: InputType = .transaction // for analytics
     var addressInputType: AnalyticsManager.AddressInputType = .paste // for analytics
-    private var session: SessionManager { wallet.session! }
     private var remoteAlert: RemoteAlert?
 
     override func viewDidLoad() {
@@ -39,7 +38,7 @@ class SendConfirmViewController: KeyboardViewController {
 
         self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: AccountsManager.shared.current?.networkName)
 
-        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: viewModel.account.type))
     }
 
     func setContent() {
@@ -50,7 +49,7 @@ class SendConfirmViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNoteViewController") as? DialogNoteViewController {
             vc.modalPresentationStyle = .overFullScreen
-            vc.prefill = transaction?.memo
+            vc.prefill = viewModel.tx.memo
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
@@ -79,7 +78,6 @@ class SendConfirmViewController: KeyboardViewController {
 
     func send() {
         let account = AccountsManager.shared.current
-        guard let transaction = transaction else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             sliderView.isUserInteractionEnabled = false
@@ -87,23 +85,15 @@ class SendConfirmViewController: KeyboardViewController {
                 let storyboard = UIStoryboard(name: "Shared", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSendHWSummaryViewController") as? DialogSendHWSummaryViewController {
                     vc.modalPresentationStyle = .overFullScreen
-                    vc.transaction = transaction
+                    vc.transaction = viewModel.tx
                     vc.isLedger = account?.isLedger ?? false
-                    vc.account = wallet
+                    vc.account = viewModel.account
                     present(vc, animated: false, completion: nil)
                 }
             }
             return Guarantee()
         }.then(on: bgq) {
-            self.session.signTransaction(tx: transaction)
-        }.then(on: bgq) { result -> Promise<Void> in
-            if transaction.isSweep {
-                let tx = result["transaction"] as? String
-                return self.session.broadcastTransaction(txHex: tx ?? "")
-            } else {
-                let tx = Transaction(result, subaccount: self.wallet?.hashValue)
-                return self.session.sendTransaction(tx: tx)
-            }
+            self.viewModel.send()
         }.ensure {
             if account?.isHW ?? false {
                 self.dismissHWSummary()
@@ -147,14 +137,14 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     func executeOnDone() {
-        let isSendAll = transaction?.sendAll ?? false
-        let withMemo = !(transaction?.memo.isEmpty ?? true)
+        let isSendAll = viewModel.tx.sendAll
+        let withMemo = !viewModel.tx.memo.isEmpty
 
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
                                                      addressInputType: addressInputType,
                                                      sendAll: isSendAll)
         AnalyticsManager.shared.sendTransaction(account: AccountsManager.shared.current,
-                               walletItem: wallet,
+                               walletItem: viewModel.account,
                                transactionSgmt: transSgmt, withMemo: withMemo)
 
         self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
@@ -166,7 +156,7 @@ class SendConfirmViewController: KeyboardViewController {
                 .shared
                 .request(isSendAll: isSendAll,
                          account: AccountsManager.shared.current,
-                         walletType: self?.wallet?.type)
+                         walletType: self?.viewModel.account.type)
         }
     }
 
@@ -199,7 +189,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
         case SendConfirmSection.remoteAlerts.rawValue:
             return self.remoteAlert != nil ? 1 : 0
         case SendConfirmSection.addressee.rawValue:
-            return transaction?.addressees.count ?? 0
+            return viewModel.tx.addressees.count
         case SendConfirmSection.fee.rawValue:
             return 1
         case SendConfirmSection.change.rawValue:
@@ -228,26 +218,26 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
                 return cell
             }
         case SendConfirmSection.addressee.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "AddresseeCell") as? AddresseeCell, let tx = transaction {
-                cell.configure(transaction: tx, index: indexPath.row)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AddresseeCell") as? AddresseeCell {
+                cell.configure(cellModel: viewModel.addresseeCellModels[indexPath.row])
                 cell.selectionStyle = .none
                 return cell
             }
         case SendConfirmSection.fee.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeSummaryCell") as? FeeSummaryCell, let tx = self.transaction {
-                cell.configure(tx)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeSummaryCell") as? FeeSummaryCell {
+                cell.configure(viewModel.tx)
                 cell.selectionStyle = .none
                 return cell
             }
         case SendConfirmSection.change.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ChangeCell") as? ChangeCell, let tx = self.transaction {
-                cell.configure(tx)
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "ChangeCell") as? ChangeCell {
+                cell.configure(viewModel.tx)
                 cell.selectionStyle = .none
                 return cell
             }
         case SendConfirmSection.note.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell") as? NoteCell {
-                cell.configure(note: transaction?.memo ?? "")
+                cell.configure(note: viewModel.tx.memo)
                 cell.delegate = self
                 cell.selectionStyle = .none
                 return cell
@@ -287,7 +277,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
 extension SendConfirmViewController: DialogNoteViewControllerDelegate {
 
     func didSave(_ note: String) {
-        transaction?.memo = note
+        viewModel.tx.memo = note
         reloadSections([SendConfirmSection.note], animated: false)
     }
 

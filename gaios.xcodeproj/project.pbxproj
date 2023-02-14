@@ -347,6 +347,8 @@
 		812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
+		8157CDAA299BE1E800365F1B /* AddresseeCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8157CDA9299BE1E800365F1B /* AddresseeCellModel.swift */; };
+		8157CDAC299BE9E100365F1B /* SendConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8157CDAB299BE9E100365F1B /* SendConfirmViewModel.swift */; };
 		8158974B2701980700DDF6D4 /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
 		815D4AA028638A56004DC015 /* PinData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D4A9F28638A56004DC015 /* PinData.swift */; };
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
@@ -805,6 +807,8 @@
 		812DBDC72977FACF002992D6 /* TwoFactorSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorSettingsCellModel.swift; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
+		8157CDA9299BE1E800365F1B /* AddresseeCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddresseeCellModel.swift; sourceTree = "<group>"; };
+		8157CDAB299BE9E100365F1B /* SendConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirmViewModel.swift; sourceTree = "<group>"; };
 		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
 		815D4A9F28638A56004DC015 /* PinData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinData.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
@@ -1274,11 +1278,12 @@
 				34477D312771D2600021698B /* RecipientCell.swift */,
 				34477D382771F7090021698B /* AddRecipientCell.swift */,
 				34477D3A277216640021698B /* FeeEditCell.swift */,
-				34B30F79277C730000D37A3C /* AddresseeCell.swift */,
 				34BD7E75278C2EB6004AEC6F /* FeeSummaryCell.swift */,
 				34BD7E79278C93F3004AEC6F /* NoteCell.swift */,
 				349C75042791BCA60046DA59 /* ChangeCell.swift */,
 				81772B322992BC9800F05BF2 /* RecipientCellModel.swift */,
+				34B30F79277C730000D37A3C /* AddresseeCell.swift */,
+				8157CDA9299BE1E800365F1B /* AddresseeCellModel.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -2041,6 +2046,7 @@
 			isa = PBXGroup;
 			children = (
 				81772B342992EDE900F05BF2 /* SendViewModel.swift */,
+				8157CDAB299BE9E100365F1B /* SendConfirmViewModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2738,6 +2744,7 @@
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
 				3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */,
 				81004E31292B6E1D001C2E4D /* MnemonicViewModel.swift in Sources */,
+				8157CDAA299BE1E800365F1B /* AddresseeCellModel.swift in Sources */,
 				815D4AA028638A56004DC015 /* PinData.swift in Sources */,
 				349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */,
 				81A062D624532643003464A0 /* HWChannelProtocol.swift in Sources */,
@@ -2770,6 +2777,7 @@
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
+				8157CDAC299BE9E100365F1B /* SendConfirmViewModel.swift in Sources */,
 				3484118C265E6113002D2202 /* Constants.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
 				34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */,
