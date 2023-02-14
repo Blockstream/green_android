@@ -97,7 +97,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.endEditing(true)
 
         // Initialize gdk and accounts
-        try? gdkinitialize()
+        try! gdkinitialize()
         AccountsManager.shared.onFirstInitialization()
 
         // Set screen lock
@@ -120,14 +120,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func gdkinitialize() throws {
-        if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
-            try FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
-            var config = ["datadir": url.path]
-            #if DEBUG
-            config["log_level"] = "info"
-            #endif
-            try gdkInit(config: config)
+        let params = GdkInit.defaults()
+        // check gdk datadir migration
+        if !UserDefaults.standard.bool(forKey: "AppDataDir") {
+            // move cache dir to the app support
+            let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true)
+            if let atPath = url?.path, let toPath = params.datadir,
+                FileManager.default.fileExists(atPath: atPath) {
+                let files = try FileManager.default.contentsOfDirectory(atPath: atPath)
+                files.forEach { file in
+                    try? FileManager.default.moveItem(atPath: "\(atPath)/\(file)", toPath: "\(toPath)/\(file)")
+                }
+            }
+            UserDefaults.standard.set(true, forKey: "AppDataDir")
         }
+        #if DEBUG
+        let datadir = try? FileManager.default.contentsOfDirectory(atPath: params.datadir ?? "")
+        print("gdk datadir:", (datadir ?? []).map { $0 })
+        #endif
+        try gdkInit(config: params.toDict() ?? [:])
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

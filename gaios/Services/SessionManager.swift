@@ -162,7 +162,7 @@ class SessionManager {
     }
 
     func existDatadir(credentials: Credentials? = nil, masterXpub: String? = nil) -> Bool {
-        if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
+        if let path = GdkInit.defaults().datadir {
             let hashes: WalletIdentifier? = {
                 if let masterXpub = masterXpub {
                     return walletIdentifier(gdkNetwork.network, masterXpub: masterXpub)
@@ -171,14 +171,14 @@ class SessionManager {
                 }
                 return nil
             }()
-            let dir = url.appendingPathComponent("state/\(hashes?.walletHashId ?? "")", isDirectory: true)
-            return FileManager.default.fileExists(atPath: dir.relativePath)
+            let dir = "\(path)/state/\(hashes?.walletHashId ?? "")"
+            return FileManager.default.fileExists(atPath: dir)
         }
         return false
     }
 
     func removeDatadir(credentials: Credentials? = nil, masterXpub: String? = nil) {
-        if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
+        if let path = GdkInit.defaults().datadir {
             let hashes: WalletIdentifier? = {
                 if let masterXpub = masterXpub {
                     return walletIdentifier(gdkNetwork.network, masterXpub: masterXpub)
@@ -187,8 +187,8 @@ class SessionManager {
                 }
                 return nil
             }()
-            let dir = url.appendingPathComponent(hashes?.walletHashId ?? "", isDirectory: true)
-            try? FileManager.default.removeItem(at: dir)
+            let dir = "\(path)/state/\(hashes?.walletHashId ?? "")"
+            try? FileManager.default.removeItem(atPath: dir)
         }
     }
 
