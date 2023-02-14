@@ -293,35 +293,40 @@ public class TrezorHWWallet extends HWWallet {
                                                          final TrezorType.TxRequestDetailsType txRequest,
                                                          final List<InputOutput> outputs) {
         final InputOutput out = outputs.get(txRequest.getRequestIndex());
-        final TrezorType.TxOutputType.Builder b = TrezorType.TxOutputType.newBuilder().setAmount(out.getSatoshi());
+        final TrezorType.TxOutputType.Builder b = TrezorType.TxOutputType.newBuilder();
 
-        if (out.isChange()) {
-            final TrezorType.OutputScriptType type;
+        b.setAmount(out.getSatoshi());
+        if (out.getAddressType() != null) {
             switch (out.getAddressType()) {
                 case "p2sh":
-                    type = TrezorType.OutputScriptType.PAYTOMULTISIG;
+                    b.setScriptType(TrezorType.OutputScriptType.PAYTOSCRIPTHASH);
                     break;
                 case "p2pkh":
-                    type = TrezorType.OutputScriptType.PAYTOADDRESS;
+                    b.setScriptType(TrezorType.OutputScriptType.PAYTOADDRESS);
                     break;
                 case "p2wpkh":
-                    type = TrezorType.OutputScriptType.PAYTOWITNESS;
+                    b.setScriptType(TrezorType.OutputScriptType.PAYTOWITNESS);
                     break;
-                default:
-                    type = TrezorType.OutputScriptType.PAYTOP2SHWITNESS;
-            }
-            b.setScriptType(type);
-            if (network.isMultisig()) {
-                // Green Multisig Shield
-                return b.addAllAddressN(out.getUserPathAsInts()).setMultisig(makeMultisigRedeemScript(parent, out));
-            } else {
-                // Green Electrum Singlesig
-                return b.setAddress(out.getAddress());
+                default:  // csv ?
+                    b.setScriptType(TrezorType.OutputScriptType.PAYTOP2SHWITNESS);
             }
         } else {
-            // Not a change output - just use generic type
-            return b.setAddress(out.getAddress()).setScriptType(TrezorType.OutputScriptType.PAYTOADDRESS);
+            // Don't know address type ?
+            b.setScriptType(TrezorType.OutputScriptType.PAYTOADDRESS);
         }
+
+        if (out.isChange()) {
+            // Change address - set path elements
+            b.addAllAddressN(out.getUserPathAsInts());
+            if (network.isMultisig()) {
+                // Green Multisig Shield
+                b.setMultisig(makeMultisigRedeemScript(parent, out));
+            }
+        } else {
+            // Not a change output - just set address
+            b.setAddress(out.getAddress());
+        }
+        return b;
     }
 
     private TrezorType.TxOutputBinType.Builder createBinOutput(final TrezorType.TxRequestDetailsType txRequest) {
