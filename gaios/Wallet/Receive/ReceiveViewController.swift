@@ -97,8 +97,8 @@ class ReceiveViewController: UIViewController {
         lblAccount.text = viewModel.accountType().uppercased()
         lblAddress.text = viewModel.address?.address
         btnEdit.isHidden = true //self.viewModel.account.gdkNetwork.liquid
-        if let address = viewModel.address, !address.address.isEmpty {
-            let uri = viewModel.addressToUri(address: address.address, satoshi: satoshi ?? 0)
+        if let address = viewModel.address?.address, !address.isEmpty {
+            let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
             let dim = min(qrFrame.frame.size.width, qrFrame.frame.size.height)
             let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
             btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)

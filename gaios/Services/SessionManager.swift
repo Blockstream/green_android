@@ -8,28 +8,6 @@ public enum LoginError: Error, Equatable {
     case connectionFailed(_ localizedDescription: String? = nil)
 }
 
-extension Thenable {
-
-    // extend PromiseKit::Thenable to handle exceptions
-    func tapLogger(on: DispatchQueue? = conf.Q.return, flags: DispatchWorkItemFlags? = nil) -> Promise<T> {
-       return tap(on: on, flags: flags) {
-           switch $0 {
-           case .rejected(let error):
-               switch error {
-               case TwoFactorCallError.failure(let txt), TwoFactorCallError.cancel(let txt):
-                   AnalyticsManager.shared.recordException(txt)
-               case GaError.GenericError(let txt), GaError.TimeoutError(let txt), GaError.SessionLost(let txt), GaError.NotAuthorizedError(let txt):
-                   AnalyticsManager.shared.recordException(txt ?? "")
-               default:
-                   break
-               }
-           default:
-               break
-           }
-       }
-   }
-}
-
 class GDKSession: Session {
     var connected = false
     var logged = false
@@ -49,6 +27,23 @@ class GDKSession: Session {
     deinit {
         super.setNotificationHandler(notificationCompletionHandler: nil)
     }
+
+    public func loginUserSW(details: [String: Any]) throws -> TwoFactorCall {
+        try loginUser(details: details)
+    }
+
+    public func loginUserHW(device: [String: Any]) throws -> TwoFactorCall {
+        try loginUser(details: [:], hw_device: ["device": device])
+    }
+
+    public func registerUserSW(details: [String: Any]) throws -> TwoFactorCall {
+        try registerUser(details: details)
+    }
+
+    public func registerUserHW(device: [String: Any]) throws -> TwoFactorCall {
+        try registerUser(details: [:], hw_device: ["device": device])
+    }
+
 }
 
 class SessionManager {
@@ -145,20 +140,14 @@ class SessionManager {
     }
 
     func walletIdentifier(_ network: String, credentials: Credentials) -> WalletIdentifier? {
-        let data = try? JSONEncoder().encode(credentials)
-        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        let res = try? self.session?.getWalletIdentifier(net_params: networkParams(network), details: dict ?? [:])
-        let json = try? JSONSerialization.data(withJSONObject: res ?? [:], options: [])
-        let hash = try? JSONDecoder().decode(WalletIdentifier.self, from: json ?? Data())
-        return hash
+        let res = try? self.session?.getWalletIdentifier(net_params: networkParams(network), details: credentials.toDict() ?? [:])
+        return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
     func walletIdentifier(_ network: String, masterXpub: String) -> WalletIdentifier? {
         let details = ["master_xpub": masterXpub]
         let res = try? self.session?.getWalletIdentifier(net_params: networkParams(network), details: details)
-        let json = try? JSONSerialization.data(withJSONObject: res ?? [:], options: [])
-        let hash = try? JSONDecoder().decode(WalletIdentifier.self, from: json ?? Data())
-        return hash
+        return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
     func existDatadir(credentials: Credentials? = nil, masterXpub: String? = nil) -> Bool {
@@ -212,32 +201,24 @@ class SessionManager {
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.getSubaccount(subaccount: pointer) }
             .then(on: bgq) { $0.resolve(session: self) }
-            .recover { _ in
-                Guarantee()
-                    .compactMap(on: bgq) { try self.session?.getSubaccount(subaccount: 0) }
-                    .then(on: bgq) { $0.resolve(session: self) }
-            }.compactMap(on: bgq) { data in
+            .compactMap(on: bgq) { data in
                 let result = data["result"] as? [String: Any]
-                let jsonData = try JSONSerialization.data(withJSONObject: result ?? [:])
-                let wallet = try JSONDecoder().decode(WalletItem.self, from: jsonData)
-                wallet.network = self.gdkNetwork.network
+                let wallet = WalletItem.from(result ?? [:]) as? WalletItem
+                wallet?.network = self.gdkNetwork.network
                 return wallet
             }.tapLogger()
     }
 
     func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
-        let bgq = DispatchQueue.global(qos: .background)
+        let params = GetSubaccountsParams(refresh: refresh)
         return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getSubaccounts(details: ["refresh": refresh]) }
-            .then(on: bgq) { $0.resolve(session: self) }
-            .compactMap(on: bgq) { data in
-                let result = data["result"] as? [String: Any]
-                let subaccounts = result?["subaccounts"] as? [[String: Any]]
-                let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
-                let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
+            .then { self.wrapper(fun: self.session?.getSubaccounts, params: params) }
+            .compactMap { $0 }
+            .compactMap { (res: GetSubaccountsResult) in
+                let wallets = res.subaccounts
                 wallets.forEach { $0.network = self.gdkNetwork.network }
                 return wallets.sorted()
-            }.tapLogger()
+            }
     }
 
     func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
@@ -245,9 +226,9 @@ class SessionManager {
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.getTwoFactorConfig() }
             .compactMap { dataTwoFactorConfig in
-                let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: []))
-                self.twoFactorConfig = twoFactorConfig
-                return twoFactorConfig
+                let res = TwoFactorConfig.from(dataTwoFactorConfig) as? TwoFactorConfig
+                self.twoFactorConfig = res
+                return res
             }.tapLogger()
     }
 
@@ -277,59 +258,71 @@ class SessionManager {
     }
 
     func reconnect() -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .then(on: bgq) { self.loginUser() }
+            .compactMap { try self.session?.loginUserSW(details: [:]) }
+            .then { $0.resolve(session: self) }
+            .tapLogger()
             .asVoid()
     }
 
-    private func loginUser(details: [String: Any] = [:], hwDevice: [String: Any] = [:]) -> Promise<String> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .then(on: bgq) { self.connect() }
-            .compactMap(on: bgq) { try self.session?.loginUser(details: details, hw_device: hwDevice) }
-            .then(on: bgq) { $0.resolve(session: self) }
-            .then(on: bgq) { res -> Promise<String?> in
-                self.session?.logged = true
-                let result = res["result"] as? [String: Any]
-                let hash = result?["wallet_hash_id"] as? String
-                let watchonly = details.keys.contains("username")
-                if !self.gdkNetwork.electrum && !watchonly {
-                    return self.loadTwoFactorConfig().asVoid().recover {_ in }.map { _ in hash }
-                }
-                return Promise().asVoid().map { hash }
-            }.compactMap { $0 }
-            .tapLogger()
+    func loginUser(_ params: Credentials) -> Promise<LoginUserResult> {
+        let initialized = gdkNetwork.electrum && existDatadir(credentials: params)
+        return connect()
+            .then { self.wrapper(fun: self.session?.loginUserSW, params: params) }
+            .compactMap { $0 }
+            .then { res in
+                self.subaccounts(!initialized)
+                    .then { _ in self.onLogin(res) }
+                    .map { res }
+            }
     }
 
-    func loginWithCredentials(_ credentials: Credentials) -> Promise<String> {
-        let bgq = DispatchQueue.global(qos: .background)
-        let data = try? JSONEncoder().encode(credentials)
-        let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        let initialized = gdkNetwork.electrum && existDatadir(credentials: credentials)
-        return Guarantee()
-            .then(on: bgq) { self.loginUser(details: details ?? [:]) }
-            .then(on: bgq) { res in self.subaccounts(!initialized).compactMap { _ in res } }
+    func loginUser(_ params: HWDevice) -> Promise<LoginUserResult> {
+        return connect()
+            .then { self.wrapper(fun: self.session?.loginUserHW, params: params) }
+            .compactMap { $0 }
+            .then { res in
+                self.subaccounts()
+                    .then { _ in self.onLogin(res) }
+                    .map { res }
+            }
+    }
+
+    func login(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<LoginUserResult> {
+        if let credentials = credentials {
+            return loginUser(credentials)
+        } else if let hw = hw {
+            return loginUser(hw)
+        } else {
+            return Promise<LoginUserResult>() { seal in seal.reject(GaError.GenericError("No login method specified")) }
+        }
+    }
+
+    private func onLogin(_ data: LoginUserResult) -> Promise<Void> {
+        self.session?.logged = true
+        if !self.gdkNetwork.electrum {
+            return self.loadTwoFactorConfig().asVoid().recover {_ in }
+        }
+        return Promise().asVoid()
     }
 
     typealias GdkFunc = ([String: Any]) throws -> TwoFactorCall
 
-    func wrapper<T: Codable, K: Codable>(fun: GdkFunc?, params: T) -> Promise<K> {
+    func wrapper<T: Codable, K: Codable>(fun: GdkFunc?, params: T) -> Promise<K?> {
         let bgq = DispatchQueue.global(qos: .background)
-        let data = try? JSONEncoder().encode(params)
-        let dict = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
+        let dict = params.toDict()
         return Guarantee()
             .compactMap(on: bgq) { try fun?(dict ?? [:]) }
             .then(on: bgq) { $0.resolve(session: self) }
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
-                let json = try? JSONSerialization.data(withJSONObject: result ?? [:], options: [])
-                return try? JSONDecoder().decode(K.self, from: json ?? Data())
-            }
+                return K.from(result ?? [:]) as? K
+            }.tapLogger()
     }
 
     func decryptWithPin(_ params: DecryptWithPinParams) -> Promise<Credentials> {
         return wrapper(fun: self.session?.decryptWithPin, params: params)
+            .compactMap { $0 }
     }
 
     func load(refreshSubaccounts: Bool = true) -> Promise<Void> {
@@ -345,66 +338,25 @@ class SessionManager {
             }.tapLogger()
     }
 
-    func loginWatchOnly(_ username: String, _ password: String) -> Promise<String> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .then(on: bgq) { self.loginUser(details: ["username": username, "password": password]) }
-            .then(on: bgq) { res in self.subaccounts().compactMap { _ in res } }
-    }
-
-    func loginWithHW(_ hwDevice: HWDevice) -> Promise<String> {
-        let data = try? JSONEncoder().encode(hwDevice)
-        let device = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        return self.loginUser(hwDevice: ["device": device ?? [:]])
-    }
-
-    func login(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<String> {
-        if let credentials = credentials {
-            return loginWithCredentials(credentials)
-        } else if let hw = hw {
-            return loginWithHW(hw)
-        } else {
-            return Promise<String>() { seal in seal.reject(GaError.GenericError("No login method specified")) }
-        }
-    }
-
     func getCredentials(password: String) -> Promise<Credentials> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getCredentials(details: ["password": password]) }
-            .then(on: bgq) { $0.resolve(session: self) }
-            .compactMap {
-                let result = $0["result"] as? [String: Any]
-                let jsonData = try JSONSerialization.data(withJSONObject: result ?? "")
-                return try JSONDecoder().decode(Credentials.self, from: jsonData)
-            }.tapLogger()
+        let cred = Credentials(password: password)
+        return wrapper(fun: self.session?.getCredentials, params: cred)
+            .compactMap { $0 }
     }
 
     func register(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
-        let data = try? JSONEncoder().encode(credentials)
-        let details = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        let dataHw = try? JSONEncoder().encode(hw)
-        let device = try? JSONSerialization.jsonObject(with: dataHw ?? Data(), options: .allowFragments) as? [String: Any]
         return Guarantee()
             .then(on: bgq) { self.connect() }
-            .compactMap(on: bgq) { try self.session?.registerUser(details: details ?? [:], hw_device: ["device": device ?? [:]]) }
+            .compactMap(on: bgq) { try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]]) }
             .then(on: bgq) { $0.resolve(session: self) }
             .tapLogger()
             .asVoid()
     }
 
-    func encryptWithPin(pin: String, text: [String: Any?]) -> Promise<PinData> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.encryptWithPin(details: ["pin": pin, "plaintext": text]) }
-            .then(on: bgq) { $0.resolve(session: self) }
-            .compactMap { res in
-                let result = res["result"] as? [String: Any]
-                let txt = result?["pin_data"] as? [String: Any]
-                let jsonData = try JSONSerialization.data(withJSONObject: txt ?? "")
-                return try JSONDecoder().decode(PinData.self, from: jsonData)
-            }.tapLogger()
+    func encryptWithPin(_ params: EncryptWithPinParams) -> Promise<EncryptWithPinResult> {
+        return wrapper(fun: self.session?.encryptWithPin, params: params)
+            .compactMap { $0 }
     }
 
     func resetTwoFactor(email: String, isDispute: Bool) -> Promise<Void> {
@@ -461,14 +413,9 @@ class SessionManager {
     }
 
     func getReceiveAddress(subaccount: UInt32) -> Promise<Address> {
-        return Guarantee()
-            .compactMap { try self.session?.getReceiveAddress(details: ["subaccount": subaccount]) }
-            .then { $0.resolve(session: self) }
-            .compactMap { res in
-                let result = res["result"] as? [String: Any]
-                let data = try? JSONSerialization.data(withJSONObject: result!, options: [])
-                return try? JSONDecoder().decode(Address.self, from: data!)
-            }.tapLogger()
+        let params = Address(address: nil, pointer: nil, branch: nil, subtype: nil, userPath: nil, subaccount: subaccount, scriptType: nil, addressType: nil, script: nil)
+        return wrapper(fun: self.session?.getReceiveAddress, params: params)
+            .compactMap { $0 }
     }
 
     func getBalance(subaccount: UInt32, numConfs: Int) -> Promise<[String: Int64]> {
@@ -480,9 +427,8 @@ class SessionManager {
     }
 
     func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) -> Promise<Void> {
-        let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         return Guarantee()
-            .compactMap { try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: details ?? [:]) }
+            .compactMap { try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:]) }
             .then { $0.resolve(session: self) }.asVoid()
             .tapLogger()
     }
@@ -496,6 +442,7 @@ class SessionManager {
 
     func createSubaccount(_ details: CreateSubaccountParams) -> Promise<WalletItem> {
         return wrapper(fun: self.session?.createSubaccount, params: details)
+            .compactMap { $0 }
             .compactMap { (wallet: WalletItem) in wallet.network = self.gdkNetwork.network; return wallet }
     }
 
@@ -506,12 +453,8 @@ class SessionManager {
             .asVoid()
     }
 
-    func changeSettings(settings: Settings) -> Promise<Void> {
-        let settings = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-        return Guarantee()
-            .compactMap { try self.session?.changeSettings(details: settings ?? [:]) }
-            .then { $0.resolve(session: self) }.asVoid()
-            .tapLogger()
+    func changeSettings(settings: Settings) -> Promise<Settings?> {
+        return wrapper(fun: self.session?.changeSettings, params: settings)
     }
 
     func getUnspentOutputs(subaccount: UInt32, numConfs: Int) -> Promise<[String: Any]> {

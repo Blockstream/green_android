@@ -184,22 +184,22 @@ class RecipientCell: UITableViewCell {
         lblAmountError.isHidden = true
         lblAmountExchange.isHidden = true
 
-        if model.txError == "id_invalid_address" || model.txError == "id_invalid_private_key" {
+        if ["id_invalid_address", "id_invalid_private_key"].contains(model.txError) {
             addressContainer.borderColor = UIColor.errorRed()
             lblAddressError.isHidden = false
             lblAddressError.text = NSLocalizedString(model.txError, comment: "")
-        } else if model.txError == "id_invalid_amount" || model.txError == "id_insufficient_funds" {
+        } else if ["id_invalid_amount", "id_no_amount_specified", "id_insufficient_funds"].contains(model.txError) {
             amountContainer.borderColor = UIColor.errorRed()
             lblAmountError.isHidden = false
             lblAmountError.text = NSLocalizedString(model.txError, comment: "")
-        } else if model.txError == "id_invalid_payment_request_assetid" || model.txError == "id_invalid_asset_id" {
+        } else if ["id_invalid_payment_request_assetid", "id_invalid_asset_id"].contains(model.txError) {
             assetBox.borderColor = UIColor.errorRed()
         } else if !(model.txError).isEmpty {
             print(model.txError)
         }
 
         if model.isBipAddress() {
-            if model.txError == "id_invalid_payment_request_assetid" || model.txError == "id_invalid_asset_id" {
+            if ["id_invalid_payment_request_assetid", "id_invalid_asset_id"].contains(model.txError) {
                 iconAsset.image = UIImage(named: "default_asset_icon")
                 lblAssetName.text = NSLocalizedString("id_asset", comment: "")
                 lblCurrency.text = ""

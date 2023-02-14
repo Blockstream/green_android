@@ -133,6 +133,7 @@ class SendViewModel {
     var inlineErrors = ["id_invalid_address",
                       "id_invalid_private_key",
                       "id_invalid_amount",
+                      "id_no_amount_specified",
                       "id_insufficient_funds",
                       "id_invalid_payment_request_assetid",
                       "id_invalid_asset_id"

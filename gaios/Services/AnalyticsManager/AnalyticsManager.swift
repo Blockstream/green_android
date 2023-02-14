@@ -78,6 +78,7 @@ class AnalyticsManager {
     // list of ignorable common error messages
     let skipExceptionRecording = [
         "id_invalid_amount",
+        "id_no_amount_specified",
         "id_invalid_address",
         "id_insufficient_funds",
         "id_invalid_private_key",

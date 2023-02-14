@@ -163,20 +163,18 @@ struct Account: Codable, Equatable {
                 if authKeyBiometricPrivateKey == nil {
                     try AuthenticationTypeHandler.generateBiometricPrivateKey(network: keychain)
                 }
-            }.then(on: bgq) {
-                session.getCredentials(password: "") }
-            .then(on: bgq) {
-                session.encryptWithPin(pin: password, text: ["mnemonic": $0.mnemonic]) }
-            .compactMap(on: bgq) { try AuthenticationTypeHandler.addBiometryType(pinData: $0, extraData: password, forNetwork: keychain) }
+            }.then(on: bgq) { session.getCredentials(password: "") }
+            .compactMap { EncryptWithPinParams(pin: password, plaintext: ["mnemonic": $0.mnemonic ?? ""]) }
+            .then(on: bgq) { session.encryptWithPin($0) }
+            .compactMap(on: bgq) { try AuthenticationTypeHandler.addBiometryType(pinData: $0.pinData, extraData: password, forNetwork: keychain) }
     }
 
     func addPin(session: SessionManager, pin: String, mnemonic: String) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .then(on: bgq) {
-                session.encryptWithPin(pin: pin, text: ["mnemonic": mnemonic]) }
-            .map(on: bgq) {
-                try AuthenticationTypeHandler.addPIN(pinData: $0, forNetwork: keychain) }
+            .compactMap { EncryptWithPinParams(pin: pin, plaintext: ["mnemonic": mnemonic]) }
+            .then(on: bgq) { session.encryptWithPin($0) }
+            .map(on: bgq) { try AuthenticationTypeHandler.addPIN(pinData: $0.pinData, forNetwork: keychain) }
     }
 
     var networkName: String {

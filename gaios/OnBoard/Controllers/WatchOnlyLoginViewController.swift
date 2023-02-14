@@ -153,7 +153,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }.compactMap {
             WalletManager.getOrAdd(for: self.account)
         }.then(on: bgq) {
-            $0.loginWatchOnly(username, password)
+            $0.login(Credentials(username: username, password: password))
         }.ensure {
             self.stopLoader()
         }.done { _ in

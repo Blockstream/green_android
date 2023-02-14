@@ -19,6 +19,10 @@ class ValidateTask {
             if inputType == .transaction && details["utxos"] == nil {
                 let unspent = try? session.getUnspentOutputs(subaccount: subaccount ?? 0, numConfs: 0).wait()
                 details["utxos"] = unspent ?? [:]
+            } else if inputType == .sweep && details["addressees"] == nil {
+                let address = try? account.session?.getReceiveAddress(subaccount: account.pointer).wait()
+                let addressee: [String: Any] = ["address": address ?? ""]
+                details["addressees"] = [addressee]
             }
             let inputTx = Transaction(details, subaccount: account.hashValue)
             var tx = try? session.createTransaction(tx: inputTx).wait()

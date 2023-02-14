@@ -277,6 +277,7 @@ extension UserSettingsViewController {
         return Guarantee().map { _ in self.startAnimating() }
             .compactMap { self.session }
             .then(on: bgq) { $0.changeSettings(settings: settings) }
+            .asVoid()
             .ensure { self.stopAnimating() }
     }
 }

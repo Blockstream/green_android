@@ -36,6 +36,52 @@ struct DecryptWithPinParams: Codable {
     let pinData: PinData
 }
 
+struct EncryptWithPinParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case pin
+        case plaintext
+    }
+    let pin: String
+    let plaintext: [String: String]
+}
+
+struct EncryptWithPinResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case pinData = "pin_data"
+    }
+    let pinData: PinData
+}
+
+struct LoginUserResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case xpubHashId = "xpub_hash_id"
+        case wallethashId = "wallet_hash_id"
+    }
+    let xpubHashId: String
+    let wallethashId: String
+}
+
+struct GetSubaccountsParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case refresh
+    }
+    let refresh: Bool
+}
+
+struct GetSubaccountsResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case subaccounts
+    }
+    let subaccounts: [WalletItem]
+}
+
+struct GetSubaccountParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case pointer
+    }
+    let pointer: UInt32
+}
+
 struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {
         case datadir

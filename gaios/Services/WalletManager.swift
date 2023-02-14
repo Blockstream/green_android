@@ -101,11 +101,11 @@ class WalletManager {
             .then { credentials, _ in self.login(credentials) }
     }
 
-    func loginWatchOnly(_ username: String, _ password: String) -> Promise<Void> {
+    func loginWatchOnly(_ credentials: Credentials) -> Promise<Void> {
         guard let mainSession = sessions[prominentNetwork.rawValue] else {
             fatalError()
         }
-        return mainSession.loginWatchOnly(username, password).asVoid()
+        return mainSession.loginUser(credentials).asVoid()
             .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
     }
@@ -129,7 +129,7 @@ class WalletManager {
                     if session.gdkNetwork.electrum && credentials.bip39Passphrase == nil && !session.existDatadir(credentials: credentials) {
                         return Guarantee().asVoid()
                     }
-                    return session.loginWithCredentials(credentials)
+                    return session.loginUser(credentials)
                     .asVoid()
                     .recover { err in
                         switch err {
@@ -150,7 +150,7 @@ class WalletManager {
         return Promise()
             .then { btcSession.connect() }
             .then { btcSession.register(credentials: credentials) }
-            .then { btcSession.loginWithCredentials(credentials) }
+            .then { btcSession.loginUser(credentials) }
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
     }
 
@@ -171,7 +171,7 @@ class WalletManager {
             return btcRestore
         }
         let liquidRestore = Guarantee()
-            .then { liquidSession.loginWithCredentials(credentials) }
+            .then { liquidSession.login(credentials: credentials, hw: hw) }
             .then { _ in liquidSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
             .compactMap { $0.filter({ $0.pointer == 0 }).first }
             .then { !($0.bip44Discovered ?? false) ? liquidSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
@@ -195,7 +195,7 @@ class WalletManager {
             guard let session = iterator.next() else {
                 return nil
             }
-            return session.loginWithHW(device).asVoid()
+            return session.loginUser(device).asVoid()
                 .recover { _ in return Guarantee().asVoid() }
         }
         return when(fulfilled: generator, concurrently: 1)

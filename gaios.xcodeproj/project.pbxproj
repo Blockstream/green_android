@@ -368,6 +368,8 @@
 		81772B352992EDEA00F05BF2 /* SendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B342992EDE900F05BF2 /* SendViewModel.swift */; };
 		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
 		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
+		81865F43299D5AA5002CBA87 /* Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81865F42299D5AA5002CBA87 /* Codable.swift */; };
+		81865F47299D8CB4002CBA87 /* Thenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81865F46299D8CB4002CBA87 /* Thenable.swift */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
 		818EE78026A5C2ED008CD09E /* HWDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818EE77F26A5C2ED008CD09E /* HWDevice.swift */; };
@@ -828,6 +830,8 @@
 		81772B342992EDE900F05BF2 /* SendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendViewModel.swift; sourceTree = "<group>"; };
 		818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuthenticatorFactors.storyboard; sourceTree = "<group>"; };
 		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
+		81865F42299D5AA5002CBA87 /* Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Codable.swift; sourceTree = "<group>"; };
+		81865F46299D8CB4002CBA87 /* Thenable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thenable.swift; sourceTree = "<group>"; };
 		8187B47D21E9026900235A35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8187B47F21E9027100235A35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8189BEFF2236F2270091B466 /* ScreenLocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLocker.swift; sourceTree = "<group>"; };
@@ -2202,6 +2206,8 @@
 				34019C1928D1FC5100E64BEE /* Localizable.swift */,
 				3498079E291CF05600F8DB95 /* Collection.swift */,
 				3456AF11299A78BE00C1BCA6 /* UITextView.swift */,
+				81865F42299D5AA5002CBA87 /* Codable.swift */,
+				81865F46299D8CB4002CBA87 /* Thenable.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2668,6 +2674,7 @@
 				34F980AA2914286300C12D48 /* AccountViewModel.swift in Sources */,
 				342F9812293518C6005876A8 /* Enable2faPrefs.swift in Sources */,
 				34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */,
+				81865F47299D8CB4002CBA87 /* Thenable.swift in Sources */,
 				34204711291B919600EDE945 /* SecuritySelectViewController.swift in Sources */,
 				3491C9942912B4C70063C055 /* AssetsViewModel.swift in Sources */,
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
@@ -2734,6 +2741,7 @@
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
 				3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */,
 				81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */,
+				81865F43299D5AA5002CBA87 /* Codable.swift in Sources */,
 				34EB6703282138710036D615 /* AMSegmentation.swift in Sources */,
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
 				3423C6E727C380DD001D9E2C /* DialogMnemonicLengthViewController.swift in Sources */,

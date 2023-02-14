@@ -15,12 +15,12 @@ struct Address: Codable {
         case subtype = "subtype"
     }
 
-    let address: String
+    let address: String?
     let pointer: Int?
     let branch: Int?
     let subtype: UInt32?
     let userPath: [UInt32]?
-    let subaccount: Int?
+    let subaccount: UInt32?
     let scriptType: Int?
     let addressType: String?
     let script: String?
