@@ -32,6 +32,7 @@ class DiscloseCell: UITableViewCell {
         self.onTap = onTap
         self.lblTitle.text = model.title
         self.lblHint.text = model.hint
+        btnDisclose.isUserInteractionEnabled = onTap != nil
     }
 
     @IBAction func onTap(_ sender: Any) {
