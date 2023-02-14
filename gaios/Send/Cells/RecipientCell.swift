@@ -217,7 +217,7 @@ class RecipientCell: UITableViewCell {
             amountTextField.text = model.amount
         }
 
-        if let satoshi = model.amount, model.txError.isEmpty {
+        if let satoshi = model.satoshi(), model.txError.isEmpty {
             if model.isBtc,
                let balance = Balance.fromSatoshi(satoshi, assetId: model.account.gdkNetwork.getFeeAsset()) {
                 lblAmountExchange.isHidden = false
@@ -301,7 +301,18 @@ class RecipientCell: UITableViewCell {
     }
 
     @IBAction func btnConvert(_ sender: Any) {
-        model?.isFiat.toggle()
+        if let satoshi = model?.satoshi(),
+           let assetId = model?.assetId,
+           let balance = Balance.fromSatoshi(satoshi, assetId: assetId) {
+            if model?.isFiat ?? false {
+                let (amount, _) = balance.toDenom()
+                model?.amount = amount
+            } else {
+                let (amount, _) = balance.toFiat()
+                model?.amount = amount
+            }
+            model?.isFiat.toggle()
+        }
         reload()
         updateModel?(model)
         delegate?.validateTx()
