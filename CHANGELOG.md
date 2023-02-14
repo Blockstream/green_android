@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.0-beta3] - 2023-02-14
+
+### Changed
+- Lock Jade on session logout
+
+### Fixed
+- Fix device list showing previously connected devices
+- Hide menu entries(rename/archive) for watch only sessions
+- Show the change address in Verification bottom sheet on Trezor devices
+- Fix wallet restore when the corresponding multisig watch-only is already present in the wallets list
+- Disable amount entry points until a valid address is entered
+- Show fee error on bump transaction fee
+
 ## [4.0.0-beta2] - 2023-02-07
 
 ### Changed
