@@ -168,11 +168,14 @@ class WatchOnlyLoginViewController: KeyboardViewController {
                 prettyError = localizedDescription
             case LoginError.connectionFailed:
                 prettyError = "id_connection_failed"
+            case LoginError.failed:
+                prettyError = "id_login_failed"
             default:
                 break
             }
-            DropAlert().error(message: prettyError)
+            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
+            WalletManager.delete(for: self.account)
         }
     }
 
