@@ -170,10 +170,9 @@ class BLEManager {
             }
     }
 
-    func getMasterXpub(_ device: HWDevice, wm: WalletManager) -> Observable<String> {
-        let network = wm.prominentNetwork.gdkNetwork?.chain ?? "mainnet"
+    func getMasterXpub(_ device: HWDevice, gdkNetwork: GdkNetwork?) -> Observable<String> {
         if device.isJade {
-            return Jade.shared.xpubs(network: network, path: [])
+            return Jade.shared.xpubs(network: gdkNetwork?.chain ?? "mainnet", path: [])
         }
         return getLedgerNetwork()
             .flatMap { Ledger.shared.xpubs(network: $0.network, path: []) }
@@ -311,7 +310,7 @@ class BLEManager {
 
     private func loginDevice(network: NetworkSecurityCase, device: HWDevice) -> Observable<Account> {
         let wm = WalletManager(prominentNetwork: network)
-        return getMasterXpub(device, wm: wm)
+        return getMasterXpub(device, gdkNetwork: network.gdkNetwork)
             .flatMap { masterXpub in
                 return Observable<WalletManager>.create { observer in
                     wm.loginWithHW(device, masterXpub: masterXpub)
