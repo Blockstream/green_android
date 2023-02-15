@@ -52,9 +52,14 @@ class WalletViewController: UIViewController {
     var cachedAccount: WalletItem?
     private var notificationObservers: [NSObjectProtocol] = []
 
+    let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletViewController.self, options: nil)![0] as? DrawerBarItem)!)
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        drawerItem.configure(img: viewModel.headerIcon, onTap: {[weak self] () in
+                self?.switchNetwork()
+        })
         ["AccountCell", "BalanceCell", "TransactionCell", "AlertCardCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
@@ -121,18 +126,6 @@ class WalletViewController: UIViewController {
         lblWelcomeTitle.text = "Welcome to your Wallet!"
         lblWelcomeHint.text = "Create your first account to receive funds."
         btnWelcomeCreate.setTitle("Create Account", for: .normal)
-        let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: self, options: nil)![0] as? DrawerBarItem)!)
-        drawerItem.configure(img: viewModel.headerIcon, onTap: {[weak self] () in
-                self?.switchNetwork()
-        })
-        let leftItem: UIBarButtonItem = UIBarButtonItem(customView: drawerItem)
-        navigationItem.leftBarButtonItem = leftItem
-
-        // setup right menu bar: settings
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
-        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
 
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
@@ -145,6 +138,17 @@ class WalletViewController: UIViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(callPullToRefresh(_:)), for: .valueChanged)
+    }
+
+    func loadNavigationBtns() {
+        let leftItem: UIBarButtonItem = UIBarButtonItem(customView: drawerItem)
+        navigationItem.leftBarButtonItem = leftItem
+
+        // setup right menu bar: settings
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
+        settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
 
     func setStyle() {
@@ -220,7 +224,14 @@ class WalletViewController: UIViewController {
     }
 
     func welcomeLayerVisibility() {
-        welcomeLayer.isHidden = viewModel.accountCellModels.count > 0
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.rightBarButtonItems = []
+        if viewModel.accountCellModels.count > 0 {
+            welcomeLayer.isHidden = true
+            loadNavigationBtns()
+        } else {
+            welcomeLayer.isHidden = false
+        }
     }
 
     func accountDetail(model: AccountCellModel?) {
