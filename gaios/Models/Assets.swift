@@ -22,6 +22,7 @@ struct AssetInfo: Codable, Comparable {
         case ticker
         case entity
         case amp
+        case weight
     }
 
     var assetId: String
@@ -30,6 +31,7 @@ struct AssetInfo: Codable, Comparable {
     var ticker: String?
     var entity: AssentEntity?
     var amp: Bool?
+    var weight: Int?
 
     init(assetId: String, name: String?, precision: UInt8, ticker: String?) {
         self.assetId = assetId
@@ -94,7 +96,13 @@ struct AssetInfo: Codable, Comparable {
         if !lhsImage && rhsImage { return false }
         if lhs.ticker != nil && rhs.ticker == nil { return true }
         if lhs.ticker == nil && rhs.ticker != nil { return false }
-        return lhs.assetId < rhs.assetId
+        let lhsw = lhs.weight ?? 0
+        let rhsw = rhs.weight ?? 0
+        if lhsw > rhsw {
+            return true
+        } else {
+            return false
+        }
     }
 
     static func == (lhs: AssetInfo, rhs: AssetInfo) -> Bool {

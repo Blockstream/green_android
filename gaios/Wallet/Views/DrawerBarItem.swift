@@ -3,7 +3,7 @@ import UIKit
 class DrawerBarItem: UIView {
     @IBOutlet weak var lblWallet: UILabel!
     @IBOutlet weak var icon: UIImageView!
-    
+
     var onTap: (() -> Void)?
 
     func configure(img: UIImage, onTap:@escaping (() -> Void)) {

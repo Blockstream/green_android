@@ -104,7 +104,10 @@ class AssetsManager {
         let assets = getAssetsFromCountly()
         let infos = fetchAssets(session: session, assetsId: assets.map { $0.id })
         self.infos.merge(infos, uniquingKeysWith: {_, new in new})
-        assets.forEach { self.infos[$0.id]?.amp = $0.amp ?? false }
+        assets.forEach {
+            self.infos[$0.id]?.amp = $0.amp ?? false
+            self.infos[$0.id]?.weight = $0.weight ?? 0
+        }
         let icons = fetchIcons(session: session, assetsId: assets.map { $0.id })
         self.icons.merge(icons, uniquingKeysWith: {_, new in new})
     }
