@@ -140,7 +140,7 @@ class WalletManager {
                         }
                     }
                 })
-            .compactMap { if self.activeSessions.count == 0 { throw LoginError.failed() } }
+            .map { if self.activeSessions.count == 0 { throw LoginError.failed() } }
             .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
     }
