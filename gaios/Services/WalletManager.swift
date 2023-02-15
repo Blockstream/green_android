@@ -157,6 +157,9 @@ class WalletManager {
     func restore(_ credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let btcSession = self.sessions[btcNetwork.rawValue]!
+        if btcSession.existDatadir(credentials: credentials) {
+            return Promise() { seal in seal.reject(LoginError.walletsJustRestored()) }
+        }
         let btcRestore = Guarantee()
             .then { btcSession.login(credentials: credentials, hw: hw) }
             .then { _ in btcSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
