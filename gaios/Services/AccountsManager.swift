@@ -39,8 +39,7 @@ class AccountsManager {
     private var currentId = ""
     var current: Account? {
         get {
-            ephAccounts.filter({ $0.id == currentId }).first ??
-            accounts.filter({ $0.id == currentId }).first
+            get(for: currentId)
         }
         set {
             currentId = newValue?.id ?? ""
@@ -152,6 +151,16 @@ class AccountsManager {
         default:
             return "Account"
         }
+    }
+
+    func get(for id: String) -> Account? {
+        ephAccounts.filter({ $0.id == id }).first ??
+        accounts.filter({ $0.id == id }).first
+    }
+
+    func find(xpubHashId: String) -> Account? {
+        ephAccounts.filter({ $0.xpubHashId == xpubHashId }).first ??
+        accounts.filter({ $0.xpubHashId == xpubHashId }).first
     }
 
     func upsert(_ account: Account) {

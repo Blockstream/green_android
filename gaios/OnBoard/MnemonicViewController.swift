@@ -195,6 +195,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     func showLoginError(_ err: Error) {
         self.stopLoader()
         switch err {
+        case LoginError.failed:
+            showError(NSLocalizedString("id_login_failed", comment: ""))
         case LoginError.walletNotFound:
             showError(NSLocalizedString("id_wallet_not_found", comment: ""))
         case LoginError.walletsJustRestored:

@@ -388,6 +388,8 @@ class BLEManager {
 
                 AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: err, prettyError: "id_login_failed")
             }
+        case LoginError.failed, LoginError.connectionFailed, LoginError.walletsJustRestored, LoginError.walletNotFound:
+           bleErr = BLEManagerError.genericErr(txt: NSLocalizedString("id_login_failed", comment: ""))
         default:
             bleErr = BLEManagerError.genericErr(txt: err.localizedDescription)
         }

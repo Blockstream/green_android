@@ -124,22 +124,26 @@ class WalletManager {
     func login(_ credentials: Credentials) -> Promise<Void> {
         self.failureSessions = [:]
         return when(guarantees: self.sessions.values
-                .filter { !$0.logged }
-                .map { session in
-                    if session.gdkNetwork.electrum && credentials.bip39Passphrase == nil && !session.existDatadir(credentials: credentials) {
-                        return Guarantee().asVoid()
-                    }
-                    return session.loginUser(credentials)
-                    .asVoid()
-                    .recover { err in
+            .filter { !$0.logged }
+            .map { session in
+                if session.gdkNetwork.electrum && credentials.bip39Passphrase == nil && !session.existDatadir(credentials: credentials) {
+                    return Guarantee().asVoid()
+                }
+                return session.loginUser(credentials)
+                    .map { data in
+                        if var account = WalletManager.account(for: self) {
+                            account.xpubHashId = data.xpubHashId
+                            AccountsManager.shared.upsert(account)
+                        }
+                    }.recover { err in
                         switch err {
                         case TwoFactorCallError.failure(_):
                             break
                         default:
                             self.failureSessions[session.gdkNetwork.network] = err
                         }
-                    }
-                })
+                    }.asVoid()
+            })
             .map { if self.activeSessions.count == 0 { throw LoginError.failed() } }
             .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
@@ -158,22 +162,28 @@ class WalletManager {
     func restore(_ credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let btcSession = self.sessions[btcNetwork.rawValue]!
-        if btcSession.existDatadir(credentials: credentials) {
-            return Promise() { seal in seal.reject(LoginError.walletsJustRestored()) }
-        }
+        // Restore btc account with subaccounts discovery
         let btcRestore = Guarantee()
             .then { btcSession.login(credentials: credentials, hw: hw) }
+            .compactMap {
+                // Avoid to restore existing wallets, unless HW
+                if let account = AccountsManager.shared.find(xpubHashId: $0.xpubHashId),
+                   account.gdkNetwork?.mainnet == btcNetwork.gdkNetwork?.mainnet && hw == nil {
+                    throw LoginError.walletsJustRestored()
+                }
+            }
             .then { _ in btcSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
             .compactMap { $0.filter({ $0.pointer == 0 }).first }
             .then { credentials?.bip39Passphrase.isNilOrEmpty ?? true && !($0.bip44Discovered ?? false) ? btcSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
+        // Liquid singlesig not yet available on HW mode
         guard let credentials = credentials else {
-            // Liquid singlesig not yet available
             return btcRestore
         }
         let liquidNetwork: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
         guard let liquidSession = self.sessions[liquidNetwork.rawValue] else {
             return btcRestore
         }
+        // Restore liquid account with subaccounts discovery
         let liquidRestore = Guarantee()
             .then { liquidSession.login(credentials: credentials, hw: hw) }
             .then { _ in liquidSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
@@ -181,6 +191,7 @@ class WalletManager {
             .then { !($0.bip44Discovered ?? false) ? liquidSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
             .then { _ in liquidSession.subaccounts() }
             .compactMap { subaccounts in
+                // Remove liquid account if not found
                 if subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty {
                     liquidSession.removeDatadir(credentials: credentials)
                     liquidSession.session?.logged = false
@@ -367,5 +378,10 @@ extension WalletManager {
     static func change(wm: WalletManager, for account: Account) {
         delete(for: wm)
         add(for: account, wm: wm)
+    }
+    
+    static func account(for wm: WalletManager) -> Account? {
+        let id = wallets.first(where: { $0.value === wm })?.key
+        return AccountsManager.shared.get(for: id ?? "")
     }
 }

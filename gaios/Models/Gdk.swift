@@ -55,10 +55,10 @@ struct EncryptWithPinResult: Codable {
 struct LoginUserResult: Codable {
     enum CodingKeys: String, CodingKey {
         case xpubHashId = "xpub_hash_id"
-        case wallethashId = "wallet_hash_id"
+        case walletHashId = "wallet_hash_id"
     }
     let xpubHashId: String
-    let wallethashId: String
+    let walletHashId: String
 }
 
 struct GetSubaccountsParams: Codable {
