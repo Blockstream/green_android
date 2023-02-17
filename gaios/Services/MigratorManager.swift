@@ -1,23 +1,15 @@
 import Foundation
 
 enum MigrationFlag: String {
-    case appVersion = "app_version"
+    case appDataVersion = "app_data_version"
     case firstInitialization = "FirstInitialization"
-    
-    case vNetworkUnification = "4.0.0"
-    case vMultipleWallets = "3.5.5"
 }
 class MigratorManager {
 
     static let shared = MigratorManager()
 
     func migrate() {
-        let prevVersion = UserDefaults.standard.string(forKey: MigrationFlag.appVersion.rawValue) ?? "0"
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
-        //let appBuildVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
-        if prevVersion.compare(appVersion) == .orderedDescending {
-            return
-        }
+        let appDataVersion = UserDefaults.standard.integer(forKey: MigrationFlag.appDataVersion.rawValue)
         let firstInitialization = !UserDefaults.standard.bool(forKey: MigrationFlag.firstInitialization.rawValue)
         if firstInitialization {
             // first installation or app upgrade from app version < v3.5.5
@@ -25,11 +17,11 @@ class MigratorManager {
             migrateWallets()
             UserDefaults.standard.set(true, forKey: MigrationFlag.firstInitialization.rawValue)
         }
-        if prevVersion.compare(MigrationFlag.vNetworkUnification.rawValue) == .orderedAscending {
+        if appDataVersion < 1 {
             // upgrade from app < v4.0.0
             migrateDatadir()
         }
-        UserDefaults.standard.set(appVersion, forKey: MigrationFlag.appVersion.rawValue)
+        UserDefaults.standard.set(1, forKey: MigrationFlag.appDataVersion.rawValue)
     }
 
     private func migrateDatadir() { // from "4.0.0"
