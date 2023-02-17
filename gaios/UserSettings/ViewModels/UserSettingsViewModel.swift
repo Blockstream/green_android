@@ -83,7 +83,6 @@ class UserSettingsViewModel {
             subtitle: (settings?.autolock ?? .fiveMinutes).string,
             section: .Security,
             type: .AutoLogout)
-        
         if AccountsManager.shared.current?.isHW ?? false {
             return [twoFactorAuth, pgpKey, autolock]
         }
@@ -92,9 +91,10 @@ class UserSettingsViewModel {
 
     func getGeneral() -> [UserSettingsItem] {
         guard let settings = settings, let session = session else { return [] }
+        let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
         let bitcoinDenomination = UserSettingsItem(
             title: USItem.BitcoinDenomination.string,
-            subtitle: settings.denomination.string(for: session.gdkNetwork),
+            subtitle: settings.denomination.string(for: network.gdkNetwork!),
             section: .General,
             type: .BitcoinDenomination)
         let referenceExchangeRate = UserSettingsItem(

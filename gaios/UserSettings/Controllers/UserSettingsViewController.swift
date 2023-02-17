@@ -239,7 +239,8 @@ extension UserSettingsViewController {
         let selected = settings.denomination
         let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: DenominationType) in
-            let symbol = item.string(for: session.gdkNetwork)
+            let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
+            let symbol = item.string(for: network.gdkNetwork!)
             alert.addAction(UIAlertAction(title: symbol, style: item == selected  ? .destructive : .default) { _ in
                 settings.denomination = item
                 self.changeSettings(settings)
