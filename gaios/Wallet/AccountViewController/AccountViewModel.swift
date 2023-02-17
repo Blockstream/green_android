@@ -149,4 +149,26 @@ class AccountViewModel {
             .then { self.wm.subaccounts() }
             .asVoid()
     }
+
+    func handleEvent(_ notification: Notification) {
+        let eventType = EventType(rawValue: notification.name.rawValue)
+        switch eventType {
+        case .Transaction:
+            getBalance()
+            getTransactions(restart: true, max: cachedTransactions.count)
+        case .Block:
+            if cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
+                getBalance()
+            }
+        case .Network:
+            guard let dict = notification.userInfo as NSDictionary? else { return }
+            guard let connected = dict["connected"] as? Bool else { return }
+            guard let loginRequired = dict["login_required"] as? Bool else { return }
+            if connected == true && loginRequired == false {
+                getBalance()
+            }
+        default:
+            break
+        }
+    }
 }

@@ -38,10 +38,10 @@ class AccountViewController: UIViewController {
     private var cardHc: CGFloat = 184.0
 
     weak var delegate: AccountViewControllerDelegate?
+    var viewModel: AccountViewModel!
 
     private var sIdx: Int = 0
-
-    var viewModel: AccountViewModel!
+    private var notificationObservers: [NSObjectProtocol] = []
 
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
@@ -67,6 +67,24 @@ class AccountViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        [EventType.Transaction, .Block, .AssetsUpdated, .Network].forEach {
+            let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
+                                                                  object: nil,
+                                                                  queue: .main,
+                                                                  using: { [weak self] data in
+                self?.viewModel.handleEvent(data)
+            })
+            notificationObservers.append(observer)
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        notificationObservers.forEach { observer in
+            NotificationCenter.default.removeObserver(observer)
+        }
+        notificationObservers = []
     }
 
     func reloadSections(_ sections: [AccountSection], animated: Bool) {
