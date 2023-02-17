@@ -96,8 +96,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.endEditing(true)
 
-        // Initialize gdk and accounts
-        try! gdkinitialize()
+        // Initialize gdk
+        GdkInit.defaults().run()
+
+        // Checking for migrations
         MigratorManager.shared.migrate()
 
         // Set screen lock
@@ -117,28 +119,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         applicationWillEnterForeground(application)
 
         return true
-    }
-
-    func gdkinitialize() throws {
-        let params = GdkInit.defaults()
-        // check gdk datadir migration
-        if !UserDefaults.standard.bool(forKey: "AppDataDir") {
-            // move cache dir to the app support
-            let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true)
-            if let atPath = url?.path, let toPath = params.datadir,
-                FileManager.default.fileExists(atPath: atPath) {
-                let files = try FileManager.default.contentsOfDirectory(atPath: atPath)
-                files.forEach { file in
-                    try? FileManager.default.moveItem(atPath: "\(atPath)/\(file)", toPath: "\(toPath)/\(file)")
-                }
-            }
-            UserDefaults.standard.set(true, forKey: "AppDataDir")
-        }
-        #if DEBUG
-        let datadir = try? FileManager.default.contentsOfDirectory(atPath: params.datadir ?? "")
-        print("gdk datadir:", (datadir ?? []).map { $0 })
-        #endif
-        try gdkInit(config: params.toDict() ?? [:])
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

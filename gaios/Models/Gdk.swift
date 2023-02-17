@@ -106,4 +106,8 @@ struct GdkInit: Codable {
                        registrydir: cacheDir?.path,
                        logLevel: logLevel)
     }
+
+    func run() {
+        try? gdkInit(config: self.toDict() ?? [:])
+    }
 }
