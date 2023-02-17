@@ -816,27 +816,29 @@ class GdkSession constructor(
     }
 
     fun loginWithDevice(
-        network: Network,
+        wallet: Wallet,
         device: Device,
         hardwareWalletResolver: HardwareWalletResolver,
         hwWalletBridge: HWWalletBridge,
     ): LoginData {
+        val lastUsedNetwork = networks.getNetworkById(wallet.activeNetwork)
+
         val initNetworks = if(device.isTrezor){
-            if(network.isTestnet){
+            if(wallet.isTestnet){
                 listOf(networks.testnetBitcoinElectrum, networks.testnetBitcoinGreen)
             }else{
                 listOf(networks.bitcoinElectrum, networks.bitcoinGreen)
             }
         } else {
             // Jade or Ledger
-            if(network.isTestnet){
+            if(wallet.isTestnet){
                 listOf(networks.testnetBitcoinElectrum, networks.testnetBitcoinGreen, networks.testnetLiquidGreen)
             }else{
                 listOf(networks.bitcoinElectrum, networks.bitcoinGreen, networks.liquidGreen)
             }.let {
                 if(device.isLedger){
                     // Ledger can operate only into a single network but both policies are supported
-                    it.filter { it.isBitcoin == network.isBitcoin }
+                    it.filter { it.isBitcoin == lastUsedNetwork.isBitcoin }
                 }else{
                     it
                 }
@@ -844,8 +846,9 @@ class GdkSession constructor(
         }
 
         return loginWithLoginCredentials(
-            prominentNetwork = network,
+            prominentNetwork = lastUsedNetwork,
             initNetworks = initNetworks,
+            wallet = wallet,
             loginCredentialsParams = LoginCredentialsParams.empty,
             device = device,
             isSmartDiscovery = true,

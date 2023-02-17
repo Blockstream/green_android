@@ -6,29 +6,29 @@ plugins {
 
 android {
     namespace 'com.blockstream.jade'
-    compileSdk 33
+    compileSdkVersion 33
     buildToolsVersion "33.0.0"
 
     defaultConfig {
-        minSdk 23
-        targetSdk 33
+        minSdkVersion 23
+        targetSdkVersion 33
 
         consumerProguardFiles "consumer-rules.pro"
     }
-
+    compileOptions {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+}
+
+kotlin {
+    jvmToolchain(11)
 }
 
 dependencies {

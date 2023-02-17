@@ -9,11 +9,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
+import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.ListItemTransactionNoteBinding
 import com.blockstream.green.databinding.ListItemTransactionOutputBinding
 import com.blockstream.green.databinding.SendConfirmFragmentBinding
 import com.blockstream.green.extensions.copyToClipboard
+import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.setNavigationResult
@@ -124,7 +126,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
 
         binding.buttonSend.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener{
             override fun onSlideComplete(view: SlideToActView) {
-                viewModel.broadcastTransaction(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+                viewModel.signTransaction(broadcast = true, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
             }
         }
 
@@ -135,6 +137,12 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
                 }
                 snackbar(R.string.id_transaction_sent)
                 findNavController().popBackStack(R.id.walletOverviewFragment, false)
+            }
+
+            consumableEvent?.getContentIfNotHandledForType<GdkEvent.SuccessWithData>()?.let {
+                (it.data as? String)?.also { signedTransaction ->
+                    dialog("Signed Transaction", signedTransaction, isMessageSelectable = true)
+                }
             }
         }
 
@@ -163,6 +171,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
 
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep == false && viewModel.transactionNote.isBlank()
+        menu.findItem(R.id.sign_transaction).isVisible = isDevelopmentOrDebug
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -170,6 +179,9 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             R.id.add_note -> {
                 TransactionNoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
                 return true
+            }
+            R.id.sign_transaction -> {
+                viewModel.signTransaction(broadcast = false, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
             }
         }
 

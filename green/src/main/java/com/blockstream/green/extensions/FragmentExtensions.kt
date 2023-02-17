@@ -8,8 +8,10 @@ import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.MenuRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
@@ -25,6 +27,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
+
 
 fun Fragment.hideKeyboard() {
     view?.let { context?.hideKeyboard(it) }
@@ -137,8 +140,16 @@ fun Fragment.dialog(title: Int, message: Int, listener: (() -> Unit)? = null) {
     dialog(getString(title), getString(message), listener)
 }
 
-fun Fragment.dialog(title: String, message: String, listener: (() -> Unit)? = null) {
-    MaterialAlertDialogBuilder(requireContext())
+fun Fragment.dialog(title: String, message: String, isMessageSelectable: Boolean = false) {
+    dialog(title, message, listener = null).also {
+        if(isMessageSelectable){
+            it.window?.decorView?.findViewById<TextView>(android.R.id.message)?.setTextIsSelectable(true)
+        }
+    }
+}
+
+fun Fragment.dialog(title: String, message: String, listener: (() -> Unit)? = null): AlertDialog {
+    return MaterialAlertDialogBuilder(requireContext())
         .setTitle(title)
         .setMessage(message)
         .setPositiveButton(android.R.string.ok, null)

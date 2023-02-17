@@ -76,8 +76,8 @@
 -keep class mehdi.sakout.aboutpage.** {*;}
 -keep class com.blockstream.libwally.** {*;}
 -keep class com.blockstream.libgreenaddress.** {*;}
--keep class com.greenaddress.greenapi.data.** {*;}
--keep class com.greenaddress.jade.entities** {*;}
+-keep class com.blockstream.greenapi.data.** {*;}
+-keep class com.blockstream.jade.entities** {*;}
 
 
 -keepattributes InnerClasses,EnclosingMethod

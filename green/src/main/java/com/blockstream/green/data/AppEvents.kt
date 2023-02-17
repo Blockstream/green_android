@@ -4,6 +4,8 @@ interface AppEvent
 
 sealed class GdkEvent: AppEvent{
     object Success : GdkEvent()
+
+    data class SuccessWithData(val data: Any? = null): GdkEvent()
 }
 
 sealed class NavigateEvent: AppEvent{

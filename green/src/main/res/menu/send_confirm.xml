@@ -7,4 +7,9 @@
         android:title="@string/id_add_note"
         android:icon="@drawable/ic_note"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/sign_transaction"
+        android:title="@string/sign_transaction"
+        app:showAsAction="never"/>
 </menu>

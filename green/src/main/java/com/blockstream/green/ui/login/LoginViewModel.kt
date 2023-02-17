@@ -184,9 +184,8 @@ class LoginViewModel @AssistedInject constructor(
         if(device == null) return
 
         login {
-            val network = session.networks.getNetworkById(wallet.activeNetwork)
             session.loginWithDevice(
-                network = network,
+                wallet = wallet,
                 device = device,
                 hardwareWalletResolver = DeviceResolver(device.hwWallet, this),
                 hwWalletBridge = this
@@ -272,7 +271,7 @@ class LoginViewModel @AssistedInject constructor(
             }
 
             // Change active account if necessary (account archived)
-            if (wallet.activeNetwork != (session.activeAccountOrNull?.networkId ?: "")||
+            if (wallet.activeNetwork != (session.activeAccountOrNull?.networkId ?: "") ||
                 wallet.activeAccount != (session.activeAccountOrNull?.pointer ?: 0)
             ) {
                 wallet.activeNetwork = session.activeAccountOrNull?.networkId ?: session.defaultNetwork.id

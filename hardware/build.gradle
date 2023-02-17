@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace 'com.blockstream.hardware'
     compileSdkVersion 33
     buildToolsVersion "33.0.0"
 
@@ -24,7 +25,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    namespace 'com.blockstream.hardware'
 }
 
 kotlin {

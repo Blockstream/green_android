@@ -103,7 +103,7 @@ abstract class AbstractWalletViewModel constructor(
         wallet.activeNetwork = account.networkId
         wallet.activeAccount = account.pointer
 
-        if(!wallet.isHardware) {
+        if(!wallet.isEphemeral) {
             viewModelScope.launch(context = logException(countly)){
                 walletRepository.updateWallet(wallet)
             }
