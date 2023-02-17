@@ -55,25 +55,7 @@ class AccountsManager {
         }
     }
 
-    func onFirstInitialization() {
-        for network in ["mainnet", "testnet", "liquid"] {
-            if !UserDefaults.standard.bool(forKey: network + "FirstInitialization") {
-                _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyBiometric, forNetwork: network)
-                _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: network)
-                UserDefaults.standard.set(true, forKey: network + "FirstInitialization")
-            }
-        }
-        if !UserDefaults.standard.bool(forKey: "FirstInitialization") {
-            try? remove()
-            accounts = []
-            UserDefaults.standard.set(true, forKey: "FirstInitialization")
-
-            // Handle wallet migration
-            accounts = migratedAccounts()
-        }
-    }
-
-    private func remove() throws {
+    func remove() throws {
         let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
                                     kSecAttrAccount as String: attrAccount,
                                     kSecAttrService as String: attrService,
@@ -124,33 +106,6 @@ class AccountsManager {
         }
         guard let data = retrivedData as? Data else { throw GaError.GenericError() }
         return try JSONDecoder().decode([Account].self, from: data)
-    }
-
-    private func migratedAccounts() -> [Account] {
-        var accounts = [Account]()
-        for network in ["mainnet", "testnet", "liquid"] {
-            let bioData = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: network)
-            let pinData = AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: network)
-            if pinData || bioData {
-                var account = Account(name: nameLabel(network), network: network, keychain: network, isSingleSig: false)
-                account.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")
-                accounts.append(account)
-            }
-        }
-        return accounts
-    }
-
-    func nameLabel(_ network: String) -> String {
-        switch network {
-        case "mainnet":
-            return "Bitcoin"
-        case "testnet":
-            return "Testnet"
-        case "liquid":
-            return "Liquid"
-        default:
-            return "Account"
-        }
     }
 
     func get(for id: String) -> Account? {

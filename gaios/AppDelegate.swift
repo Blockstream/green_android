@@ -98,7 +98,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Initialize gdk and accounts
         try! gdkinitialize()
-        AccountsManager.shared.onFirstInitialization()
+        MigratorManager.shared.migrate()
 
         // Set screen lock
         instantiateViewControllerAsRoot(storyboard: "Home", identifier: "HomeViewController")

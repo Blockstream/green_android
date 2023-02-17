@@ -99,3 +99,9 @@ extension String {
         return decoded ?? self
     }
 }
+
+extension String {
+    func versionCompare(_ otherVersion: String) -> ComparisonResult {
+        return self.compare(otherVersion, options: .numeric)
+    }
+}
