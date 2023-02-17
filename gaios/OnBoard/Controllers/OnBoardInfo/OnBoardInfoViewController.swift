@@ -96,7 +96,7 @@ class OnBoardInfoViewController: UIViewController {
     }
 
     func next(_ lenght: MnemonicLengthOption) {
-        OnBoardManager.shared.params?.mnemonicSize = lenght.rawValue
+        OnBoardParams.shared.mnemonicSize = lenght.rawValue
         let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryCreateViewController") as? RecoveryCreateViewController {
             vc.mnemonicLength = lenght

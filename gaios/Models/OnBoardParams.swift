@@ -6,11 +6,21 @@ enum MnemonicSize: Int {
 }
 
 struct OnBoardParams: Codable {
-    var network: String?
+    var testnet: Bool?
     var walletName: String?
     var mnemonic: String?
     var mnemomicPassword: String?
     var mnemonicSize = Constants.mnemonicSizeDefault
-    var singleSig = false
     var accountId: String?
+    var xpubHashId: String?
+
+    static var shared = OnBoardParams()
+
+    func toAccount() -> Account {
+        let network: NetworkSecurityCase = testnet ?? false ? .testnetSS : .bitcoinSS
+        return Account(id: accountId ?? UUID().uuidString,
+                       name: walletName ?? "",
+                       network: network.network,
+                       xpubHashId: xpubHashId ?? "")
+    }
 }

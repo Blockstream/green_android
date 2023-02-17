@@ -5,12 +5,12 @@ extension AnalyticsManager {
     typealias Sgmt = [String: String]
 
     func ntwSgmt(_ onBoardParams: OnBoardParams?) -> Sgmt? {
-        if let network = onBoardParams?.network {
-            var s = Sgmt()
-            s[AnalyticsManager.strNetwork] = network
-            s[AnalyticsManager.strSecurity] = onBoardParams?.singleSig == true ? AnalyticsManager.strSinglesig : AnalyticsManager.strMultisig
-            return s
-        }
+//        if let network = onBoardParams?.network {
+//            var s = Sgmt()
+//            s[AnalyticsManager.strNetwork] = network
+//            s[AnalyticsManager.strSecurity] = onBoardParams?.singleSig == true ? AnalyticsManager.strSinglesig : AnalyticsManager.strMultisig
+//            return s
+//        }
         return nil
     }
 

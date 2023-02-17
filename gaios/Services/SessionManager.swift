@@ -7,6 +7,7 @@ public enum LoginError: Error, Equatable {
     case invalidMnemonic(_ localizedDescription: String? = nil)
     case connectionFailed(_ localizedDescription: String? = nil)
     case failed(_ localizedDescription: String? = nil)
+    case walletMismatch(_ localizedDescription: String? = nil)
 }
 
 class GDKSession: Session {

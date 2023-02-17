@@ -243,7 +243,7 @@ class LoginViewController: UIViewController {
             }
             if !bip39passphrase.isNilOrEmpty {
                 self.account =  Account(name: self.account.name,
-                                network: self.account.network,
+                                network: self.account.network ?? "",
                                 isSingleSig: self.account.isSingleSig,
                                 isEphemeral: true)
                 WalletManager.change(wm: wm, for: self.account)
@@ -302,6 +302,7 @@ class LoginViewController: UIViewController {
         account?.attempts += 1
         AccountsManager.shared.upsert(account)
         if account?.attempts == self.MAXATTEMPTS {
+            AccountsManager.shared.remove(account)
             showLock()
         } else {
             self.pinCode = ""
@@ -437,9 +438,13 @@ class LoginViewController: UIViewController {
 
     @IBAction func btnWalletLock(_ sender: Any) {
         LandingViewController.flowType = .restore
-        OnBoardManager.shared.params = OnBoardParams(network: account?.network, walletName: account?.name, singleSig: account?.isSingleSig ?? false, accountId: account?.id ?? UUID().uuidString)
+        OnBoardParams.shared = OnBoardParams(testnet: account?.gdkNetwork?.mainnet,
+                                             walletName: account?.name,
+                                             accountId: account?.id ?? UUID().uuidString,
+                                             xpubHashId: account?.xpubHashId ?? "")
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
+            vc.xpubHashId = account.xpubHashId
             navigationController?.pushViewController(vc, animated: true)
         }
     }

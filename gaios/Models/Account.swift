@@ -26,7 +26,7 @@ struct Account: Codable, Equatable {
     let username: String?
     var password: String?
     let keychain: String
-    var network: String
+    var network: String?
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
     var walletHashId: String?
     var xpubHashId: String?
@@ -35,7 +35,7 @@ struct Account: Codable, Equatable {
     var askEphemeral: Bool?
     var ephemeralId: Int?
 
-    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool?, isEphemeral: Bool = false, askEphemeral: Bool = false) {
+    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -48,6 +48,7 @@ struct Account: Codable, Equatable {
         self.isSingleSig = isSingleSig
         self.isEphemeral = isEphemeral
         self.askEphemeral = askEphemeral
+        self.xpubHashId = xpubHashId
         if isEphemeral {
             let ephAccounts = AccountsManager.shared.ephAccounts
             if ephAccounts.count == 0 {
@@ -180,7 +181,7 @@ struct Account: Codable, Equatable {
     var networkName: String {
         get {
             let isSingleSig = self.isSingleSig ?? false
-            let ntw = self.network
+            let ntw = self.network ?? "electrum-mainnet"
 
             return (isSingleSig ? Constants.electrumPrefix + ntw : ntw)
         }

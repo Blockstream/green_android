@@ -24,6 +24,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     var currIndexPath: IndexPath?
     var mnemonicActionType: MnemonicActionType = .recoverWallet
+    var xpubHashId: String?
     var page = 0 // analytics, mnemonic fails counter
     weak var delegate: AccountCreateRecoveryKeyDelegate?
 
@@ -195,6 +196,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     func showLoginError(_ err: Error) {
         self.stopLoader()
         switch err {
+        case LoginError.walletMismatch:
+            showError(NSLocalizedString("Wallet mismatch", comment: ""))
         case LoginError.failed:
             showError(NSLocalizedString("id_login_failed", comment: ""))
         case LoginError.walletNotFound:
@@ -204,7 +207,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case LoginError.invalidMnemonic:
             showError(NSLocalizedString("id_invalid_recovery_phrase", comment: ""))
             page += 1
-            AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardManager.shared.params, page: self.page)
+            AnalyticsManager.shared.recoveryPhraseCheckFailed(onBoardParams: OnBoardParams.shared, page: self.page)
         case LoginError.connectionFailed:
             showError(NSLocalizedString("id_connection_failed", comment: ""))
         case TwoFactorCallError.cancel(localizedDescription: let desc), TwoFactorCallError.failure(localizedDescription: let desc):
@@ -221,7 +224,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             .then { (mnemonic: String, password: String) -> Promise<Void> in
                 switch self.mnemonicActionType {
                 case .recoverWallet:
-                    return self.viewModel.restore(mnemonic: mnemonic, password: password, testnet: testnet)
+                    let credentials = Credentials(mnemonic: mnemonic, password: password)
+                    return self.viewModel.restore(credentials: credentials, testnet: testnet, xpubHashId: self.xpubHashId)
                 case .addSubaccount:
                     return self.viewModel.validateMnemonic(mnemonic)
                 }
