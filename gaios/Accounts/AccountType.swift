@@ -18,11 +18,32 @@ enum AccountType: String, CaseIterable, Codable, Comparable {
             case .amp:
                 return "AMP"
             case .twoOfThree:
-                return "2of3 with 2FA Protected"
+                return "2of3 with 2FA"
             case .legacy:
                 return "Legacy"
             case .segwitWrapped:
                 return "Standard"
+            case .segWit:
+                return "Native SegWit"
+            case .taproot:
+                return "Taproot"
+            }
+        }
+    }
+
+    var shortString: String {
+        get {
+            switch self {
+            case .standard:
+                return "2of2"
+            case .amp:
+                return "Amp"
+            case .twoOfThree:
+                return "2of3"
+            case .legacy:
+                return "Legacy"
+            case .segwitWrapped:
+                return "Legacy SegWit"
             case .segWit:
                 return "Native SegWit"
             case .taproot:

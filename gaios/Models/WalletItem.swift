@@ -37,20 +37,24 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     var gdkNetwork: GdkNetwork { getGdkNetwork(network!)}
     var session: SessionManager? { WalletManager.current?.sessions[network ?? ""] }
 
-    func localizedName() -> String {
+    var localizedName: String {
         if !name.isEmpty {
             return name
         }
         let subaccounts = WalletManager.current?.subaccounts ?? []
-        let counter = subaccounts.filter { $0.pointer < self.pointer && $0.type == self.type && $0.network == self.network }.count
-        if counter > 0 {
-            return "\(type.string.localized) \(counter)"
+        let subaccountsSameType = subaccounts.filter { $0.type == self.type && $0.network == self.network }
+        if subaccountsSameType.count > 1 {
+            let index = subaccountsSameType.filter { $0.pointer < self.pointer }.count
+            if index == 0 {
+                return "\(type.string.localized) Account"
+            }
+            return "\(type.string.localized) \(index+1)"
         }
         return "\(type.string.localized)"
     }
 
-    func localizedHint() -> String {
-        return "\((NSLocalizedString(type.string, comment: "")).uppercased()) #\(self.accountNumber)"
+    var localizedType: String {
+        return type.shortString.localized.uppercased()
     }
 
     var btc: Int64 {

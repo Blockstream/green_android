@@ -25,7 +25,7 @@ class ReceiveViewModel {
         return WalletManager.current?.registry.info(for: asset).name ?? "--"
     }
     func accountType() -> String {
-        return account.localizedName()
+        return account.localizedName
     }
 
     func newAddress() {

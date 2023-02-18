@@ -62,7 +62,7 @@ class WatchOnlySettingsViewModel {
             network: nil)
         self.singlesigCellModels = [cellHeaderPubKeys]
         Promise()
-            .then { self.loadWOExtendedPubKeys() }
+            .compactMap { self.loadWOExtendedPubKeys() }
             .done { self.singlesigCellModels += $0 }
             .catch { err in self.error?(err.localizedDescription) }
     }
@@ -76,32 +76,26 @@ class WatchOnlySettingsViewModel {
                 network: session.gdkNetwork.network) }
     }
 
-    func loadWOExtendedPubKeys() -> Promise<[WatchOnlySettingsCellModel]> {
-        let promises = WalletManager.current!.subaccounts
+    func loadWOExtendedPubKeys() -> [WatchOnlySettingsCellModel] {
+        return WalletManager.current!.subaccounts
             .filter { $0.gdkNetwork.electrum && !$0.gdkNetwork.liquid }
-            .compactMap { $0.session?.subaccount($0.pointer) }
-        return when(fulfilled: promises).compactMap { subaccounts in
-            return subaccounts.map {
+            .compactMap {
                 WatchOnlySettingsCellModel(
-                    title: $0.localizedName(),
+                    title: $0.localizedName,
                     subtitle: $0.extendedPubkey ?? "",
                     network: $0.gdkNetwork.network,
                     isExtended: true)
             }
-        }
     }
 
-    func loadWOOutputDescriptors() -> Promise<[WatchOnlySettingsCellModel]> {
-        let promises = WalletManager.current!.subaccounts
-            .compactMap { $0.session?.subaccount($0.pointer) }
-        return when(fulfilled: promises).compactMap { subaccounts in
-            return subaccounts
-                .filter { $0.coreDescriptors != nil }
-                .map {  WatchOnlySettingsCellModel(
-                    title: $0.localizedName(),
+    func loadWOOutputDescriptors() -> [WatchOnlySettingsCellModel] {
+        return WalletManager.current!.subaccounts
+            .filter { $0.coreDescriptors != nil }
+            .compactMap {
+                WatchOnlySettingsCellModel(
+                    title: $0.localizedName,
                     subtitle: $0.coreDescriptors?.joined(separator: "\n") ?? "",
                     network: $0.gdkNetwork.network)
             }
-        }
     }
 }

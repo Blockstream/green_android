@@ -50,7 +50,7 @@ class TransactionCell: UITableViewCell {
             }
         }
         addStackRow(MultiLabelViewModel(txtLeft: model.statusUI().label,
-                                        txtRight: model.subaccount?.localizedName() ?? "",
+                                        txtRight: model.subaccount?.localizedName ?? "",
                                         style: model.statusUI().style))
 
         if !model.tx.memo.isEmpty {

@@ -45,7 +45,7 @@ class AccountArchiveCell: UITableViewCell {
         (cColor = isLiquid ? UIColor.gAccountLightBlue() : UIColor.gAccountOrange())
 
         bg.backgroundColor = cColor
-        self.lblAccountTitle.text = account.localizedName()
+        self.lblAccountTitle.text = account.localizedName
 
         let assetId = account.gdkNetwork.getFeeAsset()
         if let converted = Balance.fromSatoshi(account.satoshi?[assetId] ?? 0, assetId: assetId) {
@@ -54,7 +54,7 @@ class AccountArchiveCell: UITableViewCell {
             lblBalance.isHidden = false
         }
 
-        self.lblAccountHint.text = account.localizedHint()
+        self.lblAccountHint.text = account.localizedType
         self.action = action
         self.actionBtn.isHidden = false
 

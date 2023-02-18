@@ -118,7 +118,7 @@ class RecipientCell: UITableViewCell {
         lblAssetName.text = "id_asset".localized
         iconAsset.image = model.assetImage ?? UIImage(named: "default_asset_icon")!
         lblAssetName.text = model.asset?.name ?? model.assetId ?? "id_asset".localized
-        lblAccount.text = model.account.localizedName()
+        lblAccount.text = model.account.localizedName
         lblAddressHint.text = model.inputType == .sweep ? "id_enter_a_private_key_to_sweep".localized : "id_enter_an_address".localized
 
         btnCancelAddress.isHidden = !(addressTextView.text.count > 0)

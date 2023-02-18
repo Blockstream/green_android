@@ -18,8 +18,8 @@ class AccountCellModel {
 
     init(subaccount: WalletItem) {
         account = subaccount
-        name = account.localizedName()
-        type = account.localizedHint().uppercased()
+        name = account.localizedName
+        type = account.localizedType
         isSS = account.gdkNetwork.electrum ? true : false
         isLiquid = account.gdkNetwork.liquid
         isTest = !account.gdkNetwork.mainnet

@@ -35,8 +35,8 @@ class AccountAssetCell: UITableViewCell {
     func configure(model: AccountAssetCellModel) {
         let name = model.asset.name ?? model.asset.assetId
         self.lblAsset.text = name
-        self.lblAccount.text = model.account.localizedName()
-        self.lblType.text = model.account.type.string.localized.uppercased()
+        self.lblAccount.text = model.account.localizedName
+        self.lblType.text = model.account.localizedType
 
         imgView.image = WalletManager.current?.registry.image(for: model.asset.assetId)
         let isSS = model.account.gdkNetwork.electrum ? true : false

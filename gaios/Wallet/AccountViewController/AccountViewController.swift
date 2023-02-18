@@ -204,7 +204,7 @@ class AccountViewController: UIViewController {
             vc.isAccountRename = true
             vc.delegate = self
             vc.index = nil
-            vc.prefill = viewModel.account.localizedName()
+            vc.prefill = viewModel.account.localizedName
             present(vc, animated: false, completion: nil)
         }
     }

@@ -45,7 +45,7 @@ class SendViewController: KeyboardViewController {
     }
 
     func setContent() {
-        self.title = viewModel.inputType == .sweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), viewModel.account.localizedName()) : NSLocalizedString("id_send_to", comment: "")
+        self.title = viewModel.inputType == .sweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), viewModel.account.localizedName) : NSLocalizedString("id_send_to", comment: "")
     }
 
     func setStyle() {
