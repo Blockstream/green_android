@@ -14,7 +14,7 @@ struct PolicyCellModel {
     static func from(policy: PolicyCellType) -> PolicyCellModel {
         switch policy {
         case .Standard:
-            return PolicyCellModel(isSS: true, isLight: false, type: "SINGLESIG / STANDARD", name: "Standard".uppercased(), hint: "Simple, portable, standard account, secured by your key, the recovery phrase.", policy: policy, accountType: .segwitWrapped)
+            return PolicyCellModel(isSS: true, isLight: false, type: "SINGLESIG / STANDARD", name: "Standard", hint: "Simple, portable, standard account, secured by your key, the recovery phrase.", policy: policy, accountType: .segwitWrapped)
         //case .Instant:
         //    return PolicyCellModel(isSS: false, isLight: true, type: "Lightning", name: "Instant", hint: "Fast transactions on the Lightning Network, powered by Greenlight.", policy: policy)
         case .TwoFAProtected:
@@ -26,7 +26,7 @@ struct PolicyCellModel {
         //case .Taproot:
         //    return PolicyCellModel(isSS: true, isLight: false, type: "SINGLESIG / TAPROOT", name: "Taproot", hint: "Cheaper and more private singlesig option. Addresses are Bech32m.", policy: policy)
         case .Amp:
-            return PolicyCellModel(isSS: false, isLight: false, type: "MULTISIG / AMP".uppercased(), name: "Amp", hint: "Account for special assets, monitored or authorized by the asset issuer.", policy: policy, accountType: .amp)
+            return PolicyCellModel(isSS: false, isLight: false, type: "MULTISIG / AMP".uppercased(), name: "AMP", hint: "Account for special assets, monitored or authorized by the asset issuer.", policy: policy, accountType: .amp)
         }
     }
 }
