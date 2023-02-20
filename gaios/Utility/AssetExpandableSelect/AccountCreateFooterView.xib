@@ -46,9 +46,6 @@
                                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                             <state key="normal" image="ic_arrow_card"/>
-                                            <connections>
-                                                <action selector="btnOnCreate:" destination="iN0-l3-epB" eventType="touchUpInside" id="mgQ-wj-CJl"/>
-                                            </connections>
                                         </button>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="526-eZ-qzJ">
                                             <rect key="frame" x="0.0" y="62" width="343" height="1"/>
@@ -78,6 +75,13 @@
                                                 <constraint firstAttribute="width" constant="2" id="nfA-eg-MBJ"/>
                                             </constraints>
                                         </view>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gra-i5-6LV">
+                                            <rect key="frame" x="0.0" y="0.0" width="343" height="63"/>
+                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                            <connections>
+                                                <action selector="btnOnCreate:" destination="iN0-l3-epB" eventType="touchUpInside" id="wEI-7p-VtF"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" name="gGrayCard"/>
                                     <constraints>
@@ -87,6 +91,7 @@
                                         <constraint firstItem="Z0i-Vr-Ipv" firstAttribute="leading" secondItem="G9C-UF-frN" secondAttribute="leading" id="5lD-HW-WpQ"/>
                                         <constraint firstAttribute="trailing" secondItem="526-eZ-qzJ" secondAttribute="trailing" id="7GF-22-1B5"/>
                                         <constraint firstItem="tYz-UB-9J6" firstAttribute="leading" secondItem="1fs-ov-fjD" secondAttribute="trailing" constant="20" id="8N4-Yo-ftc"/>
+                                        <constraint firstItem="gra-i5-6LV" firstAttribute="top" secondItem="G9C-UF-frN" secondAttribute="top" id="B6U-Jz-75V"/>
                                         <constraint firstAttribute="bottom" secondItem="hok-6R-fKT" secondAttribute="bottom" id="BQg-Qp-hvw"/>
                                         <constraint firstAttribute="trailing" secondItem="vJc-UQ-EoS" secondAttribute="trailing" id="CpD-2V-vc3"/>
                                         <constraint firstAttribute="bottom" secondItem="526-eZ-qzJ" secondAttribute="bottom" id="K6e-Sb-bQd"/>
@@ -100,7 +105,10 @@
                                         <constraint firstItem="hok-6R-fKT" firstAttribute="top" secondItem="G9C-UF-frN" secondAttribute="top" id="iU1-Rs-DA0"/>
                                         <constraint firstAttribute="bottom" secondItem="tYz-UB-9J6" secondAttribute="bottom" constant="13" id="ifK-Tg-bZ0"/>
                                         <constraint firstItem="hok-6R-fKT" firstAttribute="leading" secondItem="G9C-UF-frN" secondAttribute="leading" id="k8b-wo-Esj"/>
+                                        <constraint firstAttribute="trailing" secondItem="gra-i5-6LV" secondAttribute="trailing" id="nMC-J7-CFY"/>
+                                        <constraint firstItem="gra-i5-6LV" firstAttribute="leading" secondItem="G9C-UF-frN" secondAttribute="leading" id="tHy-oc-Hs9"/>
                                         <constraint firstItem="Z0i-Vr-Ipv" firstAttribute="top" secondItem="G9C-UF-frN" secondAttribute="top" id="uyE-bt-MUK"/>
+                                        <constraint firstAttribute="bottom" secondItem="gra-i5-6LV" secondAttribute="bottom" id="w55-2k-1Uk"/>
                                         <constraint firstItem="1fs-ov-fjD" firstAttribute="top" secondItem="G9C-UF-frN" secondAttribute="top" constant="20" id="ybK-oy-v2U"/>
                                     </constraints>
                                 </view>
