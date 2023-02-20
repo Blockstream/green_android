@@ -11,9 +11,14 @@ class WalletListCell: UITableViewCell {
     @IBOutlet weak var iconHW: UIImageView!
     @IBOutlet weak var lblHint: UILabel!
 
+    var onLongpress: (() -> Void)?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.cornerRadius = 7.0
+
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
+        self.addGestureRecognizer(longPressRecognizer)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -31,7 +36,10 @@ class WalletListCell: UITableViewCell {
         iconHW.image = UIImage()
     }
 
-    func configure(item: Account, isSelected: Bool = false) {
+    func configure(item: Account,
+                   isSelected: Bool = false,
+                   onLongpress: (() -> Void)? = nil
+    ) {
         lblTitle.text = item.name
         lblHint.text = ""
 
@@ -65,5 +73,13 @@ class WalletListCell: UITableViewCell {
         }
         iconPassphrase.isHidden = !item.isEphemeral
         iconHW.isHidden = !item.isHW
+        self.onLongpress = onLongpress
+    }
+
+    @objc func longPressed(sender: UILongPressGestureRecognizer) {
+
+        if sender.state == UIGestureRecognizer.State.began {
+            onLongpress?()
+        }
     }
 }

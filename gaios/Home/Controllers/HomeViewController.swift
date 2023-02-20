@@ -88,6 +88,28 @@ class HomeViewController: UIViewController {
         AccountNavigator.goCreateRestore()
     }
 
+    func walletDelete(_ index: Int) {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletDeleteViewController") as? DialogWalletDeleteViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            vc.index = index
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func walletRename(_ index: Int) {
+        guard let account = AccountsManager.shared.swAccounts[safe: index] else { return }
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            vc.index = index
+            vc.prefill = account.name
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnAbout(_ sender: Any) {
 
         let storyboard = UIStoryboard(name: "About", bundle: nil)
@@ -158,7 +180,27 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                     let selected = { () -> Bool in
                         return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
                     }
-                    cell.configure(item: account, isSelected: selected())
+                    cell.configure(item: account,
+                                   isSelected: selected(),
+                                   onLongpress: { [weak self] () in
+                        if !(WalletManager.get(for: account.id)?.activeSessions.isEmpty == false) {
+                            UINotificationFeedbackGenerator().notificationOccurred(.success)
+
+                            let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
+                            if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
+                                popover.delegate = self
+                                popover.index = indexPath.row
+                                popover.menuOptions = [.edit, .delete]
+                                popover.modalPresentationStyle = .popover
+                                let popoverPresentationController = popover.popoverPresentationController
+                                popoverPresentationController?.backgroundColor = UIColor.customModalDark()
+                                popoverPresentationController?.delegate = self
+                                popoverPresentationController?.sourceView = cell
+                                popoverPresentationController?.sourceRect = cell.bounds
+                                self?.present(popover, animated: true)
+                            }
+                        }
+                    })
                     cell.selectionStyle = .none
                     return cell
                 }
@@ -347,5 +389,49 @@ extension HomeViewController: AnalyticsManagerDelegate {
             self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .home, network: nil)
             self.tableView.reloadData()
         }
+    }
+}
+
+extension HomeViewController: UIPopoverPresentationControllerDelegate {
+
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        return UINavigationController(rootViewController: controller.presentedViewController)
+    }
+}
+
+extension HomeViewController: PopoverMenuWalletDelegate {
+    func didSelectionMenuOption(menuOption: MenuWalletOption, index: Int?) {
+        guard let index = index else { return }
+        switch menuOption {
+        case .edit:
+            walletRename(index)
+        case .delete:
+            walletDelete(index)
+        default:
+            break
+        }
+    }
+}
+
+extension HomeViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
+    func didRename(name: String, index: Int?) {
+        if let index = index, var account = AccountsManager.shared.swAccounts[safe: index] {
+            account.name = name
+            AccountsManager.shared.upsert(account)
+            AnalyticsManager.shared.renameWallet()
+            tableView.reloadData()
+        }
+    }
+    func didDelete(_ index: Int?) {
+        guard let index = index, let account = AccountsManager.shared.swAccounts[safe: index] else { return }
+        AccountsManager.shared.remove(account)
+        AnalyticsManager.shared.deleteWallet()
+        tableView.reloadData()
+    }
+    func didCancel() {
     }
 }

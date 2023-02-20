@@ -196,7 +196,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        var session = SessionManager(account.gdkNetwork!)
+        let session = SessionManager(account.gdkNetwork!)
         firstly {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
@@ -467,7 +467,7 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
             AnalyticsManager.shared.renameWallet()
         }
     }
-    func didDelete() {
+    func didDelete(_ index: Int?) {
         if let account = self.account {
             AccountsManager.shared.remove(account)
             navigationController?.popViewController(animated: true)
@@ -479,7 +479,7 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
 }
 
 extension LoginViewController: PopoverMenuWalletDelegate {
-    func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
+    func didSelectionMenuOption(menuOption: MenuWalletOption, index: Int?) {
         switch menuOption {
         case .emergency:
             showEmergencyDialog()

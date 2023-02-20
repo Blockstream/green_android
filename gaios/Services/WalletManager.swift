@@ -379,7 +379,7 @@ extension WalletManager {
         delete(for: wm)
         add(for: account, wm: wm)
     }
-    
+
     static func account(for wm: WalletManager) -> Account? {
         let id = wallets.first(where: { $0.value === wm })?.key
         return AccountsManager.shared.get(for: id ?? "")

@@ -10,7 +10,7 @@ enum MenuWalletOption {
 extension MenuWalletOption: CaseIterable {}
 
 protocol PopoverMenuWalletDelegate: AnyObject {
-    func didSelectionMenuOption(_ menuOption: MenuWalletOption)
+    func didSelectionMenuOption(menuOption: MenuWalletOption, index: Int?)
 }
 
 class PopoverMenuWalletViewController: UIViewController {
@@ -21,6 +21,7 @@ class PopoverMenuWalletViewController: UIViewController {
     private var isLiquid: Bool!
     private var kvoContext = 0
     var menuOptions: [MenuWalletOption] = []
+    var index: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +38,7 @@ extension PopoverMenuWalletViewController: UITableViewDataSource, UITableViewDel
 
     override var preferredContentSize: CGSize {
         get {
-            return CGSize(width: super.preferredContentSize.width, height: menuTableView.rect(forSection: 0).height)
+            return CGSize(width: super.preferredContentSize.width, height: CGFloat(Double(menuOptions.count) * 44.0) + 25.0)
         }
         set {
             super.preferredContentSize = newValue
@@ -45,7 +46,7 @@ extension PopoverMenuWalletViewController: UITableViewDataSource, UITableViewDel
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
+        return 44.0// UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -72,7 +73,7 @@ extension PopoverMenuWalletViewController: UITableViewDataSource, UITableViewDel
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.dismiss(animated: true) {
-            self.delegate?.didSelectionMenuOption(self.menuOptions[indexPath.row])
+            self.delegate?.didSelectionMenuOption(menuOption: self.menuOptions[indexPath.row], index: self.index)
         }
     }
 }

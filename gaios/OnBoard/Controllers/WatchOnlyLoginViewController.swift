@@ -197,7 +197,7 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
             AnalyticsManager.shared.renameWallet()
         }
     }
-    func didDelete() {
+    func didDelete(_ index: Int?) {
         if let account = self.account {
             AccountsManager.shared.remove(account)
             navigationController?.popViewController(animated: true)
@@ -209,7 +209,7 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
 }
 
 extension WatchOnlyLoginViewController: PopoverMenuWalletDelegate {
-    func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
+    func didSelectionMenuOption(menuOption: MenuWalletOption, index: Int?) {
         switch menuOption {
         case .emergency:
             break
