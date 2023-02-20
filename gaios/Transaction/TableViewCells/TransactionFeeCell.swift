@@ -31,7 +31,10 @@ class TransactionFeeCell: UITableViewCell {
         lblHint.text = ""
     }
 
-    func configure(transaction: Transaction, isLiquid: Bool, feeAction: VoidToVoid?, copyFee: ((String) -> Void)?) {
+    func configure(transaction: Transaction,
+                   isLiquid: Bool,
+                   hideBalance: Bool,
+                   feeAction: VoidToVoid?, copyFee: ((String) -> Void)?) {
 
         self.copyFee = copyFee
         let color: UIColor = .white
@@ -49,6 +52,10 @@ class TransactionFeeCell: UITableViewCell {
             self.amount = amount
             lblFiat.text = "≈ \(fiat) \(fiatCurrency)"
             lblHint.text = "\(String(format: "( %.2f satoshi / vbyte )", Double(transaction.feeRate) / 1000))"
+            if hideBalance {
+                lblValue.attributedText = Common.obfuscate(color: color, size: 10, length: 5)
+                lblFiat.attributedText = Common.obfuscate(color: color, size: 10, length: 5)
+            }
         }
         let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false
         let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(subaccount(from: transaction)?.session?.isResetActive ?? false)

@@ -8,7 +8,9 @@ class MultiLabelView: UIView {
     func configure(_ model: MultiLabelViewModel) {
         lblLeft.text = model.txtLeft
         lblRight.text = model.txtRight
-
+        if model.hideBalance ?? false {
+            lblRight.attributedText = Common.obfuscate(color: .white, size: 12, length: 5)
+        }
         switch model.style {
         case .simple:
             [lblLeft, lblRight].forEach {
@@ -21,6 +23,10 @@ class MultiLabelView: UIView {
             }
             lblLeft.textColor = .white
             lblRight.textColor = UIColor.gGreenMatrix()
+            if model.hideBalance ?? false {
+                lblRight.attributedText = Common.obfuscate(color: UIColor.gGreenMatrix(),
+                                                           size: 12, length: 5)
+            }
         case .amountOut:
             [lblLeft, lblRight].forEach {
                 $0?.font = .boldSystemFont(ofSize: 14)

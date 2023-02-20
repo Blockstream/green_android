@@ -45,6 +45,10 @@ class TransactionViewController: UIViewController {
 
     var headerH: CGFloat = 44.0
 
+    private var hideBalance: Bool {
+        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -310,7 +314,11 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
                 let amount = transaction.amountsWithoutFees[indexPath.row]
-                cell.configure(tx: transaction, id: amount.0, value: amount.1, copyAmount: copyAmount, copyRecipient: copyRecipient)
+                cell.configure(tx: transaction,
+                               id: amount.0,
+                               value: amount.1,
+                               hideBalance: hideBalance,
+                               copyAmount: copyAmount, copyRecipient: copyRecipient)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -324,6 +332,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionFeeCell") as? TransactionFeeCell {
                 cell.configure(transaction: transaction,
                                isLiquid: transaction.isLiquid,
+                               hideBalance: hideBalance,
                                feeAction: feeAction,
                                copyFee: copyFee)
                 cell.selectionStyle = .none

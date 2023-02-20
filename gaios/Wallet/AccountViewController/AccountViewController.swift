@@ -311,13 +311,13 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .assets:
             if let cell = tableView.dequeueReusableCell(withIdentifier: WalletAssetCell.identifier, for: indexPath) as? WalletAssetCell {
-                cell.configure(model: viewModel.assetCellModels[indexPath.row])
+                cell.configure(model: viewModel.assetCellModels[indexPath.row], hideBalance: hideBalance)
                 cell.selectionStyle = .none
                 return cell
             }
         case .transaction:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
-                cell.configure(model: viewModel.txCellModels[indexPath.row])
+                cell.configure(model: viewModel.txCellModels[indexPath.row], hideBalance: hideBalance)
                 cell.selectionStyle = .none
                 return cell
             }

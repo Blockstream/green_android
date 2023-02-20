@@ -11,5 +11,6 @@ enum MultiLabelStyle: Int, CaseIterable {
 struct MultiLabelViewModel {
     let txtLeft: String?
     let txtRight: String?
+    let hideBalance: Bool?
     let style: MultiLabelStyle
 }

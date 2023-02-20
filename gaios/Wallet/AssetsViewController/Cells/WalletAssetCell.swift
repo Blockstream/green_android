@@ -15,10 +15,14 @@ class WalletAssetCell: UITableViewCell {
         bg.cornerRadius = 5.0
     }
 
-    func configure(model: WalletAssetCellModel) {
+    func configure(model: WalletAssetCellModel, hideBalance: Bool) {
         self.lblAsset.text = model.asset?.name ?? model.asset?.assetId
         self.lblBalance1.text = model.value ?? ""
         self.lblBalance2.text = model.fiat ?? " - "
+        if hideBalance == true {
+            self.lblBalance1.attributedText = Common.obfuscate(color: .white, size: 14, length: 5)
+            self.lblBalance2.attributedText = Common.obfuscate(color: .lightGray, size: 12, length: 5)
+        }
         self.imgView?.image = model.icon
     }
 }

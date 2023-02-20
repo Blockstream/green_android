@@ -13,6 +13,9 @@ class AssetsViewController: UIViewController {
 
     var viewModel: AssetsViewModel?
     weak var delegate: AssetsViewControllerDelegate?
+    private var hideBalance: Bool {
+        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +61,7 @@ extension AssetsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: WalletAssetCell.identifier, for: indexPath) as? WalletAssetCell,
            let model = viewModel?.assetCellModelsFilter[indexPath.row] {
-            cell.configure(model: model)
+            cell.configure(model: model, hideBalance: hideBalance)
             cell.selectionStyle = .none
             return cell
         }

@@ -27,7 +27,7 @@ class TransactionCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(model: TransactionCellModel) {
+    func configure(model: TransactionCellModel, hideBalance: Bool) {
         self.imgView.image = model.icon
 
         var txtCache = ""
@@ -46,16 +46,21 @@ class TransactionCell: UITableViewCell {
                         txtLeft = model.status ?? ""
                     }
                 }
-                addStackRow(MultiLabelViewModel(txtLeft: txtLeft, txtRight: txtRight, style: amount.value > 0 ? .amountIn : .amountOut ))
+                addStackRow(MultiLabelViewModel(txtLeft: txtLeft,
+                                                txtRight: txtRight,
+                                                hideBalance: hideBalance,
+                                                style: amount.value > 0 ? .amountIn : .amountOut ))
             }
         }
         addStackRow(MultiLabelViewModel(txtLeft: model.statusUI().label,
                                         txtRight: model.subaccount?.localizedName ?? "",
+                                        hideBalance: nil,
                                         style: model.statusUI().style))
 
         if !model.tx.memo.isEmpty {
             addStackRow(MultiLabelViewModel(txtLeft: model.tx.memo,
                                             txtRight: "",
+                                            hideBalance: nil,
                                             style: .simple))
         }
 

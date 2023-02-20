@@ -346,7 +346,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                                onHide: {[weak self] value in
                     self?.hideBalance = value
 
-                    self?.reloadSections([WalletSection.account], animated: false)
+                    self?.reloadSections([WalletSection.account, WalletSection.transaction], animated: false)
                 },
                                onAssets: {[weak self] in
                     self?.assetsScreen()
@@ -434,7 +434,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case .transaction:
             if let cell = tableView.dequeueReusableCell(withIdentifier: TransactionCell.identifier, for: indexPath) as? TransactionCell {
-                cell.configure(model: viewModel.txCellModels[indexPath.row])
+                cell.configure(model: viewModel.txCellModels[indexPath.row], hideBalance: hideBalance)
                 cell.selectionStyle = .none
                 return cell
             }

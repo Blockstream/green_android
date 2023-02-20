@@ -32,6 +32,10 @@ class DialogAssetDetailViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
 
+    private var hideBalance: Bool {
+        return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -116,7 +120,7 @@ extension DialogAssetDetailViewController: UITableViewDelegate, UITableViewDataS
                 cell.configure(NSLocalizedString("id_asset_id", comment: ""), tag)
             case .amount:
                 let balance = Balance.fromSatoshi(satoshi ?? 0, assetId: asset!.assetId)
-                cell.configure(NSLocalizedString("id_total_balance", comment: ""), balance?.toValue().0 ?? "")
+                cell.configureAmount(NSLocalizedString("id_total_balance", comment: ""), balance?.toValue().0 ?? "", hideBalance)
             case .precision:
                 cell.configure(NSLocalizedString("id_precision", comment: ""), isLBTC ? "8" : String(asset?.precision ?? 0))
             case .ticker:

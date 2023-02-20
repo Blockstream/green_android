@@ -36,7 +36,8 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = true
     }
 
-    func configure(tx: Transaction, id: String, value: Int64, copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
+    func configure(tx: Transaction, id: String, value: Int64, hideBalance: Bool,
+                   copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
 
         self.copyAmount = copyAmount
         self.copyRecipient = copyRecipient
@@ -61,6 +62,10 @@ class TransactionAmountCell: UITableViewCell {
             lblAsset.text = denom
             let (fiat, curr) = balance.toFiat()
             lblFiat.text = "≈ \(fiat) \(curr)"
+            if hideBalance {
+                lblAmount.attributedText = Common.obfuscate(color: color, size: 14, length: 5)
+                lblFiat.attributedText =  Common.obfuscate(color: color, size: 10, length: 5)
+            }
         }
     }
 
