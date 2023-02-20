@@ -47,8 +47,8 @@
 
                 <ImageView
                     android:id="@+id/icon"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
+                    android:layout_width="@dimen/asset_size"
+                    android:layout_height="@dimen/asset_size"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
@@ -64,6 +64,8 @@
                     android:id="@+id/policyIcon"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
+                    android:layout_marginEnd="-8dp"
+                    android:layout_marginBottom="-8dp"
                     android:src="@{account.network.multisig ? @drawable/ic_multisig : @drawable/ic_singlesig}"
                     app:layout_constraintBottom_toBottomOf="@+id/icon"
                     app:layout_constraintDimensionRatio="w,1:1"

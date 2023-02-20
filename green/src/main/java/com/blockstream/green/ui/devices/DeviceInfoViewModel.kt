@@ -43,6 +43,8 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
     val jadeIsUninitialized = MutableLiveData(false)
 
+    val deviceIsConnected = MutableLiveData(false)
+
     val deviceState = device.deviceState.asLiveData()
 
     override val deviceConnectionManagerOrNull = DeviceConnectionManager(
@@ -172,9 +174,8 @@ class DeviceInfoViewModel @AssistedInject constructor(
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
         onProgress.postValue(false)
         navigationLock.postValue(false)
-
+        deviceIsConnected.postValue(true)
         countly.hardwareConnected(device)
-
         jadeIsUninitialized.postValue(isJadeUninitialized == true)
     }
 

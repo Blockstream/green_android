@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.DeviceBrand
+import com.blockstream.base.Urls
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
@@ -26,6 +27,7 @@ import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.bottomsheets.EnvironmentListener
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -121,6 +123,10 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
                 }
             }
 
+        }
+
+        binding.buttonTroubleshoot.setOnClickListener {
+            openBrowser(Urls.JADE_TROUBLESHOOT)
         }
 
         binding.buttonContinue.setOnClickListener {
