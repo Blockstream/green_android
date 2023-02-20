@@ -25,6 +25,7 @@ class MnemonicViewModel {
         let wm = WalletManager.getOrAdd(for: account)
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
+            .then(on: bgq) { wm.prominentSession!.connect() }
             .then(on: bgq) { self.getXpubHashId(credentials: credentials, wm: wm) }
             .map {
                 if let xpubHashId = xpubHashId, xpubHashId != $0 {
