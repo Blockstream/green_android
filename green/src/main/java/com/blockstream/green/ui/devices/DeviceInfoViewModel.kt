@@ -14,6 +14,7 @@ import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.devices.HardwareConnectInteraction
 import com.blockstream.green.extensions.boolean
+import com.blockstream.green.extensions.logException
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
@@ -22,6 +23,7 @@ import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.launch
 import mu.KLogging
 
 class DeviceInfoViewModel @AssistedInject constructor(
@@ -39,7 +41,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     // Don't use onProgress for this screen as is not turned off for animation reasons
     val navigationLock = MutableLiveData(false)
 
-    val rememberDevice = MutableLiveData(true)
+    val rememberDevice = MutableLiveData(false)
 
     val jadeIsUninitialized = MutableLiveData(false)
 
@@ -58,10 +60,12 @@ class DeviceInfoViewModel @AssistedInject constructor(
     )
 
     init {
+        viewModelScope.launch(context = logException(countly)) {
+            rememberDevice.postValue(settingsManager.rememberDeviceWallet())
+        }
+
         if(device.hwWallet == null){
             unlockDevice(context)
-        }else{
-            // TODO get the operating network
         }
     }
 
@@ -166,8 +170,8 @@ class DeviceInfoViewModel @AssistedInject constructor(
             onProgress.value = it == null
         }, onSuccess = { wallet: Wallet ->
             proceedToLogin = true
-
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
+            settingsManager.setRememberDeviceWallet(rememberDeviceWallet = rememberDevice.value == true)
         })
     }
 

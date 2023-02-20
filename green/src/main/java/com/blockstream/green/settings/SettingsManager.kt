@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.utils.SecureRandom
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import java.util.*
+import java.util.UUID
 
 class SettingsManager constructor(context: Context, private val sharedPreferences: SharedPreferences) {
 
@@ -26,6 +26,11 @@ class SettingsManager constructor(context: Context, private val sharedPreference
 
     fun isDeviceTermsAccepted() = sharedPreferences.getInt(KEY_DEVICE_TERMS_ACCEPTED, 0) == 1
     fun setDeviceTermsAccepted() = sharedPreferences.edit().putInt(KEY_DEVICE_TERMS_ACCEPTED, 1).apply()
+
+    fun rememberDeviceWallet() = sharedPreferences.getBoolean(KEY_REMEMBER_DEVICE_WALLET, true)
+    fun setRememberDeviceWallet(rememberDeviceWallet: Boolean) =
+        sharedPreferences.edit().putBoolean(KEY_REMEMBER_DEVICE_WALLET, rememberDeviceWallet)
+            .apply()
 
     fun isAskedAboutAnalyticsConsent() = sharedPreferences.getInt(KEY_ASKED_ANALYTICS_CONSENT, 0) == 1
     fun setAskedAboutAnalyticsConsent() = sharedPreferences.edit().putInt(KEY_ASKED_ANALYTICS_CONSENT, 1).apply()
@@ -77,5 +82,6 @@ class SettingsManager constructor(context: Context, private val sharedPreference
         const val KEY_ASKED_APP_REVIEW = "asked_app_review"
         const val KEY_COUNTLY_DEVICE_ID = "countly_device_id"
         const val KEY_COUNTLY_OFFSET = "countly_offset"
+        const val KEY_REMEMBER_DEVICE_WALLET = "remember_device_wallet"
     }
 }
