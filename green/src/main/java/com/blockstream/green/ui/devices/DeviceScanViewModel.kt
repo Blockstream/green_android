@@ -18,6 +18,7 @@ import com.blockstream.green.utils.QATester
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -36,6 +37,8 @@ class DeviceScanViewModel @AssistedInject constructor(
 
     val hasBleConnectivity = wallet.deviceIdentifiers?.any { it.connectionType == Device.ConnectionType.BLUETOOTH } ?: false
     val canEnableBluetooth = MutableLiveData(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+
+    var requestUserActionEmitter: CompletableDeferred<Boolean>? = null
 
     private val _deviceLiveData = MutableLiveData<Device?>(null)
     val deviceLiveData: LiveData<Device?> get() = _deviceLiveData
@@ -150,8 +153,35 @@ class DeviceScanViewModel @AssistedInject constructor(
             ).walletHashId
 
             if (wallet.walletHashId.isNotBlank() && wallet.walletHashId != walletHashId) {
-                // wallet is different
-                throw Exception("This is not the same Wallet")
+
+                // Wallet has different hash id, ask user if he wants to continue
+                val userAction = CompletableDeferred<Boolean>().also{
+                    requestUserActionEmitter = it
+                    onEvent.postValue(ConsumableEvent(DeviceScanFragment.DeviceScanFragmentEvent.RequestWalletIsDifferent))
+                }
+
+                if (userAction.await()) {
+                    val onboardingSession = sessionManager.getOnBoardingSession()
+
+                    val epheneralWallet = Wallet.createEphemeralWallet(
+                        ephemeralId = 0,
+                        networkId = network.id,
+                        name = device.name,
+                        isHardware = true,
+                        isTestnet = network.isTestnet
+                    ).also {
+                        onboardingSession.ephemeralWallet = it
+                    }
+
+                    sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+
+                    epheneralWallet to device
+                } else {
+                    device.disconnect()
+                    throw Exception("id_action_canceled")
+                }
+            }else{
+                wallet to device
             }
 
         }, onError = {
@@ -159,7 +189,7 @@ class DeviceScanViewModel @AssistedInject constructor(
             onError.value = ConsumableEvent(it)
         }, onSuccess = {
             proceedToLogin = true
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
             countly.hardwareConnected(device)
         })
     }
