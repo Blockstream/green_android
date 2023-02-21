@@ -23,7 +23,6 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     let pointer: UInt32
     let receivingId: String
     let type: AccountType
-    var satoshi: [String: Int64]?
     var recoveryChainCode: String?
     var recoveryPubKey: String?
     let bip44Discovered: Bool?
@@ -33,6 +32,8 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
     let coreDescriptors: [String]?
     let extendedPubkey: String?
     let userPath: [Int]?
+    var hasTxs: Bool = false
+    var satoshi: [String: Int64]?
 
     var gdkNetwork: GdkNetwork { getGdkNetwork(network!)}
     var session: SessionManager? { WalletManager.current?.sessions[network ?? ""] }

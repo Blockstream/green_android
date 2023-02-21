@@ -15,6 +15,7 @@ class AccountCellModel {
     var balanceStr: String = ""
     var fiatStr: String = ""
     var account: WalletItem
+    var hasTxs: Bool = false
 
     init(subaccount: WalletItem) {
         account = subaccount
@@ -34,5 +35,6 @@ class AccountCellModel {
             let (fAmount, fDenom) = converted.toFiat()
             fiatStr = "\(fAmount) \(fDenom)"
         }
+        hasTxs = subaccount.hasTxs
     }
 }

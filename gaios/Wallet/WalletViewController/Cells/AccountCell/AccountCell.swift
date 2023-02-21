@@ -52,6 +52,16 @@ class AccountCell: UITableViewCell {
             $0?.cornerRadius = 3.0
         }
         btnCopy.setTitle("Copy ID", for: .normal)
+        icContainers.forEach {
+            $0.borderWidth = 1.0
+            $0.borderColor = UIColor.white
+            $0.cornerRadius = $0.frame.size.width / 2.0
+            $0.backgroundColor = cColor.darker(by: 10)
+        }
+        icImgViews.forEach {
+            $0.cornerRadius = $0.frame.size.width / 2.0
+            $0.clipsToBounds = true
+        }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -113,23 +123,15 @@ class AccountCell: UITableViewCell {
         btnSelect.isHidden = onSelect == nil
         btnCopy.isHidden = onCopy == nil || model.account.type != .amp // only for amp
 
-        let assets = AssetAmountList(model.account.satoshi ?? [:]).sorted()
+        let list = model.hasTxs ? model.account.satoshi ?? [:] : [:]
+        let assets = AssetAmountList(list).sorted()
         let registry = WalletManager.current?.registry
         var icons = [UIImage]()
         assets.compactMap { registry?.image(for: $0.0) }
             .forEach { if !icons.contains($0) { icons += [$0] } }
 
-        icContainers.forEach {
-            $0.borderWidth = 1.0
-            $0.borderColor = UIColor.white
-            $0.cornerRadius = $0.frame.size.width / 2.0
-            $0.backgroundColor = cColor.darker(by: 10)
-        }
-        icImgViews.forEach {
-            $0.cornerRadius = $0.frame.size.width / 2.0
-            $0.clipsToBounds = true
-        }
         icContainers.forEach { $0.isHidden = true }
+        icImgViews.forEach { $0.image = UIImage() }
         let padding: CGFloat = icons.count > 4 ? -20 : -10
         [trailing2_1, trailing3_2, trailing4_3].forEach {
             $0?.constant = padding

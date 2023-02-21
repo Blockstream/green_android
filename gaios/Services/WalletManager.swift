@@ -266,6 +266,8 @@ class WalletManager {
                 sessions[sub.network ?? ""]!
                     .getBalance(subaccount: sub.pointer, numConfs: 0)
                     .compactMap { sub.satoshi = $0 }
+                    .compactMap { sub.hasTxs = (sub.satoshi ?? [:]).count > 1 ? true : sub.hasTxs }
+                    .compactMap { sub.hasTxs = (sub.satoshi?.first?.value ?? 0) > 0 ? true : sub.hasTxs }
                     .asVoid()
             }
         return when(fulfilled: promises)
@@ -297,8 +299,8 @@ class WalletManager {
             }
             return session.transactions(subaccount: sub.pointer, first: UInt32(first))
                 .compactMap { $0.list.map { Transaction($0.details, subaccount: sub.hashValue) } }
-                .compactMap {
-                    txs += $0 }
+                .get { txs += $0 }
+                .compactMap { sub.hasTxs = !$0.isEmpty }
                 .asVoid()
         }
         return when(fulfilled: generator, concurrently: 1)
