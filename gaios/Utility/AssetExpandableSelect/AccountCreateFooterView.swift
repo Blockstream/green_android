@@ -20,7 +20,7 @@ class AccountCreateFooterView: UIView {
         createNew.borderColor = UIColor.gGreenMatrix()
         createNew.layer.cornerRadius = 5
         createNew.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        topMask.isHidden = hasAccounts
+        topMask.isHidden = false //hasAccounts
     }
 
     @IBAction func btnOnCreate(_ sender: Any) {

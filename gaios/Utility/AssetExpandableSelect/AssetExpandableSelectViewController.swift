@@ -121,7 +121,6 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
                                      onTap: { [weak self] in
                     self?.onCreate(asset: assetInfo)
                 })
-                
                 return createView
             }
         }
