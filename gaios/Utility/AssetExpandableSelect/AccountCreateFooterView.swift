@@ -13,7 +13,7 @@ class AccountCreateFooterView: UIView {
     ) {
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
         btnDisclose.cornerRadius = 4.0
-        lblTitle.text = "Create new account"
+        lblTitle.text = "id_create_new_account".localized
         self.onTap = onTap
 
         createNew.borderWidth = 2.0

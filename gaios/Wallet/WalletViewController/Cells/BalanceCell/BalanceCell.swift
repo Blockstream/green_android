@@ -23,7 +23,7 @@ class BalanceCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        lblBalanceTitle.text = "Total Balance"
+        lblBalanceTitle.text = "id_total_balance".localized
         lblBalanceTitle.font = .systemFont(ofSize: 18.0, weight: .bold)
     }
 
@@ -45,7 +45,7 @@ class BalanceCell: UITableViewCell {
         assetsBox.isHidden = assets.count < 2
 
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
-        let str = NSAttributedString(string: "\(assets.count) assets in total", attributes: uLineAttr)
+        let str = NSAttributedString(string: String(format: "id_d_assets_in_total".localized, assets.count), attributes: uLineAttr)
         btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
         self.onHide = onHide

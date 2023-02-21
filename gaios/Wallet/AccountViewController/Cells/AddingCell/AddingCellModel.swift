@@ -7,8 +7,8 @@ class AddingCellModel {
 
     init() {
 
-        var lbl = "increase the security fo your funds by adding a 2FA"
-        let strs = ["adding a 2FA"]
+        var lbl = "id_increase_the_security_of_your".localized
+        let strs = ["id_adding_a_2fa"]
 
         let attributedText = NSMutableAttributedString.init(string: lbl)
         for str1 in strs {

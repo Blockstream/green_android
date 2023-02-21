@@ -43,7 +43,7 @@ class UserSettingsViewModel {
             type: .Version)
         let support = UserSettingsItem(
             title: USItem.SupportID.string,
-            subtitle: "Copy support ID",
+            subtitle: "id_copy_support_id".localized,
             section: .About,
             type: .SupportID)
         return [version, support]
@@ -142,7 +142,7 @@ class UserSettingsViewModel {
         let wallet = AccountsManager.shared.current
         let logout = UserSettingsItem(
             title: (wallet?.name ?? "").localizedCapitalized,
-            subtitle: NSLocalizedString("id_log_out", comment: ""),
+            subtitle: "id_log_out".localized,
             section: .Logout,
             type: .Logout)
         return [logout]

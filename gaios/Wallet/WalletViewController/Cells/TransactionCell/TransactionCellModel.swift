@@ -33,13 +33,13 @@ class TransactionCellModel {
             self.status = isPending() ? "Redepositing" : "Redeposited"
             icon = UIImage(named: "ic_tx_received")!
         case .incoming:
-            self.status = isPending() ? "Receiving" : "Received"
+            self.status = isPending() ? "id_receiving".localized : "id_received".localized
             icon = UIImage(named: "ic_tx_received")!
         case .outgoing:
-            self.status = isPending() ? "Sending" : "Sent"
+            self.status = isPending() ? "is_sending".localized : "id_sent".localized
             icon = UIImage(named: "ic_tx_sent")!
         case .mixed:
-            self.status = isPending() ? "Swaping" : "Swap"
+            self.status = isPending() ? "Swapping" : "Swap"
         }
     }
 
@@ -58,11 +58,11 @@ class TransactionCellModel {
     func statusUI() -> PendingStateUI {
         if tx.blockHeight == 0 {
             return PendingStateUI(style: .unconfirmed,
-                                  label: NSLocalizedString("id_unconfirmed", comment: ""),
+                                  label: "id_unconfirmed".localized,
                                   progress: nil)
         } else if tx.isLiquid && self.blockHeight < tx.blockHeight + 1 {
             return PendingStateUI(style: .pending,
-                                  label: NSLocalizedString("id_12_confirmations", comment: ""),
+                                  label: "id_12_confirmations".localized,
                                   progress: 0.5)
         } else if !tx.isLiquid && self.blockHeight < tx.blockHeight + 5 {
             guard blockHeight >= tx.blockHeight else {
@@ -72,7 +72,7 @@ class TransactionCellModel {
             }
             let confirmCount = (blockHeight - tx.blockHeight) + 1
             return PendingStateUI(style: .pending,
-                                  label: String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount),
+                                  label: String(format: "id_d6_confirmations".localized, confirmCount),
                                   progress: Double(confirmCount) / 6.0)
         } else {
             return PendingStateUI(style: .simple,

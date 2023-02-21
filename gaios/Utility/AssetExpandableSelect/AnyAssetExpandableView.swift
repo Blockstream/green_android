@@ -18,9 +18,9 @@ class AnyAssetExpandableView: UIView {
                    hasAccounts: Bool,
                    onCreate: (() -> Void)?
     ) {
-        title.text = "Receive any Liquid Asset"
+        title.text = "id_receive_any_liquid_asset".localized
 
-        lblAccountTip.text = "You need a liquid account in order to receive it."
+        lblAccountTip.text = "id_you_need_a_liquid_account_in".localized
         accountTip.isHidden = !open
 
         createNew.isHidden = true
@@ -37,7 +37,7 @@ class AnyAssetExpandableView: UIView {
         }
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
         btnDisclose.cornerRadius = 4.0
-        lblTitle.text = "Create new account"
+        lblTitle.text = "id_create_new_account".localized
         self.onCreate = onCreate
     }
 

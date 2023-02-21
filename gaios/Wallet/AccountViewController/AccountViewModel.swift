@@ -42,7 +42,7 @@ class AccountViewModel {
     var discloseCellModels: [DiscloseCellModel] {
         switch ampEducationalMode {
         case .table:
-            return [DiscloseCellModel(title: "Learn more about AMP, the assets and your eligibility", hint: "Check our 6 easy steps to be able to send and receive AMP assets.")]
+            return [DiscloseCellModel(title: "id_learn_more_about_amp_the_assets".localized, hint: "id_check_our_6_easy_steps_to_be".localized)]
         default:
             return []
         }

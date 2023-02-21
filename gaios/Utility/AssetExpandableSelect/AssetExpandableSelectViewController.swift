@@ -40,8 +40,8 @@ class AssetExpandableSelectViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Select asset"
-        searchField.attributedPlaceholder = NSAttributedString(string: "Search Asset", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
+        title = "id_select_asset".localized
+        searchField.attributedPlaceholder = NSAttributedString(string: "id_search".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.4)])
     }
 
     func setStyle() {

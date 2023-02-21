@@ -72,13 +72,13 @@ class ReceiveViewController: UIViewController {
     }
 
     func setContent() {
-        title = NSLocalizedString("id_receive", comment: "")
-        btnShare.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
-        btnEdit.setTitle(NSLocalizedString("id_edit", comment: ""), for: .normal)
-        btnOptions.setTitle(NSLocalizedString("id_more_options", comment: ""), for: .normal)
-        btnVerify.setTitle(NSLocalizedString("id_verify_on_device", comment: ""), for: .normal)
-        lblAssetTitle.text = "Asset & Account"
-        lblAddressTitle.text = "Account Address"
+        title = "id_receive".localized
+        btnShare.setTitle("id_share_address".localized, for: .normal)
+        btnEdit.setTitle("id_edit".localized, for: .normal)
+        btnOptions.setTitle("id_more_options".localized, for: .normal)
+        btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
+        lblAssetTitle.text = "id_account__asset".localized
+        lblAddressTitle.text = "id_account_address".localized
     }
 
     func setStyle() {

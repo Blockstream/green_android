@@ -24,7 +24,7 @@ class AssetExpandableView: UIView {
         icon?.image = model.icon
 
         ampTip.cornerRadius = 5.0
-        lblAmp.text = "\(name ?? "") " + "is a Liquid asset. You can receive it directly on a Liquid account."
+        lblAmp.text = String(format: "id_s_is_a_liquid_asset_you_can".localized, name ?? "")
         ampTip.isHidden = !(model.asset?.amp ?? false && open)
 
         createNew.isHidden = true
@@ -40,7 +40,7 @@ class AssetExpandableView: UIView {
         }
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
         btnDisclose.cornerRadius = 4.0
-        lblTitle.text = "Create new account"
+        lblTitle.text = "id_create_new_account".localized
         self.onCreate = onCreate
     }
 

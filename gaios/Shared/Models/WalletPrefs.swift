@@ -10,7 +10,7 @@ enum WalletPrefs: Int, CaseIterable {
         case .settings:
             return "id_settings".localized
         case .createAccount:
-            return "Create Account"
+            return "id_create_account".localized
         case .logout:
             return "id_logout".localized
         }

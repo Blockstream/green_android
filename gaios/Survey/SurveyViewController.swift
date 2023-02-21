@@ -59,8 +59,8 @@ class SurveyViewController: KeyboardViewController {
         lblCounter.text = "\(messageTextView.text.count)/\(limit)"
         switch widget.wType {
         case .nps:
-            btnLeft.setTitle("Not Now", for: .normal)
-            btnRight.setTitle(widget.appearance?.submit?.htmlDecoded ?? "Submit", for: .normal)
+            btnLeft.setTitle("id_not_now".localized, for: .normal)
+            btnRight.setTitle(widget.appearance?.submit?.htmlDecoded ?? "id_submit".localized, for: .normal)
             lblSegmentLeft.text = widget.appearance?.notLikely?.htmlDecoded ?? ""
             lblSegmentRight.text = widget.appearance?.likely?.htmlDecoded ?? ""
             lblHint.isHidden = true
@@ -103,8 +103,8 @@ class SurveyViewController: KeyboardViewController {
                 segment.removeSegment(at: 0, animated: false)
             }
             lblTitle.text = widget.name?.htmlDecoded ?? ""
-            btnLeft.setTitle("Not Now", for: .normal)
-            btnRight.setTitle(widget.appearance?.submit?.htmlDecoded ?? "Submit", for: .normal)
+            btnLeft.setTitle("id_not_now", for: .normal)
+            btnRight.setTitle(widget.appearance?.submit?.htmlDecoded ?? "id_submit".localized, for: .normal)
 
             let qRating: WidgetQuestion? = (widget.questions?.filter { $0.qType == .rating })?.first
             let qText: WidgetQuestion? = (widget.questions?.filter { $0.qType == .text })?.first

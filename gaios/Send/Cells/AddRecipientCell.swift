@@ -14,7 +14,7 @@ class AddRecipientCell: UITableViewCell {
 
         btnAddRecipient.setStyle(.outlinedGray)
         btnAddRecipient.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
-        btnAddRecipient.setTitle("Add Recipient", for: .normal)
+        btnAddRecipient.setTitle("id_add_recipient".localized, for: .normal)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

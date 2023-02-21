@@ -16,12 +16,6 @@ class WalletViewController: UIViewController {
         case none
     }
 
-    enum WalletPreferences: String, CaseIterable {
-        case WalletSettings = "Wallet Settings"
-        case ArchivedAccounts = "Archived Accounts"
-        case CreateNewAccount = "Create a New Account"
-    }
-
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var actionsBg: UIView!
     @IBOutlet weak var btnSend: UIButton!
@@ -137,9 +131,9 @@ class WalletViewController: UIViewController {
     }
 
     func setContent() {
-        lblWelcomeTitle.text = "Welcome to your Wallet!"
-        lblWelcomeHint.text = "Create your first account to receive funds."
-        btnWelcomeCreate.setTitle("Create Account", for: .normal)
+        lblWelcomeTitle.text = NSLocalizedString("id_welcome_to_your_wallet", comment: "")
+        lblWelcomeHint.text = NSLocalizedString("id_create_your_first_account_to", comment: "")
+        btnWelcomeCreate.setTitle(NSLocalizedString("id_create_account", comment: ""), for: .normal)
 
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
@@ -193,7 +187,7 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Wallet Preferences", type: .walletPrefs, items: WalletPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: NSLocalizedString("id_settings", comment: ""), type: .walletPrefs, items: WalletPrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -497,7 +491,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch WalletSection(rawValue: section) {
         case .transaction:
-            return headerView( "Latest transactions" )
+            return headerView(NSLocalizedString("id_latest_transactions", comment: ""))
         default:
             return nil
         }
@@ -770,10 +764,10 @@ extension WalletViewController: DialogListViewControllerDelegate {
                     let enabled2FA = session?.twoFactorConfig?.anyEnabled ?? false
                     let isSS = session?.gdkNetwork.electrum ?? false
                     if isSS {
-                        showError("Two factor authentication is not availabled for singlesig account")
+                        showError("Two-Factor authentication not available for singlesig accounts")
                         return
                     } else if enabled2FA {
-                        showError("Two factor authentication is just enabled")
+                        showError("Two factor authentication is already enabled")
                         return
                     }
                     navigateTo2fa(account)

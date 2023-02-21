@@ -57,8 +57,8 @@ class WatchOnlySettingsViewModel {
                 .catch { err in self.error?(err.localizedDescription) }
         }
         let cellHeaderPubKeys = WatchOnlySettingsCellModel(
-            title: "Extended Public Keys",
-            subtitle: "Tip: You can use the xPub/yPub/zPub to view your watch-only wallet",
+            title: "id_extended_public_keys".localized,
+            subtitle: "id_tip_you_can_use_the".localized,
             network: nil)
         self.singlesigCellModels = [cellHeaderPubKeys]
         Promise()

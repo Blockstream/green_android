@@ -67,19 +67,19 @@ class RecoveryCreateViewController: UIViewController {
     }
 
     func setContent() {
-        let title = "Write down your\nrecovery phrase in\nthe correct order"
-        let strs = ["recovery phrase", "correct order"]
+        let title = "id_write_down_your_recovery_phrase".localized
+        let strs = ["id_recovery_phrase".localized, "id_correct_order".localized] // TODO: localize these as well.
 
         let attributedText = NSMutableAttributedString.init(string: title)
         for str1 in strs {
-            let range = (title as NSString).range(of: str1)
+            let range = (title.lowercased() as NSString).range(of: str1.lowercased())
             attributedText.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.gGreenMatrix(), range: range)
             lblTitle.attributedText = attributedText
         }
 
-        lblHint.text = "Store it somewhere safe."
+        lblHint.text = "id_store_it_somewhere_safe".localized
         btnNext.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
-        lblNote.text = "Make sure to be in a private and safe space"
+        lblNote.text = "id_make_sure_to_be_in_a_private".localized
     }
 
     func setStyle() {

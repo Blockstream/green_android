@@ -219,7 +219,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     @IBAction func doneButtonClicked(_ sender: Any) {
         let testnet = LandingViewController.chainType == .testnet
-        firstly { self.startLoader(message: self.mnemonicActionType == .recoverWallet ? "Recovering wallet" : ""); return Guarantee() }
+        firstly { self.startLoader(message: self.mnemonicActionType == .recoverWallet ? "id_restoring_your_wallet".localized : ""); return Guarantee() }
             .then { self.getMnemonicString() }
             .then { (mnemonic: String, password: String) -> Promise<Void> in
                 switch self.mnemonicActionType {

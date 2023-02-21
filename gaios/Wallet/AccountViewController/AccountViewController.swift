@@ -10,11 +10,7 @@ enum AccountSection: Int, CaseIterable {
     case footer
 }
 
-enum AccountPreferences: String, CaseIterable {
-    case Rename = "Rename"
-    case Archive = "Archive"
-    case EnhanceSecurity = "Enhance Security"
-}
+
 
 protocol AccountViewControllerDelegate: AnyObject {
     func didArchiveAccount()
@@ -169,7 +165,7 @@ class AccountViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Enable 2FA", type: .enable2faPrefs, items: Enable2faPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: "id_enable_2fa".localized, type: .enable2faPrefs, items: Enable2faPrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -223,7 +219,7 @@ class AccountViewController: UIViewController {
             .then { self.viewModel.archiveSubaccount() }
             .ensure { self.stopLoader() }
             .done {
-                DropAlert().success(message: "Account Archived")
+                DropAlert().success(message: "id_account_has_been_archived".localized)
                 self.delegate?.didArchiveAccount()
                 self.navigationController?.popViewController(animated: true)
             } .catch { err in self.showError(err) }
@@ -364,7 +360,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch AccountSection(rawValue: section) {
         case .transaction:
-            return headerView( "Latest transactions" )
+            return headerView("id_latest_transactions".localized)
         case .assets:
             return nil // headerView( "Balance" )
         default:
@@ -553,10 +549,10 @@ extension AccountViewController: DialogListViewControllerDelegate {
                 let enabled2FA = session?.twoFactorConfig?.anyEnabled ?? false
                 let isSS = session?.gdkNetwork.electrum ?? false
                 if isSS {
-                    showError("Two factor authentication is not availabled for singlesig account")
+                    showError("Two-Factor authentication not available for singlesig accounts")
                     return
                 } else if enabled2FA {
-                    showError("Two factor authentication is just enabled")
+                    showError("Two factor authentication already enabled")
                     return
                 }
                 navigateTo2fa(viewModel.account)

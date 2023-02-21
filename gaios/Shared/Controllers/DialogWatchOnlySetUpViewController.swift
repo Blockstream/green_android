@@ -59,9 +59,9 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Watch-only credentials"
+        lblTitle.text = "id_watchonly_credentials".localized
         lblHint.text = NSLocalizedString("id_allows_you_to_quickly_check", comment: "")
-        btnDelete.setTitle("Delete credentials", for: .normal)
+        btnDelete.setTitle("id_delete_credentials".localized, for: .normal)
         usernameField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_username", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         passwordField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_password", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         lblUsernameError.text = NSLocalizedString("id_at_least_8_characters_required", comment: "")

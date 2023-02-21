@@ -102,7 +102,7 @@ class LandingViewController: UIViewController {
         btnNewWallet.setTitle(NSLocalizedString("id_new_wallet", comment: ""), for: .normal)
         btnRestoreWallet.setTitle(NSLocalizedString("id_restore_wallet", comment: ""), for: .normal)
         btnWatchOnly.setTitle(NSLocalizedString("id_watchonly", comment: ""), for: .normal)
-        btnContinue.setTitle("Continue", for: .normal)
+        btnContinue.setTitle("id_continue".localized, for: .normal)
     }
 
     func setStyle() {

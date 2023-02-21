@@ -174,7 +174,7 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func updateHint() {
-        lblHint.text = "What is word number \(questionPosition + 1)?"
+        lblHint.text = String(format: "id_what_is_word_number_s".localized, String(questionPosition + 1))
     }
 
     func isComplete() -> Bool {

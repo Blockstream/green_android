@@ -12,9 +12,9 @@ class OnBoardInfoViewModel {
 
     var items: [OnBoardInfoCellModel] {
         return [
-            OnBoardInfoCellModel(icon: UIImage(named: "ic_info_home")!, title: "Safe Environment", hint: "Make sure you are alone and no camera is recording you or the screen."),
-            OnBoardInfoCellModel(icon: UIImage(named: "ic_info_warn")!, title: "Sensitive Information", hint: "Whomever can access your recovery phrase, can steal your funds."),
-            OnBoardInfoCellModel(icon: UIImage(named: "ic_info_shield")!, title: "Safely stored", hint: "If you forget it or lose it, your funds are going to be lost as well.")
+            OnBoardInfoCellModel(icon: UIImage(named: "ic_info_home")!, title: "id_safe_environment".localized, hint: "id_make_sure_you_are_alone_and_no".localized),
+            OnBoardInfoCellModel(icon: UIImage(named: "ic_info_warn")!, title: "id_sensitive_information".localized, hint: "id_whomever_can_access_your".localized),
+            OnBoardInfoCellModel(icon: UIImage(named: "ic_info_shield")!, title: "id_safely_stored".localized, hint: "id_if_you_forget_it_or_lose_it".localized)
         ]
     }
 }

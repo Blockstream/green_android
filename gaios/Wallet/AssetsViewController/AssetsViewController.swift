@@ -24,7 +24,7 @@ class AssetsViewController: UIViewController {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         searchField.delegate = self
-        title = "My Assets"
+        title = "id_my_assets".localized
         setContent()
         setStyle()
     }

@@ -51,7 +51,7 @@ class AccountCell: UITableViewCell {
             $0?.borderColor = .white
             $0?.cornerRadius = 3.0
         }
-        btnCopy.setTitle("Copy ID", for: .normal)
+        btnCopy.setTitle("id_copy_id".localized, for: .normal)
         icContainers.forEach {
             $0.borderWidth = 1.0
             $0.borderColor = UIColor.white

@@ -55,7 +55,7 @@ class AccountAssetViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Account & Asset"
+        title = "id_account__asset".localized
     }
 
     func setStyle() {
