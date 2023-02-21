@@ -23,7 +23,7 @@ enum WalletPrefs: Int, CaseIterable {
         case .createAccount:
             return UIImage(named: "ic_dialog_plus_circle")!
         case .logout:
-            return UIImage(named: "ic_info_warn")!
+            return UIImage(named: "ic_logout")!
         }
     }
 
