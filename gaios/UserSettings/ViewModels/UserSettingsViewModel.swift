@@ -11,6 +11,7 @@ class UserSettingsViewModel {
     var session: SessionManager? { wm.prominentSession }
     var settings: Settings? { session?.settings }
     var isWatchonly: Bool { AccountsManager.shared.current?.isWatchonly ?? false }
+    var isHW: Bool { AccountsManager.shared.current?.isHW ?? false }
 
     // reload all contents
     var reloadTableView: (() -> Void)?
@@ -83,10 +84,13 @@ class UserSettingsViewModel {
             subtitle: (settings?.autolock ?? .fiveMinutes).string,
             section: .Security,
             type: .AutoLogout)
-        if AccountsManager.shared.current?.isHW ?? false {
+        if isHW {
             return [twoFactorAuth, pgpKey, autolock]
+        } else if wm.hasMultisig {
+            return [changePin, loginWithBiometrics, twoFactorAuth, pgpKey, autolock]
+        } else {
+            return [changePin, loginWithBiometrics, autolock]
         }
-        return [changePin, loginWithBiometrics, twoFactorAuth, pgpKey, autolock]
     }
 
     func getGeneral() -> [UserSettingsItem] {
@@ -126,10 +130,13 @@ class UserSettingsViewModel {
             subtitle: "id_legacy_script_coins".localized,
             section: .Recovery,
             type: .RecoveryTransactions)
-        if AccountsManager.shared.current?.isHW ?? false {
+        if isHW {
             return [recoveryTxs]
+        } else if wm.hasMultisig {
+            return [recovery, recoveryTxs]
+        } else {
+            return [recovery]
         }
-        return [recovery, recoveryTxs]
     }
 
     func getLogout() -> [UserSettingsItem] {

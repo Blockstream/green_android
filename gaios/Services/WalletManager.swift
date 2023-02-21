@@ -82,6 +82,11 @@ class WalletManager {
         self.sessions.filter { $0.1.logged }
     }
 
+    var hasMultisig: Bool {
+        let multisigNetworks: [NetworkSecurityCase] =  [.bitcoinMS, .testnetMS, .liquidMS, .testnetLiquidMS]
+        return self.activeNetworks.filter { multisigNetworks.contains($0) }.count > 0
+    }
+
     var failureSessions = [String: Error]()
 
     var logged: Bool {

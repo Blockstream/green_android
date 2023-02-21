@@ -214,7 +214,6 @@ extension UserSettingsViewController {
     func openPgp() {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "PgpViewController") as? PgpViewController {
-            vc.session = session
             navigationController?.pushViewController(vc, animated: true)
         }
     }
