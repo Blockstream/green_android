@@ -200,9 +200,9 @@ class SecuritySelectViewModel {
     func uniqueName(_ type: AccountType, liquid: Bool) -> String {
         let counter = wm.subaccounts.filter { $0.type == type && $0.gdkNetwork.liquid == liquid }.count
         if counter > 0 {
-            return "\(type.string) \(counter)"
+            return "\(type.string) \(counter+1)"
         }
-        return "\(type.string)"
+        return "\(type.string) Account"
     }
 }
 

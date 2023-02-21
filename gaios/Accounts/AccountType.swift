@@ -24,7 +24,7 @@ enum AccountType: String, CaseIterable, Codable, Comparable {
             case .segwitWrapped:
                 return "Standard"
             case .segWit:
-                return "Native SegWit"
+                return "SegWit"
             case .taproot:
                 return "Taproot"
             }
