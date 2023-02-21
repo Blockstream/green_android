@@ -5,10 +5,11 @@ class AccountCreateFooterView: UIView {
     @IBOutlet weak var createNew: UIView!
     @IBOutlet weak var btnDisclose: UIButton!
     @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var topMask: UIView!
 
     var onTap: (() -> Void)?
 
-    func configure(onTap: (() -> Void)?
+    func configure(hasAccounts: Bool, onTap: (() -> Void)?
     ) {
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
         btnDisclose.cornerRadius = 4.0
@@ -19,6 +20,7 @@ class AccountCreateFooterView: UIView {
         createNew.borderColor = UIColor.gGreenMatrix()
         createNew.layer.cornerRadius = 5
         createNew.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        topMask.isHidden = hasAccounts
     }
 
     @IBAction func btnOnCreate(_ sender: Any) {

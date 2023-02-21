@@ -117,9 +117,11 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
                 assetInfo = cellModel.asset ?? AssetInfo.lbtc
             }
             if let createView = Bundle.main.loadNibNamed("AccountCreateFooterView", owner: self, options: nil)?.first as? AccountCreateFooterView {
-                createView.configure { [weak self] in
+                createView.configure(hasAccounts: viewModel.accountSelectSubCellModels.count > 0,
+                                     onTap: { [weak self] in
                     self?.onCreate(asset: assetInfo)
-                }
+                })
+                
                 return createView
             }
         }
