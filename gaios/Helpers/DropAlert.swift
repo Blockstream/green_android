@@ -44,7 +44,7 @@ class DropAlert: UIView {
     }
 
     func info(message: String, delay: Double = 2.0) {
-        alert(with: message, textColor: .white, backgroundColor: .infoBlue(), delay: delay)
+        alert(with: message, textColor: .white, backgroundColor: UIColor.gGrayCard(), delay: delay)
     }
 
     func warning(message: String, delay: Double = 2.0) {

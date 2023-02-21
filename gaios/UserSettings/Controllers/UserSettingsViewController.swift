@@ -178,18 +178,18 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
 extension UserSettingsViewController {
     func headerView(_ txt: String) -> UIView {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
-        section.backgroundColor = UIColor.customTitaniumDark()
+        section.backgroundColor = UIColor.gBlackBg()
         let title = UILabel(frame: .zero)
-        title.font = .systemFont(ofSize: 20.0, weight: .heavy)
+        title.font = .systemFont(ofSize: 15.0, weight: .heavy)
         title.text = txt
-        title.textColor = .white
+        title.textColor = .white.withAlphaComponent(0.4)
         title.numberOfLines = 0
 
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)
 
         NSLayoutConstraint.activate([
-            title.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: -10),
+            title.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: -5),
             title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 24),
             title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
         ])

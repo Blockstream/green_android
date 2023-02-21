@@ -32,18 +32,18 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mC4-DN-WsT">
                                                     <rect key="frame" x="16" y="8" width="382" height="100"/>
                                                     <subviews>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="hdc-vI-Hov">
-                                                            <rect key="frame" x="20" y="20" width="273" height="60"/>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="hdc-vI-Hov">
+                                                            <rect key="frame" x="20" y="32.5" width="273" height="35"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1l4-lG-s5s">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="273" height="21.5"/>
-                                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="273" height="18"/>
+                                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="hint" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2hz-Nh-bF9">
-                                                                    <rect key="frame" x="0.0" y="26.5" width="273" height="33.5"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                                    <rect key="frame" x="0.0" y="18" width="273" height="17"/>
+                                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
@@ -55,27 +55,38 @@
                                                                 <action selector="actionSwitchChanged:" destination="kwp-L5-r46" eventType="valueChanged" id="nRJ-4N-4of"/>
                                                             </connections>
                                                         </switch>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_right" translatesAutoresizingMaskIntoConstraints="NO" id="V3E-BS-FyU">
-                                                            <rect key="frame" x="342" y="40" width="20" height="20"/>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_settings_disclose" translatesAutoresizingMaskIntoConstraints="NO" id="V3E-BS-FyU">
+                                                            <rect key="frame" x="356" y="44" width="6" height="12"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="20" id="1Mh-O7-IKl"/>
-                                                                <constraint firstAttribute="width" constant="20" id="Xfb-1g-wsR"/>
+                                                                <constraint firstAttribute="height" constant="12" id="1Mh-O7-IKl"/>
+                                                                <constraint firstAttribute="width" constant="6" id="b8Y-Ws-Zd0"/>
+                                                            </constraints>
+                                                        </imageView>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_copy_new" translatesAutoresizingMaskIntoConstraints="NO" id="9eX-Z7-H3d">
+                                                            <rect key="frame" x="346" y="42" width="16" height="16"/>
+                                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="16" id="cX6-Id-m75"/>
+                                                                <constraint firstAttribute="width" constant="16" id="lxb-fY-csI"/>
                                                             </constraints>
                                                         </imageView>
                                                     </subviews>
-                                                    <color key="backgroundColor" name="customModalBlueDark"/>
+                                                    <color key="backgroundColor" name="gGrayCard"/>
                                                     <constraints>
+                                                        <constraint firstAttribute="trailing" secondItem="9eX-Z7-H3d" secondAttribute="trailing" constant="20" id="5Jz-6l-xoK"/>
+                                                        <constraint firstItem="hdc-vI-Hov" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="9TA-lF-n9v"/>
                                                         <constraint firstItem="V3E-BS-FyU" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="EHy-Lh-UOc"/>
                                                         <constraint firstItem="MUx-YI-eK2" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="NcF-NV-VOH"/>
-                                                        <constraint firstItem="hdc-vI-Hov" firstAttribute="top" secondItem="mC4-DN-WsT" secondAttribute="top" constant="20" id="Ovw-4j-bk5"/>
-                                                        <constraint firstAttribute="bottom" secondItem="hdc-vI-Hov" secondAttribute="bottom" constant="20" id="Ru3-pk-qIC"/>
                                                         <constraint firstItem="MUx-YI-eK2" firstAttribute="leading" secondItem="hdc-vI-Hov" secondAttribute="trailing" constant="20" id="Uc7-eJ-FA6"/>
                                                         <constraint firstAttribute="trailing" secondItem="MUx-YI-eK2" secondAttribute="trailing" constant="20" id="cmY-08-HiC"/>
                                                         <constraint firstItem="hdc-vI-Hov" firstAttribute="leading" secondItem="mC4-DN-WsT" secondAttribute="leading" constant="20" id="gss-Qu-gUe"/>
+                                                        <constraint firstAttribute="height" constant="64" id="jw4-2Y-XQa"/>
                                                         <constraint firstAttribute="trailing" secondItem="V3E-BS-FyU" secondAttribute="trailing" constant="20" id="kbZ-cF-dGm"/>
+                                                        <constraint firstItem="9eX-Z7-H3d" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="tjf-ci-i7e"/>
                                                     </constraints>
                                                 </view>
                                             </subviews>
+                                            <color key="backgroundColor" name="gBlackBg"/>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="mC4-DN-WsT" secondAttribute="trailing" constant="16" id="3w8-dy-88x"/>
                                                 <constraint firstItem="mC4-DN-WsT" firstAttribute="leading" secondItem="y2j-D9-fj2" secondAttribute="leading" constant="16" id="X0B-uL-ABz"/>
@@ -87,6 +98,7 @@
                                         <connections>
                                             <outlet property="actionSwitch" destination="MUx-YI-eK2" id="O2T-gT-B0d"/>
                                             <outlet property="bg" destination="mC4-DN-WsT" id="Tck-se-ZNx"/>
+                                            <outlet property="copyImg" destination="9eX-Z7-H3d" id="0Im-iQ-sus"/>
                                             <outlet property="disclosure" destination="V3E-BS-FyU" id="dO0-iA-Rco"/>
                                             <outlet property="lblHint" destination="2hz-Nh-bF9" id="LjF-Id-tcA"/>
                                             <outlet property="lblTitle" destination="1l4-lG-s5s" id="KTt-ca-g1R"/>
@@ -100,7 +112,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="2SM-Op-GsG" secondAttribute="trailing" id="QbD-mM-ywZ"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="2SM-Op-GsG" secondAttribute="bottom" id="S9l-lX-9z6"/>
@@ -1618,6 +1630,7 @@
         <image name="arrow_right" width="25" height="25"/>
         <image name="ic_copy_new" width="16.5" height="16.5"/>
         <image name="ic_passphrase" width="9.3333330154418945" height="9.3333330154418945"/>
+        <image name="ic_settings_disclose" width="8" height="14"/>
         <image name="onboarding_noonline" width="25" height="25"/>
         <image name="onboarding_noscrshot" width="25" height="25"/>
         <image name="onboarding_write" width="25" height="25"/>
@@ -1643,6 +1656,12 @@
         </namedColor>
         <namedColor name="customTitaniumLight">
             <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gBlackBg">
+            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGrayCard">
+            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGreenMatrix">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
