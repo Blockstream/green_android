@@ -739,11 +739,8 @@ extension WalletViewController: DialogListViewControllerDelegate {
             case .createAccount:
                 AnalyticsManager.shared.newAccount(account: AccountsManager.shared.current)
                 createAccount()
-    //        case .ArchivedAccounts:
-    //            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-    //            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController {
-    //                navigationController?.pushViewController(vc, animated: true)
-    //            }
+            case .logout:
+                userLogout()
             case .none:
                 break
             }
