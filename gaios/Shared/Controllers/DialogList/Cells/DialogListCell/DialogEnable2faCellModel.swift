@@ -9,8 +9,8 @@ class DialogEnable2faCellModel: DialogCellModel {
 
     init(type: DialogCellType) {
         self.type = type
-        self.title = "2FA isn’t set up yet."
-        self.hint = "You can choose your favourite 2FA method among an authenticator app, email, SMS or a call."
+        self.title = ""
+        self.hint = "2FA isn’t set up yet.\n\nYou can choose your favourite 2FA method among an authenticator app, email, SMS or a call."
         self.actionTitle = "Setup 2FA Now"
     }
 
