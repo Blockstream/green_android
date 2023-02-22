@@ -174,21 +174,36 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
         let section = sender.tag
         if viewModel.selectedSection == section {
             viewModel.selectedSection = -1
+            tableView.reloadSections(IndexSet([section]), with: .fade)
         } else {
-            viewModel.selectedSection = -1
-            tableView.reloadData()
-            viewModel.selectedSection = section
-            let cnt = viewModel.assetSelectCellModelsFilter.count
-            if cnt == section && viewModel.enableAnyAsset {
-                viewModel.loadAccountsForAsset(nil)
-            } else {
-                if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
-                    viewModel.loadAccountsForAsset(asset)
+            if viewModel.selectedSection != -1 {
+                let old = viewModel.selectedSection
+                viewModel.selectedSection = -1
+                tableView.reloadSections(IndexSet([old]), with: .fade)
+
+                viewModel.selectedSection = section
+                let cnt = viewModel.assetSelectCellModelsFilter.count
+                if cnt == section && viewModel.enableAnyAsset {
+                    viewModel.loadAccountsForAsset(nil)
+                } else {
+                    if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
+                        viewModel.loadAccountsForAsset(asset)
+                    }
                 }
+                tableView.reloadSections(IndexSet([section]), with: .fade)
+            } else {
+                viewModel.selectedSection = section
+                let cnt = viewModel.assetSelectCellModelsFilter.count
+                if cnt == section && viewModel.enableAnyAsset {
+                    viewModel.loadAccountsForAsset(nil)
+                } else {
+                    if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
+                        viewModel.loadAccountsForAsset(asset)
+                    }
+                }
+                tableView.reloadSections(IndexSet([section]), with: .fade)
             }
         }
-        tableView.reloadSections(IndexSet([section]), with: .fade)
-
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
             if self.viewModel.accountSelectSubCellModels.count > 0 && self.viewModel.selectedSection > 0 {
                 self.tableView?.scrollToRow(at: IndexPath(row: 0, section: section), at: .middle, animated: true)
