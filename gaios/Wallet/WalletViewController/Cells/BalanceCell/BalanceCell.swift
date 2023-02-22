@@ -16,7 +16,7 @@ class BalanceCell: UITableViewCell {
     private var onAssets: (() -> Void)?
     private var onConvert: (() -> Void)?
     private var onHide: ((Bool) -> Void)?
-    private let iconW: CGFloat = 18
+    private let iconW: CGFloat = 20.0
     private var hideBalance = false
 
     class var identifier: String { return String(describing: self) }
@@ -24,7 +24,7 @@ class BalanceCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         lblBalanceTitle.text = "Total Balance"
-        lblBalanceTitle.font = .systemFont(ofSize: 18.0, weight: .heavy)
+        lblBalanceTitle.font = .systemFont(ofSize: 18.0, weight: .bold)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -79,8 +79,8 @@ class BalanceCell: UITableViewCell {
         for img in images {
             let imageView = UIImageView()
             imageView.image = img
-            imageView.heightAnchor.constraint(equalToConstant: iconW).isActive = true
-            imageView.widthAnchor.constraint(equalToConstant: iconW).isActive = true
+//            imageView.heightAnchor.constraint(equalToConstant: iconW).isActive = true
+//            imageView.widthAnchor.constraint(equalToConstant: iconW).isActive = true
 
             iconsStack.addArrangedSubview(imageView)
         }

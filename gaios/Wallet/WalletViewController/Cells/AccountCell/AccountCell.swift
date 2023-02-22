@@ -164,7 +164,7 @@ class AccountCell: UITableViewCell {
         if self.isLast {
             self.effectView.alpha = 0.0
         } else {
-            self.effectView.alpha = value ? 0.0 : 1.0
+            self.effectView.alpha = 0.0 // value ? 0.0 : 1.0
         }
     }
 
