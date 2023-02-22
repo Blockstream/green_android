@@ -67,7 +67,7 @@ class AccountViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         [EventType.Transaction, .Block, .AssetsUpdated, .Network].forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
                                                                   object: nil,
@@ -115,6 +115,7 @@ class AccountViewController: UIViewController {
 
         // setup right menu bar: settings
         let settingsBtn = UIButton(type: .system)
+        settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         settingsBtn.setImage(UIImage(named: "ic_gear"), for: .normal)
         settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
         if !viewModel.watchOnly {

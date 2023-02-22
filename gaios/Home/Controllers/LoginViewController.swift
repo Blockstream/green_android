@@ -79,6 +79,7 @@ class LoginViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
         passphraseView.isHidden = true
 
+        menuButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
         setContent()
         setStyle()
 
