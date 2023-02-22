@@ -9,13 +9,17 @@ enum AmpEducationalMode {
 }
 
 class AccountViewModel {
-
+    
     var wm: WalletManager { WalletManager.current! }
     var account: WalletItem!
     var cachedBalance: [(String, Int64)]
     var cachedTransactions = [Transaction]()
     var page = 0
     var fetchingTxs = false
+
+    var showAssets: Bool {
+        account.gdkNetwork.liquid
+    }
 
     var watchOnly: Bool {
         AccountsManager.shared.current?.isWatchonly ?? false

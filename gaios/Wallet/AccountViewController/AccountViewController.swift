@@ -268,7 +268,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .disclose:
             return viewModel.discloseCellModels.count
         case .assets:
-            return viewModel.assetCellModels.count
+            return viewModel.showAssets ? viewModel.assetCellModels.count : 0
         case .transaction:
             return viewModel.txCellModels.count
         default:
