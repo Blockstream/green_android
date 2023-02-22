@@ -27,11 +27,14 @@ enum WalletPrefs: Int, CaseIterable {
         }
     }
 
-    static func getItems() -> [DialogListCellModel] {
+    static func getPrefs() -> [WalletPrefs] {
         let isWatchOnly = AccountsManager.shared.current?.isWatchonly ?? false
-        let prefs: [WalletPrefs] = isWatchOnly ? [ .settings, .logout ] : [ .settings, .createAccount, .logout ]
-        return prefs.map { DialogListCellModel(type: .list,
-                                               icon: $0.icon,
-                                               title: $0.name) }
+        let prefs: [WalletPrefs] = isWatchOnly ? [ .settings, .logout ] : [ .createAccount, .settings, .logout ]
+        return prefs
+    }
+    static func getItems() -> [DialogListCellModel] {
+        return WalletPrefs.getPrefs().map { DialogListCellModel(type: .list,
+                                                                icon: $0.icon,
+                                                                title: $0.name) }
     }
 }

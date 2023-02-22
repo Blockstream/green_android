@@ -725,24 +725,24 @@ extension WalletViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .walletPrefs:
-            switch WalletPrefs(rawValue: index) {
-            case .settings:
-                let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-                let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
-                if let nvc = nvc as? UINavigationController {
-                    if let vc = nvc.viewControllers.first as? UserSettingsViewController {
-                        vc.delegate = self
-                        nvc.modalPresentationStyle = .fullScreen
-                        present(nvc, animated: true, completion: nil)
+            if let item = WalletPrefs.getPrefs()[safe: index] {
+                switch item {
+                case .settings:
+                    let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+                    let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
+                    if let nvc = nvc as? UINavigationController {
+                        if let vc = nvc.viewControllers.first as? UserSettingsViewController {
+                            vc.delegate = self
+                            nvc.modalPresentationStyle = .fullScreen
+                            present(nvc, animated: true, completion: nil)
+                        }
                     }
+                case .createAccount:
+                    AnalyticsManager.shared.newAccount(account: AccountsManager.shared.current)
+                    createAccount()
+                case .logout:
+                    userLogout()
                 }
-            case .createAccount:
-                AnalyticsManager.shared.newAccount(account: AccountsManager.shared.current)
-                createAccount()
-            case .logout:
-                userLogout()
-            case .none:
-                break
             }
         case .enable2faPrefs:
             switch Enable2faPrefs(rawValue: index) {
