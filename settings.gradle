@@ -1,7 +1,0 @@
-include ':crypto'
-include ':hardware'
-include ':green'
-include ':no-gms'
-include ':gms'
-include ':base'
-include ':jade'

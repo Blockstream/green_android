@@ -104,6 +104,7 @@ rm ${TARBALL}
 
 # Move the libraries and Java wrapper where we need them
 mv ${NAME}/lib/ ${CRYPTO_MODULE_ROOT}/src/main/jniLibs/
+rm -rf ${CRYPTO_MODULE_ROOT}/src/main/jniLibs/*/gdk # remove unnecessary files
 mv ${NAME}/share/java/com/blockstream/libgreenaddress/GDK.java ${GDK_JAVA_DIR}/libgreenaddress/GDK.java
 mv ${NAME}/share/java/com/blockstream/libwally/Wally.java ${GDK_JAVA_DIR}/libwally/Wally.java
 

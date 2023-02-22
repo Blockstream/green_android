@@ -1,23 +1,30 @@
 package com.blockstream.green.adapters
 
+import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
+import app.rive.runtime.kotlin.RiveAnimationView
 import com.blockstream.gdk.data.Device
+import com.blockstream.green.R
 import com.blockstream.green.data.Banner
 import com.blockstream.green.extensions.errorFromResourcesAndGDK
 import com.blockstream.green.extensions.fromHtml
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.alphaPulse
+import com.blockstream.green.utils.toPixels
+import com.blockstream.green.utils.underlineText
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenContentCardView
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
@@ -39,7 +46,19 @@ fun bindIsVisible(view: View, isVisible: Boolean) {
         view.showAnimationBehavior = BaseProgressIndicator.SHOW_INWARD
         view.hideAnimationBehavior = BaseProgressIndicator.HIDE_OUTWARD
         view.translationZ = 1.0f
+    } else if (view is RiveAnimationView) {
+        if (isVisible) {
+            view.play()
+        } else {
+            view.stop()
+        }
     }
+}
+
+@BindingAdapter("bitmap")
+fun bindBitmap(view: ImageView, bitmap: Bitmap?) {
+    view.isVisible = bitmap != null
+    view.setImageBitmap(bitmap)
 }
 
 @BindingAdapter("isGone")
@@ -71,6 +90,11 @@ fun bindBanner(view: GreenAlertView, banner: Banner?) {
         view.setIconVisibility(banner.isWarning)
         view.setMaxLines(3)
     }
+}
+
+@BindingAdapter("textUnderline")
+fun bindTextUnderline(view: TextView, text: String?) {
+    view.text = text?.let { view.context.underlineText(it) }
 }
 
 @BindingAdapter("error")
@@ -198,12 +222,24 @@ fun helperTextWithError(textInputLayout: TextInputLayout, text: String?) {
     }
 }
 
+
+@BindingAdapter("error")
+fun setError(materialCardView: MaterialCardView, error: Boolean) {
+    materialCardView.strokeWidth = materialCardView.context.toPixels(if(error) 1 else 0)
+    materialCardView.setStrokeColor(ContextCompat.getColorStateList(materialCardView.context, R.color.red))
+}
+
 @BindingAdapter("gdkError")
 fun setGdkError(textView: TextView, error: String?) {
-    if(error.isNullOrBlank()){
+    val trimmed = error?.trimMargin()
+    if (trimmed.isNullOrBlank()) {
         textView.isVisible = false
-    }else{
-        textView.text = textView.context.errorFromResourcesAndGDK(error)
+    } else {
+        textView.text = textView.context.errorFromResourcesAndGDK(
+            error.substring(0, error.indexOf("|").takeIf { it != -1 } ?: error.length),
+            *(error.split("|").filterIndexed { index, _ -> index != 0 }.toTypedArray())
+        )
+
         textView.isVisible = true
     }
 }

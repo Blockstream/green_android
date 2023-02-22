@@ -3,7 +3,26 @@ package com.blockstream.libgreenaddress
 import com.blockstream.gdk.GAJson
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorMethodConfig
-import com.blockstream.gdk.params.*
+import com.blockstream.gdk.params.AssetsParams
+import com.blockstream.gdk.params.BalanceParams
+import com.blockstream.gdk.params.ConnectionParams
+import com.blockstream.gdk.params.Convert
+import com.blockstream.gdk.params.CredentialsParams
+import com.blockstream.gdk.params.DecryptWithPinParams
+import com.blockstream.gdk.params.DeviceParams
+import com.blockstream.gdk.params.EncryptWithPinParams
+import com.blockstream.gdk.params.GetAssetsParams
+import com.blockstream.gdk.params.InitConfig
+import com.blockstream.gdk.params.Limits
+import com.blockstream.gdk.params.LoginCredentialsParams
+import com.blockstream.gdk.params.PreviousAddressParams
+import com.blockstream.gdk.params.ReceiveAddressParams
+import com.blockstream.gdk.params.ReconnectHintParams
+import com.blockstream.gdk.params.SubAccountParams
+import com.blockstream.gdk.params.SubAccountsParams
+import com.blockstream.gdk.params.TransactionParams
+import com.blockstream.gdk.params.UpdateSubAccountParams
+import com.blockstream.gdk.params.ValidateAddresseesParams
 import kotlinx.serialization.json.JsonElement
 
 typealias GASession = Any
@@ -44,6 +63,8 @@ class KotlinGDK {
     fun getWalletIdentifier(connectionParams: ConnectionParams, params: LoginCredentialsParams) = GDK.get_wallet_identifier(connectionParams, params)
 
     fun validate(session: GASession, params: JsonElement): GAAuthHandler = GDK.validate(session, params)
+
+    fun validate(session: GASession, params: ValidateAddresseesParams): GAAuthHandler = GDK.validate(session, params)
 
     fun encryptWithPin(session: GASession, params: EncryptWithPinParams): GAAuthHandler = GDK.encrypt_with_pin(session, params)
 

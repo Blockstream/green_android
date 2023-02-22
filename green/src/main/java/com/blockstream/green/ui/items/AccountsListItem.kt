@@ -7,8 +7,9 @@ import com.blockstream.gdk.data.Account
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AccountCardLayoutBinding
 import com.blockstream.green.databinding.ListItemAccountsBinding
-import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.extensions.bind
+import com.blockstream.green.extensions.dialog
+import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.views.AccordionListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -81,6 +82,14 @@ data class AccountsListItem constructor(
 
                 binding.warningIcon.setOnClickListener {
                     listener?.warningClickListener(it, index)
+                }
+
+                binding.experimental.setOnClickListener {
+                    context.dialog(
+                        title = R.string.id_experimental_feature,
+                        message = R.string.id_experimental_features_might_change_break,
+                        icon = R.drawable.ic_fill_flash_24
+                    )
                 }
             }
         }

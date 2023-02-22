@@ -27,6 +27,8 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
 
     suspend fun deleteLoginCredentials(loginCredentials: LoginCredentials) = walletDao.deleteLoginCredentials(loginCredentials)
 
+    suspend fun getWalletLoginCredentials(id: WalletId) = walletDao.getWalletLoginCredentials(id)
+
     fun getWalletLoginCredentialsFlow(id: WalletId) = walletDao.getWalletLoginCredentialsFlow(id)
     suspend fun getLoginCredentialsSuspend(id: WalletId) = walletDao.getLoginCredentialsSuspend(id)
     fun deleteLoginCredentials() = walletDao.deleteLoginCredentials()

@@ -1,5 +1,6 @@
 package com.blockstream.green.ui.send;
 
+import android.graphics.Bitmap
 import androidx.lifecycle.*
 import com.blockstream.gdk.GdkBridge
 import com.blockstream.gdk.GdkBridge.Companion.FeeBlockTarget
@@ -11,15 +12,18 @@ import com.blockstream.gdk.params.CreateTransactionParams
 import com.blockstream.green.data.*
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.gdk.*
 import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.ui.bottomsheets.DenominationListener
 import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.blockstream.green.utils.*
+import com.blockstream.lightning.lnUrlPayDescription
+import com.blockstream.lightning.lnUrlPayImage
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonElement
@@ -27,7 +31,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import mu.KLogging
-
 
 class SendViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
@@ -38,7 +41,7 @@ class SendViewModel @AssistedInject constructor(
     @Assisted val isSweep: Boolean,
     @Assisted("address") address: String?,
     @Assisted val bumpTransaction: JsonElement?,
-) : AbstractAssetWalletViewModel(sessionManager, walletRepository, countly, wallet, accountAsset) {
+) : AbstractAssetWalletViewModel(sessionManager, walletRepository, countly, wallet, accountAsset), DenominationListener {
     override val filterSubAccountsWithBalance = true
 
     val isBump = bumpTransaction != null
@@ -48,6 +51,7 @@ class SendViewModel @AssistedInject constructor(
 
     private val recipients = MutableLiveData(mutableListOf(
         AddressParamsLiveData.create(
+            session = session,
             index = 0,
             address = address,
             accountAsset = _accountAssetLiveData
@@ -71,12 +75,15 @@ class SendViewModel @AssistedInject constructor(
     private var checkedTransaction: CreateTransaction? = null
     val transactionError: MutableLiveData<String?> = MutableLiveData("") // empty string as an initial error to disable next button
 
-    val handledGdkErrors = listOfNotNull(
+    val handledGdkErrors: List<String> = listOfNotNull(
         "id_invalid_private_key",
         "id_invalid_address",
         "id_invalid_amount",
         "id_invalid_asset_id",
-    ) + if(!isBump) "id_insufficient_funds" else null // On Bump, show fee error on errorTextView
+        "id_invoice_expired",
+        "id_amount_must_be_at_least_s",
+        "id_amount_must_be_at_most_s"
+    ) + listOfNotNull(if(!isBump) "id_insufficient_funds" else null) // On Bump, show fee error on errorTextView
 
     private val checkTransactionMutex = Mutex()
 
@@ -224,13 +231,14 @@ class SendViewModel @AssistedInject constructor(
             .asFlow()
             .drop(1)// drop initial value
             .distinctUntilChanged()
-            .debounce(200) // debounce as user types
+            .debounce(100) // debounce as user types
             .onEach {
-                // Skip if is a bip21 field or is Send all or sweep or bump
+                // Skip if is a bip21 field or is Send all or sweep or bump or Bolt11
                 if (
                     addressParamsLiveData.isSendAll.value == false
                     && addressParamsLiveData.amountBip21.value == false
                     && !isBumpOrSweep
+                    && !addressParamsLiveData.hasLockedAmount.boolean()
                 ) {
                     checkTransaction()
                 }
@@ -260,18 +268,17 @@ class SendViewModel @AssistedInject constructor(
             doUserAction({
                 addressParamsLiveData.accountAsset.value?.assetId?.let { assetId ->
                     if (assetId.isPolicyAsset(network)) {
-                        val isFiat = addressParamsLiveData.isFiat.value ?: false
 
                         // TODO calculate exchange from string input or from satoshi ?
                         UserInput.parseUserInputSafe(
-                            session,
-                            amount,
-                            isFiat = isFiat
-                        ).getBalance(session)?.let {
+                            session = session,
+                            input = amount,
+                            denomination = addressParamsLiveData.denomination.value
+                        ).getBalance()?.let {
                             "≈ " + it.toAmountLook(
                                 session = session,
                                 assetId = assetId,
-                                isFiat = !isFiat,
+                                denomination = Denomination.exchange(session, addressParamsLiveData.denomination.value),
                                 withUnit = true,
                                 withGrouping = true,
                                 withMinimumDigits = false
@@ -290,7 +297,7 @@ class SendViewModel @AssistedInject constructor(
     }
 
     fun addRecipient() {
-        recipients.value = recipients.value?.apply { add(AddressParamsLiveData.create(size, accountAsset = _accountAssetLiveData)) }
+        recipients.value = recipients.value?.apply { add(AddressParamsLiveData.create(session, size, accountAsset = _accountAssetLiveData)) }
         recipients.value?.lastOrNull()?.let { setupChangeObserve(it) }
     }
 
@@ -311,6 +318,14 @@ class SendViewModel @AssistedInject constructor(
         }
 
     private suspend fun createTransactionParams(): CreateTransactionParams {
+        if(account.isLightning){
+            return CreateTransactionParams(
+                addressees = recipients.value!!.map {
+                    it.toAddressParams(session = session, isSendAll = false)
+                }
+            )
+        }
+
         val unspentOutputs = session.getUnspentOutputs(account, isBump)
 
         return when{
@@ -355,15 +370,13 @@ class SendViewModel @AssistedInject constructor(
     private fun checkTransaction(userInitiated: Boolean = false, finalCheckBeforeContinue: Boolean = false) {
         logger.info { "checkTransaction" }
 
-        var params: CreateTransactionParams? = null
-
         doUserAction({
             // Prevent race condition
             checkTransactionMutex.withLock {
 
-                params = createTransactionParams()
+                val params = createTransactionParams()
 
-                val tx = session.createTransaction(network, params!!)
+                val tx = session.createTransaction(network, params)
                 var balance: Assets? = null
 
                 if(finalCheckBeforeContinue){
@@ -373,10 +386,31 @@ class SendViewModel @AssistedInject constructor(
                 // Change UI based on the transaction
                 recipients.value?.let { recipients ->
                     for(recipient in recipients){
+                        val hasLockedAmount = tx.addressees.getOrNull(recipient.index)?.hasLockedAmount == true
 
                         // If we have BIP21/sweep/bump, update the amounts from GDK side, and disable text input editing
                         recipient.assetBip21.postValue(tx.addressees.getOrNull(recipient.index)?.bip21Params?.hasAssetId == true)
                         recipient.amountBip21.postValue(tx.addressees.getOrNull(recipient.index)?.bip21Params?.hasAmount == true)
+                        recipient.domain.postValue(tx.addressees.getOrNull(recipient.index)?.domain ?: "")
+
+                        tx.addressees.getOrNull(recipient.index)?.metadata.also {
+                            recipient.description.postValue(it.lnUrlPayDescription() ?: "")
+                            recipient.image.postValue(it.lnUrlPayImage())
+                        }
+                        recipient.hasLockedAmount.postValue(hasLockedAmount)
+
+                        recipient.minAmount.postValue(
+                            tx.addressees.getOrNull(recipient.index)?.minAmount?.toAmountLook(
+                                session = session,
+                                withUnit = false
+                            )
+                        )
+                        recipient.maxAmount.postValue(
+                            tx.addressees.getOrNull(recipient.index)?.maxAmount?.toAmountLook(
+                                session = session,
+                                withUnit = true
+                            )
+                        )
 
                         tx.addressees.getOrNull(recipient.index)?.let { addressee ->
 
@@ -390,14 +424,14 @@ class SendViewModel @AssistedInject constructor(
                                 recipient.address.postValue(addressee.address)
                             }
 
-                            // Get amount from GDK if is a BIP21 or isSendAll or Sweep or Bump
-                            if(addressee.bip21Params?.hasAmount == true || recipient.isSendAll.value == true || isBumpOrSweep){
+                            // Get amount from GDK if is a BIP21 or isSendAll or Sweep or Bump or Lightning
+                            if(addressee.bip21Params?.hasAmount == true || recipient.isSendAll.value == true || isBumpOrSweep || hasLockedAmount){
                                 val assetId = addressee.assetId ?: network.policyAsset
-                                if(!assetId.isPolicyAsset(network)){
-                                    recipient.isFiat.postValue(false)
+                                if(!assetId.isPolicyAsset(network) && recipient.denomination.value?.isFiat == true){
+                                    recipient.denomination.postValue(Denomination.default(session))
                                 }
 
-                                recipient.amount.postValue(getSendAmountCompat(recipient.index, assetId, tx)?.let {sendAmount ->
+                                recipient.amount.postValue(getSendAmountCompat(recipient.index, assetId, tx)?.let { sendAmount ->
                                     // Avoid UI glitches if isSweep and amount is zero (probably error)
                                     if(isSweep && sendAmount == 0L){
                                         ""
@@ -405,9 +439,9 @@ class SendViewModel @AssistedInject constructor(
                                         sendAmount.toAmountLook(
                                             session = session,
                                             assetId = assetId,
-                                            isFiat = recipient.isFiat.value,
+                                            denomination = recipient.denomination.value,
                                             withUnit = false,
-                                            withGrouping = false,
+                                            withGrouping = false
                                         )
                                     }
                                 })
@@ -429,24 +463,29 @@ class SendViewModel @AssistedInject constructor(
 
                 checkedTransaction = tx
 
-                feeAmount.postValue(tx.fee?.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
+                feeAmount.postValue(tx.fee?.toAmountLook(session = session, denomination = getRecipientLiveData(0)?.denomination?.value, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
                 feeAmountRate.postValue(tx.feeRateWithUnit() ?: "")
-                feeAmountFiat.postValue(tx.fee?.toAmountLook(session = session, isFiat = true, withUnit = true, withGrouping = true) ?: "")
+                feeAmountFiat.postValue(tx.fee?.toAmountLook(session = session, denomination = Denomination.fiat(session), withUnit = true, withGrouping = true) ?: "")
 
                 if(tx.error.isNotBlank()){
                     throw Exception(tx.error)
                 }
 
-                tx
+                params to tx
             }
-        }, onSuccess = { tx ->
+        }, postAction = {
+            // Avoid UI glitches
+            onProgress.value = finalCheckBeforeContinue
+        }, onSuccess = { pair ->
             transactionError.value = null
 
             if(finalCheckBeforeContinue){
-                session.pendingTransaction = params!! to tx
+                session.pendingTransaction = pair
                 onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
             }
         }, onError = {
+            it.printStackTrace()
+
             transactionError.value = (it.cause?.message ?: it.message).let { error ->
                 if(recipients.value?.get(0)?.address?.value.isNullOrBlank() && (error == "id_invalid_address" || error == "id_invalid_private_key")){
                     "" // empty error to avoid ui glitches
@@ -475,14 +514,18 @@ class SendViewModel @AssistedInject constructor(
         checkTransaction(finalCheckBeforeContinue = true)
     }
 
-    fun setBip21Uri(bip21Uri: String) {
-        recipients.value?.getOrNull(activeRecipient)?.address?.value = bip21Uri
+    fun setUri(uri: String) {
+        recipients.value?.getOrNull(activeRecipient)?.address?.value = uri
     }
 
-    fun setScannedAddress(index: Int, address: String) {
+    fun setAddress(index: Int, address: String, inputType: AddressInputType) {
         recipients.value?.getOrNull(index)?.let {
             it.address.value = address
-            it.addressInputType = AddressInputType.SCAN
+            it.addressInputType = inputType
+
+            if(account.isLightning && address.isBlank()){
+                it.amount.value = ""
+            }
         }
     }
 
@@ -493,7 +536,10 @@ class SendViewModel @AssistedInject constructor(
                 it.amount.value = ""
             }
             it.isSendAll.value = false
-            it.isFiat.value = false // reset isFiat as we don't want to have inconsistencies between btc / assets
+            // reset isFiat as we don't want to have inconsistencies between btc / assets
+            if(it.denomination.value?.isFiat == true){
+                it.denomination.value = Denomination.default(session)
+            }
             it.accountAsset.value = accountAsset
         }
     }
@@ -521,57 +567,61 @@ class SendViewModel @AssistedInject constructor(
         }
     }
 
-    fun toggleCurrency(index: Int) {
-        getRecipientLiveData(index)?.let { addressParams ->
-
-            viewModelScope.launch {
-                val isFiat = addressParams.isFiat.value ?: false
-
-                // Toggle it first as the amount trigger will be called with wrong isFiat value
-                addressParams.isFiat.value = !isFiat
-
-                // Get value from the transaction object to get the actual send all amount
-                val amountToConvert = if (checkedTransaction?.isSendAll == true) {
-                    addressParams.accountAsset.value?.assetId?.let { assetId ->
-                        checkedTransaction?.let {
-                            getSendAmountCompat(addressParams.index, assetId, it)
-                        }
-                            ?.toAmountLook(
-                                session = session,
-                                assetId = assetId,
-                                withUnit = false,
-                                withMinimumDigits = false,
-                                withGrouping = false
-                            )
-                    }
-                } else {
-                    addressParams.amount.value ?: ""
-                }
-
-                // If isSend All, skip conversion and get the actual value
-                if (checkedTransaction?.isSendAll == true && isFiat) {
-                    addressParams.amount.value = amountToConvert
-                } else {
-                    // Convert between BTC / Fiat
-                    addressParams.amount.value = try {
-                        UserInput
-                            .parseUserInput(session, amountToConvert, isFiat = isFiat)
-                            .getBalance(session)
-                            ?.toAmountLook(
-                                session = session,
-                                isFiat = !isFiat,
-                                withUnit = false,
-                                withGrouping = false,
-                                withMinimumDigits = false
-                            )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        ""
-                    }
-                }
-            }
-        }
-    }
+//    fun toggleCurrency(index: Int) {
+//        getRecipientLiveData(index)?.let { addressParams ->
+//
+//            viewModelScope.launch {
+//                val isFiat = addressParams.isFiat.value ?: false
+//
+//                // Toggle it first as the amount trigger will be called with wrong isFiat value
+//                addressParams.isFiat.value = !isFiat
+//
+//                // Get value from the transaction object to get the actual send all amount
+//                val amountToConvert = if (checkedTransaction?.isSendAll == true) {
+//                    addressParams.accountAsset.value?.assetId?.let { assetId ->
+//                        checkedTransaction?.let {
+//                            getSendAmountCompat(addressParams.index, assetId, it)
+//                        }
+//                            ?.toAmountLook(
+//                                session = session,
+//                                assetId = assetId,
+//                                withUnit = false,
+//                                withMinimumDigits = false,
+//                                withGrouping = false
+//                            )
+//                    }
+//                } else {
+//                    addressParams.amount.value ?: ""
+//                }
+//
+//                // If isSend All, skip conversion and get the actual value
+//                if (checkedTransaction?.isSendAll == true && isFiat) {
+//                    addressParams.amount.value = amountToConvert
+//                } else {
+//                    // Convert between BTC / Fiat
+//                    addressParams.amount.value = try {
+//                        UserInput
+//                            .parseUserInput(
+//                                session = session,
+//                                input = amountToConvert,
+//                                denomination = Denomination.defaultOrFiat(session, isFiat)
+//                            )
+//                            .getBalance()
+//                            ?.toAmountLook(
+//                                session = session,
+//                                isFiat = !isFiat,
+//                                withUnit = false,
+//                                withGrouping = false,
+//                                withMinimumDigits = false
+//                            )
+//                    } catch (e: Exception) {
+//                        e.printStackTrace()
+//                        ""
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
@@ -603,6 +653,81 @@ class SendViewModel @AssistedInject constructor(
             }
         }
     }
+
+    suspend fun getAmountToConvert(): String{
+        return getRecipientLiveData(0)?.let { addressParams ->
+            // Get value from the transaction object to get the actual send all amount
+            if (checkedTransaction?.isSendAll == true) {
+                addressParams.accountAsset.value?.assetId?.let { assetId ->
+                    checkedTransaction?.let {
+                        getSendAmountCompat(addressParams.index, assetId, it)
+                    }?.toAmountLook(
+                        session = session,
+                        assetId = assetId,
+                        denomination = addressParams.denomination.value,
+                        withUnit = false,
+                        withMinimumDigits = false,
+                        withGrouping = false
+                    ) ?: ""
+                } ?: ""
+            } else {
+                addressParams.amount.value ?: ""
+            }
+        } ?: ""
+    }
+
+    override fun setDenomination(denominatedValue: DenominatedValue) {
+        getRecipientLiveData(0)?.also {
+
+            it.amount.value = denominatedValue.asInput(session) ?: ""
+            it.denomination.value = denominatedValue.denomination
+
+
+//            // Get value from the transaction object to get the actual send all amount
+//            val amountToConvert = if (checkedTransaction?.isSendAll == true) {
+//                addressParams.accountAsset.value?.assetId?.let { assetId ->
+//                    checkedTransaction?.let {
+//                        getSendAmountCompat(addressParams.index, assetId, it)
+//                    }
+//                        ?.toAmountLook(
+//                            session = session,
+//                            assetId = assetId,
+//                            withUnit = false,
+//                            withMinimumDigits = false,
+//                            withGrouping = false
+//                        )
+//                }
+//            } else {
+//                addressParams.amount.value ?: ""
+//            }
+//
+//            // If isSend All, skip conversion and get the actual value
+//            if (checkedTransaction?.isSendAll == true && isFiat) {
+//                addressParams.amount.value = amountToConvert
+//            } else {
+//                // Convert between BTC / Fiat
+//                addressParams.amount.value = try {
+//                    UserInput
+//                        .parseUserInput(
+//                            session = session,
+//                            input = amountToConvert,
+//                            denomination = Denomination.defaultOrFiat(session, isFiat)
+//                        )
+//                        .getBalance()
+//                        ?.toAmountLook(
+//                            session = session,
+//                            isFiat = !isFiat,
+//                            withUnit = false,
+//                            withGrouping = false,
+//                            withMinimumDigits = false
+//                        )
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                    ""
+//                }
+//            }
+        }
+    }
 }
 
 data class AddressParamsLiveData constructor(
@@ -611,9 +736,15 @@ data class AddressParamsLiveData constructor(
     var addressInputType: AddressInputType?,
     val accountAsset: MutableLiveData<AccountAsset>,
     val amount: MutableLiveData<String>,
+    val denomination: MutableLiveData<Denomination>,
     val isSendAll: MutableLiveData<Boolean> = MutableLiveData(false),
+    val hasLockedAmount: MutableLiveData<Boolean> = MutableLiveData(false),
+    var minAmount: MutableLiveData<String?> = MutableLiveData(null),
+    var maxAmount: MutableLiveData<String?> = MutableLiveData(null),
+    val domain: MutableLiveData<String> = MutableLiveData(""),
+    val description: MutableLiveData<String> = MutableLiveData(""),
+    val image: MutableLiveData<Bitmap?> = MutableLiveData(null),
     val exchange: MutableLiveData<String> = MutableLiveData(""),
-    val isFiat: MutableLiveData<Boolean> = MutableLiveData(false),
     val assetBip21: MutableLiveData<Boolean> = MutableLiveData(false),
     val amountBip21: MutableLiveData<Boolean> = MutableLiveData(false)
 ) {
@@ -626,12 +757,12 @@ data class AddressParamsLiveData constructor(
         val satoshi = when {
             isSendAll -> 0
             accountAsset.value?.assetId.isPolicyAsset(session) -> {
-                UserInput.parseUserInputSafe(session, amount.value, isFiat = isFiat.value ?: false)
-                    .getBalance(session)?.satoshi ?: 0
+                UserInput.parseUserInputSafe(session = session, input = amount.value, denomination = denomination.value)
+                    .getBalance()?.satoshi
             }
             else -> {
-                UserInput.parseUserInputSafe(session, amount.value, assetId = accountAsset.value!!.assetId)
-                    .getBalance(session)?.satoshi ?: 0
+                UserInput.parseUserInputSafe(session = session, input = amount.value, assetId = accountAsset.value!!.assetId)
+                    .getBalance()?.satoshi
             }
         }
 
@@ -643,12 +774,14 @@ data class AddressParamsLiveData constructor(
     }
 
     companion object : KLogging() {
-        fun create(index: Int, address: String? = null, accountAsset: MutableLiveData<AccountAsset>) = AddressParamsLiveData(
+        fun create(session: GdkSession, index: Int, address: String? = null, accountAsset: MutableLiveData<AccountAsset>) = AddressParamsLiveData(
             index = index,
             address = MutableLiveData(address ?: ""),
             addressInputType = if(address.isNullOrBlank()) null else AddressInputType.BIP21,
             accountAsset = accountAsset,
-            amount = MutableLiveData("")
+            amount = MutableLiveData(""),
+            denomination = MutableLiveData(Denomination.default(session))
         )
     }
 }
+

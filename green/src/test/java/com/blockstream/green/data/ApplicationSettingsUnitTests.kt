@@ -2,6 +2,11 @@ package com.blockstream.green.data
 
 import android.content.SharedPreferences
 import com.blockstream.green.settings.ApplicationSettings
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.until
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,6 +15,7 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.whenever
+import kotlin.time.Duration
 
 @RunWith(MockitoJUnitRunner::class)
 class ApplicationSettingsUnitTests {

@@ -24,8 +24,8 @@ data class Account constructor(
     @SerialName("bip44_discovered") val bip44Discovered: Boolean? = null,
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkey") val extendedPubkey: String? = null,
-    @SerialName("user_path") val derivationPath: List<Long>? = null,
-) : Parcelable {
+    @SerialName("user_path") val derivationPath: List<Long>? = null
+) : Parcelable, Comparable<Account> {
 
     @IgnoredOnParcel
     val network
@@ -43,6 +43,9 @@ data class Account constructor(
     @IgnoredOnParcel
     val isMultisig
         get() = network.isMultisig
+
+    val isLightning
+        get() = type == AccountType.LIGHTNING
 
     val networkId
         get() = network.id
@@ -71,6 +74,18 @@ data class Account constructor(
     val outputDescriptors: String?
         get() = coreDescriptors?.joinToString("\n")
 
+    @IgnoredOnParcel
+    private val weight by lazy {
+        when{
+            isBitcoin && isSinglesig -> 0
+            isBitcoin && isMultisig -> 1
+            isLightning -> 2
+            isLiquid && isSinglesig -> 3
+            isLiquid && isMultisig && !isAmp -> 4
+            isLiquid && isMultisig && isAmp -> 5
+            else -> 6
+        }
+    }
 
     @IgnoredOnParcel
     val name: String by lazy {
@@ -151,5 +166,13 @@ data class Account constructor(
 
     fun getRecoveryPubKeyAsBytes(): ByteArray? {
         return Wally.hex_to_bytes(recoveryPubKey)
+    }
+
+    override fun compareTo(other: Account): Int {
+        return if (weight == other.weight) {
+            pointer.compareTo(other.pointer)
+        } else {
+            weight.compareTo(other.weight)
+        }
     }
 }

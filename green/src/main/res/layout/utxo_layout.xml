@@ -96,7 +96,8 @@
             app:layout_constraintEnd_toStartOf="@+id/amountTextView"
             app:layout_constraintStart_toEndOf="@+id/icon"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="bc1asfdasdfasfdasdfasfd" />
+            tools:text="bc1asfdasdfasfdasdfasfd"
+            tools:ignore="UnusedAttribute" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

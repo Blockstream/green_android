@@ -34,8 +34,8 @@ class NetworkAssetManager constructor(
     val coroutineScope: CoroutineScope,
     val qaTester: AssetQATester,
 ) {
-    private var metadata = mutableMapOf<String, Asset?>()
-    private var icons = mutableMapOf<String, Bitmap?>()
+    private val metadata = mutableMapOf<String, Asset?>()
+    private val icons = mutableMapOf<String, Bitmap?>()
 
     private val _statusStateFlow = MutableStateFlow(AssetStatus())
     private val _status get() = _statusStateFlow.value
@@ -103,8 +103,8 @@ class NetworkAssetManager constructor(
             ?: context.getDrawable(R.drawable.ic_unknown)!!
     }
 
-    fun updateAssetsIfNeeded(provider: AssetsProvider, forceUpdate: Boolean = false) {
-        if (_status.cacheStatus != CacheStatus.Latest || forceUpdate) {
+    fun updateAssetsIfNeeded(provider: AssetsProvider) {
+        if (_status.cacheStatus != CacheStatus.Latest) {
 
             coroutineScope.launch(context = Dispatchers.IO) {
 
@@ -112,7 +112,7 @@ class NetworkAssetManager constructor(
                     _statusStateFlow.value = _status.apply { onProgress = true }
 
                     // Allow forceUpdate to override QATester settings
-                    if (!qaTester.isAssetFetchDisabled() || forceUpdate) {
+                    if (!qaTester.isAssetFetchDisabled()) {
                         // Try to update the registry
                         provider.refreshAssets(
                             AssetsParams(
@@ -121,9 +121,6 @@ class NetworkAssetManager constructor(
                                 refresh = true
                             )
                         )
-
-                        // Clear our local cache
-                        metadata.clear()
 
                         _status.cacheStatus = CacheStatus.Latest
                     }
@@ -138,9 +135,5 @@ class NetworkAssetManager constructor(
         }
     }
 
-
-    companion object : KLogging(){
-        const val REMOTE_CONFIG_ASSETS_MAINNET = "liquid_assets"
-        const val REMOTE_CONFIG_ASSETS_TESTNET = "liquid_assets_testnet"
-    }
+    companion object: KLogging()
 }

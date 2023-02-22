@@ -53,6 +53,8 @@ data class TransactionListItem constructor(
         binding.date = look.date
         binding.memo = look.memo
         binding.account = tx.account.takeIf { showAccount }
+        binding.tx = tx
+
 
 
         look.setTransactionAssetToBinding(scope, session,0, binding.firstValue)

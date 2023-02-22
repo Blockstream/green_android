@@ -1,6 +1,7 @@
 package com.blockstream.gdk.data
 
 import android.os.Parcelable
+import com.blockstream.gdk.BTC_POLICY_ASSET
 import com.blockstream.gdk.GAJson
 import com.blockstream.libwally.Wally
 import kotlinx.parcelize.IgnoredOnParcel
@@ -22,9 +23,10 @@ data class Network(
     @SerialName("default_peers") val defaultPeers: List<String> = listOf(),
     @SerialName("bip21_prefix") val bip21Prefix: String = "network",
     @SerialName("tx_explorer_url") val explorerUrl: String? = null,
-    @SerialName("policy_asset") val policyAsset: String = "btc",
+    @SerialName("policy_asset") val policyAsset: String = BTC_POLICY_ASSET,
     @SerialName("server_type") val serverType: String? = null,
     @SerialName("csv_buckets") val csvBuckets: List<Int> = listOf(),
+    @SerialName("lightning") val isLightning: Boolean = false, // synthetic
 ) : GAJson<Network>(), Parcelable {
 
     val isElectrum
@@ -34,13 +36,13 @@ data class Network(
         get() = isElectrum
 
     val isMultisig
-        get() = !isElectrum
+        get() = !isElectrum && !isLightning
 
     val isTestnet
         get() = !isMainnet
 
     val isBitcoin
-        get() = !isLiquid
+        get() = !isLiquid && !isLightning
 
     val isBitcoinMainnet
         get() = isBitcoinMainnet(id)
@@ -72,6 +74,9 @@ data class Network(
         } else {
             "Multisig $canonicalName"
         }
+
+    val policyAssetOrNull
+        get() = if(isLiquid) policyAsset else null
 
     @IgnoredOnParcel
     val defaultFee by lazy {
@@ -105,10 +110,15 @@ data class Network(
         const val ElectrumTestnet = "electrum-testnet"
         const val ElectrumTestnetLiquid = "electrum-testnet-liquid"
 
+        const val Lightning = "lightning"
+        const val LightningTestnet = "lightning-testnet"
+
         fun canonicalNetworkId(id: String) = id.removePrefix("electrum-")
 
+        fun isLightning(id: String) = id.contains("lightning")
+
         fun isSinglesig(id: String) = id.contains("electrum")
-        fun isMultisig(id: String) = !isSinglesig(id)
+        fun isMultisig(id: String) = !isSinglesig(id) && !isLightning(id)
 
         fun isBitcoinMainnet(id: String) = (id == GreenMainnet || id == ElectrumMainnet)
         fun isLiquidMainnet(id: String) = (id == GreenLiquid || id == ElectrumLiquid)
@@ -116,8 +126,11 @@ data class Network(
         fun isBitcoinTestnet(id: String) = (id == GreenTestnet || id == ElectrumTestnet)
         fun isLiquidTestnet(id: String) = (id == GreenTestnetLiquid || id == ElectrumTestnetLiquid)
 
+        fun isLightningMainnet(id: String) = id == Lightning
+        fun isLightningTestnet(id: String) = id == LightningTestnet
+
         fun isLiquid(id: String) = isLiquidMainnet(id) || isLiquidTestnet(id)
-        fun isBitcoin(id: String) = isBitcoinMainnet(id) || isBitcoinTestnet(id)
-        fun isTestnet(id: String) = isBitcoinTestnet(id) || isLiquidTestnet(id)
+        fun isBitcoin(id: String) = isBitcoinMainnet(id) || isBitcoinTestnet(id) || isLightningTestnet(id)
+        fun isTestnet(id: String) = isBitcoinTestnet(id) || isLiquidTestnet(id) || isLightningTestnet(id)
     }
 }

@@ -83,7 +83,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="0" />
+                    android:text="0"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button1"
@@ -91,7 +92,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1" />
+                    android:text="1"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button2"
@@ -99,7 +101,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="2" />
+                    android:text="2"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button3"
@@ -107,8 +110,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-
-                    android:text="3" />
+                    android:text="3"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button4"
@@ -116,7 +119,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="4" />
+                    android:text="4"
+                    tools:ignore="HardcodedText" />
 
                 <Button
                     android:id="@+id/button5"
@@ -124,7 +128,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="5" />
+                    android:text="5"
+                    tools:ignore="HardcodedText" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

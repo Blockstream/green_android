@@ -48,4 +48,5 @@ enum class CredentialType(val value: Int) {
     PASSWORD_PINDATA(3), // It's a variable length PIN (string), based on greenbits v2
     KEYSTORE_WATCHONLY_CREDENTIALS(4),
     BIOMETRICS_WATCHONLY_CREDENTIALS(5),
+    KEYSTORE_GREENLIGHT_CREDENTIALS(6),
 }

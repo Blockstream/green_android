@@ -2,7 +2,14 @@ package com.blockstream.gdk.data
 
 
 import android.os.Parcelable
+import breez_sdk.Payment
+import breez_sdk.PaymentDetails
+import breez_sdk.PaymentType
+import breez_sdk.SuccessActionProcessed
+import breez_sdk.SwapInfo
+import com.blockstream.gdk.BTC_POLICY_ASSET
 import com.blockstream.gdk.GAJson
+import com.blockstream.lightning.amountSatoshi
 import kotlinx.datetime.Instant
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -18,25 +25,24 @@ data class Transaction(
     @SerialName("block_height") val blockHeight: Long,
     @SerialName("can_cpfp") val canCPFP: Boolean,
     @SerialName("can_rbf") val canRBF: Boolean,
-
     @SerialName("created_at_ts") val createdAtTs: Long,
-
     @SerialName("inputs") val inputs: List<InputOutput>,
     @SerialName("outputs") val outputs: List<InputOutput>,
-
     @SerialName("fee") val fee: Long,
     @SerialName("fee_rate") val feeRate: Long,
-
     @SerialName("memo") val memo: String,
     @SerialName("rbf_optin") val rbfOptin: Boolean,
-
     @SerialName("spv_verified") val spvVerified: String,
-
     @SerialName("txhash") val txHash: String,
-
     @SerialName("type") val type: String,
-
-    @SerialName("satoshi") val satoshi: Map<String, Long>
+    @SerialName("satoshi") val satoshi: Map<String, Long>,
+    @SerialName("message") val message: String? = null,
+    @SerialName("plaintext") val plaintext: Pair<String,String>? = null,
+    @SerialName("url") val url: Pair<String,String>? = null,
+    @SerialName("isCloseChannel") val isCloseChannel: Boolean = false,
+    @SerialName("isLightningSwap") val isLightningSwap: Boolean = false,
+    @SerialName("isInProgressSwap") val isInProgressSwap: Boolean = false,
+    @SerialName("isRefundableSwap") val isRefundableSwap: Boolean = false
 ) : GAJson<Transaction>(), Parcelable {
     val account
         get() = accountInjected!!
@@ -57,8 +63,18 @@ data class Transaction(
         fun failed() = this == NotVerified || this == NotLongest
     }
 
-    enum class Type {
-        OUT, IN, REDEPOSIT, MIXED, UNKNOWN;
+    enum class Type(val gdkType: String) {
+        OUT("outgoing"), IN("incoming"), REDEPOSIT("redeposit"), MIXED("mixed"), UNKNOWN("unknown");
+
+        companion object {
+            fun from(gdkType: String) = when (gdkType) {
+                OUT.gdkType -> OUT
+                IN.gdkType -> IN
+                REDEPOSIT.gdkType -> REDEPOSIT
+                MIXED.gdkType -> MIXED
+                else -> UNKNOWN
+            }
+        }
     }
 
     @IgnoredOnParcel
@@ -66,15 +82,8 @@ data class Transaction(
     @IgnoredOnParcel
     val createdAt: Date by lazy { Date(createdAtTs / 1000) }
 
-
     val txType: Type
-        get() = when (type) {
-            "outgoing" -> Type.OUT
-            "incoming" -> Type.IN
-            "redeposit" -> Type.REDEPOSIT
-            "mixed" -> Type.MIXED
-            else -> Type.UNKNOWN
-        }
+        get() = Type.from(type)
 
     val isIn
         get() = txType == Type.IN
@@ -87,6 +96,9 @@ data class Transaction(
 
     val isMixed
         get() = txType == Type.MIXED
+
+    val satoshiPolicyAsset: Long
+        get() = satoshi[BTC_POLICY_ASSET] ?: 0L
 
     @IgnoredOnParcel
     val spv: SPVResult by lazy{
@@ -102,6 +114,13 @@ data class Transaction(
 
     @IgnoredOnParcel
     val utxoViews : List<UtxoView> by lazy {
+        if(account.isLightning){
+            return@lazy listOf(UtxoView(
+                assetId = BTC_POLICY_ASSET,
+                satoshi = satoshi[BTC_POLICY_ASSET],
+                isChange = false
+            ))
+        }
         if(txType == Type.OUT && network.isLiquid){
             // On Liquid we have to synthesize the utxo view as we can't unblind the outputs
 
@@ -192,9 +211,12 @@ data class Transaction(
                     // Remove to display fee as amount in liquid
                     null
                 }
-            }else if(network.isLiquid && txType == Type.REDEPOSIT && it.key != network.policyAsset){
+            } else if(network.isLiquid && txType == Type.REDEPOSIT && it.key != network.policyAsset){
                 // Remove irrelevant assets if is redeposit
                 null
+            } else if(network.isLightning && txType == Type.OUT){
+                // Add fee
+                it.key to -(it.value.absoluteValue + fee)
             } else {
                 it.toPair()
             }
@@ -205,6 +227,7 @@ data class Transaction(
 
 
     fun getConfirmations(currentBlock: Long): Long{
+        if(network.isLightning) if(blockHeight > 0) return 6 else 0
         if (blockHeight == 0L || currentBlock == 0L) return 0
         return currentBlock - blockHeight + 1
     }
@@ -248,5 +271,53 @@ data class Transaction(
             type = "",
             satoshi = mapOf()
         )
+
+        fun fromPayment(payment: Payment): Transaction {
+            return Transaction(
+                blockHeight = if(payment.pending && payment.paymentType != PaymentType.CLOSED_CHANNEL) 0 else payment.paymentTime,
+                canCPFP = false,
+                canRBF = false,
+                createdAtTs = payment.paymentTime * 1_000_000,
+                inputs = listOf(),
+                outputs = listOf(),
+                fee = payment.feeMsat.toLong() / 1000,
+                feeRate = 0,
+                memo = payment.description ?: "",
+                rbfOptin = false,
+                spvVerified = "",
+                txHash = payment.id,
+                type = if(payment.paymentType == PaymentType.RECEIVED) "incoming" else "outgoing",
+                satoshi = mapOf(BTC_POLICY_ASSET to payment.amountSatoshi()),
+                message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
+                plaintext = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.data?.let { it.description to it.plaintext },
+                url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url},
+                isCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL
+            )
+        }
+
+        fun fromSwapInfo(account: Account, swapInfo: SwapInfo, isRefundableSwap: Boolean): Transaction {
+            return Transaction(
+                accountInjected = account,
+                blockHeight = if(isRefundableSwap) Long.MAX_VALUE else 0,
+                canCPFP = false,
+                canRBF = false,
+                createdAtTs = swapInfo.createdAt,
+                inputs = listOf(InputOutput(
+                    address = swapInfo.bitcoinAddress
+                )),
+                outputs = listOf(),
+                fee = 0,
+                feeRate = 0,
+                memo = "",
+                rbfOptin = false,
+                spvVerified = "",
+                txHash = swapInfo.paymentHash.toString(),
+                type = Type.MIXED.gdkType,
+                satoshi = mapOf(BTC_POLICY_ASSET to swapInfo.confirmedSats.toLong()),
+                isLightningSwap = true,
+                isInProgressSwap = swapInfo.confirmedSats.toLong() > 0 && !isRefundableSwap,
+                isRefundableSwap = isRefundableSwap
+            )
+        }
     }
 }

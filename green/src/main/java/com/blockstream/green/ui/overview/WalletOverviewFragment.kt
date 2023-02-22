@@ -78,10 +78,13 @@ import kotlin.properties.Delegates
 class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBinding>(
     layout = R.layout.wallet_overview_fragment,
     menuRes = R.menu.wallet_overview
-), MenuDataProvider{
+), OverviewInterface, MenuDataProvider{
 
     val args: WalletOverviewFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
+
+    override val appFragment: WalletOverviewFragment
+        get() = this
 
     @Inject
     lateinit var applicationScope: ApplicationScope
@@ -118,6 +121,8 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
     override fun getWalletViewModel() = viewModel
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+        overviewSetup()
+
         getNavigationResult<AccountAsset>(SET_ACCOUNT)?.observe(viewLifecycleOwner) { accountAssetOrNull ->
             accountAssetOrNull?.let { accountAsset ->
                 viewModel.setActiveAccount(account = accountAsset.account)
@@ -143,26 +148,10 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
             }
         }
 
-        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
-            viewLifecycleOwner
-        ) {
-            it?.let { result ->
-                clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                openProposal(result)
-            }
-        }
-
-        // Handle pending BIP-21 uri
-        sessionManager.pendingBip21Uri.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
-                session.activeAccountOrNull?.also { account ->
-                    navigate(
-                        WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
-                            wallet = wallet, address = bip21Uri, accountAsset = AccountAsset.fromAccount(account)
-                        )
-                    )
-                    snackbar(R.string.id_address_was_filled_by_a_payment)
-                }
+        // Handle pending URI (BIP-21 or lightning)
+        sessionManager.pendingUri.observe(viewLifecycleOwner) {
+            it?.getContentIfNotHandledOrReturnNull()?.let { uri ->
+                handleUserInput(uri, false)
             }
         }
 
@@ -214,6 +203,10 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 MenuListItem(icon = R.drawable.ic_clipboard , title = StringHolder(R.string.id_paste_an_existing_proposal)),
                 MenuListItem(icon = R.drawable.ic_qr_code , title = StringHolder(R.string.id_scan_a_proposal)),
             )), fragmentManager = childFragmentManager)
+        }
+
+        binding.bottomNav.buttonCamera.setOnClickListener {
+            CameraBottomSheetDialogFragment.showSingle(screenName = screenName, fragmentManager = childFragmentManager)
         }
 
         binding.bottomNav.buttonSend.setOnClickListener {
@@ -280,7 +273,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
             }
         })
 
-        if (ConsentBottomSheetDialogFragment.shouldShowConsentDialog(countly, settingsManager)) {
+        if (ConsentBottomSheetDialogFragment.shouldShowConsentDialog(settingsManager)) {
             applicationScope.launch(context = logException(countly)) {
                 delay(1500)
                 ConsentBottomSheetDialogFragment.show(childFragmentManager)
@@ -324,6 +317,10 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
     override fun onResume() {
         super.onResume()
 
+//        if(session.hasLightning){
+//            LightningService.start(requireContext())
+//        }
+
         requireActivity().window.navigationBarColor =
             ContextCompat.getColor(requireContext(), R.color.brand_surface_variant)
     }
@@ -339,7 +336,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         val totalBalanceAdapter: GenericFastItemAdapter = FastItemAdapter()
 
         // Wallet Balance
-        WalletBalanceListItem(session = session, countly = countly).also {
+        val walletBalanceListItem = WalletBalanceListItem(session = session, countly = countly).also {
             totalBalanceAdapter.set(listOf(it))
         }
 
@@ -379,9 +376,9 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                     }
 
                     override fun longClickListener(view: View, position: Int) {
-                        val menu =
-                            if (viewModel.accounts.size == 1) R.menu.menu_account else R.menu.menu_account_archive
                         val account = viewModel.accounts[position]
+
+                        val menu = if(account.isLightning) R.menu.menu_account_remove else if (viewModel.accounts.size == 1) R.menu.menu_account else R.menu.menu_account_archive
                         showPopupMenu(view, menu) { menuItem ->
                             when (menuItem.itemId) {
                                 R.id.rename -> {
@@ -390,13 +387,20 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                                         childFragmentManager
                                     )
                                 }
+
                                 R.id.archive -> {
                                     viewModel.archiveAccount(account)
                                     ArchiveAccountDialogFragment.show(fragmentManager = childFragmentManager)
                                 }
+
+                                R.id.remove -> {
+                                    viewModel.removeAccount(account)
+                                    snackbar(R.string.id_account_has_been_removed)
+                                }
                             }
                             true
                         }
+
                     }
 
                 }
@@ -449,7 +453,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
         val transactionsTitleAdapter = FastItemAdapter<GenericItem>()
 
-        combine(viewModel.walletTransactionsFlow, viewModel.accountsFlow){ transactions: List<Transaction>, accounts: List<Account> ->
+        combine(viewModel.walletTransactionsFlow, viewModel.accountsFlow) { transactions: List<Transaction>, accounts: List<Account> ->
 
             transactionsTitleAdapter.set((if (accounts.isEmpty()){
                 listOf()
@@ -519,6 +523,13 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
             navigateToAssets.invoke()
         }
 
+        fastAdapter.addClickListener<ListItemWalletBalanceBinding, GenericItem>({ binding -> binding.buttonDenomination }) { _, _, _, _ ->
+            showDenominationAndExchangeRateDialog {
+                walletBalanceListItem.reset()
+                fastAdapter.notifyAdapterDataSetChanged()
+            }
+        }
+
         fastAdapter.addClickListener<ListItemWalletBalanceBinding, GenericItem>({ binding -> binding.assetsTextView }) { _, _, _, _ ->
             navigateToAssets.invoke()
         }
@@ -534,12 +545,26 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                     )
                 }
                 is TransactionListItem -> {
-                    navigate(
-                        WalletOverviewFragmentDirections.actionWalletOverviewFragmentToTransactionDetailsFragment(
-                            wallet = wallet,
-                            transaction = item.tx
+                    if(item.tx.isLightningSwap){
+                        if(item.tx.isRefundableSwap){
+                            navigate(
+                                WalletOverviewFragmentDirections.actionWalletOverviewFragmentToRecoverFundsFragment(
+                                    wallet = wallet,
+                                    address = item.tx.inputs.first().address ?: "",
+                                    amount = item.tx.satoshiPolicyAsset
+                                )
+                            )
+                        }else{
+                            snackbar(R.string.id_swap_is_in_progress)
+                        }
+                    }else if(!item.tx.isLoadingTransaction) {
+                        navigate(
+                            WalletOverviewFragmentDirections.actionWalletOverviewFragmentToTransactionDetailsFragment(
+                                wallet = wallet,
+                                transaction = item.tx
+                            )
                         )
-                    )
+                    }
                 }
                 is AlertListItem -> {
                     if (item.alertType is AlertType.Banner) {
@@ -553,22 +578,26 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
         fastAdapter.onLongClickListener = { view: View, _, item: GenericItem, _ ->
                 if (item is AccountListItem) {
-                    val menu = if (viewModel.accounts.size == 1) R.menu.menu_account else R.menu.menu_account_archive
+                    if(!item.account.isLightning) {
+                        val menu =
+                            if (viewModel.accounts.size == 1) R.menu.menu_account else R.menu.menu_account_archive
 
-                    showPopupMenu(view, menu) { menuItem ->
-                        when (menuItem.itemId) {
-                            R.id.rename -> {
-                                RenameAccountBottomSheetDialogFragment.show(
-                                    item.account,
-                                    childFragmentManager
-                                )
+                        showPopupMenu(view, menu) { menuItem ->
+                            when (menuItem.itemId) {
+                                R.id.rename -> {
+                                    RenameAccountBottomSheetDialogFragment.show(
+                                        item.account,
+                                        childFragmentManager
+                                    )
+                                }
+
+                                R.id.archive -> {
+                                    viewModel.archiveAccount(item.account)
+                                    ArchiveAccountDialogFragment.show(fragmentManager = childFragmentManager)
+                                }
                             }
-                            R.id.archive -> {
-                                viewModel.archiveAccount(item.account)
-                                ArchiveAccountDialogFragment.show(fragmentManager = childFragmentManager)
-                            }
+                            true
                         }
-                        true
                     }
                 }
 
@@ -588,10 +617,8 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 ))
             }
             1 -> {
-                context?.let {
-                    getClipboard(it)
-                }?.let { link ->
-                    openProposal(link)
+                getClipboard(requireContext())?.also {
+                    openProposal(it)
                 }
             }
             else -> {
@@ -600,11 +627,14 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         }
     }
 
-    private fun openProposal(link: String) {
+    override fun openProposal(link: String) {
         if (!link.startsWith("https://")) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.id_warning)
                 .setMessage(R.string.id_invalid_swap_proposal)
+                .setPositiveButton(R.string.id_ok) { _, _ ->
+
+                }
                 .show()
             return
         }
@@ -626,4 +656,5 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
             }
         }
     }
+
 }

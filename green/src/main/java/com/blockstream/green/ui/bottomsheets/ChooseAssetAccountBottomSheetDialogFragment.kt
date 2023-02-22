@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockstream.gdk.BTC_POLICY_ASSET
 import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.green.data.EnrichedAsset
 import com.blockstream.green.databinding.FilterBottomSheetBinding
@@ -108,7 +109,10 @@ class ChooseAssetAccountBottomSheetDialogFragment :
                         }
                     }
                 }
-            )
+            ).also {
+                // Expance Bitcoin Asset if wallet is btc only
+                it.isSelected = enrichedAsset.assetId == BTC_POLICY_ASSET && !session.hasLiquidAccount
+            }
         }
 
         session.enrichedAssetsFlow.onEach {

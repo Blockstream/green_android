@@ -91,8 +91,16 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
         binding.viewFinder.frameSize = DEFAULT_FRAME_SIZE
 
 
-        binding.decoratedBarcode.viewFinder.isVisible = false
-        binding.decoratedBarcode.statusView.isVisible = false
+        binding.decoratedBarcode.apply {
+            viewFinder.isVisible = false
+            statusView.isVisible = false
+        }
+
+        binding.decoratedBarcode.cameraSettings.apply {
+            isMeteringEnabled = true
+            isExposureEnabled = true
+            isContinuousFocusEnabled = true
+        }
 
         if(isDecodeContinuous){
             binding.decoratedBarcode.decodeContinuous(callback)

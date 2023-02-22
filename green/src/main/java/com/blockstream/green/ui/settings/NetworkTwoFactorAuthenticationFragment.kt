@@ -11,10 +11,11 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.base.Urls
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.CustomTitleDialogBinding
-import com.blockstream.green.databinding.ListItemHelpBinding
+import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.databinding.SettingsLimitsDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.extensions.clearNavigationResult
@@ -24,7 +25,7 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.localized2faMethods
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
-import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
@@ -185,7 +186,7 @@ class NetworkTwoFactorAuthenticationFragment :
                 true
             }
 
-        fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
             // Recovery tool
             if(session.walletExistsAndIsUnlocked(network)){
                 openBrowser(settingsManager.getApplicationSettings(), Urls.RECOVERY_TOOL)
@@ -289,7 +290,7 @@ class NetworkTwoFactorAuthenticationFragment :
 
             if (!network.isLiquid) {
                 list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
-                list += HelpListItem(message = StringHolder(R.string.id_spend_your_bitcoin_without_2fa))
+                list += ActionListItem(message = StringHolder(R.string.id_spend_your_bitcoin_without_2fa))
 
                 list += thresholdPreference.also {
                     it.subtitle = StringHolder(twoFactorConfig.limits.let { limits ->
@@ -314,7 +315,7 @@ class NetworkTwoFactorAuthenticationFragment :
             list += TitleListItem(StringHolder(R.string.id_2fa_expiry))
 
             if (!network.isLiquid) {
-                list += HelpListItem(message = StringHolder(R.string.id_customize_2fa_expiration_of))
+                list += ActionListItem(message = StringHolder(R.string.id_customize_2fa_expiration_of))
                 list += csvBucketPreferences
 
                 val selectedIndex = network.csvBuckets.indexOf(settings.csvTime)
@@ -324,7 +325,7 @@ class NetworkTwoFactorAuthenticationFragment :
                 }
             }
 
-            list += HelpListItem(
+            list += ActionListItem(
                 message = StringHolder(R.string.id_your_2fa_expires_so_that_if_you),
                 button = StringHolder(R.string.id_recovery_tool)
             )
@@ -332,7 +333,7 @@ class NetworkTwoFactorAuthenticationFragment :
             list += TitleListItem(StringHolder(R.string.id_2fa_reset_in_progress))
 
             session.getTwoFactorReset(network)?.also {
-                list += HelpListItem(
+                list += ActionListItem(
                     message = StringHolder(getString(R.string.id_your_wallet_is_locked_for_a, it.daysRemaining)),
                     button = StringHolder(R.string.id_learn_more)
                 )
@@ -351,7 +352,7 @@ class NetworkTwoFactorAuthenticationFragment :
         binding.amountInputLayout.endIconCustomMode()
 
         // Warning, don't change the order of fiat and btc,
-        val currencies = listOf(getBitcoinOrLiquidUnit(assetId = network.policyAsset, session), getFiatCurrency(network, session))
+        val currencies = listOf(getBitcoinOrLiquidUnit(session = session, assetId = network.policyAsset), getFiatCurrency(session))
         val adapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencies)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -384,7 +385,7 @@ class NetworkTwoFactorAuthenticationFragment :
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 try {
                     val isFiat = binding.currencySpinner.selectedItemPosition == 1
-                    val input = UserInput.parseUserInput(session, binding.amount, isFiat = isFiat)
+                    val input = UserInput.parseUserInput(session, binding.amount, denomination = if(isFiat) Denomination.fiat(session) else null)
 
                     viewModel.setLimits(network, input.toLimit(), DialogTwoFactorResolver(requireContext()))
                 } catch (e: Exception) {

@@ -39,6 +39,9 @@ data class Wallet constructor(
     @ColumnInfo(name = "is_testnet")
     var isTestnet: Boolean,
 
+    @ColumnInfo(name = "is_lightning")
+    val isLightning: Boolean = false,
+
     @ColumnInfo(name = "network") // kept it as network for backward compatibility
     var activeNetwork: String,
 
@@ -68,6 +71,7 @@ data class Wallet constructor(
         watchOnlyUsername: String?,
         isHardware: Boolean,
         isTestnet: Boolean,
+        isLightning: Boolean,
         activeNetwork: String,
         activeAccount: Long,
         deviceIdentifiers: List<DeviceIdentifier>?,
@@ -81,6 +85,7 @@ data class Wallet constructor(
         watchOnlyUsername,
         isHardware,
         isTestnet,
+        isLightning,
         activeNetwork,
         activeAccount,
         deviceIdentifiers,

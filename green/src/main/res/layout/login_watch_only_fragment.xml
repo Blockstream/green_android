@@ -33,7 +33,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/textView3"
@@ -73,7 +73,6 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     app:gap="0dp"
-                    app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -173,7 +172,8 @@
                                 android:inputType="textMultiLine|textNoSuggestions"
                                 android:lines="15"
                                 android:text="@={vm.watchOnlyDescriptor}"
-                                android:textSize="12dp" />
+                                android:textSize="12dp"
+                                tools:ignore="SpUsage" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"

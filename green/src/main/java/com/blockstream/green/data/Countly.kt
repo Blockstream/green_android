@@ -14,7 +14,6 @@ import com.blockstream.gdk.data.Account
 import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.ApplicationScope
-import com.blockstream.green.R
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -34,10 +33,11 @@ import com.blockstream.green.views.GreenAlertView
 import com.greenaddress.greenbits.wallets.FirmwareFileData
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.put
 import ly.count.android.sdk.Countly
 import ly.count.android.sdk.CountlyConfig
@@ -58,9 +58,6 @@ class Countly constructor(
     private val sessionManager: SessionManager,
     private val walletRepository: WalletRepository,
 ) {
-    val analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics)
-    val rateGooglePlayEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play)
-
     private val _remoteConfigUpdateEvent = MutableSharedFlow<Unit>(replay = 1)
     val remoteConfigUpdateEvent = _remoteConfigUpdateEvent.asSharedFlow()
 
@@ -777,6 +774,10 @@ class Countly constructor(
         }
     }
 
+    fun getRemoteConfigValueAsJsonArray(key: String): JsonArray? {
+        return getRemoteConfigValueAsJsonElement(key)?.jsonArray
+    }
+
     fun getRemoteConfigValueForBanners(key: String): List<Banner>? {
         return try {
             getRemoteConfigValueAsString(key)?.let {
@@ -799,6 +800,10 @@ class Countly constructor(
             e.printStackTrace()
             null
         }
+    }
+
+    fun isLightningFeatureEnabled(): Boolean {
+        return getRemoteConfigValueAsBoolean("feature_lightning") ?: false
     }
 
     private fun appSettingsToString(appSettings: ApplicationSettings): String {

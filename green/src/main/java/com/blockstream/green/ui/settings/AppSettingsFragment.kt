@@ -1,32 +1,73 @@
 package com.blockstream.green.ui.settings
 
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.fragment.app.FragmentManager
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
-import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
+import com.blockstream.green.R
+import com.blockstream.green.databinding.AppSettingsFragmentBinding
 import com.blockstream.green.extensions.endIconCustomMode
-import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
+import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import mu.KLogging
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonPrimitive
 
 
 @AndroidEntryPoint
-class AppSettingsDialogFragment : AbstractBottomSheetDialogFragment<DialogAppSettingsBottomSheetBinding>() {
+class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app_settings_fragment, R.menu.app_settings) {
     override val screenName = "AppSettings"
-
-    override val expanded: Boolean = true
 
     private val viewModel: AppSettingsViewModel by viewModels()
 
-    override fun inflate(layoutInflater: LayoutInflater) = DialogAppSettingsBottomSheetBinding.inflate(layoutInflater)
+    private val onBackCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if(viewModel.areSettingsDirty()){
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.id_app_settings)
+                    .setMessage(R.string.id_your_settings_are_unsaved_setting)
+                    .setPositiveButton(R.string.id_continue) { _, _ ->
+                        isEnabled = false
+                        popBackStack()
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }else{
+                popBackStack()
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
+            viewLifecycleOwner
+        ) { result ->
+            result?.also { scannedCode ->
+                try {
+                    countly.getRemoteConfigValueAsJsonArray("feature_lightning_codes")
+                        ?.mapNotNull { jsonElement ->
+                            jsonElement.jsonPrimitive.contentOrNull?.takeIf { it.isNotBlank() }
+                        }?.any { code ->
+                        code == scannedCode
+                    }?.also {
+                        if (it) {
+                            settingsManager.lightningCodeOverride = true
+                            binding.invalidateAll()
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
 
         binding.vm = viewModel
         binding.isDevelopment = isDevelopmentFlavor
@@ -68,19 +109,30 @@ class AppSettingsDialogFragment : AbstractBottomSheetDialogFragment<DialogAppSet
 
         binding.buttonSave.setOnClickListener {
             viewModel.saveSettings()
-            dismiss()
+            popBackStack()
         }
 
         binding.buttonCancel.setOnClickListener {
-            dismiss()
+            popBackStack()
         }
 
-        isCancelable = false
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
     }
 
-    companion object : KLogging() {
-        fun show(fragmentManager: FragmentManager){
-            show(AppSettingsDialogFragment(), fragmentManager)
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.buttonScan -> {
+                CameraBottomSheetDialogFragment.showSingle(
+                    screenName = screenName,
+                    fragmentManager = childFragmentManager
+                )
+                true
+            }
+            else -> super.onMenuItemSelected(menuItem)
         }
+    }
+
+    fun navigateUp(){
+        onBackCallback.handleOnBackPressed()
     }
 }

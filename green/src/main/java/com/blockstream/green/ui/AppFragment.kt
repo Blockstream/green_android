@@ -226,6 +226,10 @@ abstract class AppFragment<T : ViewDataBinding>(
         findNavController().popBackStack()
     }
 
+    internal open fun popBackStack(@IdRes destinationId: Int, inclusive: Boolean){
+        findNavController().popBackStack(destinationId, inclusive)
+    }
+
     internal fun setupDeviceInteractionEvent(onDeviceInteractionEvent: MutableLiveData<ConsumableEvent<Triple<Device, CompletableDeferred<Boolean>?, String?>>>) {
         onDeviceInteractionEvent.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandledOrReturnNull()?.let {

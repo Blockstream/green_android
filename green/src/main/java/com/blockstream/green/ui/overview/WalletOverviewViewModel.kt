@@ -118,6 +118,10 @@ class WalletOverviewViewModel @AssistedInject constructor(
         super.updateAccountVisibility(account, true, null)
     }
 
+    fun removeAccount(account: Account) {
+        super.removeAccount(account, null)
+    }
+
     suspend fun downloadProposal(link: String): SwapProposal? = withContext(Dispatchers.IO) {
         return@withContext URL(link)
             .openConnection()

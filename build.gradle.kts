@@ -25,6 +25,7 @@ allprojects {
         google()
         mavenCentral()
         maven ("https://jitpack.io")
+        maven("https://mvn.breez.technology/releases")
     }
 }
 

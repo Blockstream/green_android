@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.blockstream.gdk.data.Account
 import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.Settings
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
+import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.extensions.logException
@@ -146,12 +148,37 @@ abstract class AbstractWalletViewModel constructor(
         })
     }
 
+    fun removeAccount(account: Account, callback: (() -> Unit)? = null){
+        if(account.isLightning) {
+            doUserAction({
+                walletRepository.deleteLoginCredentials(wallet.id, CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS)
+
+                session.removeAccount(account)
+
+            }, onSuccess = {
+                callback?.invoke()
+
+                // Update active account from Session if it was archived
+                setActiveAccount(session.activeAccount)
+            })
+        }
+    }
+
     fun ackSystemMessage(network: Network, message : String){
         doUserAction({
             session.ackSystemMessage(network, message)
             session.updateSystemMessage()
         }, onSuccess = {
             onEvent.postValue(ConsumableEvent(WalletEvent.AckMessage))
+        })
+    }
+
+    open fun saveGlobalSettings(newSettings: Settings, onSuccess: (() -> Unit)? = null) {
+        doUserAction({
+            session.changeGlobalSettings(newSettings)
+            session.updateSettings()
+        }, onSuccess = {
+            onSuccess?.invoke()
         })
     }
 

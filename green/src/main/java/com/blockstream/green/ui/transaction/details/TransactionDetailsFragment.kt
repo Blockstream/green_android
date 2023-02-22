@@ -13,6 +13,7 @@ import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
+import com.blockstream.green.databinding.ListItemOverlineTextBinding
 import com.blockstream.green.databinding.ListItemTransactionHashBinding
 import com.blockstream.green.databinding.ListItemTransactionNoteBinding
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
@@ -27,9 +28,10 @@ import com.blockstream.green.looks.TransactionLook
 import com.blockstream.green.ui.bottomsheets.AssetDetailsBottomSheetFragment
 import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuDataProvider
-import com.blockstream.green.ui.bottomsheets.TransactionNoteBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.NoteBottomSheetDialogFragment
 import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.items.NoteListItem
+import com.blockstream.green.ui.items.OverlineTextListItem
 import com.blockstream.green.ui.items.TransactionFeeListItem
 import com.blockstream.green.ui.items.TransactionHashListItem
 import com.blockstream.green.ui.items.TransactionProgressListItem
@@ -164,11 +166,17 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
         }
 
         fastAdapter.addClickListener<ListItemTransactionNoteBinding, GenericItem>({ binding -> binding.buttonEdit }) { _, _, _, _ ->
-            TransactionNoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
+            NoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
         }
 
         fastAdapter.addClickListener<ListItemTransactionProgressBinding, GenericItem>({ binding -> binding.buttonIncreaseFee }) { _, _, _, _ ->
             viewModel.bumpFee()
+        }
+
+        fastAdapter.addClickListener<ListItemOverlineTextBinding, GenericItem>({ binding -> binding.buttonOpen }) { _, _, _, binding ->
+            (binding as? OverlineTextListItem)?.also { listItem ->
+                listItem.url?.also { openBrowser(it) }
+            }
         }
 
         fastAdapter.onClickListener = { _, _, item: GenericItem, _: Int ->
@@ -197,6 +205,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
     }
 
     override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.share).isVisible = !account.isLightning
         // No need to display "Go to Account" menu entry as we come from the Account
         menu.findItem(R.id.account).isVisible = args.account == null
     }
@@ -237,7 +246,9 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
             list += TransactionUtxoListItem(index = i, session = session, look = look, hiddenAmount = true)
         }
 
-        list += TransactionFeeListItem(session = session, look = look)
+        if(!account.isLightning || transaction.isOut) {
+            list += TransactionFeeListItem(session = session, look = look)
+        }
 
         FastAdapterDiffUtil.set(amountsAdapter.itemAdapter, list, true)
 
@@ -251,13 +262,40 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
             confirmationsRequired = transaction.network.confirmationsRequired
         )
 
-        list += TransactionHashListItem(transaction)
+        if(!account.isLightning) {
+            list += TransactionHashListItem(transaction)
+        }
 
-        // Watch-only multisig can't edit notes
-        if(!session.isWatchOnly || session.defaultNetworkOrNull?.isSinglesig == true || viewModel.transactionNote.isNotBlank()) {
+        // Singlesig Watch-only sessions allow editing notes
+        val isEditable = !transaction.network.isLightning && (!session.isWatchOnly || session.defaultNetworkOrNull?.isSinglesig == true)
+
+        if(viewModel.transactionNote.isNotBlank() || (!session.isWatchOnly && !transaction.network.isLightning) || isEditable) {
             list += NoteListItem(
                 note = viewModel.transactionNote,
-                isEditable = !session.isWatchOnly || session.defaultNetworkOrNull?.isSinglesig == true
+                isDescription = network.isLightning,
+                isEditable = isEditable
+            )
+        }
+
+        transaction.message.takeIf { it.isNotBlank() }?.also {
+            list += OverlineTextListItem(
+                overline = StringHolder(R.string.id_message),
+                text = StringHolder(it),
+            )
+        }
+
+        transaction.url?.also {
+            list += OverlineTextListItem(
+                overline = StringHolder(R.string.id_message),
+                text = StringHolder(it.first),
+                url = it.second
+            )
+        }
+
+        transaction.plaintext?.also {
+            list += OverlineTextListItem(
+                overline = StringHolder(it.first),
+                text = StringHolder(it.second),
             )
         }
 

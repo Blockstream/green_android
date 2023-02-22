@@ -56,16 +56,6 @@
                     app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     app:navGraph="@navigation/nav_graph" />
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabFeedback"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="82dp"
-                    app:srcCompat="@drawable/ic_megaphone_simple"
-                    android:contentDescription="Feedback" />
-
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
             <FrameLayout

@@ -20,7 +20,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main"
-            isGone="@{vm.onProgress}"
+            isGone="@{vm.onProgress || vm.rocketAnimation}"
+            tools:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -78,13 +79,14 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            isVisible="@{vm.onProgress}"
+            isVisible="@{vm.onProgress || vm.rocketAnimation}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true">
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/progress"
+                isVisible="@{!vm.rocketAnimation}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
@@ -94,6 +96,17 @@
                 app:layout_constraintBottom_toTopOf="@+id/loaderTitle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
+
+            <app.rive.runtime.kotlin.RiveAnimationView
+                android:id="@+id/rive"
+                isVisible="@{vm.rocketAnimation}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/loaderTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:riveResource="@raw/rocket" />
 
             <TextView
                 android:id="@+id/loaderTitle"
@@ -109,7 +122,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.75" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

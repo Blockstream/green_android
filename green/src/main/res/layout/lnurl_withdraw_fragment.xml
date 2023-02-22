@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+
+        <variable
+            name="vm"
+            type="com.blockstream.green.ui.lightning.LnUrlWithdrawViewModel" />
+
+        <variable
+            name="redeemFrom"
+            type="String" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:text="@{redeemFrom}"
+            android:textAlignment="center"
+            tools:text="@string/id_you_are_redeeming_funds_from" />
+
+        <LinearLayout
+            android:id="@+id/amountLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/addressLinearLayout">
+
+            <TextView
+                style="@style/TextAppearance.Green.Overline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="2dp"
+                android:text="@string/id_amount_to_receive" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/amountEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:enabled="@{!vm.amountIsLocked}"
+                        android:fontFamily="@font/monospace"
+                        android:inputType="numberDecimal"
+                        android:singleLine="true"
+                        android:text="@={vm.amount}"
+                        android:textAlignment="textEnd"
+                        tools:text="1234" />
+
+                    <TextView
+                        android:id="@+id/amountCurrency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/monospace"
+                        textUnderline="@{vm.amountCurrency}"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textColor="@color/selector_image_button"
+                        android:textStyle="bold"
+                        tools:text="BTC" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAmountCurrency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:enabled="@{!vm.amountIsLocked}"
+                        android:paddingStart="12dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="6dp"
+                        android:paddingBottom="12dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_arrows_counter_clockwise"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                        app:tint="@color/selector_image_button" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAmountClear"
+                        isVisible="@{!vm.amount.empty}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:enabled="@{!vm.amountIsLocked}"
+                        android:paddingStart="6dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="12dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_x_circle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                        app:tint="@color/selector_image_button" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAmountPaste"
+                        isVisible="@{vm.amount.empty}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:enabled="@{!vm.amountIsLocked}"
+                        android:paddingStart="6dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="12dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_clipboard"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                        app:tint="@color/selector_image_button" />
+
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    gdkError="@{vm.amount.empty ? null : vm.error}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/error" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        isVisible="@{(vm.amount.empty || vm.error == null) &amp;&amp; !vm.amountIsLocked}"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@{String.format(@string/id_withdrawal_limits, vm.minWithdrawAmount , vm.maxWithdrawAmount)}"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="@color/color_on_surface_emphasis_medium" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        isInvisible="@{vm.error != null}"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@{vm.exchange}"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?attr/textAppearanceLabelMedium" />
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <LinearLayout
+                isVisible="@{!vm.requestData.defaultDescription.empty}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextAppearance.Green.Overline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/id_description" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/descriptionEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_margin="16dp"
+                        android:background="@android:color/transparent"
+                        android:enabled="@{!vm.onProgress}"
+                        android:fontFamily="@font/monospace"
+                        android:singleLine="true"
+                        android:text="@{vm.description}"
+                        tools:text="Description" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/buttonRedeem"
+            style="@style/Widget.Green.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:enabled="@{!vm.onProgress &amp;&amp; vm.error == null}"
+            android:text="@string/id_redeem" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress"
+            isVisible="@{vm.onProgress}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:indeterminate="true"
+            app:hideAnimationBehavior="inward"
+            app:trackCornerRadius="@dimen/progress_radius" />
+
+    </LinearLayout>
+
+</layout>

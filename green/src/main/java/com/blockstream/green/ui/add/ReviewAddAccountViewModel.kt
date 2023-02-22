@@ -8,10 +8,12 @@ import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.utils.AppKeystore
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 class ReviewAddAccountViewModel @AssistedInject constructor(
+    appKeystore: AppKeystore,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     countly: Countly,
@@ -20,7 +22,7 @@ class ReviewAddAccountViewModel @AssistedInject constructor(
     @Assisted val network: Network?,
     @Assisted("mnemonic") val mnemonic: String?,
     @Assisted("xpub") val xpub: String?,
-) : AbstractAddAccountViewModel(sessionManager, walletRepository, countly, wallet) {
+) : AbstractAddAccountViewModel(appKeystore, sessionManager, walletRepository, countly, wallet) {
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {

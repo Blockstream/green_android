@@ -19,6 +19,9 @@ data class WalletAndLoginCredentials(
     val passwordPinData
         get() = loginCredentials.find { it.credentialType == CredentialType.PASSWORD_PINDATA }
 
+    val lightningCredentials
+        get() = loginCredentials.find { it.credentialType == CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS }
+
     val watchOnlyCredentials
         get() = loginCredentials.find {
             it.credentialType == CredentialType.KEYSTORE_PASSWORD || // Deprecated

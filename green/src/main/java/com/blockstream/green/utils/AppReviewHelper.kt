@@ -20,7 +20,7 @@ object AppReviewHelper {
         countly: Countly
     ): Boolean {
         // Feature is not enabled
-        if(!countly.rateGooglePlayEnabled){
+        if(!settingsManager.rateGooglePlayEnabled){
             return false
         }
 

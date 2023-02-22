@@ -11,11 +11,12 @@ import com.blockstream.gdk.data.Credentials
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryPhraseFragmentBinding
 import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.items.RecoveryWordListItem
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
+import com.blockstream.green.utils.alphaPulse
 import com.blockstream.green.utils.createQrBitmap
 import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
@@ -35,8 +36,15 @@ class RecoveryPhraseFragment : AbstractWalletFragment<RecoveryPhraseFragmentBind
     override val screenName = "RecoveryPhrase"
     override val segmentation: HashMap<String, Any>? = null
 
+    override val subtitle: String?
+        get() = if(args.isLightning) getString(R.string.id_lightning) else null
+
     val credentials: Credentials
-        get() = args.credentials ?: session.getCredentials()
+        get() = args.credentials ?: if(args.isLightning) {
+            Credentials(mnemonic = session.deriveLightningMnemonic())
+        }else {
+            session.getCredentials()
+        }
 
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory
@@ -60,6 +68,7 @@ class RecoveryPhraseFragment : AbstractWalletFragment<RecoveryPhraseFragmentBind
         // we should never show the mnemonic without the passphrase,
         // since adding (or removing) the bip39 passphrase changes the seed, thus the addresses and thus is an entirely different wallet.
         binding.passphrase = credentials.bip39Passphrase
+        binding.isLightning = args.isLightning
 
         val mnemonic = credentials.mnemonic
         val words = mnemonic.split(" ")
@@ -89,6 +98,10 @@ class RecoveryPhraseFragment : AbstractWalletFragment<RecoveryPhraseFragmentBind
         binding.recycler.apply {
             itemAnimator = AlphaInAnimator()
             adapter = fastAdapter
+        }
+
+        if (args.isLightning) {
+            binding.lightning.alphaPulse(true)
         }
     }
 }

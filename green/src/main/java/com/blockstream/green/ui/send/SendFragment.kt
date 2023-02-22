@@ -2,6 +2,7 @@ package com.blockstream.green.ui.send
 
 import android.content.Context
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -13,6 +14,7 @@ import com.blockstream.base.Urls
 import com.blockstream.gdk.GdkBridge
 import com.blockstream.green.R
 import com.blockstream.green.data.AddressInputType
+import com.blockstream.green.data.DenominatedValue
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.EditTextDialogBinding
@@ -26,17 +28,18 @@ import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.filters.NumberValueFilter
-import com.blockstream.green.gdk.assetTicker
 import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.looks.AssetLook
 import com.blockstream.green.ui.bottomsheets.AccountAssetBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.SelectUtxosBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
 import com.blockstream.green.utils.AmountTextWatcher
+import com.blockstream.green.utils.UserInput
 import com.blockstream.green.utils.getClipboard
-import com.blockstream.green.utils.getFiatCurrency
 import com.blockstream.green.utils.openBrowser
+import com.blockstream.green.utils.underlineText
 import com.blockstream.green.views.GreenAlertView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -44,6 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
@@ -113,14 +117,14 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         ) {
             it?.let { result ->
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.setScannedAddress(viewModel.activeRecipient, result)
+                viewModel.setAddress(viewModel.activeRecipient, result, AddressInputType.SCAN)
             }
         }
 
-        // Handle pending BIP-21 uri
-        sessionManager.pendingBip21Uri.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
-                viewModel.setBip21Uri(bip21Uri)
+        // Handle pending URI (BIP-21 or lightning)
+        sessionManager.pendingUri.observe(viewLifecycleOwner) {
+            it?.getContentIfNotHandledOrReturnNull()?.let { uri ->
+                viewModel.setUri(uri)
                 snackbar(R.string.id_address_was_filled_by_a_payment)
             }
         }
@@ -133,8 +137,11 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
                 navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
                     wallet = wallet,
                     account = account,
+                    denomination = viewModel.getRecipientLiveData(0)?.denomination?.value,
                     transactionSegmentation = viewModel.createTransactionSegmentation()
                 ))
+                // Re-enable continue button
+                viewModel.onProgress.postValue(false)
             }
 
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
@@ -231,17 +238,12 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
     private fun initRecipientBinging(recipientBinding: ListItemTransactionRecipientBinding) {
         if(!isBump){
-            recipientBinding.buttonAddressPaste.setOnClickListener{
-                viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
-                    it.address.value = getClipboard(requireContext())
-                    it.addressInputType = AddressInputType.PASTE
-                }
+            recipientBinding.buttonAddressPaste.setOnClickListener {
+                viewModel.setAddress(recipientBinding.index ?: 0, getClipboard(requireContext()) ?: "", AddressInputType.PASTE)
             }
 
-            recipientBinding.buttonAddressClear.setOnClickListener{
-                viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
-                    it.address.value = ""
-                }
+            recipientBinding.buttonAddressClear.setOnClickListener {
+                viewModel.setAddress(recipientBinding.index ?: 0, "", AddressInputType.PASTE)
             }
         }
 
@@ -269,8 +271,30 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             viewModel.sendAll(index = recipientBinding.index ?: 0, isSendAll = isChecked)
         }
 
-        recipientBinding.buttonAmountCurrency.setOnClickListener {
-            viewModel.toggleCurrency(index = recipientBinding.index ?: 0)
+        listOf(recipientBinding.buttonAmountCurrency, recipientBinding.amountCurrency).setOnClickListener {
+            lifecycleScope.launch {
+
+                val amountToConvert = viewModel.getAmountToConvert()
+                val assetId = viewModel.getRecipientLiveData(0)?.accountAsset?.value?.assetId
+                if(assetId.isPolicyAsset(session)) {
+                    val denomination = viewModel.getRecipientLiveData(0)?.denomination?.value
+
+                    UserInput.parseUserInputSafe(
+                        session = session,
+                        input = amountToConvert,
+                        assetId = assetId,
+                        denomination = denomination
+                    ).getBalance().also {
+                        DenominationBottomSheetDialogFragment.show(
+                            denominatedValue = DenominatedValue(
+                                balance = it,
+                                assetId = assetId,
+                                denomination = denomination!!
+                            ), childFragmentManager
+                        )
+                    }
+                }
+            }
         }
 
         recipientBinding.buttonAmountPaste.setOnClickListener {
@@ -318,7 +342,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
         viewModel.getRecipientLiveData(index)?.let { addressParamsLiveData ->
             combine(
-                addressParamsLiveData.isFiat.asFlow(),
+                addressParamsLiveData.denomination.asFlow(),
                 addressParamsLiveData.accountAsset.asFlow(),
             ) { _,  ->
                 addressParamsLiveData
@@ -337,18 +361,21 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
                     )
                 }
 
+                recipientBinding.addressEditText.inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or (InputType.TYPE_TEXT_FLAG_MULTI_LINE.takeIf { !account.isLightning } ?: 0)
+
                 recipientBinding.assetName = look?.name
-                recipientBinding.assetBalance = look?.balance(isFiat = it.isFiat.value, withUnit = true) ?: ""
+                recipientBinding.assetBalance = look?.balance(denomination = it.denomination.value, withUnit = true) ?: ""
                 recipientBinding.assetSatoshi = balance ?: 0
+                assetId.isPolicyAsset(session).also { isPolicyAsset ->
+                    recipientBinding.canConvert = isPolicyAsset
 
-
-                recipientBinding.canConvert = assetId.isPolicyAsset(session)
-
-                recipientBinding.amountCurrency = if (it.isFiat.value == true) {
-                    getFiatCurrency(account.network, session)
-                } else {
-                    assetId.assetTicker(session)
+                    (it.denomination.value?.assetTicker(session, it.accountAsset.value?.assetId) ?: "").also { amountCurrency ->
+                        // Underline only if canConvert
+                        recipientBinding.amountCurrency.text = if (isPolicyAsset) underlineText(amountCurrency) else amountCurrency
+                    }
                 }
+
+
             }.launchIn(lifecycleScope)
 
             // When changing asset and send all is enabled, listen for the event resetting the send all flag

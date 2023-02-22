@@ -19,6 +19,7 @@ data class ApplicationSettings constructor(
     val spv: Boolean = false,
     val multiServerValidation: Boolean = false,
     val analytics: Boolean = false,
+    val experimentalFeatures: Boolean = false,
 
     val hideAmounts: Boolean = false,
 
@@ -73,6 +74,7 @@ data class ApplicationSettings constructor(
         private const val SPV = "spv"
         private const val MULTI_SERVER_VALIDATION = "multiServerValidation"
         private const val ANALYTICS = "analytics"
+        private const val EXPERIMENTAL_FEATURES = "experimental_features"
         private const val HIDE_AMOUNTS = "hideAmounts"
 
         private const val PERSONAL_BITCOIN_ELECTRUM_SERVER = "personalBitcoinElectrumServer"
@@ -97,6 +99,7 @@ data class ApplicationSettings constructor(
                     spv = prefs.getBoolean(SPV, false),
                     multiServerValidation = prefs.getBoolean(MULTI_SERVER_VALIDATION, false),
                     analytics = prefs.getBoolean(ANALYTICS, false),
+                    experimentalFeatures = prefs.getBoolean(EXPERIMENTAL_FEATURES, false),
 
                     hideAmounts = prefs.getBoolean(HIDE_AMOUNTS, false),
 
@@ -126,6 +129,7 @@ data class ApplicationSettings constructor(
                 it.putBoolean(SPV, appSettings.spv)
                 it.putBoolean(MULTI_SERVER_VALIDATION, appSettings.multiServerValidation)
                 it.putBoolean(ANALYTICS, appSettings.analytics)
+                it.putBoolean(EXPERIMENTAL_FEATURES, appSettings.experimentalFeatures)
                 it.putBoolean(HIDE_AMOUNTS, appSettings.hideAmounts)
 
                 it.putString(PERSONAL_BITCOIN_ELECTRUM_SERVER, appSettings.personalBitcoinElectrumServer)

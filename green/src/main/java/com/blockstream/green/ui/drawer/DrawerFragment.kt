@@ -7,7 +7,7 @@ import com.blockstream.base.Urls
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DrawerFragmentBinding
-import com.blockstream.green.ui.settings.AppSettingsDialogFragment
+import com.blockstream.green.ui.settings.AppSettingsFragment
 import com.blockstream.green.ui.wallet.AbstractWalletsFragment
 import com.blockstream.green.ui.wallet.WalletsViewModel
 import com.blockstream.green.utils.openBrowser
@@ -37,7 +37,7 @@ class DrawerFragment : AbstractWalletsFragment<DrawerFragmentBinding>(R.layout.d
 
         binding.buttonAppSettings.setOnClickListener {
             closeDrawer()
-            AppSettingsDialogFragment.show(childFragmentManager)
+            navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
         }
 
         binding.helpCenter.setOnClickListener {

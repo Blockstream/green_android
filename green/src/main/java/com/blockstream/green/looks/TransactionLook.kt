@@ -5,6 +5,7 @@ import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.data.UtxoView
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.R
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.TransactionAssetLayoutBinding
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
 import com.blockstream.green.gdk.GdkSession
@@ -22,7 +23,7 @@ import kotlinx.coroutines.withContext
 import mu.KLogging
 
 class TransactionLook constructor(val tx: Transaction, val session: GdkSession): ITransactionLook {
-    val network by lazy { tx.network }
+    override val network by lazy { tx.network }
     val date by lazy { tx.createdAt.formatAuto() }
 
     val memo: String by lazy {
@@ -40,7 +41,7 @@ class TransactionLook constructor(val tx: Transaction, val session: GdkSession):
         )
 
     override suspend fun feeFiat(): String? = session.convertAmount(network, Convert(satoshi = tx.fee))
-            ?.toAmountLook(session = session, isFiat = true, withUnit = true)?.let {
+            ?.toAmountLook(session = session, denomination = Denomination.fiat(session), withUnit = true)?.let {
                 "≈ $it"
             }
 
@@ -118,14 +119,14 @@ class TransactionLook constructor(val tx: Transaction, val session: GdkSession):
                     txOutput.satoshi?.toAmountLook(
                         session = session,
                         assetId = txOutput.assetId,
-                        isFiat = true,
+                        denomination = Denomination.fiat(session),
                         withUnit = true
                     )?.let { "≈ $it" }
                 }
             }
 
 
-            binding.icon.setImageDrawable(txOutput.assetId.getAssetIcon(binding.root.context, session))
+            binding.icon.setImageDrawable(txOutput.assetId.getAssetIcon(binding.root.context, session, isLightning = tx.account.isLightning))
         }
     }
 

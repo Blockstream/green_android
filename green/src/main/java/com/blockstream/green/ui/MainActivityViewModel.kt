@@ -1,5 +1,6 @@
 package com.blockstream.green.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -17,6 +18,7 @@ import kotlin.concurrent.schedule
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
+    @SuppressLint("StaticFieldLeak")
     @ApplicationContext val context: Context,
     val walletRepository: WalletRepository,
     val settingsManager: SettingsManager,

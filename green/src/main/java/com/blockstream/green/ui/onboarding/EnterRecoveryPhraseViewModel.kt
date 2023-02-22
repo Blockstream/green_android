@@ -19,6 +19,7 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
     @Assisted private val recoveryPhrase: String?,
 ) : AppViewModel(countly) {
 
+    val showTypeNextWork = MutableLiveData(false)
     val showPasteButton = MutableLiveData(true)
     val showHelpButton = MutableLiveData(false)
     val showInvalidMnemonicError = MutableLiveData(false)
@@ -113,6 +114,7 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
         showInvalidMnemonicError.value = showHelp && !isEditMode && len >= _recoveryPhraseSize.value!!
         showPasteButton.value = recoveryPhrase.size == 0
         showHelpButton.value = showHelp
+        showTypeNextWork.value = recoveryPhrase.size in 1..11 && state.activeWord().isNullOrBlank()
     }
 
     @dagger.assisted.AssistedFactory

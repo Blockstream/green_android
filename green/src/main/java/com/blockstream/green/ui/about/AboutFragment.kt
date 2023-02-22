@@ -68,13 +68,4 @@ class AboutFragment : AppFragment<AboutFragmentBinding>(R.layout.about_fragment,
             AppReviewHelper.showFeedback(this)
         }
     }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.clear_cache -> {
-                // TODO clear cache
-            }
-        }
-        return super.onMenuItemSelected(menuItem)
-    }
 }

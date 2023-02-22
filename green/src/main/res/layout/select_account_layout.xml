@@ -60,7 +60,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginStart="16dp"
-            android:src="@{account.multisig ? @drawable/ic_multisig : @drawable/ic_singlesig}"
+            android:src="@{account.multisig ? @drawable/ic_multisig : account.network.lightning ? @drawable/ic_lightning : @drawable/ic_singlesig}"
             app:layout_constraintBottom_toBottomOf="@+id/accountType"
             app:layout_constraintDimensionRatio="w,1:1"
             app:layout_constraintStart_toStartOf="parent"

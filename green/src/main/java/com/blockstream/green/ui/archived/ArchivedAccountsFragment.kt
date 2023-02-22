@@ -97,16 +97,13 @@ class ArchivedAccountsFragment :
                 R.id.rename -> {
                     RenameAccountBottomSheetDialogFragment.show(account, childFragmentManager)
                 }
-//                R.id.archive -> {
-//                    viewModel.updateSubAccountVisibility(subaccount, isHidden = true)
-//                }
                 R.id.unarchive -> {
-                    viewModel.updateAccountVisibility(account = account, isHidden = false)
+                    viewModel.updateAccountVisibility(account = account, isHidden = false) {
+                        if(args.navigateToOverview){
+                            popBackStack(R.id.walletOverviewFragment, false)
+                        }
+                    }
                 }
-//                R.id.view_account -> {
-//                    setNavigationResult(result = subaccount.pointer, key = OverviewFragment.SET_ACCOUNT, destinationId = R.id.overviewFragment)
-//                    findNavController().popBackStack(R.id.overviewFragment, false)
-//                }
             }
             true
         }

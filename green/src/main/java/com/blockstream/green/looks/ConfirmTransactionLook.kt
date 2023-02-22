@@ -4,6 +4,7 @@ import com.blockstream.gdk.data.CreateTransaction
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.UtxoView
 import com.blockstream.gdk.params.Convert
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getAssetIcon
@@ -18,8 +19,9 @@ import kotlinx.coroutines.withContext
 
 data class ConfirmTransactionLook constructor(
     val transaction: CreateTransaction,
-    val network: Network,
+    override val network: Network,
     val session: GdkSession,
+    val denomination: Denomination? = null,
     val showChangeOutputs: Boolean = false,
     val isAddressVerificationOnDevice: Boolean = false,
 ): ITransactionLook {
@@ -37,26 +39,21 @@ data class ConfirmTransactionLook constructor(
             withUnit = true,
             withGrouping = true,
             withMinimumDigits = true,
-            overrideDenomination = isAddressVerificationOnDevice,
+            denomination = if(isAddressVerificationOnDevice) Denomination.BTC else denomination
         )
 
     override suspend fun feeFiat(): String? = session.convertAmount(network, Convert(satoshi = transaction.fee))
             ?.toAmountLook(
                 session = session,
                 assetId = network.policyAsset,
-                isFiat = true,
                 withUnit = true,
-                overrideDenomination = isAddressVerificationOnDevice
+                denomination = Denomination.fiat(session)
             )?.let {
             "≈ $it"
         }
 
     private fun totalPolicyAsLong(): Long {
-        return (if (network.isMultisig) {
-            (transaction.satoshi[network.policyAsset] ?: 0) + (transaction.fee ?: 0)
-        } else {
-            (transaction.satoshi[network.policyAsset] ?: 0)
-        })
+        return (transaction.satoshi[network.policyAsset] ?: 0) + (transaction.fee ?: 0)
     }
     suspend fun total(): String = totalPolicyAsLong().toAmountLookOrNa(
         session = session,
@@ -64,16 +61,15 @@ data class ConfirmTransactionLook constructor(
         withUnit = true,
         withGrouping = true,
         withMinimumDigits = true,
-        overrideDenomination = isAddressVerificationOnDevice,
+        denomination = if(isAddressVerificationOnDevice) Denomination.BTC else denomination
     )
 
     suspend fun totalFiat(): String? = session.convertAmount(network, Convert(satoshi = totalPolicyAsLong()))
         ?.toAmountLook(
             session = session,
             assetId = network.policyAsset,
-            isFiat = true,
             withUnit = true,
-            overrideDenomination = isAddressVerificationOnDevice
+            denomination = Denomination.fiat(session)
         )?.let {
             "≈ $it"
         }
@@ -99,7 +95,7 @@ data class ConfirmTransactionLook constructor(
                         withDirection = true,
                         withGrouping = true,
                         withMinimumDigits = false,
-                        overrideDenomination = isAddressVerificationOnDevice
+                        denomination = if(isAddressVerificationOnDevice) Denomination.BTC else denomination
                     )
                 }
 
@@ -107,14 +103,13 @@ data class ConfirmTransactionLook constructor(
                     txOutput.satoshi?.toAmountLook(
                         session = session,
                         assetId = txOutput.assetId,
-                        isFiat = true,
+                        denomination = Denomination.fiat(session),
                         withUnit = true,
-                        overrideDenomination = isAddressVerificationOnDevice
                     )?.let { "≈ $it" }
                 }
             }
 
-            binding.icon.setImageDrawable(txOutput.assetId.getAssetIcon(binding.root.context, session))
+            binding.icon.setImageDrawable(txOutput.assetId.getAssetIcon(binding.root.context, session, isLightning = network.isLightning))
         }
     }
 }

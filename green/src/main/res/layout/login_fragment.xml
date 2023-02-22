@@ -354,7 +354,7 @@
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
-            indeterminate="@{(vm.torEvent == null || vm.torEvent.progress == 100) ? true : false}"
+            indeterminate="@{vm.torEvent.progress == 100 ? true : false}"
             isInvisible="@{!vm.onProgress}"
             progress="@{vm.torEvent.progress}"
             android:layout_width="wrap_content"

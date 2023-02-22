@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.ui.receive.ReceiveViewModel
@@ -49,11 +50,11 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
         binding.buttonOK.setOnClickListener {
             val amount: String? = try{
-                val input = UserInput.parseUserInput(session = session, input = requestViewModel.requestAmount.value, assetId = viewModel.accountAsset.assetId, isFiat = requestViewModel.isFiat.value ?: false)
+                val input = UserInput.parseUserInput(session = session, input = requestViewModel.requestAmount.value, assetId = viewModel.accountAsset.assetId, denomination = Denomination.defaultOrFiat(session,requestViewModel.isFiat.value ?: false))
 
                 // Convert it to BTC as per BIP21 spec
                 runBlocking {
-                    input.getBalance(session).let { balance ->
+                    input.getBalance().let { balance ->
                         if (balance != null && balance.satoshi > 0) {
                             balance.valueInMainUnit.let {
                                 // Remove trailing zeros if needed

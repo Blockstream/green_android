@@ -13,9 +13,9 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateMargins
 import androidx.core.view.updatePadding
-import com.blockstream.gdk.BTC_POLICY_ASSET
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
 import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.gdk.GdkSession
@@ -40,21 +40,20 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
     var isFiat = false
 
-    private var view = 0
+    private var denomination: Denomination = Denomination.BTC
 
     private suspend fun balanceInBtc() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLook(
         session = session,
         assetId = session.walletAssets.keys.firstOrNull(), // Expect the first asset to be the policy BTC or L-BTC
-        isFiat = false,
         withUnit = true,
         withGrouping = true,
-        overrideDenomination = view == 2
+        denomination = denomination.takeIf {!it.isFiat } ?: Denomination.BTC
     )
 
     private suspend fun balanceInFiat() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLookOrNa(
         session = session,
         assetId = session.walletAssets.keys.firstOrNull(), // Expect the first asset to be the policy BTC or L-BTC
-        isFiat = true,
+        denomination = Denomination.fiat(session),
         withUnit = true,
         withGrouping = true
     )
@@ -65,12 +64,17 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
     override fun createScope(): CoroutineScope = session.createScope(Dispatchers.Main)
 
+    fun reset() {
+        denomination = Denomination.BTC
+    }
+
     override fun bindView(binding: ListItemWalletBalanceBinding, payloads: List<Any>) {
         val context = binding.root.context
         val balance = session.walletTotalBalanceFlow.value
 
         binding.progressBar.isVisible = balance == -1L
         binding.balanceTextView.isInvisible = balance == -1L
+        binding.buttonDenomination.isInvisible = balance == -1L
         binding.hideAmounts = session.hideAmounts
 
         scope.launch {
@@ -81,14 +85,22 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
         }
 
         listOf(binding.balanceTextView,  binding.fiatTextView).setOnClickListener {
-            view++
+            val walletDenomination = Denomination.default(session)
 
-            if(view == 2 && session.getSettings(session.defaultNetwork)?.unit.equals(BTC_POLICY_ASSET, ignoreCase = true) || view > 2){
-                view = 0
-            }
+            denomination = (when {
+                denomination is Denomination.FIAT -> {
+                    Denomination.BTC
+                }
+                denomination != walletDenomination  -> {
+                    walletDenomination
+                }
+                else -> {
+                    Denomination.fiat(session)
+                }
+            }) ?: Denomination.BTC
 
             scope.launch {
-                if (view == 1) {
+                if (denomination.isFiat) {
                     binding.balanceTextView.text = withContext(context = Dispatchers.IO) { balanceInFiat() }
                     binding.fiatTextView.text = withContext(context = Dispatchers.IO) { balanceInBtc() }
                 } else {
@@ -117,7 +129,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
             }
         }
 
-        binding.assetsVisibility = when{
+        binding.assetsVisibility = when {
             walletAssets.size > 1 && session.walletHasHistory -> View.VISIBLE
             (session.activeBitcoin != null && session.activeLiquid != null && walletAssets.isEmpty()) -> View.INVISIBLE
             else -> {

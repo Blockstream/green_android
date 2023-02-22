@@ -8,42 +8,61 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import breez_sdk.LnInvoice
 import com.blockstream.base.Urls
 import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.green.R
 import com.blockstream.green.data.AddressType
+import com.blockstream.green.data.DenominatedValue
+import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.MediaType
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.ReceiveFragmentBinding
+import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.clearNavigationResult
+import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.extensions.share
 import com.blockstream.green.extensions.shareJPEG
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.extensions.toast
 import com.blockstream.green.ui.add.AbstractAddAccountFragment
 import com.blockstream.green.ui.bottomsheets.ChooseAssetAccountListener
+import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuDataProvider
+import com.blockstream.green.ui.bottomsheets.NoteBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RequestAmountLabelBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.VerifyAddressBottomSheetDialogFragment
 import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
+import com.blockstream.green.utils.AmountTextWatcher
 import com.blockstream.green.utils.StringHolder
+import com.blockstream.green.utils.UserInput
 import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.formatFullWithTime
+import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.utils.pulse
 import com.blockstream.green.utils.rotate
+import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.views.GreenAlertView
+import com.blockstream.lightning.amountSatoshi
+import com.blockstream.lightning.expireInAsDate
 import com.mikepenz.fastadapter.GenericItem
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -51,7 +70,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     layout = R.layout.receive_fragment,
-    menuRes = R.menu.menu_help
+    menuRes = R.menu.menu_receive
 ), MenuDataProvider, ChooseAssetAccountListener {
     val args: ReceiveFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
@@ -60,6 +79,11 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
     override val showBalance: Boolean = false
     override val showChooseAssetAccount: Boolean = true
+    override val showEditIcon: Boolean by lazy {
+        !(session.isLightningOnly && session.accounts.size == 1)
+    }
+    override val isAdjustResize: Boolean
+        get() = true
 
     override val accountAssetLayoutBinding: AccountAssetLayoutBinding
         get() = binding.accountAsset
@@ -100,7 +124,27 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
             }
         }
 
+        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
+            consumableEvent?.getContentIfNotHandledForType<GdkEvent.SuccessWithData>()?.let {
+                (it.data as? LnInvoice)?.also { paidInvoice ->
+
+                    lifecycleScope.launch {
+
+                        val amount = (paidInvoice.amountSatoshi() ?: 0).toAmountLook(
+                            session = session,
+                            withUnit = true,
+                            withGrouping = true
+                        )
+
+                        dialog(getString(R.string.id_funds_received), getString(R.string.id_you_have_just_received, amount), R.drawable.ic_lightning, null)
+                    }
+                }
+            }
+        }
+
         binding.vm = viewModel
+
+        AmountTextWatcher.watch(binding.amountEditText)
 
         binding.address.setOnClickListener {
             copyToClipboard(
@@ -187,7 +231,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
+                errorDialog(it, showCopy = true)
             }
         }
 
@@ -200,6 +244,69 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         viewModel.onProgress.observe(viewLifecycleOwner) {
             // On HWWallet Block going back until address is generated
             onBackCallback.isEnabled = session.isHardwareWallet && it
+            invalidateMenu()
+        }
+
+        viewModel.accountLiveData.observe(viewLifecycleOwner){
+            invalidateMenu()
+        }
+
+        binding.buttonConfirm.setOnClickListener {
+            viewModel.createLightningInvoice()
+            hideKeyboard()
+        }
+
+        listOf(binding.buttonAmountCurrency, binding.amountCurrency).setOnClickListener {
+            lifecycleScope.launch {
+                UserInput.parseUserInputSafe(
+                    session,
+                    viewModel.amount.value,
+                    assetId = session.lightning?.policyAsset,
+                    denomination = viewModel.denomination.value!!
+
+                ).getBalance().also {
+                    DenominationBottomSheetDialogFragment.show(
+                        denominatedValue = DenominatedValue(
+                            balance = it,
+                            assetId = session.lightning?.policyAsset,
+                            denomination = viewModel.denomination.value!!
+                        ),
+                        childFragmentManager)
+                }
+            }
+        }
+
+        binding.buttonEditAmount.setOnClickListener {
+            viewModel.addressUri.value = ""
+            viewModel.lightningInvoice.value = null
+        }
+
+        binding.buttonAmountPaste.setOnClickListener {
+            viewModel.amount.value = getClipboard(requireContext())
+        }
+
+        binding.buttonAmountClear.setOnClickListener {
+            viewModel.amount.value = ""
+        }
+
+        binding.invoiceExpiration.setOnClickListener {
+            viewModel.lightningInvoice.value?.also {
+                snackbar(it.expireInAsDate().formatFullWithTime())
+            }
+        }
+
+        binding.buttonLearnMore.setOnClickListener {
+            openBrowser(Urls.HELP_RECEIVE_FEES)
+        }
+
+        binding.buttonOnChainToggle.setOnClickListener {
+            if(viewModel.showOnchainAddress.boolean()){
+                viewModel.showOnchainAddress.value = false
+            }else{
+                viewModel.createOnchain()
+            }
+
+            hideKeyboard()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
@@ -287,17 +394,29 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
     }
 
+    override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.add_description).isVisible = account.isLightning
+        menu.findItem(R.id.add_description).isEnabled = !viewModel.onProgress.boolean()
+    }
+
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.help -> {
                 openBrowser(if (account.isAmp) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS)
             }
+            R.id.add_description -> {
+                NoteBottomSheetDialogFragment.show(
+                    note = viewModel.note.value ?: "",
+                    isLightning = true,
+                    fragmentManager = childFragmentManager
+                )
+            }
+
         }
         return super.onMenuItemSelected(menuItem)
     }
 
     override fun menuItemClicked(requestCode: Int, item: GenericItem, position: Int) {
-
         if (requestCode == 1) {
             countly.receiveAddress(
                 addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,

@@ -23,6 +23,7 @@ abstract class AbstractAssetWalletFragment<T : ViewDataBinding> constructor(
     open val showBalance: Boolean = true
     open val showEditIcon: Boolean = true
     open val showChooseAssetAccount: Boolean = false
+    open val isRefundSwap: Boolean = false
 
     private val assetWalletViewModel
         get() = getAccountWalletViewModel() as AbstractAssetWalletViewModel
@@ -38,12 +39,18 @@ abstract class AbstractAssetWalletFragment<T : ViewDataBinding> constructor(
             )
         }
 
-        accountAssetLayoutBinding?.root?.setOnClickListener {
-            if(showChooseAssetAccount){
-                ChooseAssetAccountBottomSheetDialogFragment.show(fragmentManager = childFragmentManager)
-                countly.assetChange(session)
-            }else{
-                AccountAssetBottomSheetDialogFragment.show(showBalance = showBalance, fragmentManager = childFragmentManager)
+        if(showEditIcon) {
+            accountAssetLayoutBinding?.root?.setOnClickListener {
+                if (showChooseAssetAccount) {
+                    ChooseAssetAccountBottomSheetDialogFragment.show(fragmentManager = childFragmentManager)
+                    countly.assetChange(session)
+                } else {
+                    AccountAssetBottomSheetDialogFragment.show(
+                        showBalance = showBalance,
+                        isRefundSwap = isRefundSwap,
+                        fragmentManager = childFragmentManager
+                    )
+                }
             }
         }
     }

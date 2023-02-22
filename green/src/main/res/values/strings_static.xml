@@ -46,6 +46,14 @@
         <item>L-sats</item>
     </string-array>
 
+    <string-array name="testnet_units_entries" translatable="false">
+        <item>TEST</item>
+        <item>mTEST</item>
+        <item>\u00B5TEST</item>
+        <item>bTEST</item>
+        <item>sTEST</item>
+    </string-array>
+
     <string-array name="auto_logout_values" translatable="false">
         <item>1</item>
         <item>2</item>

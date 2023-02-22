@@ -13,6 +13,7 @@ import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseAccountTypeFragmentBinding
 import com.blockstream.green.extensions.bind
+import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.toggle
 import com.blockstream.green.gdk.titleRes
 import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
@@ -88,7 +89,21 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
                             ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
                         }
                     } else {
-                        viewModel.createAccount(accountType = item.accountType, accountName = getString(item.accountType.titleRes()), network = network, null, null)
+                        val createAccount = {
+                            viewModel.createAccount(accountType = item.accountType, accountName = getString(item.accountType.titleRes()), network = network, null, null)
+                        }
+                        if(item.accountType.isLightning()){
+                            dialog(
+                                title = R.string.id_experimental_feature,
+                                message = R.string.id_experimental_features_might_change_break,
+                                icon = R.drawable.ic_fill_flash_24,
+                                listener = {
+                                    createAccount.invoke()
+                                }
+                            )
+                        }else{
+                            createAccount.invoke()
+                        }
                     }
                 }
 
@@ -101,7 +116,7 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
                             nav()
                         }
                         .setNeutralButton(R.string.id_archived_accounts) { _, _ ->
-                            navigate(NavGraphDirections.actionGlobalArchivedAccountsFragment(wallet = wallet))
+                            navigate(NavGraphDirections.actionGlobalArchivedAccountsFragment(wallet = wallet, navigateToOverview = true))
                         }
                         .show()
                 } else {
@@ -122,7 +137,7 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
         }
 
         viewModel.onProgress.observe(viewLifecycleOwner) {
-            binding.mainContainer.alpha = if(it) 0.2f else 1.0f
+            binding.mainContainer.alpha = if(it) 0.15f else 1.0f
         }
     }
 
@@ -149,6 +164,7 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
             }
             AccountType.AMP_ACCOUNT -> session.liquidMultisig!!
             AccountType.TWO_OF_THREE -> session.bitcoinMultisig!!
+            AccountType.LIGHTNING -> session.lightning!!
             AccountType.UNKNOWN, AccountType.LIGHTNING -> throw Exception("Network not found")
         }
     }

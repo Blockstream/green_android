@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.data.Countly
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.asset
@@ -76,9 +77,9 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
         isFiat.asFlow()
             .onEach {
                 amountCurrency.value = if (it) {
-                    getFiatCurrency(network, session)
+                    getFiatCurrency(session)
                 } else if (accountAsset.assetId.isPolicyAsset(accountAsset.account.network)) {
-                    getBitcoinOrLiquidUnit(network.policyAsset, session)
+                    getBitcoinOrLiquidUnit(session = session, assetId = network.policyAsset)
                 } else {
                     accountAsset.asset(session)?.ticker ?: ""
                 }
@@ -95,12 +96,12 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
                     session,
                     amount,
                     assetId = accountAsset.assetId,
-                    isFiat = isFiat
-                ).getBalance(session)?.let {
+                    denomination = Denomination.defaultOrFiat(session, isFiat)
+                ).getBalance()?.let {
                     "≈ " + it.toAmountLook(
                         session = session,
-                        isFiat = !isFiat,
                         assetId = accountAsset.assetId,
+                        denomination = Denomination.defaultOrFiat(session, !isFiat),
                         withUnit = true,
                         withGrouping = true,
                         withMinimumDigits = false
@@ -129,14 +130,14 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
                         session,
                         requestAmount.value,
                         assetId = accountAsset.assetId,
-                        isFiat = isFiat
+                        denomination = Denomination.defaultOrFiat(session, isFiat)
                     )
-                input.getBalance(session)?.let {
+                input.getBalance()?.let {
                     if (it.satoshi > 0) {
                         it.toAmountLook(
                             session = session,
                             assetId = accountAsset.assetId,
-                            isFiat = !isFiat,
+                            denomination = Denomination.defaultOrFiat(session, !isFiat),
                             withUnit = false,
                             withGrouping = false,
                             withMinimumDigits = false

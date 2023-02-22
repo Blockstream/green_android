@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:text="@{type == Type.IN ? (confirmations > 0 ? @string/id_received : @string/id_receiving) : (type == Type.OUT ? @string/id_sent : (type == Type.REDEPOSIT ? @string/id_redeposited : type == Type.MIXED ? @string/id_swapped : @string/id_unknown ))}"
+            android:text="@{type == Type.IN ? (confirmations > 0 ? @string/id_received : @string/id_receiving) : (type == Type.OUT ? (confirmations > 0 ? @string/id_sent : @string/id_sending) : (type == Type.REDEPOSIT ? @string/id_redeposited : type == Type.MIXED ? @string/id_swap : @string/id_unknown ))}"
             android:textAppearance="?attr/textAppearanceLabelLarge"
             android:textColor="@color/color_on_surface_emphasis_high"
             isGone="@{ index > 0}"

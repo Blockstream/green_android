@@ -139,9 +139,8 @@ class SwapViewModel @AssistedInject constructor(
                 val toAmount = UserInput.parseUserInput(
                     session = session,
                     input = toAmount.value!!,
-                    assetId = toAssetId!!,
-                    isFiat = false
-                ).getBalance(session)!!.valueInMainUnit
+                    assetId = toAssetId!!
+                ).getBalance()!!.valueInMainUnit
 
                 val rate = if(exchangeRateDirection.value == false){
                     exchangeRate(
@@ -187,11 +186,9 @@ class SwapViewModel @AssistedInject constructor(
             val utxo = proposal.inputs.first()
             val out = proposal.outputs.first()
             val utxoAmount = utxo.amount.toAmountLook(session, utxo.assetId,
-                isFiat = false,
                 withUnit = false
             )
             val outAmount = out.amount.toAmountLook(session, out.assetId,
-                isFiat = false,
                 withUnit = false
             )
             outAmount?.let { toAmount.postValue(it) }
@@ -236,9 +233,8 @@ class SwapViewModel @AssistedInject constructor(
             val satoshi = UserInput.parseUserInput(
                 session = session,
                 input = toAmount.value!!,
-                assetId = toAssetId!!,
-                isFiat = false
-            ).getBalance(session)!!.satoshi
+                assetId = toAssetId!!
+            ).getBalance()!!.satoshi
 
             val v0Params = LiquidDexV0Params(
                 send = listOf(utxo!!.jsonElement!!),

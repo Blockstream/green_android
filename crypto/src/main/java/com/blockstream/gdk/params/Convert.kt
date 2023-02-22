@@ -1,6 +1,11 @@
 package com.blockstream.gdk.params
 
+import com.blockstream.gdk.BITS_UNIT
+import com.blockstream.gdk.BTC_UNIT
 import com.blockstream.gdk.GAJson
+import com.blockstream.gdk.MBTC_UNIT
+import com.blockstream.gdk.SATOSHI_UNIT
+import com.blockstream.gdk.UBTC_UNIT
 import com.blockstream.gdk.data.Asset
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -33,13 +38,13 @@ data class Convert constructor(
     }
 
     companion object{
-        fun forUnit(unit: String = "btc", amount: String): Convert {
+        fun forUnit(unit: String = BTC_UNIT, amount: String): Convert {
 
-            return when (unit.lowercase()) {
-                "btc" -> Convert(btc = amount)
-                "mbtc" -> Convert(mbtc = amount)
-                "ubtc", "bits", "\u00B5btc" -> Convert(bits = amount)
-                "sats" -> Convert(sats = amount)
+            return when (unit) {
+                BTC_UNIT -> Convert(btc = amount)
+                MBTC_UNIT -> Convert(mbtc = amount)
+                BITS_UNIT, UBTC_UNIT -> Convert(bits = amount)
+                SATOSHI_UNIT -> Convert(sats = amount)
                 else -> Convert(fiat = amount)
             }
         }

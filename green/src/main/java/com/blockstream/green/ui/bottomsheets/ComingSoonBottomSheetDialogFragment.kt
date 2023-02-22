@@ -3,7 +3,8 @@ package com.blockstream.green.ui.bottomsheets
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.ui.items.AbstractBindingItem
+import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -19,18 +20,18 @@ class ComingSoonBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
     @Inject
     lateinit var settingsManager: SettingsManager
 
-    override fun createFastAdapter(): FastAdapter<HelpListItem> {
-        val itemAdapter = ItemAdapter<HelpListItem>()
+    override fun createFastAdapter(): FastAdapter<AbstractBindingItem<*>> {
+        val itemAdapter = ItemAdapter<ActionListItem>()
 
-        val list = mutableListOf<HelpListItem>()
+        val list = mutableListOf<ActionListItem>()
 
-        list += HelpListItem(
+        list += ActionListItem(
             message = StringHolder(R.string.id_this_feature_is_coming_soon),
         )
 
         itemAdapter.add(list)
 
-        return FastAdapter.with(itemAdapter)
+        return FastAdapter.with(itemAdapter) as FastAdapter<AbstractBindingItem<*>>
     }
 
     override fun getTitle() = getString(R.string.id_coming_soon)

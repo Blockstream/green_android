@@ -20,6 +20,7 @@ data class CreateTransaction constructor(
     @SerialName("error") val error: String? = null,
     @SerialName("txhash") val txHash: String? = null,
     @SerialName("sign_with") var signWith: List<String> = listOf(),
+    @SerialName("is_lightning") val isLightning: Boolean = false, // synthesized
 ) : GAJson<CreateTransaction>() {
     override val keepJsonElement = true
 

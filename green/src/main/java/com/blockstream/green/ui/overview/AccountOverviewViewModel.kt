@@ -17,6 +17,8 @@ import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -49,6 +51,9 @@ class AccountOverviewViewModel @AssistedInject constructor(
 
     val policyAsset: Long get() = session.accountAssets(account).policyAsset()
 
+    private val _swapInfoStateFlow
+        get() = if(account.isLightning) session.lightningSdk.swapInfoStateFlow else flowOf(listOf())
+
     init {
         session
             .accountAssetsFlow(account)
@@ -59,7 +64,11 @@ class AccountOverviewViewModel @AssistedInject constructor(
                 _assetsLiveData.value = assets
             }.launchIn(viewModelScope)
 
-        session.accountTransactionsFlow(account).onEach {
+        combine(session.accountTransactionsFlow(account), _swapInfoStateFlow) { transactions, swaps ->
+            swaps.map {
+                Transaction.fromSwapInfo(account, it.first, it.second)
+            } + transactions
+        }.onEach {
             _transactionsLiveData.value = it
         }.launchIn(viewModelScope)
 
@@ -99,6 +108,12 @@ class AccountOverviewViewModel @AssistedInject constructor(
 
     fun archiveAccount() {
         super.updateAccountVisibility(account, true){
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(WalletOverviewFragment.ACCOUNT_ARCHIVED)))
+        }
+    }
+
+    fun removeAccount() {
+        super.removeAccount(account){
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
         }
     }

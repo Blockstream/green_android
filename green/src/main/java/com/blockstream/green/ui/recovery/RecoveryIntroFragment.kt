@@ -12,11 +12,11 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
 import com.blockstream.green.extensions.AuthenticationCallback
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.ui.wallet.WalletViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -101,6 +101,7 @@ class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBindin
             navigate(
                 RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryPhraseFragment(
                     wallet = args.wallet,
+                    isLightning = args.isLightning
                 ), navOptionsBuilder = NavOptions.Builder().also {
                     it.setPopUpTo(R.id.recoveryIntroFragment, true)
                 })

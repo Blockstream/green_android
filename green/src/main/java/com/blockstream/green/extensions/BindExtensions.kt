@@ -9,6 +9,7 @@ import com.blockstream.gdk.data.Account
 import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.gdk.data.Utxo
 import com.blockstream.green.R
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.AccountCardLayoutBinding
 import com.blockstream.green.databinding.AssetLayoutBinding
@@ -58,14 +59,14 @@ fun AccountAssetLayoutBinding.bind(
             secondaryValue = session.starsOrNull ?: withContext(context = Dispatchers.IO) {
                 look.fiatValue.toAmountLook(
                     session = session,
-                    isFiat = true,
+                    denomination = Denomination.fiat(session),
                     withUnit = true
                 )
             }
         }
     }
 
-    icon.setImageDrawable(accountAsset.assetId.getAssetIcon(root.context, session))
+    icon.setImageDrawable(accountAsset.assetId.getAssetIcon(root.context, session, isLightning = accountAsset.account.isLightning))
 }
 
 fun AssetLayoutBinding.bind(
@@ -155,7 +156,7 @@ fun AccountCardLayoutBinding.bind(
             policyAsset.toAmountLook(
                 session,
                 assetId = account.network.policyAsset,
-                isFiat = true,
+                denomination = Denomination.fiat(session),
                 withUnit = true,
                 withGrouping = true,
                 withMinimumDigits = false
@@ -194,7 +195,7 @@ fun AccountCardLayoutBinding.bind(
 
                 val margin: Int = ((size / (1.3 + (0.1 * index))).toInt() * index)
 
-                imageView.setImageDrawable(asset.key.getAssetIcon(context, session = session))
+                imageView.setImageDrawable(asset.key.getAssetIcon(context, session = session, isLightning = account.isLightning))
                 imageView.layoutParams = FrameLayout.LayoutParams(
                     size,
                     size

@@ -25,6 +25,7 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.lightning.AppGreenlightCredentials
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.filterNotNull
@@ -56,6 +57,7 @@ class LoginViewModel @AssistedInject constructor(
     var watchOnlyCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
     var pinCredentials: PendingLiveData<LoginCredentials> = PendingLiveData()
     var passwordCredentials: PendingLiveData<LoginCredentials> = PendingLiveData()
+    var lightningCredentials: PendingLiveData<LoginCredentials> = PendingLiveData()
 
     var password = MutableLiveData("")
     var watchOnlyPassword = MutableLiveData("")
@@ -65,6 +67,7 @@ class LoginViewModel @AssistedInject constructor(
     val applicationSettingsLiveData = settingsManager.getApplicationSettingsLiveData()
 
     var bip39Passphrase = MutableLiveData("")
+
     private val isBip39Login
         get() = bip39Passphrase.string().trim().isNotBlank()
 
@@ -115,6 +118,7 @@ class LoginViewModel @AssistedInject constructor(
                     watchOnlyCredentials.value = it.watchOnlyCredentials
                     pinCredentials.value = it.pinPinData
                     passwordCredentials.value = it.passwordPinData
+                    lightningCredentials.value = it.lightningCredentials
 
                     val biometricsBasedCredentials = it.biometricsPinData ?: it.biometricsWatchOnlyCredentials
 
@@ -202,12 +206,22 @@ class LoginViewModel @AssistedInject constructor(
         // If Wallet Hash ID is empty (from migration) do a one-time wallet restore to make a real account discovery
         val isRestore = wallet.walletHashId.isEmpty()
 
+        val appGreenlightCredentials = try {
+            lightningCredentials.value.takeIf { !isBip39Login }?.encryptedData?.let { ed ->
+                appKeystore.decryptData(ed).let { AppGreenlightCredentials.fromJsonString(String(it)) }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+
         login(loginCredentials) {
             // if bip39 passphrase, don't initialize the session as we need to re-connect || initializeSession = bip39Passphrase.isNullOrBlank())
             session.loginWithPin(
                 wallet = wallet,
                 pin = pin,
                 loginCredentials = loginCredentials,
+                appGreenlightCredentials = appGreenlightCredentials,
                 isRestore = isRestore,
                 initializeSession = !isBip39Login
             )
@@ -243,7 +257,13 @@ class LoginViewModel @AssistedInject constructor(
 
     fun loginWithBiometrics(cipher: Cipher, loginCredentials: LoginCredentials) {
         loginCredentials.encryptedData?.let { encryptedData ->
-            appKeystore.decryptData(cipher, encryptedData)
+            try {
+                appKeystore.decryptData(cipher, encryptedData)
+            }catch (e: Exception){
+                countly.recordException(e)
+                onError.postValue(ConsumableEvent(e))
+                null
+            }
         }?.also { decryptedData ->
             if(loginCredentials.credentialType == CredentialType.BIOMETRICS_PINDATA){
                 loginWithPin(String(decryptedData), loginCredentials)
@@ -255,10 +275,15 @@ class LoginViewModel @AssistedInject constructor(
 
     fun loginWithBiometricsV3(cipher: Cipher, loginCredentials: LoginCredentials) {
         loginCredentials.encryptedData?.also { encryptedData ->
-            val decrypted = appKeystore.decryptData(cipher, encryptedData)
-            // Migrated from v3
-            val pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15)
-            loginWithPin(pin, loginCredentials)
+            try {
+                val decrypted = appKeystore.decryptData(cipher, encryptedData)
+                // Migrated from v3
+                val pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15)
+                loginWithPin(pin, loginCredentials)
+            }catch (e: Exception){
+                countly.recordException(e)
+                onError.postValue(ConsumableEvent(e))
+            }
         }
     }
 

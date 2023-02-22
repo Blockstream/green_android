@@ -1,5 +1,6 @@
 package com.blockstream.green.ui.devices
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.*
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class DeviceScanViewModel @AssistedInject constructor(
+    @SuppressLint("StaticFieldLeak")
     @ApplicationContext val context: Context,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,

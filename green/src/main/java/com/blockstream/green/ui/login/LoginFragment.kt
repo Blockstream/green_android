@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.base.Urls
 import com.blockstream.gdk.data.Credentials
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
@@ -28,10 +29,10 @@ import com.blockstream.green.extensions.authenticateWithBiometrics
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.services.LightningService
 import com.blockstream.green.ui.bottomsheets.Bip39PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
-import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.openBrowser
@@ -170,7 +171,7 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
         }
 
         binding.buttonAppSettings.setOnClickListener {
-            AppSettingsDialogFragment.show(childFragmentManager)
+            navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
         }
 
         binding.buttonLoginWithBiometrics.setOnClickListener {

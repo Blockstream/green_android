@@ -19,10 +19,14 @@ enum class AccountType(val gdkType: String) {
 
     override fun toString(): String = when(this){
         BIP44_LEGACY -> "Legacy"
-        BIP49_SEGWIT_WRAPPED -> "Legacy"
-        BIP84_SEGWIT -> "SegWit"
+        BIP49_SEGWIT_WRAPPED -> "Standard"
+        BIP84_SEGWIT -> "Native SegWit"
         BIP86_TAPROOT -> "Taproot"
         LIGHTNING -> "Lightning"
+
+        STANDARD -> "2FA Protected"
+        AMP_ACCOUNT -> "AMP"
+        TWO_OF_THREE -> "2of3 with 2FA"
         else -> gdkType
     }
 
@@ -31,7 +35,9 @@ enum class AccountType(val gdkType: String) {
         else -> false
     }
 
-    fun isMutlisig() = !isSinglesig()
+    fun isLightning() = this == LIGHTNING
+
+    fun isMutlisig() = !isSinglesig() && !isLightning()
 
     companion object {
         fun byGDKType(name: String) = when(name){

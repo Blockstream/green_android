@@ -9,6 +9,7 @@ import mu.KLogging
 
 data class NoteListItem constructor(
     val note: String,
+    val isDescription: Boolean = false,
     val isEditable: Boolean = true
 ): AbstractBindingItem<ListItemTransactionNoteBinding>() {
     override val type: Int
@@ -20,6 +21,7 @@ data class NoteListItem constructor(
 
     override fun bindView(binding: ListItemTransactionNoteBinding, payloads: List<Any>) {
         binding.note = note
+        binding.isDescription = isDescription
         binding.isEditable = isEditable
     }
 

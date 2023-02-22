@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.Account
+import com.blockstream.gdk.data.SendTransactionSuccess
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.NavigateEvent
@@ -12,7 +13,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.TwoFactorResolver
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.ui.bottomsheets.ITransactionNote
+import com.blockstream.green.ui.bottomsheets.INote
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
@@ -27,7 +28,7 @@ class SendConfirmViewModel @AssistedInject constructor(
     @Assisted wallet: Wallet,
     @Assisted account: Account,
     @Assisted val transactionSegmentation: TransactionSegmentation
-) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, wallet, account), ITransactionNote {
+) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, wallet, account), INote {
 
     val transactionNoteLiveData = MutableLiveData(session.pendingTransaction?.second?.memo ?: "")
     val transactionNote get() = (transactionNoteLiveData.value ?: "").trim()
@@ -69,33 +70,33 @@ class SendConfirmViewModel @AssistedInject constructor(
             val signedTransaction = session.signTransaction(network, transaction)
 
             // Send or Broadcast
-            if(broadcast) {
+            if (broadcast) {
                 if (signedTransaction.isSweep || isSwap) {
                     session.broadcastTransaction(network, signedTransaction.transaction ?: "")
                 } else {
                     session.sendTransaction(
-                        network,
-                        signedTransaction,
+                        network = network,
+                        signedTransaction = signedTransaction,
                         twoFactorResolver = twoFactorResolver
-                    ).txHash!!
+                    )
                 }
-            }else{
-                signedTransaction.transaction ?: ""
+            } else {
+                SendTransactionSuccess(signedTransaction = signedTransaction.transaction ?: "")
             }
         }, postAction = {
             onProgress.value = it == null
         }, onSuccess = {
             deviceAddressValidationEvent.value = ConsumableEvent(true)
-            if(broadcast){
-                val isSendAll = session.pendingTransaction?.first?.sendAll ?: false
-                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(isSendAll)))
+
+            if(it.signedTransaction == null){
+                session.pendingTransaction = null // clear pending transaction
                 countly.endSendTransaction(
                     session = session,
                     account = account,
                     transactionSegmentation = transactionSegmentation,
                     withMemo = transactionNote.isNotBlank()
                 )
-                session.pendingTransaction = null // clear pending transaction
+                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
             }else{
                 onProgress.value = false
                 onEvent.postValue(ConsumableEvent(GdkEvent.SuccessWithData(it)))

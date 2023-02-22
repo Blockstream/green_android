@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
@@ -22,7 +23,6 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.login.LoginFragmentDirections
-import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.getClipboard
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,7 +78,7 @@ class LoginWatchOnlyFragment :
         }
 
         binding.buttonAppSettings.setOnClickListener {
-            AppSettingsDialogFragment.show(childFragmentManager)
+            navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
         }
 
         binding.buttonScan.setOnClickListener {

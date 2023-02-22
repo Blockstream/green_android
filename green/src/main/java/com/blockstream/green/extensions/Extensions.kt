@@ -137,6 +137,8 @@ fun String?.isNotBlank() = !isNullOrBlank()
 
 fun String?.padHex() = this?.replace("........".toRegex(), "$0 ")
 
+fun List<String>.startsWith(other: String?): Boolean =
+    other.takeIf { it.isNotBlank() }?.let { o -> any { it.startsWith(o) } } ?: false
 
 fun String.fromHtml(): Spanned {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -145,6 +147,12 @@ fun String.fromHtml(): Spanned {
         @Suppress("DEPRECATION")
         Html.fromHtml(this)
     }
+}
+
+inline fun <reified T: Enum<T>> T.next(): T {
+    val values = enumValues<T>()
+    val nextOrdinal = (ordinal + 1) % values.size
+    return values[nextOrdinal]
 }
 
 inline fun <reified V> SparseArray<V>.toList() = valueIterator().asSequence().toList()

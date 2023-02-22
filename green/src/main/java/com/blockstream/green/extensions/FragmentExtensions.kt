@@ -2,6 +2,7 @@ package com.blockstream.green.extensions
 
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -82,10 +83,12 @@ fun Context.localized2faMethods(methods: List<String>): List<String> = methods.m
     localized2faMethod(it)
 }
 
-fun Context.stringFromIdentifier(id: String): String? {
-    val intRes = resources.getIdentifier(id, "string", BuildConfig.APPLICATION_ID)
-    if (intRes > 0) {
-        return getString(intRes)
+fun Context.stringFromIdentifier(id: String, vararg formatArgs: String): String? {
+    if(id.startsWith("id_")) {
+        val intRes = resources.getIdentifier(id, "string", BuildConfig.APPLICATION_ID)
+        if (intRes > 0) {
+            return getString(intRes, *formatArgs)
+        }
     }
     return null
 }
@@ -94,8 +97,8 @@ fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String = requireCon
 
 fun Context.errorFromResourcesAndGDK(throwable: Throwable): String = errorFromResourcesAndGDK(throwable.cause?.message ?: throwable.message ?: "An error occurred")
 
-fun Context.errorFromResourcesAndGDK(error: String): String {
-    stringFromIdentifier(error)?.let {
+fun Context.errorFromResourcesAndGDK(error: String, vararg formatArgs: String): String {
+    stringFromIdentifier(error, *formatArgs)?.let {
         return it
     }
 
@@ -103,12 +106,26 @@ fun Context.errorFromResourcesAndGDK(error: String): String {
         return getString(R.string.id_connection_failed)
     } else if (error.isNotAuthorized()) {
         return getString(R.string.id_login_failed)
+    } else if (error.contains("Breez SDK error")) {
+        return if (error.contains("Self-payments")) {
+            getString(R.string.id_this_payment_is_destined_to_ourselves)
+        } else {
+            val message = try {
+                error.substring(error.indexOf("message: "))
+            } catch (e: Exception) {
+                error.replace("Breez SDK error:", "")
+            }
+            getString(R.string.id_an_unidentified_error_occurred, message)
+        }
     }
 
     return error
 }
-
 fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
+    errorDialog(throwable, false, listener)
+}
+
+fun Fragment.errorDialog(throwable: Throwable, showCopy: Boolean, listener: (() -> Unit)? = null) {
     if (isDevelopmentFlavor) {
         throwable.printStackTrace()
     }
@@ -121,40 +138,63 @@ fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
 
     errorDialog(
         error = errorFromResourcesAndGDK(throwable),
+        showCopy = showCopy,
         listener = listener
     )
 }
-
 fun Fragment.errorDialog(error: String, listener: (() -> Unit)? = null) {
+    errorDialog(error, false, listener)
+}
+
+fun Fragment.errorDialog(error: String, showCopy: Boolean, listener: (() -> Unit)? = null) {
     MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Green_MaterialAlertDialog)
         .setTitle(R.string.id_error)
         .setMessage(error)
         .setPositiveButton(android.R.string.ok, null)
+        .apply {
+            if(showCopy) {
+                setNeutralButton(android.R.string.copy) { _, _ ->
+                    copyToClipboard("Error", content = error, showCopyNotification = true)
+                }
+            }
+        }
         .setOnDismissListener {
             listener?.invoke()
         }
         .show()
 }
 
-fun Fragment.dialog(title: Int, message: Int, listener: (() -> Unit)? = null) {
-    dialog(getString(title), getString(message), listener)
+fun Fragment.dialog(title: Int, message: Int, icon: Int? = null, listener: (() -> Unit)? = null) {
+    requireContext().dialog(title, message, icon, listener)
 }
 
-fun Fragment.dialog(title: String, message: String, isMessageSelectable: Boolean = false) {
-    dialog(title, message, listener = null).also {
+fun Context.dialog(title: Int, message: Int, icon: Int? = null, listener: (() -> Unit)? = null) {
+    dialog(getString(title), getString(message), icon, listener)
+}
+
+fun Fragment.dialog(title: String, message: String, icon: Int? = null, isMessageSelectable: Boolean = false) {
+    dialog(title, message, icon = icon, listener = null).also {
         if(isMessageSelectable){
             it.window?.decorView?.findViewById<TextView>(android.R.id.message)?.setTextIsSelectable(true)
         }
     }
 }
+fun Fragment.dialog(title: String, message: String, icon: Int? = null, listener: (() -> Unit)? = null): AlertDialog {
+    return requireContext().dialog(title, message, icon, listener)
+}
 
-fun Fragment.dialog(title: String, message: String, listener: (() -> Unit)? = null): AlertDialog {
-    return MaterialAlertDialogBuilder(requireContext())
+fun Context.dialog(title: String, message: String, icon: Int? = null, listener: (() -> Unit)? = null): AlertDialog {
+    return MaterialAlertDialogBuilder(this)
         .setTitle(title)
         .setMessage(message)
         .setPositiveButton(android.R.string.ok, null)
         .setOnDismissListener {
             listener?.invoke()
+        }
+        .apply {
+            icon?.also {
+                this.setIcon(it)
+            }
         }
         .show()
 }
@@ -233,6 +273,22 @@ fun Fragment.showPopupMenu(
     popup.menuInflater.inflate(menuRes, popup.menu)
     popup.setOnMenuItemClickListener(listener)
     popup.show()
+}
+
+fun Fragment.showChoiceDialog(
+    title: String,
+    items: Array<CharSequence>,
+    checkedItem: Int,
+    listener: (position: Int) -> Unit
+) {
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle(title)
+        .setSingleChoiceItems(items, checkedItem) { dialog: DialogInterface, position: Int ->
+            listener.invoke(position)
+            dialog.dismiss()
+        }
+        .setNegativeButton(android.R.string.cancel, null)
+        .show()
 }
 
 

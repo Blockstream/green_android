@@ -1,5 +1,6 @@
 package com.blockstream.green.ui.devices
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.*
 import com.blockstream.gdk.GdkBridge
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 import mu.KLogging
 
 class DeviceInfoViewModel @AssistedInject constructor(
+    @SuppressLint("StaticFieldLeak")
     @ApplicationContext val context: Context,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,

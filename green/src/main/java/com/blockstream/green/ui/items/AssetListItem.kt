@@ -4,13 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.blockstream.green.R
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.ListItemAssetBinding
+import com.blockstream.green.extensions.bind
+import com.blockstream.green.extensions.context
 import com.blockstream.green.gdk.AssetPair
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.networkForAsset
 import com.blockstream.green.looks.AssetLook
-import com.blockstream.green.extensions.bind
-import com.blockstream.green.extensions.context
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toPixels
 import kotlinx.coroutines.CoroutineScope
@@ -68,7 +69,7 @@ data class AssetListItem constructor(
             secondaryValue = {
                 if (showBalance) session.starsOrNull ?: look.fiatValue.toAmountLook(
                     session = session,
-                    isFiat = true,
+                    denomination = Denomination.fiat(session),
                     withUnit = true
                 ) ?: "-" else null
             }

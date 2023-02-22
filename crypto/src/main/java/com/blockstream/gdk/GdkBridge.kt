@@ -32,6 +32,7 @@ import com.blockstream.gdk.params.SubAccountParams
 import com.blockstream.gdk.params.SubAccountsParams
 import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.gdk.params.UpdateSubAccountParams
+import com.blockstream.gdk.params.ValidateAddresseesParams
 import com.blockstream.libgreenaddress.GAAuthHandler
 import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.GDK
@@ -60,9 +61,6 @@ class GdkBridge constructor(
     isDevelopment: Boolean,
     extraLogger: Logger? = null
 ) {
-
-    private val bip39WordList by lazy { wally.bip39Wordlist(BIP39_WORD_LIST_LANG) }
-
     val networks by lazy {
         val jsonElement = gdk.getNetworks() as JsonElement
         Networks.fromJsonElement(JsonDeserializer, jsonElement)
@@ -90,6 +88,8 @@ class GdkBridge constructor(
             }
         }
     }
+
+    val breezSdkWorkingDir by lazy { File(dataDir, "breezSdk") }
 
     private fun randomBytes(len: Int): ByteArray {
         return ByteArray(len).also {
@@ -172,6 +172,11 @@ class GdkBridge constructor(
     fun validate(
         session: GASession,
         params: JsonElement
+    ) = gdk.validate(session, params)
+
+    fun validate(
+        session: GASession,
+        params: ValidateAddresseesParams
     ) = gdk.validate(session, params)
 
     fun encryptWithPin(
@@ -321,16 +326,15 @@ class GdkBridge constructor(
 
     fun getMnemonicWordList(): List<String> {
         val wordList = mutableListOf<String>()
-        val enWords = bip39WordList
         for (i in 0 until wally.BIP39_WORDLIST_LEN) {
-            wordList += wally.bip39Word(enWords, i)
+            wordList += wally.bip39Word(i)
         }
 
         return wordList
     }
 
     fun isMnemonicValid(mnemonic: String): Boolean {
-        return wally.bip39MnemonicValidate(bip39WordList, mnemonic)
+        return wally.bip39MnemonicValidate(mnemonic)
     }
 
     fun isXpubValid(xpub: String): Boolean {
@@ -350,6 +354,10 @@ class GdkBridge constructor(
             e.printStackTrace()
             null
         }
+    }
+
+    fun bip85FromMnemonic(mnemonic: String, passphrase: String?, index: Long =  0, isTestnet: Boolean = false): String {
+        return wally.bip85FromMnemonic(mnemonic = mnemonic, passphrase = passphrase, isTestnet = isTestnet, index = index)
     }
 
     fun hasGdkCache(loginData: LoginData): Boolean {
@@ -372,8 +380,6 @@ class GdkBridge constructor(
             ignoreUnknownKeys = true
             isLenient = true
         }
-
-        const val BIP39_WORD_LIST_LANG = "en"
 
         const val KEY_CUSTOM_NETWORK = "custom_network"
 

@@ -10,6 +10,10 @@
             type="String" />
 
         <variable
+            name="isDescription"
+            type="Boolean" />
+
+        <variable
             name="isEditable"
             type="Boolean" />
 
@@ -31,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="2dp"
-            android:text="@string/id_note"
+            android:text="@{isDescription ? @string/id_description : @string/id_note}"
             style="@style/TextAppearance.Green.Overline" />
 
         <com.google.android.material.card.MaterialCardView

@@ -152,7 +152,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         whenever(walletRepository.getSoftwareWallets()).thenReturn(listOf())
         whenever(walletRepository.insertWallet(any())).thenReturn(1)
 
-        viewModel.restoreWallet(options, "123456","valid", "")
+        viewModel.restoreWallet(mock(), options, "123456","valid", "")
 
         verify(walletRepository).insertWallet(any())
         verify(walletRepository, never()).updateWallet(any())
@@ -170,7 +170,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
 
         val options = OnboardingOptions(isRestoreFlow = true)
 
-        viewModel.restoreWallet(options, "123456", "valid", "")
+        viewModel.restoreWallet(mock(), options, "123456", "valid", "")
 
         verify(walletRepository, never()).insertWallet(any())
         verify(walletRepository).updateWallet(any())
@@ -207,7 +207,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         whenever(walletRepository.insertWallet(any())).thenReturn(4)
         whenever(walletRepository.getSoftwareWallets()).thenReturn(listOf(mock(), wallet))
 
-        viewModel.restoreWallet(options, "123456", "valid", "")
+        viewModel.restoreWallet(mock(), options, "123456", "valid", "")
 
         verify(eventObserver).onChanged(argThat {
             val wallet = (this.peekContent() as NavigateEvent.NavigateWithData).data as Wallet

@@ -25,7 +25,6 @@ import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.bottomsheets.EnvironmentListener
-import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -134,7 +133,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
         }
 
         binding.buttonAppSettings.setOnClickListener {
-            AppSettingsDialogFragment.show(childFragmentManager)
+            navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)

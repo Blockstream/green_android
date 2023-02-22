@@ -32,6 +32,7 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
 
     val account: Account? by lazy { arguments?.getParcelable(ACCOUNT) }
     val showBalance: Boolean by lazy { arguments?.getBoolean(SHOW_BALANCE, true) ?: true}
+    val isRefundSwap: Boolean by lazy { arguments?.getBoolean(IS_REFUND_SWAP, false) ?: false}
     override val withDivider: Boolean = false
 
     override fun getFilterAdapter(requestCode: Int): ModelAdapter<*, *> {
@@ -43,7 +44,11 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
                 showBalance = showBalance
             )
         }.observeList(lifecycleScope, session.accountAssetFlow.map { list ->
-            list.filter { it.balance(session) > 0 } // Filter only AccountAsset with funds
+            if(isRefundSwap) {
+                list.filter { it.account.isBitcoin && !it.account.isLightning}
+            }else{
+                list.filter { it.balance(session) > 0 } // Filter only AccountAsset with funds
+            }
         }.map { list ->
             when {
                 account != null -> list.filter { it.account.id == account!!.id }
@@ -84,17 +89,20 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
     companion object {
         private const val ACCOUNT = "ACCOUNT"
         private const val SHOW_BALANCE = "SHOW_BALANCE"
+        private const val IS_REFUND_SWAP = "IS_REFUND_SWAP"
 
         fun show(
             fragmentManager: FragmentManager,
             account: Account? = null,
             showBalance: Boolean = true,
+            isRefundSwap: Boolean = false,
         ) {
             showSingle(AccountAssetBottomSheetDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
                     bundle.putParcelable(ACCOUNT, account)
                     bundle.putBoolean(SHOW_BALANCE, showBalance)
                     bundle.putBoolean(WITH_SEARCH, false)
+                    bundle.putBoolean(IS_REFUND_SWAP, isRefundSwap)
                 }
             }, fragmentManager)
         }

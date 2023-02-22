@@ -35,10 +35,6 @@
             type="Long" />
 
         <variable
-            name="amountCurrency"
-            type="String" />
-
-        <variable
             name="canConvert"
             type="Boolean" />
 
@@ -124,12 +120,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginBottom="2dp"
-                android:text="@{vm.isSweep ? @string/id_private_key : @string/id_recipient_address}"
-                tools:text="@string/id_recipient_address" />
+                android:text="@{vm.isSweep ? @string/id_private_key : vm.accountLiveData.lightning ? @string/id_lightning_invoice_lnurl : @string/id_recipient_address}"
+                tools:text="@string/id_lightning_invoice_lnurl" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                error="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; (`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) || `id_invoice_expired`.equals(vm.transactionError)) ? true : false}">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -137,6 +134,7 @@
                     android:orientation="horizontal">
 
                     <EditText
+                        android:id="@+id/addressEditText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -151,6 +149,22 @@
                         tools:text="address\nmultiline" />
 
                     <ImageButton
+                        android:id="@+id/buttonAddressScan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_qr_code"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="6dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="12dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
+
+                    <ImageButton
                         android:id="@+id/buttonAddressClear"
                         isVisible="@{!liveData.address.empty}"
                         android:layout_width="wrap_content"
@@ -161,9 +175,9 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_x_circle"
                         android:paddingTop="12dp"
-                        android:paddingEnd="6dp"
+                        android:paddingEnd="12dp"
                         android:paddingBottom="12dp"
-                        android:paddingStart="12dp"
+                        android:paddingStart="6dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
 
@@ -178,34 +192,28 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_clipboard"
                         android:paddingTop="12dp"
-                        android:paddingEnd="6dp"
-                        android:paddingBottom="12dp"
-                        android:paddingStart="12dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
-
-                    <ImageButton
-                        android:id="@+id/buttonAddressScan"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:adjustViewBounds="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_qr_code"
-                        android:paddingTop="12dp"
                         android:paddingEnd="12dp"
                         android:paddingBottom="12dp"
                         android:paddingStart="6dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
 
+
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.textview.MaterialTextView
-                gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) ? vm.transactionError : null}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="@{String.format(@string/id_payment_requested_by, liveData.domain)}"
+                isVisible="@{!liveData.domain.empty}"
+                android:textAppearance="?attr/textAppearanceLabelMedium" />
+
+            <com.google.android.material.textview.MaterialTextView
+                gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) || `id_invoice_expired`.equals(vm.transactionError) ? vm.transactionError : null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -235,7 +243,8 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                error="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; (`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) || vm.transactionError.startsWith(`id_amount_must_be_at_least_s`) || vm.transactionError.startsWith(`id_amount_must_be_at_most_s`)) ? true : false}">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -252,7 +261,7 @@
                         android:layout_marginBottom="16dp"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
                         android:fontFamily="@font/monospace"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
@@ -261,17 +270,35 @@
                         tools:text="1234" />
 
                     <TextView
+                        android:id="@+id/amountCurrency"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="6dp"
                         android:fontFamily="@font/monospace"
-                        android:text="@{amountCurrency}"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textStyle="bold"
                         android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError)}"
                         android:textColor="@color/selector_image_button"
                         tools:text="BTC" />
+
+                    <ImageButton
+                        android:id="@+id/buttonAmountCurrency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false  &amp;&amp; !vm.isBumpOrSweep &amp;&amp; canConvert &amp;&amp; !liveData.hasLockedAmount}"
+                        android:scaleType="centerInside"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="6dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="12dp"
+                        android:src="@drawable/ic_arrows_counter_clockwise"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                        app:tint="@color/selector_image_button" />
 
                     <ImageButton
                         android:id="@+id/buttonAmountClear"
@@ -281,11 +308,11 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
                         android:paddingTop="12dp"
-                        android:paddingEnd="6dp"
+                        android:paddingEnd="12dp"
                         android:paddingBottom="12dp"
-                        android:paddingStart="12dp"
+                        android:paddingStart="6dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_x_circle"
                         app:tint="@color/selector_image_button"
@@ -300,34 +327,17 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
+                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
                         android:paddingTop="12dp"
-                        android:paddingEnd="6dp"
+                        android:paddingEnd="12dp"
                         android:paddingBottom="12dp"
-                        android:paddingStart="12dp"
+                        android:paddingStart="6dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_clipboard"
                         app:tint="@color/selector_image_button"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
 
-                    <ImageButton
-                        android:id="@+id/buttonAmountCurrency"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:adjustViewBounds="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false  &amp;&amp; !vm.isBumpOrSweep &amp;&amp; canConvert}"
-                        android:scaleType="centerInside"
-                        android:paddingTop="12dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="12dp"
-                        android:paddingStart="6dp"
-                        android:src="@drawable/ic_arrows_counter_clockwise"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
-                        app:tint="@color/selector_image_button" />
 
                 </LinearLayout>
 
@@ -341,17 +351,28 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
-                    gdkError="@{`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) ? vm.transactionError : null}"
+                    gdkError="@{`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) || vm.transactionError.startsWith(`id_amount_must_be_at_least_s`) || vm.transactionError.startsWith(`id_amount_must_be_at_most_s`) ? vm.transactionError : null}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
+                    isVisible="@{vm.transactionError != null &amp;&amp; !vm.transactionError.empty}"
                     android:textAppearance="?attr/textAppearanceLabelMedium"
                     android:textColor="@color/error" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
+                    isVisible="@{(vm.transactionError == null || vm.transactionError.empty) &amp;&amp; liveData.minAmount != null &amp;&amp; !liveData.hasLockedAmount}"
+                    android:text="@{String.format(@string/id_limits, liveData.minAmount , liveData.maxAmount)}"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/color_on_surface_emphasis_medium" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    isInvisible="@{vm.transactionError != null}"
                     android:text="@{liveData.exchange}"
                     android:textAlignment="textEnd"
                     android:textAppearance="?attr/textAppearanceLabelMedium" />
@@ -361,7 +382,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -394,7 +416,7 @@
 
                 <com.google.android.material.button.MaterialButtonToggleGroup
                     android:id="@+id/toggleGroupSendAll"
-                    isVisible="@{!vm.isBumpOrSweep}"
+                    isVisible="@{!vm.isBumpOrSweep &amp;&amp; !vm.accountLiveData.lightning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end">
@@ -410,6 +432,38 @@
                 </com.google.android.material.button.MaterialButtonToggleGroup>
 
             </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/amountLinearLayout">
+
+            <ImageView
+                bitmap="@{liveData.image}"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:maxWidth="100dp"
+                android:maxHeight="100dp"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_lightning" />
+
+            <TextView
+                isVisible="@{!liveData.description.empty}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{liveData.description}"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                tools:text="BTC" />
 
         </LinearLayout>
 

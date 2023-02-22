@@ -14,7 +14,6 @@ import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DismissBottomSheetDialogListener
-import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.utils.linkedText
 import com.blockstream.green.utils.openBrowser
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,7 +54,7 @@ open class SetupNewWalletFragment : AbstractOnboardingFragment<SetupNewWalletFra
         }
 
         binding.buttonAppSettings.setOnClickListener {
-            AppSettingsDialogFragment.show(childFragmentManager)
+            navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
         }
 
         binding.terms.movementMethod = LinkMovementMethod.getInstance()
@@ -79,7 +78,7 @@ open class SetupNewWalletFragment : AbstractOnboardingFragment<SetupNewWalletFra
     }
 
     private fun askForAnalyticsConsentAndNavigate(directions: NavDirections) {
-        if (ConsentBottomSheetDialogFragment.shouldShowConsentDialog(countly, settingsManager)) {
+        if (ConsentBottomSheetDialogFragment.shouldShowConsentDialog(settingsManager)) {
             pendingNavigation = directions
             ConsentBottomSheetDialogFragment.show(childFragmentManager)
         } else {

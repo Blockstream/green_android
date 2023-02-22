@@ -63,7 +63,8 @@
         android:theme="@style/Theme.Green"
         android:hardwareAccelerated="true"
         android:enableOnBackInvokedCallback="true"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:targetApi="tiramisu">
 
         <!--In v4 we have to change launch mode to singleTask-->
         <!--Setting launchMode="singleTask" prevents Android,-->
@@ -86,6 +87,7 @@
                 <data android:scheme="bitcoin" />
                 <data android:scheme="liquidnetwork" />
                 <data android:scheme="liquidtestnet" />
+                <data android:scheme="lightning" />
             </intent-filter>
 
             <intent-filter>
@@ -136,6 +138,7 @@
         </provider>
 
         <service android:name=".services.TaskService"/>
+        <service android:name=".services.LightningService"/>
 
     </application>
 

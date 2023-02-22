@@ -51,14 +51,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <ImageView
             android:id="@+id/policyIcon"
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:layout_marginEnd="-8dp"
             android:layout_marginBottom="-8dp"
-            android:src="@{account.network.multisig ? @drawable/ic_multisig : @drawable/ic_singlesig}"
+            android:src="@{account.network.multisig ? @drawable/ic_multisig : account.network.lightning ? @drawable/ic_lightning : @drawable/ic_singlesig}"
             app:layout_constraintBottom_toBottomOf="@+id/icon"
             app:layout_constraintDimensionRatio="w,1:1"
             app:layout_constraintEnd_toEndOf="@+id/icon"
@@ -146,7 +145,8 @@
             app:layout_constraintEnd_toEndOf="@+id/icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/icon"
-            tools:text="2of2" />
+            tools:text="2of2"
+            tools:ignore="SpUsage" />
 
         <ImageView
             android:id="@+id/editIconImageView"

@@ -124,7 +124,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     fun updateWatchOnlyUsername() {
         if (!session.isWatchOnly) {
             doUserAction({
-                session.activeSessions.filter { !it.isElectrum }.toList().map { network ->
+                session.activeSessions.filter { it.isMultisig }.map { network ->
                     network to session.getWatchOnlyUsername(network)
                 }.toMap()
             }, onError = {
@@ -283,14 +283,11 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         })
     }
 
-    fun saveGlobalSettings(newSettings: Settings) {
-        doUserAction({
-            session.changeGlobalSettings(newSettings)
-            session.updateSettings()
-        }, onSuccess = {
+    override fun saveGlobalSettings(newSettings: Settings, onSuccess: (() -> Unit)?) {
+        super.saveGlobalSettings(newSettings){
             updateWatchOnlyUsername()
             onEvent.postValue(ConsumableEvent(GdkEvent.Success))
-        })
+        }
     }
 
     fun saveNetworkSettings(network: Network, newSettings: Settings) {

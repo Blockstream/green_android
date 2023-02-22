@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "aafa350ed8066a465cd6a5c43266abaf",
+    "identityHash": "fd2556c5f8ae348ff9f827697915fe7f",
     "entities": [
       {
         "tableName": "wallets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `wallet_hash_id` TEXT NOT NULL DEFAULT '', `name` TEXT NOT NULL, `is_recovery_confirmed` INTEGER NOT NULL, `ask_bip39_passphrase` INTEGER NOT NULL, `watch_only_username` TEXT, `is_hardware` INTEGER NOT NULL, `is_testnet` INTEGER NOT NULL, `network` TEXT NOT NULL, `active_account` INTEGER NOT NULL, `device_identifiers` TEXT, `order` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `wallet_hash_id` TEXT NOT NULL DEFAULT '', `name` TEXT NOT NULL, `is_recovery_confirmed` INTEGER NOT NULL, `ask_bip39_passphrase` INTEGER NOT NULL, `watch_only_username` TEXT, `is_hardware` INTEGER NOT NULL, `is_testnet` INTEGER NOT NULL, `is_lightning` INTEGER NOT NULL, `network` TEXT NOT NULL, `active_account` INTEGER NOT NULL, `device_identifiers` TEXT, `order` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -58,6 +58,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "isLightning",
+            "columnName": "is_lightning",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "activeNetwork",
             "columnName": "network",
             "affinity": "TEXT",
@@ -83,10 +89,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [
           {
@@ -168,11 +174,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "wallet_id",
             "credential_type"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -193,7 +199,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'aafa350ed8066a465cd6a5c43266abaf')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fd2556c5f8ae348ff9f827697915fe7f')"
     ]
   }
 }

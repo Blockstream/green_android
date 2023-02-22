@@ -24,6 +24,7 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getNetworkColor
+import com.blockstream.green.services.LightningService
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.MainActivity
 import kotlinx.coroutines.launch
@@ -43,12 +44,14 @@ class NotificationManager constructor(
 
     private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            intent.extras?.getLong(WALLET_ID, -1)?.let { walletId ->
-                if (intent.action == ACTION_LOGOUT) {
+            if (intent.action == ACTION_LOGOUT) {
+                intent.extras?.getLong(WALLET_ID, -1)?.also { walletId ->
                     applicationScope.launch(context = logException(countly)) {
                         sessionManager.getWalletSessionOrNull(walletId)?.disconnectAsync()
                     }
                 }
+            } else if (intent.action == ACTION_DISCONNECT_LIGHTNING) {
+                LightningService.stop(context)
             }
         }
     }
@@ -57,34 +60,45 @@ class NotificationManager constructor(
         // Listen to foreground / background events
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
-        createNotificationChannel()
+        createNotificationChannels()
 
         sessionManager.connectionChangeEvent.observeForever {
-            updateNotifications(isOnForeground)
+            updateNotifications()
         }
 
-        context.registerReceiver(broadcastReceiver, IntentFilter(ACTION_LOGOUT))
+        ContextCompat.registerReceiver(
+            context,
+            broadcastReceiver,
+            IntentFilter(ACTION_LOGOUT),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+        ContextCompat.registerReceiver(
+            context,
+            broadcastReceiver,
+            IntentFilter(ACTION_DISCONNECT_LIGHTNING),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onResume(owner: LifecycleOwner) {
         isOnForeground = true
-        updateNotifications(isOnForeground)
+        updateNotifications()
     }
 
     override fun onPause(owner: LifecycleOwner) {
         isOnForeground = false
-        updateNotifications(isOnForeground)
+        updateNotifications()
     }
 
-    fun cancelAll(){
+    fun cancelAll() {
         androidNotificationManager.cancelAll()
     }
 
-    fun notificationPermissionGiven(){
-        updateNotifications(isOnForeground)
+    fun notificationPermissionGiven() {
+        updateNotifications()
     }
 
-    private fun updateNotifications(isForeground: Boolean) {
+    private fun updateNotifications() {
 
         // do a for list to avoid Concurrent modification exception
         // TODO fix
@@ -95,10 +109,10 @@ class NotificationManager constructor(
                 session.getWallet(walletRepository)?.also { wallet ->
                     if (session.isConnected) {
                         val sessionTimeout =
-                            if (isForeground) 0 else (session.getSettings(null)?.altimeout
+                            if (isOnForeground) 0 else (session.getSettings(null)?.altimeout
                                 ?: 1) * 60 * 1000L
 
-                        val notification = createNotification(
+                        val notification = createWalletNotification(
                             context = context,
                             session = session,
                             wallet = wallet,
@@ -113,21 +127,32 @@ class NotificationManager constructor(
         }
     }
 
-    private fun createNotificationChannel() {
+    private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                WALLETS_CHANNEL_ID,
-                context.getString(R.string.id_connected_wallets),
-                NotificationManager.IMPORTANCE_LOW
-            )
 
             if (androidNotificationManager.getNotificationChannel(WALLETS_CHANNEL_ID) == null) {
-                androidNotificationManager.createNotificationChannel(channel)
+                androidNotificationManager.createNotificationChannel(
+                    NotificationChannel(
+                        WALLETS_CHANNEL_ID,
+                        context.getString(R.string.id_connected_wallets),
+                        NotificationManager.IMPORTANCE_LOW
+                    )
+                )
+            }
+
+            if (androidNotificationManager.getNotificationChannel(LIGHTNING_CHANNEL_ID) == null) {
+                androidNotificationManager.createNotificationChannel(
+                    NotificationChannel(
+                        LIGHTNING_CHANNEL_ID,
+                        context.getString(R.string.id_lightning),
+                        NotificationManager.IMPORTANCE_LOW
+                    )
+                )
             }
         }
     }
 
-    private fun createNotification(
+    private fun createWalletNotification(
         context: Context,
         session: GdkSession,
         wallet: Wallet,
@@ -159,7 +184,12 @@ class NotificationManager constructor(
             .setColorized(true)
             .setSmallIcon(R.drawable.ic_stat_green)
             .setContentIntent(pendingIntent)
-            .setColor(ContextCompat.getColor(context, if(session.gdkSessions.size == 1) session.mainAssetNetwork.id.getNetworkColor() else R.color.brand_green))
+            .setColor(
+                ContextCompat.getColor(
+                    context,
+                    if (session.gdkSessions.size == 1) session.mainAssetNetwork.id.getNetworkColor() else R.color.brand_green
+                )
+            )
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(R.drawable.ic_close, context.getString(R.string.id_logout), logoutIntent)
@@ -187,6 +217,57 @@ class NotificationManager constructor(
             .build()
     }
 
+    fun showLightningNotification() {
+        androidNotificationManager.notify(
+            LIGHTNING_NOTIFICATION_ID.hashCode(),
+            createLightningNotification(context)
+        )
+    }
+
+    fun hideLightningNotification() {
+        androidNotificationManager.cancel(LIGHTNING_NOTIFICATION_ID.hashCode())
+    }
+
+    fun createLightningNotification(
+        context: Context,
+    ): Notification {
+        val intent = Intent(context, MainActivity::class.java).also {
+            it.action = MainActivity.OPEN_WALLET
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context, WALLET_REQUEST_CODE.hashCode(), intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val disconnectIntent = PendingIntent.getBroadcast(
+            context,
+            DISCONNECT_REQUEST_CODE.hashCode(),
+            Intent(ACTION_DISCONNECT_LIGHTNING).also {
+                it.putExtra(WALLET_ID, 234)
+            },
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
+            .setContentTitle(context.getString(R.string.id_lightning))
+            .setColorized(true)
+            .setSmallIcon(R.drawable.ic_stat_green)
+            .setContentIntent(pendingIntent)
+            .setColor(ContextCompat.getColor(context, R.color.lightning))
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
+            .addAction(
+                R.drawable.ic_close,
+                context.getString(R.string.id_disconnect),
+                disconnectIntent
+            )
+            .apply {
+                setVisibility(if (settingsManager.getApplicationSettings().enhancedPrivacy) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE)
+            }
+            .build()
+    }
+
     // Make hardware wallet id positive
     private fun notificationId(wallet: Wallet): Int = notificationId(wallet.id)
     private fun notificationId(walletId: WalletId): Int = (10000 + walletId).toInt()
@@ -196,7 +277,15 @@ class NotificationManager constructor(
 
     companion object : KLogging() {
         const val WALLETS_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.WALLETS_CHANNEL_ID"
+        const val LIGHTNING_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.LIGHTNING_CHANNEL_ID"
+
+        const val DISCONNECT_REQUEST_CODE = "DISCONNECT_REQUEST_CODE"
+        const val WALLET_REQUEST_CODE = "WALLET_REQUEST_CODE"
+        const val LIGHTNING_NOTIFICATION_ID = "LIGHTNING_NOTIFICATION_ID"
+
         const val ACTION_LOGOUT = "${BuildConfig.APPLICATION_ID}.ACTION_LOGOUT"
+        const val ACTION_DISCONNECT_LIGHTNING =
+            "${BuildConfig.APPLICATION_ID}.ACTION_DISCONNECT_LIGHTNING"
         const val WALLET_ID = "WALLET_ID"
     }
 }

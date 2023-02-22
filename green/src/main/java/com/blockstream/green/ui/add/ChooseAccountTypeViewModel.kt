@@ -9,8 +9,9 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.hasHistory
 import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.items.AccountTypeListItem
-import com.mikepenz.fastadapter.GenericItem
+import com.blockstream.green.utils.AppKeystore
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.combine
@@ -18,12 +19,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class ChooseAccountTypeViewModel @AssistedInject constructor(
+    appKeystore: AppKeystore,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    settingsManager: SettingsManager,
     countly: Countly,
     @Assisted wallet: Wallet,
     @Assisted initAssetId: String?
-) : AbstractAddAccountViewModel(sessionManager, walletRepository, countly, wallet) {
+) : AbstractAddAccountViewModel(appKeystore, sessionManager, walletRepository, countly, wallet) {
 
     private var _assetIdLiveData = MutableLiveData<String>()
     val assetIdLiveData: LiveData<String>
@@ -43,54 +46,75 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
             showAdvancedLiveData.value = value
         }
 
-    private var _accountTypesLiveData = MutableLiveData<List<GenericItem>>()
-    val accountTypesLiveData: LiveData<List<GenericItem>>
+    private var _accountTypesLiveData = MutableLiveData<List<AccountTypeListItem>>()
+    val accountTypesLiveData: LiveData<List<AccountTypeListItem>>
         get() = _accountTypesLiveData
 
-    val accountTypes
-        get() = _accountTypesLiveData.value!!
+
+    val allAccountTypes = MutableLiveData<List<AccountTypeListItem>>()
+    val filteredAccountTypes = MutableLiveData<List<AccountTypeListItem>>()
 
     init {
         _assetIdLiveData.value = initAssetId ?: (session.bitcoin ?: session.liquid ?: session.defaultNetwork).policyAsset
 
-        combine(
-            assetIdLiveData.asFlow(),
-            showAdvancedLiveData.asFlow()
-        ) { _, _ ->
-            Unit
-        }.onEach {
-            val list = mutableListOf<GenericItem>()
+        assetIdLiveData.asFlow().onEach {
+            val list = mutableListOf<AccountType>()
 
             val isAmp = session.enrichedAssets[assetId]?.isAmp ?: false
             val isBitcoin = assetId == BTC_POLICY_ASSET
 
-            // Check if singlesig networks are available in this session
-            if (!isAmp && ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null))) {
-                list += AccountTypeListItem(AccountType.BIP49_SEGWIT_WRAPPED)
+            if(isAmp){
+                list += AccountType.AMP_ACCOUNT
+            }else {
+                // Check if singlesig networks are available in this session
+                if ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null)) {
+                    list += AccountType.BIP49_SEGWIT_WRAPPED
 
-                if (showAdvanced) {
-                    list += AccountTypeListItem(AccountType.BIP84_SEGWIT)
+                    list += AccountType.BIP84_SEGWIT
+
+                    if (isBitcoin && !session.isHardwareWallet && !session.hasLightning && settingsManager.getApplicationSettings().experimentalFeatures && !session.isTestnet && settingsManager.lightningEnabled) {
+                        list += AccountType.LIGHTNING
+                    }
                 }
-            }
 
-            // Check if multisig networks are available in this session
-            if (!isAmp && ((isBitcoin && session.bitcoinMultisig != null) || (!isBitcoin && session.liquidMultisig != null))) {
-                list += AccountTypeListItem(AccountType.STANDARD)
+                // Check if multisig networks are available in this session
+                if ((isBitcoin && session.bitcoinMultisig != null) || (!isBitcoin && session.liquidMultisig != null)) {
+                    list += AccountType.STANDARD
 
-                if (showAdvanced) {
                     list += if (isBitcoin) {
-                        AccountTypeListItem(AccountType.TWO_OF_THREE)
+                        AccountType.TWO_OF_THREE
                     } else {
-                        AccountTypeListItem(AccountType.AMP_ACCOUNT)
+                        AccountType.AMP_ACCOUNT
                     }
                 }
             }
 
-            if (isAmp) {
-                list += AccountTypeListItem(AccountType.AMP_ACCOUNT)
+            allAccountTypes.value = list.map {
+                AccountTypeListItem(it)
             }
 
-            _accountTypesLiveData.value = list
+            filteredAccountTypes.value = list.filter {
+                it == AccountType.BIP49_SEGWIT_WRAPPED || it == AccountType.STANDARD || it == AccountType.LIGHTNING || (it == AccountType.AMP_ACCOUNT && isAmp)
+            }.map {
+                AccountTypeListItem(it)
+            }
+        }.launchIn(viewModelScope)
+
+        combine(
+            allAccountTypes.asFlow(),
+            showAdvancedLiveData.asFlow()
+        ) { _, _ ->
+            Unit
+        }.onEach {
+            val list = if(showAdvanced){
+                allAccountTypes.value
+            }else{
+                filteredAccountTypes.value
+            }
+
+            list?.also {
+                _accountTypesLiveData.value = it
+            }
 
         }.launchIn(viewModelScope)
     }

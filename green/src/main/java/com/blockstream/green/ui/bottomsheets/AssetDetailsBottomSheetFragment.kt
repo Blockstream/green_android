@@ -11,13 +11,13 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.AssetDetailsBottomSheetBinding
 import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.gdk.networkForAsset
-import com.blockstream.green.ui.items.OverlineTextListItem
 import com.blockstream.green.looks.AssetLook
+import com.blockstream.green.ui.items.OverlineTextListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -32,8 +32,8 @@ class AssetDetailsBottomSheetFragment: WalletBottomSheetDialogFragment<AssetDeta
     val assetId by lazy { requireArguments().getString(ASSET_ID) ?: BTC_POLICY_ASSET }
     val asset by lazy { session.getAsset(assetId) }
 
-    override val network by lazy { assetId.networkForAsset(session) }
     override val accountOrNull by lazy { requireArguments().getParcelable<Account?>(ACCOUNT) }
+    override val network by lazy { accountOrNull?.network ?: assetId.networkForAsset(session) }
 
     override fun inflate(layoutInflater: LayoutInflater) = AssetDetailsBottomSheetBinding.inflate(layoutInflater)
 

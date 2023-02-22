@@ -321,8 +321,8 @@ class DeviceConnectionManager constructor(
 
             val network = when {
                 isBitcoin && isTestnet -> gdkBridge.networks.testnetBitcoinElectrum
-                isLiquid && !isTestnet -> gdkBridge.networks.liquidElectrum
-                isLiquid && isTestnet -> gdkBridge.networks.testnetLiquidElectrum
+                isLiquid && !isTestnet -> gdkBridge.networks.liquidGreen
+                isLiquid && isTestnet -> gdkBridge.networks.testnetLiquidGreen
                 else -> {
                     gdkBridge.networks.bitcoinElectrum
                 }

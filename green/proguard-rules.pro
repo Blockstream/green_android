@@ -88,7 +88,6 @@
 -keep class org.openudid.** { *; }
 -keep class ly.count.android.sdk.** { *; }
 
-
 # Until this is fixed https://youtrack.jetbrains.com/issue/KTOR-5528/Missing-class-warning-when-using-R8-with-ktor-client-in-android-application
 # https://github.com/square/okhttp/commit/9da841c24c3b3dabc1d9230ab2f1e71105768771
 # https://stackoverflow.com/questions/76042330/android-gradle-plugin-8-0-0-with-kotlin-1-8-20-causes-okhttp3-r8-minify-problem

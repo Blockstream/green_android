@@ -87,60 +87,6 @@
                 isVisible="@{isSelected}"
                 layout="@layout/select_account_layout" />
 
-<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                isVisible="@{isSelected}"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:clipToPadding="false">-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/createAccountTextView"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginStart="16dp"-->
-<!--                    android:layout_marginEnd="8dp"-->
-<!--                    android:ellipsize="end"-->
-<!--                    android:lines="1"-->
-<!--                    android:text="@string/id_create_new_account"-->
-<!--                    android:textAppearance="?attr/textAppearanceLabelLarge"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toStartOf="@+id/arrow"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/arrow"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="8dp"-->
-<!--                    android:layout_marginEnd="8dp"-->
-<!--                    android:layout_marginBottom="8dp"-->
-<!--                    android:padding="8dp"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent">-->
-
-<!--                    <com.google.android.material.card.MaterialCardView-->
-<!--                        android:layout_width="42dp"-->
-<!--                        android:layout_height="42dp"-->
-<!--                        android:elevation="0dp"-->
-<!--                        android:padding="12dp"-->
-<!--                        app:cardBackgroundColor="@color/brand_green"-->
-<!--                        app:cardElevation="0dp">-->
-
-<!--                        <androidx.appcompat.widget.AppCompatImageView-->
-<!--                            android:layout_width="20dp"-->
-<!--                            android:layout_height="20dp"-->
-<!--                            android:layout_gravity="center"-->
-<!--                            android:adjustViewBounds="true"-->
-<!--                            android:src="@drawable/ic_baseline_arrow_forward_24"-->
-<!--                            app:tint="@color/white" />-->
-
-<!--                    </com.google.android.material.card.MaterialCardView>-->
-<!--                </FrameLayout>-->
-
-<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

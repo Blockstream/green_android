@@ -48,14 +48,15 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textStyle="bold"
                 tools:text="Important!" />
 
             <TextView
                 android:id="@+id/caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textAppearance="?attr/textAppearanceBodySmall"
                 android:textSize="12dp"
                 android:visibility="gone"
                 android:includeFontPadding="false"

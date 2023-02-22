@@ -1,6 +1,11 @@
 package com.blockstream.gdk.params
 
+import com.blockstream.gdk.BITS_UNIT
+import com.blockstream.gdk.BTC_UNIT
 import com.blockstream.gdk.GAJson
+import com.blockstream.gdk.MBTC_UNIT
+import com.blockstream.gdk.SATOSHI_UNIT
+import com.blockstream.gdk.UBTC_UNIT
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -26,11 +31,11 @@ data class Limits(
     companion object {
         fun fromUnit(unit: String, value: String) =
             when (unit) {
-                "btc" -> Limits(btc = value, isFiat = false)
-                "mbtc" -> Limits(mbtc = value, isFiat = false)
-                "ubtc" -> Limits(ubtc = value, isFiat = false)
-                "bits" -> Limits(bits = value, isFiat = false)
-                "sats" -> Limits(sats = value, isFiat = false)
+                BTC_UNIT -> Limits(btc = value, isFiat = false)
+                MBTC_UNIT -> Limits(mbtc = value, isFiat = false)
+                UBTC_UNIT -> Limits(ubtc = value, isFiat = false)
+                BITS_UNIT -> Limits(bits = value, isFiat = false)
+                SATOSHI_UNIT -> Limits(sats = value, isFiat = false)
                 else -> Limits(fiat = value, isFiat = true)
             }
 

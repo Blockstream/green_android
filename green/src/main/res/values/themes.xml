@@ -25,6 +25,8 @@
 
         <item name="textAppearanceOverline">@style/TextAppearance.Green.Overline</item>
 
+        <item name="android:textAppearanceListItemSmall">@style/TextAppearance.Green.ListItem</item>
+
         <!--  Deprecated      -->
         <item name="textAppearanceBody1">@style/TextAppearance.Green.BodyMedium</item>
         <item name="textAppearanceBody2">@style/TextAppearance.Green.BodySmall</item>
@@ -113,9 +115,9 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
     </style>
 
-    <style name="ThemeOverlay.Green.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Green.Title.Text</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Green.Body.Text</item>
+    <style name="ThemeOverlay.Green.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
+<!--        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Green.Title.Text</item>-->
+<!--        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Green.Body.Text</item>-->
     </style>
 
 </resources>

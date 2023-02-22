@@ -11,11 +11,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp">
 
-        <ImageView
+    <ImageView
             android:id="@+id/iconLeft"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -29,7 +32,7 @@
             android:layout_weight="1"
             android:includeFontPadding="false"
             android:text="@string/id_transactions"
-            android:textAppearance="?attr/textAppearanceTitleLarge" />
+            android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"

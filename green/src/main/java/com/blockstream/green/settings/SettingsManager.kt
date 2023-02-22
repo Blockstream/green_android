@@ -3,12 +3,22 @@ package com.blockstream.green.settings
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.green.R
+import com.blockstream.green.data.Countly
 import com.blockstream.green.utils.SecureRandom
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import java.util.UUID
+import javax.inject.Provider
 
-class SettingsManager constructor(context: Context, private val sharedPreferences: SharedPreferences) {
+class SettingsManager constructor(private val context: Context, private val sharedPreferences: SharedPreferences, val countlyProvider: Provider<Countly>) {
+
+    val analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics)
+    val rateGooglePlayEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play)
+
+    var lightningCodeOverride = false
+    val lightningEnabled
+        get() = context.resources.getBoolean(R.bool.feature_lightning) && (countlyProvider.get().isLightningFeatureEnabled() || lightningCodeOverride)
 
     private var appSettingsSharedPreferences: SharedPreferences =
         context.getSharedPreferences(APPLICATION_SETTINGS_NAME, Context.MODE_PRIVATE)

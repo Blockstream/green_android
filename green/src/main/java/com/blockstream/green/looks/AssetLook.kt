@@ -2,6 +2,7 @@ package com.blockstream.green.looks
 
 import com.blockstream.gdk.data.Balance
 import com.blockstream.gdk.params.Convert
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getAssetName
 import com.blockstream.green.gdk.isPolicyAsset
@@ -21,13 +22,13 @@ class AssetLook constructor(
     private val isPolicyAsset by lazy { assetId.isPolicyAsset(session) }
 
     suspend fun balance(
-        isFiat: Boolean? = null,
+        denomination: Denomination? = null,
         withUnit: Boolean = false,
         withMinimumDigits: Boolean = true
     ): String = amount.toAmountLookOrNa(
-        session,
+        session = session,
         assetId = assetId,
-        isFiat = isFiat,
+        denomination = denomination,
         withUnit = withUnit,
         withGrouping = true,
         withMinimumDigits = withMinimumDigits

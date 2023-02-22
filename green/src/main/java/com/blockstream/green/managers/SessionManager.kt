@@ -20,6 +20,7 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import com.blockstream.jade.HttpRequestProvider
+import com.blockstream.lightning.LightningManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,6 +38,7 @@ import kotlin.properties.Delegates
 
 class SessionManager constructor(
     private val applicationScope: ApplicationScope,
+    val lightningManager: LightningManager,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private var countlyProvider: Provider<Countly>,
@@ -86,7 +88,7 @@ class SessionManager constructor(
 
     private var timeoutTimers = mutableListOf<Timer>()
 
-    var pendingBip21Uri = MutableLiveData<ConsumableEvent<String>>()
+    var pendingUri = MutableLiveData<ConsumableEvent<String>>()
 
     var connectionChangeEvent = MutableLiveData<Boolean>()
 

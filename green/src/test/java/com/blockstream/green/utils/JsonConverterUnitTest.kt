@@ -1,14 +1,15 @@
 package com.blockstream.green.utils
 
-import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.Pricing
 import com.blockstream.gdk.data.Settings
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.gdk.GdkSession
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.*
@@ -17,25 +18,22 @@ import java.util.*
 class JsonConverterUnitTest {
 
     @Mock
-    private lateinit var network: Network
-
-    @Mock
     private lateinit var session: GdkSession
 
     private val dotLocale = Locale.US
     private val commaLocale = Locale.ITALIAN
 
-    private fun initMock(unit: String) {
+    private fun initMock(fiat: String) {
         val settings: Settings = mock()
 
-        whenever(settings.unit).thenReturn(unit)
-        whenever(session.getSettings(any())).thenReturn(settings)
+        whenever(settings.pricing).thenReturn(Pricing(
+            fiat, fiat
+        ))
+        whenever(session.getSettings(anyOrNull())).thenReturn(settings)
     }
 
     @Test
     fun test_valuesInBTC() {
-        initMock("BTC")
-
         val tests = mapOf(
             "123" to "123",
             "123.1" to "123.1",
@@ -51,9 +49,7 @@ class JsonConverterUnitTest {
                 UserInput.parseUserInput(
                     session,
                     test.value.replace(' ', ','),
-                    isFiat = false,
                     locale = dotLocale,
-                    networkForTest = network,
                 ).amount
             )
         }
@@ -65,9 +61,7 @@ class JsonConverterUnitTest {
                 UserInput.parseUserInput(
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
-                    isFiat = false,
                     locale = commaLocale,
-                    networkForTest = network,
                 ).amount
             )
         }
@@ -75,8 +69,6 @@ class JsonConverterUnitTest {
 
     @Test
     fun test_valuesInSat() {
-        initMock("sat")
-
         val tests = mapOf(
             "123" to "123",
             "123" to "123.1",
@@ -89,7 +81,7 @@ class JsonConverterUnitTest {
         for (test in tests) {
             Assert.assertEquals(
                 test.key,
-                UserInput.parseUserInput(session, test.value.replace(' ', ','), isFiat = false, locale = dotLocale, networkForTest = network).amount
+                UserInput.parseUserInput(session, test.value.replace(' ', ','), locale = dotLocale, denomination = Denomination.SATOSHI).amount
             )
         }
 
@@ -100,9 +92,8 @@ class JsonConverterUnitTest {
                 UserInput.parseUserInput(
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
-                    isFiat = false,
                     locale = commaLocale,
-                    networkForTest = network
+                    denomination = Denomination.SATOSHI
                 ).amount
             )
         }
@@ -126,7 +117,7 @@ class JsonConverterUnitTest {
         for (test in tests) {
             Assert.assertEquals(
                 test.key,
-                UserInput.parseUserInput(session, test.value.replace(' ', ','), isFiat = true, locale = dotLocale, networkForTest = network).amount
+                UserInput.parseUserInput(session, test.value.replace(' ', ','), denomination = Denomination.fiat(session), locale = dotLocale).amount
             )
         }
 
@@ -137,9 +128,8 @@ class JsonConverterUnitTest {
                 UserInput.parseUserInput(
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
-                    isFiat = true,
-                    locale = commaLocale,
-                    networkForTest = network
+                    denomination = Denomination.fiat(session),
+                    locale = commaLocale
                 ).amount
             )
         }
@@ -147,32 +137,28 @@ class JsonConverterUnitTest {
 
     @Test
     fun test_invalid_inputs() {
-        initMock("BTC")
-
-        Assert.assertEquals("", UserInput.parseUserInputSafe(session, null, networkForTest = network).amount)
-        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "abc", networkForTest = network).amount)
-        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "123abc", networkForTest = network).amount)
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, null).amount)
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "abc").amount)
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "123abc").amount)
     }
 
     @Test
     fun test_invalid_inputs_throws() {
-        initMock("BTC")
-
         Assert.assertThrows(Exception::class.java) {
-            UserInput.parseUserInput(session, null, networkForTest = network)
+            UserInput.parseUserInput(session, null)
         }
         Assert.assertThrows(Exception::class.java) {
-            UserInput.parseUserInput(session, "abc", networkForTest = network)
+            UserInput.parseUserInput(session, "abc")
         }
         Assert.assertThrows(Exception::class.java) {
-            UserInput.parseUserInput(session, "123abc", networkForTest = network)
+            UserInput.parseUserInput(session, "123abc")
         }
     }
 
 
     @Test
     fun test_grouping() {
-        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale =  Locale.US, networkForTest = network).amount)
-        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale =  Locale.ITALIAN, networkForTest = network).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale =  Locale.US).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale =  Locale.ITALIAN).amount)
     }
 }

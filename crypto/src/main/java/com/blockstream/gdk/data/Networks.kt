@@ -14,6 +14,32 @@ data class Networks(
 
     override val keepJsonElement = true
 
+    val lightning by lazy {
+        Network(
+            id = Network.Lightning,
+            network = Network.Lightning,
+            name = "Lightning",
+            isMainnet = true,
+            isLiquid = false,
+            isDevelopment = false,
+            isLightning = true,
+            bip21Prefix = "lightning"
+        )
+    }
+
+    val testnetLightning by lazy {
+        Network(
+            id = Network.LightningTestnet,
+            network = Network.LightningTestnet,
+            name = "Lightning Testnet",
+            isMainnet = false,
+            isLiquid = false,
+            isDevelopment = false,
+            isLightning = true,
+            bip21Prefix = "lightning-testnet"
+        )
+    }
+
     val bitcoinGreen by lazy { getNetworkById(Network.GreenMainnet) }
     val liquidGreen by lazy { getNetworkById(Network.GreenLiquid) }
     val testnetBitcoinGreen by lazy { getNetworkById(Network.GreenTestnet) }
@@ -89,6 +115,7 @@ data class Networks(
         }
     }
 
+    override fun kSerializer(): KSerializer<Networks> = serializer()
     companion object {
         const val CustomNetworkId = "custom-network"
 
@@ -128,8 +155,5 @@ data class Networks(
                 }
             }
         }
-
     }
-
-    override fun kSerializer(): KSerializer<Networks> = serializer()
 }

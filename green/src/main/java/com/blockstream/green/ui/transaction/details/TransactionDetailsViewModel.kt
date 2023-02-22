@@ -12,7 +12,7 @@ import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.ui.bottomsheets.ITransactionNote
+import com.blockstream.green.ui.bottomsheets.INote
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
@@ -33,7 +33,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted val initialTransaction: Transaction
 ) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, wallet, account),
-    ITransactionNote {
+    INote {
 
     val transactionLiveData = MutableLiveData<Transaction>()
 
@@ -62,12 +62,17 @@ class TransactionDetailsViewModel @AssistedInject constructor(
     }
 
     override fun saveNote(note: String) {
-        if(session.setTransactionMemo(network, txHash = transactionLiveData.value!!.txHash, note)){
+        if (session.setTransactionMemo(
+                network,
+                txHash = transactionLiveData.value!!.txHash,
+                note
+            )
+        ) {
             transactionNoteLiveData.postValue(note)
             // update transaction
             session.getTransactions(account = account, isReset = false, isLoadMore = false)
             session.updateWalletTransactions(updateForAccounts = listOf(account))
-        }else{
+        } else {
             onError.postValue(ConsumableEvent(Exception("id_error")))
         }
     }
@@ -75,7 +80,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
     fun bumpFee() {
         doUserAction({
             val transactions = session.getTransactions(
-                network,
+                account,
                 TransactionParams(
                     subaccount = initialTransaction.accountInjected?.pointer ?: 0,
                     confirmations = 0
@@ -86,7 +91,9 @@ class TransactionDetailsViewModel @AssistedInject constructor(
                 .transactions
                 .indexOfFirst { it.txHash == initialTransaction.txHash } // Find the index of the transaction
                 .takeIf { it >= 0 }?.let { index ->
-                    transactions.jsonElement?.jsonObject?.get("transactions")?.jsonArray?.getOrNull(index)
+                    transactions.jsonElement?.jsonObject?.get("transactions")?.jsonArray?.getOrNull(
+                        index
+                    )
                 }?.let {
                     Json.encodeToString(it)
                 } ?: throw Exception("Couldn't find the transaction")

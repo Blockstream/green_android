@@ -64,38 +64,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title">
 
-            <FrameLayout
+            <com.journeyapps.barcodescanner.DecoratedBarcodeView
+                android:id="@+id/decorated_barcode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3">
+                app:zxing_preview_scaling_strategy="fitCenter"
+                app:zxing_use_texture_view="true">
 
-                <com.journeyapps.barcodescanner.DecoratedBarcodeView
-                    android:id="@+id/decorated_barcode"
+                <com.blockstream.green.views.ViewFinderView
+                    android:id="@+id/view_finder"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent" />
 
-                    <com.blockstream.green.views.ViewFinderView
-                        android:id="@+id/view_finder"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                <ImageView
+                    android:id="@+id/flash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:src="@drawable/ic_baseline_flash_off_24" />
 
-                    <ImageView
-                        android:id="@+id/flash"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top|end"
-                        android:layout_marginTop="24dp"
-                        android:layout_marginEnd="24dp"
-                        android:src="@drawable/ic_baseline_flash_off_24" />
-
-                </com.journeyapps.barcodescanner.DecoratedBarcodeView>
-
-            </FrameLayout>
+            </com.journeyapps.barcodescanner.DecoratedBarcodeView>
 
         </com.google.android.material.card.MaterialCardView>
 

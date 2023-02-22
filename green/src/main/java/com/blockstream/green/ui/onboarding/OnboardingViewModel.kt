@@ -1,5 +1,6 @@
 package com.blockstream.green.ui.onboarding
 
+import androidx.lifecycle.MutableLiveData
 import com.blockstream.gdk.data.EncryptWithPin
 import com.blockstream.gdk.params.EncryptWithPinParams
 import com.blockstream.gdk.params.LoginCredentialsParams
@@ -29,6 +30,10 @@ open class OnboardingViewModel constructor(
     private val restoreWallet: Wallet?
 ) : AppViewModel(countly) {
     val session = sessionManager.getOnBoardingSession(restoreWallet)
+
+    // Don't use onProgress for this screen as is not turned off for animation reasons
+    val navigationLock = MutableLiveData(false)
+    val rocketAnimation = MutableLiveData(false)
 
     private fun withPinData(options: OnboardingOptions) =
         options.walletName?.contains(SkipPinData) != true
@@ -95,8 +100,12 @@ open class OnboardingViewModel constructor(
             countly.createWallet(session)
 
             wallet
+        }, preAction = {
+            onProgress.value = true
+            navigationLock.value = true
         }, postAction = {
             onProgress.value = it == null
+            navigationLock.value = false
         }, onSuccess = {
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
         })
@@ -160,8 +169,12 @@ open class OnboardingViewModel constructor(
             countly.importWallet(session)
 
             wallet
+        }, preAction = {
+            onProgress.value = true
+            navigationLock.value = true
         }, postAction = {
             onProgress.value = it == null
+            navigationLock.value = false
         }, onSuccess = {
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
         })
@@ -204,11 +217,10 @@ open class OnboardingViewModel constructor(
             ).also {
                 if (restoreWallet == null) {
                     // Check if wallet already exists
-                    it.walletHashId.let { walletHashId ->
-                        walletRepository.getWalletWithHashId(walletHashId, isTestnet, false)
-                            ?.let { wallet ->
-                                throw Exception("id_wallet_already_restored:${wallet.name}")
-                            }
+                    it.walletHashId.also { walletHashId ->
+                        walletRepository.getWalletWithHashId(walletHashId, isTestnet, false)?.also { wallet ->
+                            throw Exception("id_wallet_already_restored:${wallet.name}")
+                        }
                     }
                 } else {
                     // check if walletHashId is the same (also use networkHashId for backwards compatibility)
@@ -223,6 +235,7 @@ open class OnboardingViewModel constructor(
     }
 
     fun restoreWallet(
+        appKeystore: AppKeystore,
         options: OnboardingOptions,
         pin: String,
         mnemonic: String,
@@ -267,6 +280,24 @@ open class OnboardingViewModel constructor(
                 )
 
                 wallet.id = walletRepository.insertWallet(wallet)
+
+
+                if(session.hasLightning){
+
+                    session.lightningSdk.appGreenlightCredentials?.also { credentials ->
+                        val encryptedData = appKeystore.encryptData(credentials.toJson().toByteArray())
+
+                        val loginCredentials = LoginCredentials(
+                            walletId = wallet.id,
+                            network = session.lightning!!.id,
+                            credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
+                            encryptedData = encryptedData
+                        )
+
+                        walletRepository.insertOrReplaceLoginCredentials(loginCredentials)
+                    }
+                }
+
             } else {
                 wallet = restoreWallet
 
@@ -290,8 +321,14 @@ open class OnboardingViewModel constructor(
             countly.importWallet(session)
 
             wallet
+        }, preAction = {
+            onProgress.value = true
+            navigationLock.value = true
+            rocketAnimation.value = true
         }, postAction = {
             onProgress.value = it == null
+            rocketAnimation.value = it == null
+            navigationLock.value = false
         }, onSuccess = {
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
         })

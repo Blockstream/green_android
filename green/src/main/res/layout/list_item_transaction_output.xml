@@ -43,13 +43,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.blockstream.green.views.GappedLinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
-            android:clipToPadding="false"
-            app:gap="8dp">
+            android:clipToPadding="false">
 
             <TextView
                 android:id="@+id/addressTextView"
@@ -57,16 +56,17 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 android:text="@{address}"
-                android:includeFontPadding="false"
+                android:ellipsize="end"
                 isVisible="@{address != null}"
                 android:fontFamily="@font/monospace"
+                android:layout_marginBottom="8dp"
                 tools:text="33ttwPQbgNkKvQbW8KaVp3tDNaxa3f1MAA" />
 
             <include
                 android:id="@+id/amountView"
                 layout="@layout/transaction_utxo_layout" />
 
-        </com.blockstream.green.views.GappedLinearLayout>
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </layout>

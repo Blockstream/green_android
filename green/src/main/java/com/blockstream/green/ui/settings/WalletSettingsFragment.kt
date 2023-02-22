@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.settings
 
-import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,29 +13,33 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.base.Urls
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.SettingsNotification
-import com.blockstream.gdk.data.asPricing
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.EditTextDialogBinding
-import com.blockstream.green.databinding.ListItemHelpBinding
+import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.extensions.AuthenticationCallback
 import com.blockstream.green.extensions.authenticateWithBiometrics
 import com.blockstream.green.extensions.clearNavigationResult
-import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.showChoiceDialog
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
-import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.utils.StringHolder
+import com.blockstream.green.utils.colorText
+import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.getBitcoinOrLiquidUnit
+import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -64,8 +67,7 @@ class WalletSettingsFragment :
     private lateinit var archivedAccountsPreference: PreferenceListItem
     private lateinit var supportIdPreference: PreferenceListItem
     private lateinit var watchOnlyPreference: PreferenceListItem
-    private lateinit var unitPreference: PreferenceListItem
-    private lateinit var priceSourcePreference: PreferenceListItem
+    private lateinit var denominationAndExchangeRatePreference: PreferenceListItem
     private lateinit var pgpPreference: PreferenceListItem
     private lateinit var altTimeoutPreference: PreferenceListItem
     private lateinit var twoFactorAuthenticationPreference: PreferenceListItem
@@ -142,9 +144,7 @@ class WalletSettingsFragment :
             StringHolder(R.string.id_archived_accounts),
             isInnerMenu = true
         )
-        unitPreference = PreferenceListItem(StringHolder(R.string.id_bitcoin_denomination))
-        priceSourcePreference =
-            PreferenceListItem(StringHolder(R.string.id_reference_exchange_rate))
+        denominationAndExchangeRatePreference = PreferenceListItem(StringHolder(R.string.id_denomination__exchange_rate))
         changePinPreference =
             PreferenceListItem(StringHolder(R.string.id_change_pin), isInnerMenu = true)
         multisigBitcoinPreference = PreferenceListItem(StringHolder("Bitcoin"), isInnerMenu = true)
@@ -291,11 +291,11 @@ class WalletSettingsFragment :
                             )
                         )
                     }
-                    unitPreference -> {
-                        handleUnit()
-                    }
-                    priceSourcePreference -> {
-                        handlePriceSource()
+                    denominationAndExchangeRatePreference -> {
+                        showDenominationAndExchangeRateDialog {
+                            // Update Limits as changing exchange reference can also change limits
+                            viewModel.updateTwoFactorConfig()
+                        }
                     }
                     altTimeoutPreference -> {
                         handleAltTimeout()
@@ -322,7 +322,7 @@ class WalletSettingsFragment :
                 true
             }
 
-        fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, _ ->
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, _ ->
             openBrowser(Urls.HELP_NLOCKTIMES)
         }
 
@@ -339,20 +339,20 @@ class WalletSettingsFragment :
 
         viewModel.prominentNetworkSettings.observe(viewLifecycleOwner) {
             it?.let {
-                // TODO change it to only btc
-                unitPreference.subtitle =
-                    StringHolder(getBitcoinOrLiquidUnit(session = session, overrideDenomination = it.unit))
-                if(session.defaultNetwork.isSinglesig){
-                    priceSourcePreference.subtitle = StringHolder(it.pricing.currency)
-                }else{
-                    priceSourcePreference.subtitle = StringHolder(
-                        getString(
-                            R.string.id_s_from_s,
-                            it.pricing.currency,
-                            it.pricing.exchange
-                        )
-                    )
-                }
+
+                denominationAndExchangeRatePreference.subtitle = StringHolder(colorText(
+                    getString(
+                        R.string.id_display_values_in_s_and_exchange,
+                        getBitcoinOrLiquidUnit(session = session),
+                        it.pricing.currency,
+                        it.pricing.exchange
+                    ),
+                    R.color.color_on_surface_emphasis_medium,
+                    R.color.white,
+                    getBitcoinOrLiquidUnit(session = session),
+                    it.pricing.currency,
+                    it.pricing.exchange
+                ))
 
                 altTimeoutPreference.subtitle = StringHolder(
                     if (it.altimeout == 1) "1 " + getString(R.string.id_minute) else getString(
@@ -429,7 +429,7 @@ class WalletSettingsFragment :
 
         if(networkOrNull != null){
             if (args.showRecoveryTransactions) {
-                list += HelpListItem(
+                list += ActionListItem(
                     message = StringHolder(R.string.id_if_you_have_some_coins_on_the),
                     buttonOutline = StringHolder(R.string.id_more_info)
                 )
@@ -458,22 +458,19 @@ class WalletSettingsFragment :
             if(!session.isWatchOnly || session.defaultNetworkOrNull?.isSinglesig == true){
                 // General
                 list += TitleListItem(StringHolder(R.string.id_general))
-                list += unitPreference
-
-                val bitcoin = session.bitcoin
-                if (bitcoin != null) {
-                    list += priceSourcePreference
-                }
+                list += denominationAndExchangeRatePreference
             }
 
             if (!session.isWatchOnly) {
 
-                list += archivedAccountsPreference
+                if (!session.isLightningOnly) {
+                    list += archivedAccountsPreference
+                }
 
                 // No support for Liquid Singlesig yet
-                if (session.activeSessions.firstOrNull { (it.isMultisig || (it.isSinglesig && it.isBitcoin)) } != null) {
+                if (session.activeSessions.firstOrNull { (it.isMultisig || (it.isSinglesig && it.isBitcoin)) } != null && !session.isLightningOnly) {
                     // Disable it until is supported by GDK
-                     list += watchOnlyPreference
+                    list += watchOnlyPreference
                 }
 
                 // Security
@@ -484,7 +481,7 @@ class WalletSettingsFragment :
                     list += biometricsPreference
                 }
 
-                if(hasMultisig){
+                if (hasMultisig) {
                     list += twoFactorAuthenticationPreference
                     list += pgpPreference
                 }
@@ -542,96 +539,6 @@ class WalletSettingsFragment :
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun handleUnit() {
-        viewModel.prominentNetworkSettings.value?.let { settings ->
-
-            val denominationsUnits = resources.getTextArray(R.array.btc_units_entries)
-            val denominationsEntries =
-                if (session.isTestnet) resources.getTextArray(R.array.btc_units_entries).map {
-                    // TODO change it to bitcoin only
-                    getBitcoinOrLiquidUnit(session = session, overrideDenomination = it.toString())
-                }
-                    .toTypedArray() as Array<CharSequence> else if (session.mainAssetNetwork.isLiquid) resources.getTextArray(
-                    R.array.liquid_units_entries
-                ) else denominationsUnits
-
-            showChoiceDialog(
-                getString(R.string.id_bitcoin_denomination),
-                denominationsEntries,
-                denominationsUnits.indexOf(
-                    settings.unit
-                )
-            ) {
-                val unit = denominationsUnits[it].toString()
-
-                viewModel.saveGlobalSettings(settings.copy(unit = unit))
-            }
-        }
-    }
-
-    private fun handlePriceSource() {
-        viewModel.prominentNetworkSettings.value?.let { settings ->
-            try {
-                val currencies = session.availableCurrencies()
-                val entries: Array<CharSequence> = currencies.map {
-                    getString(R.string.id_s_from_s, it.currency, it.exchange)
-                }.let {
-                    if(isDevelopmentOrDebug){
-                        listOf("NULL (Debug)") + it
-                    }else{
-                        it
-                    }
-                }.toTypedArray()
-
-                val values = currencies.map {
-                    it.toIdentifiable()
-                }.let {
-                    if(isDevelopmentOrDebug){
-                        listOf("null null") + it
-                    }else{
-                        it
-                    }
-                }.toTypedArray()
-
-                showChoiceDialog(
-                    getString(R.string.id_reference_exchange_rate), entries, values.indexOf(
-                        settings.pricing.toIdentifiable()
-                    )
-                ) {
-                    try{
-                        values[it].asPricing()?.also { pricing ->
-                            viewModel.saveGlobalSettings(settings.copy(pricing = pricing))
-
-                            // Update Limits as changing exchange reference can also change limits
-                            viewModel.updateTwoFactorConfig()
-
-                            // Show 2FA warning
-                            session.bitcoinMultisig?.let { bitcoinMultisig ->
-                                viewModel.networkTwoFactorConfigLiveData(bitcoinMultisig).value?.let { twoFactorConfig ->
-                                    if (twoFactorConfig.limits.satoshi > 0) {
-                                        dialog(
-                                            R.string.id_warning,
-                                            R.string.id_changing_reference_exchange
-                                        )
-                                    }
-                                }
-                            }
-                        } ?: run {
-                            errorDialog(getString(R.string.id_error))
-                        }
-                    }catch (e: Exception){
-                        e.printStackTrace()
-                        errorDialog(e)
-                    }
-                }
-
-            } catch (e: Exception) {
-                errorDialog(e)
-            }
-        }
-    }
-
     private fun toggleRecoveryTransactionsEmails(network: Network) {
         viewModel.networkSettingsLiveData(network).value?.let { settings ->
             settings.notifications?.let { notifications ->
@@ -666,22 +573,6 @@ class WalletSettingsFragment :
                 viewModel.saveGlobalSettings(settings.copy(altimeout = altimeout))
             }
         }
-    }
-
-    private fun showChoiceDialog(
-        title: String,
-        items: Array<CharSequence>,
-        checkedItem: Int,
-        listener: (position: Int) -> Unit
-    ) {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(title)
-            .setSingleChoiceItems(items, checkedItem) { dialog: DialogInterface, position: Int ->
-                listener.invoke(position)
-                dialog.dismiss()
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
     }
 
     private fun enableBiometrics(onlyDeviceCredentials: Boolean = false) {

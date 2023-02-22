@@ -53,7 +53,7 @@
                 app:iconSize="20dp"
                 app:iconTint="@color/brand_green"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/buttonSwap"
+                app:layout_constraintEnd_toStartOf="@+id/buttonCamera"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -73,6 +73,7 @@
                 android:paddingTop="0dp"
                 android:text="@string/id_swap"
                 android:textSize="12dp"
+                android:visibility="gone"
                 android:includeFontPadding="false"
                 app:icon="@drawable/ic_baseline_swap_horiz_24"
                 app:iconGravity="textTop"
@@ -82,6 +83,24 @@
                 tools:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1.2:1"
+                app:layout_constraintEnd_toStartOf="@+id/buttonReceive"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/buttonSend"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Green.Button.Center" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDummy"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:backgroundTint="@color/bottom_nav_bg"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:lines="1"
+                android:paddingTop="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio=""
                 app:layout_constraintEnd_toStartOf="@+id/buttonReceive"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/buttonSend"
@@ -105,30 +124,21 @@
                 app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/buttonSwap"
+                app:layout_constraintStart_toEndOf="@+id/buttonCamera"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Green.Button.Right" />
 
-
-            <FrameLayout
-                android:id="@+id/divider1"
-                android:layout_width="1dp"
-                android:layout_height="30dp"
-                android:background="@color/color_on_surface_divider"
-                android:translationZ="10dp"
-                app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
-                app:layout_constraintEnd_toEndOf="@+id/buttonSend"
-                app:layout_constraintTop_toTopOf="@+id/buttonSend" />
-
-            <FrameLayout
-                android:id="@+id/divider2"
-                isVisible="@{!isWatchOnly &amp;&amp; showSwap}"
-                android:layout_width="1dp"
-                android:layout_height="30dp"
-                android:background="@color/color_on_surface_divider"
-                android:translationZ="10dp"
-                app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
-                app:layout_constraintEnd_toEndOf="@+id/buttonSwap"
-                app:layout_constraintTop_toTopOf="@+id/buttonSend" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/buttonCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_qr_code"
+                app:fabCustomSize="52dp"
+                app:layout_constraintDimensionRatio="1.2:1"
+                app:layout_constraintEnd_toStartOf="@+id/buttonReceive"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/buttonSend"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

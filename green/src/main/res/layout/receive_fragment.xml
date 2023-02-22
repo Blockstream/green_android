@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+
         <variable
             name="vm"
             type="com.blockstream.green.ui.receive.ReceiveViewModel" />
@@ -15,219 +17,593 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:paddingTop="16dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.blockstream.green.views.GreenAlertView
-                    android:id="@+id/banner"
-                    banner="@{vm.banner}"
-                    isVisible="@{vm.banner != null}"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:fillViewport="true"
+                    android:paddingBottom="24dp"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <com.google.android.material.card.MaterialCardView
-                    isVisible="@{vm.showAssetWhitelistWarning}"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:padding="24dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="@color/surface_light">
-
-                    <TextView
-                        android:id="@+id/assetWhitelistWarning"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:drawablePadding="8dp"
-                        android:text="@string/id_ledger_supports_a_limited_set"
-                        android:textAppearance="?attr/textAppearanceBodySmall"
-                        android:textColor="@color/color_on_light_surface_emphasis_high"
-                        app:drawableStartCompat="@drawable/ic_baseline_warning_18"
-                        app:drawableTint="@color/color_on_light_surface_emphasis_high" />
+                        android:layout_marginStart="24dp"
+                        android:layout_marginEnd="24dp"
+                        android:orientation="vertical">
 
-                </com.google.android.material.card.MaterialCardView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginBottom="2dp"
-                    isGone="@{vm.accountAssetLocked}"
-                    android:text="@string/id_account__asset"
-                    style="@style/TextAppearance.Green.Overline" />
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/accountAssetMaterialCardView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    isGone="@{vm.accountAssetLocked}">
-
-                    <include
-                        android:id="@+id/accountAsset"
-                        layout="@layout/account_asset_layout"/>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginBottom="2dp"
-                        android:text="@string/id_account_address"
-                        style="@style/TextAppearance.Green.Overline" />
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/materialCardView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <com.blockstream.green.views.GreenAlertView
+                            android:id="@+id/banner"
+                            banner="@{vm.banner}"
+                            isVisible="@{vm.banner != null}"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp" />
 
-                            <ImageButton
-                                android:id="@+id/buttonNewAddress"
-                                android:layout_width="48dp"
-                                android:layout_height="48dp"
-                                android:layout_marginTop="4dp"
-                                android:layout_marginEnd="4dp"
-                                android:background="?android:attr/selectableItemBackgroundBorderless"
-                                android:src="@drawable/ic_arrows_counter_clockwise"
-                                android:tooltipText="@string/id_generate_new_address"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                        <com.google.android.material.card.MaterialCardView
+                            isVisible="@{vm.showAssetWhitelistWarning}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone"
+                            app:cardBackgroundColor="@color/surface_light">
 
-                            <com.google.android.material.progressindicator.CircularProgressIndicator
-                                android:id="@+id/loader"
-                                isVisible="@{vm.onProgress &amp;&amp; vm.addressLiveData == null}"
+                            <TextView
+                                android:id="@+id/assetWhitelistWarning"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="8dp"
+                                android:drawablePadding="8dp"
+                                android:text="@string/id_ledger_supports_a_limited_set"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="@color/color_on_light_surface_emphasis_high"
+                                app:drawableStartCompat="@drawable/ic_baseline_warning_18"
+                                app:drawableTint="@color/color_on_light_surface_emphasis_high" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            style="@style/TextAppearance.Green.Overline"
+                            isGone="@{vm.accountAssetLocked}"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginBottom="2dp"
+                            android:text="@string/id_account__asset" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/accountAssetMaterialCardView"
+                            isGone="@{vm.accountAssetLocked}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp">
+
+                            <include
+                                android:id="@+id/accountAsset"
+                                layout="@layout/account_asset_layout" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:id="@+id/amountLinearLayout"
+                            isVisible="@{vm.accountLiveData.lightning &amp;&amp; !vm.showOnchainAddress}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:orientation="vertical"
+                            app:layout_constraintTop_toBottomOf="@+id/addressLinearLayout">
+
+                            <TextView
+                                style="@style/TextAppearance.Green.Overline"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:indeterminate="true"
-                                app:layout_constraintBottom_toBottomOf="@+id/addressQrWrap"
-                                app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
-                                app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
-                                app:layout_constraintTop_toTopOf="@+id/addressQrWrap" />
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:text="@string/id_amount" />
 
                             <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/addressQrWrap"
-                                isInvisible="@{vm.addressLiveData == null}"
-                                android:layout_width="0dp"
-                                android:layout_height="0dp"
-                                android:layout_marginStart="52dp"
-                                android:layout_marginTop="52dp"
-                                android:layout_marginEnd="52dp"
-                                android:background="@color/white"
-                                android:backgroundTint="@color/white"
-                                android:scaleType="fitCenter"
-                                app:layout_constraintDimensionRatio="1:1"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHeight_max="350dp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintWidth_max="350dp"
-                                app:layout_optimizationLevel="ratio">
+                                error="@{vm.amountIsValid == -1}"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
 
-                                <ImageView
-                                    android:id="@+id/addressQR"
+                                <LinearLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_margin="10dp"
-                                    android:scaleType="fitCenter"
-                                    tools:src="@mipmap/ic_launcher" />
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <EditText
+                                        android:id="@+id/amountEditText"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical|end"
+                                        android:layout_marginStart="16dp"
+                                        android:layout_marginTop="16dp"
+                                        android:layout_marginBottom="16dp"
+                                        android:layout_weight="1"
+                                        android:background="@android:color/transparent"
+                                        android:enabled="@{!vm.onProgress &amp;&amp; ExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:fontFamily="@font/monospace"
+                                        android:inputType="numberDecimal"
+                                        android:singleLine="true"
+                                        android:text="@={vm.amount}"
+                                        android:textAlignment="textEnd"
+                                        tools:text="1234" />
+
+                                    <TextView
+                                        android:id="@+id/amountCurrency"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginStart="6dp"
+                                        android:fontFamily="@font/monospace"
+                                        textUnderline="@{vm.amountCurrency}"
+                                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                                        android:textColor="@color/selector_image_button"
+                                        android:textStyle="bold"
+                                        tools:text="BTC" />
+
+                                    <ImageButton
+                                        android:id="@+id/buttonAmountCurrency"
+                                        isVisible="@{ExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:adjustViewBounds="true"
+                                        android:background="?attr/selectableItemBackgroundBorderless"
+                                        android:enabled="@{!vm.onProgress &amp;&amp; ExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:paddingStart="12dp"
+                                        android:paddingTop="12dp"
+                                        android:paddingEnd="6dp"
+                                        android:paddingBottom="12dp"
+                                        android:scaleType="centerInside"
+                                        android:src="@drawable/ic_arrows_counter_clockwise"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                                        app:tint="@color/selector_image_button" />
+
+                                    <ImageButton
+                                        android:id="@+id/buttonAmountClear"
+                                        isVisible="@{!vm.amount.empty &amp;&amp; ExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:adjustViewBounds="true"
+                                        android:background="?attr/selectableItemBackgroundBorderless"
+                                        android:enabled="@{!vm.onProgress &amp;&amp; ExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:paddingStart="6dp"
+                                        android:paddingTop="12dp"
+                                        android:paddingEnd="12dp"
+                                        android:paddingBottom="12dp"
+                                        android:scaleType="centerInside"
+                                        android:src="@drawable/ic_x_circle"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                                        app:tint="@color/selector_image_button" />
+
+                                    <ImageButton
+                                        android:id="@+id/buttonAmountPaste"
+                                        isVisible="@{vm.amount.empty &amp;&amp; ExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:adjustViewBounds="true"
+                                        android:background="?attr/selectableItemBackgroundBorderless"
+                                        android:enabled="@{!vm.onProgress &amp;&amp; ExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:paddingStart="6dp"
+                                        android:paddingTop="12dp"
+                                        android:paddingEnd="12dp"
+                                        android:paddingBottom="12dp"
+                                        android:scaleType="centerInside"
+                                        android:src="@drawable/ic_clipboard"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                                        app:tint="@color/selector_image_button" />
+
+
+                                    <ImageButton
+                                        android:id="@+id/buttonEditAmount"
+                                        isVisible="@{ExtensionsKt.isNotBlank(vm.addressUri)}"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:adjustViewBounds="true"
+                                        android:background="?attr/selectableItemBackgroundBorderless"
+                                        android:paddingStart="6dp"
+                                        android:paddingTop="12dp"
+                                        android:paddingEnd="12dp"
+                                        android:paddingBottom="12dp"
+                                        android:scaleType="centerInside"
+                                        android:src="@drawable/ic_pencil_simple_line"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="@+id/addressInputLayout"
+                                        app:tint="@color/selector_image_button" />
+
+                                </LinearLayout>
 
                             </com.google.android.material.card.MaterialCardView>
 
-
                             <LinearLayout
-                                android:id="@+id/wrap"
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:clipChildren="false"
-                                android:clipToPadding="false"
-                                android:orientation="vertical"
-                                android:padding="24dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/addressQrWrap">
+                                android:layout_marginStart="4dp"
+                                android:layout_marginEnd="4dp"
+                                android:orientation="horizontal">
 
-                                <TextView
-                                    android:id="@+id/address"
-                                    android:layout_width="wrap_content"
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:layout_marginBottom="8dp"
-                                    android:breakStrategy="high_quality"
-                                    android:drawablePadding="8dp"
+                                    android:layout_weight="1"
                                     android:fontFamily="@font/monospace"
-                                    android:text="@{vm.addressUri}"
-                                    android:textAlignment="center"
-                                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                                    android:textColor="@color/color_on_surface_emphasis_high"
-                                    app:drawableEndCompat="@drawable/ic_copy"
-                                    tools:text="bitcoin:VJLAD343588Ub82r23tnFfadsfafadfafasdfaiiiiii?amopas=234" />
+                                    android:text="@{String.format(@string/id_max_limit, vm.maxReceiveAmount)}"
+                                    android:textAppearance="?attr/textAppearanceBodySmall"
+                                    android:textColor="@color/color_on_surface_emphasis_medium" />
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/buttonEdit"
-                                    style="@style/Widget.Green.Button.Outlined.Big"
-                                    isVisible="@{vm.isAddressUri}"
-                                    android:layout_width="match_parent"
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginBottom="4dp"
-                                    android:text="@string/id_edit"
-                                    app:icon="@drawable/ic_pencil_simple_line"
-                                    app:iconGravity="textStart" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/buttonVerify"
-                                    style="@style/Widget.Green.Button.Light"
-                                    isVisible="@{vm.canValidateAddressInDevice}"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/id_verify_on_device" />
-
-                                <TextView
-                                    isVisible="@{vm.canValidateAddressInDevice}"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:drawablePadding="8dp"
-                                    android:text="@string/id_please_verify_that_the_address"
+                                    android:layout_weight="1"
+                                    android:text="@{vm.amountExchange}"
+                                    android:fontFamily="@font/monospace"
+                                    android:textAlignment="textEnd"
                                     android:textAppearance="?attr/textAppearanceBodySmall" />
 
                             </LinearLayout>
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                isVisible="@{vm.liquidityFeeError != null}"
+                                app:cardBackgroundColor="@color/error_20">
 
-                    </com.google.android.material.card.MaterialCardView>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
 
-                </LinearLayout>
+                                    <TextView
+                                        style="?attr/textAppearanceBodySmall"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="12dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        android:layout_marginEnd="12dp"
+                                        android:drawablePadding="6dp"
+                                        android:textColor="@color/error"
+                                        android:text="@{vm.liquidityFeeError}"
+                                        tools:text="@string/id_the_amount_you_requested_is_above"
+                                        app:drawableStartCompat="@drawable/ic_info_16"
+                                        app:drawableTint="@color/error" />
+
+                                </LinearLayout>
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                isVisible="@{vm.showLiquidityFee}"
+                                app:cardBackgroundColor="@color/green_20">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        style="?attr/textAppearanceBodySmall"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="12dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="12dp"
+                                        android:textColor="@color/color_on_surface_emphasis_medium"
+                                        android:text="@{String.format(@string/id_a_funding_fee_of_s, vm.channelFeePercent, vm.channelMinFee, vm.inboundLiquidity)}"
+                                        tools:text="@string/id_a_funding_fee_of_s"/>
+
+                                    <Button
+                                        android:id="@+id/buttonLearnMore"
+                                        style="@style/Widget.Green.Button.Text.Tiny"
+                                        android:textColor="@color/color_on_surface_emphasis_medium"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/id_learn_more" />
+
+                                </LinearLayout>
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            isVisible="@{!vm.accountLiveData.lightning || !ExtensionsKt.isBlank(vm.addressUri)}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/TextAppearance.Green.Overline"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:text="@{vm.accountLiveData.lightning ? vm.showOnchainAddress ? @string/id_onchain_address : @string/id_lightning_invoice : @string/id_account_address}"
+                                tools:text="@string/id_account_address" />
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/materialCardView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp">
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <ImageButton
+                                        android:id="@+id/buttonNewAddress"
+                                        isVisible="@{!vm.accountLiveData.lightning}"
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:layout_marginTop="4dp"
+                                        android:layout_marginEnd="4dp"
+                                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                                        android:src="@drawable/ic_arrows_counter_clockwise"
+                                        android:tooltipText="@string/id_generate_new_address"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        tools:ignore="UnusedAttribute" />
+
+                                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                                        android:id="@+id/loader"
+                                        isVisible="@{vm.onProgress &amp;&amp; vm.addressLiveData == null}"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:indeterminate="true"
+                                        app:layout_constraintBottom_toBottomOf="@+id/addressQrWrap"
+                                        app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                                        app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
+                                        app:layout_constraintTop_toTopOf="@+id/addressQrWrap" />
+
+                                    <com.google.android.material.card.MaterialCardView
+                                        android:id="@+id/addressQrWrap"
+                                        isInvisible="@{vm.addressLiveData == null}"
+                                        android:layout_width="0dp"
+                                        android:layout_height="0dp"
+                                        android:layout_marginStart="52dp"
+                                        android:layout_marginTop="52dp"
+                                        android:layout_marginEnd="52dp"
+                                        android:background="@color/white"
+                                        android:backgroundTint="@color/white"
+                                        android:scaleType="fitCenter"
+                                        app:layout_constraintDimensionRatio="1:1"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintHeight_max="350dp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintWidth_max="350dp"
+                                        app:layout_optimizationLevel="ratio">
+
+                                        <ImageView
+                                            android:id="@+id/addressQR"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_margin="10dp"
+                                            android:scaleType="fitCenter"
+                                            tools:src="@mipmap/ic_launcher" />
+
+                                    </com.google.android.material.card.MaterialCardView>
+
+                                    <LinearLayout
+                                        android:id="@+id/wrap"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:clipChildren="false"
+                                        android:clipToPadding="false"
+                                        android:orientation="vertical"
+                                        android:padding="24dp"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/addressQrWrap">
+
+                                        <TextView
+                                            android:id="@+id/address"
+                                            isInvisible="@{ExtensionsKt.isBlank(vm.addressUri)}"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:layout_marginBottom="8dp"
+                                            android:drawablePadding="4dp"
+                                            android:fontFamily="@font/monospace"
+                                            android:singleLine="true"
+                                            android:text="@{vm.addressUri}"
+                                            android:textAlignment="center"
+                                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                                            android:textColor="@color/color_on_surface_emphasis_high"
+                                            app:drawableBottomCompat="@drawable/ic_copy"
+                                            tools:text="bitcoin:VJLAD343588Ub82r23tnFfadsfafadfafasdfaiiiiii?amopas=234" />
+
+                                        <com.google.android.material.card.MaterialCardView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="8dp"
+                                            isVisible="@{vm.accountLiveData.lightning &amp;&amp; vm.showOnchainAddress}"
+                                            app:cardBackgroundColor="@color/brand_green_20">
+
+                                            <TextView
+                                                style="?attr/textAppearanceBodySmall"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginStart="12dp"
+                                                android:layout_marginTop="8dp"
+                                                android:layout_marginEnd="12dp"
+                                                android:layout_marginBottom="8dp"
+                                                android:textAlignment="center"
+                                                alphaPulse="@{vm.accountLiveData.lightning &amp;&amp; vm.showOnchainAddress}"
+                                                android:text="@{String.format(@string/id_send_more_than_s, vm.onChainMin, vm.onChainMax, vm.channelFeePercent, vm.channelMinFee)}"
+                                                tools:text="@string/id_send_more_than_s"/>
+
+                                        </com.google.android.material.card.MaterialCardView>
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/buttonEdit"
+                                            style="@style/Widget.Green.Button.Outlined.Big"
+                                            isVisible="@{vm.isAddressUri}"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="4dp"
+                                            android:text="@string/id_edit"
+                                            app:icon="@drawable/ic_pencil_simple_line"
+                                            app:iconGravity="textStart" />
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/buttonVerify"
+                                            style="@style/Widget.Green.Button.Light"
+                                            isVisible="@{vm.canValidateAddressInDevice}"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/id_verify_on_device" />
+
+                                        <TextView
+                                            isVisible="@{vm.canValidateAddressInDevice}"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawablePadding="8dp"
+                                            android:text="@string/id_please_verify_that_the_address"
+                                            android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                                    </LinearLayout>
+
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <LinearLayout
+                                isVisible="@{vm.accountLiveData.lightning &amp;&amp; vm.lightningInvoice != null &amp;&amp; !vm.showOnchainAddress}"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="16dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    style="@style/TextAppearance.Green.Overline"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/id_amount_to_receive" />
+
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="@{vm.invoiceAmount}"
+                                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                                        tools:text="0,000176166" />
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="@{vm.invoiceFiatAmount}"
+                                        android:textAlignment="textEnd"
+                                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                                        android:textColor="@color/color_on_surface_emphasis_medium"
+                                        tools:text="0,000176166" />
+                                </LinearLayout>
+
+
+                                <TextView
+                                    style="@style/TextAppearance.Green.Overline"
+                                    isVisible="@{ExtensionsKt.isNotBlank(vm.lightningInvoice.description)}"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@string/id_description" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Green.BodyMedium"
+                                    isVisible="@{ExtensionsKt.isNotBlank(vm.lightningInvoice.description)}"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{vm.lightningInvoice.description}" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Green.Overline"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@string/id_expiration" />
+
+                                <TextView
+                                    android:id="@+id/invoiceExpiration"
+                                    style="@style/TextAppearance.Green.BodyMedium"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{vm.invoiceExpiration}" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+                </ScrollView>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="6dp"
+                    android:layout_gravity="top"
+                    android:background="@drawable/brand_black_gradient_top" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/brand_black_gradient_bottom" />
+
+            </FrameLayout>
+
+            <com.blockstream.green.views.GappedLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:elevation="24dp"
+                android:orientation="vertical"
+                android:paddingBottom="16dp"
+                android:gravity="center"
+                app:gap="4dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonShare"
                     style="@style/Widget.Green.Button.Big"
+                    isVisible="@{ExtensionsKt.isNotBlank(vm.addressUri)}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:elevation="24dp"
+                    android:enabled="@{!vm.onProgress &amp;&amp; ExtensionsKt.isNotBlank(vm.addressUri)}"
                     android:text="@string/id_share"
                     app:icon="@drawable/ic_baseline_share_18"
                     app:iconGravity="textStart"
@@ -238,17 +614,59 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonMore"
                     style="@style/Widget.Green.Button.Outlined.Big"
+                    isVisible="@{ExtensionsKt.isNotBlank(vm.addressUri) &amp;&amp; !vm.accountLiveData.lightning}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
                     android:text="@string/id_more_options"
                     android:textColor="@color/color_on_surface_emphasis_high"
+                    app:elevation="24dp"
                     app:icon="@drawable/ic_baseline_arrow_drop_down_24"
                     app:iconGravity="end"
                     app:iconPadding="-24dp"
                     app:iconTint="@color/color_on_surface_emphasis_high" />
 
-            </LinearLayout>
-        </ScrollView>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonConfirm"
+                    style="@style/Widget.Green.Button.Big"
+                    isVisible="@{vm.accountLiveData.lightning &amp;&amp; !ExtensionsKt.isNotBlank(vm.addressUri)}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:elevation="24dp"
+                    android:enabled="@{!vm.onProgress &amp;&amp; ExtensionsKt.isNotBlank(vm.amount) &amp;&amp; vm.amountIsValid == 1}"
+                    android:text="@string/id_confirm"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                    app:layout_constraintStart_toStartOf="@+id/addressQrWrap" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonOnChainToggle"
+                    style="@style/Widget.Green.Button.Text.Tiny"
+                    isVisible="@{vm.accountLiveData.lightning &amp;&amp; false}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:enabled="@{!vm.onProgress}"
+                    android:text="@{vm.showOnchainAddress ? @string/id_show_lightning_invoice : @string/id_show_onchain_address}"
+                    tools:text="@string/id_show_onchain_address"
+                    android:textColor="@color/color_on_surface_emphasis_high"
+                    app:elevation="24dp"
+                    app:icon="@drawable/ic_info_16"
+                    app:iconGravity="textEnd"
+                    app:iconPadding="6dp"
+                    app:iconTint="@color/color_on_surface_emphasis_medium"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
+                    app:layout_constraintStart_toStartOf="@+id/addressQrWrap" />
+
+            </com.blockstream.green.views.GappedLinearLayout>
+
+        </LinearLayout>
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"

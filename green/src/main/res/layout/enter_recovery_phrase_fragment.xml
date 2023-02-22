@@ -209,6 +209,7 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
+                android:id="@+id/textView22"
                 isVisible="@{vm.showInvalidMnemonicError}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -225,6 +226,27 @@
                 app:layout_constraintEnd_toStartOf="@+id/buttonHelp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/buttonHelp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:paddingStart="6dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="8dp"
+                android:singleLine="true"
+                android:text="@string/id_type_the_next_word"
+                android:textColor="@color/color_on_surface_emphasis_low"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                android:textAlignment="center"
+                isVisible="@{vm.showTypeNextWork}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,10 +1,12 @@
 package com.blockstream.green.looks
 
+import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.UtxoView
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
 import kotlinx.coroutines.CoroutineScope
 
 interface ITransactionLook {
+    val network: Network
     suspend fun fee() : String
     suspend fun feeFiat(): String?
     fun feeRate() : String

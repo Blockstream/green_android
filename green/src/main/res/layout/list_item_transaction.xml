@@ -4,9 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="com.blockstream.gdk.data.Transaction" />
         <import type="com.blockstream.gdk.data.Transaction.Type" />
         <import type="com.blockstream.green.extensions.ExtensionsKt" />
+
+        <variable
+            name="tx"
+            type="com.blockstream.gdk.data.Transaction" />
+
+        <variable
+            name="account"
+            type="com.blockstream.gdk.data.Account" />
 
         <variable
             name="type"
@@ -31,10 +39,6 @@
         <variable
             name="memo"
             type="String" />
-
-        <variable
-            name="account"
-            type="com.blockstream.gdk.data.Account" />
 
     </data>
 
@@ -129,10 +133,9 @@
 
                             <TextView
                                 android:id="@+id/dateView"
-                                isVisible="@{confirmations >= confirmationsRequired}"
+                                isVisible="@{confirmations >= confirmationsRequired &amp;&amp; !tx.lightningSwap}"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:includeFontPadding="false"
                                 android:text="@{date}"
                                 android:textAppearance="?attr/textAppearanceLabelSmall"
@@ -141,6 +144,25 @@
                                 tools:ignore="SpUsage"
                                 tools:text="Jul 29, 2020"
                                 tools:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/refundableView"
+                                isVisible="@{tx.refundableSwap}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/color_error_round"
+                                android:includeFontPadding="false"
+                                android:paddingStart="3dp"
+                                android:paddingTop="1dp"
+                                android:paddingEnd="3dp"
+                                android:paddingBottom="1dp"
+                                android:text="@string/id_refundable"
+                                android:textAllCaps="true"
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:textColor="@color/color_on_surface_emphasis_medium"
+                                android:textSize="7dp"
+                                android:textStyle="bold"
+                                tools:ignore="SpUsage" />
 
                             <TextView
                                 android:id="@+id/unconfirmedView"
@@ -153,7 +175,7 @@
                                 android:paddingTop="1dp"
                                 android:paddingEnd="3dp"
                                 android:paddingBottom="1dp"
-                                android:text="@string/id_unconfirmed"
+                                android:text="@{tx.inProgressSwap ? @string/id_in_progress : @string/id_unconfirmed}"
                                 android:textAllCaps="true"
                                 android:textAppearance="?attr/textAppearanceBodySmall"
                                 android:textColor="@color/color_on_surface_emphasis_medium"

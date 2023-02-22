@@ -44,7 +44,14 @@ data class PreferenceListItem constructor(
         withButton.applyToOrHide(binding.button)
 
         binding.title.setTextColor(ContextCompat.getColor(binding.root.context, if(titleColor > 0) titleColor else  R.color.color_on_surface_emphasis_high))
-        binding.subtitle.setTextColor(ContextCompat.getColor(binding.root.context, if(subtitleColor > 0) subtitleColor else  R.color.color_on_surface_emphasis_medium))
+        if(subtitle.spannedString == null) {
+            binding.subtitle.setTextColor(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    if (subtitleColor > 0) subtitleColor else R.color.color_on_surface_emphasis_medium
+                )
+            )
+        }
 
         when {
             isInnerMenu -> {

@@ -1,5 +1,6 @@
 package com.blockstream.green.ui.onboarding
 
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
@@ -25,6 +26,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import javax.crypto.Cipher
 
 class LoginWatchOnlyViewModel @AssistedInject constructor(
+    @SuppressLint("StaticFieldLeak")
     @ApplicationContext val context: Context,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
@@ -103,33 +105,36 @@ class LoginWatchOnlyViewModel @AssistedInject constructor(
         doUserAction({
             val xpubs = mutableListOf<String>()
 
-            contentResolver.openInputStream(uri)?.bufferedReader()?.use {
-                Json.parseToJsonElement(it.readText()).jsonObject.also { json ->
-                    val keys = json.keys
+            contentResolver.openInputStream(uri)?.use {
+                it.bufferedReader().use {
+                    Json.parseToJsonElement(it.readText()).jsonObject.also { json ->
+                        val keys = json.keys
 
-                    // Coldcard
-                    keys.forEach { key ->
+                        // Coldcard
+                        keys.forEach { key ->
 
-                        (json[key] as? JsonObject)?.also { inner ->
-                            // Filter only supported account types
-                            inner["name"]?.jsonPrimitive?.content?.also { name ->
-                                if (
-                                    name == AccountType.BIP44_LEGACY.gdkType ||
-                                    name == AccountType.BIP49_SEGWIT_WRAPPED.gdkType ||
-                                    name == AccountType.BIP84_SEGWIT.gdkType ||
-                                    name == AccountType.BIP86_TAPROOT.gdkType
-                                ) {
-                                    ((inner["_pub"] as? JsonPrimitive) ?: (inner["xpub"] as? JsonPrimitive))?.content?.also { xpub ->
-                                        xpubs += xpub
+                            (json[key] as? JsonObject)?.also { inner ->
+                                // Filter only supported account types
+                                inner["name"]?.jsonPrimitive?.content?.also { name ->
+                                    if (
+                                        name == AccountType.BIP44_LEGACY.gdkType ||
+                                        name == AccountType.BIP49_SEGWIT_WRAPPED.gdkType ||
+                                        name == AccountType.BIP84_SEGWIT.gdkType ||
+                                        name == AccountType.BIP86_TAPROOT.gdkType
+                                    ) {
+                                        ((inner["_pub"] as? JsonPrimitive)
+                                            ?: (inner["xpub"] as? JsonPrimitive))?.content?.also { xpub ->
+                                            xpubs += xpub
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    // Electrum
-                    ((json["keystore"] as? JsonObject)?.get("xpub") as? JsonPrimitive)?.content?.also { xpub ->
-                        xpubs += xpub
+                        // Electrum
+                        ((json["keystore"] as? JsonObject)?.get("xpub") as? JsonPrimitive)?.content?.also { xpub ->
+                            xpubs += xpub
+                        }
                     }
                 }
             }

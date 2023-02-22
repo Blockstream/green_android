@@ -24,6 +24,7 @@ import com.pandulapeter.beagle.Beagle
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
 import mu.KLogging
+import org.slf4j.impl.HandroidLoggerAdapter
 import javax.inject.Inject
 
 typealias ApplicationScope = kotlinx.coroutines.CoroutineScope
@@ -70,6 +71,10 @@ class GreenApplication : Application() {
         super.onCreate()
 
         registerActivityLifecycleCallbacks(activityLifecycle)
+
+        HandroidLoggerAdapter.DEBUG = BuildConfig.DEBUG
+        HandroidLoggerAdapter.ANDROID_API_LEVEL = Build.VERSION.SDK_INT
+        HandroidLoggerAdapter.APP_NAME = "Green"
 
         countly.applicationOnCreate()
 

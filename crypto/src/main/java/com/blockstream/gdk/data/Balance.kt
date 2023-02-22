@@ -1,6 +1,13 @@
 package com.blockstream.gdk.data
 
+import android.os.Parcelable
+import com.blockstream.gdk.BITS_UNIT
+import com.blockstream.gdk.BTC_UNIT
+import com.blockstream.gdk.MBTC_UNIT
+import com.blockstream.gdk.SATOSHI_UNIT
+import com.blockstream.gdk.UBTC_UNIT
 import com.blockstream.gdk.params.Convert
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
@@ -9,6 +16,7 @@ import kotlinx.serialization.json.*
     GDK 0.0.58.post1 changed the limits structure to return only fiat values if is_fiat = true, so
     btc amounts had to have default values if they don't exists
  */
+@Parcelize
 @Serializable
 data class Balance constructor(
     @SerialName("bits") val bits: String = "0.00",
@@ -21,20 +29,19 @@ data class Balance constructor(
     @SerialName("satoshi") val satoshi: Long = 0,
     @SerialName("sats") val sats: String = "0",
     @SerialName("ubtc") val ubtc: String = "0.00",
-    @SerialName("is_current") val isCurrent: Boolean? = null
-) {
+    @SerialName("is_current") val isCurrent: Boolean? = null,
+    var assetValue: String? = null,
+    var assetInfo: Asset? = null
+) : Parcelable {
     val valueInMainUnit: String get() = assetValue ?: btc
 
-    var assetValue: String? = null
-    var assetInfo: Asset? = null
-
     fun getValue(unit: String): String {
-        return when (unit.lowercase()) {
-            "\u00B5btc", "ubtc" -> ubtc
-            "mbtc" -> mbtc
-            "bits" -> bits
-            "sats" -> sats
-            "btc" -> btc
+        return when (unit) {
+            UBTC_UNIT, "uBTC" -> ubtc
+            MBTC_UNIT -> mbtc
+            BITS_UNIT -> bits
+            SATOSHI_UNIT -> sats
+            BTC_UNIT -> btc
             else -> fiat ?: "n/a"
         }
     }

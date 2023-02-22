@@ -7,7 +7,7 @@ import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
 import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.utils.formatWithTime
+import com.blockstream.green.utils.formatMediumWithTime
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
@@ -25,7 +25,7 @@ data class TransactionProgressListItem constructor(
     }
 
     override fun bindView(binding: ListItemTransactionProgressBinding, payloads: List<Any>) {
-        binding.date = transaction.createdAt.formatWithTime()
+        binding.date = transaction.createdAt.formatMediumWithTime()
         binding.confirmations = confirmations
         binding.confirmationsRequired = confirmationsRequired
         binding.canRBF = transaction.canRBF && transaction.isIn == false && !session.isWatchOnly

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.blockstream.gdk.data.Account
 import com.blockstream.green.R
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.ListItemAccountBinding
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getNetworkIcon
@@ -39,7 +40,7 @@ data class AccountListItem constructor(
         binding.secondaryValue = ""
         scope.launch {
             binding.primaryValue = withContext(context = Dispatchers.IO) { policyAsset.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = false) }
-            binding.secondaryValue = withContext(context = Dispatchers.IO) { policyAsset.toAmountLook(session, withUnit = true, isFiat = true, withGrouping = true, withMinimumDigits = false) }
+            binding.secondaryValue = withContext(context = Dispatchers.IO) { policyAsset.toAmountLook(session, withUnit = true, denomination = Denomination.fiat(session), withGrouping = true, withMinimumDigits = false) }
         }
 
         binding.icon.setImageResource(account.network.getNetworkIcon())

@@ -55,17 +55,17 @@
                 android:layout_height="160dp">
 
                 <ImageView
-                    isVisible="@{account.bitcoin}"
+                    isVisible="@{account.bitcoin || account.lightning}"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_gravity="end"
                     android:layout_marginTop="-20dp"
-                    android:layout_marginEnd="-24dp"
                     android:layout_marginBottom="-6dp"
                     android:adjustViewBounds="true"
                     android:alpha="0.1"
                     android:cropToPadding="false"
-                    android:src="@drawable/bitcoin_letter"
+                    android:src="@{account.bitcoin ? @drawable/bitcoin_letter : @drawable/lightning_thunder}"
+                    tools:src="@drawable/lightning_thunder"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -85,7 +85,7 @@
                     android:layout_height="18dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:src="@{account.network.multisig ? @drawable/ic_multisig : @drawable/ic_singlesig}"
+                    android:src="@{account.network.multisig ? @drawable/ic_multisig : account.network.lightning ? @drawable/ic_lightning : @drawable/ic_singlesig}"
                     app:layout_constraintDimensionRatio="w,1:1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -112,9 +112,8 @@
 
                 <TextView
                     android:id="@+id/accountType"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
                     android:ellipsize="end"
                     android:includeFontPadding="false"
                     android:lines="1"
@@ -123,11 +122,33 @@
                     android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textColor="@color/color_on_surface_emphasis_medium"
                     app:layout_constraintBottom_toBottomOf="@+id/policyIcon"
-                    app:layout_constraintEnd_toStartOf="@+id/assetsIcons"
                     app:layout_constraintStart_toEndOf="@+id/policyIcon"
                     app:layout_constraintTop_toTopOf="@+id/policyIcon"
                     app:layout_constraintVertical_chainStyle="packed"
                     tools:text="Singlesig / SegWit" />
+
+                <TextView
+                    android:id="@+id/experimental"
+                    isVisible="@{account.lightning}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:alpha="0.75"
+                    android:background="@drawable/transparent_darker_round"
+                    android:drawablePadding="2dp"
+                    android:includeFontPadding="false"
+                    android:paddingStart="6dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="6dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/id_experimental"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/color_on_surface_emphasis_high"
+                    android:textSize="9dp"
+                    app:drawableStartCompat="@drawable/ic_info_12"
+                    app:layout_constraintBottom_toBottomOf="@+id/accountType"
+                    app:layout_constraintStart_toEndOf="@+id/accountType"
+                    app:layout_constraintTop_toTopOf="@+id/accountType" />
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/balanceLoader"

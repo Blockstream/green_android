@@ -5,9 +5,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import breez_sdk.SuccessActionProcessed
+import com.blockstream.gdk.data.SendTransactionSuccess
 import com.blockstream.green.R
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.NavigateEvent
@@ -17,11 +20,10 @@ import com.blockstream.green.databinding.SendConfirmFragmentBinding
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.looks.ConfirmTransactionLook
-import com.blockstream.green.ui.bottomsheets.TransactionNoteBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.NoteBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.VerifyTransactionBottomSheetDialogFragment
 import com.blockstream.green.ui.items.NoteListItem
 import com.blockstream.green.ui.items.TransactionFeeListItem
@@ -30,7 +32,9 @@ import com.blockstream.green.ui.overview.WalletOverviewFragment
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractAccountWalletFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
+import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenAlertView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
@@ -73,6 +77,12 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
     private val transactionOrNull get() = session.pendingTransaction?.second
     private val transaction get() = transactionOrNull!!
 
+    private val onBackCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            // Prevent back
+        }
+    }
+
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
@@ -99,7 +109,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             if(!transaction.isSweep && !it.isNullOrBlank()) {
                 noteAdapter.set(
                     listOf(
-                        NoteListItem(viewModel.transactionNote)
+                        NoteListItem(note = viewModel.transactionNote, isEditable = !account.isLightning)
                     )
                 )
             }else{
@@ -112,7 +122,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
         val fastAdapter = FastAdapter.with(listOf(createAdapter(isAddressVerificationOnDevice = false), noteAdapter))
 
         fastAdapter.addClickListener<ListItemTransactionNoteBinding, GenericItem>({ binding -> binding.buttonEdit }) { _, _, _, _ ->
-            TransactionNoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
+            NoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
         }
 
         fastAdapter.addClickListener<ListItemTransactionOutputBinding, GenericItem>({ binding -> binding.addressTextView }) { v, _: Int, _: FastAdapter<GenericItem>, _: GenericItem ->
@@ -132,11 +142,42 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                (it.data as? Boolean)?.let { isSendAll ->
-                    setNavigationResult(result = isSendAll, key = WalletOverviewFragment.BROADCASTED_TRANSACTION, destinationId = R.id.walletOverviewFragment)
+                (it.data as? SendTransactionSuccess)?.also { sendTransactionSuccess ->
+                    val successAction = sendTransactionSuccess.successAction
+                    if(successAction != null){
+                        val message = when(successAction){
+                            is SuccessActionProcessed.Aes -> {
+                                "${successAction.data.description}\n\n${successAction.data.plaintext}"
+                            }
+                            is SuccessActionProcessed.Message -> {
+                                successAction.data.message
+                            }
+                            is SuccessActionProcessed.Url -> {
+                                successAction.data.description
+                            }
+                        }
+
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.id_success)
+                            .setMessage(message)
+                            .setPositiveButton(if(successAction is SuccessActionProcessed.Url) R.string.id_open else android.R.string.ok) { _, _ ->
+                                if(successAction is SuccessActionProcessed.Url){
+                                    openBrowser(successAction.data.url)
+                                }
+                                navigateBack(sendTransactionSuccess.isSendAll)
+                            }.apply {
+                                if(successAction is SuccessActionProcessed.Url){
+                                    setNegativeButton(android.R.string.cancel) { _, _ ->
+                                        navigateBack(sendTransactionSuccess.isSendAll)
+                                    }
+                                }
+                            }
+                            .show()
+                    }else{
+                        snackbar(R.string.id_transaction_sent)
+                        navigateBack(sendTransactionSuccess.isSendAll)
+                    }
                 }
-                snackbar(R.string.id_transaction_sent)
-                findNavController().popBackStack(R.id.walletOverviewFragment, false)
             }
 
             consumableEvent?.getContentIfNotHandledForType<GdkEvent.SuccessWithData>()?.let {
@@ -149,7 +190,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
         viewModel.onError.observe(viewLifecycleOwner){
             it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
                 // Reset send slider
-                binding.buttonSend.resetSlider()
+                binding.buttonSend.setCompleted(completed = false, withAnimation = true)
 
                 when {
                     // If the error is the Anti-Exfil validation violation we show that prominently.
@@ -162,22 +203,31 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
                         findNavController().popBackStack(R.id.walletOverviewFragment, false)
                     }
                     throwable.message != "id_action_canceled" -> {
-                        errorSnackbar(throwable)
+                        errorDialog(throwable, true)
                     }
                 }
             }
         }
+
+        viewModel.onProgress.observe(viewLifecycleOwner){
+            onBackCallback.isEnabled = it
+            if(account.isLightning){
+                binding.outputs.alpha = if(it) 0.2f else 1.0f
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep == false && viewModel.transactionNote.isBlank()
+        menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep == false && viewModel.transactionNote.isBlank() && !account.isLightning
         menu.findItem(R.id.sign_transaction).isVisible = isDevelopmentOrDebug
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.add_note -> {
-                TransactionNoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
+                NoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
                 return true
             }
             R.id.sign_transaction -> {
@@ -193,10 +243,10 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             network = network,
             session = session,
             transaction = transaction,
+            denomination = args.denomination.takeIf { it?.isFiat == false },
             showChangeOutputs = isAddressVerificationOnDevice && session.device?.isLedger == true,
             isAddressVerificationOnDevice = isAddressVerificationOnDevice
         )
-
 
         val itemAdapter = ItemAdapter<GenericItem>()
         val list = mutableListOf<GenericItem>()
@@ -210,9 +260,20 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             )
         }
 
-        list += TransactionFeeListItem(session = session, look = look, confirmLook = look)
+        if(!account.isLightning) {
+            list += TransactionFeeListItem(session = session, look = look, confirmLook = look)
+        }
 
         itemAdapter.add(list)
         return itemAdapter
+    }
+
+    private fun navigateBack(isSendAll: Boolean){
+        setNavigationResult(
+            result = isSendAll,
+            key = WalletOverviewFragment.BROADCASTED_TRANSACTION,
+            destinationId = R.id.walletOverviewFragment
+        )
+        findNavController().popBackStack(R.id.walletOverviewFragment, false)
     }
 }

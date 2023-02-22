@@ -216,15 +216,15 @@
         <item name="android:textSize">14dp</item>
     </style>
 
-    <style name="MaterialAlertDialog.Green.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
-    </style>
+<!--    <style name="MaterialAlertDialog.Green.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text.CenterStacked">-->
+<!--        <item name="android:textStyle">bold</item>-->
+<!--        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>-->
+<!--    </style>-->
 
-    <style name="MaterialAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
-        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
-        <item name="android:textSize">14dp</item>
-    </style>
+<!--    <style name="MaterialAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">-->
+<!--        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>-->
+<!--        <item name="android:textSize">14dp</item>-->
+<!--    </style>-->
 
     <style name="RecoveryPhraseKeyboardButton" parent="Widget.Material3.Button">
         <item name="android:padding">0dp</item>

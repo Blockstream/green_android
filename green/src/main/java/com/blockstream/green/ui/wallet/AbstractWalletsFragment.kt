@@ -10,9 +10,11 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.AbstractWalletsFragmentBinding
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.items.WalletListItem
+import com.blockstream.green.ui.login.LoginFragment
 import com.blockstream.green.utils.observeList
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -127,6 +129,12 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
 
     internal fun navigate(wallet: Wallet) {
         val walletSession = sessionManager.getWalletSession(wallet)
+
+        (requireActivity() as MainActivity).getVisibleFragment()?.also {
+            if(it is LoginFragment && it.walletOrNull == wallet){
+                return
+            }
+        }
 
         if (walletSession.isConnected) {
             navigate(NavGraphDirections.actionGlobalWalletOverviewFragment(wallet))

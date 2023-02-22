@@ -6,15 +6,19 @@ import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.params.SubAccountParams
 import com.blockstream.green.data.Countly
+import com.blockstream.green.database.CredentialType
+import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.gdk.hasHistory
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.nameCleanup
 
 open class AbstractAddAccountViewModel constructor(
+    val appKeystore: AppKeystore,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     countly: Countly,
@@ -23,9 +27,32 @@ open class AbstractAddAccountViewModel constructor(
 
     val accountCreated = MutableLiveData<Account>()
 
+    val accountTypeBeingCreated = MutableLiveData<AccountType>()
+
     fun createAccount(accountType: AccountType, accountName: String, network: Network, mnemonic: String?, xpub: String?) {
+        accountTypeBeingCreated.value = accountType
 
         doUserAction({
+            if(accountType.isLightning()){
+                session.initLightningIfNeeded()
+
+                // Persist Lightning
+                session.lightningSdk.appGreenlightCredentials?.also {
+                    val encryptedData = appKeystore.encryptData(it.toJson().toByteArray())
+
+                    val loginCredentials = LoginCredentials(
+                        walletId = wallet.id,
+                        network = network.id,
+                        credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
+                        encryptedData = encryptedData
+                    )
+
+                    walletRepository.insertOrReplaceLoginCredentials(loginCredentials)
+                }
+
+                return@doUserAction session.lightningAccount
+            }
+
             // Check if network needs initialization
             if(!session.hasActiveNetwork(network) && !session.failedNetworksFlow.value.contains(network)){
                 session.initNetworkIfNeeded(network) { }

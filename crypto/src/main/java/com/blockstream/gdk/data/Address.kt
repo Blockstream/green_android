@@ -1,6 +1,8 @@
 package com.blockstream.gdk.data
 
 import android.os.Parcelable
+import breez_sdk.LnInvoice
+import breez_sdk.SwapInfo
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -22,5 +24,15 @@ data class Address constructor(
 
     fun getUserPathAsInts(): List<Int>? {
         return userPath?.map { it.toInt() }
+    }
+
+    companion object{
+        fun fromInvoice(invoice: LnInvoice): Address {
+            return Address(address = invoice.bolt11)
+        }
+
+        fun fromSwapInfo(swapInfo: SwapInfo): Address {
+            return Address(address = swapInfo.bitcoinAddress)
+        }
     }
 }

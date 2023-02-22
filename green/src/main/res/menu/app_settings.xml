@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/clear_cache"
-        android:icon="@drawable/ic_baseline_delete_24"
-        android:title="@string/id_clear_cache"
+        android:id="@+id/buttonScan"
+        android:icon="@drawable/ic_qr_code"
+        android:title="@string/id_scan_qr_code"
         app:showAsAction="always"/>
 
 </menu>

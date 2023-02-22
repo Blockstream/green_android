@@ -24,34 +24,8 @@ android {
     }
 }
 
-kotlin {
-    jvmToolchain(11)
-}
-
-
-task("fetchBinaries") {
-    doFirst{
-        val exists = File("./lightning/src/main/jniLibs").exists()
-        val disable = File("./lightning/disable_fetch_binaries").exists()
-        if (!exists && !disable) {
-            exec {
-                commandLine("./fetch_breez_binaries.sh")
-            }
-        }else{
-            print("-- Skipped --")
-        }
-    }
-    outputs.upToDateWhen { false }
-}
-
-afterEvaluate {
-    android.libraryVariants.all {
-        preBuildProvider.configure { dependsOn("fetchBinaries") }
-    }
-}
-
 dependencies {
-    /**  --- Java Native Access ----------------------------------------------------------------- */
-    implementation (libs.jna) { artifact { type = "aar" } }
+    /**  --- Breez SDK -------------------------------------------------------------------------- */
+    api("breez_sdk:bindings-android:0.1.0")
     /** ----------------------------------------------------------------------------------------- */
 }

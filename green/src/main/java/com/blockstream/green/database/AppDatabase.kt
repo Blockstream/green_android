@@ -16,7 +16,7 @@ import kotlinx.serialization.encodeToString
 
 @Database(
     entities = [Wallet::class, LoginCredentials::class],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -45,6 +45,7 @@ abstract class AppDatabase : RoomDatabase() {
             builder.addMigrations(MIGRATION_2_3).build()
             builder.addMigrations(MIGRATION_3_4).build()
             builder.addMigrations(MIGRATION_4_5).build()
+            builder.addMigrations(MIGRATION_5_6).build()
 
             if (isDevelopmentFlavor) {
                  // builder.fallbackToDestructiveMigration()

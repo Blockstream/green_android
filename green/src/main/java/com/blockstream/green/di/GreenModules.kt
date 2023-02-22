@@ -22,6 +22,7 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.*
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
+import com.blockstream.lightning.LightningManager
 import com.pandulapeter.beagle.Beagle
 import com.pandulapeter.beagle.common.configuration.Behavior
 import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
@@ -88,13 +89,20 @@ class GreenModules {
     @Provides
     fun provideSessionManager(
         applicationScope: ApplicationScope,
+        lightningManager: LightningManager,
         settingsManager: SettingsManager,
         assetManager: AssetManager,
         countlyProvider: Provider<Countly>,
         gdkBridge: GdkBridge,
         qaTester: QATester
     ): SessionManager {
-        return SessionManager(applicationScope, settingsManager, assetManager, countlyProvider, gdkBridge, qaTester)
+        return SessionManager(applicationScope, lightningManager, settingsManager, assetManager, countlyProvider, gdkBridge, qaTester)
+    }
+
+    @Singleton
+    @Provides
+    fun provideLightningManager(): LightningManager {
+        return LightningManager()
     }
 
     @Singleton
@@ -111,8 +119,8 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideSettingsManager(@ApplicationContext context: Context, sharedPreferences: SharedPreferences): SettingsManager {
-        return SettingsManager(context, sharedPreferences)
+    fun provideSettingsManager(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, countlyProvider: Provider<Countly>): SettingsManager {
+        return SettingsManager(context, sharedPreferences, countlyProvider)
     }
 
     @Singleton

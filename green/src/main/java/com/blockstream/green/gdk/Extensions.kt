@@ -10,7 +10,9 @@ import com.blockstream.gdk.data.Device
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
+import com.blockstream.green.data.Denomination
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.extensions.startsWith
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 import com.blockstream.libgreenaddress.KotlinGDK
 
@@ -65,18 +67,18 @@ fun AccountType?.policyRes(): Int = when (this) {
 }
 
 fun AccountType.withPolicy(context: Context): String = policyRes().let {
-    if (this.isMutlisig()) {
-        "${context.getString(R.string.id_multisig)} / ${context.getString(it)}"
-    } else {
-        "${context.getString(R.string.id_singlesig)} / ${context.getString(it)}"
+    when{
+        this.isMutlisig() -> "${context.getString(R.string.id_multisig)} / ${context.getString(it)}"
+        this.isLightning() -> "${context.getString(R.string.id_lightning)}"
+        else -> "${context.getString(R.string.id_singlesig)} / ${context.getString(it)}"
     }
+
 }
 
 fun Account.typeWithPolicyAndNumber(context: Context): String = type.withPolicy(context).let { type ->
-    if (isMultisig) {
-        type
-    } else {
-        "$type #$accountNumber"
+    when{
+        isMultisig || isLightning -> type
+        else -> "$type #$accountNumber"
     }
 }
 
@@ -97,6 +99,7 @@ fun AccountType?.descriptionRes(): Int = when (this) {
     AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_simple_portable_standard
     AccountType.BIP84_SEGWIT -> R.string.id_cheaper_singlesig_option
     AccountType.BIP86_TAPROOT -> R.string.id_cheaper_singlesig_option
+    AccountType.LIGHTNING -> R.string.id_fast_transactions_on_the_lightning_network
     else -> R.string.id_unknown
 }
 
@@ -112,11 +115,17 @@ fun String?.isPolicyAsset(session: GdkSession): Boolean = (isPolicyAsset(session
 // If no Bitcoin network is available, fallback to Liquid
 fun String?.networkForAsset(session: GdkSession): Network = (if(this == null || this == BTC_POLICY_ASSET) (session.activeBitcoin ?: session.activeLiquid) else session.activeLiquid ) ?: session.defaultNetwork
 
-fun String?.assetTicker(session: GdkSession, overrideDenomination: String? = null) = assetTickerOrNull(session, overrideDenomination) ?: ""
+fun String?.assetTicker(
+    session: GdkSession,
+    denomination: Denomination? = null
+) = assetTickerOrNull(session = session, denomination = denomination) ?: ""
 
-fun String?.assetTickerOrNull(session: GdkSession, overrideDenomination: String? = null): String?{
+fun String?.assetTickerOrNull(
+    session: GdkSession,
+    denomination: Denomination? = null
+): String? {
     return if (this.isPolicyAsset(session)) {
-        getBitcoinOrLiquidUnit(this, session, overrideDenomination = overrideDenomination)
+        getBitcoinOrLiquidUnit(session = session, assetId = this, denomination = denomination)
     } else {
         this?.let { session.getAsset(it)?.ticker }
     }
@@ -130,12 +139,16 @@ fun String.getNetworkIcon(): Int{
     if (Network.isLiquidMainnet(this)) return R.drawable.ic_liquid
     if (Network.isBitcoinTestnet(this)) return R.drawable.ic_bitcoin_testnet
     if (Network.isLiquidTestnet(this)) return R.drawable.ic_liquid_testnet
+    if (Network.isLightningMainnet(this)) return R.drawable.ic_bitcoin_lightning
+    if (Network.isLightningTestnet(this)) return R.drawable.ic_bitcoin_lightning_testnet
     return R.drawable.ic_unknown
 }
 
 fun String.getNetworkColor(): Int = when {
     Network.isBitcoinMainnet(this) -> R.color.bitcoin
     Network.isLiquidMainnet(this) -> R.color.liquid
+    Network.isLightning(this) -> R.color.lightning
+    Network.isLightningTestnet(this) -> R.color.lightning_testnet
     Network.isLiquidTestnet(this) -> R.color.liquid_testnet
     Network.isBitcoinTestnet(this) -> R.color.bitcoin_testnet
     else -> R.color.bitcoin_testnet
@@ -161,30 +174,23 @@ fun Account.hasHistory(session: GdkSession): Boolean{
     }
 }
 
-fun String?.getAssetIcon(context: Context, session: GdkSession): Drawable {
-
-//    return if(this == null || this == BTC_POLICY_ASSET){
-//        ContextCompat.getDrawable(
-//            context,
-//            if (session.isMainnet) {
-//                R.drawable.ic_bitcoin
-//            } else {
-//                R.drawable.ic_bitcoin_testnet
-//            }
-//        )!!
-//    }else{
-//        session.liquid?.let { session.getAssetDrawableOrDefault(this) }
-//            ?: ContextCompat.getDrawable(context, R.drawable.ic_unknown)!!
-//    }
-
+fun String?.getAssetIcon(context: Context, session: GdkSession, isLightning: Boolean = false): Drawable {
     return if (this == null || this.isPolicyAsset(session)) {
         ContextCompat.getDrawable(
             context,
             if (this == null || this == BTC_POLICY_ASSET) {
-                if (session.isMainnet) {
-                    R.drawable.ic_bitcoin
-                } else {
-                    R.drawable.ic_bitcoin_testnet
+                if(isLightning){
+                    if (session.isMainnet) {
+                        R.drawable.ic_bitcoin_lightning
+                    } else {
+                        R.drawable.ic_bitcoin_lightning_testnet
+                    }
+                }else{
+                    if (session.isMainnet) {
+                        R.drawable.ic_bitcoin
+                    } else {
+                        R.drawable.ic_bitcoin_testnet
+                    }
                 }
             } else {
                 if (session.isMainnet) {
@@ -253,6 +259,7 @@ fun Wallet.iconResource(session: GdkSession) = when {
     isTestnet -> R.drawable.ic_regular_flask_24
     isBip39Ephemeral -> R.drawable.ic_regular_wallet_passphrase_24
     isHardware -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
+    isLightning -> R.drawable.ic_lightning
     // isHardware && session.device != null -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
     // session.gdkSessions.size == 1 -> if (session.mainAssetNetwork.isElectrum) R.drawable.ic_singlesig else R.drawable.ic_multisig
     else -> R.drawable.ic_regular_wallet_24
@@ -280,3 +287,5 @@ fun String.isNotAuthorized() =
     getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || this == "id_invalid_pin"
 
 fun String.isConnectionError() = this.contains("failed to connect")
+
+fun List<String>.startsWith(other: String?) = startsWith(other)

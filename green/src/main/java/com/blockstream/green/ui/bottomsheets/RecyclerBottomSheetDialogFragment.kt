@@ -6,7 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecyclerBottomSheetBinding
-import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.ui.items.AbstractBindingItem
 import com.blockstream.green.utils.toPixels
 import com.blockstream.green.views.SpaceItemDecoration
 import com.mikepenz.fastadapter.FastAdapter
@@ -35,5 +35,5 @@ abstract class RecyclerBottomSheetDialogFragment : AbstractBottomSheetDialogFrag
 
     protected open fun getTitle() = getString(R.string.id_help)
 
-    abstract fun createFastAdapter(): FastAdapter<HelpListItem>
+    abstract fun createFastAdapter(): FastAdapter<AbstractBindingItem<*>>
 }

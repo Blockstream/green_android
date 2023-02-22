@@ -11,13 +11,13 @@ import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
-import com.blockstream.green.databinding.ListItemHelpBinding
+import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.databinding.RecyclerBottomSheetBinding
-import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.extensions.navigate
+import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.settings.TwoFactorSetupAction
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.extensions.navigate
 import com.blockstream.green.utils.toPixels
 import com.blockstream.green.views.SpaceItemDecoration
 import com.mikepenz.fastadapter.FastAdapter
@@ -30,8 +30,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, AbstractWalletViewModel>() {
     private lateinit var twoFactorReset: TwoFactorReset
 
-    var cancelItem : HelpListItem? = null
-    var disputeItem : HelpListItem? = null
+    var cancelItem : ActionListItem? = null
+    var disputeItem : ActionListItem? = null
 
     override val screenName = "TwoFactorReset"
 
@@ -67,25 +67,25 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
     }
 
 
-    private fun createFastAdapter(): FastAdapter<HelpListItem> {
-        val itemAdapter = ItemAdapter<HelpListItem>()
+    private fun createFastAdapter(): FastAdapter<ActionListItem> {
+        val itemAdapter = ItemAdapter<ActionListItem>()
 
-        val list = mutableListOf<HelpListItem>()
+        val list = mutableListOf<ActionListItem>()
 
         if(twoFactorReset.isDisputed == true){
-            list += HelpListItem(
+            list += ActionListItem(
                 StringHolder(R.string.id_your_wallet_is_locked_under_2fa),
                 StringHolder(R.string.id_the_1_year_2fa_reset_process),
             )
 
-            list += HelpListItem(
+            list += ActionListItem(
                 message = StringHolder(R.string.id_if_you_are_the_rightful_owner),
                 button = StringHolder(R.string.id_cancel_2fa_reset),
             ).also {
                 cancelItem = it
             }
 
-            list += HelpListItem(
+            list += ActionListItem(
                 message = StringHolder(R.string.id_if_you_initiated_the_2fa_reset),
                 button = StringHolder(R.string.id_undo_2fa_dispute),
             ).also {
@@ -94,12 +94,12 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
 
         }else{
 
-            list += HelpListItem(
+            list += ActionListItem(
                 title = StringHolder(getString(R.string.id_your_wallet_is_locked_for_a, twoFactorReset.daysRemaining)),
                 message = StringHolder(R.string.id_the_waiting_period_is_necessary),
             )
 
-            list += HelpListItem(
+            list += ActionListItem(
                 title = StringHolder(R.string.id_how_to_stop_this_reset),
                 message = StringHolder(getString(R.string.id_if_you_have_access_to_a, twoFactorReset.daysRemaining)),
                 button = StringHolder(R.string.id_cancel_twofactor_reset)
@@ -107,7 +107,7 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
                 cancelItem = it
             }
 
-            list += HelpListItem(
+            list += ActionListItem(
                 title = StringHolder(R.string.id_permanently_block_this_wallet),
                 message = StringHolder(R.string.id_if_you_did_not_request_the),
                 button = StringHolder(R.string.id_dispute_twofactor_reset),
@@ -120,7 +120,7 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
-        fastAdapter.addClickListener<ListItemHelpBinding, HelpListItem>({ binding -> binding.button }) { _, _, _, item ->
+        fastAdapter.addClickListener<ListItemActionBinding, ActionListItem>({ binding -> binding.button }) { _, _, _, item ->
             val twoFactorSetupAction = if(item == cancelItem){
                 TwoFactorSetupAction.CANCEL
             }else{

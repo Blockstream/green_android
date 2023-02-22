@@ -62,6 +62,7 @@ android {
 
     flavorDimensions += listOf("normal")
     productFlavors {
+
         create("development") {
             applicationId = "com.greenaddress.greenbits_android_wallet.dev"
             versionNameSuffix  = "-dev" + appendGdkCommitHash(rootProject, true)
@@ -117,11 +118,13 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             ndk {
-                abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64") // includes ARM & x86_64 .so files only, so no x86 .so file
+                abiFilters += listOf("armeabi-v7a", "arm64-v8a") // includes ARM & x86_64 .so files only, so no x86 .so file
             }
 
             signingConfigs.getByName("release").also {
-                signingConfig = it
+                if(it.storeFile != null){
+                    signingConfig = it
+                }
             }
         }
     }
@@ -291,8 +294,6 @@ class RoomSchemaArgProvider(
 ) : CommandLineArgumentProvider {
 
     override fun asArguments(): Iterable<String> {
-        // Note: If you're using KSP, change the line below to return
-        // listOf("room.schemaLocation=${schemaDir.path}").
-        return listOf("-Aroom.schemaLocation=${schemaDir.path}")
+        return listOf("room.schemaLocation=${schemaDir.path}")
     }
 }

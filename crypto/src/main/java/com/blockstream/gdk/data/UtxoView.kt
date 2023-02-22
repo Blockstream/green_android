@@ -15,7 +15,7 @@ data class UtxoView constructor(
     companion object{
         fun fromOutput(output: Output): UtxoView {
             return UtxoView(
-                address = output.address,
+                address = output.domain ?: output.address,
                 assetId = output.assetId,
                 satoshi = -output.satoshi,
                 isChange = output.isChange,

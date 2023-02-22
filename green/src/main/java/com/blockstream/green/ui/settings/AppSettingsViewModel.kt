@@ -18,7 +18,9 @@ class AppSettingsViewModel @Inject constructor(
 ) : AppViewModel(countly) {
     private var appSettings: ApplicationSettings = settingsManager.getApplicationSettings()
 
-    val analyticsFeatureEnabled = countly.analyticsFeatureEnabled
+    val analyticsFeatureEnabled = settingsManager.analyticsFeatureEnabled
+    val lightningEnabled
+        get() = settingsManager.lightningEnabled
 
     val proxyURLInvalid = MutableLiveData(true)
 
@@ -30,6 +32,7 @@ class AppSettingsViewModel @Inject constructor(
     // screenLockSetting must be optional as is accessed by enableEnhancedPrivacy before being initialized
     val screenLockSetting : MutableLiveData<Int> = MutableLiveData(appSettings.screenLockInSeconds)
     val enableTestnet = MutableLiveData(appSettings.testnet)
+    val enableExperimentalFeatures = MutableLiveData(appSettings.experimentalFeatures)
     val enableAnalytics = MutableLiveData(appSettings.analytics)
     val enableTorRouting = MutableLiveData(appSettings.tor)
     val enableProxy = MutableLiveData(appSettings.proxyUrl != null)
@@ -75,6 +78,7 @@ class AppSettingsViewModel @Inject constructor(
         screenLockInSeconds = screenLockSetting.value ?: ScreenLockSetting.LOCK_IMMEDIATELY.seconds,
         testnet = enableTestnet.value ?: false,
         analytics = enableAnalytics.value ?: false,
+        experimentalFeatures = enableExperimentalFeatures.value ?: false,
         proxyUrl = if (enableProxy.value == true && !proxyURL.value.isNullOrBlank()) proxyURL.value else null,
         electrumNode = enableElectrumNode.value ?: false,
         tor = enableTorRouting.value ?: false,
@@ -91,11 +95,14 @@ class AppSettingsViewModel @Inject constructor(
         spvLiquidElectrumServer = if(enableSPV?.value == true) spvLiquidElectrumServer.value else null,
         spvTestnetElectrumServer = if(enableSPV?.value == true) spvTestnetElectrumServer.value else null,
         spvTestnetLiquidElectrumServer = if(enableSPV?.value == true) spvTestnetLiquidElectrumServer.value else null,
-
     )
 
     fun saveSettings(){
         settingsManager.saveApplicationSettings(getSettings())
+    }
+
+    fun areSettingsDirty(): Boolean {
+        return getSettings() != appSettings
     }
 
     companion object {

@@ -51,6 +51,7 @@
 <!--    <color name="brand_green_dark">#00832e</color>-->
 
     <color name="brand_green_20">#2000b45a</color>
+    <color name="green_20">#3300f113</color>
 
     <color name="brand_surface">#19222c</color>
     <color name="brand_surface_light">#273545</color>
@@ -68,11 +69,13 @@
     <color name="red">#EA5262</color>
 
     <color name="error">#b74747</color>
+    <color name="error_20">#3B080F</color>
     <color name="warning">#d2934a</color>
 
     <color name="bitcoin">#fe8e02</color>
     <color name="bitcoin_variant">#ffa62a</color>
     <color name="liquid">#46BEAE</color>
+    <color name="lightning">#E8B810</color>
     <color name="liquid_variant">#62d8c6</color>
     <color name="amp">#51AAB0</color>
     <color name="amp_variant">#73cad1</color>
@@ -82,6 +85,7 @@
     <color name="bitcoin_testnet_variant">#b4b4b4</color>
     <color name="liquid_testnet">#9ab8b4</color>
     <color name="liquid_testnet_variant">#b5d3d0</color>
+    <color name="lightning_testnet">#f4dc88</color>
 
     <color name="transparent_dark">#22000000</color>
     <color name="transparent_darker">#33000000</color>

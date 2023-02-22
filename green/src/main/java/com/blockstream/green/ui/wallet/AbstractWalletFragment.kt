@@ -1,20 +1,26 @@
 package com.blockstream.green.ui.wallet
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
+import com.blockstream.gdk.data.Pricing
 import com.blockstream.gdk.params.ReconnectHintParams
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.databinding.DenominationExchangeDialogBinding
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.iconResource
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.login.LoginFragment
+import com.blockstream.green.utils.isDevelopmentOrDebug
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import mu.KLogging
 
@@ -236,6 +242,102 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
         super.onDestroy()
         // Dismiss network to avoid UI leaking to other fragments
         networkSnackbar?.dismiss()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun showDenominationAndExchangeRateDialog(onSuccess: (() -> Unit)? = null) {
+
+        session.getSettings()?.let { settings ->
+
+            val denominationsUnitsIdentities = resources.getTextArray(R.array.btc_units_entries).map {
+                it.toString()
+            }
+
+            val denominationsUnits = if (session.isTestnet) {
+                resources.getTextArray(
+                    R.array.testnet_units_entries
+                ).map { it.toString() }
+            } else if (session.mainAssetNetwork.isLiquid) {
+                resources.getTextArray(
+                    R.array.liquid_units_entries
+                ).map { it.toString() }
+            } else {
+                denominationsUnitsIdentities
+            }
+
+            var selectedUnit = settings.unit
+
+            var exchangeRates = listOf<String>()
+            var exchangeRatesIdentities = listOf<Pricing>()
+
+            var selectedPricing = settings.pricing
+
+            try{
+                val availableCurrencies = session.availableCurrencies()
+                exchangeRates = availableCurrencies.map {
+                    it.toString(context = requireContext(), R.string.id_s_from_s)
+                }.let {
+                    if(isDevelopmentOrDebug){
+                        listOf("NULL (Debug)") + it
+                    }else{
+                        it
+                    }
+                }
+
+                exchangeRatesIdentities = availableCurrencies.let {
+                    if(isDevelopmentOrDebug){
+                        listOf(Pricing("null", "null")) + it
+                    }else{
+                        it
+                    }
+                }
+            }catch (e: Exception){
+                countly.recordException(e)
+            }
+
+
+            val dialogBinding = DenominationExchangeDialogBinding.inflate(LayoutInflater.from(context))
+
+            // Denomination
+            dialogBinding.denomination.setOnItemClickListener { _, _, position, _ ->
+                selectedUnit = denominationsUnitsIdentities[position]
+            }
+
+            dialogBinding.denomination.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_list_item_1,
+                    denominationsUnits
+                )
+            )
+
+            dialogBinding.denomination.setText(selectedUnit.let {
+                denominationsUnits.getOrNull(denominationsUnitsIdentities.indexOf(it)) ?: it
+            }, false)
+
+            // Exchange Rate
+            dialogBinding.exchangeRate.setOnItemClickListener { _, _, position, _ ->
+                selectedPricing = exchangeRatesIdentities[position]
+            }
+
+            dialogBinding.exchangeRate.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_list_item_1,
+                    exchangeRates
+                )
+            )
+            dialogBinding.exchangeRate.setText(selectedPricing.toString(context = requireContext(), R.string.id_s_from_s), false)
+
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.id_denomination__exchange_rate)
+                .setView(dialogBinding.root)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    getWalletViewModel().saveGlobalSettings(settings.copy(unit = selectedUnit, pricing = selectedPricing), onSuccess)
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
     }
 
     companion object : KLogging()

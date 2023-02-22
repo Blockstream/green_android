@@ -77,7 +77,7 @@
             <Button
                 android:id="@+id/buttonAdvanced"
                 style="@style/Widget.Green.Button.Text"
-                isVisible="@{vm.accountTypesLiveData.size() > 1}"
+                isVisible="@{vm.allAccountTypes.size() != vm.filteredAccountTypes.size()}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{vm.showAdvancedLiveData ? @string/id_hide_advanced_options : @string/id_show_advanced_options }"
@@ -88,7 +88,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             isVisible="@{vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -112,6 +112,22 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:progress="75" />
 
-        </FrameLayout>
+            <TextView
+                android:id="@+id/createLabel"
+                style="?attr/textAppearanceLabelLarge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:text="@{String.format(@string/id_creating_your_s_account, vm.accountTypeBeingCreated)}"
+                android:textAlignment="center"
+                android:textColor="@color/color_on_surface_emphasis_high"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progress"
+                tools:text="@string/id_creating_your_s_account" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </layout>

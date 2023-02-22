@@ -1,11 +1,12 @@
 package com.blockstream.green.ui.bottomsheets
 
 import androidx.fragment.app.FragmentManager
-import com.blockstream.green.R
 import com.blockstream.base.Urls
-import com.blockstream.green.databinding.ListItemHelpBinding
+import com.blockstream.green.R
+import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.ui.items.AbstractBindingItem
+import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
@@ -22,12 +23,12 @@ class HelpBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
     @Inject
     lateinit var settingsManager: SettingsManager
 
-    override fun createFastAdapter(): FastAdapter<HelpListItem> {
-        val itemAdapter = ItemAdapter<HelpListItem>()
+    override fun createFastAdapter(): FastAdapter<AbstractBindingItem<*>> {
+        val itemAdapter = ItemAdapter<ActionListItem>()
 
-        val list = mutableListOf<HelpListItem>()
+        val list = mutableListOf<ActionListItem>()
 
-        list += HelpListItem(
+        list += ActionListItem(
             StringHolder(R.string.id_i_typed_all_my_recovery_phrase),
             StringHolder(R.string.id_1_double_check_all_of_your),
             StringHolder(R.string.id_visit_the_blockstream_help)
@@ -37,11 +38,11 @@ class HelpBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
-        fastAdapter.addClickListener<ListItemHelpBinding, HelpListItem>({ binding -> binding.button }) { _, _, _, _ ->
+        fastAdapter.addClickListener<ListItemActionBinding, ActionListItem>({ binding -> binding.button }) { _, _, _, _ ->
             openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_MNEMONIC_NOT_WORKING)
         }
 
-        return fastAdapter
+        return fastAdapter as FastAdapter<AbstractBindingItem<*>>
     }
 
     companion object : KLogging() {

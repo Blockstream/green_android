@@ -22,6 +22,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import androidx.transition.TransitionManager
 import com.blockstream.gdk.GdkBridge
@@ -44,6 +45,7 @@ import com.blockstream.green.extensions.navigate
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.services.TaskService
+import com.blockstream.green.ui.settings.AppSettingsFragment
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.fadeIn
@@ -95,6 +97,8 @@ class MainActivity : AppActivity() {
 
     private lateinit var binding: MainActivityBinding
     private val activityViewModel: MainActivityViewModel by viewModels()
+
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override val toolbar: GreenToolbar
         get() = binding.toolbar
@@ -232,12 +236,22 @@ class MainActivity : AppActivity() {
 
         navController = navHostFragment.navController
 
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.introFragment, R.id.introSetupNewWalletFragment),
-            binding.drawerLayout
+        appBarConfiguration = AppBarConfiguration(
+            topLevelDestinationIds = setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.introFragment, R.id.introSetupNewWalletFragment),
+            drawerLayout = binding.drawerLayout,
+            fallbackOnNavigateUpListener = ::onSupportNavigateUp
         )
 
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
+
+        binding.toolbar.setNavigationOnClickListener {
+            if (navController.currentDestination?.id == R.id.appSettingsFragment) {
+                // Forward action to fragment
+                (getVisibleFragment() as? AppSettingsFragment)?.navigateUp()
+            } else {
+                NavigationUI.navigateUp(navController, appBarConfiguration)
+            }
+        }
 
         // No longer needed
 //        binding.toolbar.setLogoClickListener {
@@ -251,17 +265,10 @@ class MainActivity : AppActivity() {
 //            }
 //        }
 
-        binding.fabFeedback.setOnClickListener {
-            countly.feedbackWidget?.also {
-                countly.showFeedbackWidget(supportFragmentManager)
-            }
-        }
-
         binding.buttonUnlock.setOnClickListener {
             showUnlockPrompt()
         }
 
-        binding.fabFeedback.isVisible = false
         combine(countly.feedbackWidgetStateFlow, navController.currentBackStackEntryFlow) { feedback, currentBackStackEntry ->
             (feedback != null && currentBackStackEntry.destination.id == R.id.walletOverviewFragment)
         }.distinctUntilChanged().onEach { showDialog ->
@@ -271,7 +278,6 @@ class MainActivity : AppActivity() {
                     // Delay a bit
                     delay(1.toDuration(DurationUnit.SECONDS))
 
-                    // binding.fabFeedback.isVisible = it
                     // For Beta show immediately
                     countly.showFeedbackWidget(supportFragmentManager)
                 }
@@ -407,17 +413,18 @@ class MainActivity : AppActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        // Handle BIP-21 uri
+        // Handle Uri (BIP-21 or lightning)
         intent?.data?.let {
-            sessionManager.pendingBip21Uri.postValue(ConsumableEvent(it.toString()))
+
+            sessionManager.pendingUri.postValue(ConsumableEvent(it.toString()))
 
             if(navController.currentDestination?.id == R.id.introFragment) {
                 Snackbar.make(
                     binding.root,
-                    R.string.id_you_have_clicked_a_payment_uri,
+                    R.string.id_you_have_clicked_a_uri,
                     Snackbar.LENGTH_LONG
                 ).setAction(R.string.id_cancel) {
-                    sessionManager.pendingBip21Uri.postValue(null)
+                    sessionManager.pendingUri.postValue(null)
                 }.show()
             }
         }
@@ -463,7 +470,7 @@ class MainActivity : AppActivity() {
         }
     }
 
-    private fun getVisibleFragment() = navHostFragment.childFragmentManager.fragments.firstOrNull()
+    fun getVisibleFragment() = navHostFragment.childFragmentManager.fragments.firstOrNull()
 
     companion object: KLogging() {
         const val OPEN_WALLET = "OPEN_WALLET"

@@ -1,5 +1,6 @@
 package com.blockstream.gdk.data
 
+import android.content.Context
 import com.blockstream.gdk.GAJson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -67,6 +68,10 @@ data class Pricing(
     }
 
     fun toIdentifiable() = String.format("%s %s", currency, exchange)
+
+    fun toString(context: Context, res: Int): String {
+        return context.getString(res, currency, exchange)
+    }
 
     companion object {
         /**

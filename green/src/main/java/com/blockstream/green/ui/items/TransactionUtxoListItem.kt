@@ -44,8 +44,12 @@ data class TransactionUtxoListItem constructor(
         }
         look.setTransactionUtxoToBinding(scope, index, binding.amountView)
 
+        binding.addressTextView.maxLines = if(look.network.isLightning) 1 else Int.MAX_VALUE
+
         // make address,amount & fee selectable
-        binding.addressTextView.setTextIsSelectable(true)
+        if(!look.network.isLightning) {
+            binding.addressTextView.setTextIsSelectable(true)
+        }
         binding.amountView.amountTextView.setTextIsSelectable(true)
         binding.amountView.fiatTextView.setTextIsSelectable(true)
     }

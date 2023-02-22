@@ -57,17 +57,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="24dp"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:paddingBottom="16dp"
             app:gap="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/id_app_settings"
-                android:textAppearance="?attr/textAppearanceTitleLarge" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -166,6 +159,22 @@
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_element_margin" />
+
+            <com.blockstream.green.views.GreenSwitch
+                android:id="@+id/switchExperimentaFeatures"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="@={vm.enableExperimentalFeatures}"
+                isVisible="@{vm.lightningEnabled || vm.enableExperimentalFeatures}"
+                app:icon="@drawable/ic_fill_flash_24"
+                app:titleText="@string/id_enable_experimental_features"
+                app:captionText="@string/id_experimental_features_might_change_break" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                isVisible="@{vm.lightningEnabled}"
                 android:layout_marginStart="@dimen/settings_element_margin" />
 
             <com.blockstream.green.views.GreenSwitch
@@ -401,21 +410,23 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="end"
+                android:layout_marginTop="24dp"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/buttonCancel"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="16dp"
                     style="@style/Widget.Green.Button.Text"
                     android:text="@string/id_cancel" />
 
                 <Button
                     android:id="@+id/buttonSave"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginStart="16dp"
                     style="@style/Widget.Green.Button"
                     android:text="@string/id_save" />

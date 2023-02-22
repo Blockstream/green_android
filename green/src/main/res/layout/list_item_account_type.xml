@@ -29,12 +29,12 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:layout_marginStart="16dp"
-                android:src="@{accountType.mutlisig ? @drawable/ic_multisig : @drawable/ic_singlesig}"
+                android:src="@{accountType.mutlisig ? @drawable/ic_multisig : accountType.lightning ? @drawable/ic_lightning : @drawable/ic_singlesig}"
                 app:layout_constraintBottom_toBottomOf="@+id/accountTypeTextView"
                 app:layout_constraintDimensionRatio="w,1:1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/accountTypeTextView"
-                tools:src="@drawable/ic_multisig" />
+                tools:src="@drawable/ic_lightning" />
 
             <TextView
                 android:id="@+id/nameTextView"
@@ -85,7 +85,8 @@
                 app:layout_constraintStart_toEndOf="@+id/policyIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
-                tools:text="Singlesig" />
+                tools:text="Singlesig"
+                tools:ignore="SpUsage" />
 
             <FrameLayout
                 android:id="@+id/arrow"

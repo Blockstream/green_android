@@ -19,6 +19,7 @@
         android:clipChildren="false">
 
         <com.blockstream.green.views.GappedLinearLayout
+            android:id="@+id/outputs"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="1dp"
@@ -48,6 +49,58 @@
 
         </com.blockstream.green.views.GappedLinearLayout>
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/lightningLoader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            isVisible="@{vm.onProgress &amp;&amp; vm.account.lightning}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="300dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="64dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:indeterminate="true" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_confirming_your_transaction"
+                    android:textColor="@color/color_on_surface_emphasis_high"
+                    android:textAlignment="center"
+                    android:layout_marginTop="32dp"
+                    style="?attr/textAppearanceTitleSmall"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_this_might_take_up_to_a_minute"
+                    android:textColor="@color/color_on_surface_emphasis_medium"
+                    android:textAlignment="center"
+                    android:layout_marginTop="8dp"
+                    style="?attr/textAppearanceBodyMedium"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/buttonSendHelp"
@@ -94,6 +147,7 @@
 
         <TextView
             android:id="@+id/textView"
+            isVisible="@{!vm.accountLiveData.lightning}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -112,13 +166,16 @@
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/linearProgressIndicator"
-            isVisible="@{vm.onProgress}"
-            android:layout_width="match_parent"
+            isVisible="@{vm.onProgress &amp;&amp; !vm.account.lightning}"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
+            app:layout_constraintEnd_toEndOf="@+id/buttonSend"
+            app:layout_constraintStart_toStartOf="@+id/buttonSend"
+            app:layout_constraintTop_toTopOf="@+id/buttonSend"
+            app:trackCornerRadius="8dp"
+            app:trackThickness="8dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

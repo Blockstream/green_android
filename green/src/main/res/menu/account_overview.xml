@@ -24,7 +24,19 @@
         android:title="@string/id_archive_account" />
 
     <item
+        android:id="@+id/show_recovery_phrase"
+        android:title="@string/id_show_recovery_phrase" />
+
+    <item
+        android:id="@+id/node_info"
+        android:title="@string/id_node_info" />
+
+    <item
         android:id="@+id/enhance_security"
         android:title="@string/id_enhance_security" />
+
+    <item
+        android:id="@+id/remove"
+        android:title="@string/id_remove" />
 
 </menu>

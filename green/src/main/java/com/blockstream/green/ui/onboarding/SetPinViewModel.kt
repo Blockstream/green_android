@@ -25,8 +25,13 @@ class SetPinViewModel @AssistedInject constructor(
     val isPinVerified = MutableLiveData(false)
 
     init {
-        if(onboardingOptions.isRestoreFlow){
-            checkRecoveryPhrase(onboardingOptions.isTestnet == true, mnemonic ?: "", password, GdkEvent.Success)
+        if (onboardingOptions.isRestoreFlow) {
+            checkRecoveryPhrase(
+                isTestnet = onboardingOptions.isTestnet == true,
+                mnemonic = mnemonic ?: "",
+                password = password,
+                successEvent = GdkEvent.Success
+            )
         }
     }
 

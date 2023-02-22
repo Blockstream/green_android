@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
 import androidx.core.text.toSpanned
+import androidx.core.text.underline
 import androidx.fragment.app.Fragment
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
@@ -177,22 +178,35 @@ fun Fragment.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
     return requireContext().greenText(whiteText, *greenTexts)
 }
 
-fun Context.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
-    val whiteString = getString(whiteText)
+fun Fragment.greenText(whiteText: String, vararg greenTexts: String): Spanned {
+    return requireContext().colorText(whiteText, R.color.white, R.color.brand_green, *greenTexts)
+}
 
+fun Context.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
+    return colorText(
+        getString(whiteText), R.color.white, R.color.brand_green,
+        *(greenTexts.map { getString(it) }).toTypedArray()
+    )
+}
+
+fun Fragment.colorText(baseText: String, baseColor: Int, color: Int, vararg greenTexts: String): Spanned {
+    return requireContext().colorText(baseText, baseColor, color, *greenTexts)
+}
+
+fun Context.colorText(baseText: String, baseColor: Int, color: Int, vararg greenTexts: String): Spanned {
     return try{
         buildSpannedString {
-            color(ContextCompat.getColor(this@greenText, R.color.white)) {
-                append(whiteString)
+            color(ContextCompat.getColor(this@colorText, baseColor)) {
+                append(baseText)
             }
 
-            greenTexts.map { getString(it).lowercase() }.forEach {
-                val start = whiteString.lowercase().indexOf(it)
+            greenTexts.map { it.lowercase() }.forEach {
+                val start = baseText.lowercase().indexOf(it)
                 setSpan(
                     ForegroundColorSpan(
                         ContextCompat.getColor(
-                            this@greenText,
-                            R.color.brand_green
+                            this@colorText,
+                            color
                         )
                     ),
                     start,
@@ -202,8 +216,19 @@ fun Context.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
             }
         }.toSpanned()
     }catch (e: Exception){
-        whiteString.toSpanned()
+        baseText.toSpanned()
     }
+}
+
+fun Fragment.underlineText(text: String): Spanned {
+    return requireContext().underlineText(text)
+}
+fun Context.underlineText(text: String): Spanned {
+    return buildSpannedString {
+        underline {
+            append(text)
+        }
+    }.toSpanned()
 }
 
 fun Context.linkedText(whiteText: Int, links: List<Pair<Int, ClickableSpan>>): Spanned {

@@ -14,6 +14,8 @@ import com.blockstream.green.databinding.SetPinFragmentBinding
 import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.ui.MainActivity
+import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.views.GreenPinViewListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -24,6 +26,9 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
     private val args: SetPinFragmentArgs by navArgs()
 
     override val screenName = "OnBoardPin"
+
+    @Inject
+    lateinit var appKeystore: AppKeystore
 
     @Inject
     lateinit var viewModelFactory: SetPinViewModel.AssistedFactory
@@ -70,7 +75,7 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
         binding.buttonNext.setOnClickListener {
             options?.let {
                 if(it.isRestoreFlow){
-                    viewModel.restoreWallet(options = it, pin = pin, mnemonic = args.mnemonic, password = args.password)
+                    viewModel.restoreWallet(appKeystore = appKeystore, options = it, pin = pin, mnemonic = args.mnemonic, password = args.password)
                 }else{
                     viewModel.createNewWallet(options = it, pin = pin, mnemonic = args.mnemonic)
                 }
@@ -108,7 +113,6 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
 
         viewModel.onProgress.observe(viewLifecycleOwner){
             setToolbarVisibility(!it)
-            onBackCallback.isEnabled = it
         }
 
         viewModel.onError.observe(viewLifecycleOwner){
@@ -121,6 +125,11 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
             it.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let { navigate ->
                 navigate(NavGraphDirections.actionGlobalWalletOverviewFragment(navigate.data as Wallet))
             }
+        }
+
+        viewModel.navigationLock.observe(viewLifecycleOwner){
+            onBackCallback.isEnabled = it
+            (requireActivity() as MainActivity).lockDrawer(it)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
