@@ -139,6 +139,10 @@ class RecipientCell: UITableViewCell {
             amountBox.alpha = 0.6
         } else {
             btnSendAll.setStyle(.outlinedGray)
+            btnSendAll.isEnabled = true
+        }
+        if model.address?.isEmpty ?? true {
+            btnSendAll.setStyle(.primaryDisabled)
         }
         amountFieldIsEnabled(!model.isSendAll)
         btnConvert.isUserInteractionEnabled = !model.isSendAll && model.isBtc
