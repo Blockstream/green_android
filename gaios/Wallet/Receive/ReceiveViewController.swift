@@ -159,10 +159,13 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func btnShare(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveShareTypeViewController") as? DialogReceiveShareTypeViewController {
-            vc.modalPresentationStyle = .overFullScreen
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "id_share".localized,
+                                               type: .sharePrefs,
+                                               items: SharePrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
@@ -316,11 +319,11 @@ extension ReceiveViewController: UIActivityItemSource {
     }
 }
 
-extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
-    func didSelect(_ option: ReceiveShareOption) {
+extension ReceiveViewController: DialogListViewControllerDelegate {
+    func didSelectIndex(_ index: Int, with type: DialogType) {
         guard let address = viewModel.address?.address, !address.isEmpty else { return }
-        switch option {
-        case .cancel:
+        switch SharePrefs(rawValue: index) {
+        case .none:
             return
         case .address:
             let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)

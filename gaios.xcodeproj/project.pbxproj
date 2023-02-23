@@ -267,6 +267,7 @@
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
 		34D330442863485E009CDBB3 /* DialogWatchOnlySetUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
+		34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E329A773AF00D3B5C5 /* SharePrefs.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */; };
 		34DEF5212729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */; };
@@ -717,6 +718,7 @@
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWatchOnlySetUp.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
+		34D535E329A773AF00D3B5C5 /* SharePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePrefs.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletNameViewController.swift; sourceTree = "<group>"; };
 		34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveMoreOptionsViewController.swift; sourceTree = "<group>"; };
@@ -1328,6 +1330,7 @@
 				3457F4B92923B0B500EF33B5 /* AccountPrefs.swift */,
 				34A75B6C292BD704007995D7 /* NetworkPrefs.swift */,
 				342F9811293518C6005876A8 /* Enable2faPrefs.swift */,
+				34D535E329A773AF00D3B5C5 /* SharePrefs.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2710,6 +2713,7 @@
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,
 				81D671EB26C8007600682508 /* SessionManager.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
+				34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */,
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */,
 				34FB694F27FD782F00A13197 /* PopoverMenuAccountViewController.swift in Sources */,
