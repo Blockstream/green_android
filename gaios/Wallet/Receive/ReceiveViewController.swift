@@ -158,6 +158,26 @@ class ReceiveViewController: UIViewController {
         UIApplication.shared.open(ExternalUrls.receiveTransactionHelp, options: [:], completionHandler: nil)
     }
 
+    func optRequestAmount() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveRequestAmountViewController") as? DialogReceiveRequestAmountViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            vc.wallet = viewModel.account
+            vc.prefill = self.satoshi
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func optSweep() {
+        let storyboard = UIStoryboard(name: "Send", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
+            let sendViewModel = SendViewModel(account: viewModel.account, inputType: .sweep, transaction: nil)
+            vc.viewModel = sendViewModel
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     @IBAction func btnShare(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
@@ -171,16 +191,18 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func btnEdit(_ sender: Any) {
-        didSelect(.requestAmount)
+        optRequestAmount()
     }
 
     @IBAction func btnOptions(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveMoreOptionsViewController") as? DialogReceiveMoreOptionsViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.isLiquid = viewModel.account.gdkNetwork.liquid
-            vc.isSingleSig = viewModel.account.gdkNetwork.electrum
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
+            let hideSweep = viewModel.account.gdkNetwork.liquid || viewModel.account.gdkNetwork.electrum
+            vc.viewModel = DialogListViewModel(title: "id_share".localized,
+                                               type: .moreOptPrefs,
+                                               items: MoreOptPrefs.getItems(hideSweep: hideSweep))
+            vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
@@ -264,30 +286,6 @@ extension ReceiveViewController: AccountSelectViewControllerDelegate {
         viewModel.newAddress()
     }
 }
-extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate {
-    func didSelect(_ action: ReceiveOptionAction) {
-        switch action {
-        case .requestAmount:
-            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveRequestAmountViewController") as? DialogReceiveRequestAmountViewController {
-                vc.modalPresentationStyle = .overFullScreen
-                vc.delegate = self
-                vc.wallet = viewModel.account
-                vc.prefill = self.satoshi
-                present(vc, animated: false, completion: nil)
-            }
-        case .sweep:
-            let storyboard = UIStoryboard(name: "Send", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-                let sendViewModel = SendViewModel(account: viewModel.account, inputType: .sweep, transaction: nil)
-                vc.viewModel = sendViewModel
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        case .cancel:
-            break
-        }
-    }
-}
 
 extension ReceiveViewController: DialogReceiveRequestAmountViewControllerDelegate {
     func didConfirm(satoshi: Int64?) {
@@ -321,32 +319,48 @@ extension ReceiveViewController: UIActivityItemSource {
 
 extension ReceiveViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
-        guard let address = viewModel.address?.address, !address.isEmpty else { return }
-        switch SharePrefs(rawValue: index) {
-        case .none:
-            return
-        case .address:
-            let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
-            let activityViewController = UIActivityViewController(activityItems: [uri], applicationActivities: nil)
-            activityViewController.popoverPresentationController?.sourceView = self.view
-            self.present(activityViewController, animated: true, completion: nil)
-            let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
-                                                           media: AnalyticsManager.ReceiveAddressMedia.text,
-                                                           method: AnalyticsManager.ReceiveAddressMethod.share)
-            AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
-                                                   walletType: viewModel.account.type,
-                                                   data: data)
-        case .qr:
-            let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
-            let image = (self.btnQRCode.imageView?.image)!
-            let share = UIActivityViewController(activityItems: [image, self], applicationActivities: nil)
-            self.present(share, animated: true, completion: nil)
-            let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
-                                                           media: AnalyticsManager.ReceiveAddressMedia.image,
-                                                           method: AnalyticsManager.ReceiveAddressMethod.share)
-            AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
-                                                   walletType: viewModel.account.type,
-                                                   data: data)
+        switch type {
+        case .moreOptPrefs:
+
+            switch MoreOptPrefs(rawValue: index) {
+            case .requestAmount:
+                optRequestAmount()
+            case .sweep:
+                optSweep()
+            default:
+                break
+            }
+        case .sharePrefs:
+
+            guard let address = viewModel.address?.address, !address.isEmpty else { return }
+            switch SharePrefs(rawValue: index) {
+            case .none:
+                return
+            case .address:
+                let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
+                let activityViewController = UIActivityViewController(activityItems: [uri], applicationActivities: nil)
+                activityViewController.popoverPresentationController?.sourceView = self.view
+                self.present(activityViewController, animated: true, completion: nil)
+                let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                                                               media: AnalyticsManager.ReceiveAddressMedia.text,
+                                                               method: AnalyticsManager.ReceiveAddressMethod.share)
+                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
+                                                       walletType: viewModel.account.type,
+                                                       data: data)
+            case .qr:
+                let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
+                let image = (self.btnQRCode.imageView?.image)!
+                let share = UIActivityViewController(activityItems: [image, self], applicationActivities: nil)
+                self.present(share, animated: true, completion: nil)
+                let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
+                                                               media: AnalyticsManager.ReceiveAddressMedia.image,
+                                                               method: AnalyticsManager.ReceiveAddressMethod.share)
+                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
+                                                       walletType: viewModel.account.type,
+                                                       data: data)
+            }
+        default:
+            break
         }
     }
 }
