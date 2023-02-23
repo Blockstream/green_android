@@ -297,6 +297,7 @@ class WalletViewController: UIViewController {
     func navigateTo2fa(_ account: WalletItem) {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
+            vc.showBitcoin = !account.gdkNetwork.liquid
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

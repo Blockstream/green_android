@@ -40,6 +40,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     private var csvTypes: [Settings.CsvTime] { Settings.CsvTime.all(for: session.gdkNetwork) }
     private var csvValues: [Int] { Settings.CsvTime.values(for: session.gdkNetwork) ?? [] }
     weak var delegate: TwoFactorAuthenticationViewControllerDelegate?
+    var showBitcoin = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,6 +104,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             [NSAttributedString.Key.foregroundColor: UIColor.black], for: .selected)
         networkSegmentedControl.setTitleTextAttributes (
             [NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
+        networkSegmentedControl.selectedSegmentIndex = showBitcoin ? 0 : 1
     }
 
     override func viewWillAppear(_ animated: Bool) {
