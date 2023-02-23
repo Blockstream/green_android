@@ -21,10 +21,8 @@ class TransactionViewController: UIViewController {
     var wallet: WalletItem!
     var transaction: Transaction!
 
-    var account = AccountsManager.shared.current
-    var session: SessionManager? {
-        let subaccount = WalletManager.current?.subaccounts.filter { $0.hashValue == transaction.subaccount }.first
-        return WalletManager.current?.sessions[subaccount?.network ?? ""]
+    var isWatchonly: Bool {
+        AccountsManager.shared.current?.isWatchonly ?? false
     }
 
     var viewInExplorerPreference: Bool {
@@ -40,7 +38,7 @@ class TransactionViewController: UIViewController {
     private var blockToken: NSObjectProtocol?
     private var cantBumpFees: Bool {
         return wallet.session?.isResetActive ?? false ||
-            !transaction.canRBF || account?.isWatchonly ?? false
+            !transaction.canRBF || isWatchonly
     }
 
     var headerH: CGFloat = 44.0
@@ -105,7 +103,7 @@ class TransactionViewController: UIViewController {
     }
 
     func editNote() {
-        if account?.isWatchonly ?? false { return }
+        if isWatchonly { return }
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNoteViewController") as? DialogNoteViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -137,11 +135,11 @@ class TransactionViewController: UIViewController {
     }
 
     func urlForTx() -> URL? {
-        return URL(string: (account?.gdkNetwork?.txExplorerUrl ?? "") + self.transaction.hash)
+        return URL(string: (wallet.gdkNetwork.txExplorerUrl ?? "") + self.transaction.hash)
     }
 
     func urlForTxUnblinded() -> URL? {
-        return URL(string: (self.account?.gdkNetwork?.txExplorerUrl ?? "") + self.transaction.hash + self.transaction.blindingUrlString())
+        return URL(string: (wallet.gdkNetwork.txExplorerUrl ?? "") + self.transaction.hash + self.transaction.blindingUrlString())
     }
 
     func blidingDataString() -> String? {
@@ -340,7 +338,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case .status:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionStatusCell") as? TransactionStatusCell {
-                let blockHeight = session?.notificationManager?.blockHeight
+                let blockHeight = wallet.session?.notificationManager?.blockHeight
                 cell.configure(transaction: transaction, isLiquid: transaction.isLiquid, blockHeight: blockHeight ?? 0)
                 cell.selectionStyle = .none
                 return cell
