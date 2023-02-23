@@ -117,7 +117,8 @@ class RecoveryVerifyViewController: UIViewController {
     func createWallet() {
         let testnet = LandingViewController.chainType == .testnet
         let name = AccountsManager.shared.getUniqueAccountName(testnet: testnet)
-        let account = Account(name: name, network: testnet ? "testnet" : "mainnet", isSingleSig: true)
+        let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
+        let account = Account(name: name, network: mainNetwork.network)
         let wm = WalletManager.getOrAdd(for: account)
         let mnemonic = self.mnemonic.joined(separator: " ")
         let credentials = Credentials(mnemonic: mnemonic, password: "")

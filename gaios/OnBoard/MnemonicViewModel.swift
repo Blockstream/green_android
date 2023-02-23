@@ -21,17 +21,19 @@ class MnemonicViewModel {
 
     func restore(credentials: Credentials, testnet: Bool, xpubHashId: String? = nil) -> Promise<Void> {
         let name = AccountsManager.shared.getUniqueAccountName(testnet: testnet)
-        let account = Account(name: name, network: testnet ? "testnet" : "mainnet")
+        let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
+        let account = Account(name: name, network: mainNetwork.network)
         let wm = WalletManager.getOrAdd(for: account)
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .then(on: bgq) { wm.prominentSession!.connect() }
+            .compactMap(on: bgq) { wm.prominentSession }
+            .then(on: bgq) { $0.connect() }
             .then(on: bgq) { self.getXpubHashId(credentials: credentials, wm: wm) }
             .map {
                 if let xpubHashId = xpubHashId, xpubHashId != $0 {
                     throw LoginError.walletMismatch()
                 }
-            }.then(on: bgq) { wm.restore(credentials) }
+            }.then(on: bgq) { wm.restore(credentials, forceJustRestored: xpubHashId != nil) }
             .compactMap {
                 AccountsManager.shared.current = account
                 AnalyticsManager.shared.restoreWallet(account: account)

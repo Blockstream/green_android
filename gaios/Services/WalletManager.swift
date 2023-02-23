@@ -164,7 +164,7 @@ class WalletManager {
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
     }
 
-    func restore(_ credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
+    func restore(_ credentials: Credentials? = nil, hw: HWDevice? = nil, forceJustRestored: Bool = false) -> Promise<Void> {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let btcSession = self.sessions[btcNetwork.rawValue]!
         // Restore btc account with subaccounts discovery
@@ -173,7 +173,7 @@ class WalletManager {
             .compactMap {
                 // Avoid to restore existing wallets, unless HW
                 if let account = AccountsManager.shared.find(xpubHashId: $0.xpubHashId),
-                   account.gdkNetwork?.mainnet == btcNetwork.gdkNetwork?.mainnet && hw == nil {
+                   account.gdkNetwork?.mainnet == btcNetwork.gdkNetwork?.mainnet && hw == nil && !forceJustRestored {
                     throw LoginError.walletsJustRestored()
                 }
             }

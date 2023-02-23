@@ -32,8 +32,8 @@ class AccountsManager {
         account.isHW && !WalletManager.wallets.filter {$0.key == account.id }.isEmpty } }
 
     // Hardware wallets accounts are store in temporary memory
-    var devices = [ Account(name: "Blockstream Jade", network: "mainnet", isJade: true, isSingleSig: false),
-                       Account(name: "Ledger Nano X", network: "mainnet", isLedger: true, isSingleSig: false) ]
+    var devices = [ Account(name: "Blockstream Jade", network: "electrum-mainnet", isJade: true, isSingleSig: true),
+                       Account(name: "Ledger Nano X", network: "electrum-mainnet", isLedger: true, isSingleSig: true) ]
 
     // Current Account
     private var currentId = ""
