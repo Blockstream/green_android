@@ -33,7 +33,7 @@ enum AccountPrefs: Int, CaseIterable {
                                       icon: AccountPrefs.rename.icon,
                                       title: AccountPrefs.rename.name)]
         if let subaccount = WalletManager.current?.subaccounts,
-           subaccount.filter({ !($0.hidden ?? false) }).count > 1 {
+           subaccount.filter({ !$0.hidden }).count > 1 {
             items += [DialogListCellModel(type: .list,
                                           icon: AccountPrefs.archive.icon,
                                           title: AccountPrefs.archive.name)]

@@ -39,7 +39,6 @@ class BalanceCellModel {
     }
 
     func getValues(satoshi: Int64, mode: BalanceDisplayMode) -> (String, String) {
-        let balance = Balance.fromSatoshi(satoshi, assetId: "btc")
         var valueToBTC = "--"
         var valueToDenom = "--"
         var valueToFiat = "--"

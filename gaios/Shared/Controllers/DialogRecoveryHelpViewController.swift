@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-protocol DialogRecoveryHelpViewControllerDelegate: class {
+protocol DialogRecoveryHelpViewControllerDelegate: AnyObject {
     func didTapHelpCenter()
     func didCancel()
 }

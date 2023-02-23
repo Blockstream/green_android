@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-protocol SuggestionsDelegate: class {
+protocol SuggestionsDelegate: AnyObject {
     func suggestionWasTapped(suggestion: String)
 }
 

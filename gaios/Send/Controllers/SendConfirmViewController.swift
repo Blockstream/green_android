@@ -14,7 +14,7 @@ class SendConfirmViewController: KeyboardViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var sliderView: SliderView!
-    
+
     var viewModel: SendConfirmViewModel!
 
     private var connected = true

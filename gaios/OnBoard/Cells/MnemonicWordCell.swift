@@ -1,6 +1,6 @@
 import UIKit
 
-protocol MnemonicWordCellDelegate: class {
+protocol MnemonicWordCellDelegate: AnyObject {
     func collectionView(valueChangedIn textField: UITextField, from cell: MnemonicWordCell)
     func collectionView(pastedIn text: String, from cell: MnemonicWordCell)
 }

@@ -82,6 +82,7 @@ class AccountCell: UITableViewCell {
         }
     }
 
+    // swiftlint:disable function_parameter_count
     func configure(model: AccountCellModel,
                    cIdx: Int,
                    sIdx: Int,

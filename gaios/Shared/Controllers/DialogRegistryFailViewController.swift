@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-protocol DialogRegistryFailViewControllerDelegate: class {
+protocol DialogRegistryFailViewControllerDelegate: AnyObject {
     func didContinue()
 }
 

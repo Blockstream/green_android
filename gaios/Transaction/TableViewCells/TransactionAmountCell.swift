@@ -36,6 +36,7 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = true
     }
 
+    // swiftlint:disable function_parameter_count
     func configure(tx: Transaction, id: String, value: Int64, hideBalance: Bool,
                    copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
 

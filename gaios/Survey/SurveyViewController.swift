@@ -49,6 +49,7 @@ class SurveyViewController: KeyboardViewController {
         updateState()
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func updateState() {
         guard let widget = widget, widget.wType != .undefined else {
             dismiss(.notnow)

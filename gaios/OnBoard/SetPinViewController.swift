@@ -209,7 +209,7 @@ class SetPinViewController: UIViewController {
                 appDelegate?.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
             }
         }.catch { error in
-            if let _ = error as? GaError {
+            if error is GaError {
                 self.showError(NSLocalizedString("id_connection_failed", comment: ""))
             } else if let err = error as? AuthenticationTypeHandler.AuthError {
                 self.showError(err.localizedDescription)

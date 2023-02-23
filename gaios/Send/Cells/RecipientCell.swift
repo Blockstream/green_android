@@ -179,6 +179,7 @@ class RecipientCell: UITableViewCell {
         amountBox.alpha = value ? 1.0 : 0.6
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func onTransactionValidate() {
         guard let model = model else { return }
         addressContainer.borderColor = UIColor.gGrayCard()

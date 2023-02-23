@@ -8,7 +8,7 @@ class AccountArchiveViewModel {
 
     /// load visible subaccounts
     var subaccounts: [WalletItem] {
-        wm.subaccounts.filter { $0.hidden ?? false }
+        wm.subaccounts.filter { $0.hidden }
     }
 
     /// reload by section with animation
@@ -23,7 +23,7 @@ class AccountArchiveViewModel {
 
     func loadSubaccounts() {
         wm.subaccounts()
-            .compactMap { $0.filter { $0.hidden ?? false } }
+            .compactMap { $0.filter { $0.hidden } }
             .then { self.wm.balances(subaccounts: $0) }
             .done { _ in
                 self.accountCellModels = self.subaccounts.map { AccountCellModel(subaccount: $0) }
@@ -33,7 +33,6 @@ class AccountArchiveViewModel {
     }
 
     func unarchiveSubaccount(_ subaccount: WalletItem) {
-        let bgq = DispatchQueue.global(qos: .background)
         guard let session = WalletManager.current?.sessions[subaccount.gdkNetwork.network] else { return }
         session.updateSubaccount(subaccount: subaccount.pointer, hidden: false)
             .done { _ in self.loadSubaccounts() }

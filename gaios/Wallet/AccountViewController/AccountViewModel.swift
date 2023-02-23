@@ -9,7 +9,7 @@ enum AmpEducationalMode {
 }
 
 class AccountViewModel {
-    
+
     var wm: WalletManager { WalletManager.current! }
     var account: WalletItem!
     var cachedBalance: [(String, Int64)]

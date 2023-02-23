@@ -44,10 +44,10 @@ class AssetExpandableSelectViewModel {
         var accounts = wm.subaccounts
         if [AssetInfo.btcId, AssetInfo.testId].contains(assetId) {
             // for btc / test btc only
-            accounts.removeAll { $0.hidden ?? false || $0.gdkNetwork.liquid }
+            accounts.removeAll { $0.hidden || $0.gdkNetwork.liquid }
         } else {
             // for liquid
-            accounts.removeAll { $0.hidden ?? false || !$0.gdkNetwork.liquid }
+            accounts.removeAll { $0.hidden || !$0.gdkNetwork.liquid }
             if let assetId = assetId, wm.registry.info(for: assetId).amp ?? false {
                 accounts.removeAll { $0.type != .amp }
             }
