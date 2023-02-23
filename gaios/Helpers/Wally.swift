@@ -94,3 +94,15 @@ func flatten(_ inputs: [[UInt8]], fixedSize: Int32?) -> [UInt8] {
             return prev + item
         })
 }
+
+public func bip32KeyFromBase58(_ input: String) throws -> ga.ext_key {
+    var output: UnsafeMutablePointer<ga.ext_key>?
+    let base58: UnsafePointer<UInt8> = UnsafePointer(input)
+    if bip32_key_from_base58_alloc(base58, &output) != WALLY_OK {
+        throw GaError.GenericError()
+    }
+    guard let output = output else {
+        throw GaError.GenericError()
+    }
+    return output.pointee
+}

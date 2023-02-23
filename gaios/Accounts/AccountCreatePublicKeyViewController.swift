@@ -46,8 +46,12 @@ class AccountCreatePublicKeyViewController: UIViewController {
     }
 
     func isValid() -> Bool {
-        // temporary
-        return textViewKey.text.count > 20
+        do {
+            _ = try bip32KeyFromBase58(textViewKey.text)
+            return true
+        } catch {
+            return false
+        }
     }
 
     func refresh() {
