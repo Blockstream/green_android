@@ -30,7 +30,6 @@ class HWWConnectViewController: UIViewController {
     private var cellH = 70.0
     private var headerH: CGFloat = 44.0
     private var headerH2: CGFloat = 64.0
-    private var openAdditionalNetworks = false
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -51,7 +50,6 @@ class HWWConnectViewController: UIViewController {
         setStyle()
 
         hwwState = .connecting
-        reloadData()
 
         BLEManager.shared.delegate = self
         BLEManager.shared.prepare(peripheral)
@@ -109,12 +107,6 @@ class HWWConnectViewController: UIViewController {
             deviceImage.image = UIImage(named: "ic_hww_ledger")
             deviceImageAlign.constant = UIScreen.main.bounds.width * 0.27
         }
-    }
-
-    func reloadData() {
-        let isEnabledTestnet = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible)
-        let showTestnet = isEnabledTestnet && openAdditionalNetworks
-        let jade = BLEManager.shared.isJade(peripheral)
     }
 
     func updateState() {
@@ -178,13 +170,8 @@ class HWWConnectViewController: UIViewController {
         }
     }
 
-    func isTestnetVisible() -> Bool {
-        return UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
-    }
-
     @objc func toggleTestnet() {
-        openAdditionalNetworks = !openAdditionalNetworks
-        reloadData()
+        updateState()
     }
 
     func connect(_ peripheral: Peripheral, testnet: Bool? = nil) {
@@ -427,7 +414,6 @@ extension HWWConnectViewController: WalletSettingsViewControllerDelegate {
         //
     }
     func didSet(testnet: Bool) {
-        reloadData()
     }
 }
 
