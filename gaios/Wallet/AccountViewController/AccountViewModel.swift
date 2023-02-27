@@ -53,7 +53,8 @@ class AccountViewModel {
             return .hidden
         } else {
             let satoshi = account.satoshi?[account.gdkNetwork.getFeeAsset()] ?? 0
-            if satoshi > 0 {
+            let assets = AssetAmountList(self.account.satoshi ?? [:]).sorted()
+            if satoshi > 0 || assets.count > 1 {
                 return .header
             } else {
                 return .table
