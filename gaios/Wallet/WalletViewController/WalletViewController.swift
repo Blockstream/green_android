@@ -103,6 +103,20 @@ class WalletViewController: UIViewController {
             NotificationCenter.default.removeObserver(observer)
         }
         notificationObservers = []
+        drawerIcon(false)
+    }
+
+    func drawerIcon(_ show: Bool) {
+        if let bar = navigationController?.navigationBar {
+            if show {
+                let i = UIImageView(frame: CGRect(x: 0.0, y: bar.frame.height / 2.0 - 5.0, width: 7.0, height: 10.0))
+                i.image = UIImage(named: "ic_drawer")
+                i.tag = 999
+                bar.addSubview(i)
+            } else {
+                bar.subviews.forEach { if $0.tag == 999 { $0.removeFromSuperview()} }
+            }
+        }
     }
 
     func reloadSections(_ sections: [WalletSection], animated: Bool) {
@@ -226,9 +240,11 @@ class WalletViewController: UIViewController {
     func welcomeLayerVisibility() {
         navigationItem.leftBarButtonItem = nil
         navigationItem.rightBarButtonItems = []
+        drawerIcon(false)
         if viewModel.accountCellModels.count > 0 {
             welcomeLayer.isHidden = true
             loadNavigationBtns()
+            drawerIcon(true)
         } else {
             welcomeLayer.isHidden = false
         }
