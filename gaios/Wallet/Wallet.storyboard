@@ -1116,7 +1116,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="AIs-Ar-QgD">
-                                <rect key="frame" x="0.0" y="48" width="414" height="848"/>
+                                <rect key="frame" x="0.0" y="51" width="414" height="845"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="YcJ-Ur-Ohg" id="oU6-QB-vAt"/>
@@ -1212,7 +1212,7 @@
                         <viewLayoutGuide key="safeArea" id="CQA-0d-kL3"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
-                            <constraint firstItem="AIs-Ar-QgD" firstAttribute="top" secondItem="CQA-0d-kL3" secondAttribute="top" id="2ho-1q-0pV"/>
+                            <constraint firstItem="AIs-Ar-QgD" firstAttribute="top" secondItem="CQA-0d-kL3" secondAttribute="top" constant="3" id="2ho-1q-0pV"/>
                             <constraint firstItem="H2P-EW-cjE" firstAttribute="leading" secondItem="CQA-0d-kL3" secondAttribute="leading" constant="20" id="4SS-Jq-OGc"/>
                             <constraint firstItem="8ka-wy-WJ6" firstAttribute="bottom" secondItem="AIs-Ar-QgD" secondAttribute="bottom" id="A0w-lN-c35"/>
                             <constraint firstItem="AIs-Ar-QgD" firstAttribute="leading" secondItem="CQA-0d-kL3" secondAttribute="leading" id="CbK-Ob-AMh"/>
