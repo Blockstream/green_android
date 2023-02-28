@@ -28,6 +28,20 @@ class KotlinWally {
 
     fun bip32KeyFromBase58(base58: String) = Wally.bip32_key_from_base58(base58)
 
+    fun bip32Fingerprint(bip32xPub: String): String {
+
+        Wally.bip32_key_from_base58(bip32xPub).also { ext_key ->
+            try{
+                return Wally.hex_from_bytes(Wally.bip32_key_get_fingerprint(ext_key))
+            }finally {
+                Wally.bip32_key_free(ext_key)
+            }
+        }
+
+        null
+    }
+
+
     companion object{
         const val WALLY_SECP_RANDOMIZE_LEN = Wally.WALLY_SECP_RANDOMIZE_LEN
     }

@@ -61,7 +61,7 @@ class DeviceScanViewModel @AssistedInject constructor(
 
     init {
         session.device.takeIf { session.isConnected }?.also { device ->
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet to device)))
         } ?: run {
             deviceManager.devicesStateFlow.onEach { devices ->
                 var foundDevice = devices.firstOrNull { device ->
@@ -92,7 +92,7 @@ class DeviceScanViewModel @AssistedInject constructor(
     private fun selectDevice(device: Device) {
         if (device.hwWallet != null) {
             // Device is unlocked
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
+            onDeviceReady(device, null)
         } else if (device.hasPermissionsOrIsBonded() || device.handleBondingByHwwImplementation()) {
             doUserAction({
                 session.disconnect()
@@ -146,11 +146,7 @@ class DeviceScanViewModel @AssistedInject constructor(
             }
 
             // Check wallet hash id
-            val walletHashId = session.getWalletIdentifier(
-                network = network,
-                hwWallet = device.hwWallet,
-                hwWalletBridge = this
-            ).walletHashId
+            val walletHashId = getWalletHashId(session, network, device)
 
             if (wallet.walletHashId.isNotBlank() && wallet.walletHashId != walletHashId) {
 
@@ -162,22 +158,22 @@ class DeviceScanViewModel @AssistedInject constructor(
 
                 if (userAction.await()) {
                     val onboardingSession = sessionManager.getOnBoardingSession()
-
                     val epheneralWallet = Wallet.createEphemeralWallet(
-                        ephemeralId = 0,
                         networkId = network.id,
-                        name = device.name,
+                        name = getWalletName(session, network, device),
                         isHardware = true,
                         isTestnet = network.isTestnet
                     ).also {
                         onboardingSession.ephemeralWallet = it
+                        sessionManager.upgradeOnBoardingSessionToWallet(it)
                     }
-
-                    sessionManager.upgradeOnBoardingSessionToWallet(wallet)
 
                     epheneralWallet to device
                 } else {
-                    device.disconnect()
+                    // Disconnect only if there are no other connected sessions
+                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.id == device.id }){
+                        device.disconnect()
+                    }
                     throw Exception("id_action_canceled")
                 }
             }else{

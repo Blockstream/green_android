@@ -2,14 +2,47 @@ package com.blockstream.gdk
 
 import android.content.SharedPreferences
 import com.blockstream.crypto.BuildConfig
-import com.blockstream.gdk.data.*
-import com.blockstream.gdk.params.*
+import com.blockstream.gdk.data.Assets
+import com.blockstream.gdk.data.Balance
+import com.blockstream.gdk.data.FeeEstimation
+import com.blockstream.gdk.data.LoginData
+import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.Networks
+import com.blockstream.gdk.data.Pricing
+import com.blockstream.gdk.data.ProxySettings
+import com.blockstream.gdk.data.Settings
+import com.blockstream.gdk.data.TwoFactorConfig
+import com.blockstream.gdk.data.TwoFactorMethodConfig
+import com.blockstream.gdk.params.AssetsParams
+import com.blockstream.gdk.params.BalanceParams
+import com.blockstream.gdk.params.ConnectionParams
+import com.blockstream.gdk.params.Convert
+import com.blockstream.gdk.params.CredentialsParams
+import com.blockstream.gdk.params.DecryptWithPinParams
+import com.blockstream.gdk.params.DeviceParams
+import com.blockstream.gdk.params.EncryptWithPinParams
+import com.blockstream.gdk.params.GetAssetsParams
+import com.blockstream.gdk.params.InitConfig
+import com.blockstream.gdk.params.Limits
+import com.blockstream.gdk.params.LoginCredentialsParams
+import com.blockstream.gdk.params.PreviousAddressParams
+import com.blockstream.gdk.params.ReceiveAddressParams
+import com.blockstream.gdk.params.ReconnectHintParams
+import com.blockstream.gdk.params.SubAccountParams
+import com.blockstream.gdk.params.SubAccountsParams
+import com.blockstream.gdk.params.TransactionParams
+import com.blockstream.gdk.params.UpdateSubAccountParams
 import com.blockstream.libgreenaddress.GAAuthHandler
 import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.GDK
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.put
 import mu.KLogging
 import java.io.File
 import java.security.SecureRandom
@@ -296,6 +329,15 @@ class GdkBridge constructor(
             e.printStackTrace()
         }
         return false
+    }
+
+    fun bip32Fingerprint(bip32xPub: String): String? {
+        return try{
+            wally.bip32Fingerprint(bip32xPub)
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
+        }
     }
 
     fun hasGdkCache(loginData: LoginData): Boolean {

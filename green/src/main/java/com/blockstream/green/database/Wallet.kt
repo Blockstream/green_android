@@ -103,7 +103,7 @@ data class Wallet constructor(
     companion object : KLogging() {
         private var ephemeralWalletIdCounter = -1L
 
-        fun createEphemeralWallet(ephemeralId: Long, networkId: String, name: String? = null, isHardware: Boolean = false, isTestnet: Boolean = false): Wallet {
+        fun createEphemeralWallet(ephemeralId: Long = 0, networkId: String, name: String? = null, isHardware: Boolean = false, isTestnet: Boolean = false): Wallet {
             return Wallet(
                 id = ephemeralWalletIdCounter--,
                 walletHashId = networkId,

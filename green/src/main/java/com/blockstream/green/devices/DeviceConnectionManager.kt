@@ -429,7 +429,7 @@ class DeviceConnectionManager constructor(
         }
     }
 
-    private fun onHWalletCreated(device: Device, hwWallet: HWWallet, isJadeUninitialized: Boolean?= null) {
+    private fun onHWalletCreated(device: Device, hwWallet: HWWallet, isJadeUninitialized: Boolean? = null) {
         device.hwWallet = hwWallet
         interaction.onDeviceReady(device, isJadeUninitialized)
     }

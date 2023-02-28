@@ -37,9 +37,9 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
         binding.vm = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        val softwareWalletsModel = ModelAdapter { model: Wallet ->
-            val session = sessionManager.getWalletSession(model)
-            WalletListItem(wallet = model, session = session)
+        val softwareWalletsModel = ModelAdapter { wallet: Wallet ->
+            val session = sessionManager.getWalletSession(wallet)
+            WalletListItem(wallet = wallet, session = session)
         }.observeList(viewLifecycleOwner, viewModel.softwareWalletsLiveData, useDiffUtil = false)
 
         val softwareWalletsAdapter = FastAdapter.with(softwareWalletsModel)
@@ -50,9 +50,9 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
             true
         }
 
-        val ephemeralWalletsModel = ModelAdapter { model: Wallet ->
-            val session = sessionManager.getWalletSession(model)
-            WalletListItem(model, session = session)
+        val ephemeralWalletsModel = ModelAdapter { wallet: Wallet ->
+            val session = sessionManager.getWalletSession(wallet)
+            WalletListItem(wallet = wallet, session = session)
         }.observeList(viewLifecycleOwner, viewModel.ephemeralWalletsLiveData, useDiffUtil = false)
 
         val ephemeralWalletsAdapter = FastAdapter.with(ephemeralWalletsModel)
@@ -63,9 +63,9 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
             true
         }
 
-        val hardwareWalletsModel = ModelAdapter { model: Wallet ->
-            val session = sessionManager.getWalletSession(model)
-            WalletListItem(model, session = session)
+        val hardwareWalletsModel = ModelAdapter { wallet: Wallet ->
+            val session = sessionManager.getWalletSession(wallet)
+            WalletListItem(wallet = wallet, session = session)
         }.observeList(viewLifecycleOwner, viewModel.hardwareWalletsLiveData, useDiffUtil = false)
 
         val hardwareWalletsAdapter = FastAdapter.with(hardwareWalletsModel)

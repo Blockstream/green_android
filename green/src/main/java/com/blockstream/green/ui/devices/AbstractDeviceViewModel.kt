@@ -13,6 +13,7 @@ import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.devices.HardwareConnectInteraction
+import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
@@ -63,6 +64,26 @@ abstract class AbstractDeviceViewModel constructor(
     var requestPinEmitter: CompletableDeferred<String>? = null
 
     var askForFirmwareUpgradeEmitter: CompletableDeferred<Int?>? = null
+
+    fun getWalletHashId(session: GdkSession, network: Network, device: Device): String {
+        return session.getWalletIdentifier(
+            network = network, // xPub generation is network agnostic
+            hwWallet = device.hwWallet,
+            hwWalletBridge = this
+        ).walletHashId
+    }
+
+    fun getWalletName(session: GdkSession, network: Network, device: Device) = if (device.isJade) {
+        session.getWalletFingerprint(
+            network = network,
+            hwWallet = device.hwWallet,
+            hwWalletBridge = this
+        )?.uppercase()?.let {
+            "Wallet: $it"
+        } ?: device.name
+    } else {
+        device.name
+    }
 
     override fun showError(err: String) {
         onError.postValue(ConsumableEvent(Exception(err)))

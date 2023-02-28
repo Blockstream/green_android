@@ -2,7 +2,6 @@ package com.blockstream.green.ui.devices
 
 import android.content.Context
 import androidx.lifecycle.*
-import com.blockstream.JadeHWWallet
 import com.blockstream.gdk.GdkBridge
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
@@ -84,6 +83,9 @@ class DeviceInfoViewModel @AssistedInject constructor(
         val hwWallet = device.hwWallet ?: return
 
         doUserAction({
+            // Save user preference
+            settingsManager.setRememberDeviceWallet(rememberDeviceWallet = rememberDevice.value == true)
+
             // Authenticate device if needed
             deviceConnectionManager.authenticateDeviceIfNeeded(hwWallet = hwWallet, jadeFirmwareManager = jadeFirmwareManager)
 
@@ -103,27 +105,19 @@ class DeviceInfoViewModel @AssistedInject constructor(
                 }
             }
 
-            if (device.isJade && jadeIsUninitialized.value == true && (device.hwWallet as? JadeHWWallet)?.isReady == true) {
-                countly.jadeInitialize()
-            }
-
             var session = sessionManager.getOnBoardingSession().also {
                 // Disconnect any previous hww connection
                 it.disconnect()
             }
 
-            val walletHashId = session.getWalletIdentifier(
-                network = network, // xPub generation is network agnostic
-                hwWallet = device.hwWallet,
-                hwWalletBridge = this
-            ).walletHashId
+            val walletHashId = getWalletHashId(session, network, device)
+            val walletName = getWalletName(session, network, device)
 
             val wallet: Wallet
             if (isEphemeral) {
                 wallet = Wallet.createEphemeralWallet(
-                    ephemeralId = 0,
                     networkId = network.id,
-                    name = device.name,
+                    name = walletName,
                     isHardware = true,
                     isTestnet = network.isTestnet
                 ).also {
@@ -139,7 +133,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
                     isHardware = true
                 ) ?: Wallet(
                     walletHashId = walletHashId,
-                    name = device.name,
+                    name = walletName,
                     activeNetwork = network.id,
                     activeAccount = 0,
                     isRecoveryPhraseConfirmed = true,
@@ -171,7 +165,6 @@ class DeviceInfoViewModel @AssistedInject constructor(
         }, onSuccess = { wallet: Wallet ->
             proceedToLogin = true
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
-            settingsManager.setRememberDeviceWallet(rememberDeviceWallet = rememberDevice.value == true)
         })
     }
 

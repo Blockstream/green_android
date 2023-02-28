@@ -19,6 +19,10 @@
             name="showSwap"
             type="Boolean" />
 
+        <variable
+            name="sweepEnabled"
+            type="Boolean" />
+
     </data>
 
     <FrameLayout
@@ -42,6 +46,7 @@
                 android:ellipsize="end"
                 android:lines="1"
                 android:paddingLeft="-2dp"
+                android:enabled="@{!isWatchOnly || sweepEnabled}"
                 android:text="@{isWatchOnly ? @string/id_sweep : @string/id_send}"
                 app:icon="@{isWatchOnly ? @drawable/ic_sweep : @drawable/ic_send}"
                 app:iconGravity="textStart"

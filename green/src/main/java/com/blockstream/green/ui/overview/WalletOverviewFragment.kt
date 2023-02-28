@@ -163,6 +163,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         binding.vm = viewModel
 
         binding.bottomNav.isWatchOnly = wallet.isWatchOnly
+        binding.bottomNav.sweepEnabled = session.defaultNetwork.isBitcoin
 
         viewModel.accountsFlow.onEach {
             (if(it.isEmpty()) 0.2f else 1.0f).also { alpha ->

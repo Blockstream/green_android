@@ -33,6 +33,9 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import mu.KLogging
 import java.net.URL
@@ -581,7 +584,13 @@ class GdkSession constructor(
             prepareHttpRequest()
         }
 
-        return gdkBridge.httpRequest(gdkSession(defaultNetwork), data)
+        return gdkBridge.httpRequest(gdkSession(defaultNetwork), data).also {
+            if(data.jsonObject["urls"]?.jsonArray?.map {
+                it.jsonPrimitive.content
+            }?.find { it.contains("/set_pin") } != null){
+                countly.jadeInitialize()
+            }
+        }
     }
 
     override fun httpRequest(details: JsonNode?): JsonNode {
@@ -1160,6 +1169,18 @@ class GdkSession constructor(
             )
         } ?: loginCredentialsParams ?: getCredentials().let { LoginCredentialsParams.fromCredentials(it) }
     )
+
+    fun getWalletFingerprint(
+        network: Network,
+        hwWallet: HWWallet? = null,
+        hwWalletBridge: HWWalletBridge? = null
+    ): String? {
+        return (hwWallet ?: this.hwWallet)?.let {
+            gdkBridge.bip32Fingerprint(
+                it.getXpubs(network, hwWalletBridge, listOf(listOf())).first()
+            )
+        }
+    }
 
     fun encryptWithPin(network: Network?, encryptWithPinParams: EncryptWithPinParams): EncryptWithPin {
         @Suppress("NAME_SHADOWING")
