@@ -62,7 +62,7 @@ class WatchOnlySettingsViewModel {
             network: nil)
         self.singlesigCellModels = [cellHeaderPubKeys]
         Promise()
-            .compactMap { self.loadWOExtendedPubKeys() }
+            .then { self.loadWOExtendedPubKeys() }
             .done { self.singlesigCellModels += $0 }
             .catch { err in self.error?(err.localizedDescription) }
     }
@@ -76,16 +76,19 @@ class WatchOnlySettingsViewModel {
                 network: session.gdkNetwork.network) }
     }
 
-    func loadWOExtendedPubKeys() -> [WatchOnlySettingsCellModel] {
-        return WalletManager.current!.subaccounts
+    func loadWOExtendedPubKeys() -> Promise<[WatchOnlySettingsCellModel]> {
+        let promises = WalletManager.current!.subaccounts
             .filter { $0.gdkNetwork.electrum && !$0.gdkNetwork.liquid }
-            .compactMap {
+            .compactMap { $0.session?.subaccount($0.pointer) }
+        return when(fulfilled: promises).compactMap { subaccounts in
+            return subaccounts.map {
                 WatchOnlySettingsCellModel(
                     title: $0.localizedName,
                     subtitle: $0.extendedPubkey ?? "",
                     network: $0.gdkNetwork.network,
                     isExtended: true)
             }
+        }
     }
 
     func loadWOOutputDescriptors() -> [WatchOnlySettingsCellModel] {
