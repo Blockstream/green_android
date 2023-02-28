@@ -321,6 +321,9 @@ extension HWWConnectViewController: BLEManagerDelegate {
     }
 
     func onAuthenticated(_ peripheral: Peripheral) {
+        if BLEManager.shared.isJade(peripheral) {
+            AnalyticsManager.shared.initJade()
+        }
         DispatchQueue.main.async {
             self.hwwState = .authenticated
             BLEManager.shared.login(peripheral)

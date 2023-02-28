@@ -24,6 +24,7 @@ enum AnalyticsEventName: String {
     case assetSelect = "asset_select"
     case accountSelect = "account_select"
     case accountNew = "account_new"
+    case jadeInitialize = "jade_initialize"
 }
 
 extension AnalyticsManager {
@@ -196,6 +197,10 @@ extension AnalyticsManager {
         if let s = sessSgmt(account) {
             recordEvent(.accountNew, sgmt: s)
         }
+    }
+
+    func initJade() {
+        recordEvent(.jadeInitialize)
     }
 }
 
