@@ -18,6 +18,7 @@ import com.blockstream.green.databinding.ListItemTransactionNoteBinding
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.extensions.share
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getConfirmationsMax
@@ -244,16 +245,20 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
         list = mutableListOf()
 
         list += TransactionProgressListItem(
-            transaction,
-            transaction.getConfirmationsMax(session),
-            transaction.network.confirmationsRequired
+            session = session,
+            transaction = transaction,
+            confirmations = transaction.getConfirmationsMax(session),
+            confirmationsRequired = transaction.network.confirmationsRequired
         )
 
         list += TransactionHashListItem(transaction)
 
-        // Watch-only sessions don't provide notes
-        if(!session.isWatchOnly) {
-            list += NoteListItem(viewModel.transactionNote)
+        // Watch-only multisig can't edit notes
+        if(!session.isWatchOnly || session.defaultNetworkOrNull?.isSinglesig == true || viewModel.transactionNote.isNotBlank()) {
+            list += NoteListItem(
+                note = viewModel.transactionNote,
+                isEditable = !session.isWatchOnly || session.defaultNetworkOrNull?.isSinglesig == true
+            )
         }
 
         FastAdapterDiffUtil.set(detailsAdapter.itemAdapter, list, true)

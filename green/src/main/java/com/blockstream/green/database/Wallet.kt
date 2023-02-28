@@ -2,6 +2,7 @@ package com.blockstream.green.database
 
 import android.os.Parcelable
 import androidx.room.*
+import com.blockstream.green.extensions.isBlank
 import kotlinx.parcelize.Parcelize
 import mu.KLogging
 
@@ -29,7 +30,7 @@ data class Wallet constructor(
     @ColumnInfo(name = "ask_bip39_passphrase")
     var askForBip39Passphrase: Boolean = false,
 
-    @ColumnInfo(name = "watch_only_username")
+    @ColumnInfo(name = "watch_only_username") // kept it as watch_only_username for backward compatibility
     val watchOnlyUsername: String? = null,
 
     @ColumnInfo(name = "is_hardware")
@@ -93,6 +94,9 @@ data class Wallet constructor(
 
     val isWatchOnly
         get() = watchOnlyUsername != null
+
+    val isWatchOnlySingleSig
+        get() = isWatchOnly && watchOnlyUsername.isBlank()
 
     val isBip39Ephemeral
         get() = isEphemeral && !isHardware

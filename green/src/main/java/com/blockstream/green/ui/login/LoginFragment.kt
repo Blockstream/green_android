@@ -17,6 +17,7 @@ import com.blockstream.gdk.data.Credentials
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
+import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -201,12 +202,16 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
         }
 
         binding.buttonWatchOnlyLogin.setOnClickListener {
-            val watchOnlyCredentials = viewModel.keystoreCredentials.value
+            val watchOnlyCredentials = viewModel.watchOnlyCredentials.value
 
-            if(viewModel.initialAction.value == false && watchOnlyCredentials != null) {
-                viewModel.loginWatchOnlyWithKeyStore(watchOnlyCredentials)
-            }else{
-                viewModel.watchOnlyLogin()
+            if(watchOnlyCredentials?.credentialType == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS){
+                launchBiometricPrompt(watchOnlyCredentials)
+            }else {
+                if (viewModel.initialAction.value == false && watchOnlyCredentials != null) {
+                    viewModel.loginWatchOnlyWithLoginCredentials(watchOnlyCredentials)
+                } else {
+                    viewModel.watchOnlyLogin()
+                }
             }
         }
 

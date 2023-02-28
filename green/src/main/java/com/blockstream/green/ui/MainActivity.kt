@@ -208,7 +208,7 @@ class MainActivity : AppActivity() {
                                 LoginCredentials(
                                     walletId = walletId,
                                     network = network,
-                                    credentialType = CredentialType.PIN,
+                                    credentialType = CredentialType.PIN_PINDATA,
                                     pinData = pinData
                                 )
                             )

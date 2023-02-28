@@ -11,6 +11,7 @@ import com.blockstream.green.data.EnrichedAsset
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.database.WatchOnlyCredentials
 import com.blockstream.green.devices.Device
 import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.extensions.logException
@@ -818,16 +819,34 @@ class GdkSession constructor(
         )
     }
 
-    suspend fun loginWatchOnly(wallet: Wallet, username: String, password: String) {
-        loginWatchOnly(prominentNetwork(wallet), username, password)
+
+    suspend fun loginWatchOnly(wallet: Wallet, username: String, watchOnlyCredentials: WatchOnlyCredentials) {
+        loginWatchOnly(prominentNetwork(wallet), username, watchOnlyCredentials = watchOnlyCredentials)
     }
 
-    suspend fun loginWatchOnly(network: Network, username: String, password: String): LoginData {
+    suspend fun loginWatchOnly(network: Network, username: String = "", watchOnlyCredentials: WatchOnlyCredentials): LoginData {
+        val loginCredentialsParams = if(network.isSinglesig){
+            if(!watchOnlyCredentials.coreDescriptors.isNullOrEmpty()) {
+                LoginCredentialsParams(coreDescriptors = watchOnlyCredentials.coreDescriptors)
+            }else{
+                LoginCredentialsParams(slip132ExtendedPubkeys = watchOnlyCredentials.slip132ExtendedPubkeys)
+            }
+        }else{
+            LoginCredentialsParams(username = username, password = watchOnlyCredentials.password)
+        }
+        return loginWatchOnly(
+            network = network,
+            loginCredentialsParams = loginCredentialsParams,
+            isRestore = false, // No need to do restore procedures for wo
+        )
+    }
+
+    private suspend fun loginWatchOnly(network: Network, loginCredentialsParams: LoginCredentialsParams, isRestore: Boolean): LoginData {
         return loginWithLoginCredentials(
             prominentNetwork = network,
             initNetworks = listOf(network),
-            loginCredentialsParams = LoginCredentialsParams(username = username, password = password),
-            isRestore = false,
+            loginCredentialsParams = loginCredentialsParams,
+            isRestore = isRestore,
             initializeSession = true
         )
     }
@@ -876,7 +895,7 @@ class GdkSession constructor(
         hardwareWalletResolver: HardwareWalletResolver? = null,
         hwWalletBridge: HWWalletBridge? = null,
     ): LoginData {
-        this.isWatchOnly = !loginCredentialsParams.username.isNullOrBlank()
+        this.isWatchOnly = loginCredentialsParams.isWatchOnly
         this.device = device
 
         blockNotificationHandling = true
@@ -935,7 +954,7 @@ class GdkSession constructor(
                 val network = gdkSession.key
                 try {
                     val hasGdkCache = if(isHardwareWallet || loginCredentialsParams.mnemonic.isNotBlank()){
-                        try{
+                        try {
                             gdkBridge.hasGdkCache(
                                 getWalletIdentifier(
                                     network = network,
@@ -943,11 +962,11 @@ class GdkSession constructor(
                                     hwWalletBridge = hwWalletBridge
                                 )
                             )
-                        }catch (e: Exception){
+                        } catch (e: Exception){
                             e.printStackTrace()
                             false
                         }
-                    }else {
+                    } else {
                         false
                     }
 
@@ -1022,9 +1041,11 @@ class GdkSession constructor(
                     if (e.message != "id_login_failed") {
                         // Mark network as not being able to login
                         failedNetworkLogins.add(gdkSession.key)
-                    }else{
-                        exceptions.add(e)
                     }
+
+                    // Add all exceptions
+                    exceptions.add(e)
+
                     null
                 }
             }
@@ -1271,9 +1292,10 @@ class GdkSession constructor(
         }.awaitAll().flatten().sortedWith(::sortAccounts)
     }
 
-    fun getAccounts(network: Network, refresh: Boolean = false): List<Account> = initNetworkIfNeeded(network) {
+    private fun getAccounts(network: Network, refresh: Boolean = false): List<Account> = initNetworkIfNeeded(network) {
         gdkSession(network).let {
-            authHandler(network, gdkBridge.getSubAccounts(it, SubAccountsParams(refresh = refresh)))
+            // Watch-only can't discover new accounts
+            authHandler(network, gdkBridge.getSubAccounts(it, SubAccountsParams(refresh = if(isWatchOnly) false else refresh)))
                 .result<Accounts>().accounts.onEach { account ->
                     account.networkInjected = network
                 }

@@ -12,12 +12,21 @@ data class WalletAndLoginCredentials(
     )
     val loginCredentials: List<LoginCredentials>
 ) {
-    val pin
-        get() = loginCredentials.find { it.credentialType == CredentialType.PIN && it.counter < 3}
-    val biometrics
-        get() = loginCredentials.find { it.credentialType == CredentialType.BIOMETRICS }
-    val keystore
-        get() = loginCredentials.find { it.credentialType == CredentialType.KEYSTORE }
-    val password
-        get() = loginCredentials.find { it.credentialType == CredentialType.PASSWORD }
+    val pinPinData
+        get() = loginCredentials.find { it.credentialType == CredentialType.PIN_PINDATA && it.counter < 3 }
+    val biometricsPinData
+        get() = loginCredentials.find { it.credentialType == CredentialType.BIOMETRICS_PINDATA }
+    val passwordPinData
+        get() = loginCredentials.find { it.credentialType == CredentialType.PASSWORD_PINDATA }
+
+    val watchOnlyCredentials
+        get() = loginCredentials.find {
+            it.credentialType == CredentialType.KEYSTORE_PASSWORD || // Deprecated
+            it.credentialType == CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS ||
+            it.credentialType == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS
+        }
+
+    val biometricsWatchOnlyCredentials
+        get() = loginCredentials.find { it.credentialType == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS }
+
 }

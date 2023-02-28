@@ -454,8 +454,8 @@ class WalletSettingsFragment :
         } else {
             list += logoutPreference
 
-            if (!session.isWatchOnly) {
-
+            // Allow singlesig to change denomination & price source
+            if(!session.isWatchOnly || session.defaultNetworkOrNull?.isSinglesig == true){
                 // General
                 list += TitleListItem(StringHolder(R.string.id_general))
                 list += unitPreference
@@ -464,6 +464,9 @@ class WalletSettingsFragment :
                 if (bitcoin != null) {
                     list += priceSourcePreference
                 }
+            }
+
+            if (!session.isWatchOnly) {
 
                 list += archivedAccountsPreference
 

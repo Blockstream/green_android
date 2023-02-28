@@ -35,8 +35,8 @@
 
             <ImageView
                 android:id="@+id/icon"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="@dimen/asset_size"
+                android:layout_height="@dimen/asset_size"
                 android:layout_marginRight="8dp"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"

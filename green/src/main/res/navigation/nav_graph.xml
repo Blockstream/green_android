@@ -131,25 +131,7 @@
             android:id="@+id/action_addWalletFragment_to_chooseNetworkFragment"
             app:destination="@id/chooseNetworkFragment" />
         <action
-            android:id="@+id/action_addWalletFragment_to_chooseMainnetFragment"
-            app:destination="@id/chooseMainnetFragment" />
-        <action
             android:id="@+id/action_addWalletFragment_to_enterRecoveryPhraseFragment"
-            app:destination="@id/enterRecoveryPhraseFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/chooseMainnetFragment"
-        android:name="com.blockstream.green.ui.onboarding.ChooseMainnetFragment"
-        android:label=""
-        tools:layout="@layout/choose_network_fragment">
-        <argument
-            android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions" />
-        <action
-            android:id="@+id/action_chooseNetworkFragment_to_recoveryIntroFragment"
-            app:destination="@id/recoveryIntroFragment" />
-        <action
-            android:id="@+id/action_chooseMainnetFragment_to_enterRecoveryPhraseFragment"
             app:destination="@id/enterRecoveryPhraseFragment" />
     </fragment>
     <fragment

@@ -63,7 +63,15 @@ class ChooseNetworkFragment :
         fastItemAdapter.getExpandableExtension()
 
         fastItemAdapter.add(NetworkListItem(Network.GreenMainnet,"Bitcoin", getCaption(Network.GreenMainnet)))
-        fastItemAdapter.add(NetworkListItem(Network.GreenLiquid, "Liquid", getCaption(Network.GreenLiquid)))
+        if(args.onboardingOptions.isSinglesig == false) {
+            fastItemAdapter.add(
+                NetworkListItem(
+                    Network.GreenLiquid,
+                    "Liquid",
+                    getCaption(Network.GreenLiquid)
+                )
+            )
+        }
 
         if(settingsManager.getApplicationSettings().testnet) {
             val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
@@ -75,13 +83,15 @@ class ChooseNetworkFragment :
                 )
             )
 
-            expandable.subItems.add(
-                NetworkListItem(
-                    Network.GreenTestnetLiquid,
-                    "Testnet Liquid",
-                    getCaption("testnet-liquid")
+            if(args.onboardingOptions.isSinglesig == false) {
+                expandable.subItems.add(
+                    NetworkListItem(
+                        Network.GreenTestnetLiquid,
+                        "Testnet Liquid",
+                        getCaption("testnet-liquid")
+                    )
                 )
-            )
+            }
 
             gdkBridge.networks.customNetwork?.let {
                 expandable.subItems.add(

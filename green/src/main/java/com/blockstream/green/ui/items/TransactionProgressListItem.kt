@@ -6,11 +6,13 @@ import androidx.core.content.ContextCompat
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
+import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.utils.formatWithTime
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
 data class TransactionProgressListItem constructor(
+    private val session: GdkSession,
     private val transaction: Transaction,
     var confirmations: Int,
     private val confirmationsRequired: Int
@@ -26,7 +28,7 @@ data class TransactionProgressListItem constructor(
         binding.date = transaction.createdAt.formatWithTime()
         binding.confirmations = confirmations
         binding.confirmationsRequired = confirmationsRequired
-        binding.canRBF = transaction.canRBF && transaction.isIn == false
+        binding.canRBF = transaction.canRBF && transaction.isIn == false && !session.isWatchOnly
 
         val spv = transaction.spv
 

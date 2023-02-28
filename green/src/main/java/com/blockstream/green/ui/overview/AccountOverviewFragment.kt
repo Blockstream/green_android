@@ -98,7 +98,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
         binding.bottomNav.isWatchOnly = wallet.isWatchOnly
-        binding.bottomNav.sweepEnabled = session.defaultNetwork.isBitcoin
+        binding.bottomNav.sweepEnabled = session.defaultNetwork.isBitcoin && session.defaultNetwork.isMultisig
         binding.bottomNav.showSwap = false //account.isLiquid && account.isMultisig
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->

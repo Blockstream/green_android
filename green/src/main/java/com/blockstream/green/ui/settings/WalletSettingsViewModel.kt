@@ -89,7 +89,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         walletRepository
             .getWalletLoginCredentialsFlow(wallet.id).filterNotNull()
             .onEach {
-                biometricsLiveData.postValue(it.biometrics)
+                biometricsLiveData.postValue(it.biometricsPinData)
             }
             .launchIn(viewModelScope)
 
@@ -269,7 +269,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 LoginCredentials(
                     walletId = wallet.id,
                     network = encryptWithPin.network.id,
-                    credentialType = CredentialType.PIN,
+                    credentialType = CredentialType.PIN_PINDATA,
                     pinData = encryptWithPin.pinData
                 )
             )
@@ -277,7 +277,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             // We only allow one credential type PIN / Password
             // Password comes from v2 and should be deleted when a user tries to change his
             // password to a pin
-            walletRepository.deleteLoginCredentials(wallet.id, CredentialType.PASSWORD)
+            walletRepository.deleteLoginCredentials(wallet.id, CredentialType.PASSWORD_PINDATA)
         }, onSuccess = {
             onEvent.postValue(ConsumableEvent(GdkEvent.Success))
         })
@@ -341,7 +341,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 LoginCredentials(
                     walletId = wallet.id,
                     network = encryptWithPin.network.id,
-                    credentialType = CredentialType.BIOMETRICS,
+                    credentialType = CredentialType.BIOMETRICS_PINDATA,
                     pinData = encryptWithPin.pinData,
                     encryptedData = encryptedData
                 )
@@ -353,7 +353,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
     fun removeBiometrics() {
         applicationScope.launch(context = logException(countly)) {
-            walletRepository.deleteLoginCredentials(wallet.id, CredentialType.BIOMETRICS)
+            walletRepository.deleteLoginCredentials(wallet.id, CredentialType.BIOMETRICS_PINDATA)
         }
     }
 

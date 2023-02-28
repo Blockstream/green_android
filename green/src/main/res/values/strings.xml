@@ -146,7 +146,7 @@
   <string name="id_bitcoin_and_liquid">Bitcoin and Liquid</string>
   <string name="id_bitcoin_denomination">Bitcoin denomination</string>
   <string name="id_bitcoin_electrum_server">Bitcoin Electrum server</string>
-  <string name="id_bitcoin_is_the_worlds_leading">Bitcoin is the world\'s leading P2P cryptocurrency network. Select to send and receive bitcoin.</string>
+  <string name="id_bitcoin_is_the_worlds_leading">Bitcoin is the world\'s leading P2P cryptocurrency network.</string>
   <string name="id_bitcoin_testnet_and_liquid">Bitcoin Testnet and Liquid Testnet</string>
   <string name="id_bitcoin_wallet">Bitcoin wallet.</string>
   <string name="id_bitcoin_wallets">Bitcoin wallets</string>
@@ -893,7 +893,7 @@
   <string name="id_save_your_mnemonic">Save your mnemonic</string>
   <string name="id_scan_a_proposal">Scan a Proposal</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Scan a QR code for SPV pairing</string>
-  <string name="id_scan_or_paste_your_extended">Scan or paste your extended public key (xPub/yPub/zPub) to log in to your watch-only-wallet.</string>
+  <string name="id_scan_or_paste_your_extended">Scan or paste your Extended Public Key or Descriptor to log in to your watch-only wallet.</string>
   <string name="id_scan_qr_code">Scan QR code</string>
   <string name="id_scan_the_qr_code_with_an">Scan the QR Code with an Authenticator app</string>
   <string name="id_scan_to_send_here">Scan to send here</string>
@@ -1283,4 +1283,7 @@
   <string name="id_account_archived">Account archived</string>
   <string name="id_you_can_still_receive_funds">You can still receive funds, but they won’t be shown on your total balance.</string>
   <string name="id_see_archived_accounts">See Archived Accounts (%s)</string>
+  <string name="id_use_comma_separated_values_or_keep">Use comma separated values or keep scanning</string>
+  <string name="id_descriptor">Descriptor</string>
+  <string name="id_import_from_file">Import from file</string>
 </resources>

@@ -29,7 +29,6 @@ class ArchivedAccountsFragment :
     val args: ArchivedAccountsFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
 
-
     override val screenName = "ArchivedAccounts"
 
     @Inject

@@ -11,12 +11,16 @@ import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.database.WatchOnlyCredentials
 import com.blockstream.green.gdk.title
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.EncryptedData
+import kotlinx.coroutines.Deferred
 import mu.KLogging
+import javax.crypto.Cipher
 
 open class OnboardingViewModel constructor(
     val sessionManager: SessionManager,
@@ -80,7 +84,7 @@ open class OnboardingViewModel constructor(
                     LoginCredentials(
                         walletId = wallet.id,
                         network = it.network.id,
-                        credentialType = CredentialType.PIN,
+                        credentialType = CredentialType.PIN_PINDATA,
                         pinData = it.pinData
                     )
                 )
@@ -102,14 +106,15 @@ open class OnboardingViewModel constructor(
         appKeystore: AppKeystore,
         options: OnboardingOptions,
         username: String,
-        password: String,
-        savePassword: Boolean
+        watchOnlyCredentials: WatchOnlyCredentials,
+        multisigSavePassword: Boolean,
+        isBiometrics: Boolean,
+        biometricsCipherProvider: Deferred<Cipher>
     ) {
-
         doUserAction({
             val network = options.network!!
 
-            val loginData = session.loginWatchOnly(network, username, password)
+            val loginData = session.loginWatchOnly(network, username, watchOnlyCredentials)
 
             val wallet = Wallet(
                 walletHashId = loginData.networkHashId, // Use networkHashId as the watch-only is linked to a specific network
@@ -117,22 +122,38 @@ open class OnboardingViewModel constructor(
                 activeNetwork = session.activeAccountOrNull?.networkId ?: session.defaultNetwork.id,
                 activeAccount = session.activeAccountOrNull?.pointer ?: 0,
                 isRecoveryPhraseConfirmed = true,
-                watchOnlyUsername = username,
+                watchOnlyUsername = if(network.isSinglesig) "" else username, // empty string helps us hide the username and still identify it as a wo
                 isTestnet = network.isTestnet
             )
 
+            // First get login credentials before creating the wallet
+            val loginCredentials: LoginCredentials? = if (multisigSavePassword || options.isSinglesig == true) {
+                val credentialType : CredentialType
+                val encryptedData: EncryptedData
+                if(isBiometrics){
+                    encryptedData = appKeystore.encryptData(biometricsCipherProvider.await(), watchOnlyCredentials.toString().toByteArray())
+                    credentialType = CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS
+                }else{
+                    encryptedData = appKeystore.encryptData(watchOnlyCredentials.toString().toByteArray())
+                    credentialType = CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS
+                }
+
+                LoginCredentials(
+                    walletId = 0, // temp
+                    network = network.id,
+                    credentialType = credentialType,
+                    encryptedData = encryptedData
+                )
+            }else{
+                null
+            }
+
+            // Update wallet id
             wallet.id = walletRepository.insertWallet(wallet)
 
-            if (savePassword) {
-                val encryptedData = appKeystore.encryptData(password.toByteArray())
-                walletRepository.insertOrReplaceLoginCredentials(
-                    LoginCredentials(
-                        walletId = wallet.id,
-                        network = network.id,
-                        credentialType = CredentialType.KEYSTORE,
-                        encryptedData = encryptedData
-                    )
-                )
+            loginCredentials?.also {
+                it.walletId = wallet.id
+                walletRepository.insertOrReplaceLoginCredentials(it)
             }
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
@@ -258,7 +279,7 @@ open class OnboardingViewModel constructor(
                     LoginCredentials(
                         walletId = wallet.id,
                         network = it.network.id,
-                        credentialType = CredentialType.PIN,
+                        credentialType = CredentialType.PIN_PINDATA,
                         pinData = it.pinData
                     )
                 )

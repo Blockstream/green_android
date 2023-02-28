@@ -42,18 +42,19 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
         super.setup()
 
         val network = Network(
-            "testnet",
-            "Testnet",
-            "testnet",
-            false,
-            false,
-            true
+            id = "testnet",
+            name = "Testnet",
+            network = "testnet",
+            isMainnet = false,
+            isLiquid = false,
+            isDevelopment = true
         )
 
         whenever(gdkSession.defaultNetwork).thenReturn(network)
         whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(gdkSession)
 
         viewModel = LoginWatchOnlyViewModel(
+            context = mock(),
             walletRepository = walletRepository,
             sessionManager = sessionManager,
             appKeystore = mock(),
@@ -102,7 +103,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
         viewModel.username.value = "username"
         viewModel.password.value = "password"
 
-        viewModel.createNewWatchOnlyWallet()
+        viewModel.createNewWatchOnlyWallet(mock())
 
         verify(newWalletObserver, never()).onChanged(anyOrNull())
         verify(errorObserver).onChanged(argThat {
@@ -120,7 +121,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
         viewModel.username.value = "username"
         viewModel.password.value = "password"
 
-        viewModel.createNewWatchOnlyWallet()
+        viewModel.createNewWatchOnlyWallet(mock())
 
         verify(walletRepository).insertWallet(any())
         verify(newWalletObserver).onChanged(any())

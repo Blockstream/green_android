@@ -34,11 +34,11 @@ class UIComponentsActivity : AppCompatActivity() {
 
         binding.toolbar.title = "UI Components"
 
-        binding.rive.registerListener(object : RiveListener() {
-            override fun notifyStateChanged(stateMachineName: String, stateName: String) {
-                logger.info { "$stateMachineName : $stateName" }
-            }
-        })
+//        binding.rive.registerListener(object : RiveListener() {
+//            override fun notifyStateChanged(stateMachineName: String, stateName: String) {
+//                logger.info { "$stateMachineName : $stateName" }
+//            }
+//        })
 
 
         Countly.sharedInstance().also { countly ->

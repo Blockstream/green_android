@@ -42,10 +42,10 @@ data class LoginCredentials constructor(
 
 
 enum class CredentialType(val value: Int) {
-    PIN(0),
-    BIOMETRICS(1),
-    KEYSTORE(2),
-    // It's a variable length PIN, based on greenbits v2
-    // in the future can be used as an alphanumeric input as a password
-    PASSWORD(3)
+    PIN_PINDATA(0),
+    BIOMETRICS_PINDATA(1),
+    KEYSTORE_PASSWORD(2), // Deprecated, use WatchOnlyCredentials
+    PASSWORD_PINDATA(3), // It's a variable length PIN (string), based on greenbits v2
+    KEYSTORE_WATCHONLY_CREDENTIALS(4),
+    BIOMETRICS_WATCHONLY_CREDENTIALS(5),
 }

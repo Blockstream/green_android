@@ -406,10 +406,10 @@ class Countly constructor(
                 Events.WALLET_LOGIN.toString(),
                 sessionSegmentation(session).also { segmentation ->
                     when {
-                        loginCredentials?.credentialType == CredentialType.PIN -> {
+                        loginCredentials?.credentialType == CredentialType.PIN_PINDATA -> {
                             LOGIN_TYPE_PIN
                         }
-                        loginCredentials?.credentialType == CredentialType.BIOMETRICS -> {
+                        loginCredentials?.credentialType == CredentialType.BIOMETRICS_PINDATA -> {
                             LOGIN_TYPE_BIOMETRICS
                         }
                         wallet.isWatchOnly -> {

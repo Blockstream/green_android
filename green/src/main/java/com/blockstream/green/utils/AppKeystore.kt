@@ -16,7 +16,6 @@ import mu.KLogging
 import java.security.*
 import javax.crypto.*
 import javax.crypto.spec.IvParameterSpec
-import kotlin.math.log
 
 class AppKeystore {
     private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
@@ -212,7 +211,7 @@ class AppKeystore {
 }
 
 @Serializable
-data class EncryptedData(private val encryptedData: String, private val iv: String) {
+data class EncryptedData constructor(private val encryptedData: String, private val iv: String) {
     fun getEncryptedData(): ByteArray = Base64.decode(encryptedData, Base64.NO_WRAP)
     fun getIv(): ByteArray = Base64.decode(iv, Base64.NO_WRAP)
 

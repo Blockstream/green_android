@@ -2,10 +2,10 @@ package com.blockstream.green.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseWatchOnlyFragmentBinding
-import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,12 +29,29 @@ class ChooseWatchOnlyFragment :
         }
 
         binding.buttonSinglesig.setOnClickListener {
-            ComingSoonBottomSheetDialogFragment().also {
-                it.show(childFragmentManager, it.toString())
+            if (settingsManager.getApplicationSettings().testnet) {
+                navigate(
+                    ChooseWatchOnlyFragmentDirections.actionChooseWatchOnlyFragmentToChooseNetworkFragment(
+                        OnboardingOptions(
+                            isRestoreFlow = true,
+                            isWatchOnly = true,
+                            isSinglesig = true
+                        )
+                    )
+                )
+            } else {
+                navigate(
+                    ChooseWatchOnlyFragmentDirections.actionChooseWatchOnlyFragmentToLoginWatchOnlyFragment(
+                        OnboardingOptions(
+                            isRestoreFlow = true,
+                            isWatchOnly = true,
+                            isSinglesig = true,
+                            isTestnet = false,
+                            network = gdkBridge.networks.getNetworkByType(networkTypeOrId = Network.ElectrumMainnet, isElectrum = true)
+                        )
+                    )
+                )
             }
-//            navigate(
-//                ChooseWatchOnlyFragmentDirections.actionChooseWatchOnlyFragmentToLoginWatchOnlyFragment(isMultisig = false)
-//            )
         }
     }
 }

@@ -8,7 +8,8 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import mu.KLogging
 
 data class NoteListItem constructor(
-    val note: String
+    val note: String,
+    val isEditable: Boolean = true
 ): AbstractBindingItem<ListItemTransactionNoteBinding>() {
     override val type: Int
         get() = R.id.fastadapter_note_item_id
@@ -19,6 +20,7 @@ data class NoteListItem constructor(
 
     override fun bindView(binding: ListItemTransactionNoteBinding, payloads: List<Any>) {
         binding.note = note
+        binding.isEditable = isEditable
     }
 
     override fun createBinding(

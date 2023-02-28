@@ -9,6 +9,10 @@
             name="note"
             type="String" />
 
+        <variable
+            name="isEditable"
+            type="Boolean" />
+
     </data>
 
     <LinearLayout
@@ -55,6 +59,7 @@
                     android:layout_marginEnd="8dp"
                     android:background="@android:color/transparent"
                     android:padding="8dp"
+                    isVisible="@{isEditable}"
                     android:src="@drawable/ic_pencil_simple_line" />
 
             </LinearLayout>

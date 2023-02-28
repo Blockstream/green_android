@@ -242,7 +242,20 @@
             app:withShuffle="true"
             />
 
+        <ImageView
+            android:id="@+id/iconWatchOnly"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:src="@drawable/ic_eye"
+            android:alpha="0.25"
+            isVisible="@{vm.wallet.isWatchOnly &amp;&amp; !vm.onProgress}"
+            app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.blockstream.green.views.GappedLinearLayout
+            android:id="@+id/gappedLinearLayout4"
             isVisible="@{vm.wallet.isWatchOnly &amp;&amp; !vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -251,11 +264,11 @@
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:orientation="vertical"
-            tools:visibility="gone"
             app:gap="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"
@@ -266,6 +279,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="?attr/textInputFilledStyle"
+                isVisible="@{!vm.wallet.watchOnlyUsername.blank}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_username">
@@ -284,11 +298,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="?attr/textInputFilledStyle"
+                isGone="@{vm.watchOnlyCredentials != null &amp;&amp; vm.initialAction == false || vm.wallet.watchOnlyUsername.blank}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/id_password"
-                isGone="@{vm.keystoreCredentials != null &amp;&amp; vm.initialAction == false}"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText

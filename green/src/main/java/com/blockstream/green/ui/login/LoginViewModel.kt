@@ -8,9 +8,11 @@ import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
+import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.database.WatchOnlyCredentials
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.extensions.logException
@@ -51,7 +53,7 @@ class LoginViewModel @AssistedInject constructor(
     val onErrorMessage = MutableLiveData<ConsumableEvent<Throwable>>()
 
     var biometricsCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
-    var keystoreCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
+    var watchOnlyCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
     var pinCredentials: PendingLiveData<LoginCredentials> = PendingLiveData()
     var passwordCredentials: PendingLiveData<LoginCredentials> = PendingLiveData()
 
@@ -69,12 +71,12 @@ class LoginViewModel @AssistedInject constructor(
     val isWatchOnlyLoginEnabled: LiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
             val block = { _: Any? ->
-                val isInitial = (keystoreCredentials.value != null && initialAction.value == false)
-                value = !watchOnlyPassword.value.isNullOrBlank() && !onProgress.value!! || isInitial
+                val isInitial = (watchOnlyCredentials.value != null && initialAction.value == false)
+                value = (!watchOnlyPassword.value.isNullOrBlank() || wallet.isWatchOnlySingleSig) && !onProgress.value!! || isInitial
             }
             addSource(watchOnlyPassword, block)
             addSource(onProgress, block)
-            addSource(keystoreCredentials, block)
+            addSource(watchOnlyCredentials, block)
             addSource(initialAction, block)
         }
     }
@@ -109,13 +111,15 @@ class LoginViewModel @AssistedInject constructor(
             // Beware as this will fire new values if eg. you change a login credential
             walletRepository.getWalletLoginCredentialsFlow(wallet.id).filterNotNull().onEach {
                     loginCredentialsInitialized = true
-                    biometricsCredentials.value = it.biometrics
-                    keystoreCredentials.value = it.keystore
-                    pinCredentials.value = it.pin
-                    passwordCredentials.value = it.password
+                    biometricsCredentials.value = it.biometricsPinData
+                    watchOnlyCredentials.value = it.watchOnlyCredentials
+                    pinCredentials.value = it.pinPinData
+                    passwordCredentials.value = it.passwordPinData
+
+                    val biometricsBasedCredentials = it.biometricsPinData ?: it.biometricsWatchOnlyCredentials
 
                     if(initialAction.value == false && !wallet.askForBip39Passphrase){
-                        it.biometrics?.let { biometricsCredentials ->
+                        biometricsBasedCredentials?.let { biometricsCredentials ->
                             onEvent.postValue(ConsumableEvent(
                                 LoginEvent.LaunchBiometrics(
                                     biometricsCredentials
@@ -210,22 +214,42 @@ class LoginViewModel @AssistedInject constructor(
         }
     }
 
-    fun loginWatchOnlyWithKeyStore(loginCredentials: LoginCredentials) {
+    fun loginWatchOnlyWithLoginCredentials(loginCredentials: LoginCredentials) {
         loginCredentials.encryptedData?.let { encryptedData ->
             login(loginCredentials, isWatchOnly = true, updateWatchOnlyPassword = false) {
 
                 initialAction.postValue(true)
 
-                val password = String(appKeystore.decryptData(encryptedData))
-                session.loginWatchOnly(wallet, wallet.watchOnlyUsername!!, password)
+                val watchOnlyCredentials = appKeystore.decryptData(encryptedData).let {
+                    if(loginCredentials.credentialType == CredentialType.KEYSTORE_PASSWORD){
+                        WatchOnlyCredentials(
+                            password = String(it)
+                        )
+                    }else{
+                        WatchOnlyCredentials.fromByteArray(it)
+                    }
+                }
+
+                session.loginWatchOnly(wallet = wallet, username = wallet.watchOnlyUsername ?: "", watchOnlyCredentials)
             }
         }
     }
 
+    private fun loginWatchOnlyWithWatchOnlyCredentials(loginCredentials: LoginCredentials, watchOnlyCredentials: WatchOnlyCredentials){
+        login(loginCredentials, isWatchOnly = true, updateWatchOnlyPassword = false) {
+            session.loginWatchOnly(wallet = wallet, username = wallet.watchOnlyUsername ?: "", watchOnlyCredentials)
+        }
+    }
+
     fun loginWithBiometrics(cipher: Cipher, loginCredentials: LoginCredentials) {
-        loginCredentials.encryptedData?.also { encryptedData ->
-            val pin = String(appKeystore.decryptData(cipher, encryptedData))
-            loginWithPin(pin, loginCredentials)
+        loginCredentials.encryptedData?.let { encryptedData ->
+            appKeystore.decryptData(cipher, encryptedData)
+        }?.also { decryptedData ->
+            if(loginCredentials.credentialType == CredentialType.BIOMETRICS_PINDATA){
+                loginWithPin(String(decryptedData), loginCredentials)
+            }else{
+                loginWatchOnlyWithWatchOnlyCredentials(loginCredentials, WatchOnlyCredentials.fromByteArray(decryptedData))
+            }
         }
     }
 
@@ -239,11 +263,11 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     fun watchOnlyLogin() {
-        login(null, isWatchOnly = true, updateWatchOnlyPassword = true) {
+        login(null, isWatchOnly = true, updateWatchOnlyPassword = !wallet.isWatchOnlySingleSig) {
             session.loginWatchOnly(
-                wallet,
-                wallet.watchOnlyUsername!!,
-                watchOnlyPassword.value ?: ""
+                wallet = wallet,
+                username = wallet.watchOnlyUsername ?: "",
+                watchOnlyCredentials = WatchOnlyCredentials(password = watchOnlyPassword.string())
             )
         }
     }
@@ -285,10 +309,17 @@ class LoginViewModel @AssistedInject constructor(
             }
 
             // Update watch-only password if needed
-            if(updateWatchOnlyPassword){
-                keystoreCredentials.value?.let {
-                    it.encryptedData = appKeystore.encryptData(watchOnlyPassword.value!!.toByteArray())
-                    walletRepository.updateLoginCredentials(it)
+            if(updateWatchOnlyPassword && watchOnlyCredentials.value?.credentialType != CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS){
+                watchOnlyCredentials.value?.let {
+                    // Delete deprecated credential type
+                    if(it.credentialType == CredentialType.KEYSTORE_PASSWORD){
+                        walletRepository.deleteLoginCredentials(it)
+                    }
+
+                    // Upgrade from old KEYSTORE_PASSWORD if required
+                    it.credentialType = CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS
+                    it.encryptedData = appKeystore.encryptData(WatchOnlyCredentials(password = watchOnlyPassword.string()).toString().toByteArray())
+                    walletRepository.insertOrReplaceLoginCredentials(it)
                 }
             }
 

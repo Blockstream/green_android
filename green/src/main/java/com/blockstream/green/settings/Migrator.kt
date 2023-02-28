@@ -103,10 +103,10 @@ class Migrator constructor(
 
                     if(nativePIN.isNullOrBlank()){
                         // User PIN
-                        credentialType = if(pinPreference.getBoolean("is_six_digit", false)) CredentialType.PIN else CredentialType.PASSWORD
+                        credentialType = if(pinPreference.getBoolean("is_six_digit", false)) CredentialType.PIN_PINDATA else CredentialType.PASSWORD_PINDATA
                     }else{
                         // Biometrics or Screenlock
-                        credentialType = CredentialType.BIOMETRICS
+                        credentialType = CredentialType.BIOMETRICS_PINDATA
                         keystore = getV3KeyName(networkId)
 
                         encryptedData = EncryptedData(nativePIN, nativeIV ?: "")
@@ -175,10 +175,10 @@ class Migrator constructor(
 
                     if(nativePIN.isNullOrBlank()){
                         // User Pin
-                        credentialType = if(pinPreference.getBoolean("is_six_digit", false)) CredentialType.PIN else CredentialType.PASSWORD
+                        credentialType = if(pinPreference.getBoolean("is_six_digit", false)) CredentialType.PIN_PINDATA else CredentialType.PASSWORD_PINDATA
                     }else{
                         // Biometrics or Screenlock
-                        credentialType = CredentialType.BIOMETRICS
+                        credentialType = CredentialType.BIOMETRICS_PINDATA
                         keystore = getV3KeyName(networkId)
                         encryptedData = EncryptedData(nativePIN, nativeIV ?: "")
                     }

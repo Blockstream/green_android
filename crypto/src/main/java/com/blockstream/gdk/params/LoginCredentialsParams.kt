@@ -16,13 +16,18 @@ data class LoginCredentialsParams(
     @SerialName("pin_data") val pinData: PinData? = null,
     @SerialName("username") val username: String? = null,
     @SerialName("password") val password: String? = null,
-    @SerialName("master_xpub") val masterXpub: String? = null
+    @SerialName("master_xpub") val masterXpub: String? = null,
+    @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
+    @SerialName("slip132_extended_pubkeys") val slip132ExtendedPubkeys: List<String>? = null,
 ) : GAJson<LoginCredentialsParams>() {
     override val encodeDefaultsValues = false
 
     override fun kSerializer(): KSerializer<LoginCredentialsParams> {
         return serializer()
     }
+
+    val isWatchOnly
+        get() = !username.isNullOrBlank() || !slip132ExtendedPubkeys.isNullOrEmpty() || !coreDescriptors.isNullOrEmpty()
 
     companion object{
         val empty = LoginCredentialsParams()
