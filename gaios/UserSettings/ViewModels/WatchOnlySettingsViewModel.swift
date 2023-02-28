@@ -78,7 +78,7 @@ class WatchOnlySettingsViewModel {
 
     func loadWOExtendedPubKeys() -> Promise<[WatchOnlySettingsCellModel]> {
         let promises = WalletManager.current!.subaccounts
-            .filter { $0.gdkNetwork.electrum && !$0.gdkNetwork.liquid }
+            .filter { $0.gdkNetwork.electrum && !$0.gdkNetwork.liquid && !$0.hidden}
             .compactMap { $0.session?.subaccount($0.pointer) }
         return when(fulfilled: promises).compactMap { subaccounts in
             return subaccounts.map {
