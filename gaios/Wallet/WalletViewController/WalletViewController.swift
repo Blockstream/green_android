@@ -64,7 +64,7 @@ class WalletViewController: UIViewController {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         let reloadSections: (([WalletSection], Bool) -> Void)? = { [weak self] (sections, animated) in
-            self?.reloadSections(sections, animated: true)
+            self?.reloadSections(sections, animated: animated)
         }
         viewModel.reloadSections = reloadSections
         viewModel.reloadAccountView = reloadAccountView

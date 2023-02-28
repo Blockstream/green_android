@@ -49,7 +49,7 @@ class WalletViewModel {
     }
     var txCellModels = [TransactionCellModel]() {
         didSet {
-            reloadSections?( [WalletSection.transaction, .account], true )
+            reloadSections?( [WalletSection.transaction, .account ], false )
         }
     }
     var balanceCellModel: BalanceCellModel? {
