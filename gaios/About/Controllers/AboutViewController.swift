@@ -18,11 +18,11 @@ class AboutViewController: UIViewController {
     }
 
     func setContent() {
-        btnFeedback.setTitle(NSLocalizedString("id_give_us_your_feedback", comment: ""), for: .normal)
-        btnHelp.setTitle(NSLocalizedString("id_visit_the_blockstream_help", comment: ""), for: .normal)
-        btnTerms.setTitle(NSLocalizedString("id_terms_of_service", comment: ""), for: .normal)
-        btnPrivacy.setTitle(NSLocalizedString("id_privacy_policy", comment: ""), for: .normal)
-        lblVersion.text = String(format: NSLocalizedString("id_version_1s", comment: ""), "\(Bundle.main.versionNumber)")
+        btnFeedback.setTitle("id_give_us_your_feedback".localized, for: .normal)
+        btnHelp.setTitle("id_visit_the_blockstream_help".localized, for: .normal)
+        btnTerms.setTitle("id_terms_of_service".localized, for: .normal)
+        btnPrivacy.setTitle("id_privacy_policy".localized, for: .normal)
+        lblVersion.text = "id_version_1s".localizedFormat(withArguments: "\(Bundle.main.versionNumber)") + "-beta1"
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy"
         lblCopyright.text = "© \(formatter.string(from: Date())) Blockstream Corporation Inc."
