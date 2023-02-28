@@ -22,7 +22,7 @@ class AboutViewController: UIViewController {
         btnHelp.setTitle("id_visit_the_blockstream_help".localized, for: .normal)
         btnTerms.setTitle("id_terms_of_service".localized, for: .normal)
         btnPrivacy.setTitle("id_privacy_policy".localized, for: .normal)
-        lblVersion.text = "id_version_1s".localizedFormat(withArguments: "\(Bundle.main.versionNumber)") + "-beta1"
+        lblVersion.text = Common.versionString
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy"
         lblCopyright.text = "© \(formatter.string(from: Date())) Blockstream Corporation Inc."

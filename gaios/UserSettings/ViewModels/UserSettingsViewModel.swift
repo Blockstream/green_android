@@ -36,10 +36,9 @@ class UserSettingsViewModel {
     }
 
     func getAbout() -> [UserSettingsItem] {
-        let versionSubtitle = String(format: NSLocalizedString("id_version_1s", comment: ""), Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? "")
         let version = UserSettingsItem(
             title: USItem.Version.string,
-            subtitle: versionSubtitle,
+            subtitle: Common.versionString,
             section: .About,
             type: .Version)
         let support = UserSettingsItem(
