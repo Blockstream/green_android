@@ -76,7 +76,8 @@ class TransactionAmountCell: UITableViewCell {
         }
         switch tx.type {
         case .outgoing:
-            return tx.addresseesList.first ?? ""
+            let output = tx.outputs?.filter { $0["is_relevant"] as? Bool == false}.first
+            return output?["address"] as? String
         case .incoming:
             let output = tx.outputs?.filter { $0["is_relevant"] as? Bool == true}.first
             return output?["address"] as? String
