@@ -311,7 +311,7 @@ class GdkSession constructor(
         activeSessions.forEach { network ->
             getSettings(network)?.also { networkSettings ->
                 try{
-                    changeSettings(network, Settings.normalizeFromProminent(network = network, networkSettings = networkSettings, prominentSettings = settings))
+                    changeSettings(network, Settings.normalizeFromProminent(networkSettings = networkSettings, prominentSettings = settings))
                 }catch (e: Exception){
                     e.printStackTrace()
                     exceptions.add(e)
@@ -676,7 +676,7 @@ class GdkSession constructor(
 
             // Sync settings, use multisig if exists to sync PGP also
             (getSettings(network = previousMultisig) ?: getSettings())?.also {
-                changeSettings(network, Settings.normalizeFromProminent(network = network, networkSettings = getSettings(network) ?: it, prominentSettings = it, pgpFromProminent = true))
+                changeSettings(network, Settings.normalizeFromProminent(networkSettings = getSettings(network) ?: it, prominentSettings = it, pgpFromProminent = true))
             }
 
             // hard refresh accounts for the new network
@@ -1106,18 +1106,23 @@ class GdkSession constructor(
         }
 
         if(!isWatchOnly) {
-            // Cache 2fa config
-            activeBitcoinMultisig?.also {
-                getTwoFactorConfig(network = it, useCache = false)
-            }
-
-            // Cache 2fa config
-            activeLiquidMultisig?.also {
-                getTwoFactorConfig(network = it, useCache = false)
-            }
-
             // Sync settings from prominent network to the rest
             syncSettings()
+
+            // Continue login even if for some reason 2FA fails
+            try {
+                // Cache 2fa config
+                activeBitcoinMultisig?.also {
+                    getTwoFactorConfig(network = it, useCache = false)
+                }
+
+                // Cache 2fa config
+                activeLiquidMultisig?.also {
+                    getTwoFactorConfig(network = it, useCache = false)
+                }
+            }catch (e: Exception){
+                countly.recordException(e)
+            }
         }
 
         updateAccountsAndBalances(
@@ -1633,9 +1638,15 @@ class GdkSession constructor(
             )
         )
 
-    fun getTwoFactorConfig(network: Network, useCache: Boolean = false): TwoFactorConfig{
+    fun getTwoFactorConfig(network: Network, useCache: Boolean = false): TwoFactorConfig {
         if(!useCache || !_twoFactorConfigCache.contains(network)){
-            _twoFactorConfigCache[network] = gdkBridge.getTwoFactorConfig(gdkSession(network))
+            _twoFactorConfigCache[network] = try {
+                gdkBridge.getTwoFactorConfig(gdkSession(network))
+            } catch (e: Exception) {
+                countly.recordException(e)
+                // Quick fix to solve login issues
+                TwoFactorConfig.empty
+            }
         }
 
         return _twoFactorConfigCache[network]!!

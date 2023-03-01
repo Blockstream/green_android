@@ -20,4 +20,26 @@ data class TwoFactorConfig(
 
     @SerialName("limits") val limits: Balance,
     @SerialName("twofactor_reset") val twoFactorReset: TwoFactorReset,
-)
+){
+    companion object{
+        // Quick Fix
+        val empty = TwoFactorConfig(
+            anyEnabled = false,
+            email = TwoFactorMethodConfig(),
+            sms = TwoFactorMethodConfig(),
+            gauth = TwoFactorMethodConfig(),
+            phone = TwoFactorMethodConfig(),
+            limits = Balance(
+                satoshi = 0,
+                bits = "",
+                btc = "",
+                fiatCurrency = "",
+                mbtc = "",
+                sats = "",
+                ubtc = ""
+            ),
+            twoFactorReset = TwoFactorReset()
+
+        )
+    }
+}

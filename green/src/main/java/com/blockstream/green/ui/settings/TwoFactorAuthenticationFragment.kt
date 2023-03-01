@@ -39,7 +39,10 @@ class TwoFactorAuthenticationFragment : AbstractWalletFragment<TwofactorAuthenti
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        val networks = listOfNotNull(session.bitcoinMultisig, session.liquidMultisig)
+        val networks = listOfNotNull(session.activeBitcoinMultisig, session.activeLiquidMultisig)
+
+        binding.showTabs = networks.size > 1
+
         val adapter = TwoFactorAuthenticationPagerAdapter(
             wallet = wallet,
             fragment = this,

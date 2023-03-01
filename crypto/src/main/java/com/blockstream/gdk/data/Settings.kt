@@ -27,11 +27,11 @@ data class Settings(
     override fun kSerializer() = serializer()
 
     companion object: KLogging(){
-        fun normalizeFromProminent(network: Network, networkSettings: Settings, prominentSettings: Settings, pgpFromProminent: Boolean = false): Settings{
+        fun normalizeFromProminent(networkSettings: Settings, prominentSettings: Settings, pgpFromProminent: Boolean = false): Settings{
             return Settings(
                 // Prominent Settings
                 altimeout = prominentSettings.altimeout,
-                pricing = prominentSettings.pricing,
+                pricing = prominentSettings.pricing.takeIf { it.exchange != "TRT" } ?: Pricing("USD", "BITFINEX"), // Quick fix to solve login issues with TRT
                 unit = prominentSettings.unit,
                 pgp = prominentSettings.pgp.takeIf { pgpFromProminent } ?: networkSettings.pgp.takeIf { !pgpFromProminent },
 

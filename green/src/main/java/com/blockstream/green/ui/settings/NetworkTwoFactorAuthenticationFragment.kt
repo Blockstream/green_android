@@ -211,7 +211,6 @@ class NetworkTwoFactorAuthenticationFragment :
             viewModel.networkSettingsLiveData(network).asFlow(),
             viewModel.networkTwoFactorConfigLiveData(network).asFlow()
         ) { settings, twoFactorConfig ->
-            logger.info { "WTF flow ${network.id} ${twoFactorConfig.enabledMethods}" }
             settings to twoFactorConfig
         }.onEach {
             updateAdapter()
