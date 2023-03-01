@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+
+## [4.0.0-beta1] - 2023-03-01
+
+### Changed
+- Network Unification
+- Update GDK to 0.0.58
+- Update translations
+
+### Fixed
+- Change data directory for app data storage
+
 ## [3.9.2] - 2023-02-07
 
 ### Added
