@@ -9,9 +9,10 @@ class TwoFaCsvTimeCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        lblTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
         lblTitle.textColor = .white
-        lblHint.textColor = UIColor.customGrayLight()
+        lblHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lblHint.textColor = .white.withAlphaComponent(0.6)
         bg.layer.cornerRadius = 5.0
     }
 

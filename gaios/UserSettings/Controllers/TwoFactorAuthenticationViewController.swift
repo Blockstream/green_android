@@ -73,32 +73,34 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func setStyle() {
-        lblEnable2faTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        lblEnable2faHint.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
+        lblEnable2faTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
         lblEnable2faTitle.textColor = .white
-        lblEnable2faHint.textColor = UIColor.customGrayLight()
-        lbl2faMethods.font = UIFont.systemFont(ofSize: 20.0, weight: .heavy)
-        lbl2faMethods.textColor = .white
-        lbl2faThresholdTitle.font = UIFont.systemFont(ofSize: 20.0, weight: .heavy)
-        lbl2faThresholdHint.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
-        lbl2faThresholdCardTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        lbl2faThresholdCardHint.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
-        lbl2faThresholdTitle.textColor = .white
-        lbl2faThresholdHint.textColor = UIColor.customGrayLight()
+        lblEnable2faHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lblEnable2faHint.textColor = .white.withAlphaComponent(0.6)
+
+        [lbl2faMethods, lbl2faThresholdTitle, lbl2faExpiryTitle, lblReset2faTitle]
+            .forEach {
+                $0?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
+                $0?.textColor = .white.withAlphaComponent(0.6)
+            }
+
+        lbl2faThresholdHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lbl2faThresholdHint.textColor = .white.withAlphaComponent(0.6)
+
+        lbl2faThresholdCardTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
         lbl2faThresholdCardTitle.textColor = .white
-        lbl2faThresholdCardHint.textColor = UIColor.customGrayLight()
+        lbl2faThresholdCardHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lbl2faThresholdCardHint.textColor = .white.withAlphaComponent(0.6)
+
         bg2faThreshold.layer.cornerRadius = 5.0
-        lbl2faExpiryTitle.font = UIFont.systemFont(ofSize: 20.0, weight: .heavy)
-        lbl2faExpiryHint.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
-        lbl2faExpiryTitle.textColor = .white
-        lbl2faExpiryHint.textColor = UIColor.customGrayLight()
-        lblRecoveryTool.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
-        lblRecoveryTool.textColor = UIColor.customGrayLight()
+
+        lbl2faExpiryHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lbl2faExpiryHint.textColor = .white.withAlphaComponent(0.6)
+
+        lblRecoveryTool.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lblRecoveryTool.textColor = .white.withAlphaComponent(0.6)
         btnRecoveryTool.setStyle(.primary)
-        thresholdCardDisclosure.image = UIImage(named: "rightArrow")?.maskWithColor(color: .white)
-        lblReset2faTitle.font = UIFont.systemFont(ofSize: 20.0, weight: .heavy)
-        lblReset2faCardTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        reset2faCardDisclosure.image = UIImage(named: "rightArrow")?.maskWithColor(color: .white)
+        lblReset2faCardTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
 
         networkSegmentedControl.setTitleTextAttributes (
             [NSAttributedString.Key.foregroundColor: UIColor.black], for: .selected)
