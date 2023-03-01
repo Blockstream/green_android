@@ -221,6 +221,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
         }
         let account = viewModel.accountSelectSubCellModels[indexPath.row].account
         AnalyticsManager.shared.selectAccount(account: AccountsManager.shared.current, walletType: account.type)
+        AnalyticsManager.shared.selectAsset(account: AccountsManager.shared.current)
         delegate?.didSelectReceiver(assetId: assetId, account: account)
         navigationController?.popViewController(animated: true)
     }
