@@ -31,6 +31,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var btnRecoveryTool: UIButton!
     @IBOutlet weak var networkSegmentedControl: UISegmentedControl!
     @IBOutlet weak var expiryView: UIStackView!
+    @IBOutlet weak var no2faState: UIView!
+    @IBOutlet weak var lbl2faEmptyStateTitle: UILabel!
+    @IBOutlet weak var lbl2faEmptyStateHint: UILabel!
 
     private let viewModel = TwoFactorSettingsViewModel()
     private var factors = [TwoFactorItem]()
@@ -50,6 +53,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         setStyle()
 
         AnalyticsManager.shared.recordView(.walletSettings2FA, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        no2faState.isHidden = true
     }
 
     func setContent() {
@@ -102,6 +106,11 @@ class TwoFactorAuthenticationViewController: UIViewController {
         btnRecoveryTool.setStyle(.primary)
         lblReset2faCardTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
 
+        lbl2faEmptyStateTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
+        lbl2faEmptyStateTitle.textColor = .white
+        lbl2faEmptyStateHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lbl2faEmptyStateHint.textColor = .white.withAlphaComponent(0.6)
+
         networkSegmentedControl.setTitleTextAttributes (
             [NSAttributedString.Key.foregroundColor: UIColor.black], for: .selected)
         networkSegmentedControl.setTitleTextAttributes (
@@ -146,6 +155,16 @@ class TwoFactorAuthenticationViewController: UIViewController {
                 self.tableView2faMethods.reloadData()
                 self.reloadThreshold()
             }.catch { err in print(err) }
+    }
+
+    func updateCopy() {
+        if session.gdkNetwork.liquid {
+            lbl2faEmptyStateTitle.text = "You don’t have any Liquid 2FA Protected accounts"
+            lbl2faEmptyStateHint.text = "Create a Liquid 2FA protected account if you need to secure more assets, other than Bitcoin."
+        } else {
+            lbl2faEmptyStateTitle.text = "You don’t have any Bitcoin 2FA Protected accounts"
+            lbl2faEmptyStateHint.text = "Create a Bitcoin 2FA protected account"
+        }
     }
 
     func reloadThreshold() {
@@ -303,7 +322,11 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
+        updateCopy()
+
         if tableView == tableView2faMethods {
+            no2faState.isHidden = self.factors.count != 0
             return self.factors.count
         } else if tableView == tableViewCsvTime {
             return csvTypes.count
