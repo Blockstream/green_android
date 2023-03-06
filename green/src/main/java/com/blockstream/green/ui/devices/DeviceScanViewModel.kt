@@ -144,41 +144,43 @@ class DeviceScanViewModel @AssistedInject constructor(
                 // Change network based on user applet
                 wallet.activeNetwork = network.id
             }
+// Disable Wallet Hash ID checking until we can have a more UX friendly experience
+//            // Check wallet hash id
+//            val walletHashId = getWalletHashId(session, network, device)
+//
+//            if (wallet.walletHashId.isNotBlank() && wallet.walletHashId != walletHashId) {
+//
+//                // Wallet has different hash id, ask user if he wants to continue
+//                val userAction = CompletableDeferred<Boolean>().also{
+//                    requestUserActionEmitter = it
+//                    onEvent.postValue(ConsumableEvent(DeviceScanFragment.DeviceScanFragmentEvent.RequestWalletIsDifferent))
+//                }
+//
+//                if (userAction.await()) {
+//                    val onboardingSession = sessionManager.getOnBoardingSession()
+//                    val epheneralWallet = Wallet.createEphemeralWallet(
+//                        networkId = network.id,
+//                        name = getWalletName(session, network, device),
+//                        isHardware = true,
+//                        isTestnet = network.isTestnet
+//                    ).also {
+//                        onboardingSession.ephemeralWallet = it
+//                        sessionManager.upgradeOnBoardingSessionToWallet(it)
+//                    }
+//
+//                    epheneralWallet to device
+//                } else {
+//                    // Disconnect only if there are no other connected sessions
+//                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.id == device.id }){
+//                        device.disconnect()
+//                    }
+//                    throw Exception("id_action_canceled")
+//                }
+//            }else{
+//                wallet to device
+//            }
 
-            // Check wallet hash id
-            val walletHashId = getWalletHashId(session, network, device)
-
-            if (wallet.walletHashId.isNotBlank() && wallet.walletHashId != walletHashId) {
-
-                // Wallet has different hash id, ask user if he wants to continue
-                val userAction = CompletableDeferred<Boolean>().also{
-                    requestUserActionEmitter = it
-                    onEvent.postValue(ConsumableEvent(DeviceScanFragment.DeviceScanFragmentEvent.RequestWalletIsDifferent))
-                }
-
-                if (userAction.await()) {
-                    val onboardingSession = sessionManager.getOnBoardingSession()
-                    val epheneralWallet = Wallet.createEphemeralWallet(
-                        networkId = network.id,
-                        name = getWalletName(session, network, device),
-                        isHardware = true,
-                        isTestnet = network.isTestnet
-                    ).also {
-                        onboardingSession.ephemeralWallet = it
-                        sessionManager.upgradeOnBoardingSessionToWallet(it)
-                    }
-
-                    epheneralWallet to device
-                } else {
-                    // Disconnect only if there are no other connected sessions
-                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.id == device.id }){
-                        device.disconnect()
-                    }
-                    throw Exception("id_action_canceled")
-                }
-            }else{
-                wallet to device
-            }
+            wallet to device
 
         }, onError = {
             onDeviceFailed(device)

@@ -111,7 +111,8 @@ class DeviceInfoViewModel @AssistedInject constructor(
             }
 
             val walletHashId = getWalletHashId(session, network, device)
-            val walletName = getWalletName(session, network, device)
+            // Disable Jade wallet fingerprint, keep the device name // getWalletName(session, network, device)
+            val walletName = device.name
 
             val wallet: Wallet
             if (isEphemeral) {
