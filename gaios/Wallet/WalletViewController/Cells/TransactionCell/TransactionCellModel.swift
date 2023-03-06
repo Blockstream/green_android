@@ -40,6 +40,7 @@ class TransactionCellModel {
             icon = UIImage(named: "ic_tx_sent")!
         case .mixed:
             self.status = isPending() ? "Swapping" : "Swap"
+            icon = UIImage(named: "ic_tx_swap")!
         }
     }
 
