@@ -126,24 +126,24 @@ extension WatchOnlySettingsViewController: UITableViewDelegate, UITableViewDataS
 
     func headerView(txt: String, img: UIImage) -> UIView {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
-        section.backgroundColor = UIColor.customTitaniumDark()
+        section.backgroundColor = UIColor.gBlackBg()
 
         let icon = UIImageView(frame: .zero)
-        icon.image = img
+        icon.image = img.maskWithColor(color: .white.withAlphaComponent(0.6))
         icon.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(icon)
 
         NSLayoutConstraint.activate([
             icon.centerYAnchor.constraint(equalTo: section.centerYAnchor),
             icon.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 16),
-            icon.widthAnchor.constraint(equalToConstant: 24.0),
-            icon.heightAnchor.constraint(equalToConstant: 24.0)
+            icon.widthAnchor.constraint(equalToConstant: 20.0),
+            icon.heightAnchor.constraint(equalToConstant: 20.0)
         ])
 
         let title = UILabel(frame: .zero)
-        title.font = .systemFont(ofSize: 21.0, weight: .heavy)
+        title.font = .systemFont(ofSize: 16.0, weight: .bold)
         title.text = txt
-        title.textColor = .white
+        title.textColor = .white.withAlphaComponent(0.6)
         title.numberOfLines = 0
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)

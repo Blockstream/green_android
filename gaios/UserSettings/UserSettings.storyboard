@@ -1494,7 +1494,7 @@
                                                             </constraints>
                                                         </imageView>
                                                     </subviews>
-                                                    <color key="backgroundColor" name="customModalBlueDark"/>
+                                                    <color key="backgroundColor" name="gGrayCard"/>
                                                     <constraints>
                                                         <constraint firstItem="4et-Te-kfs" firstAttribute="leading" secondItem="xP1-Hg-Xhl" secondAttribute="leading" constant="20" id="122-mL-2Ee"/>
                                                         <constraint firstAttribute="bottom" secondItem="4et-Te-kfs" secondAttribute="bottom" constant="20" id="4h0-yd-Iy9"/>
@@ -1505,6 +1505,7 @@
                                                     </constraints>
                                                 </view>
                                             </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="xP1-Hg-Xhl" secondAttribute="trailing" constant="16" id="9xx-uk-jrp"/>
                                                 <constraint firstAttribute="bottom" secondItem="xP1-Hg-Xhl" secondAttribute="bottom" constant="8" id="L3B-lJ-09S"/>
@@ -1568,7 +1569,7 @@
                                                             </connections>
                                                         </button>
                                                     </subviews>
-                                                    <color key="backgroundColor" name="customModalBlueDark"/>
+                                                    <color key="backgroundColor" name="gGrayCard"/>
                                                     <constraints>
                                                         <constraint firstAttribute="trailing" secondItem="vmi-Hw-HBP" secondAttribute="trailing" constant="20" id="8Pc-eW-OXe"/>
                                                         <constraint firstItem="vmi-Hw-HBP" firstAttribute="leading" secondItem="N48-UO-9U9" secondAttribute="leading" constant="20" id="HLe-tT-Yt9"/>
@@ -1584,6 +1585,7 @@
                                                     </constraints>
                                                 </view>
                                             </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="N48-UO-9U9" secondAttribute="trailing" constant="16" id="1zx-01-g4b"/>
                                                 <constraint firstItem="N48-UO-9U9" firstAttribute="leading" secondItem="HrN-tT-SAo" secondAttribute="leading" constant="16" id="ZAV-23-Y7A"/>
@@ -1658,7 +1660,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="hb0-ld-Vms"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="hb0-ld-Vms" firstAttribute="trailing" secondItem="r9B-xw-VpI" secondAttribute="trailing" id="GMg-J3-I5v"/>
                             <constraint firstItem="r9B-xw-VpI" firstAttribute="leading" secondItem="hb0-ld-Vms" secondAttribute="leading" id="Ghj-FX-EO4"/>
