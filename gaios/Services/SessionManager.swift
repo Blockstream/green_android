@@ -536,4 +536,11 @@ class SessionManager {
         }
         return false
     }
+
+    func getAssets(params: GetAssetsParams) -> GetAssetsResult? {
+        if let res = try? session?.getAssets(params: params.toDict() ?? [:]) {
+            return GetAssetsResult.from(res) as? GetAssetsResult
+        }
+        return nil
+    }
 }

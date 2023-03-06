@@ -82,6 +82,18 @@ struct GetSubaccountParams: Codable {
     let pointer: UInt32
 }
 
+struct GetAssetsParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case assetsId = "assets_id"
+    }
+    let assetsId: [String]
+}
+
+struct GetAssetsResult: Codable {
+    let assets: [String: AssetInfo]
+    let icons: [String: String]
+}
+
 struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {
         case datadir

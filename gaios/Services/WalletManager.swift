@@ -256,7 +256,9 @@ class WalletManager {
         } else if let session = liquidSessions.filter({ $0.value.connected }).first?.value {
             return registry.loadAsync(session: session)
         } else {
-            return registry.loadAsync(session: nil)
+            let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
+            let session = SessionManager(getGdkNetwork(liquidNetworks.first!.rawValue))
+            return registry.loadAsync(session: session)
         }
     }
 
