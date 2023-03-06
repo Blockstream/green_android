@@ -36,7 +36,7 @@ class TransactionCellModel {
             self.status = isPending() ? "id_receiving".localized : "id_received".localized
             icon = UIImage(named: "ic_tx_received")!
         case .outgoing:
-            self.status = isPending() ? "is_sending".localized : "id_sent".localized
+            self.status = isPending() ? "id_sending".localized : "id_sent".localized
             icon = UIImage(named: "ic_tx_sent")!
         case .mixed:
             self.status = isPending() ? "Swapping" : "Swap"
