@@ -183,7 +183,6 @@ class WatchOnlyViewController: KeyboardViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            AccountsRepository.shared.current = account
             AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsRepository.shared.current)
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in

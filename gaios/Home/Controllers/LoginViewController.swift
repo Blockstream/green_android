@@ -249,7 +249,6 @@ class LoginViewController: UIViewController {
                                 isEphemeral: true)
                 WalletsRepository.shared.change(wm: wm, for: self.account)
             }
-            AccountsRepository.shared.current = self.account
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
                                                 ephemeralBip39: self.account.isEphemeral,
                                                 account: self.account)

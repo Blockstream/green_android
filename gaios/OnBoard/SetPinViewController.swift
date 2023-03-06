@@ -202,7 +202,6 @@ class SetPinViewController: UIViewController {
         .ensure { self.stopLoader() }
         .done { _ in
             account.attempts = 0
-            AccountsRepository.shared.current = account
             switch self.pinFlow {
             case .settings:
                 self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)

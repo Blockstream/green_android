@@ -157,7 +157,6 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            AccountsRepository.shared.current = self.account
             AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsRepository.shared.current)
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")

@@ -35,7 +35,6 @@ class MnemonicViewModel {
                 }
             }.then(on: bgq) { wm.restore(credentials, forceJustRestored: xpubHashId != nil) }
             .compactMap {
-                AccountsRepository.shared.current = account
                 AnalyticsManager.shared.restoreWallet(account: account)
                 return ()
             }

@@ -116,6 +116,7 @@ class WalletManager {
             .map { bip39passphrase.isNilOrEmpty ? $0 : Credentials(mnemonic: $0.mnemonic, bip39Passphrase: bip39passphrase) }
             .then { when(fulfilled: Guarantee.value($0), !bip39passphrase.isNilOrEmpty && !mainSession.existDatadir(credentials: $0) ? self.restore($0) : Guarantee().asVoid()) }
             .then { credentials, _ in self.login(credentials) }
+            .map { AccountsRepository.shared.current = self.account }
     }
 
     func loginWatchOnly(_ credentials: Credentials) -> Promise<Void> {
@@ -125,6 +126,7 @@ class WalletManager {
         return mainSession.loginUser(credentials).asVoid()
             .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
+            .map { AccountsRepository.shared.current = self.account }
     }
 
     func loginWithHW(_ device: HWDevice, masterXpub: String) -> Promise<Void> {
@@ -135,6 +137,7 @@ class WalletManager {
             .compactMap { mainSession.existDatadir(masterXpub: masterXpub) }
             .then { !$0 ? self.restore(hw: device) : Guarantee().asVoid() }
             .then { self.loginHW(device) }
+            .map { AccountsRepository.shared.current = self.account }
             .asVoid()
     }
 
@@ -161,6 +164,7 @@ class WalletManager {
             .map { if self.activeSessions.count == 0 { throw LoginError.failed() } }
             .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
+            .map { AccountsRepository.shared.current = self.account }
     }
 
     func create(_ credentials: Credentials) -> Promise<Void> {
@@ -171,6 +175,7 @@ class WalletManager {
             .then { btcSession.register(credentials: credentials) }
             .then { btcSession.loginUser(credentials) }
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
+            .map { AccountsRepository.shared.current = self.account }
     }
 
     func restore(_ credentials: Credentials? = nil, hw: HWDevice? = nil, forceJustRestored: Bool = false) -> Promise<Void> {
@@ -213,6 +218,7 @@ class WalletManager {
                 }
             }.asVoid()
         return when(fulfilled: [btcRestore, liquidRestore])
+            .map { AccountsRepository.shared.current = self.account }
     }
 
     func loginHW(_ device: HWDevice) -> Promise<Void> {

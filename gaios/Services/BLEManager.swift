@@ -328,7 +328,6 @@ class BLEManager {
                     return Disposables.create { }
                 }
             }.compactMap { wm in
-                AccountsRepository.shared.current = account
                 WalletsRepository.shared.add(for: account, wm: wm)
                 return account
             }

@@ -126,7 +126,6 @@ class RecoveryVerifyViewController: UIViewController {
         Guarantee()
             .compactMap { self.startLoader(message: NSLocalizedString("id_creating_wallet", comment: "")) }
             .then(on: bgq) { wm.create(credentials) }
-            .compactMap { AccountsRepository.shared.current = account }
             .then(on: bgq) { wm.login(credentials) }
             .ensure { self.stopLoader() }
             .done {
