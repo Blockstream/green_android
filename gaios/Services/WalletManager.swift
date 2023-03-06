@@ -4,8 +4,11 @@ import PromiseKit
 
 class WalletManager {
 
-    // Store all the Wallet available for each account id
-    static var wallets = [String: WalletManager]()
+    // Return current WalletManager used for the active user session
+    static var current: WalletManager? {
+        let account = AccountsRepository.shared.current
+        return WalletsRepository.shared.get(for: account?.id ?? "")
+    }
 
     // Hashmap of available networks with open session
     var sessions = [String: SessionManager]()
@@ -18,6 +21,14 @@ class WalletManager {
 
     // Cached subaccounts list
     var registry: AssetsManager
+    
+    var account: Account {
+        didSet {
+            if AccountsRepository.shared.get(for: account.id) != nil {
+                AccountsRepository.shared.upsert(account)
+            }
+        }
+    }
 
     // Store active subaccount
     private var activeWalletHash: Int?
@@ -51,10 +62,11 @@ class WalletManager {
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
 
-    init(prominentNetwork: NetworkSecurityCase?) {
+    init(account: Account, prominentNetwork: NetworkSecurityCase?) {
         let mainnet = prominentNetwork?.gdkNetwork?.mainnet ?? true
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
         self.registry = AssetsManager(testnet: !mainnet)
+        self.account = account
         if mainnet {
             addSession(for: .bitcoinSS)
             addSession(for: .liquidSS)
@@ -136,10 +148,7 @@ class WalletManager {
                 }
                 return session.loginUser(credentials)
                     .map { data in
-                        if var account = WalletManager.account(for: self) {
-                            account.xpubHashId = data.xpubHashId
-                            AccountsRepository.shared.upsert(account)
-                        }
+                        self.account.xpubHashId = data.xpubHashId
                     }.recover { err in
                         switch err {
                         case TwoFactorCallError.failure(_):
@@ -330,65 +339,5 @@ class WalletManager {
                 }
             }
         }
-    }
-}
-
-extension WalletManager {
-
-    // Return current WalletManager used for the active user session
-    static var current: WalletManager? {
-        let account = AccountsRepository.shared.current
-        return get(for: account?.id ?? "")
-    }
-
-    static func add(for account: Account, wm: WalletManager? = nil) {
-        if let wm = wm {
-            wallets[account.id] = wm
-            return
-        }
-        let network = NetworkSecurityCase(rawValue: account.networkName)
-        let wm = WalletManager(prominentNetwork: network)
-        wallets[account.id] = wm
-    }
-
-    static func get(for accountId: String) -> WalletManager? {
-        return wallets[accountId]
-    }
-
-    static func get(for account: Account) -> WalletManager? {
-        get(for: account.id)
-    }
-
-    static func getOrAdd(for account: Account) -> WalletManager {
-        if !wallets.keys.contains(account.id) {
-            add(for: account)
-        }
-        return get(for: account)!
-    }
-
-    static func delete(for accountId: String) {
-        wallets.removeValue(forKey: accountId)
-    }
-
-    static func delete(for account: Account?) {
-        if let account = account {
-            delete(for: account.id)
-        }
-    }
-
-    static func delete(for wm: WalletManager) {
-        if let index = wallets.firstIndex(where: { $0.value === wm }) {
-            wallets.remove(at: index)
-        }
-    }
-
-    static func change(wm: WalletManager, for account: Account) {
-        delete(for: wm)
-        add(for: account, wm: wm)
-    }
-
-    static func account(for wm: WalletManager) -> Account? {
-        let id = wallets.first(where: { $0.value === wm })?.key
-        return AccountsRepository.shared.get(for: id ?? "")
     }
 }

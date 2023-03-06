@@ -23,7 +23,7 @@ class MnemonicViewModel {
         let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let account = Account(name: name, network: mainNetwork.network)
-        let wm = WalletManager.getOrAdd(for: account)
+        let wm = WalletsRepository.shared.getOrAdd(for: account)
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .compactMap(on: bgq) { wm.prominentSession }

@@ -57,7 +57,7 @@ class AccountsRepository {
 
     // Filtered account list of hardware wallets
     var hwAccounts: [Account] { accounts.filter { account in
-        account.isHW && !WalletManager.wallets.filter {$0.key == account.id }.isEmpty } }
+        account.isHW && !WalletsRepository.shared.wallets.filter {$0.key == account.id }.isEmpty } }
 
     // Hardware wallets accounts are store in temporary memory
     var devices = [ Account(name: "Blockstream Jade", network: "mainnet", isJade: true, isSingleSig: false),

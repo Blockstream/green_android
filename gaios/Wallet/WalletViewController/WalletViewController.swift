@@ -564,7 +564,7 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
             }
             DispatchQueue.main.async {
                 if let account = AccountsRepository.shared.current {
-                    WalletManager.delete(for: account.id)
+                    WalletsRepository.shared.delete(for: account.id)
                 }
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)
                 let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController

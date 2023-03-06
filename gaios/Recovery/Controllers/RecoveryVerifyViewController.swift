@@ -119,7 +119,7 @@ class RecoveryVerifyViewController: UIViewController {
         let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let account = Account(name: name, network: mainNetwork.network)
-        let wm = WalletManager.getOrAdd(for: account)
+        let wm = WalletsRepository.shared.getOrAdd(for: account)
         let mnemonic = self.mnemonic.joined(separator: " ")
         let credentials = Credentials(mnemonic: mnemonic, password: "")
         let bgq = DispatchQueue.global(qos: .background)

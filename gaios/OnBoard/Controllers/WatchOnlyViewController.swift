@@ -177,7 +177,7 @@ class WatchOnlyViewController: KeyboardViewController {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.compactMap {
-            WalletManager.getOrAdd(for: account)
+            WalletsRepository.shared.getOrAdd(for: account)
         }.then(on: bgq) {
             $0.login(Credentials(username: username, password: password))
         }.ensure {
@@ -200,7 +200,7 @@ class WatchOnlyViewController: KeyboardViewController {
             }
             DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
-            WalletManager.delete(for: account)
+            WalletsRepository.shared.delete(for: account)
         }
     }
 

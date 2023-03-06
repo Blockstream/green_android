@@ -116,7 +116,7 @@ class AnalyticsManager {
 
     var analyticsNtw: AnalyticsManager.NtwTypeDescriptor? {
         if let account = AccountsRepository.shared.current {
-            let activeNetworks: [NetworkSecurityCase] = WalletManager.get(for: account.id)?.activeNetworks ?? []
+            let activeNetworks: [NetworkSecurityCase] = WalletsRepository.shared.get(for: account.id)?.activeNetworks ?? []
 
             let bitcoinNtws = activeNetworks.filter { $0 == .bitcoinSS || $0 == .bitcoinMS }
             let liquidNtws = activeNetworks.filter { $0 == .liquidSS || $0 == .liquidMS }
@@ -135,7 +135,7 @@ class AnalyticsManager {
 
     var analyticsSec: SecTypeDescriptor? {
         if let account = AccountsRepository.shared.current {
-            let activeNetworks: [NetworkSecurityCase] = WalletManager.get(for: account.id)?.activeNetworks ?? []
+            let activeNetworks: [NetworkSecurityCase] = WalletsRepository.shared.get(for: account.id)?.activeNetworks ?? []
 
             let ssNtws = activeNetworks.filter { [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS].contains($0) }
             let msNtws = activeNetworks.filter { [.bitcoinMS, .liquidMS, .testnetMS, .testnetLiquidMS].contains($0) }

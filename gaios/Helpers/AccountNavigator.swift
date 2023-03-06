@@ -18,7 +18,7 @@ class AccountNavigator {
     // open the account if just logged or redirect to login
     static func goLogin(account: Account) {
         // switch on selected active session
-        if WalletManager.get(for: account.id)?.activeSessions.isEmpty == false {
+        if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {
             AccountsRepository.shared.current = account
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController

@@ -226,7 +226,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let wm = WalletManager.getOrAdd(for: account)
+        let wm = WalletsRepository.shared.getOrAdd(for: account)
         firstly {
             return Guarantee()
         }.compactMap {
@@ -247,7 +247,7 @@ class LoginViewController: UIViewController {
                                 network: self.account.network ?? "",
                                 isSingleSig: self.account.isSingleSig,
                                 isEphemeral: true)
-                WalletManager.change(wm: wm, for: self.account)
+                WalletsRepository.shared.change(wm: wm, for: self.account)
             }
             AccountsRepository.shared.current = self.account
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),

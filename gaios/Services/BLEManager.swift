@@ -309,7 +309,12 @@ class BLEManager {
     }
 
     private func loginDevice(network: NetworkSecurityCase, device: HWDevice) -> Observable<Account> {
-        let wm = WalletManager(prominentNetwork: network)
+        let account = Account(name: device.name,
+                              network: network.chain,
+                              isJade: device.isJade,
+                              isLedger: device.isLedger,
+                              isSingleSig: network.gdkNetwork?.electrum ?? true)
+        let wm = WalletManager(account: account, prominentNetwork: network)
         return getMasterXpub(device, gdkNetwork: network.gdkNetwork)
             .flatMap { masterXpub in
                 return Observable<WalletManager>.create { observer in
@@ -323,14 +328,8 @@ class BLEManager {
                     return Disposables.create { }
                 }
             }.compactMap { wm in
-                let network = wm.prominentNetwork
-                let account = Account(name: device.name,
-                                     network: network.chain,
-                                      isJade: device.isJade,
-                                     isLedger: device.isLedger,
-                                     isSingleSig: network.gdkNetwork?.electrum ?? true)
                 AccountsRepository.shared.current = account
-                WalletManager.add(for: account, wm: wm)
+                WalletsRepository.shared.add(for: account, wm: wm)
                 return account
             }
     }

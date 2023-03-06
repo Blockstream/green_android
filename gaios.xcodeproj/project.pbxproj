@@ -354,6 +354,7 @@
 		8158974B2701980700DDF6D4 /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
 		815A804429B3D44300269027 /* AccountsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804329B3D44300269027 /* AccountsRepository.swift */; };
 		815A804629B3D4B600269027 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804529B3D4B600269027 /* KeychainStorage.swift */; };
+		815A804829B6443F00269027 /* WalletsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804729B6443F00269027 /* WalletsRepository.swift */; };
 		815D4AA028638A56004DC015 /* PinData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815D4A9F28638A56004DC015 /* PinData.swift */; };
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
@@ -819,6 +820,7 @@
 		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
 		815A804329B3D44300269027 /* AccountsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsRepository.swift; sourceTree = "<group>"; };
 		815A804529B3D4B600269027 /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
+		815A804729B6443F00269027 /* WalletsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsRepository.swift; sourceTree = "<group>"; };
 		815D4A9F28638A56004DC015 /* PinData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinData.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
 		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
@@ -2057,6 +2059,7 @@
 		815A804229B3D41800269027 /* Repository */ = {
 			isa = PBXGroup;
 			children = (
+				815A804729B6443F00269027 /* WalletsRepository.swift */,
 				815A804329B3D44300269027 /* AccountsRepository.swift */,
 				815A804529B3D4B600269027 /* KeychainStorage.swift */,
 			);
@@ -2768,6 +2771,7 @@
 				3457F4AE292397A600EF33B5 /* DialogListViewModel.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView.swift in Sources */,
 				3497936D25F8B18C0029ECB1 /* RotationAnimation.swift in Sources */,
+				815A804829B6443F00269027 /* WalletsRepository.swift in Sources */,
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
 				3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */,
 				81004E31292B6E1D001C2E4D /* MnemonicViewModel.swift in Sources */,

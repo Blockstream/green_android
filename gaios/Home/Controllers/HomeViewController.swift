@@ -22,7 +22,7 @@ class HomeViewController: UIViewController {
 
     private var ephAccounts: [Account] {
         AccountsRepository.shared.ephAccounts.filter { account in
-            account.isEphemeral && !WalletManager.wallets.filter {$0.key == account.id }.isEmpty
+            account.isEphemeral && !WalletsRepository.shared.wallets.filter {$0.key == account.id }.isEmpty
         }
     }
 
@@ -178,12 +178,12 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 let account = AccountsRepository.shared.swAccounts[indexPath.row]
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                     let selected = { () -> Bool in
-                        return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
+                        return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
                     }
                     cell.configure(item: account,
                                    isSelected: selected(),
                                    onLongpress: { [weak self] () in
-                        if !(WalletManager.get(for: account.id)?.activeSessions.isEmpty == false) {
+                        if !(WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false) {
                             UINotificationFeedbackGenerator().notificationOccurred(.success)
 
                             let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
@@ -209,7 +209,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = ephAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
-                    return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
+                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
                 }
                 cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none
@@ -219,7 +219,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = AccountsRepository.shared.hwAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
-                    return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
+                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
                 }
                 cell.configure(item: account, isSelected: selected())
                 cell.selectionStyle = .none
