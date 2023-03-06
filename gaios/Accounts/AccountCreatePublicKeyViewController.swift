@@ -23,7 +23,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
         setStyle()
         textViewKey.delegate = self
 
-        AnalyticsManager.shared.recordView(.addAccountPublicKey, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.addAccountPublicKey, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
     func setContent() {

@@ -329,7 +329,7 @@ class BLEManager {
                                       isJade: device.isJade,
                                      isLedger: device.isLedger,
                                      isSingleSig: network.gdkNetwork?.electrum ?? true)
-                AccountsManager.shared.current = account
+                AccountsRepository.shared.current = account
                 WalletManager.add(for: account, wm: wm)
                 return account
             }
@@ -374,7 +374,7 @@ class BLEManager {
             let authErr = err as? AuthenticationTypeHandler.AuthError
             bleErr = BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
 
-            AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: err, prettyError: authErr?.localizedDescription ?? "")
+            AnalyticsManager.shared.failedWalletLogin(account: AccountsRepository.shared.current, error: err, prettyError: authErr?.localizedDescription ?? "")
         case is Ledger.SWError:
             bleErr = BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
         case is JadeError:
@@ -386,7 +386,7 @@ class BLEManager {
             default:
                 bleErr = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
 
-                AnalyticsManager.shared.failedWalletLogin(account: AccountsManager.shared.current, error: err, prettyError: "id_login_failed")
+                AnalyticsManager.shared.failedWalletLogin(account: AccountsRepository.shared.current, error: err, prettyError: "id_login_failed")
             }
         case LoginError.failed, LoginError.connectionFailed, LoginError.walletsJustRestored, LoginError.walletNotFound:
            bleErr = BLEManagerError.genericErr(txt: NSLocalizedString("id_login_failed", comment: ""))

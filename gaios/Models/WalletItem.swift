@@ -60,7 +60,7 @@ class WalletItem: Codable, Equatable, Comparable, Hashable {
 
     var btc: Int64 {
         get {
-            if let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() {
+            if let feeAsset = AccountsRepository.shared.current?.gdkNetwork?.getFeeAsset() {
                 return satoshi?[feeAsset] ?? 0
             }
             return 0

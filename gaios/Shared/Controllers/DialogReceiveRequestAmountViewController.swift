@@ -51,7 +51,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.amountField
         btnConfirm.accessibilityIdentifier = AccessibilityIdentifiers.DialogReceiveRequestAmountScreen.confirmBtn
 
-        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: wallet?.type))
     }
 
     func setContent() {
@@ -116,7 +116,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
             btnFiat.backgroundColor = UIColor.customMatrixGreen()
             btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)
         } else {
-            let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+            let isMainnet = AccountsRepository.shared.current?.gdkNetwork?.mainnet ?? true
             btnFiat.setTitle(isMainnet ? settings.getCurrency() : "FIAT", for: UIControl.State.normal)
             btnFiat.backgroundColor = UIColor.clear
             btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)

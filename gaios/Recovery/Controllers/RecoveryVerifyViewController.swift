@@ -116,7 +116,7 @@ class RecoveryVerifyViewController: UIViewController {
 
     func createWallet() {
         let testnet = LandingViewController.chainType == .testnet
-        let name = AccountsManager.shared.getUniqueAccountName(testnet: testnet)
+        let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let account = Account(name: name, network: mainNetwork.network)
         let wm = WalletManager.getOrAdd(for: account)
@@ -126,11 +126,11 @@ class RecoveryVerifyViewController: UIViewController {
         Guarantee()
             .compactMap { self.startLoader(message: NSLocalizedString("id_creating_wallet", comment: "")) }
             .then(on: bgq) { wm.create(credentials) }
-            .compactMap { AccountsManager.shared.current = account }
+            .compactMap { AccountsRepository.shared.current = account }
             .then(on: bgq) { wm.login(credentials) }
             .ensure { self.stopLoader() }
             .done {
-                AnalyticsManager.shared.createWallet(account: AccountsManager.shared.current)
+                AnalyticsManager.shared.createWallet(account: AccountsRepository.shared.current)
                 let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
                     vc.pinFlow = .onboard

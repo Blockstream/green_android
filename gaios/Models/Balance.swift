@@ -92,7 +92,7 @@ struct Balance: Codable {
     }
 
     func toFiat() -> (String, String) {
-        let mainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet
+        let mainnet = AccountsRepository.shared.current?.gdkNetwork?.mainnet
         if let asset = assetInfo, !["btc", Balance.lbtc, Balance.ltest].contains(asset.assetId) {
             return ("", "")
         } else {

@@ -55,7 +55,7 @@ class AssetExpandableSelectViewController: UIViewController {
     }
 
     func onCreate(asset: AssetInfo?) {
-        AnalyticsManager.shared.newAccount(account: AccountsManager.shared.current)
+        AnalyticsManager.shared.newAccount(account: AccountsRepository.shared.current)
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
             let asset = asset?.assetId ?? getGdkNetwork("liquid").getFeeAsset()
@@ -220,8 +220,8 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
             }
         }
         let account = viewModel.accountSelectSubCellModels[indexPath.row].account
-        AnalyticsManager.shared.selectAccount(account: AccountsManager.shared.current, walletType: account.type)
-        AnalyticsManager.shared.selectAsset(account: AccountsManager.shared.current)
+        AnalyticsManager.shared.selectAccount(account: AccountsRepository.shared.current, walletType: account.type)
+        AnalyticsManager.shared.selectAsset(account: AccountsRepository.shared.current)
         delegate?.didSelectReceiver(assetId: assetId, account: account)
         navigationController?.popViewController(animated: true)
     }
@@ -272,7 +272,7 @@ extension AssetExpandableSelectViewController: UITextFieldDelegate {
 extension AssetExpandableSelectViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
 
-        AnalyticsManager.shared.createAccount(account: AccountsManager.shared.current, walletType: wallet.type)
+        AnalyticsManager.shared.createAccount(account: AccountsRepository.shared.current, walletType: wallet.type)
         delegate?.didSelectReceiver(assetId: getAssetId(), account: wallet)
         navigationController?.popViewController(animated: true)
     }

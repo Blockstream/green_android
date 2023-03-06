@@ -112,7 +112,7 @@ class AccountCell: UITableViewCell {
         imgSS.isHidden = !model.isSS
         imgMS.isHidden = model.isSS
         let session = model.account.session
-        let watchOnly = AccountsManager.shared.current?.isWatchonly ?? false
+        let watchOnly = AccountsRepository.shared.current?.isWatchonly ?? false
         let enabled2FA = session?.twoFactorConfig?.anyEnabled ?? false
         btnShield.isHidden = onSelect == nil || model.isSS || enabled2FA || watchOnly
         btcImg.isHidden = model.isLiquid

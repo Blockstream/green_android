@@ -17,7 +17,7 @@ class AccountArchiveViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let account = AccountsManager.shared.current
+        let account = AccountsRepository.shared.current
         navigationItem.title = account?.name ?? ""
         navigationItem.setHidesBackButton(true, animated: false)
 
@@ -32,7 +32,7 @@ class AccountArchiveViewController: UIViewController {
 
         setContent()
 
-        AnalyticsManager.shared.recordView(.archivedAccounts, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.archivedAccounts, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
     @objc func back(sender: UIBarButtonItem) {

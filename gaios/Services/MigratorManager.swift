@@ -48,7 +48,7 @@ class MigratorManager {
                 accounts.append(account)
             }
         }
-        AccountsManager.shared.accounts = accounts
+        AccountsRepository.shared.accounts = accounts
     }
 
     private func clean() {
@@ -59,6 +59,6 @@ class MigratorManager {
                 UserDefaults.standard.set(true, forKey: network + "FirstInitialization")
             }
         }
-        try? AccountsManager.shared.remove()
+        AccountsRepository.shared.removeAll()
     }
 }

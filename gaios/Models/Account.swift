@@ -50,7 +50,7 @@ struct Account: Codable, Equatable {
         self.askEphemeral = askEphemeral
         self.xpubHashId = xpubHashId
         if isEphemeral {
-            let ephAccounts = AccountsManager.shared.ephAccounts
+            let ephAccounts = AccountsRepository.shared.ephAccounts
             if ephAccounts.count == 0 {
                 self.ephemeralId = 1
             } else {

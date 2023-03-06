@@ -28,7 +28,7 @@ enum WalletPrefs: Int, CaseIterable {
     }
 
     static func getPrefs() -> [WalletPrefs] {
-        let isWatchOnly = AccountsManager.shared.current?.isWatchonly ?? false
+        let isWatchOnly = AccountsRepository.shared.current?.isWatchonly ?? false
         let prefs: [WalletPrefs] = isWatchOnly ? [ .settings, .logout ] : [ .createAccount, .settings, .logout ]
         return prefs
     }

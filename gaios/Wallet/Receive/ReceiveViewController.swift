@@ -39,7 +39,7 @@ class ReceiveViewController: UIViewController {
 
         setContent()
         setStyle()
-        let userAccount = AccountsManager.shared.current
+        let userAccount = AccountsRepository.shared.current
         btnVerify.isHidden = !(userAccount?.isHW == true && userAccount?.isLedger == false)
         btnEdit.isHidden = true
         let helpBtn = UIButton(type: .system)
@@ -51,7 +51,7 @@ class ReceiveViewController: UIViewController {
         btnQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.qrCodeBtn
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
 
-        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: viewModel.account.type))
+        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
 
         viewModel.reload = reload
         viewModel.error = showError
@@ -146,7 +146,7 @@ class ReceiveViewController: UIViewController {
         let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
                                                        media: AnalyticsManager.ReceiveAddressMedia.text,
                                                        method: AnalyticsManager.ReceiveAddressMethod.copy)
-        AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
+        AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
                                                walletType: viewModel.account.type,
                                                data: data)
         UIPasteboard.general.string = uri
@@ -226,7 +226,7 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func btnChangeReceiver(_ sender: Any) {
-        AnalyticsManager.shared.changeAsset(account: AccountsManager.shared.current)
+        AnalyticsManager.shared.changeAsset(account: AccountsRepository.shared.current)
         let previousViewController = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if previousViewController is WalletViewController {
@@ -344,7 +344,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                 let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
                                                                media: AnalyticsManager.ReceiveAddressMedia.text,
                                                                method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
+                AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
                                                        walletType: viewModel.account.type,
                                                        data: data)
             case .qr:
@@ -355,7 +355,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                 let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
                                                                media: AnalyticsManager.ReceiveAddressMedia.image,
                                                                method: AnalyticsManager.ReceiveAddressMethod.share)
-                AnalyticsManager.shared.receiveAddress(account: AccountsManager.shared.current,
+                AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
                                                        walletType: viewModel.account.type,
                                                        data: data)
             }

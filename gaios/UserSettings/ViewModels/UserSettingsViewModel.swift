@@ -10,8 +10,8 @@ class UserSettingsViewModel {
     // load wallet manager for current logged session
     var session: SessionManager? { wm.prominentSession }
     var settings: Settings? { session?.settings }
-    var isWatchonly: Bool { AccountsManager.shared.current?.isWatchonly ?? false }
-    var isHW: Bool { AccountsManager.shared.current?.isHW ?? false }
+    var isWatchonly: Bool { AccountsRepository.shared.current?.isWatchonly ?? false }
+    var isHW: Bool { AccountsRepository.shared.current?.isHW ?? false }
 
     // reload all contents
     var reloadTableView: (() -> Void)?
@@ -58,7 +58,7 @@ class UserSettingsViewModel {
         let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "") : NSLocalizedString("id_touchface_id_not_available", comment: "")
         var bioSwitch: Bool?
         if AuthenticationTypeHandler.supportsBiometricAuthentication() {
-            let account = AccountsManager.shared.current
+            let account = AccountsRepository.shared.current
             bioSwitch = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account?.keychain ?? "")
         }
         let loginWithBiometrics = UserSettingsItem(
@@ -139,7 +139,7 @@ class UserSettingsViewModel {
     }
 
     func getLogout() -> [UserSettingsItem] {
-        let wallet = AccountsManager.shared.current
+        let wallet = AccountsRepository.shared.current
         let logout = UserSettingsItem(
             title: (wallet?.name ?? "").localizedCapitalized,
             subtitle: "id_log_out".localized,

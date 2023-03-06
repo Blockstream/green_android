@@ -21,7 +21,7 @@ class HomeViewController: UIViewController {
     private var remoteAlert: RemoteAlert?
 
     private var ephAccounts: [Account] {
-        AccountsManager.shared.ephAccounts.filter { account in
+        AccountsRepository.shared.ephAccounts.filter { account in
             account.isEphemeral && !WalletManager.wallets.filter {$0.key == account.id }.isEmpty
         }
     }
@@ -71,7 +71,7 @@ class HomeViewController: UIViewController {
     }
 
     func showHardwareWallet(_ index: Int) {
-        let account = AccountsManager.shared.devices[index]
+        let account = AccountsRepository.shared.devices[index]
         AccountNavigator.goHWLogin(isJade: account.isJade)
     }
 
@@ -99,7 +99,7 @@ class HomeViewController: UIViewController {
     }
 
     func walletRename(_ index: Int) {
-        guard let account = AccountsManager.shared.swAccounts[safe: index] else { return }
+        guard let account = AccountsRepository.shared.swAccounts[safe: index] else { return }
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -138,13 +138,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case HomeSection.remoteAlerts.rawValue:
             return remoteAlert != nil ? 1 : 0
         case HomeSection.swWallet.rawValue:
-            return AccountsManager.shared.swAccounts.count == 0 ? 1 : AccountsManager.shared.swAccounts.count
+            return AccountsRepository.shared.swAccounts.count == 0 ? 1 : AccountsRepository.shared.swAccounts.count
         case HomeSection.ephWallet.rawValue:
             return ephAccounts.count
         case HomeSection.hwWallet.rawValue:
-            return AccountsManager.shared.hwAccounts.count
+            return AccountsRepository.shared.hwAccounts.count
         case HomeSection.device.rawValue:
-            return AccountsManager.shared.devices.count
+            return AccountsRepository.shared.devices.count
         default:
             return 0
         }
@@ -168,14 +168,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case HomeSection.swWallet.rawValue:
-            if AccountsManager.shared.swAccounts.count == 0 {
+            if AccountsRepository.shared.swAccounts.count == 0 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListEmptyCell") as? WalletListEmptyCell {
                     cell.configure(NSLocalizedString("id_it_looks_like_you_have_no", comment: ""), UIImage(named: "ic_logo_green")!)
                     cell.selectionStyle = .none
                     return cell
                 }
             } else {
-                let account = AccountsManager.shared.swAccounts[indexPath.row]
+                let account = AccountsRepository.shared.swAccounts[indexPath.row]
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                     let selected = { () -> Bool in
                         return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
@@ -216,7 +216,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case HomeSection.hwWallet.rawValue:
-            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            let account = AccountsRepository.shared.hwAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
@@ -227,7 +227,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case HomeSection.device.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListHDCell") as? WalletListHDCell {
-                let hw = AccountsManager.shared.devices[indexPath.row]
+                let hw = AccountsRepository.shared.devices[indexPath.row]
                 let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
                 cell.configure(hw.name, icon ?? UIImage())
                 cell.selectionStyle = .none
@@ -244,7 +244,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         if section == HomeSection.ephWallet.rawValue && ephAccounts.isEmpty {
             return 0.1
         }
-        if section == HomeSection.hwWallet.rawValue && AccountsManager.shared.hwAccounts.isEmpty {
+        if section == HomeSection.hwWallet.rawValue && AccountsRepository.shared.hwAccounts.isEmpty {
             return 0.1
         }
         if section == HomeSection.remoteAlerts.rawValue {
@@ -278,7 +278,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             }
             return headerView(NSLocalizedString("id_ephemeral_wallets", comment: "").uppercased())
         case HomeSection.hwWallet.rawValue:
-            if AccountsManager.shared.hwAccounts.isEmpty {
+            if AccountsRepository.shared.hwAccounts.isEmpty {
                 return UIView()
             }
             return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
@@ -303,16 +303,16 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case HomeSection.remoteAlerts.rawValue:
             break
         case HomeSection.swWallet.rawValue:
-            if AccountsManager.shared.swAccounts.count > 0 {
-                let account = AccountsManager.shared.swAccounts[indexPath.row]
+            if AccountsRepository.shared.swAccounts.count > 0 {
+                let account = AccountsRepository.shared.swAccounts[indexPath.row]
                 enterWallet(account)
             }
         case HomeSection.ephWallet.rawValue:
             let account = ephAccounts[indexPath.row]
             enterWallet(account)
         case HomeSection.hwWallet.rawValue:
-            if AccountsManager.shared.hwAccounts.count > 0 {
-                let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            if AccountsRepository.shared.hwAccounts.count > 0 {
+                let account = AccountsRepository.shared.hwAccounts[indexPath.row]
                 enterWallet(account)
             }
         case HomeSection.device.rawValue:
@@ -419,16 +419,16 @@ extension HomeViewController: PopoverMenuWalletDelegate {
 
 extension HomeViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didRename(name: String, index: Int?) {
-        if let index = index, var account = AccountsManager.shared.swAccounts[safe: index] {
+        if let index = index, var account = AccountsRepository.shared.swAccounts[safe: index] {
             account.name = name
-            AccountsManager.shared.upsert(account)
+            AccountsRepository.shared.upsert(account)
             AnalyticsManager.shared.renameWallet()
             tableView.reloadData()
         }
     }
     func didDelete(_ index: Int?) {
-        guard let index = index, let account = AccountsManager.shared.swAccounts[safe: index] else { return }
-        AccountsManager.shared.remove(account)
+        guard let index = index, let account = AccountsRepository.shared.swAccounts[safe: index] else { return }
+        AccountsRepository.shared.remove(account)
         AnalyticsManager.shared.deleteWallet()
         tableView.reloadData()
     }

@@ -63,7 +63,7 @@ class LandingViewController: UIViewController {
                 .forEach { $0?.alpha = 0.0}
         }
 
-        iAgree = AccountsManager.shared.swAccounts.count > 0
+        iAgree = AccountsRepository.shared.swAccounts.count > 0
 
         customBack()
         setContent()

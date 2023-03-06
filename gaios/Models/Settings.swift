@@ -260,7 +260,7 @@ class Settings: Codable {
     }
 
     func getScreenLock() -> ScreenLockType {
-        let account = AccountsManager.shared.current
+        let account = AccountsRepository.shared.current
         if account?.hasBioPin ?? false && account?.hasManualPin ?? false {
             return .All
         } else if account?.hasBioPin ?? false {

@@ -58,7 +58,7 @@ class AccountViewController: UIViewController {
         viewModel.getBalance()
         viewModel.getTransactions()
 
-        AnalyticsManager.shared.recordView(.accountOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.accountOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -138,7 +138,7 @@ class WalletManager {
                     .map { data in
                         if var account = WalletManager.account(for: self) {
                             account.xpubHashId = data.xpubHashId
-                            AccountsManager.shared.upsert(account)
+                            AccountsRepository.shared.upsert(account)
                         }
                     }.recover { err in
                         switch err {
@@ -172,7 +172,7 @@ class WalletManager {
             .then { btcSession.login(credentials: credentials, hw: hw) }
             .compactMap {
                 // Avoid to restore existing wallets, unless HW
-                if let account = AccountsManager.shared.find(xpubHashId: $0.xpubHashId),
+                if let account = AccountsRepository.shared.find(xpubHashId: $0.xpubHashId),
                    account.gdkNetwork?.mainnet == btcNetwork.gdkNetwork?.mainnet && hw == nil && !forceJustRestored {
                     throw LoginError.walletsJustRestored()
                 }
@@ -337,7 +337,7 @@ extension WalletManager {
 
     // Return current WalletManager used for the active user session
     static var current: WalletManager? {
-        let account = AccountsManager.shared.current
+        let account = AccountsRepository.shared.current
         return get(for: account?.id ?? "")
     }
 
@@ -389,6 +389,6 @@ extension WalletManager {
 
     static func account(for wm: WalletManager) -> Account? {
         let id = wallets.first(where: { $0.value === wm })?.key
-        return AccountsManager.shared.get(for: id ?? "")
+        return AccountsRepository.shared.get(for: id ?? "")
     }
 }

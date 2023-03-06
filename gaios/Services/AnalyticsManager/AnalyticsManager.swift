@@ -115,7 +115,7 @@ class AnalyticsManager {
     weak var delegate: AnalyticsManagerDelegate?
 
     var analyticsNtw: AnalyticsManager.NtwTypeDescriptor? {
-        if let account = AccountsManager.shared.current {
+        if let account = AccountsRepository.shared.current {
             let activeNetworks: [NetworkSecurityCase] = WalletManager.get(for: account.id)?.activeNetworks ?? []
 
             let bitcoinNtws = activeNetworks.filter { $0 == .bitcoinSS || $0 == .bitcoinMS }
@@ -134,7 +134,7 @@ class AnalyticsManager {
     }
 
     var analyticsSec: SecTypeDescriptor? {
-        if let account = AccountsManager.shared.current {
+        if let account = AccountsRepository.shared.current {
             let activeNetworks: [NetworkSecurityCase] = WalletManager.get(for: account.id)?.activeNetworks ?? []
 
             let ssNtws = activeNetworks.filter { [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS].contains($0) }
@@ -264,7 +264,7 @@ class AnalyticsManager {
     }
 
     private func updateUserProperties() {
-        let accounts = AccountsManager.shared.swAccounts
+        let accounts = AccountsRepository.shared.swAccounts
 
         let bitcoin_wallets = accounts.filter { $0.network == "mainnet"}
         let liquid_wallets = accounts.filter { $0.network == "liquid"}

@@ -242,7 +242,7 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func createSubaccount(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) {
-        if AccountsManager.shared.current?.isHW ?? false {
+        if AccountsRepository.shared.current?.isHW ?? false {
             showHWCheckDialog()
         }
         firstly { self.startLoader(message: "Creating new account"); return Guarantee() }

@@ -35,7 +35,7 @@ class FeeEditCell: UITableViewCell {
     weak var delegate: FeeEditCellDelegate?
 
     private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        return AccountsRepository.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {
@@ -81,7 +81,7 @@ class FeeEditCell: UITableViewCell {
         lblFeeFiat.isHidden = true
         lblInvalidFee.isHidden = true
 
-        let estimateConfirmTime = transactionPriority.time(isLiquid: AccountsManager.shared.current?.gdkNetwork?.liquid ?? false)
+        let estimateConfirmTime = transactionPriority.time(isLiquid: AccountsRepository.shared.current?.gdkNetwork?.liquid ?? false)
         lblTimeHint.text = transactionPriority == .Custom ? NSLocalizedString("id_custom", comment: "") : "~ \(estimateConfirmTime)"
         feeSlider.value = Float(feeToSwitchIndex(transactionPriority))
 

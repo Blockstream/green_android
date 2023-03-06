@@ -70,7 +70,7 @@ class WalletViewController: UIViewController {
         setStyle()
         welcomeLayer.isHidden = true
 
-        AnalyticsManager.shared.recordView(.walletOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.walletOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -327,7 +327,7 @@ class WalletViewController: UIViewController {
     }
 
     @IBAction func btnWelcomeCreate(_ sender: Any) {
-        AnalyticsManager.shared.onAccountFirst(account: AccountsManager.shared.current)
+        AnalyticsManager.shared.onAccountFirst(account: AccountsRepository.shared.current)
         createAccount()
     }
 }
@@ -559,11 +559,11 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {
-            if AccountsManager.shared.current?.isHW ?? false {
+            if AccountsRepository.shared.current?.isHW ?? false {
                 BLEManager.shared.dispose()
             }
             DispatchQueue.main.async {
-                if let account = AccountsManager.shared.current {
+                if let account = AccountsRepository.shared.current {
                     WalletManager.delete(for: account.id)
                 }
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)
@@ -708,7 +708,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
     // accounts drawer: select another account
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
-        if account.id == AccountsManager.shared.current?.id ?? "" {
+        if account.id == AccountsRepository.shared.current?.id ?? "" {
             return
         }
         AccountNavigator.goLogin(account: account)
@@ -756,7 +756,7 @@ extension WalletViewController: DialogListViewControllerDelegate {
                         }
                     }
                 case .createAccount:
-                    AnalyticsManager.shared.newAccount(account: AccountsManager.shared.current)
+                    AnalyticsManager.shared.newAccount(account: AccountsRepository.shared.current)
                     createAccount()
                 case .logout:
                     userLogout()
@@ -789,7 +789,7 @@ extension WalletViewController: DialogListViewControllerDelegate {
 extension WalletViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
 
-        AnalyticsManager.shared.createAccount(account: AccountsManager.shared.current, walletType: wallet.type)
+        AnalyticsManager.shared.createAccount(account: AccountsRepository.shared.current, walletType: wallet.type)
         viewModel.onCreateAccount(wallet)
     }
 }

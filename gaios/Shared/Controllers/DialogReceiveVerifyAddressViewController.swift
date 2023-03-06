@@ -30,7 +30,7 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
         }
         lblAddress.text = address
 
-        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
     func setContent() {

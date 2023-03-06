@@ -39,9 +39,9 @@ class SendViewController: KeyboardViewController {
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
-        remoteAlert = RemoteAlertManager.shared.getAlert(screen: .send, network: AccountsManager.shared.current?.networkName)
+        remoteAlert = RemoteAlertManager.shared.getAlert(screen: .send, network: AccountsRepository.shared.current?.networkName)
 
-        AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: viewModel.account.type))
+        AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
     }
 
     func setContent() {

@@ -22,7 +22,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
     var footerH: CGFloat = 54.0
 
     private var ephAccounts: [Account] {
-        AccountsManager.shared.ephAccounts.filter { account in
+        AccountsRepository.shared.ephAccounts.filter { account in
             account.isEphemeral && !WalletManager.wallets.filter {$0.key == account.id }.isEmpty
         }
     }
@@ -68,13 +68,13 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return AccountsManager.shared.swAccounts.count
+            return AccountsRepository.shared.swAccounts.count
         case 1:
             return ephAccounts.count
         case 2:
-            return AccountsManager.shared.hwAccounts.count
+            return AccountsRepository.shared.hwAccounts.count
         case 3:
-            return AccountsManager.shared.devices.count
+            return AccountsRepository.shared.devices.count
         default:
             return 0
         }
@@ -84,7 +84,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
 
         switch indexPath.section {
         case 0:
-            let account = AccountsManager.shared.swAccounts[indexPath.row]
+            let account = AccountsRepository.shared.swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
@@ -104,7 +104,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case 2:
-            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            let account = AccountsRepository.shared.hwAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     return WalletManager.get(for: account.id)?.activeSessions.count ?? 0 > 0
@@ -115,7 +115,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             }
         case 3:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListHDCell") as? WalletListHDCell {
-                let hw = AccountsManager.shared.devices[indexPath.row]
+                let hw = AccountsRepository.shared.devices[indexPath.row]
                 let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
                 cell.configure(hw.name, icon ?? UIImage())
                 cell.selectionStyle = .none
@@ -132,7 +132,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         if section == 1 && ephAccounts.isEmpty {
             return 0.1
         }
-        if section == 2 && AccountsManager.shared.hwAccounts.isEmpty {
+        if section == 2 && AccountsRepository.shared.hwAccounts.isEmpty {
             return 0.1
         }
         return headerH
@@ -161,7 +161,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             }
             return headerView(NSLocalizedString("id_ephemeral_wallets", comment: "").uppercased())
         case 2:
-            if AccountsManager.shared.hwAccounts.isEmpty {
+            if AccountsRepository.shared.hwAccounts.isEmpty {
                 return UIView()
             }
             return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
@@ -184,16 +184,16 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
-            let account = AccountsManager.shared.swAccounts[indexPath.row]
+            let account = AccountsRepository.shared.swAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 1:
             let account = ephAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 2:
-            let account = AccountsManager.shared.hwAccounts[indexPath.row]
+            let account = AccountsRepository.shared.hwAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 3:
-            let account = AccountsManager.shared.devices[indexPath.row]
+            let account = AccountsRepository.shared.devices[indexPath.row]
             self.delegate?.didSelectHW(account: account)
         default:
             break

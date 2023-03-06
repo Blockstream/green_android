@@ -18,7 +18,7 @@ class WalletViewModel {
     }
 
     var watchOnly: Bool {
-        AccountsManager.shared.current?.isWatchonly ?? false
+        AccountsRepository.shared.current?.isWatchonly ?? false
     }
 
     var headerIcon: UIImage {
@@ -75,7 +75,7 @@ class WalletViewModel {
     var analyticsDone = false
 
     init() {
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .walletOverview, network: AccountsManager.shared.current?.networkName)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .walletOverview, network: AccountsRepository.shared.current?.networkName)
     }
 
     func loadSubaccounts(_ newAccount: WalletItem? = nil) {
@@ -173,7 +173,7 @@ class WalletViewModel {
             }
         }
         // All sessions should login with the passphrase
-        if AccountsManager.shared.current?.isEphemeral ?? false {
+        if AccountsRepository.shared.current?.isEphemeral ?? false {
             // Bip39 ephemeral wallet
             cards.append(.ephemeralWallet)
         }
@@ -261,7 +261,7 @@ class WalletViewModel {
         let accounts: Int = subaccounts.count
         let accountsTypes: String = Array(Set(subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
 
-        AnalyticsManager.shared.activeWallet(account: AccountsManager.shared.current,
+        AnalyticsManager.shared.activeWallet(account: AccountsRepository.shared.current,
                                              walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
                                                                                      accountsFunded: accountsFunded,
                                                                                      accounts: accounts,

@@ -52,7 +52,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         setContent()
         setStyle()
 
-        AnalyticsManager.shared.recordView(.walletSettings2FA, sgmt: AnalyticsManager.shared.sessSgmt(AccountsManager.shared.current))
+        AnalyticsManager.shared.recordView(.walletSettings2FA, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
         no2faState.isHidden = true
     }
 
@@ -254,7 +254,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func resetTwoFactor(email: String) {
-        //AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        //AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
         self.startLoader()
         firstly { Guarantee() }
             .then { self.viewModel.resetTwoFactor(session: self.session, email: email) }
@@ -372,7 +372,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
                 }
             }
 
-            //AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsManager.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
+            //AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
         } else if tableView == tableViewCsvTime {
             let selected = csvTypes[indexPath.row]
             if let newCsv = selected.value(for: session.gdkNetwork),

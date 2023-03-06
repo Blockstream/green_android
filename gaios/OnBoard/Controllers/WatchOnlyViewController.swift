@@ -164,7 +164,7 @@ class WatchOnlyViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
-        let name = AccountsManager.shared.getUniqueAccountName(
+        let name = AccountsRepository.shared.getUniqueAccountName(
             testnet: !network.mainnet,
             watchonly: true)
 
@@ -183,8 +183,8 @@ class WatchOnlyViewController: KeyboardViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            AccountsManager.shared.current = account
-            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsManager.shared.current)
+            AccountsRepository.shared.current = account
+            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsRepository.shared.current)
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             var prettyError = "id_login_failed"

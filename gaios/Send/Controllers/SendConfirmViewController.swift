@@ -36,9 +36,9 @@ class SendConfirmViewController: KeyboardViewController {
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: AccountsManager.shared.current?.networkName)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: AccountsRepository.shared.current?.networkName)
 
-        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsManager.shared.current, walletType: viewModel.account.type))
+        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
     }
 
     func setContent() {
@@ -77,7 +77,7 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     func send() {
-        let account = AccountsManager.shared.current
+        let account = AccountsRepository.shared.current
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             sliderView.isUserInteractionEnabled = false
@@ -132,7 +132,7 @@ class SendConfirmViewController: KeyboardViewController {
                 self?.showError(error.localizedDescription)
                 prettyError = error.localizedDescription
             }
-            AnalyticsManager.shared.failedTransaction(account: AccountsManager.shared.current, error: error, prettyError: prettyError)
+            AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current, error: error, prettyError: prettyError)
         }
     }
 
@@ -143,7 +143,7 @@ class SendConfirmViewController: KeyboardViewController {
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
                                                      addressInputType: addressInputType,
                                                      sendAll: isSendAll)
-        AnalyticsManager.shared.sendTransaction(account: AccountsManager.shared.current,
+        AnalyticsManager.shared.sendTransaction(account: AccountsRepository.shared.current,
                                walletItem: viewModel.account,
                                transactionSgmt: transSgmt, withMemo: withMemo)
 
@@ -155,7 +155,7 @@ class SendConfirmViewController: KeyboardViewController {
             StoreReviewHelper
                 .shared
                 .request(isSendAll: isSendAll,
-                         account: AccountsManager.shared.current,
+                         account: AccountsRepository.shared.current,
                          walletType: self?.viewModel.account.type)
         }
     }

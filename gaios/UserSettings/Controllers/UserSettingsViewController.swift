@@ -11,7 +11,7 @@ class UserSettingsViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     weak var delegate: UserSettingsViewControllerDelegate?
 
-    var account = { AccountsManager.shared.current }()
+    var account = { AccountsRepository.shared.current }()
     var session = { WalletManager.current?.prominentSession }()
     var headerH: CGFloat = 54.0
     var viewModel = UserSettingsViewModel()

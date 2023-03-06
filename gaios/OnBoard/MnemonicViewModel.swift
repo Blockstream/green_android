@@ -20,7 +20,7 @@ class MnemonicViewModel {
     }
 
     func restore(credentials: Credentials, testnet: Bool, xpubHashId: String? = nil) -> Promise<Void> {
-        let name = AccountsManager.shared.getUniqueAccountName(testnet: testnet)
+        let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let account = Account(name: name, network: mainNetwork.network)
         let wm = WalletManager.getOrAdd(for: account)
@@ -35,7 +35,7 @@ class MnemonicViewModel {
                 }
             }.then(on: bgq) { wm.restore(credentials, forceJustRestored: xpubHashId != nil) }
             .compactMap {
-                AccountsManager.shared.current = account
+                AccountsRepository.shared.current = account
                 AnalyticsManager.shared.restoreWallet(account: account)
                 return ()
             }
