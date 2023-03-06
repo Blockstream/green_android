@@ -21,7 +21,7 @@ class WalletManager {
 
     // Cached subaccounts list
     var registry: AssetsManager
-    
+
     var account: Account {
         didSet {
             if AccountsRepository.shared.get(for: account.id) != nil {
@@ -151,6 +151,7 @@ class WalletManager {
                 }
                 return session.loginUser(credentials)
                     .map { data in
+                        self.account.isEphemeral = !credentials.bip39Passphrase.isNilOrEmpty
                         self.account.xpubHashId = data.xpubHashId
                     }.recover { err in
                         switch err {

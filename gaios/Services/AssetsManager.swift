@@ -8,6 +8,7 @@ class AssetsManager {
     private var infos = [String: AssetInfo]()
     private var icons = [String: String]()
     private var session: SessionManager?
+    fileprivate let qos = DispatchQueue(label: "AssetsManagerDispatchQueue", qos: .userInteractive                                        )
 
     init(testnet: Bool) {
         self.testnet = testnet
@@ -26,7 +27,7 @@ class AssetsManager {
 
     func info(for key: String) -> AssetInfo {
         if infos[key] == nil, let session = session {
-            let infos = fetchAssets(session: session, assetsId: [key])
+            let infos = qos.sync() { fetchAssets(session: session, assetsId: [key]) }
             self.infos.merge(infos, uniquingKeysWith: {_, new in new})
         }
         if let asset = infos[key] {
@@ -40,7 +41,7 @@ class AssetsManager {
             return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc")
         }
         if icons[key] == nil, let session = session {
-            let icons = fetchIcons(session: session, assetsId: [key])
+            let icons = qos.sync() { fetchIcons(session: session, assetsId: [key]) }
             self.icons.merge(icons, uniquingKeysWith: {_, new in new})
         }
         if let icon = icons[key] {
@@ -56,6 +57,13 @@ class AssetsManager {
     func hasImage(for key: String?) -> Bool {
         return getImage(for: key ?? "") != nil
     }
+    
+    func getAsset(session: SessionManager, assetsId: [String]) {
+        let assets = try? session.session?.getAssets(params: ["assets_id": assetsId])
+        
+    }
+    
+    
 
     func fetchAssets(session: SessionManager, assetsId: [String]) -> [String: AssetInfo] {
         let assets = try? session.session?.getAssets(params: ["assets_id": assetsId])
@@ -102,13 +110,13 @@ class AssetsManager {
 
     func fetchFromCountly(session: SessionManager) {
         let assets = getAssetsFromCountly()
-        let infos = fetchAssets(session: session, assetsId: assets.map { $0.id })
+        let infos = qos.sync() { fetchAssets(session: session, assetsId: assets.map { $0.id }) }
         self.infos.merge(infos, uniquingKeysWith: {_, new in new})
         assets.forEach {
             self.infos[$0.id]?.amp = $0.amp ?? false
             self.infos[$0.id]?.weight = $0.weight ?? 0
         }
-        let icons = fetchIcons(session: session, assetsId: assets.map { $0.id })
+        let icons = qos.sync() { fetchIcons(session: session, assetsId: assets.map { $0.id }) }
         self.icons.merge(icons, uniquingKeysWith: {_, new in new})
     }
 }
