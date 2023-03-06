@@ -11,10 +11,10 @@ class UserSettingsViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     weak var delegate: UserSettingsViewControllerDelegate?
 
-    var account = { AccountsRepository.shared.current }()
     var session = { WalletManager.current?.prominentSession }()
     var headerH: CGFloat = 54.0
     var viewModel = UserSettingsViewModel()
+    var account: Account { get { viewModel.wm.account } }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -285,7 +285,7 @@ extension UserSettingsViewController {
 extension UserSettingsViewController {
     private func enableBioAuth() {
         // An auth key pin should be set before updating bio auth
-        if !AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: self.account!.keychain) {
+        if !AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: self.account.keychain) {
             onAuthError(message: NSLocalizedString("id_please_enable_pin", comment: ""))
             return
         }
@@ -296,7 +296,7 @@ extension UserSettingsViewController {
         }.compactMap {
             self.session
         }.then(on: bgq) {
-            self.account!.addBioPin(session: $0)
+            self.account.addBioPin(session: $0)
         }.ensure {
             self.stopAnimating()
         }.done {
@@ -316,7 +316,7 @@ extension UserSettingsViewController {
 
     private func disableBioAuth() {
         onAuthRemoval { [weak self] in
-            self?.account?.removeBioKeychainData()
+            self?.account.removeBioKeychainData()
             self?.viewModel.load()
         }
     }
@@ -346,8 +346,8 @@ extension UserSettingsViewController {
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_reset", comment: ""), style: .destructive) { _ in
             removeBioKeychainData()
-            try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.account!.keychain)
-            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.account!.keychain)
+            try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.account.keychain)
+            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.account.keychain)
             self.navigationController?.popViewController(animated: true)
         })
         DispatchQueue.main.async {

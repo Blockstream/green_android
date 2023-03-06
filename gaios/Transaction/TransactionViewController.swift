@@ -22,7 +22,7 @@ class TransactionViewController: UIViewController {
     var transaction: Transaction!
 
     var isWatchonly: Bool {
-        AccountsRepository.shared.current?.isWatchonly ?? false
+        WalletManager.current?.account.isWatchonly ?? false
     }
 
     var viewInExplorerPreference: Bool {

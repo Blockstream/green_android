@@ -559,13 +559,12 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {
-            if AccountsRepository.shared.current?.isHW ?? false {
+            let account = self.viewModel.wm?.account
+            if account?.isHW ?? false {
                 BLEManager.shared.dispose()
             }
             DispatchQueue.main.async {
-                if let account = AccountsRepository.shared.current {
-                    WalletsRepository.shared.delete(for: account.id)
-                }
+                WalletsRepository.shared.delete(for: account?.id ?? "")
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)
                 let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
                 UIApplication.shared.keyWindow?.rootViewController = nav
@@ -708,7 +707,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
     // accounts drawer: select another account
     func didSelectAccount(account: Account) {
         // don't switch if same account selected
-        if account.id == AccountsRepository.shared.current?.id ?? "" {
+        if account.id == viewModel.wm?.account.id ?? "" {
             return
         }
         AccountNavigator.goLogin(account: account)

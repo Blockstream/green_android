@@ -57,7 +57,7 @@ class TransactionFeeCell: UITableViewCell {
                 lblFiat.attributedText = Common.obfuscate(color: color, size: 10, length: 5)
             }
         }
-        let isWatchonly = AccountsRepository.shared.current?.isWatchonly ?? false
+        let isWatchonly = WalletManager.current?.account.isWatchonly ?? false
         let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(subaccount(from: transaction)?.session?.isResetActive ?? false)
         feeBtnView.isHidden = !showBumpFee
     }

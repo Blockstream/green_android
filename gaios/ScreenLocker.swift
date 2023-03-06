@@ -93,11 +93,10 @@ class ScreenLocker {
         WalletsRepository.shared.wallets.forEach { (id, wm) in
             if let settings = wm.prominentSession?.settings,
                Int(countdown) >= settings.altimeout * 60 {
-                WalletsRepository.shared.delete(for: id)
-
-                if id == AccountsRepository.shared.current?.id ?? "" {
+                if id == wm.account.id {
                     self.isScreenLockLocked = true
                 }
+                WalletsRepository.shared.delete(for: id)
             }
         }
     }

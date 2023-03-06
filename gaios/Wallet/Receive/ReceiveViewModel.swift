@@ -45,7 +45,7 @@ class ReceiveViewModel {
     }
 
     func validateHw() -> Promise<Bool> {
-        let hw: HWProtocol = AccountsRepository.shared.current?.isLedger ?? false ? Ledger.shared : Jade.shared
+        let hw: HWProtocol = wm.account.isLedger ?? false ? Ledger.shared : Jade.shared
         let chain = account.gdkNetwork.chain
         guard let addr = address else {
             return Promise() { $0.reject(GaError.GenericError()) }

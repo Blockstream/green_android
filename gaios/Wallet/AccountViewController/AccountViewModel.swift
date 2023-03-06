@@ -22,7 +22,7 @@ class AccountViewModel {
     }
 
     var watchOnly: Bool {
-        AccountsRepository.shared.current?.isWatchonly ?? false
+        wm.account.isWatchonly ?? false
     }
 
     var accountCellModels: [AccountCellModel] {
@@ -31,7 +31,7 @@ class AccountViewModel {
         }
     }
     var addingCellModels: [AddingCellModel] {
-        let watchOnly = AccountsRepository.shared.current?.isWatchonly ?? false
+        let watchOnly = wm.account.isWatchonly ?? false
         let enabled2fa = account.session?.twoFactorConfig?.anyEnabled ?? false
         if account.type == .standard && !enabled2fa && !watchOnly {
             return [AddingCellModel()]

@@ -94,7 +94,7 @@ class SecuritySelectViewModel {
     }
 
     func registerSession(session: SessionManager) -> Promise<Void> {
-        let isHW = AccountsRepository.shared.current?.isHW ?? false
+        let isHW = wm.account.isHW ?? false
         if isHW {
             if session.gdkNetwork.liquid && session.gdkNetwork.electrum {
                 return Promise() { seal in seal.reject(GaError.GenericError("Liquid singlesig not available"))}

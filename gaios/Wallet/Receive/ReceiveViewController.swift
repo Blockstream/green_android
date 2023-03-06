@@ -39,8 +39,8 @@ class ReceiveViewController: UIViewController {
 
         setContent()
         setStyle()
-        let userAccount = AccountsRepository.shared.current
-        btnVerify.isHidden = !(userAccount?.isHW == true && userAccount?.isLedger == false)
+        let userAccount = viewModel.wm.account
+        btnVerify.isHidden = !(userAccount.isHW == true && userAccount.isLedger == false)
         btnEdit.isHidden = true
         let helpBtn = UIButton(type: .system)
         helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)

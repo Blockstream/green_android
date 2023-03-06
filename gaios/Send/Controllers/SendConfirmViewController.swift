@@ -36,7 +36,7 @@ class SendConfirmViewController: KeyboardViewController {
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: AccountsRepository.shared.current?.networkName)
+        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: WalletManager.current?.account.networkName)
 
         AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
     }
@@ -77,7 +77,7 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     func send() {
-        let account = AccountsRepository.shared.current
+        let account = WalletManager.current?.account
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             sliderView.isUserInteractionEnabled = false
