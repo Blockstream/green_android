@@ -2,8 +2,8 @@ import Foundation
 
 class AccountsRepository {
 
-    let attrAccount = "AccountsRepository_Account"
-    let attrService = "AccountsRepository_Service"
+    let attrAccount = "AccountsManager_Account"
+    let attrService = "AccountsManager_Service"
 
     static let shared = AccountsRepository()
     let storage: KeychainStorage

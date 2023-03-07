@@ -1,10 +1,10 @@
 import Foundation
 
 class KeychainStorage {
-    
+
     let attrAccount: String
     let attrService: String
-    
+
     init(account: String, service: String) {
         attrAccount = account
         attrService = service
