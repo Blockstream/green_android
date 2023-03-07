@@ -152,6 +152,12 @@ class WalletViewController: UIViewController {
         let leftItem: UIBarButtonItem = UIBarButtonItem(customView: drawerItem)
         navigationItem.leftBarButtonItem = leftItem
 
+        let desiredWidth = 135.0
+        let desiredHeight = 35.0
+        let widthConstraint = NSLayoutConstraint(item: drawerItem, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desiredWidth)
+        let heightConstraint = NSLayoutConstraint(item: drawerItem, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desiredHeight)
+        drawerItem.addConstraints([widthConstraint, heightConstraint])
+
         // setup right menu bar: settings
         let settingsBtn = UIButton(type: .system)
         settingsBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
