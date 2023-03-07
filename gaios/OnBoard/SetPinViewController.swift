@@ -81,6 +81,7 @@ class SetPinViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        pinCode = ""
         cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in keyButton!.enumerated() {
@@ -124,6 +125,7 @@ class SetPinViewController: UIViewController {
             nextSetEnabled(true)
         } else {
             DropAlert().error(message: NSLocalizedString("id_pins_do_not_match_please_try", comment: ""))
+            navigationController?.popViewController(animated: true)
         }
 
     }
