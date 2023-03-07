@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+
+## [4.0.0-beta4] - 2023-03-07
+
+### Added
+
+- Add troubleshooting links in Jade onboarding
+- Uncheck "Remember device" option if user deletes a wallet from the list
+
+### Fixed
+
+- Fix Jade login with bip39 passphrases
+- Fix Trezor signing to recognize change address when sending
+
 ## [4.0.0-beta3] - 2023-02-14
 
 ### Changed
