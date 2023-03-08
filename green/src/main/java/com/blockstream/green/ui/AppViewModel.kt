@@ -21,7 +21,6 @@ import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.nameCleanup
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
-import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
@@ -42,7 +41,7 @@ open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, Lif
     val banner = MutableLiveData<Banner>()
     val closedBanners = mutableListOf<Banner>()
 
-    val onDeviceInteractionEvent = MutableLiveData<ConsumableEvent<Triple<Device, Completable?, String?>>>()
+    val onDeviceInteractionEvent = MutableLiveData<ConsumableEvent<Triple<Device, CompletableDeferred<Boolean>?, String?>>>()
 
     var requestPinMatrixEmitter: CompletableDeferred<String>? = null
     var requestPinPassphraseEmitter: CompletableDeferred<String>? = null
@@ -58,7 +57,7 @@ open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, Lif
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
-    override fun interactionRequest(hw: HWWallet?, completable: Completable?, text: String?) {
+    override fun interactionRequest(hw: HWWallet?, completable: CompletableDeferred<Boolean>?, text: String?) {
         hw?.let {
             onDeviceInteractionEvent.postValue(ConsumableEvent(
                 Triple(it.device, completable, text)

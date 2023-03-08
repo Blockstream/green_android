@@ -74,7 +74,7 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
             }
 
             // Check if multisig networks are available in this session
-            if (!isAmp && ((isBitcoin && session.bitcoinMultisig != null) || (!isBitcoin && session.bitcoinMultisig != null))) {
+            if (!isAmp && ((isBitcoin && session.bitcoinMultisig != null) || (!isBitcoin && session.liquidMultisig != null))) {
                 list += AccountTypeListItem(AccountType.STANDARD)
 
                 if (showAdvanced) {

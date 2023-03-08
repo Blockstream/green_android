@@ -36,7 +36,7 @@ import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenToolbar
-import io.reactivex.rxjava3.core.Completable
+import kotlinx.coroutines.CompletableDeferred
 import mu.KLogging
 import javax.inject.Inject
 
@@ -223,7 +223,7 @@ abstract class AppFragment<T : ViewDataBinding>(
         findNavController().popBackStack()
     }
 
-    internal fun setupDeviceInteractionEvent(onDeviceInteractionEvent: MutableLiveData<ConsumableEvent<Triple<Device, Completable?, String?>>>) {
+    internal fun setupDeviceInteractionEvent(onDeviceInteractionEvent: MutableLiveData<ConsumableEvent<Triple<Device, CompletableDeferred<Boolean>?, String?>>>) {
         onDeviceInteractionEvent.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandledOrReturnNull()?.let {
                 DeviceInteractionRequestBottomSheetDialogFragment(device = it.first, completable = it.second, text = it.third).also {

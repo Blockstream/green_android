@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.rxjava3.subjects.CompletableSubject;
+import kotlinx.coroutines.CompletableDeferred;
+import kotlinx.coroutines.CompletableDeferredKt;
 
 
 public class TrezorHWWallet extends HWWallet {
@@ -381,12 +383,12 @@ public class TrezorHWWallet extends HWWallet {
     private Message handleCommon(final HWWalletBridge parent, final Message m) {
         switch (m.getClass().getSimpleName()) {
         case "ButtonRequest":
-            CompletableSubject completable = CompletableSubject.create();
+            CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
             if(parent != null) {
                 parent.interactionRequest(this, completable, "id_check_device");
             }
             Message io = mTrezor.io(TrezorMessage.ButtonAck.newBuilder());
-            completable.onComplete();
+            completable.complete(true);
             return handleCommon(parent, io);
 
         case "PinMatrixRequest":

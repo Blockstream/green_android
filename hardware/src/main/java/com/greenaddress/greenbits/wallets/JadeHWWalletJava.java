@@ -44,6 +44,8 @@ import java.util.Map;
 import io.reactivex.Single;
 import io.reactivex.rxjava3.subjects.CompletableSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import kotlinx.coroutines.CompletableDeferred;
+import kotlinx.coroutines.CompletableDeferredKt;
 
 abstract public class JadeHWWalletJava extends HWWallet {
     private static final String TAG = "JadeHWWallet";
@@ -102,7 +104,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
         // JADE_STATE => READY  (device unlocked / ready to use)
         // anything else ( LOCKED | UNSAVED | UNINIT | TEMP) will need an authUser first to unlock
         if (state != JadeState.READY) {
-            CompletableSubject completable = CompletableSubject.create();
+            CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
 
             // JADE_STATE => TEMP no need for PIN entry
             if (hwLoginBridge != null && state != JadeState.TEMP) {
@@ -117,9 +119,9 @@ abstract public class JadeHWWalletJava extends HWWallet {
                 while (!this.jade.authUser(network)) {
                     Log.w(TAG, "Jade authentication failed");
                 }
-                completable.onComplete();
+                completable.complete(true);
             }catch (Exception e){
-                completable.onError(e);
+                completable.completeExceptionally(e);
                 throw e;
             }
         }

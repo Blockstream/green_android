@@ -81,7 +81,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         SendViewModel.provideFactory(
             viewModelFactory,
             args.wallet,
-            args.accountAsset ?: AccountAsset.fromAccount(session.activeAccount),
+            args.accountAsset,
             isSweep,
             args.address,
             bumpTransaction

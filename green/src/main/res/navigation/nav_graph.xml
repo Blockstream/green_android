@@ -548,9 +548,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="accountAsset"
-            android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.AccountAsset"
-            app:nullable="true" />
+            app:argType="com.blockstream.gdk.data.AccountAsset" />
         <action
             android:id="@+id/action_receiveFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
@@ -636,9 +634,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="accountAsset"
-            android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.AccountAsset"
-            app:nullable="true" />
+            app:argType="com.blockstream.gdk.data.AccountAsset" />
         <argument
             android:name="network"
             android:defaultValue="@null"

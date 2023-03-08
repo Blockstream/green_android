@@ -75,7 +75,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
             this,
             arguments,
             wallet = args.wallet,
-            initAccountAsset = args.accountAsset ?: AccountAsset.fromAccount(session.activeAccount)
+            initAccountAsset = args.accountAsset
         )
     }
 

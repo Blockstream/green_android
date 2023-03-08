@@ -153,7 +153,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
             it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
                 navigate(
                     WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
-                        wallet = wallet, address = bip21Uri
+                        wallet = wallet, address = bip21Uri, accountAsset = AccountAsset.fromAccount(session.activeAccount)
                     )
                 )
                 snackbar(R.string.id_address_was_filled_by_a_payment)
@@ -191,7 +191,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         binding.bottomNav.buttonReceive.setOnClickListener {
             navigate(
                 WalletOverviewFragmentDirections.actionWalletOverviewFragmentToReceiveFragment(
-                    wallet = viewModel.wallet
+                    wallet = viewModel.wallet, accountAsset = AccountAsset.fromAccount(session.activeAccount)
                 )
             )
         }
@@ -210,7 +210,8 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                     navigate(
                         WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
                             wallet = wallet,
-                            isSweep = true
+                            isSweep = true,
+                            accountAsset = AccountAsset.fromAccount(session.activeAccount)
                         )
                     )
                 }
@@ -239,7 +240,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 else -> {
                     navigate(
                         WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
-                            wallet = wallet
+                            wallet = wallet, accountAsset = AccountAsset.fromAccount(session.activeAccount)
                         )
                     )
                 }

@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.text.Spannable
 import android.text.Spanned
 import android.text.style.ClickableSpan
@@ -18,7 +19,6 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
-import androidx.core.text.inSpans
 import androidx.core.text.toSpanned
 import androidx.fragment.app.Fragment
 import com.blockstream.green.BuildConfig
@@ -100,7 +100,9 @@ fun copyToClipboard(label: String, content: String, context: Context, animateVie
 
 fun clearClipboard(context: Context) {
     (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
-        it.clearPrimaryClip()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            it.clearPrimaryClip()
+        }
     }
 }
 
