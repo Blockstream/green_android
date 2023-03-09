@@ -72,6 +72,12 @@ class HomeViewController: UIViewController {
 
     func showHardwareWallet(_ index: Int) {
         let account = AccountsRepository.shared.devices[index]
+
+//        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+//        if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
+//            navigationController?.pushViewController(vc, animated: true)
+//        }
+//        return
         AccountNavigator.goHWLogin(isJade: account.isJade)
     }
 
