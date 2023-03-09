@@ -88,6 +88,10 @@ class SessionManager {
             .compactMap { AnalyticsManager.shared.setupSession(session: self.session) } // Update analytics endpoint with session tor/proxy
     }
 
+    public func disconnect() {
+        session = GDKSession()
+    }
+
     private func connect(network: String, params: [String: Any]? = nil) throws {
         do {
             if notificationManager == nil {
@@ -542,5 +546,37 @@ class SessionManager {
             return GetAssetsResult.from(res) as? GetAssetsResult
         }
         return nil
+    }
+
+    func restore(credentials: Credentials? = nil, hw: HWDevice? = nil, forceJustRestored: Bool = false) -> Promise<Void> {
+        let existDatadir = existDatadir(credentials: credentials)
+        return Guarantee()
+            .then { self.login(credentials: credentials, hw: hw) }
+            .map {
+                // Avoid to restore existing wallets, unless HW
+                if let account = AccountsRepository.shared.find(xpubHashId: $0.xpubHashId),
+                   account.gdkNetwork == self.gdkNetwork && hw == nil && !forceJustRestored {
+                    throw LoginError.walletsJustRestored()
+                }
+            }
+            .then { self.discovery(credentials: credentials, hw: hw, removeDatadir: !existDatadir) }
+    }
+
+    func discovery(credentials: Credentials? = nil, hw: HWDevice? = nil, removeDatadir: Bool) -> Promise<Void> {
+        return Guarantee()
+            .then { _ in self.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
+            .compactMap { $0.filter({ $0.pointer == 0 }).first }
+            .then { !($0.bip44Discovered ?? false) ? self.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
+            .then { _ in self.subaccounts() }
+            .compactMap { subaccounts in
+                // Remove liquid account if not found
+                if subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty {
+                    if removeDatadir {
+                        self.disconnect()
+                        self.removeDatadir(credentials: credentials)
+                    }
+                    return
+                }
+            }.asVoid()
     }
 }

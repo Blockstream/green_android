@@ -114,18 +114,9 @@ class WalletManager {
             .compactMap { DecryptWithPinParams(pin: pin, pinData: pinData)}
             .then { mainSession.decryptWithPin($0) }
             .map { bip39passphrase.isNilOrEmpty ? $0 : Credentials(mnemonic: $0.mnemonic, bip39Passphrase: bip39passphrase) }
-            .then { when(fulfilled: Guarantee.value($0), !bip39passphrase.isNilOrEmpty && !mainSession.existDatadir(credentials: $0) ? self.restore($0) : Guarantee().asVoid()) }
-            .then { credentials, _ in self.login(credentials) }
-            .map { AccountsRepository.shared.current = self.account }
-    }
-
-    func loginWatchOnly(_ credentials: Credentials) -> Promise<Void> {
-        guard let mainSession = sessions[prominentNetwork.rawValue] else {
-            fatalError()
-        }
-        return mainSession.loginUser(credentials).asVoid()
-            .then { self.subaccounts() }.asVoid()
-            .compactMap { self.loadRegistry() }
+            .map { (self.account.xpubHashId == nil || ( mainSession.gdkNetwork.electrum && !mainSession.existDatadir(credentials: $0)), $0) }
+            .then { (discovery, cred) in discovery ? self.restore(cred).map { cred } : Promise.value(cred) }
+            .then { self.login($0) }
             .map { AccountsRepository.shared.current = self.account }
     }
 
@@ -144,16 +135,11 @@ class WalletManager {
     func login(_ credentials: Credentials) -> Promise<Void> {
         self.failureSessions = [:]
         return when(guarantees: self.sessions.values
-            .filter { !$0.logged }
+            .filter { !$0.logged && !($0.gdkNetwork.electrum && !$0.existDatadir(credentials: credentials))}
             .map { session in
-                if session.gdkNetwork.electrum && credentials.bip39Passphrase == nil && !session.existDatadir(credentials: credentials) {
-                    return Guarantee().asVoid()
-                }
-                return session.loginUser(credentials)
-                    .map { data in
-                        self.account.isEphemeral = !credentials.bip39Passphrase.isNilOrEmpty
-                        self.account.xpubHashId = data.xpubHashId
-                    }.recover { err in
+                session.loginUser(credentials)
+                    .map { self.account.xpubHashId = $0.xpubHashId }
+                    .recover { err in
                         switch err {
                         case TwoFactorCallError.failure(_):
                             break
@@ -162,10 +148,10 @@ class WalletManager {
                         }
                     }.asVoid()
             })
-            .map { if self.activeSessions.count == 0 { throw LoginError.failed() } }
-            .then { self.subaccounts() }.asVoid()
-            .compactMap { self.loadRegistry() }
-            .map { AccountsRepository.shared.current = self.account }
+        .map { if self.activeSessions.count == 0 { throw LoginError.failed() } }
+        .then { self.subaccounts() }.asVoid()
+        .compactMap { self.loadRegistry() }
+        .map { AccountsRepository.shared.current = self.account }
     }
 
     func create(_ credentials: Credentials) -> Promise<Void> {
@@ -181,44 +167,12 @@ class WalletManager {
 
     func restore(_ credentials: Credentials? = nil, hw: HWDevice? = nil, forceJustRestored: Bool = false) -> Promise<Void> {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        let btcSession = self.sessions[btcNetwork.rawValue]!
-        // Restore btc account with subaccounts discovery
-        let btcRestore = Guarantee()
-            .then { btcSession.login(credentials: credentials, hw: hw) }
-            .compactMap {
-                // Avoid to restore existing wallets, unless HW
-                if let account = AccountsRepository.shared.find(xpubHashId: $0.xpubHashId),
-                   account.gdkNetwork?.mainnet == btcNetwork.gdkNetwork?.mainnet && hw == nil && !forceJustRestored {
-                    throw LoginError.walletsJustRestored()
-                }
-            }
-            .then { _ in btcSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
-            .compactMap { $0.filter({ $0.pointer == 0 }).first }
-            .then { credentials?.bip39Passphrase.isNilOrEmpty ?? true && !($0.bip44Discovered ?? false) ? btcSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
-        // Liquid singlesig not yet available on HW mode
-        guard let credentials = credentials else {
-            return btcRestore
-        }
+        let btcSession = self.sessions[btcNetwork.rawValue]
+        let btcPromise = btcSession?.restore(credentials: credentials, hw: hw, forceJustRestored: forceJustRestored)
         let liquidNetwork: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
-        guard let liquidSession = self.sessions[liquidNetwork.rawValue] else {
-            return btcRestore
-        }
-        // Restore liquid account with subaccounts discovery
-        let liquidRestore = Guarantee()
-            .then { liquidSession.login(credentials: credentials, hw: hw) }
-            .then { _ in liquidSession.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
-            .compactMap { $0.filter({ $0.pointer == 0 }).first }
-            .then { !($0.bip44Discovered ?? false) ? liquidSession.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
-            .then { _ in liquidSession.subaccounts() }
-            .compactMap { subaccounts in
-                // Remove liquid account if not found
-                if subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty {
-                    liquidSession.removeDatadir(credentials: credentials)
-                    liquidSession.session?.logged = false
-                    return
-                }
-            }.asVoid()
-        return when(fulfilled: [btcRestore, liquidRestore])
+        let liquidSession = self.sessions[liquidNetwork.rawValue]
+        let liquidPromise = hw == nil ? liquidSession?.restore(credentials: credentials, hw: hw, forceJustRestored: forceJustRestored) : nil
+        return when(fulfilled: [btcPromise ?? Promise().asVoid(), liquidPromise ?? Promise().asVoid()])
             .map { AccountsRepository.shared.current = self.account }
     }
 
