@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "Для отправки всей суммы требуется один получатель";
 "id_send_and_receive_liquidbased" = "Отправляйте и получайте Managed Assets на основе Liquid";
 "id_send_to" = "Отправить";
-"id_sending" = "ОТПРАВКА";
+"id_sending" = "Sending";
 "id_sending_request" = "Отправка запроса...";
 "id_sensitive_information" = "Конфиденциальная информация";
 "id_sent" = "Отправлено";

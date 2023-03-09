@@ -7,7 +7,7 @@ enum SharePrefs: Int, CaseIterable {
     var name: String {
         switch self {
         case .address:
-            return "id_address".localized
+            return "id_share_address".localized
         case .qr:
             return "id_qr_code".localized
         }

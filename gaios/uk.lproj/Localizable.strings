@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "Для відправлення всієї суми потрібен єдиний отримувач";
 "id_send_and_receive_liquidbased" = "Надсилайте та отримуйте Managed Assets на основі Liquid";
 "id_send_to" = "Надіслати";
-"id_sending" = "ВІДПРАВЛЕННЯ";
+"id_sending" = "Sending";
 "id_sending_request" = "Відправка запиту...";
 "id_sensitive_information" = "Конфіденційна інформація";
 "id_sent" = "Відправлено";

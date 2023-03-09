@@ -73,6 +73,7 @@ class ReceiveViewController: UIViewController {
 
     func setContent() {
         title = "id_receive".localized
+        btnCopy.setTitle("id_copy_address".localized, for: .normal)
         btnShare.setTitle("id_share_address".localized, for: .normal)
         btnEdit.setTitle("id_edit".localized, for: .normal)
         btnOptions.setTitle("id_more_options".localized, for: .normal)

@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "全て送信するには単一の受取先が必要です";
 "id_send_and_receive_liquidbased" = "Liquid上のマネージド・アセットを送受信する";
 "id_send_to" = "送り先";
-"id_sending" = "送金中…";
+"id_sending" = "Sending";
 "id_sending_request" = "要請中…";
 "id_sensitive_information" = "センシティブな情報";
 "id_sent" = "送信済み";

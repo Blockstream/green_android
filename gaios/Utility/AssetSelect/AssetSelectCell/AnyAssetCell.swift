@@ -16,6 +16,6 @@ class AnyAssetCell: UITableViewCell {
     }
 
     func configure() {
-        self.lblAny.text = "Receive any Liquid Asset"
+        self.lblAny.text = "id_receive_any_liquid_asset".localized
     }
 }

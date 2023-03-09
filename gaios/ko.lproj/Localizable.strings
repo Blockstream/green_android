@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "전부 보내기는 한 명에게만 가능합니다";
 "id_send_and_receive_liquidbased" = "Liquid 기반 Managed Assets 주고 받기";
 "id_send_to" = "수취인";
-"id_sending" = "보내는 중";
+"id_sending" = "Sending";
 "id_sending_request" = "요청 보내는 중...";
 "id_sensitive_information" = "민감 정보";
 "id_sent" = "전송 완료";

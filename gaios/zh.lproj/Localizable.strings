@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "全部发送需要一个单一的接收人";
 "id_send_and_receive_liquidbased" = "发送和接收基于液态网络的托管资产";
 "id_send_to" = "发送至";
-"id_sending" = "正在发送";
+"id_sending" = "Sending";
 "id_sending_request" = "正在发送请求...";
 "id_sensitive_information" = "敏感信息";
 "id_sent" = "已发送";

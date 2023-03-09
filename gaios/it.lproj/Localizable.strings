@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "Invia Tutti i Fondi richiede un unico destinatario";
 "id_send_and_receive_liquidbased" = "Invia e ricevi Managed Asset Liquid based";
 "id_send_to" = "Invia a";
-"id_sending" = "INVIO IN CORSO";
+"id_sending" = "Sending";
 "id_sending_request" = "Invio richiesta in corso…";
 "id_sensitive_information" = "Informazioni sensibili";
 "id_sent" = "Inviato";

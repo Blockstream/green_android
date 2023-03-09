@@ -35,7 +35,7 @@ class ReceiveViewModel {
                 self?.address = addr
                 self?.reload?()
             }.catch { [weak self] _ in
-                self?.error?("id_connection_failed")
+                self?.error?("id_connection_failed".localized)
             }
     }
 

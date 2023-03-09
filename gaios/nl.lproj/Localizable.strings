@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "Om alles te verzenden moet er slechts één ontvanger zijn";
 "id_send_and_receive_liquidbased" = "Beheerde assets op Liquid verzenden en ontvangen";
 "id_send_to" = "Verzenden naar";
-"id_sending" = "VERZENDEN";
+"id_sending" = "Sending";
 "id_sending_request" = "Verzoek verzenden…";
 "id_sensitive_information" = "Gevoelige informatie";
 "id_sent" = "Verzonden";

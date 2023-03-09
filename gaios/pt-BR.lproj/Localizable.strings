@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "\"Enviar tudo\" só permite o envio para um destinatário";
 "id_send_and_receive_liquidbased" = "Enviar e receber ativos gerenciados pela Liquid";
 "id_send_to" = "Enviar para";
-"id_sending" = "ENVIANDO";
+"id_sending" = "Sending";
 "id_sending_request" = "Enviando solicitação…";
 "id_sensitive_information" = "Informação sensível";
 "id_sent" = "Enviada";

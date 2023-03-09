@@ -927,7 +927,7 @@
 "id_send_all_requires_a_single" = "Odeslat vše vyžaduje jednoho příjemce";
 "id_send_and_receive_liquidbased" = "Odesílejte a přijímejte spravovaná Liquid aktiva";
 "id_send_to" = "Odeslat na";
-"id_sending" = "ODESÍLÁNÍ";
+"id_sending" = "Sending";
 "id_sending_request" = "Odesílá se žádost…";
 "id_sensitive_information" = "Citlivé informace";
 "id_sent" = "Odesláno";
