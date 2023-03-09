@@ -40,7 +40,7 @@ class HomeViewController: UIViewController {
         tableView.register(UINib(nibName: "WalletListEmptyCell", bundle: nil), forCellReuseIdentifier: "WalletListEmptyCell")
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .home, network: nil)
+        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
 
         AnalyticsManager.shared.delegate = self
         AnalyticsManager.shared.recordView(.home)
@@ -386,7 +386,7 @@ extension HomeViewController {
 extension HomeViewController: AnalyticsManagerDelegate {
     func remoteConfigIsReady() {
         DispatchQueue.main.async {
-            self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .home, network: nil)
+            self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
             self.tableView.reloadData()
         }
     }

@@ -84,7 +84,7 @@ class LoginViewController: UIViewController {
         setStyle()
 
         alertCard.isHidden = true
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .login, network: account.networkName)
+        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [NetworkSecurityCase(rawValue: account.networkName) ?? .bitcoinSS]).first
         if remoteAlert != nil {
             alertCard.isHidden = false
             alertTitle.text = remoteAlert?.title

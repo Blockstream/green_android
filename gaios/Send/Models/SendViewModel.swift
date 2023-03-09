@@ -10,6 +10,7 @@ class SendViewModel {
     var transactionPriority: TransactionPriority = .High
     var inputType: InputType
     var customFee: UInt64 = 1000
+    var remoteAlert: RemoteAlert?
 
     private var session: SessionManager { account.session! }
     private var isLiquid: Bool { session.gdkNetwork.liquid }
@@ -22,6 +23,7 @@ class SendViewModel {
         self.inputType = inputType
         self.transaction = transaction
         self.transactionPriority = inputType == .bumpFee ? .High : defaultTransactionPriority()
+        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .send, networks: wm?.activeNetworks ?? []).first
     }
 
     var recipient: RecipientCellModel? {

@@ -75,7 +75,7 @@ class WalletViewModel {
     var analyticsDone = false
 
     init() {
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .walletOverview, network: wm?.account.networkName)
+        remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
     }
 
     func loadSubaccounts(_ newAccount: WalletItem? = nil) {

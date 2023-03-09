@@ -8,11 +8,13 @@ class SendConfirmViewModel {
     var tx: Transaction
     var addresseeCellModels: [AddresseeCellModel]
     var session: SessionManager { account.session! }
+    var remoteAlert: RemoteAlert?
 
     init(account: WalletItem, tx: Transaction) {
         self.account = account
         self.tx = tx
         self.addresseeCellModels = [AddresseeCellModel(tx: tx, index: 0)]
+        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .sendConfirm, networks: wm?.activeNetworks ?? []).first
     }
 
     func send() -> Promise<Void> {

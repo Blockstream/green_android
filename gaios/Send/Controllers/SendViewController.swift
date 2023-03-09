@@ -21,7 +21,6 @@ class SendViewController: KeyboardViewController {
     var addressInputType: AnalyticsManager.AddressInputType = .paste
 
     private let activityIndicator = UIActivityIndicatorView(style: .white)
-    private var remoteAlert: RemoteAlert?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +38,6 @@ class SendViewController: KeyboardViewController {
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
-        remoteAlert = RemoteAlertManager.shared.getAlert(screen: .send, network: AccountsRepository.shared.current?.networkName)
 
         AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
     }
@@ -139,7 +137,7 @@ class SendViewController: KeyboardViewController {
     }
 
     func remoteAlertDismiss() {
-        remoteAlert = nil
+        viewModel.remoteAlert = nil
         reloadSections([SendSection.remoteAlerts], animated: true)
     }
 
@@ -158,7 +156,7 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch section {
         case SendSection.remoteAlerts.rawValue:
-            return self.remoteAlert != nil ? 1 : 0
+            return viewModel.remoteAlert != nil ? 1 : 0
         case SendSection.recipient.rawValue:
             return viewModel.recipientCellModels.count
         case SendSection.addRecipient.rawValue:
@@ -174,7 +172,7 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch indexPath.section {
         case SendSection.remoteAlerts.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = viewModel.remoteAlert {
                 cell.configure(AlertCardCellModel(type: .remoteAlert(remoteAlert)),
                                    onLeft: nil,
                                    onRight: (remoteAlert.link ?? "" ).isEmpty ? nil : { () in

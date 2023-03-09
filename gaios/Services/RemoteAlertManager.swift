@@ -30,39 +30,17 @@ class RemoteAlertManager {
 
     static let shared = RemoteAlertManager()
 
-    var remoteAlerts: [RemoteAlert] {
+    var remoteAlerts: [RemoteAlert] = {
         if let banners: [Any] = AnalyticsManager.shared.getRemoteConfigValue(key: Constants.countlyRemoteConfigBanners) as? [Any] {
             return RemoteAlert.getList(banners)
         }
         return []
-    }
+    }()
 
-    func getAlert(screen: AnalyticsViewName, network: String?) -> RemoteAlert? {
-
-        var alerts: [RemoteAlert] = []
-        remoteAlerts.forEach { item in
-            if let screens = item.screens {
-                if screens.contains("*") || screens.contains(screen.rawValue) {
-                    alerts.append(item)
-                }
-            }
-        }
-        if let network = network {
-            alerts = alerts.filter { item in
-                if let networks = item.networks {
-                    return networks.contains( network )
-                }
-                return false
-            }
-        } else {
-            alerts = alerts.filter { item in
-                if item.networks?.isEmpty ?? true {
-                    return true
-                }
-                return false
-            }
-        }
-        alerts.shuffle()
-        return alerts.first
+    func alerts(screen: AnalyticsViewName, networks: [NetworkSecurityCase]) -> [RemoteAlert] {
+        let networkNames = networks.map { $0.network }
+        return remoteAlerts
+            .filter { $0.screens?.contains("*") ?? false || $0.screens?.contains(screen.rawValue) ?? false }
+            .filter { networks.isEmpty || !($0.networks?.filter { networkNames.contains($0) }.isEmpty ?? true) }
     }
 }

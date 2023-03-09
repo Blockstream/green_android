@@ -21,7 +21,6 @@ class SendConfirmViewController: KeyboardViewController {
     private var updateToken: NSObjectProtocol?
     var inputType: InputType = .transaction // for analytics
     var addressInputType: AnalyticsManager.AddressInputType = .paste // for analytics
-    private var remoteAlert: RemoteAlert?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,8 +34,6 @@ class SendConfirmViewController: KeyboardViewController {
         sliderView.accessibilityIdentifier = AccessibilityIdentifiers.SendConfirmScreen.viewSlider
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
-
-        self.remoteAlert = RemoteAlertManager.shared.getAlert(screen: .sendConfirm, network: WalletManager.current?.account.networkName)
 
         AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
     }
@@ -56,7 +53,7 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     func remoteAlertDismiss() {
-        remoteAlert = nil
+        viewModel.remoteAlert = nil
         reloadSections([SendConfirmSection.remoteAlerts], animated: true)
     }
 
@@ -187,7 +184,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
 
         switch section {
         case SendConfirmSection.remoteAlerts.rawValue:
-            return self.remoteAlert != nil ? 1 : 0
+            return viewModel.remoteAlert != nil ? 1 : 0
         case SendConfirmSection.addressee.rawValue:
             return viewModel.tx.addressees.count
         case SendConfirmSection.fee.rawValue:
@@ -205,7 +202,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
 
         switch indexPath.section {
         case SendConfirmSection.remoteAlerts.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = self.remoteAlert {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell, let remoteAlert = viewModel.remoteAlert {
                 cell.configure(AlertCardCellModel(type: .remoteAlert(remoteAlert)),
                                    onLeft: nil,
                                    onRight: (remoteAlert.link ?? "" ).isEmpty ? nil : { () in
