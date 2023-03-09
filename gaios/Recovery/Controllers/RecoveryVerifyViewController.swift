@@ -107,35 +107,20 @@ class RecoveryVerifyViewController: UIViewController {
 
     func next() {
         if OnBoardInfoViewController.flowType == .onboarding {
-            createWallet()
+            AnalyticsManager.shared.createWallet(account: AccountsRepository.shared.current)
+            let testnet = LandingViewController.chainType == .testnet
+            let mnemonic = self.mnemonic.joined(separator: " ")
+            let credentials = Credentials(mnemonic: mnemonic, password: "")
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+                vc.viewModel = SetPinViewModel(credentials: credentials, testnet: testnet)
+                vc.pinFlow = .create
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         } else {
             self.navigationController?.popToViewController(ofClass: AccountCreateRecoveryKeyViewController.self, animated: false)
             OnBoardInfoViewController.delegate?.didNewRecoveryPhrase(self.mnemonic.joined(separator: " "))
         }
-    }
-
-    func createWallet() {
-        let testnet = LandingViewController.chainType == .testnet
-        let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
-        let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        let account = Account(name: name, network: mainNetwork.network)
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
-        let mnemonic = self.mnemonic.joined(separator: " ")
-        let credentials = Credentials(mnemonic: mnemonic, password: "")
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee()
-            .compactMap { self.startLoader(message: NSLocalizedString("id_creating_wallet", comment: "")) }
-            .then(on: bgq) { wm.create(credentials) }
-            .then(on: bgq) { wm.login(credentials) }
-            .ensure { self.stopLoader() }
-            .done {
-                AnalyticsManager.shared.createWallet(account: AccountsRepository.shared.current)
-                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
-                    vc.pinFlow = .onboard
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            }.catch { err in self.showError(err) }
     }
 
     func updatePageControl() {

@@ -272,26 +272,19 @@ class SessionManager {
     }
 
     func loginUser(_ params: Credentials) -> Promise<LoginUserResult> {
-        let initialized = gdkNetwork.electrum && existDatadir(credentials: params)
+        let discovery = gdkNetwork.electrum && !existDatadir(credentials: params)
         return connect()
             .then { self.wrapper(fun: self.session?.loginUserSW, params: params) }
             .compactMap { $0 }
-            .then { res in
-                self.subaccounts(!initialized)
-                    .then { _ in self.onLogin(res) }
-                    .map { res }
-            }
+            .then { res in self.onLogin(res).compactMap { res } }
+            .then { res in discovery ? self.discovery(credentials: params, removeDatadir: false).compactMap { res } : Promise.value(res) }
     }
 
     func loginUser(_ params: HWDevice) -> Promise<LoginUserResult> {
         return connect()
             .then { self.wrapper(fun: self.session?.loginUserHW, params: params) }
             .compactMap { $0 }
-            .then { res in
-                self.subaccounts()
-                    .then { _ in self.onLogin(res) }
-                    .map { res }
-            }
+            .then { res in self.onLogin(res).compactMap { res } }
     }
 
     func login(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<LoginUserResult> {

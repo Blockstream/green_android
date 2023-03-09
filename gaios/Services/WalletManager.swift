@@ -135,7 +135,7 @@ class WalletManager {
     func login(_ credentials: Credentials) -> Promise<Void> {
         self.failureSessions = [:]
         return when(guarantees: self.sessions.values
-            .filter { !$0.logged && !($0.gdkNetwork.electrum && !$0.existDatadir(credentials: credentials))}
+            .filter { !$0.logged && ($0 === prominentSession || !($0.gdkNetwork.electrum && !$0.existDatadir(credentials: credentials))) }
             .map { session in
                 session.loginUser(credentials)
                     .map { self.account.xpubHashId = $0.xpubHashId }

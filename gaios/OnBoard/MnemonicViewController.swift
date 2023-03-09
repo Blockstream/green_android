@@ -217,36 +217,39 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }
     }
 
-    @IBAction func doneButtonClicked(_ sender: Any) {
-        let testnet = LandingViewController.chainType == .testnet
-        firstly { self.startLoader(message: self.mnemonicActionType == .recoverWallet ? "id_restoring_your_wallet".localized : ""); return Guarantee() }
+    func addSubaccount() {
+        Guarantee()
             .then { self.getMnemonicString() }
-            .then { (mnemonic: String, password: String) -> Promise<Void> in
-                switch self.mnemonicActionType {
-                case .recoverWallet:
-                    let credentials = Credentials(mnemonic: mnemonic, password: password)
-                    return self.viewModel.restore(credentials: credentials, testnet: testnet, xpubHashId: self.xpubHashId)
-                case .addSubaccount:
-                    return self.viewModel.validateMnemonic(mnemonic)
+            .then { self.viewModel.validateMnemonic($0.0) }
+            .done {
+                self.dismiss(animated: true)
+                let phrase = self.mnemonic.joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                self.delegate?.didExistingRecoveryPhrase(phrase)
+            }.catch { err in self.showLoginError(err) }
+    }
+
+    func restoreWallet() {
+        let testnet = LandingViewController.chainType == .testnet
+        Guarantee()
+            .then { self.getMnemonicString() }
+            .compactMap { Credentials(mnemonic: $0.0, password: $0.1) }
+            .done { credentials in
+                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+                    vc.pinFlow = .restore
+                    vc.viewModel = SetPinViewModel(credentials: credentials, testnet: testnet, xpubHashId: self.xpubHashId)
+                    self.navigationController?.pushViewController(vc, animated: true)
                 }
-            }.ensure {
-                self.stopLoader()
-            }.done {
-                switch self.mnemonicActionType {
-                case .recoverWallet:
-                    // recovery of existing wallet
-                    let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                    if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
-                        vc.pinFlow = .onboard
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    }
-                case .addSubaccount:
-                    self.dismiss(animated: true)
-                    self.delegate?.didExistingRecoveryPhrase(self.mnemonic.joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
-                }
-            }.catch { err in
-                self.showLoginError(err)
-            }
+            }.catch { err in self.showLoginError(err) }
+    }
+
+    @IBAction func doneButtonClicked(_ sender: Any) {
+        switch self.mnemonicActionType {
+        case .recoverWallet:
+            restoreWallet()
+        case .addSubaccount:
+            addSubaccount()
+        }
     }
 
     func checkTextfield(textField: UITextField) {

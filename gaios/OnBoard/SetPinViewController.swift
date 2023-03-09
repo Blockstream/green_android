@@ -7,7 +7,8 @@ enum ActionPin {
 }
 
 enum PinFlow {
-    case onboard
+    case create
+    case restore
     case settings
 }
 
@@ -22,10 +23,12 @@ class SetPinViewController: UIViewController {
     @IBOutlet var pinLabel: [UILabel]?
     @IBOutlet weak var btnNext: UIButton!
 
-    var pinFlow = PinFlow.onboard
     private var pinCodeToVerify = ""
     private var pinCode = ""
     private var actionPin = ActionPin.set
+
+    var pinFlow = PinFlow.create
+    var viewModel: SetPinViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,15 +46,10 @@ class SetPinViewController: UIViewController {
             switch self.pinFlow {
             case .settings:
                 AnalyticsManager.shared.recordView(.walletSettingsChangePIN, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
-            case .onboard:
-                switch LandingViewController.flowType {
-                case .add:
-                    AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow.strCreate))
-                case .restore:
-                    AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow.strRestore))
-                case .watchonly:
-                    break
-                }
+            case .create:
+                AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow.strCreate))
+            case .restore:
+                AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow.strRestore))
             }
         }
     }
@@ -170,7 +168,8 @@ class SetPinViewController: UIViewController {
             if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
                 vc.pinCodeToVerify = pinCode
                 vc.actionPin = .verify
-                vc.pinFlow = self.pinFlow
+                vc.pinFlow = pinFlow
+                vc.viewModel = viewModel
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .verify:
@@ -184,28 +183,32 @@ class SetPinViewController: UIViewController {
 
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
-        let session = WalletManager.current?.prominentSession
-        guard var account = AccountsRepository.shared.current,
-                let session = session else {
-            fatalError("Error: No account or session found")
-        }
         firstly {
             switch pinFlow {
             case .settings:
                 self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
-            case .onboard:
+            case .restore:
+                self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""))
+            case .create:
                 self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""))
             }
             return Guarantee() }
-        .then(on: bgq) { session.getCredentials(password: "") }
-        .then(on: bgq) { account.addPin(session: session, pin: pin, mnemonic: $0.mnemonic ?? "") }
+        .then(on: bgq) { _ -> Promise<Void> in
+            switch self.pinFlow {
+            case .settings:
+                return self.viewModel.setup(pin: pin)
+            case .restore:
+                return self.viewModel.restore(pin: pin)
+            case .create:
+                return self.viewModel.create(pin: pin)
+            }
+        }
         .ensure { self.stopLoader() }
         .done { _ in
-            account.attempts = 0
             switch self.pinFlow {
             case .settings:
                 self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
-            case .onboard:
+            case .create, .restore:
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 appDelegate?.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
             }
