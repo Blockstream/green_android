@@ -146,7 +146,7 @@ class WatchOnlyViewController: KeyboardViewController {
             networks = testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS]
             let cells = networks.map { DialogListCellModel(type: .list,
                                                            icon: nil,
-                                                           title: $0.chain) }
+                                                           title: $0.name()) }
             vc.viewModel = DialogListViewModel(title: "Select Network", type: .watchOnlyPrefs, items: cells)
             vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
