@@ -136,7 +136,6 @@ class RecipientCell: UITableViewCell {
         if model.isSendAll {
             btnSendAll.setStyle(.primary)
             amountTextField.text = ""
-            amountBox.alpha = 0.6
         } else {
             btnSendAll.setStyle(.outlinedGray)
             btnSendAll.isEnabled = true
@@ -145,9 +144,7 @@ class RecipientCell: UITableViewCell {
             btnSendAll.setStyle(.primaryDisabled)
         }
         amountFieldIsEnabled(!model.isSendAll)
-        btnConvert.isUserInteractionEnabled = !model.isSendAll && model.isBtc
         btnPasteAmount.isUserInteractionEnabled = !model.isSendAll && model.isBtc
-        btnCancelAmount.isUserInteractionEnabled = !model.isSendAll && model.isBtc
         btnConvert.isUserInteractionEnabled = model.isBtc
         btnConvert.alpha = model.isBtc ? 1.0 : 0.6
 
@@ -176,7 +173,7 @@ class RecipientCell: UITableViewCell {
 
     func amountFieldIsEnabled(_ value: Bool) {
         amountTextField.isUserInteractionEnabled = value
-        amountBox.alpha = value ? 1.0 : 0.6
+        amountTextField.alpha = value ? 1.0 : 0.6
     }
 
     // swiftlint:disable cyclomatic_complexity
@@ -290,6 +287,7 @@ class RecipientCell: UITableViewCell {
     }
 
     @IBAction func btnCancelAmount(_ sender: Any) {
+        if model?.isSendAll == true { model?.isSendAll.toggle() }
         model?.amount = nil
         reload()
         updateModel?(model)
