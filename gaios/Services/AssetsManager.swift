@@ -35,6 +35,10 @@ class AssetsManager {
     }
 
     func info(for key: String) -> AssetInfo {
+        let main = [AssetInfo.btc, AssetInfo.lbtc, AssetInfo.test, AssetInfo.ltest].filter { $0.assetId == key }.first
+        if let main = main {
+            return main
+        }
         if infos[key] == nil {
             getAsset(for: key)
         }
@@ -45,7 +49,7 @@ class AssetsManager {
     }
 
     func getImage(for key: String) -> UIImage? {
-        if key == "btc" {
+        if [AssetInfo.btcId, AssetInfo.testId].contains(key) {
             return UIImage(named: testnet ? "ntw_testnet" : "ntw_btc")
         }
         if icons[key] == nil {

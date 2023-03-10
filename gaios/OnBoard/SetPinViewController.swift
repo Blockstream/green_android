@@ -183,17 +183,16 @@ class SetPinViewController: UIViewController {
 
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            switch pinFlow {
-            case .settings:
-                self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
-            case .restore:
-                self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""))
-            case .create:
-                self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""))
-            }
-            return Guarantee() }
-        .then(on: bgq) { _ -> Promise<Void> in
+        switch pinFlow {
+        case .settings:
+            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
+        case .restore:
+            self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""))
+        case .create:
+            self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""))
+        }
+        Guarantee()
+        .then(on: bgq) { _  -> Promise<Void> in
             switch self.pinFlow {
             case .settings:
                 return self.viewModel.setup(pin: pin)
