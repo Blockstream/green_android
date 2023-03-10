@@ -541,11 +541,13 @@ class SessionManager {
         return nil
     }
 
-    func restore(credentials: Credentials? = nil, hw: HWDevice? = nil, forceJustRestored: Bool = false) -> Promise<Void> {
+    func restore(credentials: Credentials? = nil, hw: HWDevice? = nil, forceJustRestored: Bool = false) -> Promise<LoginUserResult> {
         let existDatadir = existDatadir(credentials: credentials)
+        var loginData: LoginUserResult?
         return Guarantee()
             .then { self.login(credentials: credentials, hw: hw) }
             .map {
+                loginData = $0
                 // Avoid to restore existing wallets, unless HW
                 if let account = AccountsRepository.shared.find(xpubHashId: $0.xpubHashId),
                    account.gdkNetwork == self.gdkNetwork && hw == nil && !forceJustRestored {
@@ -553,6 +555,7 @@ class SessionManager {
                 }
             }
             .then { self.discovery(credentials: credentials, hw: hw, removeDatadir: !existDatadir) }
+            .compactMap { loginData }
     }
 
     func discovery(credentials: Credentials? = nil, hw: HWDevice? = nil, removeDatadir: Bool) -> Promise<Void> {

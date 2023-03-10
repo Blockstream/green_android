@@ -161,6 +161,7 @@ class WalletManager {
             .then { btcSession.connect() }
             .then { btcSession.register(credentials: credentials) }
             .then { btcSession.loginUser(credentials) }
+            .map { self.account.xpubHashId = $0.xpubHashId }
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
             .map { AccountsRepository.shared.current = self.account }
     }
@@ -169,9 +170,10 @@ class WalletManager {
         let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
         let btcSession = self.sessions[btcNetwork.rawValue]
         let btcPromise = btcSession?.restore(credentials: credentials, hw: hw, forceJustRestored: forceJustRestored)
+            .map { self.account.xpubHashId = $0.xpubHashId }.asVoid()
         let liquidNetwork: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
         let liquidSession = self.sessions[liquidNetwork.rawValue]
-        let liquidPromise = hw == nil ? liquidSession?.restore(credentials: credentials, hw: hw, forceJustRestored: forceJustRestored) : nil
+        let liquidPromise = hw == nil ? liquidSession?.restore(credentials: credentials, hw: hw, forceJustRestored: forceJustRestored).asVoid() : nil
         return when(fulfilled: [btcPromise ?? Promise().asVoid(), liquidPromise ?? Promise().asVoid()])
             .map { AccountsRepository.shared.current = self.account }
     }
