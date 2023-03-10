@@ -218,11 +218,11 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                     }
                 }
             } else {
-                firstly { self.startLoader(message: "Creating new account"); return Guarantee() }
+                firstly { self.startLoader(message: ""); return Guarantee() }
                     .then { self.viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) }
                     .ensure { self.stopLoader() }
                     .done { wallet in
-                        DropAlert().success(message: "Account created")
+                        DropAlert().success(message: "id_new_account_created".localized)
                         self.navigationController?.popViewController(animated: true)
                         self.delegate?.didCreatedWallet(wallet)
                     }.catch { err in self.showError(err)}
@@ -245,11 +245,11 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         if AccountsRepository.shared.current?.isHW ?? false {
             showHWCheckDialog()
         }
-        firstly { self.startLoader(message: "Creating new account"); return Guarantee() }
+        firstly { self.startLoader(message: ""); return Guarantee() }
             .then { self.viewModel.create(policy: policy, asset: asset, params: params) }
             .ensure { self.stopLoader(); self.dialogJadeCheckViewController?.dismiss()}
             .done { wallet in
-                DropAlert().success(message: "Account created")
+                DropAlert().success(message: "id_new_account_created".localized)
                 self.navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
                 self.delegate?.didCreatedWallet(wallet)
             }.catch { err in self.showError(err)}
