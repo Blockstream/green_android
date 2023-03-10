@@ -32,7 +32,7 @@ class ValidateTask {
     }
 
     func execute() -> Promise<Transaction?> {
-        let bgq = DispatchQueue.global(qos: .background)
+        let bgq = DispatchQueue.global(qos: .userInteractive)
         return Promise<Transaction?> { seal in
             self.task!.notify(queue: bgq) {
                 guard !self.cancelme else { return seal.reject(PMKError.cancelled) }

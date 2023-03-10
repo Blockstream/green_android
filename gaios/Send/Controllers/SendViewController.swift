@@ -83,7 +83,10 @@ class SendViewController: KeyboardViewController {
     }
 
     func validateTransaction() {
-        viewModel.createTx().done { tx in
+        let queue = DispatchQueue.global(qos: .userInteractive)
+        Guarantee()
+        .then(on: queue) { self.viewModel.createTx() }
+        .done { tx in
             if let error = tx?.error, !error.isEmpty, !self.viewModel.inlineErrors.contains(error) {
                 self.dropError(NSLocalizedString(error, comment: ""))
             }
