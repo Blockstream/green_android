@@ -377,20 +377,14 @@ class GdkSession constructor(
         var spvMulti = false // Only available in Singlesig
 
         if (network.isElectrum) {
-            var tempUrl = applicationSettings.getPersonalElectrumServer(network)
-
-            if (!tempUrl.isNullOrBlank()) {
-                electrumUrl = tempUrl
-            }
+            electrumUrl = applicationSettings.getPersonalElectrumServer(network).takeIf { it.isNotBlank() }
 
             spvMulti = applicationSettings.multiServerValidation
-            tempUrl = applicationSettings.getSpvElectrumServer(network)
 
-            if (spvMulti && !tempUrl.isNullOrBlank()) {
-                spvServers = tempUrl
-                    .split(",")
-                    .map { it.trim() }
+            applicationSettings.getSpvElectrumServer(network).takeIf { spvMulti && it.isNotBlank() }?.also { spvElectrumServer ->
+                spvServers = spvElectrumServer.split(",").map { it.trim() }
             }
+
         } else {
             val url = applicationSettings.getPersonalElectrumServer(network)
 
@@ -399,14 +393,17 @@ class GdkSession constructor(
             }
         }
 
+        val useTor = applicationSettings.tor
+
         return ConnectionParams(
             networkName = network.id,
-            useTor = applicationSettings.tor,
+            useTor = useTor,
             userAgent = userAgent,
             proxy = applicationSettings.proxyUrl ?: "",
             spvEnabled = spvEnabled,
             spvMulti = spvMulti,
             electrumUrl = electrumUrl,
+            electrumOnionUrl = electrumUrl.takeIf { useTor },
             spvServers = spvServers
         )
     }

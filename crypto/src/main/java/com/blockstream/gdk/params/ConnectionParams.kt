@@ -17,6 +17,7 @@ data class ConnectionParams constructor(
     @SerialName("spv_multi") val spvMulti: Boolean = false,
 
     @SerialName("electrum_url") val electrumUrl: String? = null,
+    @SerialName("electrum_onion_url") val electrumOnionUrl: String? = null,
     @SerialName("spv_servers") val spvServers: List<String>? = null,
 ) : GAJson<ConnectionParams>() {
 
