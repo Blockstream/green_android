@@ -1,6 +1,6 @@
 import UIKit
 
-class WaitJadeViewController: UIViewController {
+class WaitJadeViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var imgDevice: UIImageView!
     @IBOutlet weak var lblStepNumber: UILabel!

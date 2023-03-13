@@ -245,9 +245,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_mash" translatesAutoresizingMaskIntoConstraints="NO" id="dAt-qg-nR6">
-                                <rect key="frame" x="0.0" y="409" width="414" height="487"/>
-                            </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="il_jade_wait_1" translatesAutoresizingMaskIntoConstraints="NO" id="xiO-PC-fI1">
                                 <rect key="frame" x="25" y="48" width="364" height="361"/>
                             </imageView>
@@ -351,14 +348,10 @@
                             <constraint firstItem="AGM-WH-yUI" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" id="kUk-bc-M1T"/>
                             <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="xiO-PC-fI1" secondAttribute="trailing" constant="25" id="oPH-JS-tzB"/>
                             <constraint firstItem="Ljd-Mj-aiL" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" constant="25" id="pre-lW-MJl"/>
-                            <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="dAt-qg-nR6" secondAttribute="trailing" id="q0p-bR-tpR"/>
                             <constraint firstItem="c4n-d1-CE5" firstAttribute="centerY" secondItem="mSX-Ka-F5V" secondAttribute="centerY" multiplier="0.9" id="rnY-SJ-0OJ"/>
                             <constraint firstItem="Uva-md-zH3" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" constant="25" id="ulY-Zh-cHE"/>
                             <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="3lZ-3V-eLN" secondAttribute="trailing" constant="25" id="w02-by-9Fq"/>
-                            <constraint firstItem="dAt-qg-nR6" firstAttribute="top" secondItem="c4n-d1-CE5" secondAttribute="top" id="wq2-mQ-MJU"/>
-                            <constraint firstItem="dAt-qg-nR6" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" id="xdn-sc-1Fh"/>
                             <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="Uva-md-zH3" secondAttribute="trailing" constant="25" id="yfV-nc-3hZ"/>
-                            <constraint firstItem="dAt-qg-nR6" firstAttribute="bottom" secondItem="IIt-pT-ARc" secondAttribute="bottom" id="zw7-bS-bnX"/>
                         </constraints>
                     </view>
                     <connections>
@@ -384,9 +377,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999998807907104" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_mash" translatesAutoresizingMaskIntoConstraints="NO" id="TMZ-5p-QCc">
-                                <rect key="frame" x="0.0" y="512" width="414" height="384"/>
-                            </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="il_jade_setup_1" translatesAutoresizingMaskIntoConstraints="NO" id="Rey-U0-wOj">
                                 <rect key="frame" x="25" y="48" width="364" height="359.5"/>
                             </imageView>
@@ -517,10 +507,8 @@
                             <constraint firstItem="MS1-e4-63l" firstAttribute="bottom" secondItem="Lrd-gF-b7i" secondAttribute="bottom" constant="10" id="2t7-r0-Ivv"/>
                             <constraint firstItem="Lrd-gF-b7i" firstAttribute="leading" secondItem="MS1-e4-63l" secondAttribute="leading" constant="25" id="32l-jy-ReM"/>
                             <constraint firstItem="MS1-e4-63l" firstAttribute="trailing" secondItem="e2A-pQ-SXv" secondAttribute="trailing" constant="25" id="4vQ-0g-6QK"/>
-                            <constraint firstItem="TMZ-5p-QCc" firstAttribute="bottom" secondItem="l4S-Df-fYJ" secondAttribute="bottom" id="AWi-M6-KBb"/>
                             <constraint firstItem="Lrd-gF-b7i" firstAttribute="top" secondItem="6SQ-Ey-9ez" secondAttribute="bottom" constant="10" id="AmE-TL-oca"/>
                             <constraint firstItem="6SQ-Ey-9ez" firstAttribute="top" secondItem="e2A-pQ-SXv" secondAttribute="bottom" constant="10" id="Bzi-cb-e68"/>
-                            <constraint firstItem="TMZ-5p-QCc" firstAttribute="leading" secondItem="MS1-e4-63l" secondAttribute="leading" id="Cyj-2a-McA"/>
                             <constraint firstItem="e2A-pQ-SXv" firstAttribute="leading" secondItem="MS1-e4-63l" secondAttribute="leading" constant="25" id="G0P-w6-Bs9"/>
                             <constraint firstItem="Rey-U0-wOj" firstAttribute="leading" secondItem="MS1-e4-63l" secondAttribute="leading" constant="25" id="RtJ-TG-vAU"/>
                             <constraint firstItem="Rey-U0-wOj" firstAttribute="top" secondItem="MS1-e4-63l" secondAttribute="top" id="XjP-H7-8Xg"/>
@@ -531,7 +519,6 @@
                             <constraint firstItem="6SQ-Ey-9ez" firstAttribute="leading" secondItem="MS1-e4-63l" secondAttribute="leading" constant="25" id="kDE-a3-nVx"/>
                             <constraint firstItem="MS1-e4-63l" firstAttribute="trailing" secondItem="Rey-U0-wOj" secondAttribute="trailing" constant="25" id="n2i-HR-3Bm"/>
                             <constraint firstItem="ACF-uJ-AON" firstAttribute="leading" secondItem="MS1-e4-63l" secondAttribute="leading" constant="25" id="of2-0E-eP2"/>
-                            <constraint firstItem="MS1-e4-63l" firstAttribute="trailing" secondItem="TMZ-5p-QCc" secondAttribute="trailing" id="yET-tL-cyI"/>
                         </constraints>
                     </view>
                     <connections>
@@ -562,7 +549,6 @@
         <image name="il_jade_welcome_1" width="300.33334350585938" height="222"/>
         <image name="il_jade_welcome_2" width="300.33334350585938" height="222"/>
         <image name="il_jade_welcome_3" width="300.33334350585938" height="222"/>
-        <image name="il_mash" width="375" height="384"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

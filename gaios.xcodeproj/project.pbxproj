@@ -134,6 +134,7 @@
 		34560B7A29B9D590007E916F /* WaitJadeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B7929B9D590007E916F /* WaitJadeViewModel.swift */; };
 		34560B8329BA257E007E916F /* SetupJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B8229BA257E007E916F /* SetupJadeViewController.swift */; };
 		34560B8529BA28F7007E916F /* SetupJadeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */; };
+		34560B9B29BF1A9D007E916F /* HWFlowBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */; };
 		3456AF12299A78BE00C1BCA6 /* UITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456AF11299A78BE00C1BCA6 /* UITextView.swift */; };
 		34574C61283FB8670068212F /* DialogAnalyticsConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */; };
 		3457F4A72923943C00EF33B5 /* Dialogs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3457F4A62923943C00EF33B5 /* Dialogs.storyboard */; };
@@ -594,6 +595,7 @@
 		34560B7929B9D590007E916F /* WaitJadeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitJadeViewModel.swift; sourceTree = "<group>"; };
 		34560B8229BA257E007E916F /* SetupJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupJadeViewController.swift; sourceTree = "<group>"; };
 		34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupJadeViewModel.swift; sourceTree = "<group>"; };
+		34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWFlowBaseViewController.swift; sourceTree = "<group>"; };
 		3456AF11299A78BE00C1BCA6 /* UITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextView.swift; sourceTree = "<group>"; };
 		34574C60283FB8670068212F /* DialogAnalyticsConsent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAnalyticsConsent.swift; sourceTree = "<group>"; };
 		3457F4A62923943C00EF33B5 /* Dialogs.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Dialogs.storyboard; sourceTree = "<group>"; };
@@ -1323,6 +1325,14 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
+		34560B9C29BF1FAD007E916F /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		3457F4AC2923978600EF33B5 /* DialogList */ = {
 			isa = PBXGroup;
 			children = (
@@ -1722,6 +1732,7 @@
 		34B385D429B8882A0097220B /* HWFlow */ = {
 			isa = PBXGroup;
 			children = (
+				34560B9C29BF1FAD007E916F /* ViewModels */,
 				34B385D729B888A70097220B /* Controllers */,
 				34B385D529B888610097220B /* HWFlow.storyboard */,
 			);
@@ -1735,7 +1746,7 @@
 				34560B7729B9C6E7007E916F /* WaitJadeViewController.swift */,
 				34560B7929B9D590007E916F /* WaitJadeViewModel.swift */,
 				34560B8229BA257E007E916F /* SetupJadeViewController.swift */,
-				34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */,
+				34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2862,6 +2873,7 @@
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
 				345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */,
 				6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */,
+				34560B9B29BF1A9D007E916F /* HWFlowBaseViewController.swift in Sources */,
 				34B170F1292E874E00A829B2 /* DiscloseCell.swift in Sources */,
 				3457F4B22923988600EF33B5 /* DialogListCell.swift in Sources */,
 				6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */,

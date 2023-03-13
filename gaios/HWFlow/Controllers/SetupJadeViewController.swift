@@ -1,6 +1,6 @@
 import UIKit
 
-class SetupJadeViewController: UIViewController {
+class SetupJadeViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var imgDevice: UIImageView!
 

@@ -1,6 +1,6 @@
 import UIKit
 
-class WelcomeJadeViewController: UIViewController {
+class WelcomeJadeViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var lblSlide1Title: UILabel!
