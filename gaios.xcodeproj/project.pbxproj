@@ -193,6 +193,7 @@
 		3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6C290AE28700122628 /* BalanceCellModel.swift */; };
 		3488FC6F290BCB2500122628 /* AccountCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6E290BCB2500122628 /* AccountCellModel.swift */; };
 		3489A5D429BF37CC009B242F /* ListOtherDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */; };
+		3489A5D629BF3FE4009B242F /* PairingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489A5D529BF3FE4009B242F /* PairingViewController.swift */; };
 		3491C9922912B3670063C055 /* AssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3491C9912912B3670063C055 /* AssetsViewController.swift */; };
 		3491C9942912B4C70063C055 /* AssetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3491C9932912B4C70063C055 /* AssetsViewModel.swift */; };
 		34927BC72971452300D741DB /* AccountAssetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34927BC62971452300D741DB /* AccountAssetViewController.swift */; };
@@ -268,6 +269,7 @@
 		34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */; };
 		34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */; };
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
+		34C8E76829BF6AD400C84066 /* PairingSuccessOtherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */; };
 		34C978A5268DAF740061264D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A4268DAF740061264D /* Settings.swift */; };
 		34C978A8268DC14D0061264D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A7268DC14D0061264D /* Extensions.swift */; };
 		34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A9268DDD8C0061264D /* WatchOnly.swift */; };
@@ -658,6 +660,7 @@
 		3488FC6C290AE28700122628 /* BalanceCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCellModel.swift; sourceTree = "<group>"; };
 		3488FC6E290BCB2500122628 /* AccountCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountCellModel.swift; sourceTree = "<group>"; };
 		3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOtherDevicesViewController.swift; sourceTree = "<group>"; };
+		3489A5D529BF3FE4009B242F /* PairingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingViewController.swift; sourceTree = "<group>"; };
 		3491C9912912B3670063C055 /* AssetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsViewController.swift; sourceTree = "<group>"; };
 		3491C9932912B4C70063C055 /* AssetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsViewModel.swift; sourceTree = "<group>"; };
 		34927BC62971452300D741DB /* AccountAssetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountAssetViewController.swift; sourceTree = "<group>"; };
@@ -734,6 +737,7 @@
 		34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountSelectSubCell.xib; sourceTree = "<group>"; };
 		34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCellModel.swift; sourceTree = "<group>"; };
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
+		34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingSuccessOtherViewController.swift; sourceTree = "<group>"; };
 		34C978A4268DAF740061264D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		34C978A7268DC14D0061264D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		34C978A9268DDD8C0061264D /* WatchOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnly.swift; sourceTree = "<group>"; };
@@ -1341,15 +1345,6 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		34560BA129BF3376007E916F /* ListOtherDevices */ = {
-			isa = PBXGroup;
-			children = (
-				34560BA229BF338A007E916F /* Cells */,
-				3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */,
-			);
-			path = ListOtherDevices;
-			sourceTree = "<group>";
-		};
 		34560BA229BF338A007E916F /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -1768,13 +1763,16 @@
 		34B385D729B888A70097220B /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				34560BA129BF3376007E916F /* ListOtherDevices */,
+				34560BA229BF338A007E916F /* Cells */,
 				34B385D829B888E40097220B /* WelcomeJadeViewController.swift */,
 				34560B7729B9C6E7007E916F /* WaitJadeViewController.swift */,
 				34560B7929B9D590007E916F /* WaitJadeViewModel.swift */,
 				34560B8229BA257E007E916F /* SetupJadeViewController.swift */,
 				34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */,
 				34560B9D29BF2120007E916F /* ConnectOtherDevicesViewController.swift */,
+				3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */,
+				3489A5D529BF3FE4009B242F /* PairingViewController.swift */,
+				34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2745,6 +2743,7 @@
 				34204726291CE13100EDE945 /* AssetSelectCell.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */,
+				3489A5D629BF3FE4009B242F /* PairingViewController.swift in Sources */,
 				81C56B6B29BA2B02003E0E19 /* SetPinViewModel.swift in Sources */,
 				34EB670128212EBA0036D615 /* AMEvents.swift in Sources */,
 				81A062D224532454003464A0 /* HWProtocol.swift in Sources */,
@@ -2926,6 +2925,7 @@
 				81A5919B29156011001D1A65 /* MultisigSettingsViewModel.swift in Sources */,
 				34EB670528213A8A0036D615 /* AMConstants.swift in Sources */,
 				34237FD5276B693100618502 /* SendViewController.swift in Sources */,
+				34C8E76829BF6AD400C84066 /* PairingSuccessOtherViewController.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
 				34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */,
 				81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */,
