@@ -270,6 +270,7 @@
 		34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */; };
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
 		34C8E76829BF6AD400C84066 /* PairingSuccessOtherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */; };
+		34C8E76F29BF7DF100C84066 /* ConnectionFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */; };
 		34C978A5268DAF740061264D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A4268DAF740061264D /* Settings.swift */; };
 		34C978A8268DC14D0061264D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A7268DC14D0061264D /* Extensions.swift */; };
 		34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A9268DDD8C0061264D /* WatchOnly.swift */; };
@@ -738,6 +739,7 @@
 		34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCellModel.swift; sourceTree = "<group>"; };
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
 		34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingSuccessOtherViewController.swift; sourceTree = "<group>"; };
+		34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionFailViewController.swift; sourceTree = "<group>"; };
 		34C978A4268DAF740061264D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		34C978A7268DC14D0061264D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		34C978A9268DDD8C0061264D /* WatchOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnly.swift; sourceTree = "<group>"; };
@@ -1773,6 +1775,7 @@
 				3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */,
 				3489A5D529BF3FE4009B242F /* PairingViewController.swift */,
 				34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */,
+				34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2698,6 +2701,7 @@
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */,
 				346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */,
+				34C8E76F29BF7DF100C84066 /* ConnectionFailViewController.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */,
 				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,

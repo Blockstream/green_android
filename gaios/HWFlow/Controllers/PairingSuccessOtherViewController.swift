@@ -44,6 +44,10 @@ class PairingSuccessOtherViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnContinue(_ sender: Any) {
+        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectionFailViewController") as? ConnectionFailViewController {
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnRemember(_ sender: Any) {
