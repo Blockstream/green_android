@@ -72,6 +72,10 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnConnectOther(_ sender: Any) {
+        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectOtherDevicesViewController") as? ConnectOtherDevicesViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnCheckStore(_ sender: Any) {
