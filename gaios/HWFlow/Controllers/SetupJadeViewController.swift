@@ -126,7 +126,7 @@ class SetupJadeViewController: HWFlowBaseViewController {
             $0?.textColor = .white
         }
         [lblStep1Hint, lblStep2Hint, lblStep3Hint].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .bold)
+            $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
             $0?.textColor = .white.withAlphaComponent(0.6)
         }
         btnExit.setStyle(.outlinedWhite)

@@ -275,6 +275,8 @@
 		34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* JadeDeviceCell.swift */; };
 		34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C8E77529BF868500C84066 /* JadeDeviceCell.xib */; };
 		34C8E77E29C05DD300C84066 /* ConfirmConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */; };
+		34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77F29C069F400C84066 /* PinCreateViewController.swift */; };
+		34C8E78229C0746E00C84066 /* ConnectJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E78129C0746E00C84066 /* ConnectJadeViewController.swift */; };
 		34C978A5268DAF740061264D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A4268DAF740061264D /* Settings.swift */; };
 		34C978A8268DC14D0061264D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A7268DC14D0061264D /* Extensions.swift */; };
 		34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A9268DDD8C0061264D /* WatchOnly.swift */; };
@@ -748,6 +750,8 @@
 		34C8E77429BF868500C84066 /* JadeDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDeviceCell.swift; sourceTree = "<group>"; };
 		34C8E77529BF868500C84066 /* JadeDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JadeDeviceCell.xib; sourceTree = "<group>"; };
 		34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmConnectionViewController.swift; sourceTree = "<group>"; };
+		34C8E77F29C069F400C84066 /* PinCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinCreateViewController.swift; sourceTree = "<group>"; };
+		34C8E78129C0746E00C84066 /* ConnectJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectJadeViewController.swift; sourceTree = "<group>"; };
 		34C978A4268DAF740061264D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		34C978A7268DC14D0061264D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		34C978A9268DDD8C0061264D /* WatchOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnly.swift; sourceTree = "<group>"; };
@@ -1788,6 +1792,8 @@
 				34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */,
 				34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */,
 				34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */,
+				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
+				34C8E78129C0746E00C84066 /* ConnectJadeViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2726,7 +2732,9 @@
 				34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */,
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,
 				34477D3B277216640021698B /* FeeEditCell.swift in Sources */,
+				34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */,
 				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
+				34C8E78229C0746E00C84066 /* ConnectJadeViewController.swift in Sources */,
 				8164909027F4C4FF0097B2E4 /* JadeMessage.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */,

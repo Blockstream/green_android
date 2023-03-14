@@ -76,6 +76,10 @@ class HomeViewController: UIViewController {
         if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
+//        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+//        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectJadeViewController") as? ConnectJadeViewController {
+//            navigationController?.pushViewController(vc, animated: true)
+//        }
 //        let account = AccountsRepository.shared.devices[index]
 //        AccountNavigator.goHWLogin(isJade: account.isJade)
     }

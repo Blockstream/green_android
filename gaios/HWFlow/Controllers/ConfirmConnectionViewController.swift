@@ -36,9 +36,9 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnConfirm(_ sender: Any) {
-//        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-//        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectionFailViewController") as? ConnectionFailViewController {
-//            self.navigationController?.pushViewController(vc, animated: true)
-//        }
+        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "PinCreateViewController") as? PinCreateViewController {
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
