@@ -11,9 +11,10 @@ enum HomeSection: Int, CaseIterable {
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-
     @IBOutlet weak var btnAbout: UIButton!
     @IBOutlet weak var btnSettings: UIButton!
+    @IBOutlet weak var newWalletView: UIView!
+    @IBOutlet weak var lblNewWallet: UILabel!
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
@@ -58,9 +59,11 @@ class HomeViewController: UIViewController {
         btnAbout.setTitle(NSLocalizedString("id_about", comment: ""), for: .normal)
         btnAbout.setImage(UIImage(named: "ic_about")!, for: .normal)
         btnAbout.setTitleColor(.lightGray, for: .normal)
+        lblNewWallet.text = "id_setup_a_new_wallet".localized
     }
 
     func setStyle() {
+        newWalletView.cornerRadius = 5.0
     }
 
     func updateUI() {
@@ -71,17 +74,8 @@ class HomeViewController: UIViewController {
     }
 
     func showHardwareWallet(_ index: Int) {
-
-        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        }
-//        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-//        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectJadeViewController") as? ConnectJadeViewController {
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
-//        let account = AccountsRepository.shared.devices[index]
-//        AccountNavigator.goHWLogin(isJade: account.isJade)
+        let account = AccountsRepository.shared.devices[index]
+        AccountNavigator.goHWLogin(isJade: account.isJade)
     }
 
     func remoteAlertDismiss() {
@@ -116,6 +110,13 @@ class HomeViewController: UIViewController {
             vc.index = index
             vc.prefill = account.name
             present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @IBAction func btnNewWallet(_ sender: Any) {
+        let hwFlow = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "SelectOnBoardTypeViewController") as? SelectOnBoardTypeViewController {
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 

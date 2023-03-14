@@ -7,6 +7,7 @@ enum ButtonStyle {
     case outlined
     case outlinedGray
     case outlinedWhite
+    case outlinedWhiteDisabled
     case inline
     case inlineDisabled
     case destructiveOutlined
@@ -176,6 +177,14 @@ extension UIButton {
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.white.cgColor
             layer.cornerRadius = 5.0
+            isEnabled = true
+        case .outlinedWhiteDisabled:
+            backgroundColor = UIColor.clear
+            setTitleColor(UIColor.white.withAlphaComponent(0.4), for: .normal)
+            layer.borderWidth = 1.0
+            layer.borderColor = UIColor.white.withAlphaComponent(0.4).cgColor
+            layer.cornerRadius = 5.0
+            isEnabled = false
         case .inline:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.gGreenMatrix(), for: .normal)

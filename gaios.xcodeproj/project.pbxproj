@@ -163,6 +163,8 @@
 		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
 		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
 		345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */; };
+		345ED1F429C088DC00BD9071 /* SelectOnBoardTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345ED1F329C088DC00BD9071 /* SelectOnBoardTypeViewController.swift */; };
+		3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */; };
 		346300E0274D114A00B28521 /* DialogExplorerOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */; };
 		346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */; };
 		3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */; };
@@ -637,6 +639,8 @@
 		345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerPresentationController.swift; sourceTree = "<group>"; };
 		345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DrawerNetworkSelection.storyboard; sourceTree = "<group>"; };
 		345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerNetworkSelectionViewController.swift; sourceTree = "<group>"; };
+		345ED1F329C088DC00BD9071 /* SelectOnBoardTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectOnBoardTypeViewController.swift; sourceTree = "<group>"; };
+		3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartOnBoardViewController.swift; sourceTree = "<group>"; };
 		346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExplorerOptionsViewController.swift; sourceTree = "<group>"; };
 		346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogShareTxOptionViewController.swift; sourceTree = "<group>"; };
 		3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UserSettings.storyboard; sourceTree = "<group>"; };
@@ -1643,6 +1647,8 @@
 				340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */,
 				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
 				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
+				345ED1F329C088DC00BD9071 /* SelectOnBoardTypeViewController.swift */,
+				3461177329C0BFC400F61D22 /* StartOnBoardViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2644,6 +2650,7 @@
 				3457F4AB292394DD00EF33B5 /* CustomVisualEffectView.swift in Sources */,
 				3489A5D429BF37CC009B242F /* ListOtherDevicesViewController.swift in Sources */,
 				34A862A12979432C0018E636 /* DialogShowQRViewController.swift in Sources */,
+				3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */,
 				3418BABC2743984400F9B2D0 /* TransactionDetailCell.swift in Sources */,
 				341B1F282874625100270629 /* DialogSendHWSummaryViewController.swift in Sources */,
 				34F980AE29151C6600C12D48 /* TransactionCell.swift in Sources */,
@@ -2655,6 +2662,7 @@
 				3497936E25F8B18C0029ECB1 /* ProgressView.swift in Sources */,
 				3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */,
 				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
+				345ED1F429C088DC00BD9071 /* SelectOnBoardTypeViewController.swift in Sources */,
 				346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */,
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
 				3418BAB6274285BD00F9B2D0 /* TransactionFeeCell.swift in Sources */,
