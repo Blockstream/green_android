@@ -34,7 +34,7 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
     }
 
     func setContent() {
-        lblVerify.text = NSLocalizedString("id_please_verify_that_the_address", comment: "")
+        lblVerify.text = "id_verify_on_device".localized
         icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.customMatrixGreen())
     }
 
