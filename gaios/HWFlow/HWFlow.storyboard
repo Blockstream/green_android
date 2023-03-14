@@ -904,6 +904,40 @@
             </objects>
             <point key="canvasLocation" x="3072" y="680"/>
         </scene>
+        <!--List Jade Devices View Controller-->
+        <scene sceneID="iSu-2x-VGA">
+            <objects>
+                <viewController storyboardIdentifier="ListJadeDevicesViewController" id="23i-a9-QU1" customClass="ListJadeDevicesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="CwH-pO-X2J">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="8ua-sq-v9x">
+                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="23i-a9-QU1" id="TXn-2A-nAH"/>
+                                    <outlet property="delegate" destination="23i-a9-QU1" id="3c6-4W-Z6Q"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="RcV-ru-I7W"/>
+                        <color key="backgroundColor" name="gBlackBg"/>
+                        <constraints>
+                            <constraint firstItem="8ua-sq-v9x" firstAttribute="top" secondItem="RcV-ru-I7W" secondAttribute="top" id="LQv-kQ-7Sb"/>
+                            <constraint firstItem="RcV-ru-I7W" firstAttribute="trailing" secondItem="8ua-sq-v9x" secondAttribute="trailing" id="XOn-b4-xsP"/>
+                            <constraint firstItem="8ua-sq-v9x" firstAttribute="leading" secondItem="RcV-ru-I7W" secondAttribute="leading" id="dcJ-Mp-VhU"/>
+                            <constraint firstItem="RcV-ru-I7W" firstAttribute="bottom" secondItem="8ua-sq-v9x" secondAttribute="bottom" id="sig-4A-pOe"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="8ua-sq-v9x" id="vi5-Hb-Qiy"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hta-M7-XYi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2348" y="-50"/>
+        </scene>
     </scenes>
     <resources>
         <image name="ic_checkbox_off" width="18" height="18"/>

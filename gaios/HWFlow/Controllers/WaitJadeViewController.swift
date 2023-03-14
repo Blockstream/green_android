@@ -127,6 +127,9 @@ class WaitJadeViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnTrouble(_ sender: Any) {
-
+        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ListJadeDevicesViewController") as? ListJadeDevicesViewController {
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }

@@ -271,6 +271,9 @@
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
 		34C8E76829BF6AD400C84066 /* PairingSuccessOtherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */; };
 		34C8E76F29BF7DF100C84066 /* ConnectionFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */; };
+		34C8E77129BF85AC00C84066 /* ListJadeDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77029BF85AC00C84066 /* ListJadeDevicesViewController.swift */; };
+		34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* JadeDeviceCell.swift */; };
+		34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C8E77529BF868500C84066 /* JadeDeviceCell.xib */; };
 		34C978A5268DAF740061264D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A4268DAF740061264D /* Settings.swift */; };
 		34C978A8268DC14D0061264D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A7268DC14D0061264D /* Extensions.swift */; };
 		34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A9268DDD8C0061264D /* WatchOnly.swift */; };
@@ -740,6 +743,9 @@
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
 		34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingSuccessOtherViewController.swift; sourceTree = "<group>"; };
 		34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionFailViewController.swift; sourceTree = "<group>"; };
+		34C8E77029BF85AC00C84066 /* ListJadeDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListJadeDevicesViewController.swift; sourceTree = "<group>"; };
+		34C8E77429BF868500C84066 /* JadeDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDeviceCell.swift; sourceTree = "<group>"; };
+		34C8E77529BF868500C84066 /* JadeDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JadeDeviceCell.xib; sourceTree = "<group>"; };
 		34C978A4268DAF740061264D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		34C978A7268DC14D0061264D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		34C978A9268DDD8C0061264D /* WatchOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnly.swift; sourceTree = "<group>"; };
@@ -1352,6 +1358,8 @@
 			children = (
 				34560BA329BF349E007E916F /* OtherDeviceCell.swift */,
 				34560BA429BF349E007E916F /* OtherDeviceCell.xib */,
+				34C8E77429BF868500C84066 /* JadeDeviceCell.swift */,
+				34C8E77529BF868500C84066 /* JadeDeviceCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1773,6 +1781,7 @@
 				34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */,
 				34560B9D29BF2120007E916F /* ConnectOtherDevicesViewController.swift */,
 				3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */,
+				34C8E77029BF85AC00C84066 /* ListJadeDevicesViewController.swift */,
 				3489A5D529BF3FE4009B242F /* PairingViewController.swift */,
 				34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */,
 				34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */,
@@ -2442,6 +2451,7 @@
 			files = (
 				6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */,
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
+				34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
@@ -2672,6 +2682,7 @@
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
 				3458AB18292D289F006EC7FB /* AnyAssetExpandableView.swift in Sources */,
+				34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */,
 				3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */,
 				811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */,
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,
@@ -2690,6 +2701,7 @@
 				3451017827EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift in Sources */,
 				340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
+				34C8E77129BF85AC00C84066 /* ListJadeDevicesViewController.swift in Sources */,
 				3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
 				346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */,
