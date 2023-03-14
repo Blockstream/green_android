@@ -71,7 +71,7 @@ extension ListJadeDevicesViewController: UITableViewDelegate, UITableViewDataSou
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "PairingViewController") as? PairingViewController {
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConfirmConnectionViewController") as? ConfirmConnectionViewController {
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
