@@ -142,7 +142,9 @@ class ReceiveViewController: UIViewController {
     }
 
     @objc func copyToClipboard(_ sender: Any) {
-        let address = (viewModel.address?.address)!
+        guard let address = viewModel.address?.address else {
+            return
+        }
         let uri = viewModel.addressToUri(address: address, satoshi: satoshi ?? 0)
         let data = AnalyticsManager.ReceiveAddressData(type: self.isBipAddress(uri) ? AnalyticsManager.ReceiveAddressType.uri : AnalyticsManager.ReceiveAddressType.address,
                                                        media: AnalyticsManager.ReceiveAddressMedia.text,
