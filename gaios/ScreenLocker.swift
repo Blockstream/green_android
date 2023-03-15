@@ -115,10 +115,12 @@ class ScreenLocker {
 
     func applicationWillEnterForeground(_ notification: Notification) {
         self.appIsInBackground = false
+        resumeNetworks()
     }
 
     func applicationDidEnterBackground(_ notification: Notification) {
         self.appIsInBackground = true
+        pauseNetworks()
     }
 
     func showLockWindow() {
@@ -166,6 +168,21 @@ class ScreenLocker {
         DispatchQueue.main.async {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate?.logout(with: false)
+        }
+    }
+
+    func resumeNetworks() {
+        WalletsRepository.shared.wallets.forEach { _, wm in
+            wm.resume()
+            if let session = wm.activeSessions.first?.value.session {
+                AnalyticsManager.shared.setupSession(session: session)
+            }
+        }
+    }
+
+    func pauseNetworks() {
+        WalletsRepository.shared.wallets.forEach { _, wm in
+            wm.pause()
         }
     }
 }

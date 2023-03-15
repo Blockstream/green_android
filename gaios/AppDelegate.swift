@@ -116,7 +116,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #endif
 
         AnalyticsManager.shared.countlyStart()
-        applicationWillEnterForeground(application)
+        AnalyticsManager.shared.setupSession(session: nil)
 
         return true
     }
@@ -129,17 +129,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        WalletsRepository.shared.wallets.forEach { _, wm in
-            wm.pause()
-        }
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-        WalletsRepository.shared.wallets.forEach { _, wm in
-            wm.resume()
-        }
-        AnalyticsManager.shared.setupSession(session: WalletManager.current?.prominentSession?.session)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
