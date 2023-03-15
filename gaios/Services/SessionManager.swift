@@ -80,6 +80,7 @@ class SessionManager {
 
     deinit {
         session?.logged = false
+        session?.connected = false
     }
 
     public func connect() -> Promise<Void> {
@@ -87,12 +88,14 @@ class SessionManager {
             return Promise().asVoid()
         }
         return Guarantee()
+            .compactMap(on: SessionManager.reconnectionQueue) { self.networkConnect() }
             .compactMap(on: SessionManager.reconnectionQueue) { try self.connect(network: self.gdkNetwork.network) }
             .compactMap { AnalyticsManager.shared.setupSession(session: self.session) } // Update analytics endpoint with session tor/proxy
     }
 
     public func disconnect() {
         session?.logged = false
+        session?.connected = false
         SessionManager.reconnectionQueue.async {
             self.session = GDKSession()
         }
@@ -580,5 +583,17 @@ class SessionManager {
                     return
                 }
             }.asVoid()
+    }
+
+    func networkConnect() {
+        SessionManager.reconnectionQueue.async {
+            try? self.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
+        }
+    }
+
+    func networkDisconnect() {
+        SessionManager.reconnectionQueue.async {
+            try? self.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
+        }
     }
 }

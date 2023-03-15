@@ -293,9 +293,7 @@ class WalletManager {
     func pause() {
         activeSessions.forEach { (_, session) in
             if session.connected {
-                SessionManager.reconnectionQueue.async {
-                    try? session.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
-                }
+                session.networkDisconnect()
             }
         }
     }
@@ -303,9 +301,7 @@ class WalletManager {
     func resume() {
         activeSessions.forEach { (_, session) in
             if session.connected {
-                SessionManager.reconnectionQueue.async {
-                    try? session.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
-                }
+               session.networkConnect()
             }
         }
     }
