@@ -59,9 +59,6 @@ class WalletManager {
         return activeSessions.keys.compactMap { NetworkSecurityCase(rawValue: $0) }
     }
 
-    // Serial reconnect queue for network events
-    static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
-
     init(account: Account, prominentNetwork: NetworkSecurityCase?) {
         let mainnet = prominentNetwork?.gdkNetwork?.mainnet ?? true
         self.prominentNetwork = prominentNetwork ?? .bitcoinSS
@@ -296,7 +293,7 @@ class WalletManager {
     func pause() {
         activeSessions.forEach { (_, session) in
             if session.connected {
-                WalletManager.reconnectionQueue.async {
+                SessionManager.reconnectionQueue.async {
                     try? session.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
                 }
             }
@@ -306,7 +303,7 @@ class WalletManager {
     func resume() {
         activeSessions.forEach { (_, session) in
             if session.connected {
-                WalletManager.reconnectionQueue.async {
+                SessionManager.reconnectionQueue.async {
                     try? session.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
                 }
             }

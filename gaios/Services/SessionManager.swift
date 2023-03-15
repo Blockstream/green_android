@@ -57,6 +57,9 @@ class SessionManager {
     var gdkNetwork: GdkNetwork
     var registry: AssetsManager?
 
+    // Serial reconnect queue for network events
+    static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
+
     var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
     }
@@ -76,7 +79,7 @@ class SessionManager {
     }
 
     deinit {
-        session = nil
+        session?.logged = false
     }
 
     public func connect() -> Promise<Void> {
@@ -84,12 +87,15 @@ class SessionManager {
             return Promise().asVoid()
         }
         return Guarantee()
-            .compactMap { try self.connect(network: self.gdkNetwork.network) }
+            .compactMap(on: SessionManager.reconnectionQueue) { try self.connect(network: self.gdkNetwork.network) }
             .compactMap { AnalyticsManager.shared.setupSession(session: self.session) } // Update analytics endpoint with session tor/proxy
     }
 
     public func disconnect() {
-        session = GDKSession()
+        session?.logged = false
+        SessionManager.reconnectionQueue.async {
+            self.session = GDKSession()
+        }
     }
 
     private func connect(network: String, params: [String: Any]? = nil) throws {
