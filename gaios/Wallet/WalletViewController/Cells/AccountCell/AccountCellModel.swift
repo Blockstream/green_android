@@ -17,7 +17,7 @@ class AccountCellModel {
     var account: WalletItem
     var hasTxs: Bool = false
 
-    init(subaccount: WalletItem) {
+    init(subaccount: WalletItem, satoshi: Int64) {
         account = subaccount
         name = account.localizedName
         type = account.localizedType
@@ -27,7 +27,6 @@ class AccountCellModel {
         security = (isSS ? "Singlesig" : "Multisig").uppercased()
         lblType = security + " / " + type
 
-        let satoshi = account.satoshi?[account.gdkNetwork.getFeeAsset()] ?? 0
         if let converted = Balance.fromSatoshi(satoshi, assetId: account.gdkNetwork.getFeeAsset()) {
             let (amount, denom) = converted.toValue()
             balanceStr = "\(amount) \(denom)"

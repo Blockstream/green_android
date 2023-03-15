@@ -239,6 +239,13 @@ class WalletManager {
         }
     }
 
+    func subaccount(account: WalletItem) -> Promise<WalletItem> {
+        return Guarantee()
+            .compactMap { account.session }
+            .then { $0.subaccount(account.pointer) }
+            .get { if let row = self.subaccounts.firstIndex(where: {$0.pointer == account.pointer && $0.gdkNetwork == account.gdkNetwork}) { self.subaccounts[row] = $0 } }
+    }
+
     func balances(subaccounts: [WalletItem]) -> Promise<[String: Int64]> {
         let promises = subaccounts
             .map { sub in

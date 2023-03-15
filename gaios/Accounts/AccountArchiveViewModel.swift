@@ -26,7 +26,7 @@ class AccountArchiveViewModel {
             .compactMap { $0.filter { $0.hidden } }
             .then { self.wm.balances(subaccounts: $0) }
             .done { _ in
-                self.accountCellModels = self.subaccounts.map { AccountCellModel(subaccount: $0) }
+                self.accountCellModels = self.subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }
             }.catch { err in
                 print(err)
             }

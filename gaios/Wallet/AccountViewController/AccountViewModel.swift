@@ -22,16 +22,19 @@ class AccountViewModel {
     }
 
     var watchOnly: Bool {
-        wm.account.isWatchonly ?? false
+        wm.account.isWatchonly
+    }
+
+    var satoshi: Int64 {
+        cachedBalance.first(where: { $0.0 == account.gdkNetwork.getFeeAsset() })?.1 ?? account.btc
     }
 
     var accountCellModels: [AccountCellModel] {
         didSet {
-            reloadSections?( [AccountSection.account], true )
+            reloadSections?([AccountSection.account], true)
         }
     }
     var addingCellModels: [AddingCellModel] {
-        let watchOnly = wm.account.isWatchonly ?? false
         let enabled2fa = account.session?.twoFactorConfig?.anyEnabled ?? false
         if account.type == .standard && !enabled2fa && !watchOnly {
             return [AddingCellModel()]
@@ -108,18 +111,16 @@ class AccountViewModel {
                 if self.txCellModels.count == 0 {
                     self.reloadSections?( [AccountSection.transaction], true )
                 }
-            }.catch { err in
-                print(err)
-            }
+            }.catch { err in print(err) }
     }
 
     func getBalance() {
         wm.balances(subaccounts: [self.account])
             .done { _ in
-                self.accountCellModels = [AccountCellModel(subaccount: self.account)]
-                var assets = AssetAmountList(self.account.satoshi ?? [:]).sorted()
-                self.assetCellModels = assets.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
-            }
+                self.cachedBalance = AssetAmountList(self.account.satoshi ?? [:]).sorted()
+                self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)]
+                self.assetCellModels = self.cachedBalance.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
+            }.catch { err in print(err.localizedDescription)}
     }
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
@@ -138,9 +139,9 @@ class AccountViewModel {
         }
         return Guarantee()
             .then { session.updateSubaccount(subaccount: self.account.pointer, hidden: true) }
-            .then { session.subaccount(self.account.pointer) }
-            .compactMap { self.accountCellModels = [AccountCellModel(subaccount: $0)]}
-            .then { self.wm.subaccounts() }
+            .then { self.wm.subaccount(account: self.account) }
+            .compactMap { self.account = $0 }
+            .compactMap { self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)] }
             .asVoid()
     }
 
@@ -150,9 +151,9 @@ class AccountViewModel {
         }
         return Guarantee()
             .then { session.renameSubaccount(subaccount: self.account.pointer, newName: name) }
-            .then { session.subaccount(self.account.pointer) }
-            .compactMap { self.accountCellModels = [AccountCellModel(subaccount: $0)]}
-            .then { self.wm.subaccounts() }
+            .then { self.wm.subaccount(account: self.account) }
+            .compactMap { self.account = $0 }
+            .compactMap { self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)] }
             .asVoid()
     }
 
