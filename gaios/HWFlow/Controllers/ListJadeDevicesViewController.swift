@@ -1,8 +1,18 @@
 import UIKit
+import RxSwift
+import RxBluetoothKit
 
 class ListJadeDevicesViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    var scanDispose: Disposable?
+    var connectionDispose: Disposable?
+
+    var peripherals = [Peripheral]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +29,11 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        scan()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        scanDispose?.dispose()
     }
 
     func setContent() {
@@ -26,6 +41,42 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
     }
 
     func setStyle() {
+    }
+
+    func scan() {
+        if BLEManager.shared.manager.state == .poweredOff {
+            showError("id_turn_on_bluetooth_to_connect".localized)
+        } else if BLEManager.shared.manager.state == .unauthorized {
+            showError("id_give_bluetooth_permissions".localized)
+        }
+        scanDispose = BLEManager.shared.scanning()
+            .filter { $0.contains { $0.isJade() } }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { self.peripherals = $0.filter { $0.isJade() } },
+                       onError: { self.showError($0.localizedDescription) })
+    }
+
+    func pair(_ peripheral: Peripheral) {
+        scanDispose?.dispose()
+        connectionDispose = BLEManager.shared.preparing(peripheral)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { self.next($0) },
+                       onError: { self.error($0) })
+    }
+
+    func next(_ peripheral: Peripheral) {
+        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConfirmConnectionViewController") as? ConfirmConnectionViewController {
+            vc.peripheral = peripheral
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func error(_ err: Error) {
+        self.stopLoader()
+        let bleError = BLEManager.shared.toBleError(err, network: nil)
+        let txt = BLEManager.shared.toErrorString(bleError)
+        showAlert(title: "id_error".localized, message: txt)
     }
 }
 
@@ -36,13 +87,13 @@ extension ListJadeDevicesViewController: UITableViewDelegate, UITableViewDataSou
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return peripherals.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+        let peripheral = peripherals[indexPath.row]
         if let cell = tableView.dequeueReusableCell(withIdentifier: JadeDeviceCell.identifier, for: indexPath) as? JadeDeviceCell {
-            cell.configure()
+            cell.configure(text: peripheral.name ?? "Jade")
             cell.selectionStyle = .none
             return cell
         }
@@ -70,9 +121,7 @@ extension ListJadeDevicesViewController: UITableViewDelegate, UITableViewDataSou
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConfirmConnectionViewController") as? ConfirmConnectionViewController {
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
+        let peripheral = peripherals[indexPath.row]
+        pair(peripheral)
     }
 }

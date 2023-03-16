@@ -3,6 +3,7 @@ import PromiseKit
 import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
+import UIKit
 
 enum BLEManagerError: Error {
     case powerOff(txt: String)
@@ -43,6 +44,16 @@ protocol BLEManagerDelegate: AnyObject {
     func onComputedHash(_ hash: String)
 }
 
+extension Peripheral {
+    func isLedger() -> Bool {
+        peripheral.name?.contains("Nano") ?? false
+    }
+
+    func isJade() -> Bool {
+        peripheral.name?.contains("Jade") ?? false
+    }
+}
+
 class BLEManager {
 
     private static var instance: BLEManager?
@@ -71,13 +82,31 @@ class BLEManager {
     var boardType: String?
     var device: HWDevice?
     private var session: SessionManager?
+    private let sheduler: SerialDispatchQueueScheduler
 
     init() {
         manager = CentralManager(queue: queue, options: nil)
+        sheduler = SerialDispatchQueueScheduler(queue: queue, internalSerialQueueName: "manager.sheduler")
         Jade.shared.gdkRequestDelegate = self
 #if DEBUG
         RxBluetoothKitLog.setLogLevel(.debug)
 #endif
+    }
+
+    private func waitForBluetooth() -> Observable<BluetoothState> {
+        return self.manager
+            .observeState()
+            .startWith(self.manager.state)
+            .filter { $0 == .poweredOn }
+            .take(1)
+    }
+
+    func isReady() throws {
+        if manager.state == .poweredOff {
+            throw BLEManagerError.powerOff(txt: NSLocalizedString("id_turn_on_bluetooth_to_connect", comment: ""))
+        } else if manager.state == .unauthorized {
+            throw BLEManagerError.unauthorized(txt: NSLocalizedString("id_give_bluetooth_permissions", comment: ""))
+        }
     }
 
     func start() {
@@ -90,10 +119,7 @@ class BLEManager {
         }
 
         // wait bluetooth is ready
-        let sheduler = SerialDispatchQueueScheduler(queue: queue, internalSerialQueueName: "manager.sheduler")
-        scanningDispose = manager.observeState()
-            .startWith(self.manager.state)
-            .filter { $0 == .poweredOn }
+        scanningDispose = waitForBluetooth()
             .subscribeOn(sheduler)
             .subscribe(onNext: { _ in
                 self.scanningDispose = self.scan()
@@ -103,10 +129,22 @@ class BLEManager {
             })
     }
 
-    func scan() -> Disposable {
+    func scanning() -> Observable<[Peripheral]> {
         peripherals = manager.retrieveConnectedPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID])
             .filter { self.isJade($0) || self.isLedger($0) }
-        self.scanDelegate?.didUpdatePeripherals(self.peripherals)
+        return waitForBluetooth()
+            .flatMap { _ in self.manager.scanForPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID]) }
+            .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
+            .map { p in
+                    if let row = self.peripherals.firstIndex(where: { $0.name == p.advertisementData.localName }) {
+                    self.peripherals[row] = p.peripheral
+                } else {
+                    self.peripherals += [p.peripheral]
+                }
+            }.map { self.peripherals }
+    }
+
+    func scan() -> Disposable {
         return manager.scanForPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID])
             .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
             .subscribeOn(MainScheduler.instance)
@@ -185,6 +223,36 @@ class BLEManager {
             .flatMap { _ in Jade.shared.addEntropy() }
             .flatMap { _ in Jade.shared.version() }
             .compactMap { $0.jadeHasPin }
+    }
+
+    func authenticating(_ p: Peripheral, testnet: Bool? = nil) -> Observable<Bool> {
+        if p.isLedger() {
+            return Observable.just(true)
+        }
+        return Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { _ in Jade.shared.version() }
+            .flatMap { version -> Observable<Bool> in
+                self.fmwVersion = version.jadeVersion
+                self.boardType = version.boardType
+                let isTestnet = (testnet == true && version.jadeNetworks == "ALL") || version.jadeNetworks == "TEST"
+                let networkType: NetworkSecurityCase = isTestnet ? .testnetSS : .bitcoinSS
+                let chain = networkType.chain
+                // connect to network pin server
+                self.session = SessionManager(getGdkNetwork(networkType.network))
+                try? self.session?.connect().wait()
+                // JADE_STATE => READY  (device unlocked / ready to use)
+                // anything else ( LOCKED | UNSAVED | UNINIT | TEMP) will need an authUser first to unlock
+                switch version.jadeState {
+                case "READY":
+                    return Observable.just(true)
+                case "TEMP":
+                    return Jade.shared.unlock(network: chain)
+                default:
+                    return Jade.shared.auth(network: chain)
+                            .retry(3)
+                }
+            }
     }
 
     func auth(_ p: Peripheral, testnet: Bool? = nil) {
@@ -284,8 +352,66 @@ class BLEManager {
         }
     }
 
+    func logging(_ peripheral: Peripheral, account: Account) -> Observable<WalletManager> {
+        let device: HWDevice = peripheral.isJade() ? .defaultJade(fmwVersion: self.fmwVersion ?? "") : .defaultLedger()
+        let network = NetworkSecurityCase(rawValue: account.networkName)
+        let wm = WalletManager(account: account, prominentNetwork: network)
+        return getMasterXpub(device, gdkNetwork: network?.gdkNetwork)
+            .flatMap { masterXpub in
+                return Observable<WalletManager>.create { observer in
+                    wm.loginWithHW(device, masterXpub: masterXpub)
+                        .done { _ in
+                            observer.onNext(wm)
+                            observer.onCompleted()
+                        }.catch { err in observer.onError(err) }
+                    return Disposables.create { }
+                }
+            }.compactMap { wm in
+                WalletsRepository.shared.add(for: account, wm: wm)
+                return wm
+            }
+    }
+
+    func network(_ peripheral: Peripheral) -> Observable<NetworkSecurityCase> {
+        if peripheral.isJade() {
+            return Jade.shared.version().compactMap { $0.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS }
+        } else {
+            return  self.getLedgerNetwork()
+        }
+    }
+
+    func account(_ peripheral: Peripheral) -> Observable<Account> {
+        let device: HWDevice = peripheral.isJade() ? .defaultJade(fmwVersion: self.fmwVersion ?? "") : .defaultLedger()
+        return network(peripheral)
+            .compactMap { network in
+                return Account(name: peripheral.name ?? device.name,
+                                      network: network.chain,
+                                      isJade: device.isJade,
+                                      isLedger: device.isLedger,
+                                      isSingleSig: network.gdkNetwork?.electrum ?? true,
+                                      uuid: peripheral.identifier)
+            }
+    }
+
     func login(_ p: Peripheral) {
         isJade(p) ? loginJade(p) : loginLedger(p)
+    }
+
+    func loggingJade(_ p: Peripheral) -> Observable<Account> {
+        self.device = HWDevice.defaultJade(fmwVersion: self.fmwVersion ?? "")
+        return Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { _ in Jade.shared.version() }
+            .compactMap { $0.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS }
+            .flatMap { self.loginDevice(peripheral: p, network: $0, device: self.device!) }
+    }
+
+    func loggingLedger(_ p: Peripheral) -> Observable<Account> {
+        self.device = HWDevice.defaultLedger()
+        return Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { _ in self.getLedgerNetwork() }
+            .flatMap { self.loginDevice(peripheral: p, network: $0, device: self.device!) }
     }
 
     func loginJade(_ p: Peripheral, checkFirmware: Bool = true) {
@@ -294,7 +420,7 @@ class BLEManager {
             .flatMap { checkFirmware ? self.checkFirmware($0) : Observable.just($0) }
             .flatMap { _ in Jade.shared.version() }
             .compactMap { $0.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS }
-            .flatMap { self.loginDevice(network: $0, device: self.device!) }
+            .flatMap { self.loginDevice(peripheral: p, network: $0, device: self.device!) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 self.delegate?.onLogin(p, account: $0)
@@ -308,12 +434,13 @@ class BLEManager {
             })
     }
 
-    private func loginDevice(network: NetworkSecurityCase, device: HWDevice) -> Observable<Account> {
-        let account = Account(name: device.name,
+    private func loginDevice(peripheral: Peripheral, network: NetworkSecurityCase, device: HWDevice) -> Observable<Account> {
+        let account = Account(name: peripheral.name ?? device.name,
                               network: network.chain,
                               isJade: device.isJade,
                               isLedger: device.isLedger,
-                              isSingleSig: network.gdkNetwork?.electrum ?? true)
+                              isSingleSig: network.gdkNetwork?.electrum ?? true,
+                              uuid: peripheral.identifier)
         let wm = WalletManager(account: account, prominentNetwork: network)
         return getMasterXpub(device, gdkNetwork: network.gdkNetwork)
             .flatMap { masterXpub in
@@ -338,7 +465,7 @@ class BLEManager {
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in self.getLedgerNetwork() }
-            .flatMap { self.loginDevice(network: $0, device: self.device!) }
+            .flatMap { self.loginDevice(peripheral: p, network: $0, device: self.device!) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 self.delegate?.onLogin(p, account: $0)
@@ -395,6 +522,105 @@ class BLEManager {
         if let bleErr = bleErr {
             self.delegate?.onError(bleErr)
         }
+    }
+
+    func toBleError(_ err: Error, network: String?) -> BLEManagerError {
+        switch err {
+        case BluetoothError.peripheralConnectionFailed(_, let error):
+            return BLEManagerError.bleErr(txt: error?.localizedDescription ?? err.localizedDescription)
+        case is BluetoothError, is GaError:
+            return BLEManagerError.bleErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
+        case RxError.timeout:
+            return BLEManagerError.timeoutErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
+        case DeviceError.dashboard:
+            return BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
+        case DeviceError.outdated_app:
+            return BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
+        case DeviceError.wrong_app:
+            return BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
+        case is AuthenticationTypeHandler.AuthError:
+            let authErr = err as? AuthenticationTypeHandler.AuthError
+            AnalyticsManager.shared.failedWalletLogin(account: AccountsRepository.shared.current, error: err, prettyError: authErr?.localizedDescription ?? "")
+            return BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
+        case is Ledger.SWError:
+            return BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
+        case is JadeError:
+            switch err {
+            case JadeError.Abort(let desc),
+                 JadeError.URLError(let desc),
+                 JadeError.Declined(let desc):
+                return BLEManagerError.genericErr(txt: desc)
+            default:
+                AnalyticsManager.shared.failedWalletLogin(account: AccountsRepository.shared.current, error: err, prettyError: "id_login_failed")
+                return BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
+            }
+        case LoginError.failed, LoginError.connectionFailed, LoginError.walletsJustRestored, LoginError.walletNotFound:
+            return BLEManagerError.genericErr(txt: NSLocalizedString("id_login_failed", comment: ""))
+        default:
+            return BLEManagerError.genericErr(txt: err.localizedDescription)
+        }
+    }
+
+    func toErrorString(_ error: BLEManagerError) -> String {
+        switch error {
+        case .powerOff(let txt):
+            return txt
+        case .notReady(let txt):
+            return txt
+        case .scanErr(let txt):
+            return txt
+        case .bleErr(let txt):
+            return txt
+        case .timeoutErr(let txt):
+            return txt
+        case .dashboardErr(let txt):
+            return txt
+        case .outdatedAppErr(let txt):
+            return txt
+        case .wrongAppErr(let txt):
+            return txt
+        case .authErr(let txt):
+            return txt
+        case .swErr(let txt):
+            return txt
+        case .genericErr(let txt):
+            return txt
+        case .firmwareErr(txt: let txt):
+            return txt
+        case .unauthorized(txt: let txt):
+            return txt
+        }
+    }
+
+    func preparing(_ peripheral: Peripheral) -> Observable<Peripheral> {
+        if peripheral.isConnected {
+            return Observable.just(peripheral)
+        } else if isLedger(peripheral) {
+            return Observable.just(peripheral)
+        }
+
+        // dummy 1st connection for jade
+        return Observable.just(peripheral)
+            .timeoutIfNoEvent(RxTimeInterval.seconds(20))
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { $0.establishConnection() }
+            .compactMap { sleep(3); return $0 }
+    }
+
+    func connecting(_ peripheral: Peripheral, testnet: Bool? = nil) -> Observable<Bool> {
+        // connect Ledger X
+        if peripheral.isLedger() {
+            return Observable.just(peripheral)
+                .flatMap { $0.isConnected ? Observable.just($0) : $0.establishConnection() }
+                .flatMap { self.connectLedger($0) }
+        }
+        // start a new connection with jade
+        return Observable.just(peripheral)
+            .compactMap { _ in sleep(1) }
+            .compactMap { self.manager.manager.cancelPeripheralConnection(peripheral.peripheral) }
+            .compactMap { sleep(1) }
+            .flatMap { peripheral.establishConnection() }
+            .flatMap { self.connectJade($0) }
     }
 
     func prepare(_ peripheral: Peripheral) {

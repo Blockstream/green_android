@@ -1,4 +1,8 @@
+import Foundation
 import UIKit
+import PromiseKit
+import RxBluetoothKit
+import RxSwift
 
 class PairingSuccessOtherViewController: HWFlowBaseViewController {
 
@@ -13,6 +17,7 @@ class PairingSuccessOtherViewController: HWFlowBaseViewController {
     @IBOutlet weak var iconRemember: UIImageView!
 
     var remember = false
+    var peripheral: Peripheral!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +27,7 @@ class PairingSuccessOtherViewController: HWFlowBaseViewController {
     }
 
     func setContent() {
-        lblSerial.text = "Serial F2910-1100-5120"
+        lblSerial.text = peripheral.name
         lblTitle.text = "Pairing Complete!".localized
         lblHint.text = "Follow the instruction on Ledger Wallet".localized
         lblWarn.text = "* If you forget your PIN, need to restore with recovery phrase".localized
@@ -44,14 +49,33 @@ class PairingSuccessOtherViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnContinue(_ sender: Any) {
-        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectionFailViewController") as? ConnectionFailViewController {
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
+        self.startLoader(message: "id_logging_in".localized)
+        BLEManager.shared.authenticating(self.peripheral)
+            .flatMap { _ in BLEManager.shared.account(self.peripheral) }
+            .flatMap { BLEManager.shared.logging(self.peripheral, account: $0) }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { self.next($0) },
+                       onError: { self.error($0) })
     }
 
     @IBAction func btnRemember(_ sender: Any) {
         remember.toggle()
         iconRemember.image = remember ? UIImage(named: "ic_checkbox_on") : UIImage(named: "ic_checkbox_off")
+    }
+
+    func next(_ wm: WalletManager) {
+        self.stopLoader()
+        wm.account.hidden = !remember
+        AccountsRepository.shared.upsert(wm.account)
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
+        UIApplication.shared.keyWindow?.rootViewController = nav
+    }
+
+    func error(_ err: Error) {
+        self.stopLoader()
+        let bleError = BLEManager.shared.toBleError(err, network: nil)
+        let txt = BLEManager.shared.toErrorString(bleError)
+        showAlert(title: "id_error".localized, message: txt)
     }
 }

@@ -25,9 +25,9 @@ class JadeDeviceCell: UITableViewCell {
         super.prepareForReuse()
     }
 
-    func configure() {
+    func configure(text: String) {
 
-        lblName.text = "Jade 1F6C60"
+        lblName.text = text
         setStyle()
     }
 

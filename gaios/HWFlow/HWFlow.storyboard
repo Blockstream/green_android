@@ -542,10 +542,10 @@
             </objects>
             <point key="canvasLocation" x="1616" y="-50"/>
         </scene>
-        <!--Connect Other Devices View Controller-->
+        <!--Wait Other Devices View Controller-->
         <scene sceneID="22T-bW-36L">
             <objects>
-                <viewController storyboardIdentifier="ConnectOtherDevicesViewController" id="Zy2-nf-zOe" customClass="ConnectOtherDevicesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WaitOtherDevicesViewController" id="Zy2-nf-zOe" customClass="WaitOtherDevicesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xGA-Fe-afm">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -806,34 +806,17 @@
                                     </label>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DfU-5Q-yTk" userLabel="Btn Check Store">
-                                <rect key="frame" x="25" y="792" width="364" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="E01-2f-6ia"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
-                                <state key="normal" title="btn_retry">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="btnRetry:" destination="23X-0a-bbe" eventType="touchUpInside" id="MFd-mz-Cmu"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="p9j-Sy-QW9"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="7z3-2u-Ygz" firstAttribute="top" secondItem="8lu-YR-tK3" secondAttribute="bottom" id="78W-mf-zgF"/>
-                            <constraint firstItem="p9j-Sy-QW9" firstAttribute="bottom" secondItem="DfU-5Q-yTk" secondAttribute="bottom" constant="20" id="9gF-UP-xZb"/>
-                            <constraint firstItem="DfU-5Q-yTk" firstAttribute="leading" secondItem="p9j-Sy-QW9" secondAttribute="leading" constant="25" id="TO3-c3-FRR"/>
                             <constraint firstItem="7z3-2u-Ygz" firstAttribute="centerY" secondItem="p9j-Sy-QW9" secondAttribute="centerY" multiplier="1.1" id="TOa-Fq-da7"/>
                             <constraint firstItem="8lu-YR-tK3" firstAttribute="leading" secondItem="p9j-Sy-QW9" secondAttribute="leading" constant="36" id="UG5-B6-L8R"/>
                             <constraint firstItem="p9j-Sy-QW9" firstAttribute="trailing" secondItem="7z3-2u-Ygz" secondAttribute="trailing" constant="25" id="VZ2-Z6-PMp"/>
                             <constraint firstItem="8lu-YR-tK3" firstAttribute="top" secondItem="XWh-1d-rNc" secondAttribute="top" constant="48" id="bKZ-CY-4y1"/>
                             <constraint firstItem="7z3-2u-Ygz" firstAttribute="leading" secondItem="p9j-Sy-QW9" secondAttribute="leading" constant="25" id="kmm-ei-sk6"/>
                             <constraint firstItem="p9j-Sy-QW9" firstAttribute="trailing" secondItem="8lu-YR-tK3" secondAttribute="trailing" constant="36" id="m43-l6-xC9"/>
-                            <constraint firstItem="p9j-Sy-QW9" firstAttribute="trailing" secondItem="DfU-5Q-yTk" secondAttribute="trailing" constant="25" id="shW-DI-XPo"/>
                         </constraints>
                     </view>
                     <connections>
@@ -1174,10 +1157,10 @@
             </objects>
             <point key="canvasLocation" x="3809" y="-50"/>
         </scene>
-        <!--Connect Jade View Controller-->
+        <!--Connect View Controller-->
         <scene sceneID="S5D-Q0-PEk">
             <objects>
-                <viewController storyboardIdentifier="ConnectJadeViewController" id="z5l-07-Xjx" customClass="ConnectJadeViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ConnectViewController" id="z5l-07-Xjx" customClass="ConnectViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="2tc-vf-hDa">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1214,14 +1197,32 @@
                                     <constraint firstItem="h1G-gS-jBG" firstAttribute="centerY" secondItem="qcR-Dl-mGw" secondAttribute="centerY" id="r7A-2A-yJW"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DfU-5Q-yTk" userLabel="Btn Check Store">
+                                <rect key="frame" x="25" y="792" width="364" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="E01-2f-6ia"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <state key="normal" title="btn_retry">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnRetry:" destination="23X-0a-bbe" eventType="touchUpInside" id="MFd-mz-Cmu"/>
+                                    <action selector="retryBtnTapped:" destination="z5l-07-Xjx" eventType="touchUpInside" id="AXn-nf-HLG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="mHO-wb-71B"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="zRp-Sz-Pb5" firstAttribute="centerY" secondItem="mHO-wb-71B" secondAttribute="centerY" id="0vl-Fy-A0P"/>
+                            <constraint firstItem="DfU-5Q-yTk" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" constant="25" id="7SP-ki-JsO"/>
+                            <constraint firstItem="mHO-wb-71B" firstAttribute="trailing" secondItem="DfU-5Q-yTk" secondAttribute="trailing" constant="25" id="7qN-cc-Ln5"/>
                             <constraint firstItem="mHO-wb-71B" firstAttribute="trailing" secondItem="zRp-Sz-Pb5" secondAttribute="trailing" constant="25" id="GnV-J5-try"/>
                             <constraint firstItem="XID-Nl-jGG" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" constant="36" id="JA3-OO-nW0"/>
                             <constraint firstItem="zRp-Sz-Pb5" firstAttribute="top" secondItem="XID-Nl-jGG" secondAttribute="bottom" id="Js5-E5-w8e"/>
+                            <constraint firstItem="mHO-wb-71B" firstAttribute="bottom" secondItem="DfU-5Q-yTk" secondAttribute="bottom" constant="20" id="Q62-I1-bYB"/>
                             <constraint firstItem="mHO-wb-71B" firstAttribute="bottom" secondItem="qcR-Dl-mGw" secondAttribute="bottom" id="SiE-um-56h"/>
                             <constraint firstItem="XID-Nl-jGG" firstAttribute="top" secondItem="2tc-vf-hDa" secondAttribute="top" constant="48" id="Ucl-nm-8xd"/>
                             <constraint firstItem="zRp-Sz-Pb5" firstAttribute="leading" secondItem="mHO-wb-71B" secondAttribute="leading" constant="25" id="l04-JS-4na"/>
@@ -1232,8 +1233,10 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="image" destination="XID-Nl-jGG" id="Y2b-7X-ahA"/>
                         <outlet property="lblTitle" destination="HMd-oB-RDe" id="6vk-ad-Y9A"/>
                         <outlet property="loaderPlaceholder" destination="h1G-gS-jBG" id="nV7-GX-esI"/>
+                        <outlet property="retryButton" destination="DfU-5Q-yTk" id="Q5g-t4-Sn5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="y2e-Od-E56" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

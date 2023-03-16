@@ -1,4 +1,6 @@
 import UIKit
+import RxBluetoothKit
+import RxSwift
 
 class PinCreateViewController: HWFlowBaseViewController {
 
@@ -17,6 +19,8 @@ class PinCreateViewController: HWFlowBaseViewController {
     @IBOutlet weak var loaderPlaceholder: UIView!
 
     var remember = false
+    var testnet = false
+    var peripheral: Peripheral!
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -115,5 +119,26 @@ class PinCreateViewController: HWFlowBaseViewController {
     @IBAction func btnRemember(_ sender: Any) {
         remember.toggle()
         iconRemember.image = remember ? UIImage(named: "ic_checkbox_on") : UIImage(named: "ic_checkbox_off")
+    }
+
+    func connect() {
+        BLEManager.shared.authenticating(peripheral, testnet: testnet)
+            .flatMap { _ in BLEManager.shared.account(self.peripheral) }
+            .flatMap { BLEManager.shared.logging(self.peripheral, account: $0) }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { self.next($0) },
+                       onError: { self.error($0) })
+    }
+
+    func next(_ wm: WalletManager) {
+        AnalyticsManager.shared.loginWallet(loginType: .hardware, ephemeralBip39: false, account: wm.account)
+        getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+    }
+
+    func error(_ err: Error) {
+        self.stopLoader()
+        let bleError = BLEManager.shared.toBleError(err, network: nil)
+        let txt = BLEManager.shared.toErrorString(bleError)
+        showAlert(title: "id_error".localized, message: txt)
     }
 }

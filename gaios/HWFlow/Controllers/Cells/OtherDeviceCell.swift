@@ -27,10 +27,10 @@ class OtherDeviceCell: UITableViewCell {
         super.prepareForReuse()
     }
 
-    func configure() {
-        lblType.text = "Serial F2910-1100-5120"
-        lblName.text = "Ledger Wallet from Basak"
-        lblHint.text = "Fast transactions on the Lightning Network, powered by Greenlight."
+    func configure(name: String, type: String) {
+        lblType.text = type
+        lblName.text = name
+        lblHint.text = ""
         setStyle()
     }
 

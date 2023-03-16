@@ -134,7 +134,7 @@
 		34560B8329BA257E007E916F /* SetupJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B8229BA257E007E916F /* SetupJadeViewController.swift */; };
 		34560B8529BA28F7007E916F /* SetupJadeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */; };
 		34560B9B29BF1A9D007E916F /* HWFlowBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */; };
-		34560B9E29BF2120007E916F /* ConnectOtherDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B9D29BF2120007E916F /* ConnectOtherDevicesViewController.swift */; };
+		34560B9E29BF2120007E916F /* WaitOtherDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B9D29BF2120007E916F /* WaitOtherDevicesViewController.swift */; };
 		34560BA529BF349E007E916F /* OtherDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560BA329BF349E007E916F /* OtherDeviceCell.swift */; };
 		34560BA629BF349E007E916F /* OtherDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34560BA429BF349E007E916F /* OtherDeviceCell.xib */; };
 		3456AF12299A78BE00C1BCA6 /* UITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456AF11299A78BE00C1BCA6 /* UITextView.swift */; };
@@ -278,7 +278,7 @@
 		34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C8E77529BF868500C84066 /* JadeDeviceCell.xib */; };
 		34C8E77E29C05DD300C84066 /* ConfirmConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */; };
 		34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77F29C069F400C84066 /* PinCreateViewController.swift */; };
-		34C8E78229C0746E00C84066 /* ConnectJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E78129C0746E00C84066 /* ConnectJadeViewController.swift */; };
+		34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E78129C0746E00C84066 /* ConnectViewController.swift */; };
 		34C978A5268DAF740061264D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A4268DAF740061264D /* Settings.swift */; };
 		34C978A8268DC14D0061264D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A7268DC14D0061264D /* Extensions.swift */; };
 		34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A9268DDD8C0061264D /* WatchOnly.swift */; };
@@ -610,7 +610,7 @@
 		34560B8229BA257E007E916F /* SetupJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupJadeViewController.swift; sourceTree = "<group>"; };
 		34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupJadeViewModel.swift; sourceTree = "<group>"; };
 		34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWFlowBaseViewController.swift; sourceTree = "<group>"; };
-		34560B9D29BF2120007E916F /* ConnectOtherDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectOtherDevicesViewController.swift; sourceTree = "<group>"; };
+		34560B9D29BF2120007E916F /* WaitOtherDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitOtherDevicesViewController.swift; sourceTree = "<group>"; };
 		34560BA329BF349E007E916F /* OtherDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherDeviceCell.swift; sourceTree = "<group>"; };
 		34560BA429BF349E007E916F /* OtherDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OtherDeviceCell.xib; sourceTree = "<group>"; };
 		3456AF11299A78BE00C1BCA6 /* UITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextView.swift; sourceTree = "<group>"; };
@@ -755,7 +755,7 @@
 		34C8E77529BF868500C84066 /* JadeDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JadeDeviceCell.xib; sourceTree = "<group>"; };
 		34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmConnectionViewController.swift; sourceTree = "<group>"; };
 		34C8E77F29C069F400C84066 /* PinCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinCreateViewController.swift; sourceTree = "<group>"; };
-		34C8E78129C0746E00C84066 /* ConnectJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectJadeViewController.swift; sourceTree = "<group>"; };
+		34C8E78129C0746E00C84066 /* ConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewController.swift; sourceTree = "<group>"; };
 		34C978A4268DAF740061264D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		34C978A7268DC14D0061264D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		34C978A9268DDD8C0061264D /* WatchOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnly.swift; sourceTree = "<group>"; };
@@ -1797,9 +1797,9 @@
 				34B385D829B888E40097220B /* WelcomeJadeViewController.swift */,
 				34560B7729B9C6E7007E916F /* WaitJadeViewController.swift */,
 				34560B7929B9D590007E916F /* WaitJadeViewModel.swift */,
+				34560B9D29BF2120007E916F /* WaitOtherDevicesViewController.swift */,
 				34560B8229BA257E007E916F /* SetupJadeViewController.swift */,
 				34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */,
-				34560B9D29BF2120007E916F /* ConnectOtherDevicesViewController.swift */,
 				3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */,
 				34C8E77029BF85AC00C84066 /* ListJadeDevicesViewController.swift */,
 				3489A5D529BF3FE4009B242F /* PairingViewController.swift */,
@@ -1807,7 +1807,7 @@
 				34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */,
 				34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */,
 				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
-				34C8E78129C0746E00C84066 /* ConnectJadeViewController.swift */,
+				34C8E78129C0746E00C84066 /* ConnectViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2750,7 +2750,7 @@
 				34477D3B277216640021698B /* FeeEditCell.swift in Sources */,
 				34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */,
 				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
-				34C8E78229C0746E00C84066 /* ConnectJadeViewController.swift in Sources */,
+				34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */,
 				8164909027F4C4FF0097B2E4 /* JadeMessage.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */,
@@ -2758,7 +2758,7 @@
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
-				34560B9E29BF2120007E916F /* ConnectOtherDevicesViewController.swift in Sources */,
+				34560B9E29BF2120007E916F /* WaitOtherDevicesViewController.swift in Sources */,
 				3418BAB4274275E600F9B2D0 /* TransactionAmountCell.swift in Sources */,
 				81D671F326C80D6B00682508 /* TorNotification.swift in Sources */,
 				34927BC72971452300D741DB /* AccountAssetViewController.swift in Sources */,
@@ -3174,7 +3174,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -3229,7 +3229,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3440,7 +3440,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

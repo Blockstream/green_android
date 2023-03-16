@@ -1,4 +1,6 @@
 import UIKit
+import RxBluetoothKit
+import RxSwift
 
 class WaitJadeViewController: HWFlowBaseViewController {
 
@@ -14,6 +16,7 @@ class WaitJadeViewController: HWFlowBaseViewController {
     let viewModel = WaitJadeViewModel()
     var timer: Timer?
     var idx = 0
+    var scanDispose: Disposable?
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -37,11 +40,13 @@ class WaitJadeViewController: HWFlowBaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         timer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         start()
+        scan()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         stop()
         timer?.invalidate()
+        scanDispose?.dispose()
     }
 
     @objc func fireTimer() {
@@ -127,9 +132,27 @@ class WaitJadeViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnTrouble(_ sender: Any) {
+        next()
+    }
+
+    func next() {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ListJadeDevicesViewController") as? ListJadeDevicesViewController {
             self.navigationController?.pushViewController(vc, animated: true)
         }
+    }
+
+    func scan() {
+        if BLEManager.shared.manager.state == .poweredOff {
+            showError("id_turn_on_bluetooth_to_connect".localized)
+        } else if BLEManager.shared.manager.state == .unauthorized {
+            showError("id_give_bluetooth_permissions".localized)
+        }
+        scanDispose = BLEManager.shared.scanning()
+            .filter { $0.contains { $0.isJade() } }
+            .take(1)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { _ in self.next() },
+                       onError: { self.showError($0.localizedDescription) })
     }
 }
