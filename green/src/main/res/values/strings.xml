@@ -1279,5 +1279,8 @@
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.</string>
-  <string name="sign_transaction">Sign Transaction</string>
+  <string name="id_sign_transaction">Sign Transaction</string>
+  <string name="id_account_archived">Account archived</string>
+  <string name="id_you_can_still_receive_funds">You can still receive funds, but they won’t be shown on your total balance.</string>
+  <string name="id_see_archived_accounts">See Archived Accounts (%s)</string>
 </resources>

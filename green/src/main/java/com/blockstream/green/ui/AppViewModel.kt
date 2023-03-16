@@ -1,5 +1,6 @@
 package com.blockstream.green.ui
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -21,7 +22,6 @@ import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.nameCleanup
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -32,8 +32,6 @@ import kotlinx.coroutines.withTimeout
 
 
 open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, LifecycleOwner {
-    internal val disposables = CompositeDisposable()
-
     val onEvent = MutableLiveData<ConsumableEvent<AppEvent>>()
     val onProgress = MutableLiveData(false)
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
@@ -46,7 +44,7 @@ open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, Lif
     var requestPinMatrixEmitter: CompletableDeferred<String>? = null
     var requestPinPassphraseEmitter: CompletableDeferred<String>? = null
 
-    private val lifecycleRegistry: LifecycleRegistry by lazy {
+    private val lifecycleRegistry = lazy {
         LifecycleRegistry(this).apply {
             currentState = Lifecycle.State.STARTED
         }
@@ -55,7 +53,8 @@ open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, Lif
     val lifecycleOwner: LifecycleOwner
         get() = this
 
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+    @SuppressLint("StaticFieldLeak")
+    override val lifecycle: Lifecycle = lifecycleRegistry.value
 
     override fun interactionRequest(hw: HWWallet?, completable: CompletableDeferred<Boolean>?, text: String?) {
         hw?.let {
@@ -150,8 +149,9 @@ open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, Lif
 
     override fun onCleared() {
         super.onCleared()
-        disposables.clear()
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        if(lifecycleRegistry.isInitialized()){
+            lifecycleRegistry.value.currentState = Lifecycle.State.DESTROYED
+        }
     }
 
     companion object{

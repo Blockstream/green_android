@@ -110,9 +110,6 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
                     action?.invoke(false)
                 }
             }
-            is AlertType.AppReview -> {
-
-            }
         }
 
     }
@@ -128,7 +125,6 @@ sealed class AlertType{
     data class Reset2FA(val network: Network, val twoFactorReset: TwoFactorReset): AlertType()
     object TestnetWarning : AlertType()
     object EphemeralBip39 : AlertType()
-    object AppReview : AlertType()
     data class Banner(val banner: com.blockstream.green.data.Banner) : AlertType()
     object FailedNetworkLogin : AlertType()
 }

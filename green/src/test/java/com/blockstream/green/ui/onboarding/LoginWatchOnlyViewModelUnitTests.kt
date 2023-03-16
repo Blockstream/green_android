@@ -104,7 +104,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
 
         viewModel.createNewWatchOnlyWallet()
 
-        verify(newWalletObserver, never()).onChanged(eq(null))
+        verify(newWalletObserver, never()).onChanged(anyOrNull())
         verify(errorObserver).onChanged(argThat {
             this.peekContent().message == "-1"
         })
@@ -123,7 +123,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
         viewModel.createNewWatchOnlyWallet()
 
         verify(walletRepository).insertWallet(any())
-        verify(newWalletObserver).onChanged(notNull())
+        verify(newWalletObserver).onChanged(any())
         verify(errorObserver, never()).onChanged(any())
     }
 

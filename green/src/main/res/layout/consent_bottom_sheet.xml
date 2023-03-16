@@ -74,7 +74,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
             app:cardBackgroundColor="@color/brand_surface_light"
-            app:layout_constraintBottom_toTopOf="@+id/buttonDisable"
+            app:layout_constraintBottom_toTopOf="@+id/buttonEnable"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView12">
@@ -196,31 +196,33 @@
         </com.google.android.material.card.MaterialCardView>
 
         <Button
-            android:id="@+id/buttonDisable"
-            style="@style/Widget.Green.Button.Outlined.Small"
+            android:id="@+id/buttonEnable"
+            style="@style/Widget.Green.Button"
+            isVisible="@{!hideButtons}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@string/id_dont_collect_data"
-            isVisible="@{!hideButtons}"
-            app:layout_constraintBottom_toTopOf="@+id/buttonEnable"
+            android:layout_marginBottom="4dp"
+            android:text="@string/id_allow_data_collection"
+            app:layout_constraintBottom_toTopOf="@+id/buttonDisable"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
-            android:id="@+id/buttonEnable"
-            style="@style/Widget.Green.Button"
+            android:id="@+id/buttonDisable"
+            style="@style/Widget.Green.Button.Text.Small"
+            isVisible="@{!hideButtons}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:text="@string/id_allow_data_collection"
-            isVisible="@{!hideButtons}"
+            android:text="@string/id_dont_collect_data"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

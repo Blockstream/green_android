@@ -64,19 +64,19 @@ class JadeGuideFragment : AppFragment<JadeGuideFragmentBinding>(
 
         when(step){
             0 -> {
-                binding.imageView1.fadeIn()
-                binding.imageView2.fadeOut(duration = 500)
-                binding.imageView3.fadeOut(duration = 500)
+                binding.rive1.fadeIn()
+                binding.rive2.fadeOut(duration = 500)
+                binding.rive3.fadeOut(duration = 500)
             }
             1 -> {
-                binding.imageView1.fadeOut(duration = 500)
-                binding.imageView2.fadeIn()
-                binding.imageView3.fadeOut(duration = 500)
+                binding.rive1.fadeOut(duration = 500)
+                binding.rive2.fadeIn()
+                binding.rive3.fadeOut(duration = 500)
             }
             else -> {
-                binding.imageView1.fadeOut(duration = 500)
-                binding.imageView2.fadeOut(duration = 500)
-                binding.imageView3.fadeIn()
+                binding.rive1.fadeOut(duration = 500)
+                binding.rive2.fadeOut(duration = 500)
+                binding.rive3.fadeIn()
             }
         }
     }

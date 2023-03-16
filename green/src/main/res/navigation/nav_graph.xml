@@ -360,7 +360,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/overviewFragment"
+        android:id="@+id/accountOverviewFragment"
         android:name="com.blockstream.green.ui.overview.AccountOverviewFragment"
         tools:layout="@layout/account_overview_fragment">
         <argument
@@ -400,7 +400,7 @@
             app:destination="@id/transactionDetailsFragment" />
         <action
             android:id="@+id/action_walletOverviewFragment_to_accountOverviewFragment"
-            app:destination="@id/overviewFragment" />
+            app:destination="@id/accountOverviewFragment" />
         <action
             android:id="@+id/action_walletOverviewFragment_to_receiveFragment"
             app:destination="@id/receiveFragment" />
@@ -623,7 +623,7 @@
             app:destination="@id/sendFragment" />
         <action
             android:id="@+id/action_transactionDetailsFragment_to_accountOverviewFragment"
-            app:destination="@id/overviewFragment" />
+            app:destination="@id/accountOverviewFragment" />
     </fragment>
     <fragment
         android:id="@+id/sendFragment"

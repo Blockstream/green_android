@@ -17,59 +17,41 @@
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
 
-        <ImageView
-            android:id="@+id/hwBackground"
+        <FrameLayout
+            android:id="@+id/wrap"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/hw_matrix_bg"
             app:layout_constraintBottom_toTopOf="@+id/steps1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintVertical_chainStyle="packed">
 
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/jade_button"
-            app:layout_constraintBottom_toBottomOf="@+id/hwBackground"
-            app:layout_constraintEnd_toEndOf="@+id/hwBackground"
-            app:layout_constraintStart_toStartOf="@+id/hwBackground"
-            app:layout_constraintTop_toTopOf="@+id/hwBackground" />
+            <app.rive.runtime.kotlin.RiveAnimationView
+                android:id="@+id/rive1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.0"
+                app:riveResource="@raw/jade_button" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:adjustViewBounds="true"
-            android:alpha="0.0"
-            android:scaleType="centerInside"
-            android:src="@drawable/notepad"
-            app:layout_constraintBottom_toBottomOf="@+id/hwBackground"
-            app:layout_constraintEnd_toEndOf="@+id/hwBackground"
-            app:layout_constraintStart_toStartOf="@+id/hwBackground"
-            app:layout_constraintTop_toTopOf="@+id/hwBackground" />
+            <app.rive.runtime.kotlin.RiveAnimationView
+                android:id="@+id/rive2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.0"
+                app:riveResource="@raw/recovery_phrase" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:adjustViewBounds="true"
-            android:alpha="0.0"
-            android:scaleType="centerInside"
-            android:src="@drawable/jade_rotate"
-            app:layout_constraintBottom_toBottomOf="@+id/hwBackground"
-            app:layout_constraintEnd_toEndOf="@+id/hwBackground"
-            app:layout_constraintStart_toStartOf="@+id/hwBackground"
-            app:layout_constraintTop_toTopOf="@+id/hwBackground" />
+            <app.rive.runtime.kotlin.RiveAnimationView
+                android:id="@+id/rive3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.0"
+                app:riveResource="@raw/jade_scroll" />
+
+        </FrameLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/steps1"
@@ -82,7 +64,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView1"
+            app:layout_constraintTop_toBottomOf="@+id/wrap"
             app:strokeColor="@color/brand_green"
             app:strokeWidth="2dp">
 

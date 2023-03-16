@@ -73,8 +73,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/message"
-                app:riveStateMachine="State Machine 1"
-                app:riveResource="@raw/rating_animation" />
+                app:riveResource="@raw/rating_animation"
+                app:riveStateMachine="State Machine 1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

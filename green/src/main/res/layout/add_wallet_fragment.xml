@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:text="@string/id_simple__secure_selfcustody"
+            android:text="@string/id_take_control_your_keys_your"
             android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceDisplayMedium"
             app:layout_constraintBottom_toTopOf="@+id/subtitle"
@@ -100,14 +100,14 @@
                 style="@style/Widget.Green.Button.Big"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/id_restore_a_wallet" />
+                android:text="@string/id_restore_wallet" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonWatchOnly"
                 style="@style/Widget.Green.Button.White.Big"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/id_watchonly_wallet" />
+                android:text="@string/id_watchonly" />
 
         </com.blockstream.green.views.GappedLinearLayout>
 

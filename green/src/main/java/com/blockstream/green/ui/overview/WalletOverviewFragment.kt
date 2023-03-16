@@ -11,7 +11,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.base.IAppReview
-import com.blockstream.base.Urls
 import com.blockstream.gdk.data.Account
 import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.gdk.data.Transaction
@@ -34,11 +33,12 @@ import com.blockstream.green.ui.bottomsheets.MenuDataProvider
 import com.blockstream.green.ui.bottomsheets.RenameAccountBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.SystemMessageBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
+import com.blockstream.green.ui.dialogs.AppRateDialogFragment
+import com.blockstream.green.ui.dialogs.ArchiveAccountDialogFragment
 import com.blockstream.green.ui.items.AccountListItem
 import com.blockstream.green.ui.items.AccountsListItem
 import com.blockstream.green.ui.items.AlertListItem
 import com.blockstream.green.ui.items.AlertType
-import com.blockstream.green.ui.items.AppReviewListItem
 import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.items.TextListItem
 import com.blockstream.green.ui.items.TitleListItem
@@ -51,7 +51,6 @@ import com.blockstream.green.utils.BannersHelper
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.observeList
-import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.AccordionListener
 import com.blockstream.green.views.NpaLinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -113,6 +112,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
     companion object {
         const val BROADCASTED_TRANSACTION = "BROADCASTED_TRANSACTION"
+        const val ACCOUNT_ARCHIVED = "ACCOUNT_ARCHIVED"
     }
 
     override fun getWalletViewModel() = viewModel
@@ -130,12 +130,16 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
             // Avoid requesting for review on send all transactions
             if (isSendAll == false) {
                 if (AppReviewHelper.shouldAskForReview(settingsManager, countly)) {
-                    applicationScope.launch(context = logException(countly)) {
-                        delay(1000)
-                        viewModel.setAppReview(true)
-                    }
+                    AppRateDialogFragment.show(childFragmentManager)
                 }
                 clearNavigationResult(BROADCASTED_TRANSACTION)
+            }
+        }
+
+        getNavigationResult<Boolean>(ACCOUNT_ARCHIVED)?.observe(viewLifecycleOwner) {
+            it?.let {
+                clearNavigationResult(ACCOUNT_ARCHIVED)
+                ArchiveAccountDialogFragment.show(fragmentManager = childFragmentManager)
             }
         }
 
@@ -171,6 +175,12 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 binding.bottomNav.root.alpha = alpha
             }
             setToolbarVisibility(it.isNotEmpty())
+
+            if(it.isEmpty()){
+                binding.rive.play()
+            }else{
+                binding.rive.stop()
+            }
         }.launchIn(lifecycleScope)
 
         viewModel.archivedAccountsLiveData.observe(viewLifecycleOwner){
@@ -380,7 +390,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                                 }
                                 R.id.archive -> {
                                     viewModel.archiveAccount(account)
-                                    snackbar(R.string.id_account_has_been_archived)
+                                    ArchiveAccountDialogFragment.show(fragmentManager = childFragmentManager)
                                 }
                             }
                             true
@@ -395,53 +405,41 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
         // Alert cards
         val alertCardsAdapter = ModelAdapter<AlertType, GenericItem> {
-            if (it is AlertType.AppReview) {
-                AppReviewListItem { rate ->
-                    if (rate > 0) {
-                        appReview.showGooglePlayInAppReviewDialog(this){
-                            openBrowser(Urls.BLOCKSTREAM_GOOGLE_PLAY)
+            AlertListItem(it).also { alertListItem ->
+                alertListItem.action = { isClose ->
+                    when (alertListItem.alertType) {
+                        is AlertType.Reset2FA -> {
+                            TwoFactorResetBottomSheetDialogFragment.show(
+                                alertListItem.alertType.network,
+                                alertListItem.alertType.twoFactorReset,
+                                childFragmentManager
+                            )
                         }
-                    }
-                    settingsManager.setAskedAboutAppReview()
-                    viewModel.setAppReview(false)
-                }
-            } else {
-                AlertListItem(it).also { alertListItem ->
-                    alertListItem.action = { isClose ->
-                        when (alertListItem.alertType) {
-                            is AlertType.Reset2FA -> {
-                                TwoFactorResetBottomSheetDialogFragment.show(
+                        is AlertType.Dispute2FA -> {
+                            TwoFactorResetBottomSheetDialogFragment.show(
+                                alertListItem.alertType.network,
+                                alertListItem.alertType.twoFactorReset,
+                                childFragmentManager
+                            )
+                        }
+                        is AlertType.SystemMessage -> {
+                            if (isClose) {
+                                viewModel.dismissSystemMessage()
+                            } else {
+                                SystemMessageBottomSheetDialogFragment.show(
                                     alertListItem.alertType.network,
-                                    alertListItem.alertType.twoFactorReset,
+                                    alertListItem.alertType.message,
                                     childFragmentManager
                                 )
                             }
-                            is AlertType.Dispute2FA -> {
-                                TwoFactorResetBottomSheetDialogFragment.show(
-                                    alertListItem.alertType.network,
-                                    alertListItem.alertType.twoFactorReset,
-                                    childFragmentManager
-                                )
-                            }
-                            is AlertType.SystemMessage -> {
-                                if (isClose) {
-                                    viewModel.dismissSystemMessage()
-                                } else {
-                                    SystemMessageBottomSheetDialogFragment.show(
-                                        alertListItem.alertType.network,
-                                        alertListItem.alertType.message,
-                                        childFragmentManager
-                                    )
-                                }
-                            }
-                            is AlertType.Banner -> {
-                                BannersHelper.dismiss(this, alertListItem.alertType.banner)
-                            }
-                            is AlertType.FailedNetworkLogin -> {
-                                viewModel.tryFailedNetworks()
-                            }
-                            AlertType.EphemeralBip39, AlertType.TestnetWarning, AlertType.AppReview -> {}
                         }
+                        is AlertType.Banner -> {
+                            BannersHelper.dismiss(this, alertListItem.alertType.banner)
+                        }
+                        is AlertType.FailedNetworkLogin -> {
+                            viewModel.tryFailedNetworks()
+                        }
+                        AlertType.EphemeralBip39, AlertType.TestnetWarning -> {}
                     }
                 }
             }
@@ -565,12 +563,11 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                             }
                             R.id.archive -> {
                                 viewModel.archiveAccount(item.account)
-                                snackbar(R.string.id_account_has_been_archived)
+                                ArchiveAccountDialogFragment.show(fragmentManager = childFragmentManager)
                             }
                         }
                         true
                     }
-
                 }
 
                 true

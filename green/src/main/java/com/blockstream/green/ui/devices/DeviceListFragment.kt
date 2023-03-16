@@ -173,6 +173,8 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
 }
 
 class JadePageFragment : Fragment() {
+    private var binding: JadeConnectStepBinding? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -187,25 +189,36 @@ class JadePageFragment : Fragment() {
                     0 -> {
                         it.title.setText(R.string.id_power_on_jade)
                         it.subtitle.setText(R.string.id_hold_the_green_button_on_the)
-                        it.imageView.setImageResource(R.drawable.jade_power)
+                        it.rive.setRiveResource(R.raw.jade_power)
                     }
 
                     1 -> {
                         it.title.setText(R.string.id_follow_the_instructions_on_jade)
                         it.subtitle.setText(R.string.id_select_initialize_and_choose_to)
-                        it.imageView.setImageResource(R.drawable.jade_button)
+                        it.rive.setRiveResource(R.raw.jade_button)
                     }
 
                     else -> {
                         it.title.setText(R.string.id_connect_using_usb_or_bluetooth)
                         it.subtitle.setText(R.string.id_choose_a_usb_or_bluetooth)
-                        it.imageView.setImageResource(R.drawable.jade_rotate)
+                        it.rive.setRiveResource(R.raw.jade_scroll)
                     }
                 }
             }
         }.also {
             it.lifecycleOwner = viewLifecycleOwner
+            binding = it
         }.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding?.rive?.play()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding?.rive?.stop()
     }
 
     companion object : KLogging() {

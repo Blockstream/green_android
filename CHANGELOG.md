@@ -7,12 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [4.0.0-beta4] - 2023-03-07
 
 ### Added
-
 - Add troubleshooting links in Jade onboarding
-- Uncheck "Remember device" option if user deletes a wallet from the list
+- Persist last selection of the "Remember device" option 
 
 ### Fixed
-
 - Fix Jade login with bip39 passphrases
 - Fix Trezor signing to recognize change address when sending
 

@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.ScreenView
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import mu.KLogging
 import javax.inject.Inject
@@ -27,6 +28,9 @@ abstract class AbstractDialogFragment<T : ViewDataBinding> : DialogFragment(), S
     override val segmentation: HashMap<String, Any>? = null
 
     open val isFullWidth: Boolean = false
+
+    val walletFragment : AbstractWalletFragment<*>?
+        get() = (parentFragment as? AbstractWalletFragment<*>)
 
     abstract fun inflate(layoutInflater: LayoutInflater): T
 

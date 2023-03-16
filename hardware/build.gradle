@@ -44,7 +44,7 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- AndroidX --------------------------------------------------------------------------- */
-    implementation 'androidx.arch.core:core-common:2.1.0'
+    implementation 'androidx.arch.core:core-common:2.2.0'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Guava ------------------------------------------------------------------------------ */
@@ -78,6 +78,6 @@ dependencies {
     testImplementation fileTree(dir: 'libs', include: ['.jar', '.so'])
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
 }

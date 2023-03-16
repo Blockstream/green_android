@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.base.IAppReview
@@ -19,6 +20,7 @@ import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.AccountOverviewFragmentBinding
+import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.AssetPair
@@ -97,7 +99,12 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
-                popBackStack()
+                setNavigationResult(
+                    result = true,
+                    key = WalletOverviewFragment.ACCOUNT_ARCHIVED,
+                    destinationId = R.id.walletOverviewFragment
+                )
+                findNavController().popBackStack(R.id.walletOverviewFragment, false)
             }
         }
 
@@ -197,7 +204,6 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             }
             R.id.archive -> {
                 viewModel.archiveAccount()
-                snackbar(R.string.id_account_has_been_archived)
                 true
             }
             R.id.enhance_security -> {

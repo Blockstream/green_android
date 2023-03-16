@@ -80,12 +80,13 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.75">
 
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
+                <!-- Make it riveAutoPlay=false to avoid "Has No Surface"!" logging  -->
+                <app.rive.runtime.kotlin.RiveAnimationView
+                    android:id="@+id/rive"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/wallet_visual" />
+                    app:riveAutoPlay="false"
+                    app:riveResource="@raw/wallet" />
 
                 <TextView
                     android:layout_width="match_parent"
