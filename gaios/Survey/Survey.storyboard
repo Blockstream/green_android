@@ -19,7 +19,7 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lPU-Uu-3eX">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.65280174420000003" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.75115113329774441" colorSpace="custom" customColorSpace="calibratedRGB"/>
                             </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6vu-cS-pNG">
                                 <rect key="frame" x="0.0" y="59" width="393" height="759"/>
@@ -219,7 +219,7 @@
                                                         </connections>
                                                     </button>
                                                 </subviews>
-                                                <color key="backgroundColor" name="customModalBlueDark"/>
+                                                <color key="backgroundColor" name="gGrayCard"/>
                                                 <constraints>
                                                     <constraint firstItem="y5F-dB-Fa4" firstAttribute="top" secondItem="27m-jU-HPy" secondAttribute="bottom" constant="10" id="8zZ-Hj-F4K"/>
                                                     <constraint firstAttribute="trailing" secondItem="y5F-dB-Fa4" secondAttribute="trailing" constant="20" id="M3x-la-5Dc"/>
@@ -297,13 +297,13 @@
     <resources>
         <image name="cancel" width="14" height="14"/>
         <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customModalBlueDark">
-            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTextFieldBg">
             <color red="0.59200000762939453" green="0.59200000762939453" blue="0.59200000762939453" alpha="0.14200000464916229" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGrayCard">
+            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

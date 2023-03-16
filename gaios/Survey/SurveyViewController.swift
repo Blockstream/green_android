@@ -103,7 +103,7 @@ class SurveyViewController: KeyboardViewController {
                 segment.removeSegment(at: 0, animated: false)
             }
             lblTitle.text = widget.name?.htmlDecoded ?? ""
-            btnLeft.setTitle("id_not_now", for: .normal)
+            btnLeft.setTitle("id_not_now".localized, for: .normal)
             btnRight.setTitle(widget.appearance?.submit?.htmlDecoded ?? "id_submit".localized, for: .normal)
 
             let qRating: WidgetQuestion? = (widget.questions?.filter { $0.qType == .rating })?.first

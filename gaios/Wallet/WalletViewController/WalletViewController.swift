@@ -71,6 +71,22 @@ class WalletViewController: UIViewController {
         welcomeLayer.isHidden = true
 
         AnalyticsManager.shared.recordView(.walletOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        AnalyticsManager.shared.getSurvey { [weak self] widget in
+            if let widget = widget {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
+                    self?.surveyUI(widget)
+                }
+            }
+        }
+    }
+
+    func surveyUI(_ widget: CountlyWidget) {
+        let storyboard = UIStoryboard(name: "Survey", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SurveyViewController") as? SurveyViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.widget = widget
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
