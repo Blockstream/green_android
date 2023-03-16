@@ -1,21 +1,24 @@
 import Foundation
 import UIKit
-import PromiseKit
 
-protocol DialogCountlyConsentViewControllerDelegate: AnyObject {
+protocol DialogCountlyViewControllerDelegate: AnyObject {
     func didChangeConsent()
 }
 
-enum DialogCountlyConsentAction {
+enum DialogCountlyAction {
     case cancel
     case more
     case deny
     case allow
 }
 
-class DialogCountlyConsentViewController: UIViewController {
+class DialogCountlyViewController: UIViewController {
 
+    @IBOutlet weak var tappableBg: UIView!
+    @IBOutlet weak var handle: UIView!
+    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
     @IBOutlet weak var lblTitle: UILabel!
+
     @IBOutlet weak var lblHint: UILabel!
 
     @IBOutlet weak var detailsContainer: UIStackView!
@@ -34,32 +37,56 @@ class DialogCountlyConsentViewController: UIViewController {
     @IBOutlet weak var btnAllow: UIButton!
     @IBOutlet weak var btnDebugID: UIButton!
 
-    @IBOutlet weak var btnDismiss: UIButton!
-    @IBOutlet weak var bgLayer: UIView!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
 
-    weak var delegate: DialogCountlyConsentViewControllerDelegate?
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableHeight: NSLayoutConstraint!
+
+    weak var delegate: DialogCountlyViewControllerDelegate?
 
     var disableControls = false
 
     var expandText: String {
-        return self.detailsCard.isHidden ? NSLocalizedString("id_show_details", comment: "") : NSLocalizedString("id_hide_details", comment: "")
+        return self.detailsCard.isHidden ? "id_show_details".localized : "id_hide_details".localized
     }
+
+    lazy var blurredView: UIView = {
+        let containerView = UIView()
+        let blurEffect = UIBlurEffect(style: .dark)
+        let customBlurEffectView = CustomVisualEffectView(effect: blurEffect, intensity: 0.4)
+        customBlurEffectView.frame = self.view.bounds
+
+        let dimmedView = UIView()
+        dimmedView.backgroundColor = .black.withAlphaComponent(0.3)
+        dimmedView.frame = self.view.bounds
+        containerView.addSubview(customBlurEffectView)
+        containerView.addSubview(dimmedView)
+        return containerView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.alpha = 0.0
 
         detailsCard.isHidden = true
         setContent()
         setStyle()
 
+        view.addSubview(blurredView)
+        view.sendSubviewToBack(blurredView)
+
+        view.alpha = 0.0
+        anchorBottom.constant = -200
+
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+            swipeDown.direction = .down
+            self.view.addGestureRecognizer(swipeDown)
+        let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
+            tappableBg.addGestureRecognizer(tapToClose)
+
         if disableControls == true {
             btnDeny.isHidden = true
             btnAllow.isHidden = true
-            btnDismiss.isHidden = false
         }
         btnDebugID.isHidden = true
 
@@ -70,29 +97,30 @@ class DialogCountlyConsentViewController: UIViewController {
 #endif
 
         detailsExpand.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressExpandDetails)))
-
-        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogAnalyticsConsentScreen.view
-        btnDeny.accessibilityIdentifier = AccessibilityIdentifiers.DialogAnalyticsConsentScreen.denyBtn
-        btnAllow.accessibilityIdentifier = AccessibilityIdentifiers.DialogAnalyticsConsentScreen.allowBtn
     }
 
-    @objc func didPressExpandDetails() {
-        let clock = self.detailsCard.isHidden ? 1 : -1
-        UIView.animate(withDuration: 0.25) {
-            self.detailsCard.isHidden = !self.detailsCard.isHidden
+    @objc func didSwipe(gesture: UIGestureRecognizer) {
 
-            self.expandArrow.transform = self.expandArrow.transform.rotated(by: CGFloat(clock) * .pi / 2)
-            self.lblExpand.text = self.expandText
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            switch swipeGesture.direction {
+            case .down:
+                dismiss(.cancel)
+            default:
+                break
+            }
         }
     }
 
-    func setStyle() {
-        cardView.layer.cornerRadius = 20
-        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        detailsContainer.layer.cornerRadius = 5.0
-        btnDeny.setStyle(.outlined)
-        btnAllow.setStyle(.primary)
-        btnMore.setStyle(.inline)
+    @objc func didTap(gesture: UIGestureRecognizer) {
+
+        dismiss(.cancel)
+    }
+
+    @objc func didPressExpandDetails() {
+        UIView.animate(withDuration: 0.25) {
+            self.detailsCard.isHidden = !self.detailsCard.isHidden
+            self.lblExpand.text = self.expandText
+        }
     }
 
     func setContent() {
@@ -117,14 +145,28 @@ class DialogCountlyConsentViewController: UIViewController {
         btnDebugID.setTitle(NSLocalizedString("id_copy_device_id", comment: ""), for: .normal)
     }
 
+    func setStyle() {
+        cardView.layer.cornerRadius = 20
+        cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        handle.cornerRadius = 1.5
+        detailsContainer.layer.cornerRadius = 5.0
+        btnDeny.setStyle(.inline)
+        btnAllow.setStyle(.primary)
+        btnMore.setStyle(.inline)
+        lblHint.textColor = .white.withAlphaComponent(0.6)
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        anchorBottom.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
+            self.view.layoutIfNeeded()
         }
     }
 
-    func dismiss(_ action: DialogCountlyConsentAction) {
+    func dismiss(_ action: DialogCountlyAction) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
@@ -146,10 +188,6 @@ class DialogCountlyConsentViewController: UIViewController {
                 }
             }
         })
-    }
-
-    @IBAction func btnDismiss(_ sender: Any) {
-        dismiss(.cancel)
     }
 
     @IBAction func btnMore(_ sender: Any) {

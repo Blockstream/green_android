@@ -67,7 +67,6 @@
 		34204722291C12DB00EDE945 /* AssetSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204721291C12DB00EDE945 /* AssetSelectViewModel.swift */; };
 		34204726291CE13100EDE945 /* AssetSelectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34204724291CE13100EDE945 /* AssetSelectCell.swift */; };
 		34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34204725291CE13100EDE945 /* AssetSelectCell.xib */; };
-		34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */; };
 		34237FC7276A479700618502 /* ExistingWallets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC6276A479700618502 /* ExistingWallets.swift */; };
 		34237FC9276A520800618502 /* ManualRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC8276A520800618502 /* ManualRestore.swift */; };
 		34237FD2276B68A900618502 /* Send.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34237FD1276B68A900618502 /* Send.storyboard */; };
@@ -223,6 +222,7 @@
 		349DB75F26A84D17004FF265 /* TorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB75E26A84D17004FF265 /* TorUITests.swift */; };
 		349DB76126A84D20004FF265 /* WalletSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB76026A84D20004FF265 /* WalletSettings.swift */; };
 		349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */; };
+		349F71E929C21945007B9154 /* DialogCountlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349F71E829C21945007B9154 /* DialogCountlyViewController.swift */; };
 		34A2AEFE27BA9B4D006A01E9 /* SendConfirm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */; };
 		34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFF27BBECD0006A01E9 /* WordCell.swift */; };
 		34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */; };
@@ -544,7 +544,6 @@
 		34204721291C12DB00EDE945 /* AssetSelectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectViewModel.swift; sourceTree = "<group>"; };
 		34204724291CE13100EDE945 /* AssetSelectCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectCell.swift; sourceTree = "<group>"; };
 		34204725291CE13100EDE945 /* AssetSelectCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetSelectCell.xib; sourceTree = "<group>"; };
-		34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCountlyConsentViewController.swift; sourceTree = "<group>"; };
 		34237FC6276A479700618502 /* ExistingWallets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingWallets.swift; sourceTree = "<group>"; };
 		34237FC8276A520800618502 /* ManualRestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualRestore.swift; sourceTree = "<group>"; };
 		34237FD1276B68A900618502 /* Send.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Send.storyboard; sourceTree = "<group>"; };
@@ -699,6 +698,7 @@
 		349DB75E26A84D17004FF265 /* TorUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorUITests.swift; sourceTree = "<group>"; };
 		349DB76026A84D20004FF265 /* WalletSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettings.swift; sourceTree = "<group>"; };
 		349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRegistryFailViewController.swift; sourceTree = "<group>"; };
+		349F71E829C21945007B9154 /* DialogCountlyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DialogCountlyViewController.swift; path = gaios/Shared/Controllers/DialogList/DialogCountlyViewController.swift; sourceTree = SOURCE_ROOT; };
 		34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirm.swift; sourceTree = "<group>"; };
 		34A2AEFF27BBECD0006A01E9 /* WordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCell.swift; sourceTree = "<group>"; };
 		34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterQrCell.swift; sourceTree = "<group>"; };
@@ -1677,6 +1677,14 @@
 			path = Transaction;
 			sourceTree = "<group>";
 		};
+		349F71E729C218FA007B9154 /* DialogCountly */ = {
+			isa = PBXGroup;
+			children = (
+				349F71E829C21945007B9154 /* DialogCountlyViewController.swift */,
+			);
+			path = DialogCountly;
+			sourceTree = "<group>";
+		};
 		34A75B62292B6984007995D7 /* OnBoardInfo */ = {
 			isa = PBXGroup;
 			children = (
@@ -1911,13 +1919,13 @@
 				3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */,
 				3423C6E627C380DD001D9E2C /* DialogMnemonicLengthViewController.swift */,
 				343A697A27E08921008D5F4C /* DialogAssetDetailViewController.swift */,
-				34224D8228128AFF0071850E /* DialogCountlyConsentViewController.swift */,
 				341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */,
 				34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */,
 				340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */,
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				34A862A02979432C0018E636 /* DialogShowQRViewController.swift */,
 				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
+				349F71E729C218FA007B9154 /* DialogCountly */,
 				3457F4AC2923978600EF33B5 /* DialogList */,
 			);
 			path = Controllers;
@@ -2818,7 +2826,6 @@
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
 				812DBDBA29724E8C002992D6 /* WatchOnlySettings.swift in Sources */,
 				34F980B129151C7500C12D48 /* TransactionCellModel.swift in Sources */,
-				34224D8328128AFF0071850E /* DialogCountlyConsentViewController.swift in Sources */,
 				3447553329098DA000B9C1AF /* WalletViewController.swift in Sources */,
 				349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */,
 				3420470C291A6FE100EDE945 /* MultiLabelViewModel.swift in Sources */,
@@ -2898,6 +2905,7 @@
 				815D4AA028638A56004DC015 /* PinData.swift in Sources */,
 				349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */,
 				81A062D624532643003464A0 /* HWChannelProtocol.swift in Sources */,
+				349F71E929C21945007B9154 /* DialogCountlyViewController.swift in Sources */,
 				3418BAE32743BDAD00F9B2D0 /* ArcView.swift in Sources */,
 				3418BABA2742ABE100F9B2D0 /* TransactionStatusCell.swift in Sources */,
 				34477D392771F7090021698B /* AddRecipientCell.swift in Sources */,

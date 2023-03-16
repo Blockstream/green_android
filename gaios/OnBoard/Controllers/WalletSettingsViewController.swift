@@ -293,8 +293,8 @@ class WalletSettingsViewController: KeyboardViewController {
 
     @IBAction func btnAnalytics(_ sender: Any) {
 
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCountlyConsentViewController") as? DialogCountlyConsentViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCountlyViewController") as? DialogCountlyViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.disableControls = true
             self.present(vc, animated: true, completion: nil)
