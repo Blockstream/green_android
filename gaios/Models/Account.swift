@@ -17,6 +17,8 @@ struct Account: Codable, Equatable {
         case walletHashId = "wallet_hash_id"
         case askEphemeral = "ask_ephemeral"
         case xpubHashId = "xpub_hash_id"
+        case hidden
+        case uuid
     }
 
     var name: String
@@ -30,12 +32,14 @@ struct Account: Codable, Equatable {
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
     var walletHashId: String?
     var xpubHashId: String?
+    var hidden: Bool = false
+    var uuid: UUID?
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
     var isEphemeral: Bool = false
     var askEphemeral: Bool?
     var ephemeralId: Int?
 
-    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil) {
+    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, uuid: UUID? = nil) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -49,6 +53,7 @@ struct Account: Codable, Equatable {
         self.isEphemeral = isEphemeral
         self.askEphemeral = askEphemeral
         self.xpubHashId = xpubHashId
+        self.uuid = uuid
         if isEphemeral {
             let ephAccounts = AccountsRepository.shared.ephAccounts
             if ephAccounts.count == 0 {

@@ -56,12 +56,7 @@ class AccountsRepository {
     var ephAccounts: [Account] = [Account]()
 
     // Filtered account list of hardware wallets
-    var hwAccounts: [Account] { accounts.filter { account in
-        account.isHW && !WalletsRepository.shared.wallets.filter {$0.key == account.id }.isEmpty } }
-
-    // Hardware wallets accounts are store in temporary memory
-    var devices = [ Account(name: "Blockstream Jade", network: "mainnet", isJade: true, isSingleSig: false),
-                       Account(name: "Ledger Nano X", network: "mainnet", isLedger: true, isSingleSig: false) ]
+    var hwAccounts: [Account] { accounts.filter { $0.isHW && !$0.hidden } }
 
     func get(for id: String) -> Account? {
         ephAccounts.filter({ $0.id == id }).first ??
