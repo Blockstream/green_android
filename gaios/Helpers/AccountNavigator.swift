@@ -23,11 +23,21 @@ class AccountNavigator {
             let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
             let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
             UIApplication.shared.keyWindow?.rootViewController = nav
-           return
+            return
         }
-        // switch on pin view of selected account
         let homeS = UIStoryboard(name: "Home", bundle: nil)
         let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
+        let hwflow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if account.isHW {
+            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+               let vc = hwflow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
+                vc.account = account
+                UIApplication.shared.keyWindow?.rootViewController = nav
+                nav.pushViewController(vc, animated: false)
+                return
+            }
+        }
+        // switch on pin view of selected account
         if account.isWatchonly {
             if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
                 let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {

@@ -571,7 +571,7 @@ extension AccountViewController: DialogListViewControllerDelegate {
 }
 
 extension AccountViewController: DialogWalletNameViewControllerDelegate {
-    func didRename(name: String, index: Int?) {
+    func didRename(name: String, index: String?) {
         rename(name: name)
     }
     func didCancel() {

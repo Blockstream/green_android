@@ -564,7 +564,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension WalletViewController: DialogWalletNameViewControllerDelegate {
 
-    func didRename(name: String, index: Int?) {
+    func didRename(name: String, index: String?) {
         //...
     }
     func didCancel() {

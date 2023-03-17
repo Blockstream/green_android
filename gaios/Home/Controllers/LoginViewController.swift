@@ -456,7 +456,7 @@ class LoginViewController: UIViewController {
 }
 
 extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
-    func didRename(name: String, index: Int?) {
+    func didRename(name: String, index: String?) {
         self.account?.name = name
         if let account = self.account {
             AccountsRepository.shared.upsert(account)
@@ -464,7 +464,7 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
             AnalyticsManager.shared.renameWallet()
         }
     }
-    func didDelete(_ index: Int?) {
+    func didDelete(_ index: String?) {
         if let account = self.account {
             AccountsRepository.shared.remove(account)
             navigationController?.popViewController(animated: true)
@@ -476,7 +476,7 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
 }
 
 extension LoginViewController: PopoverMenuWalletDelegate {
-    func didSelectionMenuOption(menuOption: MenuWalletOption, index: Int?) {
+    func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?) {
         switch menuOption {
         case .emergency:
             showEmergencyDialog()

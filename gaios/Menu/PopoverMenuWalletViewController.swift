@@ -10,7 +10,7 @@ enum MenuWalletOption {
 extension MenuWalletOption: CaseIterable {}
 
 protocol PopoverMenuWalletDelegate: AnyObject {
-    func didSelectionMenuOption(menuOption: MenuWalletOption, index: Int?)
+    func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?)
 }
 
 class PopoverMenuWalletViewController: UIViewController {
@@ -21,7 +21,7 @@ class PopoverMenuWalletViewController: UIViewController {
     private var isLiquid: Bool!
     private var kvoContext = 0
     var menuOptions: [MenuWalletOption] = []
-    var index: Int?
+    var index: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()

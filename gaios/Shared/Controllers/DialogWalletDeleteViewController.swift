@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol DialogWalletDeleteViewControllerDelegate: AnyObject {
-    func didDelete(_ index: Int?)
+    func didDelete(_ index: String?)
     func didCancel()
 }
 
@@ -28,7 +28,7 @@ class DialogWalletDeleteViewController: KeyboardViewController {
 
     var buttonConstraint: NSLayoutConstraint?
     var preDeleteFlag = false
-    var index: Int?
+    var index: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()

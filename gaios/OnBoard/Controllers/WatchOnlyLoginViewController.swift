@@ -188,7 +188,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 }
 
 extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
-    func didRename(name: String, index: Int?) {
+    func didRename(name: String, index: String?) {
         account?.name = name
         if let account = self.account {
             AccountsRepository.shared.current = account
@@ -196,7 +196,7 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
             AnalyticsManager.shared.renameWallet()
         }
     }
-    func didDelete(_ index: Int?) {
+    func didDelete(_ index: String?) {
         if let account = self.account {
             AccountsRepository.shared.remove(account)
             navigationController?.popViewController(animated: true)
@@ -208,7 +208,7 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
 }
 
 extension WatchOnlyLoginViewController: PopoverMenuWalletDelegate {
-    func didSelectionMenuOption(menuOption: MenuWalletOption, index: Int?) {
+    func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?) {
         switch menuOption {
         case .emergency:
             break

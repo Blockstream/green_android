@@ -5,7 +5,6 @@ enum HomeSection: Int, CaseIterable {
     case swWallet = 1
     case ephWallet = 2
     case hwWallet = 3
-    case device = 4
 }
 
 class HomeViewController: UIViewController {
@@ -69,15 +68,6 @@ class HomeViewController: UIViewController {
     func updateUI() {
     }
 
-    func enterWallet(_ account: Account) {
-        AccountNavigator.goLogin(account: account)
-    }
-
-    func showHardwareWallet(_ index: Int) {
-        let account = AccountsRepository.shared.devices[index]
-        AccountNavigator.goHWLogin(isJade: account.isJade)
-    }
-
     func remoteAlertDismiss() {
         remoteAlert = nil
         tableView.reloadData()
@@ -87,11 +77,7 @@ class HomeViewController: UIViewController {
         SafeNavigationManager.shared.navigate(remoteAlert?.link)
     }
 
-    @objc func didPressAddWallet() {
-        AccountNavigator.goCreateRestore()
-    }
-
-    func walletDelete(_ index: Int) {
+    func walletDelete(_ index: String) {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletDeleteViewController") as? DialogWalletDeleteViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -101,14 +87,14 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func walletRename(_ index: Int) {
-        guard let account = AccountsRepository.shared.swAccounts[safe: index] else { return }
+    func walletRename(_ index: String) {
+        let account = AccountsRepository.shared.get(for: index)
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.index = index
-            vc.prefill = account.name
+            vc.prefill = account?.name ?? ""
             present(vc, animated: false, completion: nil)
         }
     }
@@ -148,13 +134,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case HomeSection.remoteAlerts.rawValue:
             return remoteAlert != nil ? 1 : 0
         case HomeSection.swWallet.rawValue:
-            return AccountsRepository.shared.swAccounts.count == 0 ? 1 : AccountsRepository.shared.swAccounts.count
+            return AccountsRepository.shared.swAccounts.count
         case HomeSection.ephWallet.rawValue:
             return ephAccounts.count
         case HomeSection.hwWallet.rawValue:
             return AccountsRepository.shared.hwAccounts.count
-        case HomeSection.device.rawValue:
-            return AccountsRepository.shared.devices.count
         default:
             return 0
         }
@@ -178,42 +162,16 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case HomeSection.swWallet.rawValue:
-            if AccountsRepository.shared.swAccounts.count == 0 {
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListEmptyCell") as? WalletListEmptyCell {
-                    cell.configure(NSLocalizedString("id_it_looks_like_you_have_no", comment: ""), UIImage(named: "ic_logo_green")!)
-                    cell.selectionStyle = .none
-                    return cell
+            let account = AccountsRepository.shared.swAccounts[indexPath.row]
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
+                let selected = { () -> Bool in
+                    return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
                 }
-            } else {
-                let account = AccountsRepository.shared.swAccounts[indexPath.row]
-                if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
-                    let selected = { () -> Bool in
-                        return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
-                    }
-                    cell.configure(item: account,
-                                   isSelected: selected(),
-                                   onLongpress: { [weak self] () in
-                        if !(WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false) {
-                            UINotificationFeedbackGenerator().notificationOccurred(.success)
-
-                            let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
-                            if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
-                                popover.delegate = self
-                                popover.index = indexPath.row
-                                popover.menuOptions = [.edit, .delete]
-                                popover.modalPresentationStyle = .popover
-                                let popoverPresentationController = popover.popoverPresentationController
-                                popoverPresentationController?.backgroundColor = UIColor.customModalDark()
-                                popoverPresentationController?.delegate = self
-                                popoverPresentationController?.sourceView = cell
-                                popoverPresentationController?.sourceRect = cell.bounds
-                                self?.present(popover, animated: true)
-                            }
-                        }
-                    })
-                    cell.selectionStyle = .none
-                    return cell
-                }
+                cell.configure(item: account,
+                               isSelected: selected(),
+                               onLongpress: { [weak self] () in self?.popover(for: cell, account: account) })
+                cell.selectionStyle = .none
+                return cell
             }
         case HomeSection.ephWallet.rawValue:
             let account = ephAccounts[indexPath.row]
@@ -231,15 +189,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 let selected = { () -> Bool in
                     return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
                 }
-                cell.configure(item: account, isSelected: selected())
-                cell.selectionStyle = .none
-                return cell
-            }
-        case HomeSection.device.rawValue:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListHDCell") as? WalletListHDCell {
-                let hw = AccountsRepository.shared.devices[indexPath.row]
-                let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
-                cell.configure(hw.name, icon ?? UIImage())
+                cell.configure(item: account,
+                               isSelected: selected(),
+                               onLongpress: { [weak self] () in self?.popover(for: cell, account: account) })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -250,8 +202,28 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return UITableViewCell()
     }
 
+    func popover(for cell: UITableViewCell, account: Account) {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
+        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
+            popover.delegate = self
+            popover.index = account.id
+            popover.menuOptions = [.edit, .delete]
+            popover.modalPresentationStyle = .popover
+            let popoverPresentationController = popover.popoverPresentationController
+            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
+            popoverPresentationController?.delegate = self
+            popoverPresentationController?.sourceView = cell
+            popoverPresentationController?.sourceRect = cell.bounds
+            present(popover, animated: true)
+        }
+    }
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section == HomeSection.ephWallet.rawValue && ephAccounts.isEmpty {
+            return 0.1
+        }
+        if section == HomeSection.swWallet.rawValue && AccountsRepository.shared.swAccounts.isEmpty {
             return 0.1
         }
         if section == HomeSection.hwWallet.rawValue && AccountsRepository.shared.hwAccounts.isEmpty {
@@ -263,15 +235,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return headerH
     }
 
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch section {
-        case HomeSection.swWallet.rawValue:
-            return footerH
-        default:
-            return 0.1
-        }
-    }
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -281,28 +244,20 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case HomeSection.remoteAlerts.rawValue:
             return nil
         case HomeSection.swWallet.rawValue:
-            return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
+            if AccountsRepository.shared.swAccounts.isEmpty {
+                return nil
+            }
+            return headerView(NSLocalizedString("id_digital_wallets", comment: ""))
         case HomeSection.ephWallet.rawValue:
             if ephAccounts.isEmpty {
-                return UIView()
+                return nil
             }
-            return headerView(NSLocalizedString("id_ephemeral_wallets", comment: "").uppercased())
+            return headerView(NSLocalizedString("id_ephemeral_wallets", comment: ""))
         case HomeSection.hwWallet.rawValue:
             if AccountsRepository.shared.hwAccounts.isEmpty {
-                return UIView()
+                return nil
             }
-            return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
-        case HomeSection.device.rawValue:
-            return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
-        default:
-            return nil
-        }
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        switch section {
-        case HomeSection.swWallet.rawValue:
-            return footerView(NSLocalizedString("id_add_wallet", comment: ""))
+            return headerView(NSLocalizedString("id_hardware_wallets", comment: ""))
         default:
             return nil
         }
@@ -313,20 +268,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case HomeSection.remoteAlerts.rawValue:
             break
         case HomeSection.swWallet.rawValue:
-            if AccountsRepository.shared.swAccounts.count > 0 {
-                let account = AccountsRepository.shared.swAccounts[indexPath.row]
-                enterWallet(account)
-            }
+            let account = AccountsRepository.shared.swAccounts[indexPath.row]
+            AccountNavigator.goLogin(account: account)
         case HomeSection.ephWallet.rawValue:
             let account = ephAccounts[indexPath.row]
-            enterWallet(account)
+            AccountNavigator.goLogin(account: account)
         case HomeSection.hwWallet.rawValue:
-            if AccountsRepository.shared.hwAccounts.count > 0 {
-                let account = AccountsRepository.shared.hwAccounts[indexPath.row]
-                enterWallet(account)
-            }
-        case HomeSection.device.rawValue:
-            showHardwareWallet(indexPath.row)
+            let account = AccountsRepository.shared.hwAccounts[indexPath.row]
+            AccountNavigator.goLogin(account: account)
         default:
             break
         }
@@ -342,53 +291,13 @@ extension HomeViewController {
         title.text = txt
         title.textColor = UIColor.customGrayLight()
         title.numberOfLines = 0
-
         title.translatesAutoresizingMaskIntoConstraints = false
         section.addSubview(title)
-
         NSLayoutConstraint.activate([
             title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
             title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 24),
             title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
         ])
-
-        return section
-    }
-
-    func footerView(_ txt: String) -> UIView {
-        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
-        section.backgroundColor = UIColor.customTitaniumDark()
-
-        let icon = UIImageView(frame: .zero)
-        icon.image = UIImage(named: "ic_plus")?.maskWithColor(color: .white)
-        icon.translatesAutoresizingMaskIntoConstraints = false
-        section.addSubview(icon)
-
-        let title = UILabel(frame: .zero)
-        title.text = txt
-        title.textColor = .white
-        title.font = .systemFont(ofSize: 17.0, weight: .semibold)
-        title.numberOfLines = 0
-
-        title.translatesAutoresizingMaskIntoConstraints = false
-        section.addSubview(title)
-
-        NSLayoutConstraint.activate([
-            icon.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-            icon.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 16),
-            icon.widthAnchor.constraint(equalToConstant: 40.0),
-            icon.heightAnchor.constraint(equalToConstant: 40.0)
-        ])
-
-        NSLayoutConstraint.activate([
-            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: (40 + 16 * 2)),
-            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
-        ])
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didPressAddWallet))
-        section.addGestureRecognizer(tapGesture)
-        section.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.addWalletView
         return section
     }
 }
@@ -414,7 +323,7 @@ extension HomeViewController: UIPopoverPresentationControllerDelegate {
 }
 
 extension HomeViewController: PopoverMenuWalletDelegate {
-    func didSelectionMenuOption(menuOption: MenuWalletOption, index: Int?) {
+    func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?) {
         guard let index = index else { return }
         switch menuOption {
         case .edit:
@@ -428,19 +337,20 @@ extension HomeViewController: PopoverMenuWalletDelegate {
 }
 
 extension HomeViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
-    func didRename(name: String, index: Int?) {
-        if let index = index, var account = AccountsRepository.shared.swAccounts[safe: index] {
+    func didRename(name: String, index: String?) {
+        if let index = index, var account = AccountsRepository.shared.get(for: index) {
             account.name = name
             AccountsRepository.shared.upsert(account)
             AnalyticsManager.shared.renameWallet()
             tableView.reloadData()
         }
     }
-    func didDelete(_ index: Int?) {
-        guard let index = index, let account = AccountsRepository.shared.swAccounts[safe: index] else { return }
-        AccountsRepository.shared.remove(account)
-        AnalyticsManager.shared.deleteWallet()
-        tableView.reloadData()
+    func didDelete(_ index: String?) {
+        if let index = index, let account = AccountsRepository.shared.get(for: index) {
+            AccountsRepository.shared.remove(account)
+            AnalyticsManager.shared.deleteWallet()
+            tableView.reloadData()
+        }
     }
     func didCancel() {
     }
