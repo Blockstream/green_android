@@ -29,7 +29,12 @@ class ListOtherDevicesViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        scan()
+        do {
+            try BLEViewModel.shared.isReady()
+            BLEViewModel.shared.scan(jade: true,
+                                     completion: { self.peripherals = $0 },
+                                     error: self.error)
+        } catch { self.error(error) }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -57,12 +62,9 @@ class ListOtherDevicesViewController: HWFlowBaseViewController {
     }
 
     func pair(_ peripheral: Peripheral) {
-        scanDispose?.dispose()
-        connectionDispose = BLEManager.shared.preparing(peripheral)
-            .flatMap { _ in BLEManager.shared.connecting(peripheral) }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in self.next(peripheral) },
-                       onError: { self.showError($0.localizedDescription) })
+        BLEViewModel.shared.pairing(peripheral,
+                                    completion: self.next,
+                                    error: self.error)
     }
 
     func next(_ peripheral: Peripheral) {
@@ -71,6 +73,13 @@ class ListOtherDevicesViewController: HWFlowBaseViewController {
             vc.peripheral = peripheral
             self.navigationController?.pushViewController(vc, animated: true)
         }
+    }
+
+    func error(_ err: Error) {
+        self.stopLoader()
+        let bleError = BLEManager.shared.toBleError(err, network: nil)
+        let txt = BLEManager.shared.toErrorString(bleError)
+        showAlert(title: "id_error".localized, message: txt)
     }
 }
 

@@ -404,6 +404,7 @@
 		81A062D0245322B0003464A0 /* HWResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062CF245322B0003464A0 /* HWResolver.swift */; };
 		81A062D224532454003464A0 /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
 		81A062D624532643003464A0 /* HWChannelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWChannelProtocol.swift */; };
+		81A34FED29C4659B004B27F4 /* BLEViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */; };
 		81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */; };
 		81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A49697291030AB00CA218D /* UserSettingsCellModel.swift */; };
 		81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5919829155F6A001D1A65 /* MultisigSettingsViewController.swift */; };
@@ -916,6 +917,7 @@
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
 		81A062D524532643003464A0 /* HWChannelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWChannelProtocol.swift; sourceTree = "<group>"; };
+		81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEViewModel.swift; sourceTree = "<group>"; };
 		81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewModel.swift; sourceTree = "<group>"; };
 		81A49697291030AB00CA218D /* UserSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCellModel.swift; sourceTree = "<group>"; };
 		81A5919829155F6A001D1A65 /* MultisigSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsViewController.swift; sourceTree = "<group>"; };
@@ -1808,6 +1810,7 @@
 				34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */,
 				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
 				34C8E78129C0746E00C84066 /* ConnectViewController.swift */,
+				81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2714,6 +2717,7 @@
 				34440E7A28B379C8006CD464 /* WalletListHDCell.swift in Sources */,
 				34204720291C12C000EDE945 /* AssetSelectViewController.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
+				81A34FED29C4659B004B27F4 /* BLEViewModel.swift in Sources */,
 				34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */,
 				3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */,
 				346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */,

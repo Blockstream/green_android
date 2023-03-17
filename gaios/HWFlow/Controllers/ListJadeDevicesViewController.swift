@@ -5,8 +5,6 @@ import RxBluetoothKit
 class ListJadeDevicesViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    var scanDispose: Disposable?
-    var connectionDispose: Disposable?
 
     var peripherals = [Peripheral]() {
         didSet {
@@ -29,11 +27,16 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        scan()
+        do {
+            try BLEViewModel.shared.isReady()
+            BLEViewModel.shared.scan(jade: true,
+                                     completion: { self.peripherals = $0 },
+                                     error: self.error)
+        } catch { self.error(error) }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        scanDispose?.dispose()
+        BLEViewModel.shared.scanDispose?.dispose()
     }
 
     func setContent() {
@@ -43,25 +46,10 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
     func setStyle() {
     }
 
-    func scan() {
-        if BLEManager.shared.manager.state == .poweredOff {
-            showError("id_turn_on_bluetooth_to_connect".localized)
-        } else if BLEManager.shared.manager.state == .unauthorized {
-            showError("id_give_bluetooth_permissions".localized)
-        }
-        scanDispose = BLEManager.shared.scanning()
-            .filter { $0.contains { $0.isJade() } }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { self.peripherals = $0.filter { $0.isJade() } },
-                       onError: { self.showError($0.localizedDescription) })
-    }
-
     func pair(_ peripheral: Peripheral) {
-        scanDispose?.dispose()
-        connectionDispose = BLEManager.shared.preparing(peripheral)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { self.next($0) },
-                       onError: { self.error($0) })
+        BLEViewModel.shared.pairing(peripheral,
+                                    completion: self.next,
+                                    error: self.error)
     }
 
     func next(_ peripheral: Peripheral) {

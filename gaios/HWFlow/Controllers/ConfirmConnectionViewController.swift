@@ -43,20 +43,22 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
     }
 
     func connect() {
-        BLEManager.shared.connecting(peripheral)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { jadeHasPin in
-                let testnetAvailable = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
-                if !jadeHasPin {
-                    if testnetAvailable {
-                        self.selectNetwork()
-                        return
-                    }
-                    self.nextPin(testnet: false)
-                } else {
-                    self.nextLogin()
-                }
-            }, onError: { self.error($0) })
+        BLEViewModel.shared.connecting(peripheral,
+                                       completion: self.next,
+                                       error: self.error)
+    }
+
+    func next(jadeHasPin: Bool) {
+        let testnetAvailable = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
+        if !jadeHasPin {
+            if testnetAvailable {
+                self.selectNetwork()
+                return
+            }
+            self.nextPin(testnet: false)
+        } else {
+            self.nextLogin()
+        }
     }
 
     func nextPin(testnet: Bool) {
@@ -69,7 +71,7 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
     }
 
     func nextLogin() {
-        BLEManager.shared.account(self.peripheral)
+        _ = BLEManager.shared.account(self.peripheral)
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { account in
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)

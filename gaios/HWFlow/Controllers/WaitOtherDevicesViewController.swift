@@ -7,7 +7,6 @@ class WaitOtherDevicesViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
-    var scanDispose: Disposable?
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -28,12 +27,17 @@ class WaitOtherDevicesViewController: HWFlowBaseViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         start()
-        scan()
+        do {
+            try BLEViewModel.shared.isReady()
+            BLEViewModel.shared.scan(jade: false,
+                                     completion: self.next,
+                                     error: self.error)
+        } catch { showError(error) }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         stop()
-        scanDispose?.dispose()
+        BLEViewModel.shared.scanDispose?.dispose()
     }
 
     func setContent() {
@@ -69,24 +73,16 @@ class WaitOtherDevicesViewController: HWFlowBaseViewController {
         loadingIndicator.isAnimating = false
     }
 
-    func scan() {
-        if BLEManager.shared.manager.state == .poweredOff {
-            showError("id_turn_on_bluetooth_to_connect".localized)
-        } else if BLEManager.shared.manager.state == .unauthorized {
-            showError("id_give_bluetooth_permissions".localized)
-        }
-        scanDispose = BLEManager.shared.scanning()
-            .filter { $0.contains { $0.isLedger() } }
-            .take(1)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in self.next() },
-                       onError: { self.showError($0.localizedDescription) })
-    }
-
-    func next() {
+    func next(peripheral: [Peripheral]) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ListOtherDevicesViewController") as? ListOtherDevicesViewController {
             self.navigationController?.pushViewController(vc, animated: true)
         }
+    }
+    
+    func error(_ err: Error) {
+        let bleError = BLEManager.shared.toBleError(err, network: nil)
+        let txt = BLEManager.shared.toErrorString(bleError)
+        showAlert(title: "id_error".localized, message: txt)
     }
 }
