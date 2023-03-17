@@ -73,8 +73,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             return ephAccounts.count
         case 2:
             return AccountsRepository.shared.hwAccounts.count
-        case 3:
-            return AccountsRepository.shared.devices.count
         default:
             return 0
         }
@@ -113,14 +111,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 cell.selectionStyle = .none
                 return cell
             }
-        case 3:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListHDCell") as? WalletListHDCell {
-                let hw = AccountsRepository.shared.devices[indexPath.row]
-                let icon = UIImage(named: hw.isJade ? "blockstreamIcon" : "ledgerIcon")
-                cell.configure(hw.name, icon ?? UIImage())
-                cell.selectionStyle = .none
-                return cell
-            }
         default:
             break
         }
@@ -129,6 +119,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 && AccountsRepository.shared.swAccounts.isEmpty {
+            return 0.1
+        }
         if section == 1 && ephAccounts.isEmpty {
             return 0.1
         }
@@ -138,15 +131,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         return headerH
     }
 
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch section {
-        case 0:
-            return footerH
-        default:
-            return 0.1
-        }
-    }
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -154,28 +138,20 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case 0:
-            return headerView(NSLocalizedString("id_wallets", comment: "").uppercased())
+            if AccountsRepository.shared.swAccounts.isEmpty {
+                return nil
+            }
+            return headerView(NSLocalizedString("id_digital_wallets", comment: ""))
         case 1:
             if ephAccounts.isEmpty {
-                return UIView()
+                return nil
             }
-            return headerView(NSLocalizedString("id_ephemeral_wallets", comment: "").uppercased())
+            return headerView(NSLocalizedString("id_ephemeral_wallets", comment: ""))
         case 2:
             if AccountsRepository.shared.hwAccounts.isEmpty {
-                return UIView()
+                return nil
             }
-            return headerView(NSLocalizedString("id_hardware_wallets", comment: "").uppercased())
-        case 3:
-            return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
-        default:
-            return nil
-        }
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        switch section {
-        case 0:
-            return footerView(NSLocalizedString("id_add_wallet", comment: ""))
+            return headerView(NSLocalizedString("id_hardware_wallets", comment: ""))
         default:
             return nil
         }
@@ -192,9 +168,6 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 2:
             let account = AccountsRepository.shared.hwAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
-        case 3:
-            let account = AccountsRepository.shared.devices[indexPath.row]
-            self.delegate?.didSelectHW(account: account)
         default:
             break
         }
@@ -221,43 +194,6 @@ extension DrawerNetworkSelectionViewController {
             title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20)
         ])
 
-        return section
-    }
-
-    func footerView(_ txt: String) -> UIView {
-        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
-        section.backgroundColor = UIColor.customTitaniumDark()
-
-        let icon = UIImageView(frame: .zero)
-        icon.image = UIImage(named: "ic_plus")?.maskWithColor(color: .white)
-        icon.translatesAutoresizingMaskIntoConstraints = false
-        section.addSubview(icon)
-
-        let title = UILabel(frame: .zero)
-        title.text = txt
-        title.textColor = .white
-        title.font = .systemFont(ofSize: 17.0, weight: .semibold)
-        title.numberOfLines = 0
-
-        title.translatesAutoresizingMaskIntoConstraints = false
-        section.addSubview(title)
-
-        NSLayoutConstraint.activate([
-            icon.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-            icon.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 16),
-            icon.widthAnchor.constraint(equalToConstant: 40.0),
-            icon.heightAnchor.constraint(equalToConstant: 40.0)
-        ])
-
-        NSLayoutConstraint.activate([
-            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: (40 + 16 * 2)),
-            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
-        ])
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didPressAddWallet))
-        section.addGestureRecognizer(tapGesture)
-        section.accessibilityIdentifier = AccessibilityIdentifiers.DrawerMenuScreen.addWalletView
         return section
     }
 }
