@@ -32,7 +32,7 @@ class WaitOtherDevicesViewController: HWFlowBaseViewController {
             BLEViewModel.shared.scan(jade: false,
                                      completion: self.next,
                                      error: self.error)
-        } catch { showError(error) }
+        } catch { self.error(error) }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -79,7 +79,7 @@ class WaitOtherDevicesViewController: HWFlowBaseViewController {
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     func error(_ err: Error) {
         let bleError = BLEManager.shared.toBleError(err, network: nil)
         let txt = BLEManager.shared.toErrorString(bleError)

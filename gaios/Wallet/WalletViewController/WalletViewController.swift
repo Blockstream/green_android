@@ -577,7 +577,7 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
         self.presentedViewController?.dismiss(animated: true, completion: {
             let account = self.viewModel.wm?.account
             if account?.isHW ?? false {
-                BLEManager.shared.dispose()
+                BLEViewModel.shared.dispose()
             }
             DispatchQueue.main.async {
                 WalletsRepository.shared.delete(for: account?.id ?? "")

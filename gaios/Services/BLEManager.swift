@@ -133,8 +133,9 @@ class BLEManager {
         peripherals = manager.retrieveConnectedPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID])
             .filter { self.isJade($0) || self.isLedger($0) }
         return waitForBluetooth()
-            .flatMap { _ in self.manager.scanForPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID]) }
-            .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
+            .flatMap { _ in
+                self.manager.scanForPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID]) }
+            .filter { $0.peripheral.isJade() || $0.peripheral.isLedger() }
             .map { p in
                     if let row = self.peripherals.firstIndex(where: { $0.name == p.advertisementData.localName }) {
                     self.peripherals[row] = p.peripheral
@@ -592,35 +593,11 @@ class BLEManager {
         }
     }
 
-    func preparing(_ peripheral: Peripheral) -> Observable<Peripheral> {
-        if peripheral.isConnected {
-            return Observable.just(peripheral)
-        } else if isLedger(peripheral) {
-            return Observable.just(peripheral)
-        }
-
-        // dummy 1st connection for jade
+    func connecting(_ peripheral: Peripheral, testnet: Bool? = nil) -> Observable<Bool> {
         return Observable.just(peripheral)
             .timeoutIfNoEvent(RxTimeInterval.seconds(20))
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { $0.establishConnection() }
-            .compactMap { sleep(3); return $0 }
-    }
-
-    func connecting(_ peripheral: Peripheral, testnet: Bool? = nil) -> Observable<Bool> {
-        // connect Ledger X
-        if peripheral.isLedger() {
-            return Observable.just(peripheral)
-                .flatMap { $0.isConnected ? Observable.just($0) : $0.establishConnection() }
-                .flatMap { self.connectLedger($0) }
-        }
-        // start a new connection with jade
-        return Observable.just(peripheral)
-            .compactMap { _ in sleep(1) }
-            .compactMap { self.manager.manager.cancelPeripheralConnection(peripheral.peripheral) }
-            .compactMap { sleep(1) }
-            .flatMap { peripheral.establishConnection() }
-            .flatMap { self.connectJade($0) }
+            .flatMap { $0.isConnected ? Observable.just($0) : $0.establishConnection() }
+            .flatMap { $0.isJade() ? self.connectJade($0) : self.connectLedger($0) }
     }
 
     func prepare(_ peripheral: Peripheral) {

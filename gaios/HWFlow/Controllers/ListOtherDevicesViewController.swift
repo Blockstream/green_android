@@ -5,8 +5,6 @@ import RxBluetoothKit
 class ListOtherDevicesViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    var scanDispose: Disposable?
-    var connectionDispose: Disposable?
 
     var peripherals = [Peripheral]() {
         didSet {
@@ -31,14 +29,14 @@ class ListOtherDevicesViewController: HWFlowBaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         do {
             try BLEViewModel.shared.isReady()
-            BLEViewModel.shared.scan(jade: true,
+            BLEViewModel.shared.scan(jade: false,
                                      completion: { self.peripherals = $0 },
                                      error: self.error)
         } catch { self.error(error) }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        scanDispose?.dispose()
+        BLEViewModel.shared.scanDispose?.dispose()
     }
 
     func setContent() {
@@ -46,25 +44,6 @@ class ListOtherDevicesViewController: HWFlowBaseViewController {
     }
 
     func setStyle() {
-    }
-
-    func scan() {
-        if BLEManager.shared.manager.state == .poweredOff {
-            showError("id_turn_on_bluetooth_to_connect".localized)
-        } else if BLEManager.shared.manager.state == .unauthorized {
-            showError("id_give_bluetooth_permissions".localized)
-        }
-        scanDispose = BLEManager.shared.scanning()
-            .filter { $0.contains { $0.isLedger() } }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { self.peripherals = $0.filter { $0.isLedger() } },
-                       onError: { self.showError($0.localizedDescription) })
-    }
-
-    func pair(_ peripheral: Peripheral) {
-        BLEViewModel.shared.pairing(peripheral,
-                                    completion: self.next,
-                                    error: self.error)
     }
 
     func next(_ peripheral: Peripheral) {
@@ -125,6 +104,8 @@ extension ListOtherDevicesViewController: UITableViewDelegate, UITableViewDataSo
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row]
-        pair(peripheral)
+        BLEViewModel.shared.pairing(peripheral,
+                                    completion: self.next,
+                                    error: self.error)
     }
 }

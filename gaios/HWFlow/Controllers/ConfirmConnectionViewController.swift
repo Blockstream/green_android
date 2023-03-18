@@ -74,6 +74,7 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
         _ = BLEManager.shared.account(self.peripheral)
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { account in
+                BLEViewModel.shared.dispose()
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
                 if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
                     vc.account = account

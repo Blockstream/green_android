@@ -144,7 +144,7 @@ class WaitJadeViewController: HWFlowBaseViewController {
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     func error(_ err: Error) {
         let bleError = BLEManager.shared.toBleError(err, network: nil)
         let txt = BLEManager.shared.toErrorString(bleError)

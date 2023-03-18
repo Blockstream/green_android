@@ -10,8 +10,6 @@ class ConnectViewController: HWFlowBaseViewController {
     @IBOutlet weak var retryButton: UIButton!
 
     var account: Account!
-    var scanDispose: Disposable?
-    var connectDispose: Disposable?
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -41,8 +39,7 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     @IBAction func retryBtnTapped(_ sender: Any) {
-        scanDispose?.dispose()
-        connectDispose?.dispose()
+        BLEViewModel.shared.dispose()
         scan()
     }
 
@@ -52,15 +49,13 @@ class ConnectViewController: HWFlowBaseViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         stop()
-        scanDispose?.dispose()
+        BLEViewModel.shared.scanDispose?.dispose()
     }
 
     func setContent() {
         if account.isJade {
-            lblTitle.text = "Unlock your Jade to continue".localized
             image.image = UIImage(named: "il_jade_unlock")
         } else {
-            lblTitle.text =  "id_please_follow_the_instructions".localized
             image.image = UIImage(named: "il_ledger")
         }
         retryButton.isHidden = true
@@ -94,7 +89,11 @@ class ConnectViewController: HWFlowBaseViewController {
         loadingIndicator.isAnimating = false
     }
 
-    func next() {
+    func next(_ peripheral: Peripheral) {
+        print("account.uuid \(account.uuid!)")
+        print("peripheral.identifier \(peripheral.identifier)")
+        account.uuid = peripheral.identifier
+        AccountsRepository.shared.upsert(account)
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
         UIApplication.shared.keyWindow?.rootViewController = nav
@@ -102,8 +101,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     func error(_ err: Error) {
         stop()
-        scanDispose?.dispose()
-        connectDispose?.dispose()
+        BLEViewModel.shared.dispose()
         retryButton.isHidden = false
         let bleError = BLEManager.shared.toBleError(err, network: nil)
         let txt = BLEManager.shared.toErrorString(bleError)
@@ -114,31 +112,42 @@ class ConnectViewController: HWFlowBaseViewController {
     func scan() {
         start()
         setContent()
-        if BLEManager.shared.manager.state == .poweredOff {
-            showError("id_turn_on_bluetooth_to_connect".localized)
-        } else if BLEManager.shared.manager.state == .unauthorized {
-            showError("id_give_bluetooth_permissions".localized)
-        }
-        scanDispose = BLEManager.shared.scanning()
-            .filter { $0.contains { $0.identifier == self.account.uuid } }
-            .take(1)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { self.connect($0.first { $0.identifier == self.account.uuid }) },
-                       onError: { self.error($0) })
+        self.progress(account.isJade ? "Power on Jade".localized : "id_please_follow_the_instructions".localized)
+        do {
+            try BLEViewModel.shared.isReady()
+            BLEViewModel.shared.scan(jade: account.isJade,
+                                    completion: { self.connect($0) },
+                                     error: self.error)
+        } catch { self.error(error) }
     }
 
-    func connect(_ peripheral: Peripheral?) {
+    func progress(_ txt: String) {
+        DispatchQueue.main.async {
+            self.lblTitle.text = txt
+        }
+    }
+    func connect(_ peripherals: [Peripheral]) {
+        let peripheral = peripherals.filter { $0.peripheral.identifier == account.uuid || $0.peripheral.name == account.name }.first
         guard let peripheral = peripheral else {
-            self.error(BLEManagerError.genericErr(txt: "No device found"))
             return
         }
-        scanDispose?.dispose()
-        connectDispose = BLEManager.shared.preparing(peripheral)
-            .flatMap { _ in BLEManager.shared.connecting(peripheral) }
-            .flatMap { _ in BLEManager.shared.authenticating(peripheral) }
-            .flatMap { _ in BLEManager.shared.logging(peripheral, account: self.account) }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in self.next() },
-                       onError: { self.error($0) })
+        self.progress("id_connecting".localized)
+        BLEViewModel.shared.pairing(peripheral,
+                                    completion: { _ in
+            if peripheral.isJade() && peripheral.identifier != self.account.uuid {
+                sleep(5)
+                BLEViewModel.shared.dispose()
+                sleep(2)
+            }
+            self.login(peripheral)
+        }, error: self.error )
+    }
+
+    func login(_ peripheral: Peripheral) {
+        BLEViewModel.shared.login(account: account,
+                                  peripheral: peripheral,
+                                  progress: { self.progress(self.account.isJade ? $0 : "id_logging_in".localized) },
+                                  completion: { self.next(peripheral) },
+                                  error: self.error)
     }
 }

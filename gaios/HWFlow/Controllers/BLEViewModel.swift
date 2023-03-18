@@ -18,40 +18,37 @@ class BLEViewModel {
         }
     }
 
+    func dispose() {
+        scanDispose?.dispose()
+        pairDispose?.dispose()
+        connectDispose?.dispose()
+    }
+
     func scan(jade: Bool,
               completion: @escaping([Peripheral]) -> Void,
               error: @escaping(Error) -> Void) {
         scanDispose?.dispose()
         scanDispose = BLEManager.shared.scanning()
             .observeOn(MainScheduler.instance)
-            .compactMap { $0.filter { ($0.isJade() && jade)  || ($0.isLedger() || !jade) }}
-            .subscribe(onNext: { completion($0) },
-                       onError: { error($0) })
-    }
-
-    func scan(uuid: UUID,
-              completion: @escaping(Peripheral) -> Void,
-              error: @escaping(Error) -> Void) {
-        scanDispose?.dispose()
-        scanDispose = BLEManager.shared.scanning()
-            .observeOn(MainScheduler.instance)
-            .compactMap { $0.filter { $0.identifier == uuid }.first }
+            .compactMap {
+                $0.filter { ($0.isJade() && jade)  || ($0.isLedger() && !jade) }}
             .subscribe(onNext: { completion($0) },
                        onError: { error($0) })
     }
 
     func login(account: Account,
-              peripheral: Peripheral?,
-              completion: @escaping() -> Void,
-              error: @escaping(Error) -> Void) {
-        guard let peripheral = peripheral else {
-            error(BLEManagerError.genericErr(txt: "No device found"))
-            return
-        }
+               peripheral: Peripheral,
+               progress: @escaping(String) -> Void,
+               completion: @escaping() -> Void,
+               error: @escaping(Error) -> Void) {
         scanDispose?.dispose()
-        connectDispose = BLEManager.shared.preparing(peripheral)
-            .flatMap { _ in BLEManager.shared.connecting(peripheral) }
+        progress("id_connecting".localized)
+        connectDispose = BLEManager.shared.connecting(peripheral)
+            .observeOn(MainScheduler.instance)
+            .do(onNext: { _ in progress("id_unlock_jade_to_continue".localized) })
             .flatMap { _ in BLEManager.shared.authenticating(peripheral) }
+            .observeOn(MainScheduler.instance)
+            .do(onNext: { _ in progress("id_logging_in".localized) })
             .flatMap { _ in BLEManager.shared.logging(peripheral, account: account) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in completion() },
@@ -62,8 +59,7 @@ class BLEViewModel {
                  completion: @escaping(Peripheral) -> Void,
                  error: @escaping(Error) -> Void) {
         scanDispose?.dispose()
-        pairDispose = BLEManager.shared.preparing(peripheral)
-            .flatMap { $0.isLedger() ? BLEManager.shared.connecting(peripheral) : Observable.just(true) }
+        pairDispose = peripheral.establishConnection()
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in completion(peripheral) },
                        onError: { error($0) })
@@ -73,9 +69,7 @@ class BLEViewModel {
                     completion: @escaping(Bool) -> Void,
                     error: @escaping(Error) -> Void) {
         scanDispose?.dispose()
-        if peripheral.isJade() {
-            pairDispose?.dispose()
-        }
+        pairDispose?.dispose()
         connectDispose = BLEManager.shared.connecting(peripheral)
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { completion($0) },

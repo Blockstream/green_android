@@ -46,12 +46,6 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
     func setStyle() {
     }
 
-    func pair(_ peripheral: Peripheral) {
-        BLEViewModel.shared.pairing(peripheral,
-                                    completion: self.next,
-                                    error: self.error)
-    }
-
     func next(_ peripheral: Peripheral) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ConfirmConnectionViewController") as? ConfirmConnectionViewController {
@@ -110,6 +104,8 @@ extension ListJadeDevicesViewController: UITableViewDelegate, UITableViewDataSou
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row]
-        pair(peripheral)
+        BLEViewModel.shared.pairing(peripheral,
+                                    completion: self.next,
+                                    error: self.error)
     }
 }
