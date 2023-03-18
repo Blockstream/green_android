@@ -120,7 +120,6 @@
 		344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34C2684CB3900C087A5 /* SetPin.swift */; };
 		344FE34F2684D2E800C087A5 /* WalletSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34E2684D2E800C087A5 /* WalletSuccess.swift */; };
 		344FE35326850C8500C087A5 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE35226850C8500C087A5 /* Container.swift */; };
-		3451017827EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451017727EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift */; };
 		345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142802693148B00E8BE1B /* TransactionsUITests.swift */; };
 		345142832693154100E8BE1B /* XCTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142822693154100E8BE1B /* XCTestBase.swift */; };
 		3451428526932B9300E8BE1B /* Receive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428426932B9300E8BE1B /* Receive.swift */; };
@@ -252,11 +251,6 @@
 		34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */; };
 		34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */; };
 		34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */; };
-		34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D12636A12700FB8011 /* HWWCell.swift */; };
-		34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D42636A12700FB8011 /* Enums.swift */; };
-		34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34BAD9D52636A12700FB8011 /* HWW.storyboard */; };
-		34BAD9DD2636A12700FB8011 /* HWWConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */; };
-		34BAD9DE2636A12700FB8011 /* HWWScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */; };
 		34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */; };
 		34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34BBCEF52971516F0057DF4A /* AccountAssetCell.xib */; };
 		34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBCEF72971518C0057DF4A /* AccountAssetCell.swift */; };
@@ -405,6 +399,8 @@
 		81A062D224532454003464A0 /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
 		81A062D624532643003464A0 /* HWChannelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWChannelProtocol.swift */; };
 		81A34FED29C4659B004B27F4 /* BLEViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */; };
+		81A34FEF29C547B8004B27F4 /* NetworkSecurityCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */; };
+		81A34FF129C547F4004B27F4 /* AvailableNetworks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FF029C547F4004B27F4 /* AvailableNetworks.swift */; };
 		81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */; };
 		81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A49697291030AB00CA218D /* UserSettingsCellModel.swift */; };
 		81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5919829155F6A001D1A65 /* MultisigSettingsViewController.swift */; };
@@ -597,7 +593,6 @@
 		344FE34C2684CB3900C087A5 /* SetPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPin.swift; sourceTree = "<group>"; };
 		344FE34E2684D2E800C087A5 /* WalletSuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSuccess.swift; sourceTree = "<group>"; };
 		344FE35226850C8500C087A5 /* Container.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Container.swift; sourceTree = "<group>"; };
-		3451017727EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWWNetworkSecurityCaseCell.swift; sourceTree = "<group>"; };
 		345142802693148B00E8BE1B /* TransactionsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsUITests.swift; sourceTree = "<group>"; };
 		345142822693154100E8BE1B /* XCTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestBase.swift; sourceTree = "<group>"; };
 		3451428426932B9300E8BE1B /* Receive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receive.swift; sourceTree = "<group>"; };
@@ -730,11 +725,6 @@
 		34B856DA28BDE5B400E053EE /* RemoteAlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAlertManager.swift; sourceTree = "<group>"; };
 		34B8DA0A2938FBC2001DA9B9 /* AccountCreateFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AccountCreateFooterView.xib; path = gaios/Utility/AssetExpandableSelect/AccountCreateFooterView.xib; sourceTree = SOURCE_ROOT; };
 		34B8DA0C2938FC0B001DA9B9 /* AccountCreateFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountCreateFooterView.swift; path = gaios/Utility/AssetExpandableSelect/AccountCreateFooterView.swift; sourceTree = SOURCE_ROOT; };
-		34BAD9D12636A12700FB8011 /* HWWCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWCell.swift; sourceTree = "<group>"; };
-		34BAD9D42636A12700FB8011 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
-		34BAD9D52636A12700FB8011 /* HWW.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HWW.storyboard; sourceTree = "<group>"; };
-		34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWConnectViewController.swift; sourceTree = "<group>"; };
-		34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWScanViewController.swift; sourceTree = "<group>"; };
 		34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactivate2faViewController.swift; sourceTree = "<group>"; };
 		34BBCEF52971516F0057DF4A /* AccountAssetCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccountAssetCell.xib; sourceTree = "<group>"; };
 		34BBCEF72971518C0057DF4A /* AccountAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAssetCell.swift; sourceTree = "<group>"; };
@@ -918,6 +908,8 @@
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
 		81A062D524532643003464A0 /* HWChannelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWChannelProtocol.swift; sourceTree = "<group>"; };
 		81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEViewModel.swift; sourceTree = "<group>"; };
+		81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSecurityCase.swift; sourceTree = "<group>"; };
+		81A34FF029C547F4004B27F4 /* AvailableNetworks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableNetworks.swift; sourceTree = "<group>"; };
 		81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewModel.swift; sourceTree = "<group>"; };
 		81A49697291030AB00CA218D /* UserSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCellModel.swift; sourceTree = "<group>"; };
 		81A5919829155F6A001D1A65 /* MultisigSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsViewController.swift; sourceTree = "<group>"; };
@@ -1842,43 +1834,6 @@
 			path = AccountCreateFooterView;
 			sourceTree = "<group>";
 		};
-		34BAD9CF2636A12700FB8011 /* HWW */ = {
-			isa = PBXGroup;
-			children = (
-				34BAD9D02636A12700FB8011 /* Cells */,
-				34BAD9D32636A12700FB8011 /* Enums */,
-				34BAD9D52636A12700FB8011 /* HWW.storyboard */,
-				34BAD9D62636A12700FB8011 /* Controllers */,
-			);
-			path = HWW;
-			sourceTree = "<group>";
-		};
-		34BAD9D02636A12700FB8011 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				34BAD9D12636A12700FB8011 /* HWWCell.swift */,
-				3451017727EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift */,
-			);
-			path = Cells;
-			sourceTree = "<group>";
-		};
-		34BAD9D32636A12700FB8011 /* Enums */ = {
-			isa = PBXGroup;
-			children = (
-				34BAD9D42636A12700FB8011 /* Enums.swift */,
-			);
-			path = Enums;
-			sourceTree = "<group>";
-		};
-		34BAD9D62636A12700FB8011 /* Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */,
-				34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */,
-			);
-			path = Controllers;
-			sourceTree = "<group>";
-		};
 		34C978A6268DC1300061264D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -2016,7 +1971,6 @@
 				34B385D429B8882A0097220B /* HWFlow */,
 				34E0CA8A2981391200695304 /* Survey */,
 				340A5F5728E475EF003D56B1 /* About */,
-				34BAD9CF2636A12700FB8011 /* HWW */,
 				34DDD0A7260A484E00020380 /* Shared */,
 				34B826C2260881E000579C0B /* Recovery */,
 				347FD0AB25FFA8E600BB3FAB /* Home */,
@@ -2251,6 +2205,8 @@
 				81E8C35C292041F800B2196B /* EnrichedAsset.swift */,
 				81004E2E292B57FD001C2E4D /* Gdk.swift */,
 				34E0CA8F29817CE400695304 /* CountlyWidget.swift */,
+				81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */,
+				81A34FF029C547F4004B27F4 /* AvailableNetworks.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2479,7 +2435,6 @@
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
-				34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
@@ -2723,11 +2678,9 @@
 				346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */,
 				3456AF12299A78BE00C1BCA6 /* UITextView.swift in Sources */,
 				34B856DB28BDE5B400E053EE /* RemoteAlertManager.swift in Sources */,
-				34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */,
 				34BBCEFA297151C50057DF4A /* AssetAssetCellModel.swift in Sources */,
 				6D2A613623302694008C518A /* UIImage.swift in Sources */,
 				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
-				3451017827EC69A70036C0F0 /* HWWNetworkSecurityCaseCell.swift in Sources */,
 				340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
 				34C8E77129BF85AC00C84066 /* ListJadeDevicesViewController.swift in Sources */,
@@ -2796,7 +2749,6 @@
 				81A062D224532454003464A0 /* HWProtocol.swift in Sources */,
 				34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */,
 				8169EBBD2445F16F0053BC73 /* Jade.swift in Sources */,
-				34BAD9DE2636A12700FB8011 /* HWWScanViewController.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
 				6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */,
 				34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */,
@@ -2853,7 +2805,6 @@
 				340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */,
 				81DC54352885BD8400DC37C9 /* Balance.swift in Sources */,
 				34675B0A29409D9900771D50 /* Common.swift in Sources */,
-				34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */,
 				34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
 				81268E7C291BC8190079C13D /* AssetAmountList.swift in Sources */,
@@ -2877,6 +2828,7 @@
 				342F98102935145A005876A8 /* DialogEnable2faCellModel.swift in Sources */,
 				3457F4BD2924090400EF33B5 /* AssetExpandableSelectViewController.swift in Sources */,
 				812DBDC2297261F1002992D6 /* WatchOnlySettingsCell.swift in Sources */,
+				81A34FEF29C547B8004B27F4 /* NetworkSecurityCase.swift in Sources */,
 				81E0B4D725531AD6001C8544 /* TxInputLiquid.swift in Sources */,
 				6DAB5F97235A244B007637CF /* ProgressIndicator.swift in Sources */,
 				81BF4E3222E9E9EA005A04C6 /* LedgerWrapper.swift in Sources */,
@@ -2904,6 +2856,7 @@
 				815A804829B6443F00269027 /* WalletsRepository.swift in Sources */,
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
 				3457F4BF2924091600EF33B5 /* AssetExpandableSelectViewModel.swift in Sources */,
+				81A34FF129C547F4004B27F4 /* AvailableNetworks.swift in Sources */,
 				81004E31292B6E1D001C2E4D /* MnemonicViewModel.swift in Sources */,
 				8157CDAA299BE1E800365F1B /* AddresseeCellModel.swift in Sources */,
 				815D4AA028638A56004DC015 /* PinData.swift in Sources */,
@@ -2923,7 +2876,6 @@
 				34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */,
 				34477D352771D34D0021698B /* Recipient.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
-				34BAD9DD2636A12700FB8011 /* HWWConnectViewController.swift in Sources */,
 				81D671F126C80D4E00682508 /* Connection.swift in Sources */,
 				812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */,
 				81865F49299F7D24002CBA87 /* MigratorManager.swift in Sources */,

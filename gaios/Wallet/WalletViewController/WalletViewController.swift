@@ -729,11 +729,6 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
         AccountNavigator.goLogin(account: account)
     }
 
-    // accounts drawer: select hw account
-    func didSelectHW(account: Account) {
-        AccountNavigator.goHWLogin(isJade: account.isJade)
-    }
-
     // accounts drawer: select app settings
     func didSelectSettings() {
         self.presentedViewController?.dismiss(animated: true, completion: {

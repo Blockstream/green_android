@@ -43,13 +43,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         } else if account?.isHW ?? false {
             let homeS = UIStoryboard(name: "Home", bundle: nil)
-            let hwwS = UIStoryboard(name: "HWW", bundle: nil)
-            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                let vc = hwwS.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-                    vc.jade = AccountsRepository.shared.current?.isJade == true
-                    nav.pushViewController(vc, animated: false)
-                    UIApplication.shared.keyWindow?.rootViewController = nav
-//                    nav.pushViewController(vc, animated: false)
+            if let vc = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController {
+                UIApplication.shared.keyWindow?.rootViewController = vc
             }
         } else {
             let homeS = UIStoryboard(name: "Home", bundle: nil)

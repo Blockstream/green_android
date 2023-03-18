@@ -54,16 +54,4 @@ class AccountNavigator {
                 nav.pushViewController(vc, animated: false)
         }
     }
-
-    // redirect to hw scanner
-    static func goHWLogin(isJade: Bool) {
-        let storyboardHome = UIStoryboard(name: "Home", bundle: nil)
-        let storyboardHW = UIStoryboard(name: "HWW", bundle: nil)
-        let nav = storyboardHome.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-        if let vc = storyboardHW.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-            vc.jade = isJade
-            UIApplication.shared.keyWindow?.rootViewController = nav
-            nav?.pushViewController(vc, animated: false)
-        }
-    }
 }

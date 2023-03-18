@@ -3,7 +3,6 @@ import UIKit
 
 protocol DrawerNetworkSelectionDelegate: AnyObject {
     func didSelectAccount(account: Account)
-    func didSelectHW(account: Account)
     func didSelectAddWallet()
     func didSelectSettings()
     func didSelectAbout()
