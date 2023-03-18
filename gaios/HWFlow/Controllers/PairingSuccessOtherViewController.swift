@@ -39,8 +39,8 @@ class PairingSuccessOtherViewController: HWFlowBaseViewController {
         lblTitle.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
         lblTitle.textColor = .white
         [lblHint, lblWarn].forEach {
-            $0.textColor = .white.withAlphaComponent(0.6)
-            $0.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+            $0?.textColor = .white.withAlphaComponent(0.6)
+            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         }
         btnContinue.setStyle(.primary)
         rememberView.borderWidth = 2.0

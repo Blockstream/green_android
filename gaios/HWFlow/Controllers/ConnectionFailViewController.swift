@@ -24,8 +24,8 @@ class ConnectionFailViewController: HWFlowBaseViewController {
         lblTitle.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
         lblTitle.textColor = .white
         [lblHint].forEach {
-            $0.textColor = .white.withAlphaComponent(0.6)
-            $0.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+            $0?.textColor = .white.withAlphaComponent(0.6)
+            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         }
         btnRetry.setStyle(.primary)
     }
