@@ -10,6 +10,7 @@ class ConnectViewController: HWFlowBaseViewController {
     @IBOutlet weak var retryButton: UIButton!
 
     var account: Account!
+    private var error = false
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -66,6 +67,7 @@ class ConnectViewController: HWFlowBaseViewController {
     func setStyle() {
         lblTitle.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
         lblTitle.textColor = .white
+        lblTitle.text = ""
     }
 
     func start() {
@@ -107,6 +109,7 @@ class ConnectViewController: HWFlowBaseViewController {
         let txt = BLEManager.shared.toErrorString(bleError)
         lblTitle.text = txt
         image.image = UIImage(named: "il_connection_fail")
+        error = true
     }
 
     func scan() {
@@ -134,10 +137,8 @@ class ConnectViewController: HWFlowBaseViewController {
         self.progress("id_connecting".localized)
         BLEViewModel.shared.pairing(peripheral,
                                     completion: { _ in
-            if peripheral.isJade() && peripheral.identifier != self.account.uuid {
-                sleep(5)
-                BLEViewModel.shared.dispose()
-                sleep(2)
+            if peripheral.isJade() && (self.error || peripheral.identifier != self.account.uuid) {
+                sleep(10)
             }
             self.login(peripheral)
         }, error: self.error )

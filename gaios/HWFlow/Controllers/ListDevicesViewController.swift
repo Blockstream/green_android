@@ -121,7 +121,7 @@ extension ListDevicesViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row]
         BLEViewModel.shared.pairing(peripheral,
-                                       completion: { _ in self.next(peripheral) } ,
+                                    completion: { _ in self.next(peripheral) } ,
                                     error: self.error)
     }
 }

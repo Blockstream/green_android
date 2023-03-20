@@ -44,6 +44,7 @@ class JadeConfirmConnectionViewController: HWFlowBaseViewController {
 
     func connect() {
         startLoader()
+        //BLEViewModel.shared.dispose()
         BLEViewModel.shared.connecting(peripheral,
                                        completion: self.next,
                                        error: self.error)

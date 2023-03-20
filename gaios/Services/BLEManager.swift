@@ -189,9 +189,8 @@ class BLEManager {
         return Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p in Ledger.shared.open(p) }
+            .timeoutIfNoEvent(RxTimeInterval.seconds(3))
             .flatMap { _ in self.getLedgerNetwork() }
-            .compactMap { self.session = SessionManager(getGdkNetwork($0.network)) }
-            .compactMap { try? self.session?.connect().wait() }
             .compactMap { _ in return true }
     }
 
@@ -219,7 +218,9 @@ class BLEManager {
     func connectJade(_ p: Peripheral) -> Observable<Bool> {
         return Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .timeoutIfNoEvent(RxTimeInterval.seconds(3))
             .flatMap { p in Jade.shared.open(p) }
+            .timeoutIfNoEvent(RxTimeInterval.seconds(10))
             .flatMap { _ in Jade.shared.addEntropy() }
             .flatMap { _ in Jade.shared.version() }
             .compactMap { $0.jadeHasPin }
@@ -227,7 +228,11 @@ class BLEManager {
 
     func authenticating(_ p: Peripheral, testnet: Bool? = nil) -> Observable<Bool> {
         if p.isLedger() {
-            return Observable.just(true)
+            return Observable.just(p)
+            .flatMap { _ in self.getLedgerNetwork() }
+            .compactMap { self.session = SessionManager(getGdkNetwork($0.network)) }
+            .compactMap { try? self.session?.connect().wait() }
+            .compactMap { true }
         }
         return Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
@@ -579,9 +584,10 @@ class BLEManager {
 
     func connecting(_ peripheral: Peripheral) -> Observable<Bool> {
         return Observable.just(peripheral)
-            .timeoutIfNoEvent(RxTimeInterval.seconds(20))
             .flatMap { $0.isConnected ? Observable.just($0) : $0.establishConnection() }
+            .timeoutIfNoEvent(RxTimeInterval.seconds(10))
             .flatMap { $0.isJade() ? self.connectJade($0) : self.connectLedger($0) }
+            .timeoutIfNoEvent(RxTimeInterval.seconds(10))
     }
 
     func prepare(_ peripheral: Peripheral) {
@@ -595,7 +601,7 @@ class BLEManager {
 
         // dummy 1st connection for jade
         prepareDispose = Observable.just(peripheral)
-            .timeoutIfNoEvent(RxTimeInterval.seconds(20))
+            .timeoutIfNoEvent(RxTimeInterval.seconds(3))
             .flatMap { $0.establishConnection() }
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in sleep(3) }

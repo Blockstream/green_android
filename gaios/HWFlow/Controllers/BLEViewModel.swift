@@ -81,7 +81,9 @@ class BLEViewModel {
                  error: @escaping(Error) -> Void) {
         dispose()
         pairDispose = peripheral.establishConnection()
-            .flatMap { _ in peripheral.isLedger() ? BLEManager.shared.connecting(peripheral) : Observable.just(true) }
+            .timeoutIfNoEvent(RxTimeInterval.seconds(3))
+            .flatMap { _ in peripheral.isLedger() ? Ledger.shared.open(peripheral) : Jade.shared.open(peripheral) }
+            .flatMap { _ in peripheral.isLedger() ? Ledger.shared.application() : Observable.just([:]) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in completion(peripheral) },
                        onError: { error($0) })
