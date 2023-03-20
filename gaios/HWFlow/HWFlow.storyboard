@@ -1118,6 +1118,21 @@
                                     <constraint firstAttribute="height" constant="70" id="r9a-P8-2yr"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OQj-op-5NF" userLabel="Btn Check Store">
+                                <rect key="frame" x="12" y="772" width="364" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="XX6-gS-RjM"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <state key="normal" title="btn_confirm">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnConfirm:" destination="fCZ-fe-JQ3" eventType="touchUpInside" id="kIt-Dz-GGj"/>
+                                    <action selector="continueBtnTapped:" destination="q8r-ZV-nZz" eventType="touchUpInside" id="QMe-Lt-3XR"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="jwH-LQ-Vtq"/>
                         <color key="backgroundColor" name="gBlackBg"/>
@@ -1130,7 +1145,10 @@
                             <constraint firstItem="Hzz-hi-io9" firstAttribute="centerX" secondItem="jwH-LQ-Vtq" secondAttribute="centerX" id="SU9-ZP-aYG"/>
                             <constraint firstItem="tTP-A1-32m" firstAttribute="top" secondItem="4oJ-8P-ofe" secondAttribute="bottom" constant="30" id="T0S-sv-62n"/>
                             <constraint firstItem="jwH-LQ-Vtq" firstAttribute="trailing" secondItem="WVd-gQ-o3E" secondAttribute="trailing" id="XJ9-ch-31A"/>
+                            <constraint firstItem="OQj-op-5NF" firstAttribute="leading" secondItem="jwH-LQ-Vtq" secondAttribute="leading" constant="25" id="bgU-M8-CaG"/>
+                            <constraint firstItem="jwH-LQ-Vtq" firstAttribute="bottom" secondItem="OQj-op-5NF" secondAttribute="bottom" constant="20" id="buj-lR-ASa"/>
                             <constraint firstItem="jwH-LQ-Vtq" firstAttribute="bottom" secondItem="Hzz-hi-io9" secondAttribute="bottom" constant="20" id="euI-fQ-vA3"/>
+                            <constraint firstItem="jwH-LQ-Vtq" firstAttribute="trailing" secondItem="OQj-op-5NF" secondAttribute="trailing" constant="25" id="lXk-LY-G6z"/>
                             <constraint firstItem="tTP-A1-32m" firstAttribute="leading" secondItem="jwH-LQ-Vtq" secondAttribute="leading" constant="25" id="nTq-B4-Dkc"/>
                             <constraint firstItem="jwH-LQ-Vtq" firstAttribute="trailing" secondItem="FQu-5h-woR" secondAttribute="trailing" constant="25" id="ol3-h4-06U"/>
                             <constraint firstItem="4oJ-8P-ofe" firstAttribute="top" secondItem="jwH-LQ-Vtq" secondAttribute="top" id="qLW-OK-Cb0"/>
@@ -1141,6 +1159,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="btnContinue" destination="OQj-op-5NF" id="YC2-7H-eZr"/>
                         <outlet property="btnRemember" destination="b2Z-bD-alm" id="H3l-Ql-IzJ"/>
                         <outlet property="iconRemember" destination="AkZ-9S-Yqb" id="Ojq-qf-d8B"/>
                         <outlet property="imgDevice" destination="4oJ-8P-ofe" id="ew8-Sa-wMn"/>
@@ -1155,7 +1174,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qou-2E-awP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3809" y="-50"/>
+            <point key="canvasLocation" x="3808.6956521739135" y="-50.223214285714285"/>
         </scene>
         <!--Connect View Controller-->
         <scene sceneID="S5D-Q0-PEk">

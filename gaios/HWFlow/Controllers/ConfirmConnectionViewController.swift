@@ -43,6 +43,7 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
     }
 
     func connect() {
+        startLoader()
         BLEViewModel.shared.connecting(peripheral,
                                        completion: self.next,
                                        error: self.error)
@@ -62,6 +63,8 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
     }
 
     func nextPin(testnet: Bool) {
+        self.stopLoader()
+        BLEViewModel.shared.dispose()
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "PinCreateViewController") as? PinCreateViewController {
             vc.testnet = testnet
@@ -74,6 +77,7 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
         _ = BLEManager.shared.account(self.peripheral)
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { account in
+                self.stopLoader()
                 BLEViewModel.shared.dispose()
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
                 if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
@@ -94,6 +98,7 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
 extension ConfirmConnectionViewController: DialogListViewControllerDelegate {
 
     func selectNetwork() {
+        self.stopLoader()
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self

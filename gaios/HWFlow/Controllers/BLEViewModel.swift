@@ -55,6 +55,27 @@ class BLEViewModel {
                        onError: { error($0) })
     }
 
+    func initialize(
+        peripheral: Peripheral,
+        testnet: Bool,
+        progress: @escaping(String) -> Void,
+        completion: @escaping(WalletManager) -> Void,
+        error: @escaping(Error) -> Void) {
+            scanDispose?.dispose()
+            progress("id_connecting".localized)
+            connectDispose = BLEManager.shared.connecting(peripheral)
+                .observeOn(MainScheduler.instance)
+                .do(onNext: { _ in progress("id_unlock_jade_to_continue".localized) })
+                .flatMap { _ in BLEManager.shared.authenticating(peripheral, testnet: testnet) }
+                .observeOn(MainScheduler.instance)
+                .do(onNext: { _ in progress("id_logging_in".localized) })
+                .flatMap { _ in BLEManager.shared.account(peripheral) }
+                .flatMap { BLEManager.shared.logging(peripheral, account: $0) }
+                .observeOn(MainScheduler.instance)
+                .subscribe(onNext: { completion($0) },
+                           onError: { error($0) })
+    }
+
     func pairing(_ peripheral: Peripheral,
                  completion: @escaping(Peripheral) -> Void,
                  error: @escaping(Error) -> Void) {

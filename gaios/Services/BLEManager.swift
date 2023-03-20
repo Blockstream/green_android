@@ -593,7 +593,7 @@ class BLEManager {
         }
     }
 
-    func connecting(_ peripheral: Peripheral, testnet: Bool? = nil) -> Observable<Bool> {
+    func connecting(_ peripheral: Peripheral) -> Observable<Bool> {
         return Observable.just(peripheral)
             .timeoutIfNoEvent(RxTimeInterval.seconds(20))
             .flatMap { $0.isConnected ? Observable.just($0) : $0.establishConnection() }

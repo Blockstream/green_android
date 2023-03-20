@@ -17,6 +17,7 @@ class PinCreateViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblRemember: UILabel!
     @IBOutlet weak var iconRemember: UIImageView!
     @IBOutlet weak var loaderPlaceholder: UIView!
+    @IBOutlet weak var btnContinue: UIButton!
 
     var remember = false
     var testnet = false
@@ -41,7 +42,7 @@ class PinCreateViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        start()
+        loadingIndicator.isAnimating = true
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -54,6 +55,7 @@ class PinCreateViewController: HWFlowBaseViewController {
         lblStepHint.text = "Enter and confirm a unique PIN that will be entered to unlock Jade."
         lblWarn.text = "If you forget your PIN, you will need to restore with your recovery phrase"
         lblRemember.text = "id_remember_my_device".localized
+        btnContinue.setTitle("id_continue".localized, for: .normal)
     }
 
     func loadNavigationBtns() {
@@ -86,6 +88,7 @@ class PinCreateViewController: HWFlowBaseViewController {
         rememberView.borderWidth = 2.0
         rememberView.borderColor = .white
         rememberView.cornerRadius = 4.0
+        btnContinue.setStyle(.primary)
     }
 
     func start() {
@@ -103,10 +106,25 @@ class PinCreateViewController: HWFlowBaseViewController {
         ])
 
         loadingIndicator.isAnimating = true
+        loadingIndicator.isHidden = false
     }
 
     func stop() {
         loadingIndicator.isAnimating = false
+        loadingIndicator.isHidden = true
+    }
+
+    @IBAction func continueBtnTapped(_ sender: Any) {
+        btnContinue.isHidden = true
+        start()
+        do {
+            try BLEViewModel.shared.isReady()
+            BLEViewModel.shared.initialize(peripheral: peripheral,
+                                           testnet: testnet,
+                                           progress: { _ in },
+                                           completion: self.next,
+                                           error: self.error)
+        } catch { self.error(error) }
     }
 
     @objc func setupBtnTapped() {
@@ -121,22 +139,16 @@ class PinCreateViewController: HWFlowBaseViewController {
         iconRemember.image = remember ? UIImage(named: "ic_checkbox_on") : UIImage(named: "ic_checkbox_off")
     }
 
-    func connect() {
-        BLEManager.shared.authenticating(peripheral, testnet: testnet)
-            .flatMap { _ in BLEManager.shared.account(self.peripheral) }
-            .flatMap { BLEManager.shared.logging(self.peripheral, account: $0) }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { self.next($0) },
-                       onError: { self.error($0) })
-    }
-
     func next(_ wm: WalletManager) {
+        wm.account.hidden = !remember
+        AccountsRepository.shared.upsert(wm.account)
         AnalyticsManager.shared.loginWallet(loginType: .hardware, ephemeralBip39: false, account: wm.account)
         getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
     }
 
     func error(_ err: Error) {
-        self.stopLoader()
+        btnContinue.isHidden = false
+        self.stop()
         let bleError = BLEManager.shared.toBleError(err, network: nil)
         let txt = BLEManager.shared.toErrorString(bleError)
         showAlert(title: "id_error".localized, message: txt)
