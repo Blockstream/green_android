@@ -105,10 +105,10 @@
                             </subviews>
                         </stackView>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z0i-Vr-Ipv">
-                            <rect key="frame" x="2" y="0.0" width="302" height="2"/>
+                            <rect key="frame" x="2" y="0.0" width="302" height="4"/>
                             <color key="backgroundColor" name="gGrayCard"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="2" id="iE6-PZ-FAj"/>
+                                <constraint firstAttribute="height" constant="4" id="iE6-PZ-FAj"/>
                             </constraints>
                         </view>
                     </subviews>

@@ -21,15 +21,15 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="esl-0x-eRT">
                         <rect key="frame" x="25" y="5" width="304" height="40"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_amp_warn" translatesAutoresizingMaskIntoConstraints="NO" id="EzZ-4l-g5k">
-                                <rect key="frame" x="15" y="12" width="16" height="16"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_shield_warning" translatesAutoresizingMaskIntoConstraints="NO" id="EzZ-4l-g5k">
+                                <rect key="frame" x="18" y="12" width="16" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="0cp-Wj-Bd1"/>
                                     <constraint firstAttribute="width" constant="16" id="Mvt-s2-tw6"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_add" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JXm-SC-IRE">
-                                <rect key="frame" x="46" y="16" width="243" height="8"/>
+                                <rect key="frame" x="49" y="16" width="240" height="8"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                                 <color key="textColor" name="gGreenMatrix"/>
                                 <nil key="highlightedColor"/>
@@ -39,7 +39,7 @@
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="JXm-SC-IRE" secondAttribute="bottom" constant="16" id="IzU-03-10v"/>
                             <constraint firstItem="JXm-SC-IRE" firstAttribute="top" secondItem="esl-0x-eRT" secondAttribute="top" constant="16" id="VXc-73-OXH"/>
-                            <constraint firstItem="EzZ-4l-g5k" firstAttribute="leading" secondItem="esl-0x-eRT" secondAttribute="leading" constant="15" id="eI2-r5-fUi"/>
+                            <constraint firstItem="EzZ-4l-g5k" firstAttribute="leading" secondItem="esl-0x-eRT" secondAttribute="leading" constant="18" id="eI2-r5-fUi"/>
                             <constraint firstItem="JXm-SC-IRE" firstAttribute="leading" secondItem="EzZ-4l-g5k" secondAttribute="trailing" constant="15" id="ryL-un-dUc"/>
                             <constraint firstAttribute="trailing" secondItem="JXm-SC-IRE" secondAttribute="trailing" constant="15" id="w19-bS-MYq"/>
                             <constraint firstItem="EzZ-4l-g5k" firstAttribute="centerY" secondItem="esl-0x-eRT" secondAttribute="centerY" id="xr3-AM-la0"/>
@@ -57,13 +57,14 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="bg" destination="esl-0x-eRT" id="apa-sX-CZO"/>
+                <outlet property="icShield" destination="EzZ-4l-g5k" id="hIp-Qo-17J"/>
                 <outlet property="lblTitle" destination="JXm-SC-IRE" id="eeu-89-lTr"/>
             </connections>
             <point key="canvasLocation" x="15.267175572519083" y="-7.394366197183099"/>
         </tableViewCell>
     </objects>
     <resources>
-        <image name="ic_amp_warn" width="15.333333015441895" height="16"/>
+        <image name="ic_shield_warning" width="20" height="20"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -99,6 +99,11 @@ class RecipientCell: UITableViewCell {
         assetBox.cornerRadius = 8.0
         assetBox.borderWidth = 1.0
         assetBox.borderColor = UIColor.gGrayCard()
+
+        [lblAccountAsset, lblAddressHint, lblAmountHint].forEach {
+            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+            $0?.textColor = .white.withAlphaComponent(0.4)
+        }
     }
 
     func setContent() {
@@ -112,7 +117,7 @@ class RecipientCell: UITableViewCell {
     func reload() {
         guard let model = model else { return }
          // from model to view
-        lblAccountAsset.text = "Asset & Account".localized
+        lblAccountAsset.text = "id_account__asset".localized
         addressTextView.text = model.address ?? ""
         amountTextField.text = model.amount ?? ""
         lblAssetName.text = "id_asset".localized

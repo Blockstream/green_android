@@ -209,7 +209,7 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: NSLocalizedString("id_settings", comment: ""), type: .walletPrefs, items: WalletPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: NSLocalizedString("Wallet Preferences".localized, comment: ""), type: .walletPrefs, items: WalletPrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }

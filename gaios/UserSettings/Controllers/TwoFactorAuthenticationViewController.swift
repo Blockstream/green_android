@@ -34,6 +34,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var no2faState: UIView!
     @IBOutlet weak var lbl2faEmptyStateTitle: UILabel!
     @IBOutlet weak var lbl2faEmptyStateHint: UILabel!
+    @IBOutlet weak var scrollView: UIScrollView!
 
     private let viewModel = TwoFactorSettingsViewModel()
     private var factors = [TwoFactorItem]()
@@ -327,6 +328,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
 
         if tableView == tableView2faMethods {
             no2faState.isHidden = self.factors.count != 0
+            scrollView.isScrollEnabled = no2faState.isHidden
             return self.factors.count
         } else if tableView == tableViewCsvTime {
             return csvTypes.count

@@ -55,6 +55,10 @@ class FeeEditCell: UITableViewCell {
         lblTipMedium.text = NSLocalizedString("id_medium", comment: "")
         lblTipHigh.text = NSLocalizedString("id_high", comment: "")
         lblInvalidFee.text = NSLocalizedString("id_invalid_replacement_fee_rate", comment: "")
+        [lblFeeTitle].forEach {
+            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+            $0?.textColor = .white.withAlphaComponent(0.4)
+        }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -90,6 +90,10 @@ class ReceiveViewController: UIViewController {
         btnCopy.cornerRadius = 5.0
         bgCardQR.layer.cornerRadius = 5.0
         bgAssetCard.layer.cornerRadius = 5.0
+        [lblAssetTitle, lblAddressTitle].forEach {
+            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+            $0?.textColor = .white.withAlphaComponent(0.4)
+        }
     }
 
     func reload() {

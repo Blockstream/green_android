@@ -758,7 +758,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="1600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l5h-kJ-WPe">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l5h-kJ-WPe">
                                 <rect key="frame" x="0.0" y="92" width="414" height="1474"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VQA-3K-BWP">
@@ -803,20 +803,20 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="364" height="449"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_2fa_empty_state" translatesAutoresizingMaskIntoConstraints="NO" id="VCZ-wL-fhT">
-                                                                <rect key="frame" x="26" y="26" width="312" height="312"/>
+                                                                <rect key="frame" x="32" y="0.0" width="300" height="280"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="width" constant="312" id="3Mp-MG-uPd"/>
-                                                                    <constraint firstAttribute="height" constant="312" id="V0F-xu-W0j"/>
+                                                                    <constraint firstAttribute="width" constant="300" id="3Mp-MG-uPd"/>
+                                                                    <constraint firstAttribute="height" constant="280" id="V0F-xu-W0j"/>
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_empty state_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iVa-DI-hCo">
-                                                                <rect key="frame" x="50" y="260" width="264" height="19.5"/>
+                                                                <rect key="frame" x="50" y="220" width="264" height="19.5"/>
                                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_empty state_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e98-DC-4yn">
-                                                                <rect key="frame" x="50" y="299.5" width="264" height="149.5"/>
+                                                                <rect key="frame" x="50" y="259.5" width="264" height="189.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
@@ -828,11 +828,11 @@
                                                             <constraint firstAttribute="bottom" secondItem="e98-DC-4yn" secondAttribute="bottom" id="7mq-uV-XvJ"/>
                                                             <constraint firstAttribute="trailing" secondItem="e98-DC-4yn" secondAttribute="trailing" constant="50" id="Kqm-dC-bKp"/>
                                                             <constraint firstItem="iVa-DI-hCo" firstAttribute="leading" secondItem="H1s-L4-Eg5" secondAttribute="leading" constant="50" id="LHG-IW-8kP"/>
-                                                            <constraint firstItem="iVa-DI-hCo" firstAttribute="top" secondItem="H1s-L4-Eg5" secondAttribute="top" constant="260" id="Me0-t5-AUp"/>
+                                                            <constraint firstItem="iVa-DI-hCo" firstAttribute="top" secondItem="H1s-L4-Eg5" secondAttribute="top" constant="220" id="Me0-t5-AUp"/>
                                                             <constraint firstItem="e98-DC-4yn" firstAttribute="top" secondItem="iVa-DI-hCo" secondAttribute="bottom" constant="20" id="UJb-UA-CQy"/>
                                                             <constraint firstItem="VCZ-wL-fhT" firstAttribute="centerX" secondItem="H1s-L4-Eg5" secondAttribute="centerX" id="cpx-NJ-lrG"/>
                                                             <constraint firstAttribute="trailing" secondItem="iVa-DI-hCo" secondAttribute="trailing" constant="50" id="lUY-u1-5H8"/>
-                                                            <constraint firstItem="VCZ-wL-fhT" firstAttribute="top" secondItem="H1s-L4-Eg5" secondAttribute="top" constant="26" id="m0o-gY-qHh"/>
+                                                            <constraint firstItem="VCZ-wL-fhT" firstAttribute="top" secondItem="H1s-L4-Eg5" secondAttribute="top" id="m0o-gY-qHh"/>
                                                         </constraints>
                                                     </view>
                                                 </subviews>
@@ -1252,6 +1252,7 @@
                         <outlet property="no2faState" destination="H1s-L4-Eg5" id="xTW-0T-HmA"/>
                         <outlet property="reset2faCardDisclosure" destination="YUr-ee-rGb" id="Wmb-yt-Vgy"/>
                         <outlet property="reset2faView" destination="3wW-vV-doG" id="Z5H-TC-IcC"/>
+                        <outlet property="scrollView" destination="l5h-kJ-WPe" id="eBm-jF-XW9"/>
                         <outlet property="tableView2faMethods" destination="MVK-vm-HQk" id="7Af-Yw-gND"/>
                         <outlet property="tableViewCsvTime" destination="Yjh-9Q-ouZ" id="BAY-ex-X4P"/>
                         <outlet property="thresholdCardDisclosure" destination="ytN-WU-WU2" id="I1p-gU-quG"/>

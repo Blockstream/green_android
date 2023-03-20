@@ -142,9 +142,10 @@ class AccountCell: UITableViewCell {
         let width = icContainers[0].frame.width
 
         if icons.count > 4 {
-            icImgViews[0].image = UIImage()
-            icImgViews[1].image = UIImage()
-            icImgViews[2].image = UIImage()
+            [icImgViews[0], icImgViews[1], icImgViews[2]].forEach {
+                $0.image = UIImage()
+                $0.backgroundColor = cColor
+            }
             for n in 3..<7 {
                 icContainers[n].isHidden = false
                 icImgViews[n].image = icons[7 - 1 - n]
