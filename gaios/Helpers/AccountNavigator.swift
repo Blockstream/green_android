@@ -9,9 +9,9 @@ class AccountNavigator {
         let homeS = UIStoryboard(name: "Home", bundle: nil)
         let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
         if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-            let vc = onBoardS.instantiateViewController(withIdentifier: "LandingViewController") as? LandingViewController {
+            let vc = onBoardS.instantiateViewController(withIdentifier: "SelectOnBoardTypeViewController") as? SelectOnBoardTypeViewController {
             UIApplication.shared.keyWindow?.rootViewController = nav
-            nav.pushViewController(vc, animated: false)
+            nav.pushViewController(vc, animated: true)
         }
     }
 

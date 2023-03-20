@@ -736,10 +736,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 
     // accounts drawer: add new waller
     func didSelectAddWallet() {
-        let hwFlow = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "SelectOnBoardTypeViewController") as? SelectOnBoardTypeViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        AccountNavigator.goCreateRestore()
     }
 
     // accounts drawer: select another account
