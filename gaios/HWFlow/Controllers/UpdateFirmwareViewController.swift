@@ -2,13 +2,9 @@ import Foundation
 import UIKit
 import PromiseKit
 
-enum UpdateFirmwareAction {
-    case update
-    case skip
-}
-
 protocol UpdateFirmwareViewControllerDelegate: AnyObject {
-    func didSelectAction(_ action: UpdateFirmwareAction)
+    func didUpdate(_ firmware: Firmware)
+    func didSkip()
 }
 
 class UpdateFirmwareViewController: UIViewController {
@@ -22,6 +18,8 @@ class UpdateFirmwareViewController: UIViewController {
     @IBOutlet weak var btnSkip: UIButton!
 
     weak var delegate: UpdateFirmwareViewControllerDelegate?
+    var version: String!
+    var firmware: Firmware!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +38,7 @@ class UpdateFirmwareViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = "Update Blockstream Jade to the latest version".localized
-        lblHint.text = "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum".localized
+        lblHint.text = "Current firmware: \(version ?? "")\nLatest firmware: \(firmware.version)"
         btnUpdate.setTitle("id_update".localized, for: .normal)
         btnSkip.setTitle("id_skip".localized, for: .normal)
     }
@@ -61,14 +59,7 @@ class UpdateFirmwareViewController: UIViewController {
 
     }
 
-    func dismiss(_ action: UpdateFirmwareAction) {
-        switch action {
-        case .update:
-            print("update")
-        case .skip:
-            print("skip")
-        }
-        delegate?.didSelectAction(action)
+    func dismiss() {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
@@ -77,10 +68,12 @@ class UpdateFirmwareViewController: UIViewController {
     }
 
     @IBAction func btnUpdate(_ sender: Any) {
-        dismiss(.update)
+        delegate?.didUpdate(firmware)
+        dismiss()
     }
 
     @IBAction func btnSkip(_ sender: Any) {
-        dismiss(.skip)
+        delegate?.didSkip()
+        dismiss()
     }
 }

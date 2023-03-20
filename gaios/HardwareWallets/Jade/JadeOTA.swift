@@ -128,22 +128,18 @@ class JadeOTA: JadeChannel {
         }
         return Data(hash)
     }
-
-    func updateFirmware(_ verInfo: JadeVersionInfo, _ fmw: Firmware) -> Observable<Bool> {
-        guard let binary = try? getBinary(verInfo, fmw) else {
-            return Observable.error(JadeError.Abort("Error downloading firmware file"))
-        }
+    
+    func updateFirmware(version: JadeVersionInfo, firmware: Firmware, binary: Data) -> Observable<Bool> {
         let hash = sha256(binary)
-        let cmd = JadeOta(fwsize: fmw.fwsize,
+        let cmd = JadeOta(fwsize: firmware.fwsize,
                           cmpsize: binary.count,
-                          otachunk: verInfo.jadeOtaMaxChunk,
+                          otachunk: version.jadeOtaMaxChunk,
                           cmphash: hash,
-                          patchsize: fmw.patchSize)
-        BLEManager.shared.onBinaryFetched(hash: "\(hash.map { String(format: "%02hhx", $0) }.joined())")
-        return exchange(JadeRequest(method: fmw.isDelta ? "ota" : "ota_delta",
+                          patchsize: firmware.patchSize)
+        return exchange(JadeRequest(method: firmware.isDelta ? "ota" : "ota_delta",
                                     params: cmd))
             .flatMap { (_: JadeResponse<Bool>) in
-                self.otaSend(binary, size: binary.count, chunksize: verInfo.jadeOtaMaxChunk)
+                self.otaSend(binary, size: binary.count, chunksize: version.jadeOtaMaxChunk)
             }.flatMap { _ in
                 self.exchange(JadeRequest<JadeEmpty>(method: "ota_complete"))
             }.compactMap { (res: JadeResponse<Bool>) in

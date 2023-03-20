@@ -24,16 +24,6 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
         loadNavigationBtns()
     }
 
-    func fwUpdateDialog() {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
-            let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "UpdateFirmwareViewController") as? UpdateFirmwareViewController {
-                vc.modalPresentationStyle = .overFullScreen
-                self.present(vc, animated: false, completion: nil)
-            }
-        }
-    }
-
     func setContent() {
         lblSlide1Title.text = "id_welcome_to_blockstream_jade".localized
         lblSlide1Hint.text = "id_jade_is_a_specialized_device".localized

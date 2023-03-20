@@ -332,21 +332,6 @@ class BLEManager {
             }
     }
 
-    func updateFirmware(_ p: Peripheral, fmw: Firmware, currentVersion: String) {
-        _ = Observable.just(p)
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { _ in Jade.shared.version() }
-            .flatMap {  Jade.shared.updateFirmware($0, fmw) }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                self.prepareDispose?.dispose()
-                self.connectDispose?.dispose()
-                self.delegate?.onUpdateFirmware(p, version: fmw.version, prevVersion: currentVersion)
-            }, onError: { err in
-                self.onError(err, network: nil)
-            })
-    }
-
     func onBinaryFetched(hash: String) {
         DispatchQueue.main.async {
             self.delegate?.onComputedHash(hash)
