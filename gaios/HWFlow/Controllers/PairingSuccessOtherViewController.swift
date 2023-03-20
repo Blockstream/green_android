@@ -50,12 +50,11 @@ class PairingSuccessOtherViewController: HWFlowBaseViewController {
 
     @IBAction func btnContinue(_ sender: Any) {
         self.startLoader(message: "id_logging_in".localized)
-        _ = BLEManager.shared.authenticating(self.peripheral)
-            .flatMap { _ in BLEManager.shared.account(self.peripheral) }
-            .flatMap { BLEManager.shared.logging(self.peripheral, account: $0) }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: self.next,
-                       onError: self.error)
+        BLEViewModel.shared.initialize(peripheral: peripheral,
+                                       testnet: false,
+                                       progress: { _ in },
+                                       completion: self.next,
+                                       error: self.error)
     }
 
     @IBAction func btnRemember(_ sender: Any) {
