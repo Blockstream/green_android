@@ -237,10 +237,10 @@
             </objects>
             <point key="canvasLocation" x="182.60869565217394" y="-49.728260869565219"/>
         </scene>
-        <!--Wait Jade View Controller-->
+        <!--Jade Wait View Controller-->
         <scene sceneID="fRo-1C-gzO">
             <objects>
-                <viewController storyboardIdentifier="WaitJadeViewController" id="Ybu-aA-ZNK" customClass="WaitJadeViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="JadeWaitViewController" id="Ybu-aA-ZNK" customClass="JadeWaitViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="IIt-pT-ARc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -542,10 +542,10 @@
             </objects>
             <point key="canvasLocation" x="1616" y="-50"/>
         </scene>
-        <!--Wait Other Devices View Controller-->
+        <!--Ledger Wait View Controller-->
         <scene sceneID="22T-bW-36L">
             <objects>
-                <viewController storyboardIdentifier="WaitOtherDevicesViewController" id="Zy2-nf-zOe" customClass="WaitOtherDevicesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LedgerWaitViewController" id="Zy2-nf-zOe" customClass="LedgerWaitViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xGA-Fe-afm">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -603,40 +603,6 @@
             </objects>
             <point key="canvasLocation" x="183" y="680"/>
         </scene>
-        <!--List Other Devices View Controller-->
-        <scene sceneID="GHA-Vd-OfX">
-            <objects>
-                <viewController storyboardIdentifier="ListOtherDevicesViewController" id="IUC-C7-rco" customClass="ListOtherDevicesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="lpq-WR-K5p">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ydx-31-dPj">
-                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="IUC-C7-rco" id="bU8-Qd-pHB"/>
-                                    <outlet property="delegate" destination="IUC-C7-rco" id="fn5-PU-NiN"/>
-                                </connections>
-                            </tableView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="wHx-ry-zO6"/>
-                        <color key="backgroundColor" name="gBlackBg"/>
-                        <constraints>
-                            <constraint firstItem="wHx-ry-zO6" firstAttribute="bottom" secondItem="ydx-31-dPj" secondAttribute="bottom" id="0cn-Ji-H6o"/>
-                            <constraint firstItem="wHx-ry-zO6" firstAttribute="trailing" secondItem="ydx-31-dPj" secondAttribute="trailing" id="Hcu-k8-e59"/>
-                            <constraint firstItem="ydx-31-dPj" firstAttribute="top" secondItem="wHx-ry-zO6" secondAttribute="top" id="HlR-XT-AOb"/>
-                            <constraint firstItem="ydx-31-dPj" firstAttribute="leading" secondItem="wHx-ry-zO6" secondAttribute="leading" id="VQU-aH-INb"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="tableView" destination="ydx-31-dPj" id="bh2-20-UFz"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="kas-6W-6km" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="896" y="680"/>
-        </scene>
         <!--Pairing View Controller-->
         <scene sceneID="oCq-kx-uiO">
             <objects>
@@ -691,10 +657,10 @@
             </objects>
             <point key="canvasLocation" x="1616" y="680"/>
         </scene>
-        <!--Confirm Connection View Controller-->
+        <!--Jade Confirm Connection View Controller-->
         <scene sceneID="uYS-Aq-KZQ">
             <objects>
-                <viewController storyboardIdentifier="ConfirmConnectionViewController" id="fCZ-fe-JQ3" customClass="ConfirmConnectionViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="JadeConfirmConnectionViewController" id="fCZ-fe-JQ3" customClass="JadeConfirmConnectionViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Wvn-UW-tWa">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -829,10 +795,10 @@
             </objects>
             <point key="canvasLocation" x="3072" y="680"/>
         </scene>
-        <!--List Jade Devices View Controller-->
+        <!--List Devices View Controller-->
         <scene sceneID="iSu-2x-VGA">
             <objects>
-                <viewController storyboardIdentifier="ListJadeDevicesViewController" id="23i-a9-QU1" customClass="ListJadeDevicesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ListDevicesViewController" id="23i-a9-QU1" customClass="ListDevicesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="CwH-pO-X2J">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -863,10 +829,10 @@
             </objects>
             <point key="canvasLocation" x="2348" y="-50"/>
         </scene>
-        <!--Pairing Success Other View Controller-->
+        <!--Ledger Pairing Success View Controller-->
         <scene sceneID="OXV-3C-DMV">
             <objects>
-                <viewController storyboardIdentifier="PairingSuccessOtherViewController" id="HZ3-6e-lLK" customClass="PairingSuccessOtherViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LedgerPairingSuccessViewController" id="HZ3-6e-lLK" customClass="LedgerPairingSuccessViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8JV-Ag-Pyo">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

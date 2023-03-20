@@ -2,7 +2,7 @@ import UIKit
 import RxBluetoothKit
 import RxSwift
 
-class WaitOtherDevicesViewController: HWFlowBaseViewController {
+class LedgerWaitViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
@@ -75,7 +75,8 @@ class WaitOtherDevicesViewController: HWFlowBaseViewController {
 
     func next(peripheral: [Peripheral]) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "ListOtherDevicesViewController") as? ListOtherDevicesViewController {
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ListDevicesViewController") as? ListDevicesViewController {
+            vc.isJade = false
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

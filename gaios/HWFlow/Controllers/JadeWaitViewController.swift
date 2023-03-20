@@ -2,7 +2,7 @@ import UIKit
 import RxBluetoothKit
 import RxSwift
 
-class WaitJadeViewController: HWFlowBaseViewController {
+class JadeWaitViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var imgDevice: UIImageView!
     @IBOutlet weak var lblStepNumber: UILabel!
@@ -13,7 +13,7 @@ class WaitJadeViewController: HWFlowBaseViewController {
     @IBOutlet weak var infoBox: UIView!
     @IBOutlet weak var loaderPlaceholder: UIView!
 
-    let viewModel = WaitJadeViewModel()
+    let viewModel = JadeWaitViewModel()
     var timer: Timer?
     var idx = 0
 
@@ -140,7 +140,8 @@ class WaitJadeViewController: HWFlowBaseViewController {
 
     func next(peripheral: [Peripheral]) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "ListJadeDevicesViewController") as? ListJadeDevicesViewController {
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ListDevicesViewController") as? ListDevicesViewController {
+            vc.isJade = true
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

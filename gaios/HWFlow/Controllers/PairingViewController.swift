@@ -20,7 +20,7 @@ class PairingViewController: HWFlowBaseViewController {
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
             let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "PairingSuccessOtherViewController") as? PairingSuccessOtherViewController {
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "LedgerPairingSuccessViewController") as? LedgerPairingSuccessViewController {
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         }

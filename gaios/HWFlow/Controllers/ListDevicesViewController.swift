@@ -2,9 +2,10 @@ import UIKit
 import RxSwift
 import RxBluetoothKit
 
-class ListJadeDevicesViewController: HWFlowBaseViewController {
+class ListDevicesViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    var isJade = true
 
     var peripherals = [Peripheral]() {
         didSet {
@@ -15,7 +16,7 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ["JadeDeviceCell" ].forEach {
+        ["JadeDeviceCell", "OtherDeviceCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         setContent()
@@ -29,7 +30,7 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         do {
             try BLEViewModel.shared.isReady()
-            BLEViewModel.shared.scan(jade: true,
+            BLEViewModel.shared.scan(jade: isJade,
                                      completion: { self.peripherals = $0 },
                                      error: self.error)
         } catch { self.error(error) }
@@ -48,9 +49,16 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
 
     func next(_ peripheral: Peripheral) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConfirmConnectionViewController") as? ConfirmConnectionViewController {
-            vc.peripheral = peripheral
-            self.navigationController?.pushViewController(vc, animated: true)
+        if isJade {
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "JadeConfirmConnectionViewController") as? JadeConfirmConnectionViewController {
+                vc.peripheral = peripheral
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        } else {
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "LedgerPairingSuccessViewController") as? LedgerPairingSuccessViewController {
+                vc.peripheral = peripheral
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 
@@ -62,7 +70,7 @@ class ListJadeDevicesViewController: HWFlowBaseViewController {
     }
 }
 
-extension ListJadeDevicesViewController: UITableViewDelegate, UITableViewDataSource {
+extension ListDevicesViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -74,10 +82,18 @@ extension ListJadeDevicesViewController: UITableViewDelegate, UITableViewDataSou
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let peripheral = peripherals[indexPath.row]
-        if let cell = tableView.dequeueReusableCell(withIdentifier: JadeDeviceCell.identifier, for: indexPath) as? JadeDeviceCell {
-            cell.configure(text: peripheral.name ?? "Jade")
-            cell.selectionStyle = .none
-            return cell
+        if peripheral.isJade() {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: JadeDeviceCell.identifier, for: indexPath) as? JadeDeviceCell {
+                cell.configure(text: peripheral.name ?? "Jade")
+                cell.selectionStyle = .none
+                return cell
+            }
+        } else {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: OtherDeviceCell.identifier, for: indexPath) as? OtherDeviceCell {
+                cell.configure(name: peripheral.name ?? "Nano X", type: "Ledger Nano X")
+                cell.selectionStyle = .none
+                return cell
+            }
         }
         return UITableViewCell()
     }
@@ -105,7 +121,7 @@ extension ListJadeDevicesViewController: UITableViewDelegate, UITableViewDataSou
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row]
         BLEViewModel.shared.pairing(peripheral,
-                                    completion: self.next,
+                                       completion: { _ in self.next(peripheral) } ,
                                     error: self.error)
     }
 }

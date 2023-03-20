@@ -4,7 +4,7 @@ import PromiseKit
 import RxBluetoothKit
 import RxSwift
 
-class PairingSuccessOtherViewController: HWFlowBaseViewController {
+class LedgerPairingSuccessViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var lblSerial: UILabel!
     @IBOutlet weak var lblTitle: UILabel!

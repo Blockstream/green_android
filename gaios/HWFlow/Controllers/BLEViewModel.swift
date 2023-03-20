@@ -79,8 +79,9 @@ class BLEViewModel {
     func pairing(_ peripheral: Peripheral,
                  completion: @escaping(Peripheral) -> Void,
                  error: @escaping(Error) -> Void) {
-        scanDispose?.dispose()
+        dispose()
         pairDispose = peripheral.establishConnection()
+            .flatMap { _ in peripheral.isLedger() ? BLEManager.shared.connecting(peripheral) : Observable.just(true) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in completion(peripheral) },
                        onError: { error($0) })
@@ -89,8 +90,7 @@ class BLEViewModel {
     func connecting(_ peripheral: Peripheral,
                     completion: @escaping(Bool) -> Void,
                     error: @escaping(Error) -> Void) {
-        scanDispose?.dispose()
-        pairDispose?.dispose()
+        dispose()
         connectDispose = BLEManager.shared.connecting(peripheral)
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { completion($0) },

@@ -66,14 +66,14 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
 
     @IBAction func btnConnectJade(_ sender: Any) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "WaitJadeViewController") as? WaitJadeViewController {
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "JadeWaitViewController") as? JadeWaitViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
 
     @IBAction func btnConnectOther(_ sender: Any) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "WaitOtherDevicesViewController") as? WaitOtherDevicesViewController {
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "LedgerWaitViewController") as? LedgerWaitViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }

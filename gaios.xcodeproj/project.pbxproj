@@ -128,12 +128,12 @@
 		3453C73626A5A1A100451FB3 /* DrawerMenuUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */; };
 		3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73726A5A41A00451FB3 /* Drawer.swift */; };
 		3453C74226A6BD7E00451FB3 /* HWWScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C74126A6BD7E00451FB3 /* HWWScan.swift */; };
-		34560B7829B9C6E7007E916F /* WaitJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B7729B9C6E7007E916F /* WaitJadeViewController.swift */; };
-		34560B7A29B9D590007E916F /* WaitJadeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B7929B9D590007E916F /* WaitJadeViewModel.swift */; };
+		34560B7829B9C6E7007E916F /* JadeWaitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B7729B9C6E7007E916F /* JadeWaitViewController.swift */; };
+		34560B7A29B9D590007E916F /* JadeWaitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B7929B9D590007E916F /* JadeWaitViewModel.swift */; };
 		34560B8329BA257E007E916F /* SetupJadeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B8229BA257E007E916F /* SetupJadeViewController.swift */; };
 		34560B8529BA28F7007E916F /* SetupJadeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */; };
 		34560B9B29BF1A9D007E916F /* HWFlowBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */; };
-		34560B9E29BF2120007E916F /* WaitOtherDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B9D29BF2120007E916F /* WaitOtherDevicesViewController.swift */; };
+		34560B9E29BF2120007E916F /* LedgerWaitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560B9D29BF2120007E916F /* LedgerWaitViewController.swift */; };
 		34560BA529BF349E007E916F /* OtherDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34560BA329BF349E007E916F /* OtherDeviceCell.swift */; };
 		34560BA629BF349E007E916F /* OtherDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34560BA429BF349E007E916F /* OtherDeviceCell.xib */; };
 		3456AF12299A78BE00C1BCA6 /* UITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456AF11299A78BE00C1BCA6 /* UITextView.swift */; };
@@ -192,7 +192,6 @@
 		3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6A290AE28000122628 /* BalanceCell.swift */; };
 		3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6C290AE28700122628 /* BalanceCellModel.swift */; };
 		3488FC6F290BCB2500122628 /* AccountCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6E290BCB2500122628 /* AccountCellModel.swift */; };
-		3489A5D429BF37CC009B242F /* ListOtherDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */; };
 		3489A5D629BF3FE4009B242F /* PairingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489A5D529BF3FE4009B242F /* PairingViewController.swift */; };
 		3491C9922912B3670063C055 /* AssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3491C9912912B3670063C055 /* AssetsViewController.swift */; };
 		3491C9942912B4C70063C055 /* AssetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3491C9932912B4C70063C055 /* AssetsViewModel.swift */; };
@@ -266,12 +265,12 @@
 		34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */; };
 		34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */; };
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
-		34C8E76829BF6AD400C84066 /* PairingSuccessOtherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */; };
+		34C8E76829BF6AD400C84066 /* LedgerPairingSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76729BF6AD400C84066 /* LedgerPairingSuccessViewController.swift */; };
 		34C8E76F29BF7DF100C84066 /* ConnectionFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */; };
-		34C8E77129BF85AC00C84066 /* ListJadeDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77029BF85AC00C84066 /* ListJadeDevicesViewController.swift */; };
+		34C8E77129BF85AC00C84066 /* ListDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77029BF85AC00C84066 /* ListDevicesViewController.swift */; };
 		34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* JadeDeviceCell.swift */; };
 		34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C8E77529BF868500C84066 /* JadeDeviceCell.xib */; };
-		34C8E77E29C05DD300C84066 /* ConfirmConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */; };
+		34C8E77E29C05DD300C84066 /* JadeConfirmConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77D29C05DD300C84066 /* JadeConfirmConnectionViewController.swift */; };
 		34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77F29C069F400C84066 /* PinCreateViewController.swift */; };
 		34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E78129C0746E00C84066 /* ConnectViewController.swift */; };
 		34C978A5268DAF740061264D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A4268DAF740061264D /* Settings.swift */; };
@@ -602,12 +601,12 @@
 		3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerMenuUITests.swift; sourceTree = "<group>"; };
 		3453C73726A5A41A00451FB3 /* Drawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawer.swift; sourceTree = "<group>"; };
 		3453C74126A6BD7E00451FB3 /* HWWScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWWScan.swift; sourceTree = "<group>"; };
-		34560B7729B9C6E7007E916F /* WaitJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitJadeViewController.swift; sourceTree = "<group>"; };
-		34560B7929B9D590007E916F /* WaitJadeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitJadeViewModel.swift; sourceTree = "<group>"; };
+		34560B7729B9C6E7007E916F /* JadeWaitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeWaitViewController.swift; sourceTree = "<group>"; };
+		34560B7929B9D590007E916F /* JadeWaitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeWaitViewModel.swift; sourceTree = "<group>"; };
 		34560B8229BA257E007E916F /* SetupJadeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupJadeViewController.swift; sourceTree = "<group>"; };
 		34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupJadeViewModel.swift; sourceTree = "<group>"; };
 		34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWFlowBaseViewController.swift; sourceTree = "<group>"; };
-		34560B9D29BF2120007E916F /* WaitOtherDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitOtherDevicesViewController.swift; sourceTree = "<group>"; };
+		34560B9D29BF2120007E916F /* LedgerWaitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerWaitViewController.swift; sourceTree = "<group>"; };
 		34560BA329BF349E007E916F /* OtherDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherDeviceCell.swift; sourceTree = "<group>"; };
 		34560BA429BF349E007E916F /* OtherDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OtherDeviceCell.xib; sourceTree = "<group>"; };
 		3456AF11299A78BE00C1BCA6 /* UITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextView.swift; sourceTree = "<group>"; };
@@ -666,7 +665,6 @@
 		3488FC6A290AE28000122628 /* BalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCell.swift; sourceTree = "<group>"; };
 		3488FC6C290AE28700122628 /* BalanceCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCellModel.swift; sourceTree = "<group>"; };
 		3488FC6E290BCB2500122628 /* AccountCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountCellModel.swift; sourceTree = "<group>"; };
-		3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOtherDevicesViewController.swift; sourceTree = "<group>"; };
 		3489A5D529BF3FE4009B242F /* PairingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingViewController.swift; sourceTree = "<group>"; };
 		3491C9912912B3670063C055 /* AssetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsViewController.swift; sourceTree = "<group>"; };
 		3491C9932912B4C70063C055 /* AssetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsViewModel.swift; sourceTree = "<group>"; };
@@ -741,12 +739,12 @@
 		34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountSelectSubCell.xib; sourceTree = "<group>"; };
 		34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCellModel.swift; sourceTree = "<group>"; };
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
-		34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingSuccessOtherViewController.swift; sourceTree = "<group>"; };
+		34C8E76729BF6AD400C84066 /* LedgerPairingSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerPairingSuccessViewController.swift; sourceTree = "<group>"; };
 		34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionFailViewController.swift; sourceTree = "<group>"; };
-		34C8E77029BF85AC00C84066 /* ListJadeDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListJadeDevicesViewController.swift; sourceTree = "<group>"; };
+		34C8E77029BF85AC00C84066 /* ListDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListDevicesViewController.swift; sourceTree = "<group>"; };
 		34C8E77429BF868500C84066 /* JadeDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDeviceCell.swift; sourceTree = "<group>"; };
 		34C8E77529BF868500C84066 /* JadeDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JadeDeviceCell.xib; sourceTree = "<group>"; };
-		34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmConnectionViewController.swift; sourceTree = "<group>"; };
+		34C8E77D29C05DD300C84066 /* JadeConfirmConnectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeConfirmConnectionViewController.swift; sourceTree = "<group>"; };
 		34C8E77F29C069F400C84066 /* PinCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinCreateViewController.swift; sourceTree = "<group>"; };
 		34C8E78129C0746E00C84066 /* ConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewController.swift; sourceTree = "<group>"; };
 		34C978A4268DAF740061264D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -1792,17 +1790,16 @@
 				34560BA229BF338A007E916F /* Cells */,
 				34B385D829B888E40097220B /* WelcomeJadeViewController.swift */,
 				349F723D29C84DA4007B9154 /* UpdateFirmwareViewController.swift */,
-				34560B7729B9C6E7007E916F /* WaitJadeViewController.swift */,
-				34560B7929B9D590007E916F /* WaitJadeViewModel.swift */,
-				34560B9D29BF2120007E916F /* WaitOtherDevicesViewController.swift */,
+				34560B7729B9C6E7007E916F /* JadeWaitViewController.swift */,
+				34560B7929B9D590007E916F /* JadeWaitViewModel.swift */,
+				34560B9D29BF2120007E916F /* LedgerWaitViewController.swift */,
 				34560B8229BA257E007E916F /* SetupJadeViewController.swift */,
 				34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */,
-				3489A5D329BF37CC009B242F /* ListOtherDevicesViewController.swift */,
-				34C8E77029BF85AC00C84066 /* ListJadeDevicesViewController.swift */,
+				34C8E77029BF85AC00C84066 /* ListDevicesViewController.swift */,
 				3489A5D529BF3FE4009B242F /* PairingViewController.swift */,
-				34C8E76729BF6AD400C84066 /* PairingSuccessOtherViewController.swift */,
+				34C8E76729BF6AD400C84066 /* LedgerPairingSuccessViewController.swift */,
 				34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */,
-				34C8E77D29C05DD300C84066 /* ConfirmConnectionViewController.swift */,
+				34C8E77D29C05DD300C84066 /* JadeConfirmConnectionViewController.swift */,
 				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
 				34C8E78129C0746E00C84066 /* ConnectViewController.swift */,
 				81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */,
@@ -2617,7 +2614,6 @@
 			files = (
 				346752EF291E559900256132 /* AccountSelectViewController.swift in Sources */,
 				3457F4AB292394DD00EF33B5 /* CustomVisualEffectView.swift in Sources */,
-				3489A5D429BF37CC009B242F /* ListOtherDevicesViewController.swift in Sources */,
 				34A862A12979432C0018E636 /* DialogShowQRViewController.swift in Sources */,
 				3461177429C0BFC400F61D22 /* StartOnBoardViewController.swift in Sources */,
 				3418BABC2743984400F9B2D0 /* TransactionDetailCell.swift in Sources */,
@@ -2686,7 +2682,7 @@
 				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
 				340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
-				34C8E77129BF85AC00C84066 /* ListJadeDevicesViewController.swift in Sources */,
+				34C8E77129BF85AC00C84066 /* ListDevicesViewController.swift in Sources */,
 				3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
 				346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */,
@@ -2718,7 +2714,7 @@
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
-				34560B9E29BF2120007E916F /* WaitOtherDevicesViewController.swift in Sources */,
+				34560B9E29BF2120007E916F /* LedgerWaitViewController.swift in Sources */,
 				3418BAB4274275E600F9B2D0 /* TransactionAmountCell.swift in Sources */,
 				81D671F326C80D6B00682508 /* TorNotification.swift in Sources */,
 				34927BC72971452300D741DB /* AccountAssetViewController.swift in Sources */,
@@ -2768,7 +2764,7 @@
 				816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				8111485F287891F500C6F030 /* JadeOTA.swift in Sources */,
-				34560B7829B9C6E7007E916F /* WaitJadeViewController.swift in Sources */,
+				34560B7829B9C6E7007E916F /* JadeWaitViewController.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				815A804429B3D44300269027 /* AccountsRepository.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
@@ -2839,7 +2835,7 @@
 				816F0AF623E47E1E00569A5D /* Wally.swift in Sources */,
 				341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */,
 				81BF4E2F22E9E9EA005A04C6 /* Utils.swift in Sources */,
-				34560B7A29B9D590007E916F /* WaitJadeViewModel.swift in Sources */,
+				34560B7A29B9D590007E916F /* JadeWaitViewModel.swift in Sources */,
 				34580EB126FCB78D00D3BEFC /* UITableView.swift in Sources */,
 				34F980A8291400C700C12D48 /* AccountViewController.swift in Sources */,
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
@@ -2901,7 +2897,7 @@
 				8157CDAC299BE9E100365F1B /* SendConfirmViewModel.swift in Sources */,
 				3484118C265E6113002D2202 /* Constants.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
-				34C8E77E29C05DD300C84066 /* ConfirmConnectionViewController.swift in Sources */,
+				34C8E77E29C05DD300C84066 /* JadeConfirmConnectionViewController.swift in Sources */,
 				34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */,
 				34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
@@ -2929,7 +2925,7 @@
 				81A5919B29156011001D1A65 /* MultisigSettingsViewModel.swift in Sources */,
 				34EB670528213A8A0036D615 /* AMConstants.swift in Sources */,
 				34237FD5276B693100618502 /* SendViewController.swift in Sources */,
-				34C8E76829BF6AD400C84066 /* PairingSuccessOtherViewController.swift in Sources */,
+				34C8E76829BF6AD400C84066 /* LedgerPairingSuccessViewController.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
 				34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */,
 				81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */,

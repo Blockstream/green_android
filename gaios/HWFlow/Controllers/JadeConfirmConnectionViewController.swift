@@ -2,7 +2,7 @@ import UIKit
 import RxBluetoothKit
 import RxSwift
 
-class ConfirmConnectionViewController: HWFlowBaseViewController {
+class JadeConfirmConnectionViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
@@ -95,7 +95,7 @@ class ConfirmConnectionViewController: HWFlowBaseViewController {
     }
 }
 
-extension ConfirmConnectionViewController: DialogListViewControllerDelegate {
+extension JadeConfirmConnectionViewController: DialogListViewControllerDelegate {
 
     func selectNetwork() {
         self.stopLoader()

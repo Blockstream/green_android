@@ -204,8 +204,7 @@ class BLEManager {
                 if name.contains("OLOS") {
                     throw DeviceError.dashboard // open app from dashboard
                 }
-                let network = name.lowercased() == "bitcoin test" ? "testnet" : "mainnet"
-                return NetworkSecurityCase(rawValue: network)
+                return name.lowercased() == "bitcoin test" ? .testnetSS : .bitcoinSS
             }
     }
 
@@ -214,7 +213,7 @@ class BLEManager {
             return Jade.shared.xpubs(network: gdkNetwork?.chain ?? "mainnet", path: [])
         }
         return getLedgerNetwork()
-            .flatMap { Ledger.shared.xpubs(network: $0.network, path: []) }
+            .flatMap { Ledger.shared.xpubs(network: $0.chain, path: []) }
     }
 
     func connectJade(_ p: Peripheral) -> Observable<Bool> {
