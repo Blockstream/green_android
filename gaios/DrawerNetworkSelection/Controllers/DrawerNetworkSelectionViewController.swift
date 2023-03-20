@@ -13,6 +13,8 @@ class DrawerNetworkSelectionViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnAbout: UIButton!
     @IBOutlet weak var btnSettings: UIButton!
+    @IBOutlet weak var newWalletView: UIView!
+    @IBOutlet weak var lblNewWallet: UILabel!
 
     var onSelection: ((Account) -> Void)?
     weak var delegate: DrawerNetworkSelectionDelegate?
@@ -30,6 +32,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
         super.viewDidLoad()
 
         setContent()
+        setStyle()
 
         tableView.register(UINib(nibName: "WalletListCell", bundle: nil), forCellReuseIdentifier: "WalletListCell")
         tableView.register(UINib(nibName: "WalletListHDCell", bundle: nil), forCellReuseIdentifier: "WalletListHDCell")
@@ -43,9 +46,14 @@ class DrawerNetworkSelectionViewController: UIViewController {
         btnAbout.setTitle(NSLocalizedString("id_about", comment: ""), for: .normal)
         btnAbout.setImage(UIImage(named: "ic_about")!, for: .normal)
         btnAbout.setTitleColor(.lightGray, for: .normal)
+        lblNewWallet.text = "id_setup_a_new_wallet".localized
     }
 
-    @objc func didPressAddWallet() {
+    func setStyle() {
+        newWalletView.cornerRadius = 5.0
+    }
+
+    @IBAction func btnAddWallet(_ sender: Any) {
         delegate?.didSelectAddWallet()
     }
 

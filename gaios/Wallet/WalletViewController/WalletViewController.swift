@@ -717,7 +717,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 
     // accounts drawer: add new waller
     func didSelectAddWallet() {
-        AccountNavigator.goCreateRestore()
+//        AccountNavigator.goCreateRestore()
     }
 
     // accounts drawer: select another account

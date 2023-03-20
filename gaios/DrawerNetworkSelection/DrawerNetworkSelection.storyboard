@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,20 +18,63 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="blockstreamGreen" translatesAutoresizingMaskIntoConstraints="NO" id="hq7-Ge-K40">
-                                <rect key="frame" x="0.0" y="74" width="200" height="65"/>
+                                <rect key="frame" x="0.0" y="78" width="200" height="65"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="65" id="9yV-aR-Ula"/>
                                     <constraint firstAttribute="width" constant="200" id="fWf-El-5Gg"/>
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="qcp-QV-GxT">
-                                <rect key="frame" x="0.0" y="169" width="414" height="653"/>
+                                <rect key="frame" x="0.0" y="173" width="414" height="563"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <connections>
                                     <outlet property="dataSource" destination="gdl-iy-vFF" id="ttr-5C-Ype"/>
                                     <outlet property="delegate" destination="gdl-iy-vFF" id="Waj-wC-7h1"/>
                                 </connections>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n6A-Tk-XT1">
+                                <rect key="frame" x="20" y="746" width="374" height="66"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mom-VD-Wx3">
+                                        <rect key="frame" x="20" y="23.5" width="310" height="19.5"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="WKb-I8-YoI">
+                                        <rect key="frame" x="350" y="29" width="8" height="8"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_wallet_disclose" translatesAutoresizingMaskIntoConstraints="NO" id="9t6-7m-GuQ">
+                                                <rect key="frame" x="0.0" y="0.0" width="8" height="8"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="8" id="aI7-6e-fJr"/>
+                                                    <constraint firstAttribute="width" constant="8" id="jlg-Ny-9Th"/>
+                                                </constraints>
+                                            </imageView>
+                                        </subviews>
+                                    </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rBP-H4-nVn">
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="66"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <connections>
+                                            <action selector="btnAddWallet:" destination="gdl-iy-vFF" eventType="touchUpInside" id="SCu-LO-Y3J"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" name="gGrayCard"/>
+                                <constraints>
+                                    <constraint firstItem="rBP-H4-nVn" firstAttribute="height" secondItem="n6A-Tk-XT1" secondAttribute="height" id="8ZR-aR-efV"/>
+                                    <constraint firstAttribute="trailing" secondItem="WKb-I8-YoI" secondAttribute="trailing" constant="16" id="EZV-rI-Hmc"/>
+                                    <constraint firstAttribute="height" constant="66" id="H7m-H5-2U2"/>
+                                    <constraint firstItem="WKb-I8-YoI" firstAttribute="centerY" secondItem="n6A-Tk-XT1" secondAttribute="centerY" id="Nss-H8-yYK"/>
+                                    <constraint firstItem="mom-VD-Wx3" firstAttribute="centerY" secondItem="n6A-Tk-XT1" secondAttribute="centerY" id="Say-Lw-OGF"/>
+                                    <constraint firstItem="rBP-H4-nVn" firstAttribute="width" secondItem="n6A-Tk-XT1" secondAttribute="width" id="UGH-DU-EfA"/>
+                                    <constraint firstItem="WKb-I8-YoI" firstAttribute="leading" secondItem="mom-VD-Wx3" secondAttribute="trailing" constant="20" id="WQY-eZ-TYf"/>
+                                    <constraint firstItem="mom-VD-Wx3" firstAttribute="leading" secondItem="n6A-Tk-XT1" secondAttribute="leading" constant="20" id="WvI-FW-79n"/>
+                                    <constraint firstItem="rBP-H4-nVn" firstAttribute="centerX" secondItem="n6A-Tk-XT1" secondAttribute="centerX" id="dmK-we-Ib2"/>
+                                    <constraint firstItem="rBP-H4-nVn" firstAttribute="centerY" secondItem="n6A-Tk-XT1" secondAttribute="centerY" id="yu3-zl-J47"/>
+                                </constraints>
+                            </view>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="1xA-KR-PR8">
                                 <rect key="frame" x="20" y="822" width="374" height="40"/>
                                 <subviews>
@@ -70,12 +113,15 @@
                         <viewLayoutGuide key="safeArea" id="daV-B4-79u"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
+                            <constraint firstItem="n6A-Tk-XT1" firstAttribute="top" secondItem="qcp-QV-GxT" secondAttribute="bottom" constant="10" id="0a9-g8-K7U"/>
                             <constraint firstItem="daV-B4-79u" firstAttribute="bottom" secondItem="1xA-KR-PR8" secondAttribute="bottom" id="3dU-XH-3H9"/>
                             <constraint firstItem="1xA-KR-PR8" firstAttribute="leading" secondItem="daV-B4-79u" secondAttribute="leading" constant="20" id="4I6-m7-v9A"/>
+                            <constraint firstItem="daV-B4-79u" firstAttribute="trailing" secondItem="n6A-Tk-XT1" secondAttribute="trailing" constant="20" id="DZ6-EF-Uay"/>
                             <constraint firstItem="hq7-Ge-K40" firstAttribute="leading" secondItem="daV-B4-79u" secondAttribute="leading" id="NuO-Lc-mr6"/>
+                            <constraint firstItem="n6A-Tk-XT1" firstAttribute="leading" secondItem="daV-B4-79u" secondAttribute="leading" constant="20" id="SZy-bf-G81"/>
                             <constraint firstItem="qcp-QV-GxT" firstAttribute="leading" secondItem="daV-B4-79u" secondAttribute="leading" id="UAj-bN-lYD"/>
+                            <constraint firstItem="1xA-KR-PR8" firstAttribute="top" secondItem="n6A-Tk-XT1" secondAttribute="bottom" constant="10" id="hL7-ku-Vjq"/>
                             <constraint firstItem="daV-B4-79u" firstAttribute="trailing" secondItem="qcp-QV-GxT" secondAttribute="trailing" id="nWf-CB-Kyn"/>
-                            <constraint firstItem="1xA-KR-PR8" firstAttribute="top" secondItem="qcp-QV-GxT" secondAttribute="bottom" id="o72-I1-Q2f"/>
                             <constraint firstItem="hq7-Ge-K40" firstAttribute="top" secondItem="daV-B4-79u" secondAttribute="top" constant="30" id="uTS-2e-ZWW"/>
                             <constraint firstItem="qcp-QV-GxT" firstAttribute="top" secondItem="hq7-Ge-K40" secondAttribute="bottom" constant="30" id="wjA-Tj-amE"/>
                             <constraint firstItem="daV-B4-79u" firstAttribute="trailing" secondItem="1xA-KR-PR8" secondAttribute="trailing" constant="20" id="yYn-Ic-K0X"/>
@@ -84,6 +130,8 @@
                     <connections>
                         <outlet property="btnAbout" destination="OZQ-aa-4AN" id="GwW-O6-zaz"/>
                         <outlet property="btnSettings" destination="Z9H-sM-f9x" id="AZB-aW-74F"/>
+                        <outlet property="lblNewWallet" destination="mom-VD-Wx3" id="UCX-4u-sqp"/>
+                        <outlet property="newWalletView" destination="n6A-Tk-XT1" id="9EZ-7f-OGx"/>
                         <outlet property="tableView" destination="qcp-QV-GxT" id="onh-9U-oFK"/>
                     </connections>
                 </viewController>
@@ -95,8 +143,12 @@
     <resources>
         <image name="blockstreamGreen" width="280" height="114.5"/>
         <image name="home" width="25" height="25"/>
+        <image name="ic_wallet_disclose" width="7.5" height="11.5"/>
         <namedColor name="customTitaniumDark">
-            <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gGrayCard">
+            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
