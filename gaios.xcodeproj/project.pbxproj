@@ -222,6 +222,7 @@
 		349DB76126A84D20004FF265 /* WalletSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB76026A84D20004FF265 /* WalletSettings.swift */; };
 		349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */; };
 		349F71E929C21945007B9154 /* DialogCountlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349F71E829C21945007B9154 /* DialogCountlyViewController.swift */; };
+		349F723E29C84DA4007B9154 /* UpdateFirmwareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349F723D29C84DA4007B9154 /* UpdateFirmwareViewController.swift */; };
 		34A2AEFE27BA9B4D006A01E9 /* SendConfirm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */; };
 		34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AEFF27BBECD0006A01E9 /* WordCell.swift */; };
 		34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */; };
@@ -695,6 +696,7 @@
 		349DB76026A84D20004FF265 /* WalletSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettings.swift; sourceTree = "<group>"; };
 		349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRegistryFailViewController.swift; sourceTree = "<group>"; };
 		349F71E829C21945007B9154 /* DialogCountlyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DialogCountlyViewController.swift; path = gaios/Shared/Controllers/DialogList/DialogCountlyViewController.swift; sourceTree = SOURCE_ROOT; };
+		349F723D29C84DA4007B9154 /* UpdateFirmwareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateFirmwareViewController.swift; sourceTree = "<group>"; };
 		34A2AEFD27BA9B4D006A01E9 /* SendConfirm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirm.swift; sourceTree = "<group>"; };
 		34A2AEFF27BBECD0006A01E9 /* WordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCell.swift; sourceTree = "<group>"; };
 		34A2AF0127BD378C006A01E9 /* FooterQrCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterQrCell.swift; sourceTree = "<group>"; };
@@ -1789,6 +1791,7 @@
 			children = (
 				34560BA229BF338A007E916F /* Cells */,
 				34B385D829B888E40097220B /* WelcomeJadeViewController.swift */,
+				349F723D29C84DA4007B9154 /* UpdateFirmwareViewController.swift */,
 				34560B7729B9C6E7007E916F /* WaitJadeViewController.swift */,
 				34560B7929B9D590007E916F /* WaitJadeViewModel.swift */,
 				34560B9D29BF2120007E916F /* WaitOtherDevicesViewController.swift */,
@@ -2820,6 +2823,7 @@
 				34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */,
 				81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */,
 				34E0CA9229829C2A00695304 /* Collection.swift in Sources */,
+				349F723E29C84DA4007B9154 /* UpdateFirmwareViewController.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,
 				81772B352992EDEA00F05BF2 /* SendViewModel.swift in Sources */,
 				34A2AF0027BBECD0006A01E9 /* WordCell.swift in Sources */,
