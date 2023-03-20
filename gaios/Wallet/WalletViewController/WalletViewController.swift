@@ -828,14 +828,18 @@ extension WalletViewController: AccountViewControllerDelegate {
     }
 }
 extension WalletViewController: UpdateFirmwareViewControllerDelegate {
-    func didUpdate(_ firmware: Firmware) {
+    func didUpdate(version: String, firmware: Firmware) {
         startLoader(message: "id_updating_firmware".localized)
         let peripheral = Jade.shared.peripheral!
+        let repair = version <= "0.1.30" && firmware.version >= "0.1.31"
         BLEViewModel.shared.updateFirmware(
             peripheral: peripheral,
             firmware: firmware,
             progress: { self.startLoader(message: $0) },
-            completion: { self.stopLoader(); $0 ? DropAlert().success(message: "id_firmware_update_completed".localized) : DropAlert().error(message: "id_operation_failure".localized) },
+            completion: {
+                self.stopLoader();
+                if repair { self.showAlert(title: "id_firmware_update_completed".localized, message:  "id_new_jade_firmware_required".localized)}
+                $0 ? DropAlert().success(message: "id_firmware_update_completed".localized) : DropAlert().error(message: "id_operation_failure".localized) },
             error: { _ in self.stopLoader(); DropAlert().error(message: "id_operation_failure".localized) })
     }
 

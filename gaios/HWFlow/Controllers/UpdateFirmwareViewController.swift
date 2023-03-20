@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol UpdateFirmwareViewControllerDelegate: AnyObject {
-    func didUpdate(_ firmware: Firmware)
+    func didUpdate(version: String, firmware: Firmware)
     func didSkip()
 }
 
@@ -20,6 +20,8 @@ class UpdateFirmwareViewController: UIViewController {
     weak var delegate: UpdateFirmwareViewControllerDelegate?
     var version: String!
     var firmware: Firmware!
+    var needCableUpdate: Bool { version == Jade.BOARD_TYPE_JADE_V1_1 && version < "0.1.28" }
+    var isRequired: Bool { version <= "0.1.30" && firmware.version >= "0.1.31" }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,10 +39,16 @@ class UpdateFirmwareViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Update Blockstream Jade to the latest version".localized
+        lblTitle.text = "id_new_jade_firmware_available".localized
         lblHint.text = "Current firmware: \(version ?? "")\nLatest firmware: \(firmware.version)"
         btnUpdate.setTitle("id_update".localized, for: .normal)
         btnSkip.setTitle("id_skip".localized, for: .normal)
+        if needCableUpdate {
+            lblHint.text = "id_connect_jade_with_a_usb_cable".localized
+        }
+        if isRequired {
+            lblTitle.text = "id_new_jade_firmware_required".localized
+        }
     }
 
     func setStyle() {
@@ -50,13 +58,13 @@ class UpdateFirmwareViewController: UIViewController {
         lblTitle.textColor = .white
         lblHint.textColor = .white.withAlphaComponent(0.6)
         btnUpdate.setStyle(.primary)
+        btnUpdate.isHidden = !needCableUpdate
         btnSkip.setStyle(.inline)
         btnSkip.setTitleColor(.white, for: .normal)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
     }
 
     func dismiss() {
@@ -68,7 +76,7 @@ class UpdateFirmwareViewController: UIViewController {
     }
 
     @IBAction func btnUpdate(_ sender: Any) {
-        delegate?.didUpdate(firmware)
+        delegate?.didUpdate(version: version, firmware: firmware)
         dismiss()
     }
 
