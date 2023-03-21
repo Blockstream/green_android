@@ -49,16 +49,9 @@ class ListDevicesViewController: HWFlowBaseViewController {
 
     func next(_ peripheral: Peripheral) {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if isJade {
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "JadeConfirmConnectionViewController") as? JadeConfirmConnectionViewController {
-                vc.peripheral = peripheral
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
-        } else {
-            if let vc = hwFlow.instantiateViewController(withIdentifier: "LedgerPairingSuccessViewController") as? LedgerPairingSuccessViewController {
-                vc.peripheral = peripheral
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "PairingSuccessViewController") as? PairingSuccessViewController {
+            vc.peripheral = peripheral
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 

@@ -9,13 +9,7 @@ class PinCreateViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblStepNumber: UILabel!
     @IBOutlet weak var lblStepTitle: UILabel!
     @IBOutlet weak var lblStepHint: UILabel!
-    @IBOutlet weak var infoBox: UIView!
     @IBOutlet weak var lblWarn: UILabel!
-
-    @IBOutlet weak var btnRemember: UIButton!
-    @IBOutlet weak var rememberView: UIView!
-    @IBOutlet weak var lblRemember: UILabel!
-    @IBOutlet weak var iconRemember: UIImageView!
     @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var btnContinue: UIButton!
 
@@ -54,7 +48,6 @@ class PinCreateViewController: HWFlowBaseViewController {
         lblStepTitle.text = "Create a PIN"
         lblStepHint.text = "Enter and confirm a unique PIN that will be entered to unlock Jade."
         lblWarn.text = "If you forget your PIN, you will need to restore with your recovery phrase"
-        lblRemember.text = "id_remember_my_device".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
     }
 
@@ -68,11 +61,6 @@ class PinCreateViewController: HWFlowBaseViewController {
     }
 
     func setStyle() {
-        [infoBox].forEach {
-            $0?.cornerRadius = 5.0
-            $0?.borderWidth = 2.0
-            $0?.borderColor = UIColor.gGrayCard()
-        }
         [lblStepNumber].forEach {
             $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .black)
             $0?.textColor = UIColor.gGreenMatrix()
@@ -85,9 +73,6 @@ class PinCreateViewController: HWFlowBaseViewController {
             $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
             $0?.textColor = .white.withAlphaComponent(0.6)
         }
-        rememberView.borderWidth = 2.0
-        rememberView.borderColor = .white
-        rememberView.cornerRadius = 4.0
         btnContinue.setStyle(.primary)
     }
 
@@ -132,11 +117,6 @@ class PinCreateViewController: HWFlowBaseViewController {
         if let vc = hwFlow.instantiateViewController(withIdentifier: "SetupJadeViewController") as? SetupJadeViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
-    }
-
-    @IBAction func btnRemember(_ sender: Any) {
-        remember.toggle()
-        iconRemember.image = remember ? UIImage(named: "ic_checkbox_on") : UIImage(named: "ic_checkbox_off")
     }
 
     func next(_ wm: WalletManager) {
