@@ -2,6 +2,12 @@ import UIKit
 import RxBluetoothKit
 import RxSwift
 
+enum PairingState: Int {
+    case unknown
+    case pairing
+    case paired
+}
+
 class ConnectViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -10,7 +16,9 @@ class ConnectViewController: HWFlowBaseViewController {
     @IBOutlet weak var retryButton: UIButton!
 
     var account: Account!
-    private var error = false
+
+    private var activeToken, resignToken: NSObjectProtocol?
+    private var pairingState: PairingState = .unknown
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -45,10 +53,18 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
+        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         scan()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = resignToken {
+            NotificationCenter.default.removeObserver(token)
+        }
         stop()
         BLEViewModel.shared.scanDispose?.dispose()
     }
@@ -62,6 +78,16 @@ class ConnectViewController: HWFlowBaseViewController {
         retryButton.isHidden = true
         retryButton.setTitle("Retry".localized, for: .normal)
         retryButton.setStyle(.primary)
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        print("applicationDidBecomeActive")
+        self.pairingState = .paired
+    }
+
+    func applicationWillResignActive(_ notification: Notification) {
+        print("applicationWillResignActive")
+        self.pairingState = .pairing
     }
 
     func setStyle() {
@@ -109,7 +135,6 @@ class ConnectViewController: HWFlowBaseViewController {
         let txt = BLEManager.shared.toErrorString(bleError)
         lblTitle.text = txt
         image.image = UIImage(named: "il_connection_fail")
-        error = true
     }
 
     func scan() {
@@ -129,19 +154,30 @@ class ConnectViewController: HWFlowBaseViewController {
             self.lblTitle.text = txt
         }
     }
+
     func connect(_ peripherals: [Peripheral]) {
         let peripheral = peripherals.filter { $0.peripheral.identifier == account.uuid || $0.peripheral.name == account.name }.first
-        guard let peripheral = peripheral else {
-            return
-        }
+        guard let peripheral = peripheral else { return }
         self.progress("id_connecting".localized)
+        var timer: Timer?
         BLEViewModel.shared.pairing(peripheral,
                                     completion: { _ in
-            if peripheral.isJade() && (self.error || peripheral.identifier != self.account.uuid) {
-                sleep(10)
+            timer = Timer.scheduledTimer(withTimeInterval: 3.0,
+                                         repeats: true) {_ in
+                print("pairingState \(self.pairingState)")
+                if self.pairingState == .unknown {
+                    timer?.invalidate()
+                    self.login(peripheral)
+                } else if self.pairingState == .paired {
+                    timer?.invalidate()
+                    self.pairingState = .unknown
+                    BLEViewModel.shared.dispose()
+                    BLEManager.shared.dispose()
+                    BLEManager.shared.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
+                    self.scan()
+                }
             }
-            self.login(peripheral)
-        }, error: self.error )
+        }, error: self.error)
     }
 
     func login(_ peripheral: Peripheral) {
