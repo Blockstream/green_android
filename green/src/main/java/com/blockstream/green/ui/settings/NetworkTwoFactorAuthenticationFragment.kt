@@ -282,10 +282,16 @@ class NetworkTwoFactorAuthenticationFragment :
                     if (!limits.isFiat && limits.satoshi == 0L) {
                         getString(R.string.id_set_twofactor_threshold)
                     } else {
-                        limits.toAmountLook(
-                            session = session,
-                            isFiat = limits.isFiat
-                        )
+                        if(limits.isFiat){
+                            // GDK 0.0.58.post1 - GA_get_twofactor_config: Fiat pricing limits no longer return corresponding
+                            // converted BTC amounts. When "is_fiat" is true, the caller should convert
+                            // the amount themselves using GA_convert_amount if desired.
+                            limits.fiat
+                        }else{
+                            limits.toAmountLook(
+                                session = session
+                            )
+                        }
                     }
                 })
             }
@@ -331,15 +337,19 @@ class NetworkTwoFactorAuthenticationFragment :
             // Deprecate setting fiat value if not already setup
             if(limits.isFiat){
                 binding.showFiat = true
+
+                // GDK 0.0.58.post1 - GA_get_twofactor_config: Fiat pricing limits no longer return corresponding
+                // converted BTC amounts. When "is_fiat" is true, the caller should convert
+                // the amount themselves using GA_convert_amount if desired.
+                binding.amount = limits.fiat
             }else{
                 binding.currency = getBitcoinOrLiquidUnit(assetId = network.policyAsset, session = session)
+                binding.amount = limits.toAmountLook(
+                    session = session,
+                    withUnit = false
+                )
             }
             binding.currencySpinner.setSelection(if (limits.isFiat) 1 else 0)
-            binding.amount = limits.toAmountLook(
-                session = session,
-                isFiat = limits.isFiat,
-                withUnit = false
-            )
         }
 
         AmountTextWatcher.watch(binding.amountEditText)

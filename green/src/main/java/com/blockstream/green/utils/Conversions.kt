@@ -142,7 +142,7 @@ fun Balance?.toAmountLook(
                      withDecimalSeparator = true,
                      withGrouping = withGrouping
                  ).format(fiat?.toDouble())?.let {
-                     if (withUnit) "$it ${fiatCurrency.getFiatUnit(session)}" else it
+                     if (withUnit) "$it ${fiatCurrency?.getFiatUnit(session)}" else it
                  }
             } catch (e: Exception) {
                 null

@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace 'com.blockstream.crypto'
     compileSdkVersion 33
     buildToolsVersion "33.0.0"
 
@@ -25,23 +26,29 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    task fetchGdk (type: Exec) {
-        workingDir '.'
-        commandLine './fetch_gdk_binaries.sh'
-    }
-    namespace 'com.blockstream.crypto'
 }
 
 kotlin {
     jvmToolchain(11)
 }
 
-afterEvaluate {
-    android.libraryVariants.all { variant ->
+task fetchBinaries {
+    doFirst{
         def jniLibs = new File('./crypto/src/main/jniLibs')
         if (!jniLibs.exists()) {
-            preBuild.dependsOn fetchGdk
+            exec {
+                commandLine './fetch_gdk_binaries.sh'
+            }
+        }else{
+            print "-- Skipped --"
         }
+    }
+    outputs.upToDateWhen { false }
+}
+
+afterEvaluate {
+    android.libraryVariants.all { variant ->
+        variant.getPreBuildProvider().configure { dependsOn(fetchBinaries) }
     }
 }
 

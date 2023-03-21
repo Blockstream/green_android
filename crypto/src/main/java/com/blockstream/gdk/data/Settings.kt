@@ -31,7 +31,7 @@ data class Settings(
             return Settings(
                 // Prominent Settings
                 altimeout = prominentSettings.altimeout,
-                pricing = prominentSettings.pricing.takeIf { it.exchange != "TRT" } ?: Pricing("USD", "BITFINEX"), // Quick fix to solve login issues with TRT
+                pricing = prominentSettings.pricing,
                 unit = prominentSettings.unit,
                 pgp = prominentSettings.pgp.takeIf { pgpFromProminent } ?: networkSettings.pgp.takeIf { !pgpFromProminent },
 

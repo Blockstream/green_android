@@ -350,6 +350,9 @@ class Countly constructor(
             exceptionCounter++
             crashes.recordHandledException(throwable)
         }
+        if(isDevelopmentOrDebug){
+            throwable.printStackTrace()
+        }
     }
 
     fun onStart(activity: AppActivity) {

@@ -22,7 +22,7 @@ data class TwoFactorConfig(
     @SerialName("twofactor_reset") val twoFactorReset: TwoFactorReset,
 ){
     companion object{
-        // Quick Fix
+        // Emtpy object in case of 2FA bug in GDK
         val empty = TwoFactorConfig(
             anyEnabled = false,
             email = TwoFactorMethodConfig(),
