@@ -22,7 +22,7 @@ class SelectOnBoardTypeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        iAgree = AccountsRepository.shared.swAccounts.count > 0
+        iAgree = AccountsRepository.shared.swAccounts.count + AccountsRepository.shared.hwAccounts.count > 0
 
 //        customBack()
         setContent()
