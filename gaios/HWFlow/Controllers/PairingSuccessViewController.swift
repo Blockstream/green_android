@@ -121,7 +121,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         UIApplication.shared.keyWindow?.rootViewController = nav
     }
 
-    func error(_ err: Error) {
+    override func error(_ err: Error) {
         self.stopLoader()
         let bleError = BLEManager.shared.toBleError(err, network: nil)
         let txt = BLEManager.shared.toErrorString(bleError)

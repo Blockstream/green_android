@@ -102,14 +102,11 @@ class PinCreateViewController: HWFlowBaseViewController {
     @IBAction func continueBtnTapped(_ sender: Any) {
         btnContinue.isHidden = true
         start()
-        do {
-            try BLEViewModel.shared.isReady()
-            BLEViewModel.shared.initialize(peripheral: peripheral,
-                                           testnet: testnet,
-                                           progress: { _ in },
-                                           completion: self.next,
-                                           error: self.error)
-        } catch { self.error(error) }
+        BLEViewModel.shared.initialize(peripheral: peripheral,
+                                       testnet: testnet,
+                                       progress: { _ in },
+                                       completion: self.next,
+                                       error: self.error)
     }
 
     @objc func setupBtnTapped() {
@@ -126,7 +123,7 @@ class PinCreateViewController: HWFlowBaseViewController {
         getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
     }
 
-    func error(_ err: Error) {
+    override func error(_ err: Error) {
         btnContinue.isHidden = false
         self.stop()
         let bleError = BLEManager.shared.toBleError(err, network: nil)

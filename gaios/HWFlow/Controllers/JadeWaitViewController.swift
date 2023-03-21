@@ -38,12 +38,9 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         timer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
-        do {
-            try BLEViewModel.shared.isReady()
-            BLEViewModel.shared.scan(jade: true,
-                                     completion: self.next,
-                                     error: self.error)
-        } catch { showError(error) }
+        BLEViewModel.shared.scan(jade: true,
+                                 completion: self.next,
+                                 error: self.error)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -145,11 +142,5 @@ class JadeWaitViewController: HWFlowBaseViewController {
             vc.isJade = true
             self.navigationController?.pushViewController(vc, animated: true)
         }
-    }
-
-    func error(_ err: Error) {
-        let bleError = BLEManager.shared.toBleError(err, network: nil)
-        let txt = BLEManager.shared.toErrorString(bleError)
-        showAlert(title: "id_error".localized, message: txt)
     }
 }

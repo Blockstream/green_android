@@ -10,14 +10,6 @@ class BLEViewModel {
     var pairDispose: Disposable?
     var connectDispose: Disposable?
 
-    func isReady() throws {
-        if BLEManager.shared.manager.state == .poweredOff {
-            throw BLEManagerError.genericErr(txt: "id_turn_on_bluetooth_to_connect".localized)
-        } else if BLEManager.shared.manager.state == .unauthorized {
-            throw BLEManagerError.genericErr(txt: "id_give_bluetooth_permissions".localized)
-        }
-    }
-
     func dispose() {
         scanDispose?.dispose()
         pairDispose?.dispose()

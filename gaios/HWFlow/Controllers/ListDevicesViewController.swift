@@ -28,12 +28,9 @@ class ListDevicesViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        do {
-            try BLEViewModel.shared.isReady()
-            BLEViewModel.shared.scan(jade: isJade,
-                                     completion: { self.peripherals = $0 },
-                                     error: self.error)
-        } catch { self.error(error) }
+        BLEViewModel.shared.scan(jade: isJade,
+                                 completion: { self.peripherals = $0 },
+                                 error: self.error)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -55,7 +52,7 @@ class ListDevicesViewController: HWFlowBaseViewController {
         }
     }
 
-    func error(_ err: Error) {
+    override func error(_ err: Error) {
         self.stopLoader()
         let bleError = BLEManager.shared.toBleError(err, network: nil)
         let txt = BLEManager.shared.toErrorString(bleError)

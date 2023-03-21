@@ -129,7 +129,7 @@ class ConnectViewController: HWFlowBaseViewController {
         UIApplication.shared.keyWindow?.rootViewController = nav
     }
 
-    func error(_ err: Error) {
+    override func error(_ err: Error) {
         stop()
         BLEViewModel.shared.dispose()
         retryButton.isHidden = false
@@ -143,12 +143,9 @@ class ConnectViewController: HWFlowBaseViewController {
         start()
         setContent()
         self.progress(account.isJade ? "Power on Jade".localized : "id_please_follow_the_instructions".localized)
-        do {
-            try BLEViewModel.shared.isReady()
-            BLEViewModel.shared.scan(jade: account.isJade,
-                                    completion: { self.connect($0) },
-                                     error: self.error)
-        } catch { self.error(error) }
+        BLEViewModel.shared.scan(jade: account.isJade,
+                                 completion: { self.connect($0) },
+                                 error: self.error)
     }
 
     func progress(_ txt: String) {

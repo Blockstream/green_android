@@ -30,12 +30,9 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         start()
-        do {
-            try BLEViewModel.shared.isReady()
-            BLEViewModel.shared.scan(jade: false,
-                                     completion: self.next,
-                                     error: self.error)
-        } catch { self.error(error) }
+        BLEViewModel.shared.scan(jade: false,
+                                 completion: self.next,
+                                 error: self.error)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -97,11 +94,5 @@ class LedgerWaitViewController: HWFlowBaseViewController {
             vc.isJade = false
             self.navigationController?.pushViewController(vc, animated: true)
         }
-    }
-
-    func error(_ err: Error) {
-        let bleError = BLEManager.shared.toBleError(err, network: nil)
-        let txt = BLEManager.shared.toErrorString(bleError)
-        showAlert(title: "id_error".localized, message: txt)
     }
 }

@@ -101,14 +101,6 @@ class BLEManager {
             .take(1)
     }
 
-    func isReady() throws {
-        if manager.state == .poweredOff {
-            throw BLEManagerError.powerOff(txt: NSLocalizedString("id_turn_on_bluetooth_to_connect", comment: ""))
-        } else if manager.state == .unauthorized {
-            throw BLEManagerError.unauthorized(txt: NSLocalizedString("id_give_bluetooth_permissions", comment: ""))
-        }
-    }
-
     func start() {
         if manager.state == .poweredOff {
             let err = BLEManagerError.powerOff(txt: NSLocalizedString("id_turn_on_bluetooth_to_connect", comment: ""))
