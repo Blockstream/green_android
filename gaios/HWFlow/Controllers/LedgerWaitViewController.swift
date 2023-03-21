@@ -90,7 +90,8 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         loadingIndicator.isAnimating = false
     }
 
-    func next(peripheral: [Peripheral]) {
+    func next(peripherals: [Peripheral]) {
+        if peripherals.isEmpty { return  }
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ListDevicesViewController") as? ListDevicesViewController {
             vc.isJade = false

@@ -138,7 +138,8 @@ class JadeWaitViewController: HWFlowBaseViewController {
         SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 
-    func next(peripheral: [Peripheral]) {
+    func next(peripherals: [Peripheral]) {
+        if peripherals.isEmpty { return }
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ListDevicesViewController") as? ListDevicesViewController {
             vc.isJade = true
