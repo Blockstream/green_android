@@ -135,7 +135,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnTrouble(_ sender: Any) {
-        //next()
+        SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 
     func next(peripheral: [Peripheral]) {

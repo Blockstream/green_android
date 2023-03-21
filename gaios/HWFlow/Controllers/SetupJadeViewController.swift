@@ -133,7 +133,7 @@ class SetupJadeViewController: HWFlowBaseViewController {
     }
 
     @objc func troubleshootBtnTapped() {
-        print("sss")
+        SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 
     @IBAction func btnExit(_ sender: Any) {
