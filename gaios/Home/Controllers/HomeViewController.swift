@@ -205,7 +205,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func popover(for cell: UITableViewCell, account: Account) {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
-        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
+        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuHomeViewController") as? PopoverMenuHomeViewController {
             popover.delegate = self
             popover.index = account.id
             popover.menuOptions = [.edit, .delete]
@@ -322,7 +322,7 @@ extension HomeViewController: UIPopoverPresentationControllerDelegate {
     }
 }
 
-extension HomeViewController: PopoverMenuWalletDelegate {
+extension HomeViewController: PopoverMenuHomeDelegate {
     func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?) {
         guard let index = index else { return }
         switch menuOption {
