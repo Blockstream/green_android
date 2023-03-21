@@ -83,11 +83,13 @@ class ConnectViewController: HWFlowBaseViewController {
     func applicationDidBecomeActive(_ notification: Notification) {
         print("applicationDidBecomeActive")
         self.pairingState = .paired
+        start()
     }
 
     func applicationWillResignActive(_ notification: Notification) {
         print("applicationWillResignActive")
         self.pairingState = .pairing
+        stop()
     }
 
     func setStyle() {

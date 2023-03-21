@@ -8,6 +8,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
 
+    private var activeToken, resignToken: NSObjectProtocol?
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
         progress.translatesAutoresizingMaskIntoConstraints = false
@@ -26,6 +27,8 @@ class LedgerWaitViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
+        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         start()
         do {
             try BLEViewModel.shared.isReady()
@@ -36,6 +39,12 @@ class LedgerWaitViewController: HWFlowBaseViewController {
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = resignToken {
+            NotificationCenter.default.removeObserver(token)
+        }
         stop()
         BLEViewModel.shared.scanDispose?.dispose()
     }
@@ -50,6 +59,14 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         lblHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
         lblTitle.textColor = .white
         lblHint.textColor = .white.withAlphaComponent(0.6)
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        start()
+    }
+
+    func applicationWillResignActive(_ notification: Notification) {
+        stop()
     }
 
     func start() {
