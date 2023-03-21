@@ -5,6 +5,8 @@ class JadeDeviceCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var btnDisclose: UIButton!
     @IBOutlet weak var lblName: UILabel!
+    @IBOutlet weak var iconSensor: UIImageView!
+    @IBOutlet weak var lblBlockstream: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -13,6 +15,8 @@ class JadeDeviceCell: UITableViewCell {
         btnDisclose.isUserInteractionEnabled = false
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
         btnDisclose.cornerRadius = 4.0
+        lblBlockstream.text = "Blockstream"
+        iconSensor.image = iconSensor.image?.maskWithColor(color: .white)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
