@@ -11,8 +11,10 @@ import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GdkBridge
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.managers.NotificationManager
+import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.services.TaskService
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.MainActivity
@@ -22,12 +24,13 @@ import com.blockstream.green.utils.isDevelopmentFlavor
 import com.pandulapeter.beagle.Beagle
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
+import mu.KLogging
 import javax.inject.Inject
 
 typealias ApplicationScope = kotlinx.coroutines.CoroutineScope
 
 @HiltAndroidApp
-class GreenApplication : Application(){
+class GreenApplication : Application() {
     @Inject
     lateinit var migrator: Migrator
 
@@ -59,10 +62,15 @@ class GreenApplication : Application(){
     lateinit var notificationManager: NotificationManager
 
     @Inject
+    lateinit var activityLifecycle: ActivityLifecycle
+
+    @Inject
     lateinit var countly: Countly
 
     override fun onCreate() {
         super.onCreate()
+
+        registerActivityLifecycleCallbacks(activityLifecycle)
 
         countly.applicationOnCreate()
 
@@ -73,6 +81,9 @@ class GreenApplication : Application(){
         if (isDevelopmentFlavor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             initShortcuts()
         }
+
+        // Start TaskService
+        startService(Intent(applicationContext, TaskService::class.java))
     }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
@@ -100,4 +111,6 @@ class GreenApplication : Application(){
 
         shortcutManager!!.dynamicShortcuts = listOfNotNull(hideAmountsShortcut, qaTesterShortcut)
     }
+
+    companion object: KLogging()
 }

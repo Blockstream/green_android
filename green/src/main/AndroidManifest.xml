@@ -134,6 +134,9 @@
             <meta-data android:name="app.rive.runtime.kotlin.RiveInitializer"
                 android:value="androidx.startup" />
         </provider>
+
+        <service android:name=".services.TaskService"/>
+
     </application>
 
 </manifest>

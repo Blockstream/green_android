@@ -76,6 +76,10 @@ class NotificationManager constructor(
         updateNotifications(isOnForeground)
     }
 
+    fun cancelAll(){
+        androidNotificationManager.cancelAll()
+    }
+
     fun notificationPermissionGiven(){
         updateNotifications(isOnForeground)
     }
@@ -91,8 +95,15 @@ class NotificationManager constructor(
                 session.getWallet(walletRepository)?.also { wallet ->
                     if (session.isConnected) {
                         val sessionTimeout =
-                            if (isForeground) 0 else (session.getSettings(null)?.altimeout ?: 1) * 60 * 1000L
-                        val notification = createNotification(context, session, wallet, sessionTimeout)
+                            if (isForeground) 0 else (session.getSettings(null)?.altimeout
+                                ?: 1) * 60 * 1000L
+
+                        val notification = createNotification(
+                            context = context,
+                            session = session,
+                            wallet = wallet,
+                            timeout = sessionTimeout
+                        )
                         androidNotificationManager.notify(notificationId(wallet), notification)
                     } else {
                         androidNotificationManager.cancel(notificationId(wallet))
@@ -151,11 +162,7 @@ class NotificationManager constructor(
             .setColor(ContextCompat.getColor(context, if(session.gdkSessions.size == 1) session.mainAssetNetwork.id.getNetworkColor() else R.color.brand_green))
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .addAction(
-                R.drawable.ic_close,
-                context.getString(R.string.id_logout),
-                logoutIntent
-            )
+            .addAction(R.drawable.ic_close, context.getString(R.string.id_logout), logoutIntent)
             .apply {
 
                 session.device?.let {

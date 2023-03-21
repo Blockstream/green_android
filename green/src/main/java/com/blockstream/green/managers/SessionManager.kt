@@ -303,5 +303,12 @@ class SessionManager constructor(
         connectionChangeEvent.postValue(true)
     }
 
+    fun disconnectAll(){
+        logger.info { "Disconnecting all sessions" }
+        getConnectedSessions().onEach {
+            it.disconnectAsync()
+        }
+    }
+
     companion object: KLogging()
 }

@@ -14,6 +14,7 @@ import com.blockstream.green.GreenApplication
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.settings.Migrator
@@ -214,4 +215,12 @@ class GreenModules {
         return Beagle
     }
 
+    @Singleton
+    @Provides
+    fun provideActivityLifecycle(
+        sessionManager: SessionManager,
+        notificationManager: NotificationManager
+    ): ActivityLifecycle {
+        return ActivityLifecycle(sessionManager, notificationManager)
+    }
 }
