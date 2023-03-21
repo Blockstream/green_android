@@ -739,7 +739,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 
     // accounts drawer: add new waller
     func didSelectAddWallet() {
-        AccountNavigator.goCreateRestore()
+        AccountNavigator.goCreateRestore(navigationController: navigationController)
     }
 
     // accounts drawer: select another account
@@ -748,7 +748,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
         if account.id == viewModel.wm?.account.id ?? "" {
             return
         }
-        AccountNavigator.goLogin(account: account)
+        AccountNavigator.goLogin(account: account, navigationController: navigationController)
     }
 
     // accounts drawer: select app settings

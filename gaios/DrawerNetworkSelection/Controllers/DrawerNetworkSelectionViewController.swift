@@ -55,6 +55,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     @IBAction func btnAddWallet(_ sender: Any) {
         delegate?.didSelectAddWallet()
+        self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func btnAbout(_ sender: Any) {

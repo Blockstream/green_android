@@ -12,7 +12,7 @@
         <!--Home View Controller-->
         <scene sceneID="zhA-DG-HKn">
             <objects>
-                <viewController id="Emf-d6-4he" customClass="HomeViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Home" id="Emf-d6-4he" customClass="HomeViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="g4Z-08-6GD">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

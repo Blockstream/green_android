@@ -269,13 +269,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             break
         case HomeSection.swWallet.rawValue:
             let account = AccountsRepository.shared.swAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account)
+            AccountNavigator.goLogin(account: account, navigationController: navigationController)
         case HomeSection.ephWallet.rawValue:
             let account = ephAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account)
+            AccountNavigator.goLogin(account: account, navigationController: navigationController)
         case HomeSection.hwWallet.rawValue:
             let account = AccountsRepository.shared.hwAccounts[indexPath.row]
-            AccountNavigator.goLogin(account: account)
+            AccountNavigator.goLogin(account: account, navigationController: navigationController)
         default:
             break
         }
