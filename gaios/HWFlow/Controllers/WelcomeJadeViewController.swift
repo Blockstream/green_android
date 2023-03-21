@@ -21,7 +21,6 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
 
         setContent()
         setStyle()
-        loadNavigationBtns()
     }
 
     func setContent() {
@@ -37,15 +36,6 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
         lblSlide3Hint.text = "id_jade_is_an_isolated_device_not".localized
     }
 
-    func loadNavigationBtns() {
-
-        // setup right menu bar: settings
-        let settingsBtn = UIButton(type: .system)
-        settingsBtn.setTitle("Skip", for: .normal)
-        settingsBtn.addTarget(self, action: #selector(skipBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
-    }
-
     func setStyle() {
         [lblSlide1Title, lblSlide2Title, lblSlide3Title].forEach {
             $0?.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
@@ -58,10 +48,6 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
         btnConnectJade.setStyle(.primary)
         btnConnectOther.setStyle(.outlinedWhite)
         btnCheckStore.setStyle(.inline)
-    }
-
-    @objc func skipBtnTapped() {
-        print("skip")
     }
 
     @IBAction func btnConnectJade(_ sender: Any) {
@@ -79,8 +65,8 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnCheckStore(_ sender: Any) {
+        SafeNavigationManager.shared.navigate( ExternalUrls.blockstreamStore )
     }
-
 }
 
 extension WelcomeJadeViewController: UIScrollViewDelegate {

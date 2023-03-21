@@ -57,4 +57,7 @@ enum ExternalUrls {
     static let aboutHelpCenter = URL(string: "https://help.blockstream.com/hc/en-us/categories/900000056183-Blockstream-Green/")!
     static let aboutTermsOfService = URL(string: "https://blockstream.com/green/terms/")!
     static let aboutPrivacyPolicy = URL(string: "https://blockstream.com/green/privacy/")!
+
+    static let jadeTroubleshoot = URL(string: "https://help.blockstream.com/hc/en-us/articles/4406185830041-Why-is-my-Blockstream-Jade-not-connecting-over-Bluetooth-")!
+    static let blockstreamStore = URL(string: "https://store.blockstream.com/product/jade-hardware-wallet/")!
 }
