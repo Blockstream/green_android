@@ -61,7 +61,26 @@ class WalletViewController: UIViewController {
             self?.reloadSections(sections, animated: animated)
         }
         viewModel.reloadSections = reloadSections
+
+        let reloadAccountView: (() -> Void)? = { [weak self] () in
+            guard let model = self?.viewModel.accountCellModels[safe: self?.sIdx ?? 0] else { return }
+            if let vc = self?.navigationController?.viewControllers.last as? AccountViewController {
+                vc.reloadFromParent(model)
+            }
+        }
         viewModel.reloadAccountView = reloadAccountView
+        let welcomeLayerVisibility: (() -> Void)? = { [weak self] () in
+            self?.navigationItem.leftBarButtonItem = nil
+            self?.navigationItem.rightBarButtonItems = []
+            self?.drawerIcon(false)
+            if self?.viewModel.accountCellModels.count ?? 0 > 0 {
+                self?.welcomeLayer.isHidden = true
+                self?.loadNavigationBtns()
+                self?.drawerIcon(true)
+            } else {
+                self?.welcomeLayer.isHidden = false
+            }
+        }
         viewModel.welcomeLayerVisibility = welcomeLayerVisibility
         viewModel.preselectAccount = {[weak self] idx in
             self?.sIdx = idx
@@ -91,6 +110,10 @@ class WalletViewController: UIViewController {
             vc.widget = widget
             present(vc, animated: false, completion: nil)
         }
+    }
+
+    deinit {
+        print("deinit")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -247,26 +270,6 @@ class WalletViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "AssetsViewController") as? AssetsViewController {
             vc.viewModel = AssetsViewModel(assetCellModels: viewModel.walletAssetCellModels)
             navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    func reloadAccountView() {
-        guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
-        if let vc = navigationController?.viewControllers.last as? AccountViewController {
-            vc.reloadFromParent(model)
-        }
-    }
-
-    func welcomeLayerVisibility() {
-        navigationItem.leftBarButtonItem = nil
-        navigationItem.rightBarButtonItems = []
-        drawerIcon(false)
-        if viewModel.accountCellModels.count > 0 {
-            welcomeLayer.isHidden = true
-            loadNavigationBtns()
-            drawerIcon(true)
-        } else {
-            welcomeLayer.isHidden = false
         }
     }
 
