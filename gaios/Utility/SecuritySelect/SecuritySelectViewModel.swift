@@ -93,13 +93,16 @@ class SecuritySelectViewModel {
             .then { res in self.wm.subaccounts().map { _ in res } }
     }
 
+    func device() -> HWDevice {
+        return wm.account.isJade ? .defaultJade(fmwVersion: nil) : .defaultLedger()
+    }
+
     func registerSession(session: SessionManager) -> Promise<Void> {
-        let isHW = wm.account.isHW ?? false
-        if isHW {
+        if wm.account.isHW {
             if session.gdkNetwork.liquid && session.gdkNetwork.electrum {
                 return Promise() { seal in seal.reject(GaError.GenericError("Liquid singlesig not available"))}
             }
-            return registerSession(session: session, credentials: nil, hw: BLEManager.shared.device)
+            return registerSession(session: session, credentials: nil, hw: device())
         } else {
             return Guarantee()
                 .compactMap { self.wm.prominentSession }

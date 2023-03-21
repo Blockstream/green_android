@@ -171,7 +171,6 @@ class ConnectViewController: HWFlowBaseViewController {
                     timer?.invalidate()
                     self.pairingState = .unknown
                     BLEViewModel.shared.dispose()
-                    BLEManager.shared.dispose()
                     BLEManager.shared.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
                     self.scan()
                 }

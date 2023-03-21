@@ -32,8 +32,8 @@ struct HWDevice: Codable {
                         supportsHostUnblinding: false)
     }
 
-    static func defaultJade(fmwVersion: String) -> HWDevice {
-        let supportUnblinding = fmwVersion >= "0.1.27"
+    static func defaultJade(fmwVersion: String?) -> HWDevice {
+        let supportUnblinding = fmwVersion == nil || fmwVersion! >= "0.1.27"
         return HWDevice(name: "Jade",
                         supportsArbitraryScripts: true,
                         supportsLowR: true,
