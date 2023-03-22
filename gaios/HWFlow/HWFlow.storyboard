@@ -406,12 +406,23 @@
                                             </label>
                                         </subviews>
                                     </stackView>
+                                    <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t4S-4e-I7O">
+                                        <rect key="frame" x="0.0" y="0.0" width="364" height="111.5"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <connections>
+                                            <action selector="didTap:" destination="XB8-A2-aCE" eventType="touchUpInside" id="iD7-rM-fnv"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" name="gGrayCard"/>
                                 <constraints>
+                                    <constraint firstItem="t4S-4e-I7O" firstAttribute="height" secondItem="ACF-uJ-AON" secondAttribute="height" id="1fN-pq-csS"/>
                                     <constraint firstAttribute="trailing" secondItem="uAq-7F-K3w" secondAttribute="trailing" constant="25" id="8Pz-R2-QAD"/>
                                     <constraint firstItem="uAq-7F-K3w" firstAttribute="leading" secondItem="ACF-uJ-AON" secondAttribute="leading" constant="25" id="K7q-cZ-K15"/>
+                                    <constraint firstItem="t4S-4e-I7O" firstAttribute="width" secondItem="ACF-uJ-AON" secondAttribute="width" id="ipv-ti-Fpj"/>
                                     <constraint firstItem="uAq-7F-K3w" firstAttribute="top" secondItem="ACF-uJ-AON" secondAttribute="top" constant="20" id="jCf-5I-7NU"/>
+                                    <constraint firstItem="t4S-4e-I7O" firstAttribute="centerY" secondItem="ACF-uJ-AON" secondAttribute="centerY" id="vdA-X2-EC8"/>
+                                    <constraint firstItem="t4S-4e-I7O" firstAttribute="centerX" secondItem="ACF-uJ-AON" secondAttribute="centerX" id="yPz-hK-iAd"/>
                                     <constraint firstAttribute="bottom" secondItem="uAq-7F-K3w" secondAttribute="bottom" constant="20" id="zJ1-ym-NZc"/>
                                 </constraints>
                             </view>
@@ -441,12 +452,23 @@
                                             </label>
                                         </subviews>
                                     </stackView>
+                                    <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RCI-nn-yFR">
+                                        <rect key="frame" x="0.0" y="0.0" width="364" height="111.5"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <connections>
+                                            <action selector="didTap:" destination="XB8-A2-aCE" eventType="touchUpInside" id="g1u-P5-a6g"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" name="gGrayCard"/>
                                 <constraints>
                                     <constraint firstItem="yCe-mH-Ag0" firstAttribute="leading" secondItem="e2A-pQ-SXv" secondAttribute="leading" constant="25" id="Cjb-is-WKt"/>
                                     <constraint firstAttribute="bottom" secondItem="yCe-mH-Ag0" secondAttribute="bottom" constant="20" id="Mh3-vv-Xsm"/>
                                     <constraint firstItem="yCe-mH-Ag0" firstAttribute="top" secondItem="e2A-pQ-SXv" secondAttribute="top" constant="20" id="OJB-XO-2Ci"/>
+                                    <constraint firstItem="RCI-nn-yFR" firstAttribute="centerY" secondItem="e2A-pQ-SXv" secondAttribute="centerY" id="Ppm-V1-Wlf"/>
+                                    <constraint firstItem="RCI-nn-yFR" firstAttribute="centerX" secondItem="e2A-pQ-SXv" secondAttribute="centerX" id="UGt-eQ-F0Q"/>
+                                    <constraint firstItem="RCI-nn-yFR" firstAttribute="height" secondItem="e2A-pQ-SXv" secondAttribute="height" id="Vcz-TV-e8D"/>
+                                    <constraint firstItem="RCI-nn-yFR" firstAttribute="width" secondItem="e2A-pQ-SXv" secondAttribute="width" id="aFv-ya-fAs"/>
                                     <constraint firstAttribute="trailing" secondItem="yCe-mH-Ag0" secondAttribute="trailing" constant="25" id="zQI-wk-dci"/>
                                 </constraints>
                             </view>
@@ -476,13 +498,24 @@
                                             </label>
                                         </subviews>
                                     </stackView>
+                                    <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dfo-FV-uUq">
+                                        <rect key="frame" x="0.0" y="0.0" width="364" height="111.5"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <connections>
+                                            <action selector="didTap:" destination="XB8-A2-aCE" eventType="touchUpInside" id="Kto-IU-PgK"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" name="gGrayCard"/>
                                 <constraints>
+                                    <constraint firstItem="Dfo-FV-uUq" firstAttribute="centerY" secondItem="6SQ-Ey-9ez" secondAttribute="centerY" id="0XJ-NT-F44"/>
                                     <constraint firstItem="FBo-M8-q8s" firstAttribute="top" secondItem="6SQ-Ey-9ez" secondAttribute="top" constant="20" id="0do-t7-STl"/>
                                     <constraint firstAttribute="trailing" secondItem="FBo-M8-q8s" secondAttribute="trailing" constant="25" id="Mys-PH-4o7"/>
                                     <constraint firstAttribute="bottom" secondItem="FBo-M8-q8s" secondAttribute="bottom" constant="20" id="P2y-tx-z98"/>
+                                    <constraint firstItem="Dfo-FV-uUq" firstAttribute="width" secondItem="6SQ-Ey-9ez" secondAttribute="width" id="TzT-qe-hrG"/>
                                     <constraint firstItem="FBo-M8-q8s" firstAttribute="leading" secondItem="6SQ-Ey-9ez" secondAttribute="leading" constant="25" id="ovt-QD-Uci"/>
+                                    <constraint firstItem="Dfo-FV-uUq" firstAttribute="centerX" secondItem="6SQ-Ey-9ez" secondAttribute="centerX" id="tlx-Vh-Spi"/>
+                                    <constraint firstItem="Dfo-FV-uUq" firstAttribute="height" secondItem="6SQ-Ey-9ez" secondAttribute="height" id="yUM-qf-cyo"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lrd-gF-b7i">

@@ -38,14 +38,25 @@ class SetupJadeViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        timer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+        resetTimer()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         timer?.invalidate()
     }
 
+    func resetTimer() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(timeInterval: Constants.jadeAnimInterval, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+    }
+
     @objc func fireTimer() {
+        if self.idx < 2 { self.idx += 1 } else { self.idx = 0}
         refresh()
     }
 
@@ -68,7 +79,6 @@ class SetupJadeViewController: HWFlowBaseViewController {
             [self.imgDevice].forEach {
                 $0?.alpha = 0.0
             }}, completion: { _ in
-                if self.idx < 2 { self.idx += 1 } else { self.idx = 0}
                 self.update()
                 UIView.animate(withDuration: 0.4, animations: {
                     [self.imgDevice].forEach {
@@ -138,5 +148,11 @@ class SetupJadeViewController: HWFlowBaseViewController {
 
     @IBAction func btnExit(_ sender: Any) {
         navigationController?.popViewController(animated: true)
+    }
+
+    @IBAction func didTap(_ sender: UIButton) {
+        idx = sender.tag - 1
+        update()
+        resetTimer()
     }
 }

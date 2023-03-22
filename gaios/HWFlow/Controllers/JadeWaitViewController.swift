@@ -37,7 +37,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        timer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: Constants.jadeAnimInterval, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         BLEViewModel.shared.scan(jade: true,
                                  completion: self.next,
                                  error: self.error)
@@ -50,6 +50,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     @objc func fireTimer() {
+        print("FIRE \(Date())")
         refresh()
     }
 
