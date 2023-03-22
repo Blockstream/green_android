@@ -15,6 +15,7 @@ class SelectOnBoardTypeViewController: UIViewController {
     @IBOutlet weak var btnCheckTerms: CheckButton!
     @IBOutlet weak var btnNewWallet: UIButton!
     @IBOutlet weak var btnUseHardware: UIButton!
+    @IBOutlet weak var btnAppSettings: UIButton!
 
     var actionToButton: ActionToButton?
     var iAgree: Bool = false
@@ -54,6 +55,7 @@ class SelectOnBoardTypeViewController: UIViewController {
         lblTerms.text = "id_i_agree_to_the".localized
         btnNewWallet.setTitle("id_add_wallet".localized, for: .normal)
         btnUseHardware.setTitle("id_use_hardware_device".localized, for: .normal)
+        btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
     func setStyle() {
@@ -63,6 +65,8 @@ class SelectOnBoardTypeViewController: UIViewController {
         lblHint.textColor = .white.withAlphaComponent(0.6)
         btnNewWallet.setStyle(.primary)
         btnUseHardware.setStyle(.outlinedWhite)
+        btnAppSettings.setStyle(.inline)
+        btnAppSettings.setTitleColor(.white, for: .normal)
     }
 
     func updateUI() {
@@ -151,6 +155,13 @@ class SelectOnBoardTypeViewController: UIViewController {
     @IBAction func btnUseHardware(_ sender: Any) {
 //        AnalyticsManager.shared.newWallet()
         onNext(.useHardware)
+    }
+
+    @IBAction func btnSettings(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            present(vc, animated: true) {}
+        }
     }
 }
 
