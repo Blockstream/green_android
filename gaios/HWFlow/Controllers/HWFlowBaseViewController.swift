@@ -5,12 +5,11 @@ import RxSwift
 class HWFlowBaseViewController: UIViewController {
 
     var stateDisposable: Disposable?
+    let mash = UIImageView(image: UIImage(named: "il_mash")!)
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let img = UIImage(named: "il_mash")!
-        let mash = UIImageView(image: img)
         mash.alpha = 0.6
         view.insertSubview(mash, at: 0)
         mash.translatesAutoresizingMaskIntoConstraints = false

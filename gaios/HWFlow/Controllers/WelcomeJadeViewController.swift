@@ -19,6 +19,7 @@ class WelcomeJadeViewController: HWFlowBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        mash.isHidden = true
         setContent()
         setStyle()
     }

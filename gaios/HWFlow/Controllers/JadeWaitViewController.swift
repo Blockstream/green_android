@@ -50,7 +50,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     @objc func fireTimer() {
-        print("FIRE \(Date())")
         refresh()
     }
 
