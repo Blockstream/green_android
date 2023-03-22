@@ -5,7 +5,7 @@ class AccountNavigator {
 
     // open the account if just logged or redirect to login
     static func goLogin(account: Account, nv: UINavigationController?) {
-        nv?.popToRootViewController(animated: true)
+        nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
         let nv = nv ?? UINavigationController()
 
@@ -32,12 +32,12 @@ class AccountNavigator {
 
     static func goLogged(account: Account, nv: UINavigationController?) {
         AccountsRepository.shared.current = account
-        nv?.popToRootViewController(animated: true)
+        nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
         let nv = nv ?? UINavigationController()
         let vcContainer: ContainerViewController? = instantiateViewController(storyboard: "Wallet", identifier: "Container")
         nv.setNavigationBarHidden(true, animated: false)
-        nv.setViewControllers([vcContainer!], animated: true)
+        nv.setViewControllers([vcContainer!], animated: false)
     }
 
     static func goLogout(account: Account, nv: UINavigationController?) {
@@ -46,7 +46,7 @@ class AccountNavigator {
     }
 
     static func goFirstPage(nv: UINavigationController?) {
-        nv?.popToRootViewController(animated: true)
+        nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
         let nv = nv ?? UINavigationController()
         if AccountsRepository.shared.accounts.isEmpty {
@@ -62,7 +62,7 @@ class AccountNavigator {
 
     static func goAddWallet(nv: UINavigationController?) {
         AnalyticsManager.shared.addWallet()
-        nv?.popToRootViewController(animated: true)
+        nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
         let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
