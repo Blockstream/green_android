@@ -1976,7 +1976,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="main_connect" translatesAutoresizingMaskIntoConstraints="NO" id="bQZ-Qo-7hf">
-                                <rect key="frame" x="25" y="48" width="364" height="369.5"/>
+                                <rect key="frame" x="25" y="48" width="364" height="339.5"/>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="W1G-BK-xCX">
                                 <rect key="frame" x="25" y="417.5" width="364" height="75.5"/>
@@ -2064,7 +2064,7 @@
                             <constraint firstItem="3Xm-TH-bd8" firstAttribute="top" secondItem="W1G-BK-xCX" secondAttribute="bottom" id="INJ-p3-7vF"/>
                             <constraint firstItem="W1G-BK-xCX" firstAttribute="leading" secondItem="Xp6-kx-V21" secondAttribute="leading" constant="25" id="KId-LL-ciK"/>
                             <constraint firstItem="Xp6-kx-V21" firstAttribute="bottom" secondItem="3Xm-TH-bd8" secondAttribute="bottom" id="KbO-lO-89u"/>
-                            <constraint firstItem="W1G-BK-xCX" firstAttribute="top" secondItem="bQZ-Qo-7hf" secondAttribute="bottom" id="LIY-ce-Dm9"/>
+                            <constraint firstItem="W1G-BK-xCX" firstAttribute="top" secondItem="bQZ-Qo-7hf" secondAttribute="bottom" constant="30" id="LIY-ce-Dm9"/>
                             <constraint firstItem="Xp6-kx-V21" firstAttribute="trailing" secondItem="3Xm-TH-bd8" secondAttribute="trailing" id="mp9-ah-f9k"/>
                             <constraint firstItem="bQZ-Qo-7hf" firstAttribute="top" secondItem="Xp6-kx-V21" secondAttribute="top" id="vYz-qg-9hA"/>
                             <constraint firstItem="Xp6-kx-V21" firstAttribute="trailing" secondItem="W1G-BK-xCX" secondAttribute="trailing" constant="25" id="yKw-GM-OSy"/>
