@@ -124,9 +124,7 @@ class ConnectViewController: HWFlowBaseViewController {
         print("peripheral.identifier \(peripheral.identifier)")
         account.uuid = peripheral.identifier
         AccountsRepository.shared.upsert(account)
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
-        UIApplication.shared.keyWindow?.rootViewController = nav
+        AccountNavigator.goLogged(account: account, nv: navigationController)
     }
 
     override func error(_ err: Error) {

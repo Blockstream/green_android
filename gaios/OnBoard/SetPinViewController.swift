@@ -208,8 +208,8 @@ class SetPinViewController: UIViewController {
             case .settings:
                 self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
             case .create, .restore:
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                appDelegate?.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+                let account = AccountsRepository.shared.current
+                AccountNavigator.goLogged(account: account!, nv: self.navigationController)
             }
         }.catch { error in
             if error is GaError {

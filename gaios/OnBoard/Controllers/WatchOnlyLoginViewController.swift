@@ -157,9 +157,9 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: AccountsRepository.shared.current)
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+            let account = AccountsRepository.shared.current
+            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: account)
+            AccountNavigator.goLogged(account: account!, nv: self.navigationController)
         }.catch { error in
             var prettyError = "id_login_failed"
             switch error {

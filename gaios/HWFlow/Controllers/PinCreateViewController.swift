@@ -120,7 +120,7 @@ class PinCreateViewController: HWFlowBaseViewController {
         wm.account.hidden = !remember
         AccountsRepository.shared.upsert(wm.account)
         AnalyticsManager.shared.loginWallet(loginType: .hardware, ephemeralBip39: false, account: wm.account)
-        getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+        AccountNavigator.goLogged(account: wm.account, nv: navigationController)
     }
 
     override func error(_ err: Error) {

@@ -14,49 +14,7 @@ func getNetwork() -> String {
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
     var navigateWindow: UIWindow?
-
-    func instantiateViewControllerAsRoot(storyboard: String, identifier: String) {
-        let storyboard = UIStoryboard(name: storyboard, bundle: nil)
-        let firstVC = storyboard.instantiateViewController(withIdentifier: identifier)
-        window?.rootViewController?.navigationController?.popToRootViewController(animated: true)
-        window?.rootViewController?.dismiss(animated: false, completion: nil)
-        window?.rootViewController = firstVC
-        window?.makeKeyAndVisible()
-    }
-
-    func logout(with pin: Bool) {
-        let account = AccountsRepository.shared.current
-        if let account = account {
-            WalletsRepository.shared.get(for: account.id)?.disconnect()
-        }
-        if account?.isWatchonly ?? false {
-            let homeS = UIStoryboard(name: "Home", bundle: nil)
-            let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
-            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
-                    vc.account = AccountsRepository.shared.current
-                    nav.pushViewController(vc, animated: false)
-                    UIApplication.shared.keyWindow?.rootViewController = nav
-//                    nav.pushViewController(vc, animated: false)
-            }
-        } else if account?.isHW ?? false {
-            let homeS = UIStoryboard(name: "Home", bundle: nil)
-            if let vc = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController {
-                UIApplication.shared.keyWindow?.rootViewController = vc
-            }
-        } else {
-            let homeS = UIStoryboard(name: "Home", bundle: nil)
-            if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
-                vc.account = AccountsRepository.shared.current
-                nav.pushViewController(vc, animated: false)
-                UIApplication.shared.keyWindow?.rootViewController = nav
-//                nav.pushViewController(vc, animated: false)
-            }
-        }
-    }
 
     func setupAppearance() {
         if #available(iOS 15.0, *) {
@@ -98,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MigratorManager.shared.migrate()
 
         // Set screen lock
-        instantiateViewControllerAsRoot(storyboard: "Home", identifier: "HomeViewController")
+        AccountNavigator.goFirstPage(nv: nil)
         ScreenLockWindow.shared.setup()
         ScreenLocker.shared.startObserving()
 

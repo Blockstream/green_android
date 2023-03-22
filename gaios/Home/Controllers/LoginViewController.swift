@@ -249,11 +249,8 @@ class LoginViewController: UIViewController {
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
                                                 ephemeralBip39: self.account.isEphemeral,
                                                 account: self.account)
-
-            let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-            let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
+            AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
             self.stopLoader()
-            UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
             self.errorLogin(error: error)
         }

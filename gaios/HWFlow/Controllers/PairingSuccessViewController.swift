@@ -116,9 +116,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         self.stopLoader()
         wm.account.hidden = !remember
         AccountsRepository.shared.upsert(wm.account)
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
-        UIApplication.shared.keyWindow?.rootViewController = nav
+        AccountNavigator.goLogged(account: wm.account, nv: navigationController)
     }
 
     override func error(_ err: Error) {

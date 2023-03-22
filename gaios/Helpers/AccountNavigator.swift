@@ -3,55 +3,74 @@ import UIKit
 
 class AccountNavigator {
 
-    // redirect to create/restore flow
-    static func goCreateRestore(navigationController: UINavigationController?) {
-        guard let navigationController = navigationController else { return }
+    // open the account if just logged or redirect to login
+    static func goLogin(account: Account, nv: UINavigationController?) {
+        nv?.popToRootViewController(animated: true)
+        nv?.dismiss(animated: false, completion: nil)
+        let nv = nv ?? UINavigationController()
 
-        AnalyticsManager.shared.addWallet()
-        let homeS = UIStoryboard(name: "Home", bundle: nil)
-        let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vcHome = homeS.instantiateViewController(withIdentifier: "Home") as? HomeViewController,
-            let vcSelect = onBoardS.instantiateViewController(withIdentifier: "SelectOnBoardTypeViewController") as? SelectOnBoardTypeViewController {
-            navigationController.setViewControllers([vcHome, vcSelect], animated: true)
+        let vcHome: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
+        let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
+        let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
+        let vcWatch: WatchOnlyLoginViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "WatchOnlyLoginViewController")
+
+        // switch on selected active session
+        if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {
+            goLogged(account: account, nv: nv)
+        } else if account.isHW {
+            vcConnect?.account = account
+            nv.setViewControllers([vcHome!, vcConnect!], animated: true)
+        } else if account.isWatchonly {
+            vcWatch?.account = account
+            nv.setViewControllers([vcHome!, vcWatch!], animated: true)
+            return
+        } else {
+            vcLogin?.account = account
+            nv.setViewControllers([vcHome!, vcLogin!], animated: true)
         }
     }
 
-    // open the account if just logged or redirect to login
-    static func goLogin(account: Account, navigationController: UINavigationController?) {
-        // switch on selected active session
-        if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {
-            AccountsRepository.shared.current = account
-            let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-            if let vcContainer = storyboard.instantiateViewController(withIdentifier: "Container") as? ContainerViewController {
-                navigationController?.setNavigationBarHidden(true, animated: false)
-                navigationController?.setViewControllers([vcContainer], animated: true)
-            }
-            return
+    static func goLogged(account: Account, nv: UINavigationController?) {
+        AccountsRepository.shared.current = account
+        nv?.popToRootViewController(animated: true)
+        nv?.dismiss(animated: false, completion: nil)
+        let nv = nv ?? UINavigationController()
+        let vcContainer: ContainerViewController? = instantiateViewController(storyboard: "Wallet", identifier: "Container")
+        nv.setNavigationBarHidden(true, animated: false)
+        nv.setViewControllers([vcContainer!], animated: true)
+    }
+
+    static func goLogout(account: Account, nv: UINavigationController?) {
+        WalletsRepository.shared.get(for: account.id)?.disconnect()
+        goLogin(account: account, nv: nv)
+    }
+
+    static func goFirstPage(nv: UINavigationController?) {
+        nv?.popToRootViewController(animated: true)
+        nv?.dismiss(animated: false, completion: nil)
+        let nv = nv ?? UINavigationController()
+        if AccountsRepository.shared.accounts.isEmpty {
+            let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
+            nv.setViewControllers([onboard!], animated: true)
+        } else {
+            let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
+            nv.setViewControllers([home!], animated: true)
         }
-        let homeS = UIStoryboard(name: "Home", bundle: nil)
-        let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
-        let hwflow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if account.isHW {
-            if let vcHome = homeS.instantiateViewController(withIdentifier: "Home") as? HomeViewController,
-               let vcConnect = hwflow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
-                vcConnect.account = account
-                navigationController?.setViewControllers([vcHome, vcConnect], animated: true)
-                return
-            }
-        }
-        // switch on pin view of selected account
-        if account.isWatchonly {
-            if let vcHome = homeS.instantiateViewController(withIdentifier: "Home") as? HomeViewController,
-                let vcWatch = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
-                vcWatch.account = account
-                navigationController?.setViewControllers([vcHome, vcWatch], animated: true)
-            }
-            return
-        }
-        if let vcHome = homeS.instantiateViewController(withIdentifier: "Home") as? HomeViewController,
-            let vcLogin = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
-            vcLogin.account = account
-            navigationController?.setViewControllers([vcHome, vcLogin], animated: true)
-        }
+        let appDelegate = UIApplication.shared.delegate
+        appDelegate?.window??.rootViewController = nv
+    }
+
+    static func goAddWallet(nv: UINavigationController?) {
+        AnalyticsManager.shared.addWallet()
+        nv?.popToRootViewController(animated: true)
+        nv?.dismiss(animated: false, completion: nil)
+        let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
+        let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
+        nv?.setViewControllers([home!, onboard!], animated: true)
+    }
+
+    static func instantiateViewController<K>(storyboard: String, identifier: String) -> K? {
+        let storyboard = UIStoryboard(name: storyboard, bundle: nil)
+        return storyboard.instantiateViewController(withIdentifier: identifier) as? K
     }
 }
