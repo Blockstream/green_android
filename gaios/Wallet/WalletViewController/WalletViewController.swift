@@ -97,10 +97,6 @@ class WalletViewController: UIViewController {
                 }
             }
         }
-
-        if viewModel.wm?.account.isJade ?? false {
-            jadeFirmwareUpgrade()
-        }
     }
 
     func surveyUI(_ widget: CountlyWidget) {
@@ -339,21 +335,6 @@ class WalletViewController: UIViewController {
             vc.showBitcoin = !account.gdkNetwork.liquid
             self.navigationController?.pushViewController(vc, animated: true)
         }
-    }
-
-    func jadeFirmwareUpgrade() {
-        _ = BLEViewModel.shared.checkFirmware(Jade.shared.peripheral)
-            .subscribe(onNext: { (version, lastFirmware) in
-                guard let version = version, let lastFirmware = lastFirmware else { return }
-                let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "UpdateFirmwareViewController") as? UpdateFirmwareViewController {
-                    vc.firmware = lastFirmware
-                    vc.version = version
-                    vc.delegate = self
-                    vc.modalPresentationStyle = .overFullScreen
-                    self.present(vc, animated: false, completion: nil)
-                }
-            })
     }
 
     @IBAction func btnSend(_ sender: Any) {
@@ -828,41 +809,5 @@ extension WalletViewController: SecuritySelectViewControllerDelegate {
 extension WalletViewController: AccountViewControllerDelegate {
     func didArchiveAccount() {
         sIdx = 0
-    }
-}
-extension WalletViewController: UpdateFirmwareViewControllerDelegate {
-    func didUpdate(version: String, firmware: Firmware) {
-        startLoader(message: "id_updating_firmware".localized)
-        let peripheral = Jade.shared.peripheral!
-        let repair = version <= "0.1.30" && firmware.version >= "0.1.31"
-        BLEViewModel.shared.updateFirmware(
-            peripheral: peripheral,
-            firmware: firmware,
-            progress: { self.startLoader(message: self.progressLoaderMessage(title: $0, subtitle: $1)) },
-            completion: {
-                self.stopLoader();
-                if repair { self.showAlert(title: "id_firmware_update_completed".localized, message:  "id_new_jade_firmware_required".localized)}
-                $0 ? DropAlert().success(message: "id_firmware_update_completed".localized) : DropAlert().error(message: "id_operation_failure".localized) },
-            error: { _ in self.stopLoader(); DropAlert().error(message: "id_operation_failure".localized) })
-    }
-
-    func didSkip() {
-    }
-
-    func progressLoaderMessage(title: String, subtitle: String) -> NSMutableAttributedString {
-        let titleAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.white
-        ]
-        let hashAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.customGrayLight(),
-            .font: UIFont.systemFont(ofSize: 16)
-        ]
-        let hint = "\n\n" + subtitle
-        let attributedTitleString = NSMutableAttributedString(string: title)
-        attributedTitleString.setAttributes(titleAttributes, for: title)
-        let attributedHintString = NSMutableAttributedString(string: hint)
-        attributedHintString.setAttributes(hashAttributes, for: hint)
-        attributedTitleString.append(attributedHintString)
-        return attributedTitleString
     }
 }

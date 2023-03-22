@@ -19,6 +19,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
     private var activeToken, resignToken: NSObjectProtocol?
     private var pairingState: PairingState = .unknown
+    private var peripheral: Peripheral?
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -177,10 +178,72 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     func login(_ peripheral: Peripheral) {
+        self.peripheral = peripheral
         BLEViewModel.shared.login(account: account,
                                   peripheral: peripheral,
                                   progress: { self.progress(self.account.isJade ? $0 : "id_logging_in".localized) },
-                                  completion: { self.next(peripheral) },
+                                  completion: { peripheral.isJade() ? self.jadeFirmwareUpgrade() : self.next(peripheral) },
                                   error: self.error)
+    }
+}
+
+extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
+    func didUpdate(version: String, firmware: Firmware) {
+        startLoader(message: "id_updating_firmware".localized)
+        let repair = version <= "0.1.30" && firmware.version >= "0.1.31"
+        BLEViewModel.shared.updateFirmware(
+            peripheral: self.peripheral!,
+            firmware: firmware,
+            progress: { self.startLoader(message: self.progressLoaderMessage(title: $0, subtitle: $1)) },
+            completion: {
+                self.stopLoader()
+                if repair {
+                    self.showAlert(title: "id_firmware_update_completed".localized, message: "id_new_jade_firmware_required".localized)
+                }
+                if $0 {
+                    DropAlert().success(message: "id_firmware_update_completed".localized)
+                } else {
+                    DropAlert().error(message: "id_operation_failure".localized)
+                }
+                BLEViewModel.shared.dispose()
+                self.scan()
+            },
+            error: { _ in self.stopLoader(); DropAlert().error(message: "id_operation_failure".localized) })
+    }
+
+    func didSkip() {
+        self.next(self.peripheral!)
+    }
+
+    func progressLoaderMessage(title: String, subtitle: String) -> NSMutableAttributedString {
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white
+        ]
+        let hashAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.customGrayLight(),
+            .font: UIFont.systemFont(ofSize: 16)
+        ]
+        let hint = "\n\n" + subtitle
+        let attributedTitleString = NSMutableAttributedString(string: title)
+        attributedTitleString.setAttributes(titleAttributes, for: title)
+        let attributedHintString = NSMutableAttributedString(string: hint)
+        attributedHintString.setAttributes(hashAttributes, for: hint)
+        attributedTitleString.append(attributedHintString)
+        return attributedTitleString
+    }
+
+    func jadeFirmwareUpgrade() {
+        _ = BLEViewModel.shared.checkFirmware(Jade.shared.peripheral)
+            .subscribe(onNext: { (version, lastFirmware) in
+                guard let version = version, let lastFirmware = lastFirmware else { return }
+                let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "UpdateFirmwareViewController") as? UpdateFirmwareViewController {
+                    vc.firmware = lastFirmware
+                    vc.version = version
+                    vc.delegate = self
+                    vc.modalPresentationStyle = .overFullScreen
+                    self.present(vc, animated: false, completion: nil)
+                }
+            }, onError: { _ in self.next(self.peripheral!)})
     }
 }

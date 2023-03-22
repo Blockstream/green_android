@@ -58,9 +58,10 @@ class UpdateFirmwareViewController: UIViewController {
         lblTitle.textColor = .white
         lblHint.textColor = .white.withAlphaComponent(0.6)
         btnUpdate.setStyle(.primary)
-        btnUpdate.isHidden = !needCableUpdate
+        btnUpdate.isHidden = needCableUpdate
         btnSkip.setStyle(.inline)
         btnSkip.setTitleColor(.white, for: .normal)
+        btnSkip.isHidden = isRequired
     }
 
     override func viewWillAppear(_ animated: Bool) {
