@@ -838,7 +838,7 @@ extension WalletViewController: UpdateFirmwareViewControllerDelegate {
         BLEViewModel.shared.updateFirmware(
             peripheral: peripheral,
             firmware: firmware,
-            progress: { self.startLoader(message: $0) },
+            progress: { self.startLoader(message: self.progressLoaderMessage(title: $0, subtitle: $1)) },
             completion: {
                 self.stopLoader();
                 if repair { self.showAlert(title: "id_firmware_update_completed".localized, message:  "id_new_jade_firmware_required".localized)}
@@ -847,5 +847,22 @@ extension WalletViewController: UpdateFirmwareViewControllerDelegate {
     }
 
     func didSkip() {
+    }
+
+    func progressLoaderMessage(title: String, subtitle: String) -> NSMutableAttributedString {
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white
+        ]
+        let hashAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.customGrayLight(),
+            .font: UIFont.systemFont(ofSize: 16)
+        ]
+        let hint = "\n\n" + subtitle
+        let attributedTitleString = NSMutableAttributedString(string: title)
+        attributedTitleString.setAttributes(titleAttributes, for: title)
+        let attributedHintString = NSMutableAttributedString(string: hint)
+        attributedHintString.setAttributes(hashAttributes, for: hint)
+        attributedTitleString.append(attributedHintString)
+        return attributedTitleString
     }
 }

@@ -14,8 +14,8 @@ class Loader: UIView {
     @IBOutlet weak var lblHint: UILabel!
 
     static let tag = 0x70726f6772657373
-    var message: String! {
-        didSet { self.lblHint.text = self.message }
+    var message: NSMutableAttributedString? {
+        didSet { self.lblHint.attributedText = self.message }
     }
 
     init() {
@@ -68,7 +68,11 @@ extension UIViewController {
         }
     }
 
-    @objc func startLoader(message: String = "") {
+    func startLoader(message: String = "") {
+        startLoader(message: NSMutableAttributedString(string: message))
+    }
+
+    @objc func startLoader(message: NSMutableAttributedString) {
         if let window = UIApplication.shared.keyWindow {
             if loader == nil {
                 let loader = Loader()

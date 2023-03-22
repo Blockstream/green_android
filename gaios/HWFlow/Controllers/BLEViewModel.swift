@@ -101,16 +101,16 @@ class BLEViewModel {
 
     func updateFirmware(peripheral: Peripheral,
                         firmware: Firmware,
-                        progress: @escaping(String) -> Void,
+                        progress: @escaping(String, String) -> Void,
                         completion: @escaping(Bool) -> Void,
                         error: @escaping(Error) -> Void) {
         Observable.just(peripheral)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Jade.shared.version() }
             .observeOn(MainScheduler.instance)
-            .do(onNext: { _ in progress("id_fetching_new_firmware".localized) })
+            .do(onNext: { _ in progress("id_fetching_new_firmware".localized, "") })
             .compactMap { ($0, firmware, try Jade.shared.getBinary($0, firmware)) }
-            .do(onNext: { progress("id_updating_firmware".localized + "\n\nHash: \(self.hash($0.2))") })
+            .do(onNext: { progress("id_updating_firmware".localized, "Hash: \(self.hash($0.2))") })
             .flatMap { Jade.shared.updateFirmware(version: $0.0, firmware: $0.1, binary: $0.2) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { completion($0) },
