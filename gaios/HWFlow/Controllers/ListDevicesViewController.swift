@@ -5,6 +5,7 @@ import RxBluetoothKit
 class ListDevicesViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var btnTroubleshoot: UIButton!
     var isJade = true
 
     var peripherals = [Peripheral]() {
@@ -19,6 +20,7 @@ class ListDevicesViewController: HWFlowBaseViewController {
         ["JadeDeviceCell", "OtherDeviceCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
+        loadNavigationBtns()
         setContent()
         setStyle()
     }
@@ -39,9 +41,11 @@ class ListDevicesViewController: HWFlowBaseViewController {
 
     func setContent() {
         title = "".localized
+        btnTroubleshoot.setTitle("id_troubleshoot".localized, for: .normal)
     }
 
     func setStyle() {
+        btnTroubleshoot.setStyle(.outlinedWhite)
     }
 
     func next(_ peripheral: Peripheral) {
@@ -57,6 +61,26 @@ class ListDevicesViewController: HWFlowBaseViewController {
         let bleError = BLEManager.shared.toBleError(err, network: nil)
         let txt = BLEManager.shared.toErrorString(bleError)
         showAlert(title: "id_error".localized, message: txt)
+    }
+
+    func loadNavigationBtns() {
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        settingsBtn.tintColor = UIColor.gGreenMatrix()
+        settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
+        settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+    }
+
+    @objc func setupBtnTapped() {
+        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "SetupJadeViewController") as? SetupJadeViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    @IBAction func btnTroubleshoot(_ sender: Any) {
+        SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 }
 

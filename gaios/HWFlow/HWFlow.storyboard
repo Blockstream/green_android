@@ -750,24 +750,42 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="8ua-sq-v9x">
-                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                                <rect key="frame" x="0.0" y="48" width="414" height="734"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="23i-a9-QU1" id="TXn-2A-nAH"/>
                                     <outlet property="delegate" destination="23i-a9-QU1" id="3c6-4W-Z6Q"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lG5-lC-4VX">
+                                <rect key="frame" x="20" y="802" width="374" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="DBb-mc-KL9"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <state key="normal" title="btn_troubleshoot">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnTroubleshoot:" destination="23i-a9-QU1" eventType="touchUpInside" id="rkt-T2-64O"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="RcV-ru-I7W"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="8ua-sq-v9x" firstAttribute="top" secondItem="RcV-ru-I7W" secondAttribute="top" id="LQv-kQ-7Sb"/>
                             <constraint firstItem="RcV-ru-I7W" firstAttribute="trailing" secondItem="8ua-sq-v9x" secondAttribute="trailing" id="XOn-b4-xsP"/>
+                            <constraint firstItem="RcV-ru-I7W" firstAttribute="bottom" secondItem="lG5-lC-4VX" secondAttribute="bottom" constant="10" id="cBw-gr-PUx"/>
                             <constraint firstItem="8ua-sq-v9x" firstAttribute="leading" secondItem="RcV-ru-I7W" secondAttribute="leading" id="dcJ-Mp-VhU"/>
-                            <constraint firstItem="RcV-ru-I7W" firstAttribute="bottom" secondItem="8ua-sq-v9x" secondAttribute="bottom" id="sig-4A-pOe"/>
+                            <constraint firstItem="lG5-lC-4VX" firstAttribute="top" secondItem="8ua-sq-v9x" secondAttribute="bottom" constant="20" id="lO9-db-YyP"/>
+                            <constraint firstItem="RcV-ru-I7W" firstAttribute="trailing" secondItem="lG5-lC-4VX" secondAttribute="trailing" constant="20" id="rbZ-uc-T12"/>
+                            <constraint firstItem="lG5-lC-4VX" firstAttribute="leading" secondItem="RcV-ru-I7W" secondAttribute="leading" constant="20" id="roe-6P-Ua4"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="btnTroubleshoot" destination="lG5-lC-4VX" id="net-vj-B07"/>
                         <outlet property="tableView" destination="8ua-sq-v9x" id="vi5-Hb-Qiy"/>
                     </connections>
                 </viewController>
