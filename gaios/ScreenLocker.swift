@@ -96,7 +96,7 @@ class ScreenLocker {
                 if id == wm.account.id {
                     self.isScreenLockLocked = true
                 }
-                WalletsRepository.shared.delete(for: id)
+                WalletsRepository.shared.get(for: id)?.disconnect()
             }
         }
     }
@@ -114,13 +114,13 @@ class ScreenLocker {
     }
 
     func applicationWillEnterForeground(_ notification: Notification) {
-        self.appIsInBackground = false
         resumeNetworks()
+        self.appIsInBackground = false
     }
 
     func applicationDidEnterBackground(_ notification: Notification) {
-        self.appIsInBackground = true
         pauseNetworks()
+        self.appIsInBackground = true
     }
 
     func showLockWindow() {

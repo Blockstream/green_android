@@ -34,6 +34,7 @@ class LoginViewController: UIViewController {
 
     var account: Account!
 
+    private var session: SessionManager?
     private var pinCode = ""
     private let MAXATTEMPTS = 3
     private var emergencyRestore = false {
@@ -184,7 +185,8 @@ class LoginViewController: UIViewController {
 
     @objc func progress(_ notification: NSNotification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
-           let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
+           let tor = try? JSONDecoder().decode(TorNotification.self, from: json),
+           self.session != nil {
             var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
             if tor.progress == 100 {
                 text = NSLocalizedString("id_logging_in", comment: "")
@@ -198,6 +200,7 @@ class LoginViewController: UIViewController {
     fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         let session = SessionManager(account.gdkNetwork!)
+        self.session = session
         firstly {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
@@ -227,6 +230,7 @@ class LoginViewController: UIViewController {
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         let wm = WalletsRepository.shared.getOrAdd(for: account)
+        self.session = wm.prominentSession
         firstly {
             return Guarantee()
         }.compactMap {

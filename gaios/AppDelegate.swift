@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func logout(with pin: Bool) {
         let account = AccountsRepository.shared.current
         if let account = account {
-            WalletsRepository.shared.delete(for: account.id)
+            WalletsRepository.shared.get(for: account.id)?.disconnect()
         }
         if account?.isWatchonly ?? false {
             let homeS = UIStoryboard(name: "Home", bundle: nil)

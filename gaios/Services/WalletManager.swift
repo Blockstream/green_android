@@ -77,6 +77,10 @@ class WalletManager {
         }
     }
 
+    func disconnect() {
+        activeSessions.values.forEach { $0.disconnect() }
+    }
+
     func addSession(for network: NetworkSecurityCase) {
         let networkName = network.network
         let gdknetwork = getGdkNetwork(networkName)

@@ -110,8 +110,8 @@ class SecuritySelectViewModel {
 
     func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         return Promise()
-            .then { session.register(credentials: credentials, hw: hw)
-                .then { session.login(credentials: credentials, hw: hw) } }
+            .then { session.register(credentials: credentials, hw: hw) }
+            .then { session.login(credentials: credentials, hw: hw) }
             .then { _ in session.subaccounts(true) }
             .then { self.isUsedDefaultAccount(for: session, account: $0.first) }
             .then { !$0 ? session.updateSubaccount(subaccount: 0, hidden: true).asVoid() : Promise().asVoid() }
