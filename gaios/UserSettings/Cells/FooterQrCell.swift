@@ -17,7 +17,7 @@ class FooterQrCell: UICollectionReusableView {
 
         qrImg.image = QRImageGenerator.imageForTextWhite(text: mnemonic ?? "", frame: qrImg.frame)
 
-        let isEphemeral = AccountsRepository.shared.current?.isEphemeral ?? false
+        let isEphemeral = bip39Passphrase != nil
         passphraseView.isHidden = !isEphemeral
         lblQrInfo.isHidden = !isEphemeral
         if isEphemeral {
