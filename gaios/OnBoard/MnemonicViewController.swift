@@ -232,6 +232,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         let testnet = LandingViewController.chainType == .testnet
         Guarantee()
             .then { self.getMnemonicString() }
+            .then { res in self.viewModel.validateMnemonic(res.0).map { res } }
             .compactMap { Credentials(mnemonic: $0.0, password: $0.1) }
             .done { credentials in
                 let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
