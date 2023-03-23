@@ -84,7 +84,7 @@ class WalletViewModel {
             .done { amounts in
                 self.cachedBalance = AssetAmountList(amounts).sorted()
                 let models = self.subaccounts.map { AccountCellModel(subaccount: $0,
-                                                                     satoshi: amounts[$0.gdkNetwork.getFeeAsset()] ?? 0) }
+                                                                     satoshi: $0.btc) }
                 if models.count > 0 {
                     if let newAccount = newAccount {
                         if let idx = models.firstIndex(where: {$0.account == newAccount}) {
