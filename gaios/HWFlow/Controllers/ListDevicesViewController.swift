@@ -45,7 +45,7 @@ class ListDevicesViewController: HWFlowBaseViewController {
     }
 
     func setStyle() {
-        btnTroubleshoot.setStyle(.outlinedWhite)
+        btnTroubleshoot.setStyle(.inline)
     }
 
     func next(_ peripheral: Peripheral) {

@@ -291,10 +291,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AGM-WH-yUI">
-                                <rect key="frame" x="0.0" y="520.5" width="414" height="236"/>
+                                <rect key="frame" x="0.0" y="520.5" width="414" height="291"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ygn-CM-6Vd">
-                                        <rect key="frame" x="172" y="83" width="70" height="70"/>
+                                        <rect key="frame" x="172" y="110.5" width="70" height="70"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="70" id="Od0-Po-uIE"/>
@@ -309,53 +309,35 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_slide_1_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uva-md-zH3">
-                                <rect key="frame" x="25" y="756.5" width="364" height="20.5"/>
+                                <rect key="frame" x="25" y="811.5" width="364" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3lZ-3V-eLN">
-                                <rect key="frame" x="25" y="802" width="364" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="sNv-75-0Ih"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
-                                <state key="normal" title="btn_connect_other">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="btnTrouble:" destination="Ybu-aA-ZNK" eventType="touchUpInside" id="tBi-fT-AJj"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="mSX-Ka-F5V"/>
                         <color key="backgroundColor" name="gBlackBg"/>
                         <constraints>
                             <constraint firstItem="c4n-d1-CE5" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" id="DE1-yJ-tjf"/>
-                            <constraint firstItem="3lZ-3V-eLN" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" constant="25" id="F2W-nF-kdZ"/>
                             <constraint firstItem="xiO-PC-fI1" firstAttribute="top" secondItem="mSX-Ka-F5V" secondAttribute="top" id="FoQ-qV-2cO"/>
                             <constraint firstItem="AGM-WH-yUI" firstAttribute="top" secondItem="Ljd-Mj-aiL" secondAttribute="bottom" id="Lwc-aC-RaS"/>
                             <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="c4n-d1-CE5" secondAttribute="trailing" id="MjW-br-Irn"/>
                             <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="Ljd-Mj-aiL" secondAttribute="trailing" constant="25" id="OTd-7K-Csv"/>
                             <constraint firstItem="xiO-PC-fI1" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" constant="25" id="Rch-Jy-9Q2"/>
-                            <constraint firstItem="mSX-Ka-F5V" firstAttribute="bottom" secondItem="3lZ-3V-eLN" secondAttribute="bottom" constant="10" id="Rwy-1V-ctJ"/>
                             <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="AGM-WH-yUI" secondAttribute="trailing" id="ScS-bj-ow8"/>
                             <constraint firstItem="c4n-d1-CE5" firstAttribute="top" secondItem="xiO-PC-fI1" secondAttribute="bottom" id="T0h-xB-ozE"/>
                             <constraint firstItem="Ljd-Mj-aiL" firstAttribute="top" secondItem="c4n-d1-CE5" secondAttribute="top" id="WLf-LV-7Wv"/>
                             <constraint firstItem="Uva-md-zH3" firstAttribute="top" secondItem="AGM-WH-yUI" secondAttribute="bottom" id="b6R-9h-e6N"/>
-                            <constraint firstItem="3lZ-3V-eLN" firstAttribute="top" secondItem="Uva-md-zH3" secondAttribute="bottom" constant="25" id="gra-s4-lBY"/>
                             <constraint firstItem="AGM-WH-yUI" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" id="kUk-bc-M1T"/>
                             <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="xiO-PC-fI1" secondAttribute="trailing" constant="25" id="oPH-JS-tzB"/>
                             <constraint firstItem="Ljd-Mj-aiL" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" constant="25" id="pre-lW-MJl"/>
                             <constraint firstItem="c4n-d1-CE5" firstAttribute="centerY" secondItem="mSX-Ka-F5V" secondAttribute="centerY" multiplier="0.9" id="rnY-SJ-0OJ"/>
                             <constraint firstItem="Uva-md-zH3" firstAttribute="leading" secondItem="mSX-Ka-F5V" secondAttribute="leading" constant="25" id="ulY-Zh-cHE"/>
-                            <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="3lZ-3V-eLN" secondAttribute="trailing" constant="25" id="w02-by-9Fq"/>
+                            <constraint firstItem="mSX-Ka-F5V" firstAttribute="bottom" secondItem="Uva-md-zH3" secondAttribute="bottom" constant="30" id="wit-lJ-otR"/>
                             <constraint firstItem="mSX-Ka-F5V" firstAttribute="trailing" secondItem="Uva-md-zH3" secondAttribute="trailing" constant="25" id="yfV-nc-3hZ"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="btnTrouble" destination="3lZ-3V-eLN" id="A1U-Ud-AS6"/>
                         <outlet property="imgDevice" destination="xiO-PC-fI1" id="FAa-dt-bnK"/>
                         <outlet property="infoBox" destination="Ljd-Mj-aiL" id="4yB-vM-wVD"/>
                         <outlet property="lblLoading" destination="Uva-md-zH3" id="jYl-xF-RpL"/>

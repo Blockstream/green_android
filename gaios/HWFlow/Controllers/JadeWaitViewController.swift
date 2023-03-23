@@ -9,7 +9,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblStepTitle: UILabel!
     @IBOutlet weak var lblStepHint: UILabel!
     @IBOutlet weak var lblLoading: UILabel!
-    @IBOutlet weak var btnTrouble: UIButton!
     @IBOutlet weak var infoBox: UIView!
     @IBOutlet weak var loaderPlaceholder: UIView!
 
@@ -55,7 +54,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func setContent() {
         lblLoading.text = "id_looking_for_device".localized
-        btnTrouble.setTitle("id_troubleshoot".localized, for: .normal)
     }
 
     func refresh() {
@@ -100,7 +98,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
         lblStepTitle.textColor = .white
         lblStepHint.textColor = .white.withAlphaComponent(0.6)
         lblLoading.textColor = .white
-        btnTrouble.setStyle(.outlinedWhite)
     }
 
     @objc func setupBtnTapped() {
@@ -129,10 +126,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     func stop() {
         loadingIndicator.isAnimating = false
-    }
-
-    @IBAction func btnTrouble(_ sender: Any) {
-        SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 
     func next(peripherals: [Peripheral]) {
