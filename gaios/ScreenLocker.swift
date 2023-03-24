@@ -167,9 +167,7 @@ class ScreenLocker {
         clear()
         DispatchQueue.main.async {
             if let account = AccountsRepository.shared.current {
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                let nv = appDelegate?.window?.rootViewController?.navigationController
-                AccountNavigator.goLogout(account: account, nv: nv)
+                _ = AccountNavigator.goLogout(account: account, nv: nil)
             }
         }
     }

@@ -4,7 +4,7 @@ import UIKit
 class AccountNavigator {
 
     // open the account if just logged or redirect to login
-    static func goLogin(account: Account, nv: UINavigationController?) {
+    static func goLogin(account: Account, nv: UINavigationController?) -> UINavigationController {
         nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
         let nv = nv ?? UINavigationController()
@@ -16,21 +16,21 @@ class AccountNavigator {
 
         // switch on selected active session
         if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {
-            goLogged(account: account, nv: nv)
+            return goLogged(account: account, nv: nv)
         } else if account.isHW {
             vcConnect?.account = account
             nv.setViewControllers([vcHome!, vcConnect!], animated: true)
         } else if account.isWatchonly {
             vcWatch?.account = account
             nv.setViewControllers([vcHome!, vcWatch!], animated: true)
-            return
         } else {
             vcLogin?.account = account
             nv.setViewControllers([vcHome!, vcLogin!], animated: true)
         }
+        return nv
     }
 
-    static func goLogged(account: Account, nv: UINavigationController?) {
+    static func goLogged(account: Account, nv: UINavigationController?) -> UINavigationController {
         AccountsRepository.shared.current = account
         nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
@@ -38,14 +38,18 @@ class AccountNavigator {
         let vcContainer: ContainerViewController? = instantiateViewController(storyboard: "Wallet", identifier: "Container")
         nv.setNavigationBarHidden(true, animated: false)
         nv.setViewControllers([vcContainer!], animated: false)
+        return nv
     }
 
-    static func goLogout(account: Account, nv: UINavigationController?) {
+    static func goLogout(account: Account, nv: UINavigationController?) -> UINavigationController {
         WalletsRepository.shared.get(for: account.id)?.disconnect()
-        goLogin(account: account, nv: nv)
+        let appDelegate = UIApplication.shared.delegate
+        let nv = goLogin(account: account, nv: nv)
+        appDelegate?.window??.rootViewController = nv
+        return nv
     }
 
-    static func goFirstPage(nv: UINavigationController?) {
+    static func goFirstPage(nv: UINavigationController?) -> UINavigationController {
         nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
         let nv = nv ?? UINavigationController()
@@ -58,15 +62,18 @@ class AccountNavigator {
         }
         let appDelegate = UIApplication.shared.delegate
         appDelegate?.window??.rootViewController = nv
+        return nv
     }
 
-    static func goAddWallet(nv: UINavigationController?) {
+    static func goAddWallet(nv: UINavigationController?) -> UINavigationController {
         AnalyticsManager.shared.addWallet()
         nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
+        let nv = nv ?? UINavigationController()
         let home: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         let onboard: SelectOnBoardTypeViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "SelectOnBoardTypeViewController")
-        nv?.setViewControllers([home!, onboard!], animated: true)
+        nv.setViewControllers([home!, onboard!], animated: true)
+        return nv
     }
 
     static func instantiateViewController<K>(storyboard: String, identifier: String) -> K? {
