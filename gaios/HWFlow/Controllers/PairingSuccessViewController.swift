@@ -6,48 +6,63 @@ import RxSwift
 
 class PairingSuccessViewController: HWFlowBaseViewController {
 
-    @IBOutlet weak var lblSerial: UILabel!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var lblWarn: UILabel!
     @IBOutlet weak var btnContinue: UIButton!
-    @IBOutlet weak var btnRemember: UIButton!
     @IBOutlet weak var rememberView: UIView!
     @IBOutlet weak var lblRemember: UILabel!
-    @IBOutlet weak var iconRemember: UIImageView!
     @IBOutlet weak var imgDevice: UIImageView!
+    @IBOutlet weak var rememberSwitch: UISwitch!
+    @IBOutlet weak var btnAppSettings: UIButton!
 
-    var remember = false
     var peripheral: Peripheral!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        rememberSwitch.isOn = true
+        mash.isHidden = true
         setContent()
         setStyle()
+        loadNavigationBtns()
     }
 
     func setContent() {
-        lblSerial.text = peripheral.name
-        lblTitle.text = "Pairing Complete!".localized
+        lblTitle.text = peripheral.name
         lblHint.text = "id_follow_the_instructions_on_your".localized
-        lblWarn.text = "* If you forget your PIN, need to restore with recovery phrase".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
-        lblRemember.text = "id_remember_my_device".localized
-        imgDevice.image = UIImage(named: peripheral.isJade() ? "il_jade_unlock" : "il_ledger")
+        lblRemember.text = "id_remember_device_connection".localized
+        imgDevice.image = UIImage(named: peripheral.isJade() ? "il_jade_welcome_1" : "il_ledger")
+        lblHint.text = peripheral.isJade() ? "Blockstream" : ""
+        btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
     func setStyle() {
-        lblTitle.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
+        lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
         lblTitle.textColor = .white
-        [lblHint, lblWarn].forEach {
-            $0?.textColor = .white.withAlphaComponent(0.6)
+        [lblHint, lblRemember].forEach {
             $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+            $0?.textColor = .white
         }
         btnContinue.setStyle(.primary)
-        rememberView.borderWidth = 2.0
-        rememberView.borderColor = .white
-        rememberView.cornerRadius = 4.0
+        btnAppSettings.setStyle(.inline)
+        btnAppSettings.setTitleColor(.white.withAlphaComponent(0.6), for: .normal)
+    }
+
+    func loadNavigationBtns() {
+        let settingsBtn = UIButton(type: .system)
+        settingsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        settingsBtn.tintColor = UIColor.gGreenMatrix()
+        settingsBtn.setTitle("id_setup_guide".localized, for: .normal)
+        settingsBtn.addTarget(self, action: #selector(setupBtnTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+    }
+
+    @objc func setupBtnTapped() {
+        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "SetupJadeViewController") as? SetupJadeViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnContinue(_ sender: Any) {
@@ -63,6 +78,13 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                                            progress: { _ in },
                                            completion: self.onLedgerLogin,
                                            error: self.error)
+        }
+    }
+
+    @IBAction func btnAppSettings(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            present(vc, animated: true) {}
         }
     }
 
@@ -85,7 +107,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             .subscribe(onNext: { account in
                 self.stopLoader()
                 var account = account
-                account.hidden = !self.remember
+                account.hidden = !(self.rememberSwitch.isOn)
                 BLEViewModel.shared.dispose()
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
                 if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
@@ -102,19 +124,14 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         if let vc = hwFlow.instantiateViewController(withIdentifier: "PinCreateViewController") as? PinCreateViewController {
             vc.testnet = testnet
             vc.peripheral = peripheral
-            vc.remember = remember
+            vc.remember = rememberSwitch.isOn
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 
-    @IBAction func btnRemember(_ sender: Any) {
-        remember.toggle()
-        iconRemember.image = remember ? UIImage(named: "ic_checkbox_on") : UIImage(named: "ic_checkbox_off")
-    }
-
     func onLedgerLogin(_ wm: WalletManager) {
         self.stopLoader()
-        wm.account.hidden = !remember
+        wm.account.hidden = !(rememberSwitch.isOn)
         AccountsRepository.shared.upsert(wm.account)
         AccountNavigator.goLogged(account: wm.account, nv: navigationController)
     }
@@ -151,4 +168,3 @@ extension PairingSuccessViewController: DialogListViewControllerDelegate {
         }
     }
 }
-
