@@ -23,6 +23,7 @@ class HWFlowBaseViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        UIApplication.shared.isIdleTimerDisabled = true
         stateDisposable = BLEManager.shared.manager
                 .observeState()
                 .subscribe(onNext: { if $0 != .poweredOn { self.showBleState($0) }},
@@ -30,6 +31,7 @@ class HWFlowBaseViewController: UIViewController {
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        UIApplication.shared.isIdleTimerDisabled = false
         stateDisposable?.dispose()
     }
 
