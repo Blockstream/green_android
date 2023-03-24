@@ -21,7 +21,7 @@
                                 <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HVu-iH-SgY">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="751"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="683"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kdz-am-DaQ">
                                                 <rect key="frame" x="36" y="36" width="342" height="29"/>
@@ -30,7 +30,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="qb7-2u-MFE">
-                                                <rect key="frame" x="20" y="95" width="374" height="636"/>
+                                                <rect key="frame" x="20" y="95" width="374" height="568"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TK8-9L-AAB">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="115.5"/>
@@ -86,45 +86,8 @@
                                                             <constraint firstItem="Gek-P0-zIu" firstAttribute="top" secondItem="39t-2O-W3p" secondAttribute="top" constant="20" id="on3-DK-74O"/>
                                                         </constraints>
                                                     </view>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Nr-xn-wJR">
-                                                        <rect key="frame" x="0.0" y="279.5" width="374" height="44"/>
-                                                        <subviews>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kEY-42-oEF">
-                                                                <rect key="frame" x="1" y="1" width="372" height="1"/>
-                                                                <color key="backgroundColor" name="customTitaniumLight"/>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="height" constant="1" id="Pqr-Le-QUH"/>
-                                                                </constraints>
-                                                            </view>
-                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="kB0-ic-aZ0">
-                                                                <rect key="frame" x="5" y="14" width="16" height="16"/>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="height" constant="16" id="G67-5H-eja"/>
-                                                                    <constraint firstAttribute="width" constant="16" id="mt5-5D-nEx"/>
-                                                                </constraints>
-                                                            </imageView>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="lbl_more" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d65-eW-3ph">
-                                                                <rect key="frame" x="31" y="12.5" width="317" height="19.5"/>
-                                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                                <color key="textColor" name="subtitles"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                        </subviews>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <constraints>
-                                                            <constraint firstItem="d65-eW-3ph" firstAttribute="leading" secondItem="kB0-ic-aZ0" secondAttribute="trailing" constant="10" id="DTC-ZA-eUt"/>
-                                                            <constraint firstItem="d65-eW-3ph" firstAttribute="centerY" secondItem="kB0-ic-aZ0" secondAttribute="centerY" id="J2O-vq-2kQ"/>
-                                                            <constraint firstItem="kEY-42-oEF" firstAttribute="top" secondItem="2Nr-xn-wJR" secondAttribute="top" constant="1" id="XK3-X9-bmc"/>
-                                                            <constraint firstItem="kEY-42-oEF" firstAttribute="leading" secondItem="2Nr-xn-wJR" secondAttribute="leading" constant="1" id="aIE-kt-EXK"/>
-                                                            <constraint firstAttribute="trailing" secondItem="d65-eW-3ph" secondAttribute="trailing" constant="26" id="cYi-tC-dLL"/>
-                                                            <constraint firstAttribute="trailing" secondItem="kEY-42-oEF" secondAttribute="trailing" constant="1" id="eZU-DT-SxY"/>
-                                                            <constraint firstAttribute="height" constant="44" id="hCE-s1-G6s"/>
-                                                            <constraint firstItem="kB0-ic-aZ0" firstAttribute="leading" secondItem="2Nr-xn-wJR" secondAttribute="leading" constant="5" id="q6o-2L-WUC"/>
-                                                            <constraint firstItem="kB0-ic-aZ0" firstAttribute="centerY" secondItem="2Nr-xn-wJR" secondAttribute="centerY" id="qMx-9E-Pfx"/>
-                                                        </constraints>
-                                                    </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WCM-zt-GVi">
-                                                        <rect key="frame" x="0.0" y="347.5" width="374" height="149"/>
+                                                        <rect key="frame" x="0.0" y="279.5" width="374" height="149"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="lbl_existing_phrase_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EYJ-KS-ptr">
                                                                 <rect key="frame" x="20" y="20" width="334" height="86.5"/>
@@ -151,7 +114,7 @@
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kn6-pX-qaV">
-                                                        <rect key="frame" x="0.0" y="520.5" width="374" height="115.5"/>
+                                                        <rect key="frame" x="0.0" y="452.5" width="374" height="115.5"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="lbl_public_key_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fmv-Jr-p9E">
                                                                 <rect key="frame" x="20" y="20" width="334" height="53"/>
@@ -220,11 +183,8 @@
                         <outlet property="cardHW" destination="TK8-9L-AAB" id="lal-TO-a1J"/>
                         <outlet property="cardNewPhrase" destination="39t-2O-W3p" id="04C-Nw-hhf"/>
                         <outlet property="cardPublicKey" destination="kn6-pX-qaV" id="jpj-vK-NpT"/>
-                        <outlet property="expandArrow" destination="kB0-ic-aZ0" id="Cbl-mV-u1T"/>
-                        <outlet property="expandSeparator" destination="2Nr-xn-wJR" id="QeE-bc-j3x"/>
                         <outlet property="lblExistingPhraseHint" destination="R9k-Xb-teh" id="xaN-Uj-zK7"/>
                         <outlet property="lblExistingPhraseTitle" destination="EYJ-KS-ptr" id="ncg-Gt-5xP"/>
-                        <outlet property="lblExpand" destination="d65-eW-3ph" id="iAu-hM-c2K"/>
                         <outlet property="lblHWHint" destination="TJP-v7-QIM" id="nfI-vW-OPW"/>
                         <outlet property="lblHWTitle" destination="Sc3-DX-LjQ" id="TAM-TC-Cg7"/>
                         <outlet property="lblNewPhraseHint" destination="E6W-UP-Lne" id="UpK-Wv-ln1"/>
@@ -590,7 +550,6 @@
         <image name="ic_cancel" width="24" height="24"/>
         <image name="ic_paste" width="24" height="24"/>
         <image name="ic_qr" width="60" height="60"/>
-        <image name="rightArrow" width="9" height="14"/>
         <namedColor name="accountOrange">
             <color red="0.99607843137254903" green="0.55686274509803924" blue="0.0078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -606,9 +565,6 @@
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.086274509803921567" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="errorRed">
             <color red="0.91764705882352937" green="0.32156862745098042" blue="0.3843137254901961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -616,7 +572,7 @@
             <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="subtitles">
-            <color red="1" green="1" blue="1" alpha="0.70999999999999996" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="1" blue="1" alpha="0.70999997854232788" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

@@ -19,10 +19,6 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
     @IBOutlet weak var lblNewPhraseTitle: UILabel!
     @IBOutlet weak var lblNewPhraseHint: UILabel!
 
-    @IBOutlet weak var expandSeparator: UIView!
-    @IBOutlet weak var expandArrow: UIImageView!
-    @IBOutlet weak var lblExpand: UILabel!
-
     @IBOutlet weak var cardExistingPhrase: UIView!
     @IBOutlet weak var lblExistingPhraseTitle: UILabel!
     @IBOutlet weak var lblExistingPhraseHint: UILabel!
@@ -43,9 +39,6 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         setStyle()
         setActions()
 
-        cardExistingPhrase.isHidden = true
-        cardPublicKey.isHidden = true
-
         AnalyticsManager.shared.recordView(.addAccountChooseRecovery, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
@@ -59,13 +52,13 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         lblExistingPhraseHint.text = NSLocalizedString("id_use_an_existing_recovery_phrase", comment: "")
         lblPublicKeyTitle.text = NSLocalizedString("id_use_a_public_key", comment: "")
         lblPublicKeyHint.text = NSLocalizedString("id_use_an_xpub_for_which_you_own", comment: "")
-        lblExpand.text = NSLocalizedString("id_more_options", comment: "")
     }
 
     func setStyle() {
         cards.forEach { card in
             card.layer.cornerRadius = 5.0
         }
+        cardHW.isHidden = true
     }
 
     func setActions() {
@@ -76,7 +69,6 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
         cardNewPhrase.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressCardNewPhrase)))
         cardExistingPhrase.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressCardExistingPhrase)))
         cardPublicKey.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressCardPublicKey)))
-        expandSeparator.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressExpandSeparator)))
     }
 
     @objc func didPressCardHW() {
@@ -93,15 +85,6 @@ class AccountCreateRecoveryKeyViewController: UIViewController {
 
     @objc func didPressCardPublicKey() {
         next(.publicKey)
-    }
-
-    @objc func didPressExpandSeparator() {
-        let clock = self.cardExistingPhrase.isHidden ? 1 : -1
-        UIView.animate(withDuration: 0.3) {
-            self.cardExistingPhrase.isHidden = !self.cardExistingPhrase.isHidden
-            self.cardPublicKey.isHidden = !self.cardPublicKey.isHidden
-            self.expandArrow.transform = self.expandArrow.transform.rotated(by: CGFloat(clock) * .pi / 2)
-        }
     }
 
     func next(_ recoveryKeyType: RecoveryKeyType) {
