@@ -94,6 +94,14 @@ class ReceiveViewController: UIViewController {
             $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
             $0?.textColor = .white.withAlphaComponent(0.4)
         }
+        [lblAsset].forEach {
+            $0?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
+            $0?.textColor = .white
+        }
+        [lblAccount].forEach {
+            $0?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+            $0?.textColor = .white.withAlphaComponent(0.4)
+        }
     }
 
     func reload() {
