@@ -12,6 +12,7 @@ class UserSettingsViewController: UIViewController {
     weak var delegate: UserSettingsViewControllerDelegate?
 
     var session = { WalletManager.current?.prominentSession }()
+    var multiSigSession = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }()
     var headerH: CGFloat = 54.0
     var viewModel = UserSettingsViewModel()
     var account: Account { get { viewModel.wm.account } }
@@ -160,7 +161,7 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .Version:
             break
         case .SupportID:
-            session?.subaccount(0).done { wallet in
+            multiSigSession?.subaccount(0).done { wallet in
                 UIPasteboard.general.string = wallet.receivingId
                 DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
