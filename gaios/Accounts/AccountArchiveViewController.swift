@@ -54,6 +54,7 @@ class AccountArchiveViewController: UIViewController {
             self?.reloadSections(sections, animated: true)
         }
         viewModel.reloadSections = reloadSections
+        viewModel.loadSubaccounts()
     }
 
     func presentUnarchiveMenu(frame: CGRect, index: Int) {
