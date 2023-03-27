@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '11.0'
+platform :ios, '14.0'
 install! 'cocoapods', :warn_for_unused_master_specs_repo => false
 
 target 'gaios' do
@@ -14,7 +14,7 @@ target 'gaios' do
   pod 'SwiftCBOR', '0.4.5'
 #  pod 'Countly', '20.11.1'
   pod 'Countly', :git => 'https://github.com/angelix/countly-sdk-ios', :commit => 'f8485fe7f38c8fbd656d95c3eb431f5e854c2202'
-
+  pod 'RiveRuntime', '~> 3.1.7'
 end
 
 target 'gaiosTests' do

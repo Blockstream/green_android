@@ -10,8 +10,6 @@ enum AccountSection: Int, CaseIterable {
     case footer
 }
 
-
-
 protocol AccountViewControllerDelegate: AnyObject {
     func didArchiveAccount()
 }
@@ -219,10 +217,19 @@ class AccountViewController: UIViewController {
             .then { self.viewModel.archiveSubaccount() }
             .ensure { self.stopLoader() }
             .done {
-                DropAlert().success(message: "id_account_has_been_archived".localized)
+//                DropAlert().success(message: "id_account_has_been_archived".localized)
                 self.delegate?.didArchiveAccount()
-                self.navigationController?.popViewController(animated: true)
+                self.showDialog()
             } .catch { err in self.showError(err) }
+    }
+
+    func showDialog() {
+        let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchivedViewController") as? AccountArchivedViewController {
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
     }
 
     func navigateTo2fa(_ account: WalletItem) {
@@ -581,5 +588,20 @@ extension AccountViewController: DialogWalletNameViewControllerDelegate {
 extension AccountViewController: TransactionViewControllerDelegate {
     func onMemoEdit() {
         viewModel.getTransactions(restart: true)
+    }
+}
+
+extension AccountViewController: AccountArchivedViewControllerDelegate {
+    func onDismissArchived() {
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    func showArchived() {
+        let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchiveViewController") as? AccountArchiveViewController, var viewControllers = navigationController?.viewControllers, let nav = navigationController {
+            viewControllers.removeLast()
+            viewControllers.append(vc)
+            nav.setViewControllers(viewControllers, animated: true)
+        }
     }
 }

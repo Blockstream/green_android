@@ -43,6 +43,7 @@
 		3412133F269F187C00CC8112 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81073D7A21E8B27700E08F86 /* Localizable.strings */; };
 		3412136826A07A6A00CC8112 /* AccountCreateSelectType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412136726A07A6A00CC8112 /* AccountCreateSelectType.swift */; };
 		3412136A26A0814300CC8112 /* AccountCreateSetName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412136926A0814300CC8112 /* AccountCreateSetName.swift */; };
+		3416B67729D1A5EC00643C9C /* AccountArchivedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416B67629D1A5EC00643C9C /* AccountArchivedViewController.swift */; };
 		3418BAB4274275E600F9B2D0 /* TransactionAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAB3274275E600F9B2D0 /* TransactionAmountCell.swift */; };
 		3418BAB6274285BD00F9B2D0 /* TransactionFeeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAB5274285BD00F9B2D0 /* TransactionFeeCell.swift */; };
 		3418BABA2742ABE100F9B2D0 /* TransactionStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAB92742ABE100F9B2D0 /* TransactionStatusCell.swift */; };
@@ -191,6 +192,18 @@
 		3486AD7227CFC5060013D8FF /* AssetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3486AD7127CFC5060013D8FF /* AssetsList.swift */; };
 		3486ADA027D622EE0013D8FF /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3486AD9F27D622EE0013D8FF /* SliderView.swift */; };
 		3487653729D337150059D05F /* OnBoardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3487653629D337150059D05F /* OnBoardManager.swift */; };
+		3487657429D43B2A0059D05F /* Illustration Account Archived.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656829D43B290059D05F /* Illustration Account Archived.riv */; };
+		3487657529D43B2A0059D05F /* Illustration Checklist.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656929D43B290059D05F /* Illustration Checklist.riv */; };
+		3487657629D43B2A0059D05F /* Illustration Wallet.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656A29D43B2A0059D05F /* Illustration Wallet.riv */; };
+		3487657729D43B2A0059D05F /* Illustration Error.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656B29D43B2A0059D05F /* Illustration Error.riv */; };
+		3487657829D43B2A0059D05F /* Illustration Checkmark.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */; };
+		3487657929D43B2A0059D05F /* Illustration Stars Success.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */; };
+		3487657A29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656E29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv */; };
+		3487657B29D43B2A0059D05F /* Illustration Envelope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656F29D43B2A0059D05F /* Illustration Envelope.riv */; };
+		3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */; };
+		3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */; };
+		3487657E29D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657229D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv */; };
+		3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */; };
 		3488FC69290AE26E00122628 /* BalanceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3488FC68290AE26E00122628 /* BalanceCell.xib */; };
 		3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6A290AE28000122628 /* BalanceCell.swift */; };
 		3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6C290AE28700122628 /* BalanceCellModel.swift */; };
@@ -518,6 +531,7 @@
 		3412133D269EFC2D00CC8112 /* Accounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accounts.swift; sourceTree = "<group>"; };
 		3412136726A07A6A00CC8112 /* AccountCreateSelectType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSelectType.swift; sourceTree = "<group>"; };
 		3412136926A0814300CC8112 /* AccountCreateSetName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSetName.swift; sourceTree = "<group>"; };
+		3416B67629D1A5EC00643C9C /* AccountArchivedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchivedViewController.swift; sourceTree = "<group>"; };
 		3418BAB3274275E600F9B2D0 /* TransactionAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionAmountCell.swift; sourceTree = "<group>"; };
 		3418BAB5274285BD00F9B2D0 /* TransactionFeeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeCell.swift; sourceTree = "<group>"; };
 		3418BAB92742ABE100F9B2D0 /* TransactionStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionStatusCell.swift; sourceTree = "<group>"; };
@@ -665,6 +679,18 @@
 		3486AD7127CFC5060013D8FF /* AssetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsList.swift; sourceTree = "<group>"; };
 		3486AD9F27D622EE0013D8FF /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		3487653629D337150059D05F /* OnBoardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardManager.swift; sourceTree = "<group>"; };
+		3487656829D43B290059D05F /* Illustration Account Archived.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Account Archived.riv"; sourceTree = "<group>"; };
+		3487656929D43B290059D05F /* Illustration Checklist.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Checklist.riv"; sourceTree = "<group>"; };
+		3487656A29D43B2A0059D05F /* Illustration Wallet.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Wallet.riv"; sourceTree = "<group>"; };
+		3487656B29D43B2A0059D05F /* Illustration Error.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Error.riv"; sourceTree = "<group>"; };
+		3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Checkmark.riv"; sourceTree = "<group>"; };
+		3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Stars Success.riv"; sourceTree = "<group>"; };
+		3487656E29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 01 - Faster + BG + Power Button.riv"; sourceTree = "<group>"; };
+		3487656F29D43B2A0059D05F /* Illustration Envelope.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Envelope.riv"; sourceTree = "<group>"; };
+		3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 04 - Faster + BG + Refresh.riv"; sourceTree = "<group>"; };
+		3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Recovery Phrase.riv"; sourceTree = "<group>"; };
+		3487657229D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 02 - Faster + BG + Select Button.riv"; sourceTree = "<group>"; };
+		3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 03 - Faster + BG + Side Scroll.riv"; sourceTree = "<group>"; };
 		3488FC68290AE26E00122628 /* BalanceCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BalanceCell.xib; sourceTree = "<group>"; };
 		3488FC6A290AE28000122628 /* BalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCell.swift; sourceTree = "<group>"; };
 		3488FC6C290AE28700122628 /* BalanceCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCellModel.swift; sourceTree = "<group>"; };
@@ -1756,6 +1782,25 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		34AFA8E429D1723F00C4F3E6 /* Rive */ = {
+			isa = PBXGroup;
+			children = (
+				3487656829D43B290059D05F /* Illustration Account Archived.riv */,
+				3487656929D43B290059D05F /* Illustration Checklist.riv */,
+				3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */,
+				3487656F29D43B2A0059D05F /* Illustration Envelope.riv */,
+				3487656B29D43B2A0059D05F /* Illustration Error.riv */,
+				3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */,
+				3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */,
+				3487656A29D43B2A0059D05F /* Illustration Wallet.riv */,
+				3487656E29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv */,
+				3487657229D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv */,
+				3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */,
+				3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */,
+			);
+			path = Rive;
+			sourceTree = "<group>";
+		};
 		34B170E1292E85D900A829B2 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -1812,6 +1857,7 @@
 				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
 				34C8E78129C0746E00C84066 /* ConnectViewController.swift */,
 				81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */,
+				3416B67629D1A5EC00643C9C /* AccountArchivedViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2008,6 +2054,7 @@
 				34AB8BAC26036742009C930A /* Services */,
 				815A804229B3D41800269027 /* Repository */,
 				8189BEFF2236F2270091B466 /* ScreenLocker.swift */,
+				34AFA8E429D1723F00C4F3E6 /* Rive */,
 				817417362236E85500A28E36 /* ScreenLockWindow.swift */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
@@ -2442,11 +2489,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3487657B29D43B2A0059D05F /* Illustration Envelope.riv in Resources */,
 				6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */,
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
+				3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
@@ -2454,25 +2503,33 @@
 				34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */,
 				342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
+				3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
+				3487657929D43B2A0059D05F /* Illustration Stars Success.riv in Resources */,
+				3487657E29D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv in Resources */,
+				3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */,
 				3447553C290A5BD300B9C1AF /* AccountCell.xib in Resources */,
 				349D1ED927424F200095B5CA /* Transaction.storyboard in Resources */,
 				34019C2728D35F2400E64BEE /* DrawerBarItem.xib in Resources */,
 				3420471C291BFFEF00EDE945 /* Utility.storyboard in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
+				3487657629D43B2A0059D05F /* Illustration Wallet.riv in Resources */,
 				3457F4B32923988600EF33B5 /* DialogListCell.xib in Resources */,
+				3487657429D43B2A0059D05F /* Illustration Account Archived.riv in Resources */,
 				34B170ED292E872A00A829B2 /* DiscloseCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
 				34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */,
+				3487657829D43B2A0059D05F /* Illustration Checkmark.riv in Resources */,
 				346752F7291E5D0100256132 /* AccountSelectCell.xib in Resources */,
 				340A5F5928E476C6003D56B1 /* About.storyboard in Resources */,
 				34B170E3292E861E00A829B2 /* AddingCell.xib in Resources */,
 				3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */,
 				34560BA629BF349E007E916F /* OtherDeviceCell.xib in Resources */,
+				3487657729D43B2A0059D05F /* Illustration Error.riv in Resources */,
 				34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */,
 				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
 				3458AB10292D1F0B006EC7FB /* AnyAssetCell.xib in Resources */,
@@ -2484,6 +2541,7 @@
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
 				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				3458AB1A292D28A9006EC7FB /* AnyAssetExpandableView.xib in Resources */,
+				3487657A29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
@@ -2498,6 +2556,7 @@
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
 				34204718291B9A8600EDE945 /* PolicyCell.xib in Resources */,
+				3487657529D43B2A0059D05F /* Illustration Checklist.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2602,6 +2661,7 @@
 				"${BUILT_PRODUCTS_DIR}/RxBluetoothKit/RxBluetoothKit.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftCBOR/SwiftCBOR.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/RiveRuntime/RiveRuntime.framework/RiveRuntime",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -2610,6 +2670,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBluetoothKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftCBOR.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RiveRuntime.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2788,6 +2849,7 @@
 				342F9812293518C6005876A8 /* Enable2faPrefs.swift in Sources */,
 				34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */,
 				81865F47299D8CB4002CBA87 /* Thenable.swift in Sources */,
+				3416B67729D1A5EC00643C9C /* AccountArchivedViewController.swift in Sources */,
 				34204711291B919600EDE945 /* SecuritySelectViewController.swift in Sources */,
 				3491C9942912B4C70063C055 /* AssetsViewModel.swift in Sources */,
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
@@ -3142,7 +3204,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -3197,7 +3259,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3223,7 +3285,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=iphonesimulator*]" = NO;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				INFOPLIST_FILE = gaios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.0.0;
 				OTHER_LDFLAGS = (
@@ -3265,7 +3327,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				INFOPLIST_FILE = gaios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.0.0;
 				OTHER_LDFLAGS = (
@@ -3408,7 +3470,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3431,7 +3493,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				INFOPLIST_FILE = gaios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.0.0;
 				OTHER_LDFLAGS = (

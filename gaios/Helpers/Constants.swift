@@ -1,4 +1,5 @@
 import Foundation
+import RiveRuntime
 
 enum Constants {
     static let mnemonicSizeDefault = MnemonicSize._12.rawValue
@@ -61,4 +62,14 @@ enum ExternalUrls {
 
     static let jadeTroubleshoot = URL(string: "https://help.blockstream.com/hc/en-us/articles/4406185830041-Why-is-my-Blockstream-Jade-not-connecting-over-Bluetooth-")!
     static let blockstreamStore = URL(string: "https://store.blockstream.com/product/jade-hardware-wallet/")!
+}
+
+enum RiveModel {
+    static let animationWallet = RiveViewModel(fileName: "Illustration Wallet")
+    static let animationJade1 = RiveViewModel(fileName: "Jade 01 - Faster + BG + Power Button")
+    static let animationJade2 = RiveViewModel(fileName: "Jade 02 - Faster + BG + Select Button")
+    static let animationJade3 = RiveViewModel(fileName: "Jade 03 - Faster + BG + Side Scroll")
+    static let animationJadeFirmware = RiveViewModel(fileName: "Jade 04 - Faster + BG + Refresh")
+    static let animationArchived = RiveViewModel(fileName: "Illustration Account Archived")
+    static let animationCheckList = RiveViewModel(fileName: "Illustration Checklist")
 }

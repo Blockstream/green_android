@@ -1,8 +1,7 @@
 import UIKit
+import RiveRuntime
 
 class SetupJadeViewController: HWFlowBaseViewController {
-
-    @IBOutlet weak var imgDevice: UIImageView!
 
     @IBOutlet weak var lblStep1Number: UILabel!
     @IBOutlet weak var lblStep1Title: UILabel!
@@ -13,6 +12,7 @@ class SetupJadeViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblStep3Number: UILabel!
     @IBOutlet weak var lblStep3Title: UILabel!
     @IBOutlet weak var lblStep3Hint: UILabel!
+    @IBOutlet weak var animateView: UIView!
 
     @IBOutlet weak var infoBox1: UIView!
     @IBOutlet weak var infoBox2: UIView!
@@ -31,6 +31,7 @@ class SetupJadeViewController: HWFlowBaseViewController {
         setStyle()
         loadNavigationBtns()
         update()
+        animateView.alpha = 0.0
     }
 
     deinit {
@@ -39,6 +40,10 @@ class SetupJadeViewController: HWFlowBaseViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         resetTimer()
+        update()
+        UIView.animate(withDuration: 0.3) {
+            self.animateView.alpha = 1.0
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -76,12 +81,12 @@ class SetupJadeViewController: HWFlowBaseViewController {
     func refresh() {
 
         UIView.animate(withDuration: 0.25, animations: {
-            [self.imgDevice].forEach {
+            [self.animateView].forEach {
                 $0?.alpha = 0.0
             }}, completion: { _ in
                 self.update()
                 UIView.animate(withDuration: 0.4, animations: {
-                    [self.imgDevice].forEach {
+                    [self.animateView].forEach {
                         $0?.alpha = 1.0
                     }
                 })
@@ -89,7 +94,11 @@ class SetupJadeViewController: HWFlowBaseViewController {
     }
 
     func update() {
-        imgDevice.image = self.viewModel.steps[idx].img
+        animateView.subviews.forEach({ $0.removeFromSuperview() })
+        let riveView = viewModel.steps[idx].riveModel.createRiveView()
+        animateView.addSubview(riveView)
+        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
+//        imgDevice.image = self.viewModel.steps[idx].img
         [lblStep1Hint, lblStep2Hint, lblStep3Hint].forEach {
             $0?.isHidden = true
         }

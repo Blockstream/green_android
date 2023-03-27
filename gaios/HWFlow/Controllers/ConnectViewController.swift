@@ -32,6 +32,7 @@ class ConnectViewController: HWFlowBaseViewController {
 
         setContent()
         setStyle()
+        loadNavigationBtns()
     }
 
     func loadNavigationBtns() {
@@ -45,7 +46,7 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     @objc func troubleshootBtnTapped() {
-        print("sss")
+        SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
 
     @IBAction func retryBtnTapped(_ sender: Any) {

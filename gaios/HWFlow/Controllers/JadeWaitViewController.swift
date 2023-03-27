@@ -1,16 +1,17 @@
 import UIKit
 import RxBluetoothKit
 import RxSwift
+import RiveRuntime
 
 class JadeWaitViewController: HWFlowBaseViewController {
 
-    @IBOutlet weak var imgDevice: UIImageView!
     @IBOutlet weak var lblStepNumber: UILabel!
     @IBOutlet weak var lblStepTitle: UILabel!
     @IBOutlet weak var lblStepHint: UILabel!
     @IBOutlet weak var lblLoading: UILabel!
     @IBOutlet weak var infoBox: UIView!
     @IBOutlet weak var loaderPlaceholder: UIView!
+    @IBOutlet weak var animateView: UIView!
 
     let viewModel = JadeWaitViewModel()
     var timer: Timer?
@@ -29,6 +30,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
         setStyle()
         loadNavigationBtns()
         update()
+        animateView.alpha = 0.0
     }
 
     deinit {
@@ -40,9 +42,14 @@ class JadeWaitViewController: HWFlowBaseViewController {
         BLEViewModel.shared.scan(jade: true,
                                  completion: self.next,
                                  error: self.error)
+        update()
+        UIView.animate(withDuration: 0.3) {
+            self.animateView.alpha = 1.0
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         stop()
         timer?.invalidate()
         BLEViewModel.shared.scanDispose?.dispose()
@@ -59,13 +66,13 @@ class JadeWaitViewController: HWFlowBaseViewController {
     func refresh() {
 
         UIView.animate(withDuration: 0.25, animations: {
-            [self.lblStepNumber, self.lblStepTitle, self.lblStepHint, self.imgDevice].forEach {
+            [self.lblStepNumber, self.lblStepTitle, self.lblStepHint, self.animateView].forEach {
                 $0?.alpha = 0.0
             }}, completion: { _ in
                 if self.idx < 2 { self.idx += 1 } else { self.idx = 0}
                 self.update()
                 UIView.animate(withDuration: 0.4, animations: {
-                    [self.lblStepNumber, self.lblStepTitle, self.lblStepHint, self.imgDevice].forEach {
+                    [self.lblStepNumber, self.lblStepTitle, self.lblStepHint, self.animateView].forEach {
                         $0?.alpha = 1.0
                     }
                 })
@@ -73,7 +80,10 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     func update() {
-        self.imgDevice.image = self.viewModel.steps[idx].img
+        animateView.subviews.forEach({ $0.removeFromSuperview() })
+        let riveView = viewModel.steps[idx].riveModel.createRiveView()
+        animateView.addSubview(riveView)
+        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
         self.lblStepNumber.text = self.viewModel.steps[idx].titleStep
         self.lblStepTitle.text = self.viewModel.steps[idx].title
         self.lblStepHint.text = self.viewModel.steps[idx].hint

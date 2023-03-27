@@ -16,6 +16,7 @@ class UpdateFirmwareViewController: UIViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var btnUpdate: UIButton!
     @IBOutlet weak var btnSkip: UIButton!
+    @IBOutlet weak var animateView: UIView!
 
     weak var delegate: UpdateFirmwareViewControllerDelegate?
     var version: String!
@@ -36,6 +37,9 @@ class UpdateFirmwareViewController: UIViewController {
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
         }
+        let riveView = RiveModel.animationJadeFirmware.createRiveView()
+        animateView.addSubview(riveView)
+        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
     }
 
     func setContent() {
@@ -62,10 +66,6 @@ class UpdateFirmwareViewController: UIViewController {
         btnSkip.setStyle(.inline)
         btnSkip.setTitleColor(.white, for: .normal)
         btnSkip.isHidden = isRequired
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
     }
 
     func dismiss() {

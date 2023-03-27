@@ -1,5 +1,6 @@
 import UIKit
 import PromiseKit
+import RiveRuntime
 
 enum WalletSection: Int, CaseIterable {
     case card
@@ -24,6 +25,7 @@ class WalletViewController: UIViewController {
     @IBOutlet weak var lblWelcomeTitle: UILabel!
     @IBOutlet weak var lblWelcomeHint: UILabel!
     @IBOutlet weak var btnWelcomeCreate: UIButton!
+    @IBOutlet weak var animateView: UIView!
 
     //    var assetId: String?
 
@@ -128,6 +130,14 @@ class WalletViewController: UIViewController {
             })
             notificationObservers.append(observer)
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        let riveView = RiveModel.animationWallet.createRiveView()
+        animateView.addSubview(riveView)
+        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
