@@ -10,8 +10,9 @@ class UserSettingsViewModel {
     // load wallet manager for current logged session
     var session: SessionManager? { wm.prominentSession }
     var settings: Settings? { session?.settings }
-    var isWatchonly: Bool { wm.account.isWatchonly ?? false }
-    var isHW: Bool { wm.account.isHW ?? false }
+    var isWatchonly: Bool { wm.account.isWatchonly }
+    var isHW: Bool { wm.account.isHW }
+    var multiSigSession: SessionManager? { wm.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
 
     // reload all contents
     var reloadTableView: (() -> Void)?
@@ -46,7 +47,10 @@ class UserSettingsViewModel {
             subtitle: "id_copy_support_id".localized,
             section: .About,
             type: .SupportID)
-        return [version, support]
+        if multiSigSession != nil {
+            return [version, support]
+        }
+        return [version]
     }
 
     func getSecurity() -> [UserSettingsItem] {
@@ -58,7 +62,7 @@ class UserSettingsViewModel {
         let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "") : NSLocalizedString("id_touchface_id_not_available", comment: "")
         var bioSwitch: Bool?
         if AuthenticationTypeHandler.supportsBiometricAuthentication() {
-            bioSwitch = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wm.account.keychain ?? "")
+            bioSwitch = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wm.account.keychain)
         }
         let loginWithBiometrics = UserSettingsItem(
             title: bioTitle,
