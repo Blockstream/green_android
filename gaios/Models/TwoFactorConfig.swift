@@ -28,6 +28,7 @@ struct TwoFactorConfigLimits: Codable {
     enum CodingKeys: String, CodingKey {
         case isFiat = "is_fiat"
         case fiat = "fiat"
+        case fiatCurrency = "fiat_currency"
         case btc = "btc"
         case bits = "bits"
         case mbtc = "mbtc"
@@ -36,11 +37,12 @@ struct TwoFactorConfigLimits: Codable {
     }
     let isFiat: Bool
     let fiat: String?
-    let btc: String
-    let bits: String
-    let mbtc: String
-    let ubtc: String
-    let sats: String
+    let fiatCurrency: String?
+    let btc: String?
+    let bits: String?
+    let mbtc: String?
+    let ubtc: String?
+    let sats: String?
 
     func get<T>(_ key: CodingKeys) -> T? {
         let value = Mirror(reflecting: self).children.filter { $0.label == key.rawValue }.map { return $0.value as? T }
