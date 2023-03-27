@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.0-beta4] - 2023-03-27
+
+### Changed
+- Bug fixes
+- Update to gdk 0.0.58 post2
+
 ## [4.0.0-beta3] - 2023-03-24
 
 ### Changed
