@@ -32,7 +32,7 @@ struct Account: Codable, Equatable {
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
     var walletHashId: String?
     var xpubHashId: String?
-    var hidden: Bool = false
+    var hidden: Bool? = false
     var uuid: UUID?
     var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
     var isEphemeral: Bool = false
