@@ -104,7 +104,7 @@ extension ListDevicesViewController: UITableViewDelegate, UITableViewDataSource 
             }
         } else {
             if let cell = tableView.dequeueReusableCell(withIdentifier: OtherDeviceCell.identifier, for: indexPath) as? OtherDeviceCell {
-                cell.configure(name: peripheral.name ?? "Nano X", type: "Ledger Nano X")
+                cell.configure(text: peripheral.name ?? "Nano X")
                 cell.selectionStyle = .none
                 return cell
             }

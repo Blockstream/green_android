@@ -4,9 +4,9 @@ class OtherDeviceCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var btnDisclose: UIButton!
-    @IBOutlet weak var lblType: UILabel!
     @IBOutlet weak var lblName: UILabel!
-    @IBOutlet weak var lblHint: UILabel!
+    @IBOutlet weak var iconSensor: UIImageView!
+    @IBOutlet weak var lblMan: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -15,6 +15,7 @@ class OtherDeviceCell: UITableViewCell {
         btnDisclose.isUserInteractionEnabled = false
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
         btnDisclose.cornerRadius = 4.0
+        iconSensor.image = iconSensor.image?.maskWithColor(color: .white)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -27,19 +28,15 @@ class OtherDeviceCell: UITableViewCell {
         super.prepareForReuse()
     }
 
-    func configure(name: String, type: String) {
-        lblType.text = type
-        lblName.text = name
-        lblHint.text = ""
+    func configure(text: String) {
+
+        lblName.text = text
+        lblMan.text = text
         setStyle()
     }
 
     func setStyle() {
-        lblType.font = UIFont.systemFont(ofSize: 10.0, weight: .regular)
         lblName.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
-        lblHint.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        lblType.textColor = .white.withAlphaComponent(0.6)
         lblName.textColor = .white
-        lblHint.textColor = .white.withAlphaComponent(0.6)
     }
 }
