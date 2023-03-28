@@ -22,7 +22,6 @@ python3 -m virtualenv -p python3 venv
 source venv/bin/activate
 
 pip install -r tools/requirements.txt
-pip install ninja
 
 all_archs="armeabi-v7a arm64-v8a x86_64 x86"
 
@@ -33,9 +32,12 @@ fi
 mkdir -p ../src/main/java/com/blockstream/libwally ../src/main/java/com/blockstream/libgreenaddress/
 
 for arch in $all_archs; do
-    mkdir -p ../src/main/jniLibs/$arch $PWD/gdk-android-jni$arch
-    #./tools/build.sh --buildtype=debug --install $PWD/gdk-android-jni$arch --ndk $arch
-    ./tools/build.sh --install $PWD/gdk-android-jni$arch --ndk $arch
+    ./tools/builddeps.sh -ndk $arch --prefix $PWD/prebuild-$arch
+    cmake -B build-android-$arch -S . -DEXTERNAL-DEPS-DIR:PATH=$PWD/prebuild-$arch -DCMAKE_TOOLCHAIN_FILE=cmake/profiles/android-$arch.cmake
+    cmake --build build-android-$arch --target java-bindings --parallel 8
+    cmake --install build-android-$arch --prefix $pwd/gdk-android-jni$arch --strip
+    cmake --install build-android-$arch --prefix $pwd/gdk-android-jni$arch --component gdk-java
+  
     cp gdk-android-jni$arch/lib/$arch/* ../src/main/jniLibs/$arch
     cp gdk-android-jni$arch/java/com/blockstream/libgreenaddress/GDK.java ../src/main/java/com/blockstream/libgreenaddress/GDK.java
     cp gdk-android-jni$arch/java/com/blockstream/libwally/Wally.java ../src/main/java/com/blockstream/libwally/Wally.java
