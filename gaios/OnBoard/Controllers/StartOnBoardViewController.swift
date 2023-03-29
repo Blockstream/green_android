@@ -1,5 +1,11 @@
 import UIKit
 
+enum ActionOnButton {
+    case new
+    case restore
+    case watchOnly
+}
+
 class StartOnBoardViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -15,22 +21,11 @@ class StartOnBoardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        customBack()
         setContent()
         setStyle()
         updateUI()
 
         AnalyticsManager.shared.recordView(.onBoardIntro)
-    }
-
-    func customBack() {
-        var arrow = UIImage.init(named: "backarrow")
-        if #available(iOS 13.0, *) {
-            arrow = UIImage(systemName: "chevron.backward")
-        }
-        let newBackButton = UIBarButtonItem(image: arrow, style: UIBarButtonItem.Style.plain, target: self, action: #selector(LandingViewController.back(sender:)))
-        navigationItem.leftBarButtonItem = newBackButton
-        navigationItem.hidesBackButton = true
     }
 
     @objc func back(sender: UIBarButtonItem) {
@@ -58,11 +53,11 @@ class StartOnBoardViewController: UIViewController {
 
         switch action {
         case .new:
-            LandingViewController.flowType = .add
+            OnBoardManager.shared.flowType = .add
         case .restore:
-            LandingViewController.flowType = .restore
+            OnBoardManager.shared.flowType = .restore
         case .watchOnly:
-            LandingViewController.flowType = .watchonly
+            OnBoardManager.shared.flowType = .watchonly
         }
         let testnetAvailable = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
         if testnetAvailable {
@@ -85,8 +80,7 @@ class StartOnBoardViewController: UIViewController {
     func next() {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
 
-        // refactor and dismiss LandingViewController
-        switch LandingViewController.flowType {
+        switch OnBoardManager.shared.flowType {
         case .add:
             let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
             navigationController?.pushViewController(vc, animated: true)
@@ -117,10 +111,10 @@ extension StartOnBoardViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch NetworkPrefs(rawValue: index) {
         case .mainnet:
-            LandingViewController.chainType = .mainnet
+            OnBoardManager.shared.chainType = .mainnet
             next()
         case .testnet:
-            LandingViewController.chainType = .testnet
+            OnBoardManager.shared.chainType = .testnet
             next()
         case .none:
             break

@@ -25,25 +25,10 @@ class SelectOnBoardTypeViewController: UIViewController {
 
         iAgree = AccountsRepository.shared.swAccounts.count + AccountsRepository.shared.hwAccounts.count > 0
 
-//        customBack()
         setContent()
         setStyle()
         updateUI()
-
-//        if landingScope == .onBoard {
-//            AnalyticsManager.shared.recordView(.onBoardIntro)
-//        }
     }
-
-//    func customBack() {
-//        var arrow = UIImage.init(named: "backarrow")
-//        if #available(iOS 13.0, *) {
-//            arrow = UIImage(systemName: "chevron.backward")
-//        }
-//        let newBackButton = UIBarButtonItem(image: arrow, style: UIBarButtonItem.Style.plain, target: self, action: #selector(LandingViewController.back(sender:)))
-//        navigationItem.leftBarButtonItem = newBackButton
-//        navigationItem.hidesBackButton = true
-//    }
 
     @objc func back(sender: UIBarButtonItem) {
         navigationController?.popViewController(animated: true)
@@ -106,34 +91,8 @@ class SelectOnBoardTypeViewController: UIViewController {
             if let vc = hwFlow.instantiateViewController(withIdentifier: "WelcomeJadeViewController") as? WelcomeJadeViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
-
-//            LandingViewController.flowType = .restore
-//        case .watchOnly:
-//            break
-//            LandingViewController.flowType = .watchonly
         }
-//        let testnetAvailable = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
-//        if testnetAvailable {
-//            selectNetwork()
-//        } else {
-//            next()
-//        }
     }
-
-//    func next() {
-//        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-//        switch LandingViewController.flowType {
-//        case .add:
-//            let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController")
-//            navigationController?.pushViewController(vc, animated: true)
-//        case .restore:
-//            let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController")
-//            navigationController?.pushViewController(vc, animated: true)
-//        case .watchonly:
-//            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
-//    }
 
     @IBAction func btnCheckTerms(_ sender: Any) {
         print(btnCheckTerms.isSelected)

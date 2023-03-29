@@ -229,7 +229,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     func restoreWallet() {
-        let testnet = LandingViewController.chainType == .testnet
+        let testnet = OnBoardManager.shared.chainType == .testnet
         Guarantee()
             .then { self.getMnemonicString() }
             .then { res in self.viewModel.validateMnemonic(res.0).map { res } }

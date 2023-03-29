@@ -142,7 +142,7 @@ class WatchOnlyViewController: KeyboardViewController {
     func selectNetwork() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            let testnet = LandingViewController.chainType == .testnet
+            let testnet = OnBoardManager.shared.chainType == .testnet
             networks = testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS]
             let cells = networks.map { DialogListCellModel(type: .list,
                                                            icon: nil,

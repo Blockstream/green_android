@@ -108,7 +108,7 @@ class RecoveryVerifyViewController: UIViewController {
     func next() {
         if OnBoardInfoViewController.flowType == .onboarding {
             AnalyticsManager.shared.createWallet(account: AccountsRepository.shared.current)
-            let testnet = LandingViewController.chainType == .testnet
+            let testnet = OnBoardManager.shared.chainType == .testnet
             let mnemonic = self.mnemonic.joined(separator: " ")
             let credentials = Credentials(mnemonic: mnemonic, password: "")
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)

@@ -431,7 +431,7 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func btnWalletLock(_ sender: Any) {
-        LandingViewController.flowType = .restore
+        OnBoardManager.shared.flowType = .restore
         OnBoardParams.shared = OnBoardParams(testnet: account?.gdkNetwork?.mainnet,
                                              walletName: account?.name,
                                              accountId: account?.id ?? UUID().uuidString,
