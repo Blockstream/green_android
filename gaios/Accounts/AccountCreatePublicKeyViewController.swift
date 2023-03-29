@@ -89,8 +89,8 @@ class AccountCreatePublicKeyViewController: UIViewController {
     }
 
     @IBAction func btnQr(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogQRCodeScanViewController") as? DialogQRCodeScanViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: false, completion: nil)
@@ -102,7 +102,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
     }
 }
 
-extension AccountCreatePublicKeyViewController: DialogQRCodeScanViewControllerDelegate {
+extension AccountCreatePublicKeyViewController: DialogScanViewControllerDelegate {
     func didScan(value: String, index: Int?) {
         textViewKey.text = value
         triggerTextChange()

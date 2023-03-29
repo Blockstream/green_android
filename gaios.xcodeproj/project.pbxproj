@@ -110,6 +110,7 @@
 		34477D352771D34D0021698B /* Recipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D342771D34D0021698B /* Recipient.swift */; };
 		34477D392771F7090021698B /* AddRecipientCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D382771F7090021698B /* AddRecipientCell.swift */; };
 		34477D3B277216640021698B /* FeeEditCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D3A277216640021698B /* FeeEditCell.swift */; };
+		3448B5CB29D47647008D5746 /* DialogScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448B5CA29D47647008D5746 /* DialogScanViewController.swift */; };
 		3448E63B2730141500C7ADFF /* DialogReceiveShareTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */; };
 		344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */; };
 		344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BBB268C5567000182B0 /* Mnemonic.swift */; };
@@ -176,7 +177,6 @@
 		346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F4291E55CC00256132 /* AccountSelectCellModel.swift */; };
 		346752F7291E5D0100256132 /* AccountSelectCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 346752F6291E5D0100256132 /* AccountSelectCell.xib */; };
 		34675B0A29409D9900771D50 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34675B0929409D9900771D50 /* Common.swift */; };
-		3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346970192779A1F100796D37 /* DialogQRCodeScanViewController.swift */; };
 		3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */; };
 		3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2452887D23700B2F640 /* StoreReviewManager.swift */; };
 		3469A2482887D56E00B2F640 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2472887D56E00B2F640 /* Date.swift */; };
@@ -582,6 +582,7 @@
 		34477D342771D34D0021698B /* Recipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipient.swift; sourceTree = "<group>"; };
 		34477D382771F7090021698B /* AddRecipientCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipientCell.swift; sourceTree = "<group>"; };
 		34477D3A277216640021698B /* FeeEditCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeEditCell.swift; sourceTree = "<group>"; };
+		3448B5CA29D47647008D5746 /* DialogScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogScanViewController.swift; sourceTree = "<group>"; };
 		3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveShareTypeViewController.swift; sourceTree = "<group>"; };
 		344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhrase.swift; sourceTree = "<group>"; };
 		344B1BBB268C5567000182B0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
@@ -648,7 +649,6 @@
 		346752F4291E55CC00256132 /* AccountSelectCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectCellModel.swift; sourceTree = "<group>"; };
 		346752F6291E5D0100256132 /* AccountSelectCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountSelectCell.xib; sourceTree = "<group>"; };
 		34675B0929409D9900771D50 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
-		346970192779A1F100796D37 /* DialogQRCodeScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogQRCodeScanViewController.swift; sourceTree = "<group>"; };
 		3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFeeViewController.swift; sourceTree = "<group>"; };
 		3469A2452887D23700B2F640 /* StoreReviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewManager.swift; sourceTree = "<group>"; };
 		3469A2472887D56E00B2F640 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
@@ -1347,6 +1347,14 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
+		3448B5C929D475E4008D5746 /* DialogScan */ = {
+			isa = PBXGroup;
+			children = (
+				3448B5CA29D47647008D5746 /* DialogScanViewController.swift */,
+			);
+			path = DialogScan;
+			sourceTree = "<group>";
+		};
 		34560B9C29BF1FAD007E916F /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -1869,7 +1877,6 @@
 				346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */,
 				346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */,
 				349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */,
-				346970192779A1F100796D37 /* DialogQRCodeScanViewController.swift */,
 				3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */,
 				3423C6E627C380DD001D9E2C /* DialogMnemonicLengthViewController.swift */,
 				343A697A27E08921008D5F4C /* DialogAssetDetailViewController.swift */,
@@ -1879,6 +1886,7 @@
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				34A862A02979432C0018E636 /* DialogShowQRViewController.swift */,
 				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
+				3448B5C929D475E4008D5746 /* DialogScan */,
 				349F71E729C218FA007B9154 /* DialogCountly */,
 				3457F4AC2923978600EF33B5 /* DialogList */,
 			);
@@ -2681,7 +2689,6 @@
 				340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
 				34C8E77129BF85AC00C84066 /* ListDevicesViewController.swift in Sources */,
-				3469701A2779A1F100796D37 /* DialogQRCodeScanViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
 				346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */,
 				812DBDBC29724F69002992D6 /* WatchOnlySettingsViewController.swift in Sources */,
@@ -2841,6 +2848,7 @@
 				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
 				3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */,
+				3448B5CB29D47647008D5746 /* DialogScanViewController.swift in Sources */,
 				81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */,
 				81865F43299D5AA5002CBA87 /* Codable.swift in Sources */,
 				34EB6703282138710036D615 /* AMSegmentation.swift in Sources */,

@@ -254,7 +254,7 @@ extension SendViewController: DialogRecipientDeleteViewControllerDelegate {
         reloadSections([SendSection.recipient], animated: true)
     }
 }
-extension SendViewController: DialogQRCodeScanViewControllerDelegate {
+extension SendViewController: DialogScanViewControllerDelegate {
     func didScan(value: String, index: Int?) {
         if let index = index {
             viewModel.updateRecipientFromTx(tx: nil)
@@ -312,8 +312,8 @@ extension SendViewController: RecipientCellDelegate {
     }
 
     func qrScan(_ index: Int) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogQRCodeScanViewController") as? DialogQRCodeScanViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.index = index
             vc.delegate = self
