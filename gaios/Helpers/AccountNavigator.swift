@@ -66,7 +66,6 @@ class AccountNavigator {
     }
 
     static func goAddWallet(nv: UINavigationController?) -> UINavigationController {
-        AnalyticsManager.shared.addWallet()
         nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
         let nv = nv ?? UINavigationController()

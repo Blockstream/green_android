@@ -18,6 +18,7 @@ enum AnalyticsEventName: String {
 
     case walletAdd = "wallet_add"
     case walletNew = "wallet_new"
+    case walletHWW = "wallet_hww"
     case accountFirst = "account_first"
     case balanceConvert = "balance_convert"
     case assetChange = "asset_change"
@@ -25,6 +26,8 @@ enum AnalyticsEventName: String {
     case accountSelect = "account_select"
     case accountNew = "account_new"
     case jadeInitialize = "jade_initialize"
+    case connectHWW = "hww_connect"
+    case connectedHWW = "hww_connected"
 }
 
 extension AnalyticsManager {
@@ -163,6 +166,10 @@ extension AnalyticsManager {
         recordEvent(.walletNew)
     }
 
+    func hwwWallet() {
+        recordEvent(.walletHWW)
+    }
+
     func onAccountFirst(account: Account?) {
         if let s = sessSgmt(account) {
             recordEvent(.accountFirst, sgmt: s)
@@ -201,6 +208,18 @@ extension AnalyticsManager {
 
     func initJade() {
         recordEvent(.jadeInitialize)
+    }
+
+    func hwwConnect(account: Account?) {
+        if let s = sessSgmt(account) {
+            recordEvent(.connectHWW, sgmt: s)
+        }
+    }
+
+    func hwwConnected(account: Account?) {
+        if let s = sessSgmt(account) {
+            recordEvent(.connectedHWW, sgmt: s)
+        }
     }
 }
 

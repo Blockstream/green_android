@@ -1,31 +1,5 @@
 import UIKit
 
-//enum OnBoardingFlowType {
-//    case add
-//    case restore
-//    case watchonly
-//}
-//
-//enum OnBoardingChainType {
-//    case mainnet
-//    case testnet
-//}
-//
-//enum ActionOnButton {
-//    case new
-//    case restore
-//    case watchOnly
-//}
-//
-//enum LandingScope {
-//    case onBoard
-//    case hwTerms
-//}
-//
-//protocol LandingViewControllerDelegate: AnyObject {
-//    func didPressContinue()
-//}
-
 class StartOnBoardViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -38,8 +12,6 @@ class StartOnBoardViewController: UIViewController {
     static var flowType: OnBoardingFlowType = .add
     static var chainType: OnBoardingChainType = .mainnet
 
-    weak var delegate: LandingViewControllerDelegate?
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -48,9 +20,7 @@ class StartOnBoardViewController: UIViewController {
         setStyle()
         updateUI()
 
-//        if landingScope == .onBoard {
-//            AnalyticsManager.shared.recordView(.onBoardIntro)
-//        }
+        AnalyticsManager.shared.recordView(.onBoardIntro)
     }
 
     func customBack() {

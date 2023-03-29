@@ -25,6 +25,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         setContent()
         setStyle()
         loadNavigationBtns()
+        AnalyticsManager.shared.hwwConnect(account: AccountsRepository.shared.current)
     }
 
     func setContent() {
@@ -134,6 +135,8 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         wm.account.hidden = !(rememberSwitch.isOn)
         AccountsRepository.shared.upsert(wm.account)
         AccountNavigator.goLogged(account: wm.account, nv: navigationController)
+
+        AnalyticsManager.shared.hwwConnected(account: AccountsRepository.shared.current)
     }
 
     override func error(_ err: Error) {

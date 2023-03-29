@@ -214,7 +214,7 @@ class ReceiveViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
             let hideSweep = viewModel.account.gdkNetwork.liquid || viewModel.account.gdkNetwork.electrum
-            vc.viewModel = DialogListViewModel(title: "id_share".localized,
+            vc.viewModel = DialogListViewModel(title: "id_more_options".localized,
                                                type: .moreOptPrefs,
                                                items: MoreOptPrefs.getItems(hideSweep: hideSweep))
             vc.modalPresentationStyle = .overFullScreen

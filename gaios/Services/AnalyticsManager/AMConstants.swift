@@ -62,7 +62,7 @@ extension AnalyticsManager {
     enum OnBoardFlow: String {
         case strCreate = "create"
         case strRestore = "restore"
-        case watchOnly = "watchOnly"
+        case watchOnly = "watch_only"
     }
 
     enum LoginType: String {

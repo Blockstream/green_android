@@ -182,7 +182,10 @@ class ConnectViewController: HWFlowBaseViewController {
         BLEViewModel.shared.login(account: account,
                                   peripheral: peripheral,
                                   progress: { self.progress(self.account.isJade ? $0 : "id_logging_in".localized) },
-                                  completion: { peripheral.isJade() ? self.jadeFirmwareUpgrade() : self.next(peripheral) },
+                                  completion: {
+            peripheral.isJade() ? self.jadeFirmwareUpgrade() : self.next(peripheral)
+            AnalyticsManager.shared.hwwConnected(account: AccountsRepository.shared.current)
+        },
                                   error: self.error)
     }
 }

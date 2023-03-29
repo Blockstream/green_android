@@ -148,12 +148,12 @@ class SelectOnBoardTypeViewController: UIViewController {
     }
 
     @IBAction func btnNewWallet(_ sender: Any) {
-        AnalyticsManager.shared.newWallet()
+        AnalyticsManager.shared.addWallet()
         onNext(.newWallet)
     }
 
     @IBAction func btnUseHardware(_ sender: Any) {
-//        AnalyticsManager.shared.newWallet()
+        AnalyticsManager.shared.hwwWallet()
         onNext(.useHardware)
     }
 
