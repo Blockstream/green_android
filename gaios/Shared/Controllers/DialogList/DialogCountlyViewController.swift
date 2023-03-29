@@ -150,10 +150,19 @@ class DialogCountlyViewController: UIViewController {
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         handle.cornerRadius = 1.5
         detailsContainer.layer.cornerRadius = 5.0
-        btnDeny.setStyle(.inline)
+        btnDeny.setStyle(.outlinedWhite)
+        btnDeny.layer.borderColor = UIColor.gGreenMatrix().cgColor
         btnAllow.setStyle(.primary)
         btnMore.setStyle(.inline)
         lblHint.textColor = .white.withAlphaComponent(0.6)
+
+        lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
+        [lblHint, lblCollectHint, lblNotCollectHint].forEach {
+            $0.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+        }
+        [lblCollectTitle, lblNotCollectTitle, lblExpand].forEach {
+            $0.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
