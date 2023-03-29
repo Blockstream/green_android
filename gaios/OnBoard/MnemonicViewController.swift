@@ -19,7 +19,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     var suggestions: KeyboardSuggestions?
     var mnemonic = [String](repeating: String(), count: 27)
-    var qrCodeReader: QRCodeReaderView?
+
     var viewModel = MnemonicViewModel()
 
     var currIndexPath: IndexPath?
@@ -97,8 +97,12 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     @objc func qrButtonTapped(_ sender: Any) {
-        AnalyticsManager.shared.recordView(.camera)
-        startScan()
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -290,36 +294,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         updateDoneButton(!foundEmpty)
     }
 
-    func startScan() {
-        if qrCodeReader == nil {
-            qrCodeReader = QRCodeReaderView()
-            let tap = UITapGestureRecognizer(target: self, action: #selector(onTap))
-            qrCodeReader!.addGestureRecognizer(tap)
-            qrCodeReader!.delegate = self
-            qrCodeReader!.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
-        }
-        if !qrCodeReader!.isSessionAuthorized() {
-            qrCodeReader!.requestVideoAccess(presentingViewController: self)
-            if !qrCodeReader!.isSessionAuthorized() {
-                updateLblTitle()
-                return
-            }
-        }
-        view.insertSubview(qrCodeReader!, belowSubview: header)
-        view.layoutIfNeeded()
-        qrCodeReader!.startScan()
-    }
-
-    func stopScan() {
-        qrCodeReader!.stopScan()
-        qrCodeReader!.removeFromSuperview()
-    }
-
-    func onScan(mnemonic: String) {
-        updateLblTitle()
-        onPaste(mnemonic)
-    }
-
     @objc func onTap(sender: UITapGestureRecognizer?) { }
 
     func isValidCount(_ count: Int) -> Bool {
@@ -337,17 +311,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 }
 
-extension MnemonicViewController: QRCodeReaderDelegate {
-    func userDidGrant(_ granted: Bool) {
-        DispatchQueue.main.async {
-            if granted {
-                self.startScan()
-            } else {
-                self.navigationController?.popViewController(animated: true)
-            }
-        }
-    }
-
+extension MnemonicViewController {
     private func onPaste(_ result: String) {
         let words = result.split(separator: " ")
         if !isValidCount(words.count) { return }
@@ -358,11 +322,6 @@ extension MnemonicViewController: QRCodeReaderDelegate {
 
         mnemonicWords.reloadData()
         updateDoneButton(true)
-    }
-
-    func onQRCodeReadSuccess(result: String) {
-        onScan(mnemonic: result)
-        stopScan()
     }
 }
 
@@ -442,4 +401,11 @@ extension MnemonicViewController: DialogRecoveryHelpViewControllerDelegate {
 
     func didCancel() { }
 
+}
+
+extension MnemonicViewController: DialogScanViewControllerDelegate {
+    func didScan(value: String, index: Int?) {
+        onPaste(value)
+    }
+    func didStop() { }
 }
