@@ -6,6 +6,7 @@ enum TransactionSection: Int, CaseIterable {
     case fee = 1
     case status = 2
     case detail = 3
+    case note = 4
 }
 
 protocol TransactionViewControllerDelegate: AnyObject {
@@ -296,6 +297,8 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             return 1
         case TransactionSection.detail.rawValue:
             return 1
+        case TransactionSection.note.rawValue:
+            return 1
         default:
             return 0
         }
@@ -344,9 +347,6 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 return cell
             }
         case .detail:
-            let noteAction: VoidToVoid? = { [weak self] in
-                self?.editNote()
-            }
             let explorerAction: VoidToVoid? = { [weak self] in
                 self?.explorerAction()
             }
@@ -356,9 +356,21 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailCell") as? TransactionDetailCell {
                 cell.configure(
                     transaction: transaction,
-                    noteAction: noteAction,
                     explorerAction: explorerAction,
                     copyHash: copyHash
+                )
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .note:
+            let noteAction: VoidToVoid? = { [weak self] in
+                self?.editNote()
+            }
+
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailNoteCell") as? TransactionDetailNoteCell {
+                cell.configure(
+                    transaction: transaction,
+                    noteAction: noteAction
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -370,16 +382,11 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch section {
-        case TransactionSection.detail.rawValue:
-            return headerH
-        default:
-            return 1
-        }
+        return 0.1
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 1
+        return 0.1
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -388,12 +395,13 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        switch section {
-        case TransactionSection.detail.rawValue:
-            return headerView(NSLocalizedString("id_transaction_details", comment: ""))
-        default:
-            return headerView("")
-        }
+        return nil
+//        switch section {
+//        case TransactionSection.detail.rawValue:
+//            return headerView(NSLocalizedString("id_transaction_details", comment: ""))
+//        default:
+//            return headerView("")
+//        }
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -408,31 +416,32 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
 }
 
 extension TransactionViewController {
-    func headerView(_ txt: String) -> UIView {
-        if txt == "" {
-            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
-            section.backgroundColor = .clear
-            return section
-        }
-        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
-        section.backgroundColor = UIColor.customTitaniumDark()
-        let title = UILabel(frame: .zero)
-        title.font = .systemFont(ofSize: 20.0, weight: .heavy)
-        title.text = txt
-        title.textColor = .white
-        title.numberOfLines = 0
-
-        title.translatesAutoresizingMaskIntoConstraints = false
-        section.addSubview(title)
-
-        NSLayoutConstraint.activate([
-            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 20),
-            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20)
-        ])
-
-        return section
-    }
+//    func headerView(_ txt: String) -> UIView {
+//        if txt == "" {
+//            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
+//            section.backgroundColor = .clear
+//            return section
+//        }
+//        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
+//        section.backgroundColor = UIColor.customTitaniumDark()
+//        let title = UILabel(frame: .zero)
+//        title.text = txt
+//        title.numberOfLines = 0
+//
+//        title.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+//        title.textColor = .yellow.withAlphaComponent(0.4)
+//
+//        title.translatesAutoresizingMaskIntoConstraints = false
+//        section.addSubview(title)
+//
+//        NSLayoutConstraint.activate([
+//            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+//            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 20),
+//            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20)
+//        ])
+//
+//        return section
+//    }
 }
 
 extension TransactionViewController: DialogNoteViewControllerDelegate {

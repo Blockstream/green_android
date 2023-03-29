@@ -111,6 +111,7 @@
 		34477D392771F7090021698B /* AddRecipientCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D382771F7090021698B /* AddRecipientCell.swift */; };
 		34477D3B277216640021698B /* FeeEditCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34477D3A277216640021698B /* FeeEditCell.swift */; };
 		3448B5CB29D47647008D5746 /* DialogScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448B5CA29D47647008D5746 /* DialogScanViewController.swift */; };
+		3448B5CD29D48B32008D5746 /* TransactionDetailNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448B5CC29D48B32008D5746 /* TransactionDetailNoteCell.swift */; };
 		3448E63B2730141500C7ADFF /* DialogReceiveShareTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */; };
 		344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */; };
 		344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BBB268C5567000182B0 /* Mnemonic.swift */; };
@@ -583,6 +584,7 @@
 		34477D382771F7090021698B /* AddRecipientCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipientCell.swift; sourceTree = "<group>"; };
 		34477D3A277216640021698B /* FeeEditCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeEditCell.swift; sourceTree = "<group>"; };
 		3448B5CA29D47647008D5746 /* DialogScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogScanViewController.swift; sourceTree = "<group>"; };
+		3448B5CC29D48B32008D5746 /* TransactionDetailNoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailNoteCell.swift; sourceTree = "<group>"; };
 		3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveShareTypeViewController.swift; sourceTree = "<group>"; };
 		344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhrase.swift; sourceTree = "<group>"; };
 		344B1BBB268C5567000182B0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
@@ -1067,6 +1069,7 @@
 				3418BAB5274285BD00F9B2D0 /* TransactionFeeCell.swift */,
 				3418BAB92742ABE100F9B2D0 /* TransactionStatusCell.swift */,
 				3418BABB2743984400F9B2D0 /* TransactionDetailCell.swift */,
+				3448B5CC29D48B32008D5746 /* TransactionDetailNoteCell.swift */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -2714,6 +2717,7 @@
 				34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */,
 				8164909027F4C4FF0097B2E4 /* JadeMessage.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
+				3448B5CD29D48B32008D5746 /* TransactionDetailNoteCell.swift in Sources */,
 				340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */,
 				3457F4B82923A72900EF33B5 /* WalletPrefs.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,

@@ -15,6 +15,7 @@ class TransactionStatusCell: UITableViewCell {
     @IBOutlet weak var lblStep: UILabel!
     @IBOutlet weak var arc: UIView!
     @IBOutlet weak var spvVerifyIcon: UIImageView!
+    @IBOutlet weak var lblStatusTitle: UILabel!
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -25,9 +26,9 @@ class TransactionStatusCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        bg.layer.borderWidth = 1.0
-        bg.layer.borderColor = UIColor.gray.cgColor
         bg.layer.cornerRadius = 5.0
+        lblStatusTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        lblStatusTitle.textColor = .white.withAlphaComponent(0.4)
     }
 
     override func prepareForReuse() {
@@ -39,6 +40,8 @@ class TransactionStatusCell: UITableViewCell {
     }
 
     func configure(transaction: Transaction, isLiquid: Bool, blockHeight: UInt32) {
+
+        lblStatusTitle.text = "id_transaction_status".localized
         lblDate.text = transaction.date(dateStyle: .long, timeStyle: .short)
 
         var step: Int = 0

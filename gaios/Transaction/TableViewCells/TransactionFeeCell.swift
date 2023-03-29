@@ -9,6 +9,7 @@ class TransactionFeeCell: UITableViewCell {
     @IBOutlet weak var feeBtnView: UIView!
     @IBOutlet weak var btnFee: UIButton!
     @IBOutlet weak var copyIcon: UIImageView!
+    @IBOutlet weak var bg: UIView!
 
     var feeAction: VoidToVoid?
     var copyFee: ((String) -> Void)?
@@ -16,7 +17,10 @@ class TransactionFeeCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+
+        bg.layer.cornerRadius = 5.0
+        lblFee.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        lblFee.textColor = .white.withAlphaComponent(0.4)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
