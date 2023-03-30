@@ -144,10 +144,10 @@ class TransactionViewController: UIViewController {
     }
 
     func blidingDataString() -> String? {
-        let blindingData: Data? = try? JSONSerialization.data(withJSONObject: self.transaction.blindingData() ?? "", options: [])
-        guard let data = blindingData else { return nil }
-        guard let dataString = String(data: data, encoding: .utf8) else { return nil }
-        return dataString
+        let blinding = self.transaction.blindingData()
+        let jsonData = try? JSONEncoder().encode(blinding)
+        let jsonString = String(data: jsonData ?? Data(), encoding: .utf8)
+        return jsonString
     }
 
     func openShare(_ option: TxShareOption) {

@@ -23,7 +23,7 @@ struct Addressee: Codable {
     }
 }
 
-enum TransactionType: String {
+enum TransactionType: String, Codable {
     case incoming
     case outgoing
     case redeposit
@@ -193,15 +193,13 @@ struct Transaction: Comparable {
         return assetId != "" && satoshi != 0 && amountBlinder != "" && assetBlinder != ""
     }
 
-    func txoBlindingData(data: [String: Any], isUnspent: Bool) -> [String: Any] {
-        var blindingData = [String: Any]()
-        let index = isUnspent ? "vout" : "vin"
-        blindingData[index] = data["pt_idx"]
-        blindingData["asset_id"] = data["asset_id"]
-        blindingData["assetblinder"] = data["assetblinder"]
-        blindingData["satoshi"] = data["satoshi"]
-        blindingData["amountblinder"] = data["amountblinder"]
-        return blindingData
+    func txoBlindingData(data: [String: Any], isUnspent: Bool) -> TxoBlindingData {
+        return TxoBlindingData.init(vin: !isUnspent ? data["pt_idx"] as? Int64 : nil,
+                                    vout: isUnspent ? data["pt_idx"] as? Int64 : nil,
+                                    asset_id: data["asset_id"] as? String ?? "",
+                                    assetblinder: data["assetblinder"] as? String ?? "",
+                                    satoshi: data["satoshi"] as? Int64 ?? 0,
+                                    amountblinder: data["amountblinder"] as? String ?? "")
     }
 
     func txoBlindingString(data: [String: Any]) -> String? {
@@ -215,22 +213,22 @@ struct Transaction: Comparable {
         return String(format: "%lu,%@,%@,%@", satoshi, assetId, amountBlinder, assetBlinder)
     }
 
-    func blindingData() -> [String: Any]? {
-        var txBlindingData = [String: Any]()
-        txBlindingData["version"] = 0
-        txBlindingData["txid"] = hash
-        txBlindingData["type"] = type
-        txBlindingData["inputs"] = inputs?.filter { (data: [String: Any]) -> Bool in
+    func blindingData() -> BlindingData {
+        let inputs = inputs?.filter { (data: [String: Any]) -> Bool in
             return hasBlindingData(data: data)
-        }.map { (data: [String: Any]) -> [String: Any] in
+        }.map { (data: [String: Any]) in
             return txoBlindingData(data: data, isUnspent: false)
         }
-        txBlindingData["outputs"] = outputs?.filter { (data: [String: Any]) -> Bool in
+        let outputs = outputs?.filter { (data: [String: Any]) -> Bool in
             return hasBlindingData(data: data)
-        }.map { (data: [String: Any]) -> [String: Any] in
+        }.map { (data: [String: Any]) in
             return txoBlindingData(data: data, isUnspent: true)
         }
-        return txBlindingData
+        return BlindingData(version: 0,
+                            txid: hash,
+                            type: type,
+                            inputs: inputs ?? [],
+                            outputs: outputs ?? [])
     }
 
     func blindingUrlString() -> String {
@@ -263,4 +261,21 @@ struct Transaction: Comparable {
         }
         return lhs.createdAtTs < rhs.createdAtTs
     }
+}
+
+struct TxoBlindingData: Codable {
+    let vin: Int64?
+    let vout: Int64?
+    let asset_id: String
+    let assetblinder: String
+    let satoshi: Int64
+    let amountblinder: String
+}
+
+struct BlindingData: Codable {
+    let version: Int
+    let txid: String
+    let type: TransactionType
+    let inputs: [TxoBlindingData]
+    let outputs: [TxoBlindingData]
 }
