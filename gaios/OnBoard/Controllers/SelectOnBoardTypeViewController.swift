@@ -9,17 +9,19 @@ class SelectOnBoardTypeViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var lblTerms: UILabel!
-    @IBOutlet weak var btnTerms: UIButton!
-
     @IBOutlet weak var btnCheckTerms: CheckButton!
     @IBOutlet weak var btnNewWallet: UIButton!
     @IBOutlet weak var btnUseHardware: UIButton!
     @IBOutlet weak var btnAppSettings: UIButton!
+    @IBOutlet weak var labelAgree: UILabel!
 
     var actionToButton: ActionToButton?
     var iAgree: Bool = false
     let mash = UIImageView(image: UIImage(named: "il_mash")!)
+
+    let strIAgree = "id_i_agree_to_the_terms_of_service".localized
+    let strTerms = "id_terms_of_service".localized
+    let strPrivacy = "id_privacy_policy".localized
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +51,6 @@ class SelectOnBoardTypeViewController: UIViewController {
     func setContent() {
         lblTitle.text = "id_simple__secure_selfcustody".localized
         lblHint.text = "Everything you need to take control of your bitcoin."
-        lblTerms.text = "id_i_agree_to_the".localized
         btnNewWallet.setTitle("id_add_wallet".localized, for: .normal)
         btnUseHardware.setTitle("id_use_hardware_device".localized, for: .normal)
         btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
@@ -64,6 +65,26 @@ class SelectOnBoardTypeViewController: UIViewController {
         btnUseHardware.setStyle(.outlinedWhite)
         btnAppSettings.setStyle(.inline)
         btnAppSettings.setTitleColor(.white, for: .normal)
+
+        let pStyle = NSMutableParagraphStyle()
+        pStyle.lineSpacing = 7.0
+        let gAttr: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.gGreenMatrix(),
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        let attrStr = NSMutableAttributedString(string: strIAgree)
+        attrStr.addAttribute (
+            NSAttributedString.Key.paragraphStyle,
+            value: pStyle,
+            range: NSRange(location: 0, length: attrStr.length))
+        attrStr.setAttributes(gAttr, for: strTerms)
+        attrStr.setAttributes(gAttr, for: strPrivacy)
+        labelAgree.attributedText = attrStr
+        labelAgree.isUserInteractionEnabled = true
+        labelAgree.lineBreakMode = .byWordWrapping
+        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(onTap(_:)))
+        tapGesture.numberOfTouchesRequired = 1
+        labelAgree.addGestureRecognizer(tapGesture)
     }
 
     func updateUI() {
@@ -78,6 +99,21 @@ class SelectOnBoardTypeViewController: UIViewController {
             btnNewWallet.setStyle(.primaryDisabled)
             btnUseHardware.setStyle(.outlinedWhiteDisabled)
         }
+    }
+
+    @objc func onTap(_ gesture: UITapGestureRecognizer) {
+        guard let text = labelAgree.text else { return }
+        let rangeTerms = (text.lowercased() as NSString).range(of: strTerms.lowercased())
+        let rangePrivacy = (text.lowercased() as NSString).range(of: strPrivacy.lowercased())
+        if gesture.didTapAttributedTextInLabel(label: labelAgree, inRange: rangeTerms) {
+            navigate(ExternalUrls.aboutTermsOfService)
+        } else if gesture.didTapAttributedTextInLabel(label: labelAgree, inRange: rangePrivacy) {
+            navigate(ExternalUrls.aboutPrivacyPolicy)
+        }
+    }
+
+    func navigate(_ url: URL) {
+        SafeNavigationManager.shared.navigate(url)
     }
 
     func onNext(_ action: ActionToButton) {
@@ -110,12 +146,6 @@ class SelectOnBoardTypeViewController: UIViewController {
         print(btnCheckTerms.isSelected)
         iAgree = btnCheckTerms.isSelected
         updateUI()
-    }
-
-    @IBAction func btnTerms(_ sender: Any) {
-        if let url = URL(string: "https://blockstream.com/green/terms/") {
-            UIApplication.shared.open(url)
-        }
     }
 
     @IBAction func btnNewWallet(_ sender: Any) {

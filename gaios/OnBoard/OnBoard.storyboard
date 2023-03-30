@@ -1647,7 +1647,7 @@
                                 </subviews>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ggG-wr-sKO">
-                                <rect key="frame" x="85" y="495" width="244.5" height="44"/>
+                                <rect key="frame" x="62" y="495" width="290" height="44"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gzO-XT-Dzj" customClass="CheckButton" customModule="gaios" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="10" width="24" height="24"/>
@@ -1659,31 +1659,21 @@
                                             <action selector="btnCheckTerms:" destination="uPh-5C-PLy" eventType="touchUpInside" id="oT1-Gk-GwJ"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I agree to the" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mde-G7-oaF">
-                                        <rect key="frame" x="40" y="13.5" width="85.5" height="17"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I agree" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mde-G7-oaF">
+                                        <rect key="frame" x="40" y="13.5" width="250" height="17"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P92-el-d1Q">
-                                        <rect key="frame" x="128.5" y="7" width="116" height="30"/>
-                                        <color key="tintColor" name="customMatrixGreen"/>
-                                        <state key="normal" title="Terms of Service"/>
-                                        <connections>
-                                            <action selector="btnTerms:" destination="uPh-5C-PLy" eventType="touchUpInside" id="G4X-sn-C7x"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="mde-G7-oaF" firstAttribute="leading" secondItem="gzO-XT-Dzj" secondAttribute="trailing" constant="16" id="BCg-Zn-v6u"/>
-                                    <constraint firstAttribute="trailing" secondItem="P92-el-d1Q" secondAttribute="trailing" id="C6g-dc-RJR"/>
                                     <constraint firstItem="gzO-XT-Dzj" firstAttribute="leading" secondItem="ggG-wr-sKO" secondAttribute="leading" id="MCr-mB-T0h"/>
-                                    <constraint firstItem="P92-el-d1Q" firstAttribute="centerY" secondItem="mde-G7-oaF" secondAttribute="centerY" id="Mwt-6f-b6Q"/>
                                     <constraint firstAttribute="bottom" secondItem="gzO-XT-Dzj" secondAttribute="bottom" constant="10" id="OeQ-3v-92V"/>
                                     <constraint firstItem="gzO-XT-Dzj" firstAttribute="top" secondItem="ggG-wr-sKO" secondAttribute="top" constant="10" id="WJi-4F-J5L"/>
-                                    <constraint firstItem="P92-el-d1Q" firstAttribute="leading" secondItem="mde-G7-oaF" secondAttribute="trailing" constant="3" id="kjr-Hk-P3c"/>
                                     <constraint firstItem="mde-G7-oaF" firstAttribute="centerY" secondItem="gzO-XT-Dzj" secondAttribute="centerY" id="pDe-Nd-hpM"/>
+                                    <constraint firstAttribute="trailing" secondItem="mde-G7-oaF" secondAttribute="trailing" id="whE-wE-1QD"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UjX-PK-uL0" userLabel="App Settings">
@@ -1704,7 +1694,7 @@
                         <viewLayoutGuide key="safeArea" id="mtm-xd-iuy"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
-                            <constraint firstItem="ggG-wr-sKO" firstAttribute="width" relation="lessThanOrEqual" secondItem="SSE-XM-yag" secondAttribute="width" multiplier="0.85" id="GTm-o1-oU6"/>
+                            <constraint firstItem="ggG-wr-sKO" firstAttribute="width" secondItem="SSE-XM-yag" secondAttribute="width" multiplier="0.7" id="GTm-o1-oU6"/>
                             <constraint firstItem="ggG-wr-sKO" firstAttribute="top" secondItem="Efl-tQ-DEj" secondAttribute="bottom" constant="30" id="OUa-mV-pxa"/>
                             <constraint firstItem="UjX-PK-uL0" firstAttribute="leading" secondItem="mtm-xd-iuy" secondAttribute="leading" constant="25" id="RjP-ga-KP6"/>
                             <constraint firstItem="Hrc-JF-kpz" firstAttribute="top" secondItem="ClL-E3-IaD" secondAttribute="bottom" constant="50" id="TL9-hp-78W"/>
@@ -1727,10 +1717,9 @@
                         <outlet property="btnAppSettings" destination="UjX-PK-uL0" id="6uM-gO-Wfh"/>
                         <outlet property="btnCheckTerms" destination="gzO-XT-Dzj" id="YMG-I0-P8i"/>
                         <outlet property="btnNewWallet" destination="Vdf-JK-vMz" id="ciV-Ag-Y7G"/>
-                        <outlet property="btnTerms" destination="P92-el-d1Q" id="Si2-5C-Zlz"/>
                         <outlet property="btnUseHardware" destination="yhO-ah-4Up" id="8ZP-Ug-wic"/>
+                        <outlet property="labelAgree" destination="mde-G7-oaF" id="d68-7p-H2u"/>
                         <outlet property="lblHint" destination="8bV-Us-gBv" id="gQT-QO-m6n"/>
-                        <outlet property="lblTerms" destination="mde-G7-oaF" id="DIF-i7-Nbu"/>
                         <outlet property="lblTitle" destination="fvb-bf-cZT" id="V0y-QI-UTd"/>
                     </connections>
                 </viewController>
