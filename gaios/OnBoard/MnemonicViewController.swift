@@ -35,7 +35,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         updateLblTitle()
         switch mnemonicActionType {
         case .recoverWallet:
-            doneButton.setTitle(NSLocalizedString("id_restore", comment: ""), for: .normal)
+            doneButton.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
         case .addSubaccount:
             doneButton.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
         }
