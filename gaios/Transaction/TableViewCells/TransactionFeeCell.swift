@@ -21,6 +21,10 @@ class TransactionFeeCell: UITableViewCell {
         bg.layer.cornerRadius = 5.0
         lblFee.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblFee.textColor = .white.withAlphaComponent(0.4)
+        lblValue.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+        lblFiat.font = UIFont.systemFont(ofSize: 12.0, weight: .semibold)
+        lblFiat.textColor = .white.withAlphaComponent(0.4)
+        lblHint.font = UIFont.systemFont(ofSize: 12.0, weight: .semibold)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -43,7 +47,7 @@ class TransactionFeeCell: UITableViewCell {
         self.copyFee = copyFee
         let color: UIColor = .white
         copyIcon.image = copyIcon.image?.maskWithColor(color: color)
-        lblFee.text = NSLocalizedString("id_fee", comment: "")
+        lblFee.text = NSLocalizedString("id_network_fee", comment: "")
 
         btnFee.setTitle(NSLocalizedString("id_increase_fee", comment: "") + " »", for: .normal)
         btnFee.setStyle(.primary)

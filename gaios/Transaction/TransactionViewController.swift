@@ -92,7 +92,7 @@ class TransactionViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftBarItem)
 
         let shareBtn = UIButton(type: .system)
-        shareBtn.setImage(UIImage(named: "ic_share"), for: .normal)
+        shareBtn.setImage(UIImage(named: "ic_export"), for: .normal)
         shareBtn.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: shareBtn)
     }

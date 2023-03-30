@@ -11,7 +11,8 @@ class TransactionAmountCell: UITableViewCell {
     @IBOutlet weak var lblRecipient: UILabel!
     @IBOutlet weak var copyRecipientIcon: UIImageView!
     @IBOutlet weak var copyAmountIcon: UIImageView!
-
+    @IBOutlet weak var recipientView: UIView!
+    
     var copyAmount: ((String) -> Void)?
     var copyRecipient: ((String) -> Void)?
 
@@ -22,6 +23,13 @@ class TransactionAmountCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.layer.cornerRadius = 5.0
+
+        lblTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        lblTitle.textColor = .white.withAlphaComponent(0.4)
+        lblRecipient.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+        lblAmount.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+        lblAsset.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+        lblFiat.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -51,8 +59,10 @@ class TransactionAmountCell: UITableViewCell {
         lblRecipient.isHidden = tx.isLiquid
         lblFiat.textColor = color
         copyRecipientIcon.isHidden = tx.isLiquid
+        recipientView.isHidden = tx.isLiquid
         lblAmount.textColor = color
         lblFiat.isHidden = id != tx.feeAsset
+        lblAsset.textColor = color
 
         let registry = WalletManager.current?.registry
         icon.image =  registry?.image(for: id)
