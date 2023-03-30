@@ -56,7 +56,7 @@ class AccountsRepository {
     var ephAccounts: [Account] = [Account]()
 
     // Filtered account list of hardware wallets
-    var hwAccounts: [Account] { accounts.filter { $0.isHW && !($0.hidden ?? false) } }
+    var hwAccounts: [Account] { accounts.filter { $0.isHW && !($0.hidden ?? true) } }
 
     func get(for id: String) -> Account? {
         ephAccounts.filter({ $0.id == id }).first ??
