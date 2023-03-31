@@ -188,6 +188,7 @@
 "id_choose_a_name_for_your_wallet" = "Scegli un nome per il tuo wallet";
 "id_choose_a_swap_option" = "Scegli un'opzione per lo Swap";
 "id_choose_a_usb_or_bluetooth" = "Scegli connessione USB o Bluetooth su Jade dopo aver verificato la tua recovery phrase";
+"id_choose_bluetooth_connection_on" = "Choose Bluetooth connection on Jade after verifying your recovery phrase";
 "id_choose_method_to_authorize_the" = "Scegli un metodo per autorizzare l'azione";
 "id_choose_recovery_phrase_length" = "Scegli la lunghezza della tua recovery phrase";
 "id_choose_security_policy" = "Scegli una Security Policy";
@@ -242,6 +243,7 @@
 "id_connect_through_a_proxy" = "Connessione tramite proxy";
 "id_connect_usb_cable_or_enable" = "Connetti un cavo USB o attiva la connessione Bluetooth";
 "id_connect_using_usb_or_bluetooth" = "Connetti tramite USB o Bluetooth";
+"id_connect_with_bluetooth" = "Connect with Bluetooth";
 "id_connect_with_tor" = "Connessione con Tor";
 "id_connect_your_jade_to_use_it" = "Collega il tuo Jade per utilizzarlo con Green";
 "id_connect_your_ledger_to_use_it" = "Collega il tuo Ledger per utilizzarlo con Green";
@@ -986,7 +988,7 @@
 "id_simplified_payment_verification" = "La Simplified Payment Verification verifica le tue transazioni e il tuo saldo utilizzando la rete Bitcoin, al di fuori dei server di Green. L'abilitazione comporta maggiore utilizzo di banda e potenza di calcolo";
 "id_singlesig" = "Singlesig";
 "id_singlesig_wallets_are_not_yet" = "I wallet singlesig non vengono ancora supportati per l'utilizzo con device hardware. Decidendo di continuare accederai a un wallet Multisig Shield.";
-"id_skip" = "SALTA";
+"id_skip" = "Skip";
 "id_skip_not_recommended" = "Salta (non raccomandato)";
 "id_slide_to_send" = "Scorri per Inviare";
 "id_slow" = "Lento";

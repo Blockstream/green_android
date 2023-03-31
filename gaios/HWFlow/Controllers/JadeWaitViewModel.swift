@@ -26,8 +26,8 @@ class JadeWaitViewModel {
                          hint: "id_select_initalize_to_create_a".localized),
             JadeWaitStep(riveModel: RiveModel.animationJade3,
                          titleStep: "id_step".localized.uppercased() + " 3",
-                         title: "Connect using Bluetooth".localized,
-                         hint: "Choose a Bluetooth connection on Jade after verifying your recovery phrase.".localized)
+                         title: "id_connect_with_bluetooth".localized,
+                         hint: "id_choose_bluetooth_connection_on".localized)
         ]
     }
 }

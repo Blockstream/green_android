@@ -188,6 +188,7 @@
 "id_choose_a_name_for_your_wallet" = "Zvolte název své peněženky";
 "id_choose_a_swap_option" = "Výběr možnosti výměny";
 "id_choose_a_usb_or_bluetooth" = "Po ověření fráze pro obnovení zvolte připojení USB nebo Bluetooth v zařízení Jade.";
+"id_choose_bluetooth_connection_on" = "Choose Bluetooth connection on Jade after verifying your recovery phrase";
 "id_choose_method_to_authorize_the" = "Vyberte metodu k autorizaci akce";
 "id_choose_recovery_phrase_length" = "Zvolte délku fráze pro obnovení";
 "id_choose_security_policy" = "Zvolte bezpečnostní politiku";
@@ -242,6 +243,7 @@
 "id_connect_through_a_proxy" = "Připojit se přes proxy";
 "id_connect_usb_cable_or_enable" = "Připojte kabel USB nebo povolte Bluetooth";
 "id_connect_using_usb_or_bluetooth" = "Připojte se pomocí USB nebo Bluetooth";
+"id_connect_with_bluetooth" = "Connect with Bluetooth";
 "id_connect_with_tor" = "Připojit se přes Tor";
 "id_connect_your_jade_to_use_it" = "Připojte svůj Jade a použijte jej s Green peněženkou";
 "id_connect_your_ledger_to_use_it" = "Připojte svůj Ledger a použijte jej s Green peněženkou";
@@ -927,7 +929,7 @@
 "id_send_all_requires_a_single" = "Odeslat vše vyžaduje jednoho příjemce";
 "id_send_and_receive_liquidbased" = "Odesílejte a přijímejte spravovaná Liquid aktiva";
 "id_send_to" = "Odeslat na";
-"id_sending" = "Sending";
+"id_sending" = "Odesílání";
 "id_sending_request" = "Odesílá se žádost…";
 "id_sensitive_information" = "Citlivé informace";
 "id_sent" = "Odesláno";
@@ -986,7 +988,7 @@
 "id_simplified_payment_verification" = "Zjednodušené ověření plateb (SPV) ověřuje vaše transakce a zůstatek pomocí bitcoinové sítě mimo servery Green. Povolení přidá požadavky na šířku pásma a zpracování";
 "id_singlesig" = "Singlesig";
 "id_singlesig_wallets_are_not_yet" = "Peněženky Singlesig zatím nejsou podporovány pro použití s hardwarovými zařízeními. Pokračováním získáte přístup k peněžence Multisig Shield.";
-"id_skip" = "PŘESKOČIT";
+"id_skip" = "Skip";
 "id_skip_not_recommended" = "Přeskočit (nedoporučuje se)";
 "id_slide_to_send" = "Posuňte k odeslání";
 "id_slow" = "Pomalé";

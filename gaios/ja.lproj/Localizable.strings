@@ -188,6 +188,7 @@
 "id_choose_a_name_for_your_wallet" = "ウォレットに名前をつける";
 "id_choose_a_swap_option" = "Swap Optionを選択する";
 "id_choose_a_usb_or_bluetooth" = "リカバリーフレーズを確認後、Jadeとの接続をUSBとBluetoothのどちらで行うか選択します";
+"id_choose_bluetooth_connection_on" = "Choose Bluetooth connection on Jade after verifying your recovery phrase";
 "id_choose_method_to_authorize_the" = "認可方法を選択する";
 "id_choose_recovery_phrase_length" = "リカバリーフレーズの長さを選択する";
 "id_choose_security_policy" = "セキュリティポリシーを設定する";
@@ -242,6 +243,7 @@
 "id_connect_through_a_proxy" = "プロキシを使って接続する";
 "id_connect_usb_cable_or_enable" = "USBケーブルを接続するか、Bluetoothを有効にしてください";
 "id_connect_using_usb_or_bluetooth" = "USBかBluetoothで接続する";
+"id_connect_with_bluetooth" = "Connect with Bluetooth";
 "id_connect_with_tor" = "Torを使って接続する";
 "id_connect_your_jade_to_use_it" = "JadeをGreenと接続して利用する";
 "id_connect_your_ledger_to_use_it" = "LedgerをGreenと接続して利用する";
@@ -986,7 +988,7 @@
 "id_simplified_payment_verification" = "Simplified Payment VerificationはGreenのサーバーではなくビットコインネットワークから貴方のトランザクションと残高を検証します。有効にする場合、帯域幅とプロセッシングの必要条件が高くなります。";
 "id_singlesig" = "シングルシグ";
 "id_singlesig_wallets_are_not_yet" = "シングルシグ・ウォレットはハードウェアウォレットに未対応です。続行することでマルチシグ・シールドウォレットを使用します。";
-"id_skip" = "スキップ";
+"id_skip" = "Skip";
 "id_skip_not_recommended" = "スキップ(推薦しません)";
 "id_slide_to_send" = "スライドして送金する";
 "id_slow" = "遅い";

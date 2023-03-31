@@ -188,6 +188,7 @@
 "id_choose_a_name_for_your_wallet" = "为您的钱包选择一个名字";
 "id_choose_a_swap_option" = "选择一个互换选项";
 "id_choose_a_usb_or_bluetooth" = "验证助记词后，在Jade上选择使用USB连接或蓝牙连接";
+"id_choose_bluetooth_connection_on" = "Choose Bluetooth connection on Jade after verifying your recovery phrase";
 "id_choose_method_to_authorize_the" = "选择批准该操作的方案";
 "id_choose_recovery_phrase_length" = "选择助记词长度";
 "id_choose_security_policy" = "选择安全政策";
@@ -242,6 +243,7 @@
 "id_connect_through_a_proxy" = "通过proxy连接";
 "id_connect_usb_cable_or_enable" = "连接USB数据线或启用蓝牙";
 "id_connect_using_usb_or_bluetooth" = "用USB数据线或蓝牙连接";
+"id_connect_with_bluetooth" = "Connect with Bluetooth";
 "id_connect_with_tor" = "连接Tor";
 "id_connect_your_jade_to_use_it" = "连接您的Jade以将其与Green配合使用";
 "id_connect_your_ledger_to_use_it" = "连接您的Ledger以在Green中使用";
@@ -986,7 +988,7 @@
 "id_simplified_payment_verification" = "简单付款验证（SPV）在Green服务器之外，使用比特币网络来验证用户转账与余额。开启将增加带宽与处理请求。";
 "id_singlesig" = "单签名";
 "id_singlesig_wallets_are_not_yet" = "单签名钱包尚不支持与硬件设备一起使用。如要继续，您将访问Multisig Shield钱包。";
-"id_skip" = "跳过";
+"id_skip" = "Skip";
 "id_skip_not_recommended" = "跳过（不推荐）";
 "id_slide_to_send" = "滑动发送";
 "id_slow" = "缓慢";

@@ -188,6 +188,7 @@
 "id_choose_a_name_for_your_wallet" = "Выберите название для своего кошелька";
 "id_choose_a_swap_option" = "Выберите вариант обмена";
 "id_choose_a_usb_or_bluetooth" = "Выберите подключение USB или Bluetooth на устройстве Jade после проверки вашей фразы восстановления.";
+"id_choose_bluetooth_connection_on" = "Choose Bluetooth connection on Jade after verifying your recovery phrase";
 "id_choose_method_to_authorize_the" = "Выберите метод авторизации действия";
 "id_choose_recovery_phrase_length" = "Выберите длину фразы восстановления";
 "id_choose_security_policy" = "Выберите политику безопасности";
@@ -242,6 +243,7 @@
 "id_connect_through_a_proxy" = "Установить соединение через прокси-сервер";
 "id_connect_usb_cable_or_enable" = "Подключите USB-кабель или включите Bluetooth";
 "id_connect_using_usb_or_bluetooth" = "Подключение через USB или Bluetooth";
+"id_connect_with_bluetooth" = "Connect with Bluetooth";
 "id_connect_with_tor" = "Установить соединение с Tor";
 "id_connect_your_jade_to_use_it" = "Подключите свой Jade, чтобы использовать его с Green";
 "id_connect_your_ledger_to_use_it" = "Подключите свой Ledger, чтобы использовать его с Green";
@@ -986,7 +988,7 @@
 "id_simplified_payment_verification" = "Упрощенная верификация платежей SPV проверяет ваши транзакции и баланс, используя сеть Биткоин, за пределами Green-серверов. Включение повышает системные требования к пропускной способности и обработке.";
 "id_singlesig" = "Одноподписной";
 "id_singlesig_wallets_are_not_yet" = "Использование одноподписных кошельков с аппаратными устройствами пока не поддерживается. Продолжив, вы получите доступ к кошельку Multisig Shield.";
-"id_skip" = "ПРОПУСТИТЬ";
+"id_skip" = "Skip";
 "id_skip_not_recommended" = "Пропустить (не рекомендуется)";
 "id_slide_to_send" = "Смахните, чтобы отправить";
 "id_slow" = "Медленно";

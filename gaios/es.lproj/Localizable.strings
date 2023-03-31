@@ -188,6 +188,7 @@
 "id_choose_a_name_for_your_wallet" = "Elegir un nombre para la cartera";
 "id_choose_a_swap_option" = "Elija una opción de canje";
 "id_choose_a_usb_or_bluetooth" = "Una vez que haya verificado su frase de recuperación, elija una conexión USB o Bluetooth en Jade";
+"id_choose_bluetooth_connection_on" = "Choose Bluetooth connection on Jade after verifying your recovery phrase";
 "id_choose_method_to_authorize_the" = "Seleccionar método para autorizar la acción";
 "id_choose_recovery_phrase_length" = "Elegir la longitud de la frase de recuperación";
 "id_choose_security_policy" = "Elija una política de seguridad";
@@ -242,6 +243,7 @@
 "id_connect_through_a_proxy" = "Conectarse a través de un proxy";
 "id_connect_usb_cable_or_enable" = "Conectar un cable USB o activar Bluetooth";
 "id_connect_using_usb_or_bluetooth" = "Conectar mediante USB o Bluetooth";
+"id_connect_with_bluetooth" = "Connect with Bluetooth";
 "id_connect_with_tor" = "Conectarse con Tor";
 "id_connect_your_jade_to_use_it" = "Conecte su Jade para utilizarla con Green";
 "id_connect_your_ledger_to_use_it" = "Conecte su Ledger para usarla en Green";
@@ -986,7 +988,7 @@
 "id_simplified_payment_verification" = "La verificación simple de pago (SPV) verifica las transacciones y el saldo a través de la red de Bitcoin, por fuera de los servidores de Green. Habilitarla supone requisitos adicionales de ancho de banda y procesamiento.";
 "id_singlesig" = "Singlesig";
 "id_singlesig_wallets_are_not_yet" = "Las carteras singlesig todavía no son compatibles con los dispositivos de hardware. Al continuar, accederá a una cartera Multisig Shield.";
-"id_skip" = "OMITIR";
+"id_skip" = "Skip";
 "id_skip_not_recommended" = "Omitir (no recomendado)";
 "id_slide_to_send" = "Deslizar para enviar";
 "id_slow" = "Lento";

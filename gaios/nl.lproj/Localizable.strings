@@ -188,6 +188,7 @@
 "id_choose_a_name_for_your_wallet" = "Kies een naam voor je wallet";
 "id_choose_a_swap_option" = "Kies een ruiloptie";
 "id_choose_a_usb_or_bluetooth" = "Kies een USB- of Bluetooth-verbinding op Jade nadat je je herstelzin hebt geverifieerd";
+"id_choose_bluetooth_connection_on" = "Choose Bluetooth connection on Jade after verifying your recovery phrase";
 "id_choose_method_to_authorize_the" = "Kies methode om actie te autoriseren";
 "id_choose_recovery_phrase_length" = "Kies de lengte van je herstelzin";
 "id_choose_security_policy" = "Kies je beveiligingsbeleid";
@@ -242,6 +243,7 @@
 "id_connect_through_a_proxy" = "Via proxy verbinden";
 "id_connect_usb_cable_or_enable" = "Sluit USB-kabel aan of schakel Bluetooth in";
 "id_connect_using_usb_or_bluetooth" = "Maak verbinding via USB of Bluetooth";
+"id_connect_with_bluetooth" = "Connect with Bluetooth";
 "id_connect_with_tor" = "Met Tor verbinden";
 "id_connect_your_jade_to_use_it" = "Verbind je Jade om hem te gebruiken met Green";
 "id_connect_your_ledger_to_use_it" = "Verbind je Ledger om hem in Green te gebruiken";
@@ -986,7 +988,7 @@
 "id_simplified_payment_verification" = "Simplified Payment Verification (SPV) verifieert je transacties en balans via het bitcoin-netwerk, zonder tussenkomst van servers van Green. Door dit in te schakelen wordt er meer bandbreedte en CPU verbruikt.";
 "id_singlesig" = "Singlesig";
 "id_singlesig_wallets_are_not_yet" = "Singlesig-wallets worden nog niet ondersteund voor gebruik met hardware-apparaten. Als je doorgaat, krijg je toegang tot een Multisig Shield-wallet.";
-"id_skip" = "OVERSLAAN";
+"id_skip" = "Skip";
 "id_skip_not_recommended" = "Overslaan (wordt afgeraden)";
 "id_slide_to_send" = "Sleep om te verzenden";
 "id_slow" = "Traag";
