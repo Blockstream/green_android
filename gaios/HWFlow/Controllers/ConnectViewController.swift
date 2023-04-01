@@ -123,6 +123,7 @@ class ConnectViewController: HWFlowBaseViewController {
     func next(_ peripheral: Peripheral) {
         print("account.uuid \(account.uuid!)")
         print("peripheral.identifier \(peripheral.identifier)")
+        var account = AccountsRepository.shared.current!
         account.uuid = peripheral.identifier
         AccountsRepository.shared.upsert(account)
         AccountNavigator.goLogged(account: account, nv: navigationController)

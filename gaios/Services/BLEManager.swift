@@ -157,23 +157,34 @@ class BLEManager {
             }
     }
 
+    func normalizeAccount(_ account: Account) -> Account {
+        // check existing previous account
+        let prevAccount = AccountsRepository.shared.hwAccounts.first { $0.isJade == account.isJade && $0.gdkNetwork == account.gdkNetwork && $0.xpubHashId == account.xpubHashId }
+        if var prevAccount = prevAccount {
+            prevAccount.name = account.name
+            prevAccount.hidden = account.hidden
+            return prevAccount
+        }
+        return account
+    }
+
     func logging(_ peripheral: Peripheral, account: Account) -> Observable<WalletManager> {
         let device: HWDevice = peripheral.isJade() ? .defaultJade(fmwVersion: self.fmwVersion) : .defaultLedger()
         let network = NetworkSecurityCase(rawValue: account.networkName)
-        let wm = WalletManager(account: account, prominentNetwork: network)
+        var account = account
         return getMasterXpub(device, gdkNetwork: network?.gdkNetwork)
-            .flatMap { masterXpub in
+            .compactMap { account.xpubHashId = $0; return account }
+            .compactMap { self.normalizeAccount($0) }
+            .compactMap { WalletsRepository.shared.getOrAdd(for: $0) }
+            .flatMap { wm in
                 return Observable<WalletManager>.create { observer in
-                    wm.loginWithHW(device, masterXpub: masterXpub)
+                    wm.loginWithHW(device, masterXpub: wm.account.xpubHashId ?? "")
                         .done { _ in
                             observer.onNext(wm)
                             observer.onCompleted()
                         }.catch { err in observer.onError(err) }
                     return Disposables.create { }
                 }
-            }.compactMap { wm in
-                WalletsRepository.shared.add(for: account, wm: wm)
-                return wm
             }
     }
 
