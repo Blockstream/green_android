@@ -308,22 +308,8 @@
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Qx3-oG-08a">
                                                                         <rect key="frame" x="25" y="392.00000000000006" width="343" height="110"/>
                                                                         <subviews>
-                                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a4Q-7O-6bm">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
-                                                                                <color key="backgroundColor" name="customMatrixGreen"/>
-                                                                                <constraints>
-                                                                                    <constraint firstAttribute="height" constant="50" id="tmS-wG-xW5"/>
-                                                                                </constraints>
-                                                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
-                                                                                <state key="normal" title="Deny">
-                                                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                                </state>
-                                                                                <connections>
-                                                                                    <action selector="btnDeny:" destination="cXG-tL-4ky" eventType="touchUpInside" id="FNh-RU-2pR"/>
-                                                                                </connections>
-                                                                            </button>
                                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wiK-9r-rZb">
-                                                                                <rect key="frame" x="0.0" y="60" width="343" height="50"/>
+                                                                                <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
                                                                                 <color key="backgroundColor" name="customMatrixGreen"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="50" id="8oZ-sF-4tR"/>
@@ -334,6 +320,20 @@
                                                                                 </state>
                                                                                 <connections>
                                                                                     <action selector="btnAllow:" destination="cXG-tL-4ky" eventType="touchUpInside" id="R0I-no-9bz"/>
+                                                                                </connections>
+                                                                            </button>
+                                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a4Q-7O-6bm">
+                                                                                <rect key="frame" x="0.0" y="60" width="343" height="50"/>
+                                                                                <color key="backgroundColor" name="customMatrixGreen"/>
+                                                                                <constraints>
+                                                                                    <constraint firstAttribute="height" constant="50" id="tmS-wG-xW5"/>
+                                                                                </constraints>
+                                                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                                                                <state key="normal" title="Deny">
+                                                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                </state>
+                                                                                <connections>
+                                                                                    <action selector="btnDeny:" destination="cXG-tL-4ky" eventType="touchUpInside" id="FNh-RU-2pR"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ci8-WV-qxQ">
