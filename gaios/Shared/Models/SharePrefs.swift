@@ -7,7 +7,7 @@ enum SharePrefs: Int, CaseIterable {
     var name: String {
         switch self {
         case .address:
-            return "id_share_address".localized
+            return "id_address".localized
         case .qr:
             return "id_qr_code".localized
         }
@@ -18,7 +18,7 @@ enum SharePrefs: Int, CaseIterable {
         case .address:
             return UIImage(named: "ic_dialog_text_Aa")!.maskWithColor(color: .white)
         case .qr:
-            return UIImage(named: "ic_any_asset")!.maskWithColor(color: .white)
+            return UIImage(named: "ic_dialog_qr")!.maskWithColor(color: .white)
         }
     }
 

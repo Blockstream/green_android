@@ -13,10 +13,12 @@ enum MoreOptPrefs: Int, CaseIterable {
         }
     }
 
-    var icon: UIImage? {
+    var icon: UIImage {
         switch self {
-        default:
-            return nil
+        case .requestAmount:
+            return UIImage(named: "ic_dialog_arrow_down_square")!.maskWithColor(color: .white)
+        case .sweep:
+            return UIImage(named: "ic_dialog_sweep_wallet")!.maskWithColor(color: .white)
         }
     }
 
