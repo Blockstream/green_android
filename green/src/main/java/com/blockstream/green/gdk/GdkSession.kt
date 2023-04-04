@@ -439,26 +439,28 @@ class GdkSession constructor(
         }
     }
 
-    fun connect(network: Network, initNetworks: List<Network>? = null, isHardware: Boolean = false) {
+    fun connect(network: Network, initNetworks: List<Network>? = null, isHardware: Boolean = false): List<Network> {
         defaultNetworkOrNull = network
 
         disconnect()
 
         initGdkSessions(initNetworks = initNetworks, isHardware = isHardware)
 
-        runBlocking {
+        return runBlocking {
             gdkSessions.map {
-                scope.launch(Dispatchers.IO) {
+                scope.async(Dispatchers.IO) {
                     try {
                         gdkBridge.connect(it.value, createConnectionParams(it.key))
+                        it.key
                     } catch (e: Exception) {
                         _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + it.key
+                        null
                     }
                 }
-            }.joinAll()
-
-            // Update the enriched assets
-            updateEnrichedAssets()
+            }.awaitAll().filterNotNull().also {
+                // Update the enriched assets
+                updateEnrichedAssets()
+            }
         }
     }
 
@@ -882,7 +884,7 @@ class GdkSession constructor(
         blockNotificationHandling = true
         walletActiveEventInvalidated = true
 
-        connect(
+        val connectedNetworks = connect(
             network = prominentNetwork,
             initNetworks = initNetworks,
             isHardware = hardwareWalletResolver != null
@@ -909,6 +911,11 @@ class GdkSession constructor(
             }else{
                 n1.id.compareTo(n2.id)
             }
+        }
+
+        // If it's a pin login, check if the prominent network is connected
+        if(loginCredentialsParams.pin.isNotBlank() && !connectedNetworks.contains(prominentNetwork)){
+            throw Exception("id_connection_failed")
         }
 
         @Suppress("NAME_SHADOWING")
