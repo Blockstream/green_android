@@ -174,8 +174,8 @@ class ReceiveViewController: UIViewController {
     }
 
     func optRequestAmount() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveRequestAmountViewController") as? DialogReceiveRequestAmountViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAmountViewController") as? DialogAmountViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.wallet = viewModel.account
@@ -302,15 +302,13 @@ extension ReceiveViewController: AccountSelectViewControllerDelegate {
     }
 }
 
-extension ReceiveViewController: DialogReceiveRequestAmountViewControllerDelegate {
+extension ReceiveViewController: DialogAmountViewControllerDelegate {
     func didConfirm(satoshi: Int64?) {
         self.satoshi = satoshi
         reload()
     }
 
-    func didCancel() {
-        //
-    }
+    func didCancel() { }
 }
 
 extension ReceiveViewController: UIActivityItemSource {
