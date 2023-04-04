@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,6 +13,7 @@
             <connections>
                 <outlet property="lblHint" destination="5Ha-eL-thk" id="Xdc-0v-NXq"/>
                 <outlet property="loaderPlaceholder" destination="6N4-4c-rfw" id="nxP-8S-3n9"/>
+                <outlet property="rectangle" destination="rCJ-3n-6KM" id="3eJ-Vh-lIc"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -23,11 +24,14 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tn4-hX-RYH">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCJ-3n-6KM">
-                            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCJ-3n-6KM">
+                            <rect key="frame" x="44" y="241.5" width="326" height="413.5"/>
                             <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.59999999999999998" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_mash" translatesAutoresizingMaskIntoConstraints="NO" id="CiI-SW-D2M">
+                                    <rect key="frame" x="-100" y="0.0" width="426" height="613.5"/>
+                                </imageView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6N4-4c-rfw">
-                                    <rect key="frame" x="147" y="278" width="120" height="120"/>
+                                    <rect key="frame" x="103" y="140" width="120" height="120"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="120" id="DcC-dg-gbf"/>
@@ -35,27 +39,32 @@
                                     </constraints>
                                 </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Message" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ha-eL-thk">
-                                    <rect key="frame" x="36" y="430" width="342" height="36"/>
-                                    <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="30"/>
+                                    <rect key="frame" x="36" y="292" width="254" height="21.5"/>
+                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
-                            <color key="backgroundColor" name="customTitaniumDark"/>
+                            <color key="backgroundColor" name="gBlackBg"/>
                             <constraints>
                                 <constraint firstAttribute="trailing" secondItem="5Ha-eL-thk" secondAttribute="trailing" constant="36" id="0aV-hK-P1x"/>
                                 <constraint firstItem="6N4-4c-rfw" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="2dJ-f2-jrb"/>
+                                <constraint firstItem="CiI-SW-D2M" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="-100" id="4yp-WD-x9h"/>
+                                <constraint firstAttribute="bottom" secondItem="CiI-SW-D2M" secondAttribute="bottom" constant="-200" id="61b-WJ-Wxd"/>
+                                <constraint firstItem="6N4-4c-rfw" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="140" id="AUJ-rx-TKn"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="36" id="FWm-D0-6zu"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="6N4-4c-rfw" secondAttribute="bottom" constant="32" id="VQW-nP-JfK"/>
-                                <constraint firstItem="5Ha-eL-thk" firstAttribute="centerY" secondItem="rCJ-3n-6KM" secondAttribute="centerY" id="n9Z-Ek-svh"/>
+                                <constraint firstItem="CiI-SW-D2M" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" id="czR-v4-lCC"/>
+                                <constraint firstAttribute="trailing" secondItem="CiI-SW-D2M" secondAttribute="trailing" id="lBw-Up-hIM"/>
+                                <constraint firstAttribute="bottom" secondItem="5Ha-eL-thk" secondAttribute="bottom" constant="100" id="t0g-xx-YiH"/>
                             </constraints>
                         </view>
                     </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.3942610432330827" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="bottom" secondItem="rCJ-3n-6KM" secondAttribute="bottom" id="4lo-cL-cQQ"/>
-                        <constraint firstItem="rCJ-3n-6KM" firstAttribute="leading" secondItem="tn4-hX-RYH" secondAttribute="leading" id="L8l-TP-daU"/>
-                        <constraint firstAttribute="trailing" secondItem="rCJ-3n-6KM" secondAttribute="trailing" id="eEr-Uj-p2C"/>
-                        <constraint firstItem="rCJ-3n-6KM" firstAttribute="top" secondItem="tn4-hX-RYH" secondAttribute="top" id="iNY-AQ-ne9"/>
+                        <constraint firstItem="rCJ-3n-6KM" firstAttribute="leading" secondItem="tn4-hX-RYH" secondAttribute="leading" constant="44" id="L8l-TP-daU"/>
+                        <constraint firstItem="rCJ-3n-6KM" firstAttribute="centerY" secondItem="tn4-hX-RYH" secondAttribute="centerY" id="P2w-ef-dw6"/>
+                        <constraint firstAttribute="trailing" secondItem="rCJ-3n-6KM" secondAttribute="trailing" constant="44" id="eEr-Uj-p2C"/>
                     </constraints>
                 </view>
             </subviews>
@@ -71,8 +80,9 @@
         </view>
     </objects>
     <resources>
-        <namedColor name="customTitaniumDark">
-            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <image name="il_mash" width="375" height="384"/>
+        <namedColor name="gBlackBg">
+            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

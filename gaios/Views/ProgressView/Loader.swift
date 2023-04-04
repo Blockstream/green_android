@@ -12,6 +12,7 @@ class Loader: UIView {
 
     @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var lblHint: UILabel!
+    @IBOutlet weak var rectangle: UIView!
 
     static let tag = 0x70726f6772657373
     var message: NSMutableAttributedString? {
@@ -23,6 +24,9 @@ class Loader: UIView {
         tag = Loader.tag
         translatesAutoresizingMaskIntoConstraints = false
         setup()
+        rectangle.cornerRadius = 10.0
+        rectangle.borderWidth = 1.0
+        rectangle.borderColor = .white.withAlphaComponent(0.05)
     }
 
     required init?(coder aDecoder: NSCoder) {
