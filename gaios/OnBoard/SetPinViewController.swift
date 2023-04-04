@@ -78,7 +78,7 @@ class SetPinViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+    
         pinCode = ""
         cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
@@ -92,7 +92,7 @@ class SetPinViewController: UIViewController {
         super.viewWillDisappear(animated)
         ScreenLocker.shared.startObserving()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
-
+    
         cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in keyButton!.enumerated() {
@@ -125,7 +125,6 @@ class SetPinViewController: UIViewController {
             DropAlert().error(message: NSLocalizedString("id_pins_do_not_match_please_try", comment: ""))
             navigationController?.popViewController(animated: true)
         }
-
     }
 
     func reload() {
@@ -186,41 +185,44 @@ class SetPinViewController: UIViewController {
         switch pinFlow {
         case .settings:
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
+            Guarantee()
+                .then(on: bgq) { self.viewModel.setup(pin: pin) }
+                .ensure { self.stopLoader() }
+                .done { self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true) }
+                .catch { self.error($0)}
         case .restore:
             self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""))
+            Guarantee()
+                .then(on: bgq) { self.viewModel.restore(pin: pin) }
+                .ensure { self.stopLoader() }
+                .done { AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
+                                                  nv: self.navigationController) }
+                .catch { self.error($0)}
         case .create:
             self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""))
+            Guarantee()
+                .then(on: bgq) { self.viewModel.create(pin: pin) }
+                .ensure { self.stopLoader() }
+                .done { AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
+                                                  nv: self.navigationController) }
+                .catch { self.error($0)}
         }
-        Guarantee()
-        .then(on: bgq) { _  -> Promise<Void> in
-            switch self.pinFlow {
-            case .settings:
-                return self.viewModel.setup(pin: pin)
-            case .restore:
-                return self.viewModel.restore(pin: pin)
-            case .create:
-                return self.viewModel.create(pin: pin)
-            }
-        }
-        .ensure { self.stopLoader() }
-        .done { _ in
-            switch self.pinFlow {
-            case .settings:
-                self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
-            case .create, .restore:
-                let account = AccountsRepository.shared.current
-                AccountNavigator.goLogged(account: account!, nv: self.navigationController)
-            }
-        }.catch { error in
-            if error is GaError {
-                self.showError(NSLocalizedString("id_connection_failed", comment: ""))
-            } else if let err = error as? AuthenticationTypeHandler.AuthError {
-                self.showError(err.localizedDescription)
-            } else if !error.localizedDescription.isEmpty {
-                self.showError(NSLocalizedString(error.localizedDescription, comment: ""))
-            } else {
-                self.showError(NSLocalizedString("id_operation_failure", comment: ""))
-            }
+    }
+
+    func error(_ error: Error) {
+        switch error {
+        case GaError.GenericError(_), GaError.NotAuthorizedError(_), LoginError.connectionFailed(_), AuthenticationTypeHandler.AuthError.ConnectionFailed:
+            self.showError("id_connection_failed".localized)
+        case LoginError.walletMismatch( _):
+            self.showError("Wallet mismatch".localized)
+        case LoginError.walletsJustRestored(_):
+            self.showError("Wallet just restored".localized)
+        case LoginError.walletNotFound(_):
+            self.showError("id_wallet_not_found".localized)
+        case LoginError.invalidMnemonic(_):
+            self.showError("id_invalid_mnemonic".localized)
+        default:
+            self.showError("id_operation_failure".localized)
         }
     }
 }

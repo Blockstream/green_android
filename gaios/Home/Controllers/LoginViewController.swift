@@ -296,7 +296,7 @@ class LoginViewController: UIViewController {
         account?.attempts += 1
         AccountsRepository.shared.upsert(account)
         if account?.attempts == self.MAXATTEMPTS {
-            AccountsRepository.shared.remove(account)
+            WalletsRepository.shared.delete(for: account)
             showLock()
         } else {
             self.pinCode = ""
@@ -438,7 +438,7 @@ class LoginViewController: UIViewController {
                                              xpubHashId: account?.xpubHashId ?? "")
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
-            vc.xpubHashId = account.xpubHashId
+            vc.restoredAccount = account
             navigationController?.pushViewController(vc, animated: true)
         }
     }

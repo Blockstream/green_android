@@ -24,7 +24,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     var currIndexPath: IndexPath?
     var mnemonicActionType: MnemonicActionType = .recoverWallet
-    var xpubHashId: String?
+    var restoredAccount: Account?
     var page = 0 // analytics, mnemonic fails counter
     weak var delegate: AccountCreateRecoveryKeyDelegate?
 
@@ -242,7 +242,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                 let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
                     vc.pinFlow = .restore
-                    vc.viewModel = SetPinViewModel(credentials: credentials, testnet: testnet, xpubHashId: self.xpubHashId)
+                    vc.viewModel = SetPinViewModel(credentials: credentials, testnet: testnet, restoredAccount: self.restoredAccount)
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             }.catch { err in self.showLoginError(err) }

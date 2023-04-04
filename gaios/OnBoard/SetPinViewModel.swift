@@ -5,12 +5,12 @@ class SetPinViewModel {
 
     var credentials: Credentials
     var testnet: Bool
-    var xpubHashId: String?
+    var restoredAccount: Account?
 
-    init(credentials: Credentials, testnet: Bool, xpubHashId: String? = nil) {
+    init(credentials: Credentials, testnet: Bool, restoredAccount: Account? = nil) {
         self.credentials = credentials
         self.testnet = testnet
-        self.xpubHashId = xpubHashId
+        self.restoredAccount = restoredAccount
     }
 
     func getXpubHashId(session: SessionManager) -> Promise<String> {
@@ -23,20 +23,20 @@ class SetPinViewModel {
     func restore(pin: String) -> Promise<Void> {
         let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        let account = Account(name: name, network: mainNetwork.network)
+        let account = restoredAccount ?? Account(name: name, network: mainNetwork.network)
         let wm = WalletsRepository.shared.getOrAdd(for: account)
-        return Guarantee()
+        return Promise()
             .compactMap { wm.prominentSession }
             .then { $0.connect() }
             .then { self.getXpubHashId(session: wm.prominentSession!) }
             .map {
-                if let xpubHashId = self.xpubHashId, xpubHashId != $0 {
+                if let restoredAccount = self.restoredAccount, restoredAccount.xpubHashId != $0 {
                     throw LoginError.walletMismatch()
                 }
-            }.then { wm.restore(self.credentials, forceJustRestored: self.xpubHashId != nil) }
+            }.then { wm.restore(self.credentials, forceJustRestored: account.xpubHashId != nil) }
             .map { AnalyticsManager.shared.restoreWallet(account: account) }
             .then { wm.login(self.credentials) }
-            .map { wm.account.attempts = 0}
+            .map { wm.account.attempts = 0 }
             .then { wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!) }
             .asVoid()
     }
