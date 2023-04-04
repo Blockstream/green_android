@@ -76,17 +76,13 @@ class WatchOnlyLoginViewController: KeyboardViewController {
     }
 
     @objc func menuButtonTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
-        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
-            popover.delegate = self
-            popover.menuOptions = [.edit, .delete]
-            popover.modalPresentationStyle = .popover
-            let popoverPresentationController = popover.popoverPresentationController
-            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
-            popoverPresentationController?.delegate = self
-            popoverPresentationController?.sourceView = self.menuButton
-            popoverPresentationController?.sourceRect = self.menuButton.bounds
-            self.present(popover, animated: true)
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+
+            vc.viewModel = DialogListViewModel(title: "More Options", type: .loginPrefs, items: LoginPrefs.getItems(isWatchOnly: true))
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 
@@ -159,7 +155,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }.done { _ in
             let account = AccountsRepository.shared.current
             AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: account)
-            AccountNavigator.goLogged(account: account!, nv: self.navigationController)
+            _ = AccountNavigator.goLogged(account: account!, nv: self.navigationController)
         }.catch { error in
             var prettyError = "id_login_failed"
             switch error {
@@ -207,21 +203,6 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
     }
 }
 
-extension WatchOnlyLoginViewController: PopoverMenuWalletDelegate {
-    func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?) {
-        switch menuOption {
-        case .emergency:
-            break
-        case .passphrase:
-            break
-        case .edit:
-            walletRename()
-        case .delete:
-            walletDelete()
-        }
-    }
-}
-
 extension WatchOnlyLoginViewController: UIPopoverPresentationControllerDelegate {
 
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -230,5 +211,23 @@ extension WatchOnlyLoginViewController: UIPopoverPresentationControllerDelegate 
 
     func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         return UINavigationController(rootViewController: controller.presentedViewController)
+    }
+}
+
+extension WatchOnlyLoginViewController: DialogListViewControllerDelegate {
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch type {
+        case .loginPrefs:
+            switch index {
+            case 0:
+                walletRename()
+            case 1:
+                walletDelete()
+            default:
+                break
+            }
+        default:
+            break
+        }
     }
 }

@@ -18,7 +18,7 @@ class AccountArchiveViewController: UIViewController {
         super.viewDidLoad()
 
         let account = viewModel.wm.account
-        navigationItem.title = account.name 
+        navigationItem.title = account.name
         navigationItem.setHidesBackButton(true, animated: false)
 
         let ntwBtn = UIButton(type: .system)

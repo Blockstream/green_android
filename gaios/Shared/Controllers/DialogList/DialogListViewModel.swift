@@ -10,6 +10,7 @@ enum DialogType: CaseIterable {
     case watchOnlyPrefs
     case sharePrefs
     case moreOptPrefs
+    case loginPrefs
 }
 
 enum DialogCellType: CaseIterable {

@@ -4,6 +4,13 @@ protocol PopoverMenuHomeDelegate: AnyObject {
     func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?)
 }
 
+enum MenuWalletOption {
+    case passphrase
+    case emergency
+    case edit
+    case delete
+}
+
 class PopoverMenuHomeViewController: UIViewController {
 
     @IBOutlet weak var menuTableView: UITableView!

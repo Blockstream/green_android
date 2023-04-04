@@ -169,17 +169,13 @@ class LoginViewController: UIViewController {
     }
 
     @objc func menuButtonTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
-        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
-            popover.delegate = self
-            popover.menuOptions = MenuWalletOption.allCases
-            popover.modalPresentationStyle = .popover
-            let popoverPresentationController = popover.popoverPresentationController
-            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
-            popoverPresentationController?.delegate = self
-            popoverPresentationController?.sourceView = self.menuButton
-            popoverPresentationController?.sourceRect = self.menuButton.bounds
-            self.present(popover, animated: true)
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+
+            vc.viewModel = DialogListViewModel(title: "More Options", type: .loginPrefs, items: LoginPrefs.getItems(isWatchOnly: false))
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 
@@ -249,7 +245,7 @@ class LoginViewController: UIViewController {
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
                                                 ephemeralBip39: self.account.isEphemeral,
                                                 account: self.account)
-            AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
+            _ = AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
             self.stopLoader()
         }.catch { error in
             self.errorLogin(error: error)
@@ -472,21 +468,6 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
     }
 }
 
-extension LoginViewController: PopoverMenuWalletDelegate {
-    func didSelectionMenuOption(menuOption: MenuWalletOption, index: String?) {
-        switch menuOption {
-        case .emergency:
-            showEmergencyDialog()
-        case .passphrase:
-            loginWithPassphrase(isAlwaysAsk: false)
-        case .edit:
-            walletRename()
-        case .delete:
-            walletDelete()
-        }
-    }
-}
-
 extension LoginViewController: UIPopoverPresentationControllerDelegate {
 
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -514,6 +495,28 @@ extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
         AccountsRepository.shared.upsert(account)
         if account.hasBioPin {
             loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
+        }
+    }
+}
+
+extension LoginViewController: DialogListViewControllerDelegate {
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch type {
+        case .loginPrefs:
+            switch LoginPrefs(rawValue: index) {
+            case .emergency:
+                showEmergencyDialog()
+            case .passphrase:
+                loginWithPassphrase(isAlwaysAsk: false)
+            case .edit:
+                walletRename()
+            case .delete:
+                walletDelete()
+            case .none:
+                break
+            }
+        default:
+            break
         }
     }
 }
