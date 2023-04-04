@@ -297,7 +297,7 @@ class WalletSettingsViewController: KeyboardViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCountlyViewController") as? DialogCountlyViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.disableControls = true
-            self.present(vc, animated: true, completion: nil)
+            self.present(vc, animated: false, completion: nil)
         }
     }
 }

@@ -124,7 +124,7 @@ class SelectOnBoardTypeViewController: UIViewController {
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogCountlyViewController") as? DialogCountlyViewController {
                 vc.modalPresentationStyle = .overFullScreen
                 vc.delegate = self
-                self.present(vc, animated: true, completion: nil)
+                self.present(vc, animated: false, completion: nil)
             }
             return
         }

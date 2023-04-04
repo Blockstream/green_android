@@ -68,7 +68,7 @@ class DialogAmountViewController: KeyboardViewController {
         view.sendSubviewToBack(blurredView)
 
         view.alpha = 0.0
-        anchorBottom.constant = -200
+        anchorBottom.constant = -cardView.frame.size.height
 
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
             swipeDown.direction = .down
@@ -199,8 +199,10 @@ class DialogAmountViewController: KeyboardViewController {
     }
 
     func dismiss(_ action: DialogAmountAction) {
+        anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
+            self.view.layoutIfNeeded()
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             switch action {

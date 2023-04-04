@@ -26,7 +26,7 @@ enum LoginPrefs: Int, CaseIterable {
         case .emergency:
             return UIImage(named: "ic_dialog_show_phrase")!.maskWithColor(color: .white)
         case .edit:
-            return UIImage(named: "ic_dialog_text_edit")!.maskWithColor(color: .white)
+            return UIImage(named: "ic_dialog_text_Aa")!.maskWithColor(color: .white)
         case .delete:
             return UIImage(named: "ic_dialog_remove")!.maskWithColor(color: .white)
         }

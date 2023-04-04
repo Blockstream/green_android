@@ -40,9 +40,6 @@ class DialogCountlyViewController: UIViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
 
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var tableHeight: NSLayoutConstraint!
-
     weak var delegate: DialogCountlyViewControllerDelegate?
 
     var disableControls = false
@@ -76,7 +73,7 @@ class DialogCountlyViewController: UIViewController {
         view.sendSubviewToBack(blurredView)
 
         view.alpha = 0.0
-        anchorBottom.constant = -200
+        anchorBottom.constant = -cardView.frame.size.height
 
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
             swipeDown.direction = .down
@@ -176,8 +173,10 @@ class DialogCountlyViewController: UIViewController {
     }
 
     func dismiss(_ action: DialogCountlyAction) {
+        anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
+            self.view.layoutIfNeeded()
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
             switch action {
