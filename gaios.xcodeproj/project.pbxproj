@@ -308,6 +308,7 @@
 		34E0CA9229829C2A00695304 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA9129829C2A00695304 /* Collection.swift */; };
 		34E8457729DBFA4500B207E7 /* DialogAmountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457629DBFA4500B207E7 /* DialogAmountViewController.swift */; };
 		34E8457929DC26DD00B207E7 /* LoginPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457829DC26DD00B207E7 /* LoginPrefs.swift */; };
+		34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457B29DD6ABB00B207E7 /* DialogPassphraseViewController.swift */; };
 		34EB670128212EBA0036D615 /* AMEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670028212EBA0036D615 /* AMEvents.swift */; };
 		34EB6703282138710036D615 /* AMSegmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB6702282138710036D615 /* AMSegmentation.swift */; };
 		34EB670528213A8A0036D615 /* AMConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670428213A8A0036D615 /* AMConstants.swift */; };
@@ -793,6 +794,7 @@
 		34E0CA9129829C2A00695304 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		34E8457629DBFA4500B207E7 /* DialogAmountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAmountViewController.swift; sourceTree = "<group>"; };
 		34E8457829DC26DD00B207E7 /* LoginPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPrefs.swift; sourceTree = "<group>"; };
+		34E8457B29DD6ABB00B207E7 /* DialogPassphraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogPassphraseViewController.swift; sourceTree = "<group>"; };
 		34EB670028212EBA0036D615 /* AMEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMEvents.swift; sourceTree = "<group>"; };
 		34EB6702282138710036D615 /* AMSegmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMSegmentation.swift; sourceTree = "<group>"; };
 		34EB670428213A8A0036D615 /* AMConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMConstants.swift; sourceTree = "<group>"; };
@@ -1930,6 +1932,7 @@
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				34A862A02979432C0018E636 /* DialogShowQRViewController.swift */,
 				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
+				34E8457A29DD6A9600B207E7 /* DialogPassphrase */,
 				34E8457529DBFA1C00B207E7 /* DialogAmount */,
 				3448B5C929D475E4008D5746 /* DialogScan */,
 				349F71E729C218FA007B9154 /* DialogCountly */,
@@ -1953,6 +1956,14 @@
 				34E8457629DBFA4500B207E7 /* DialogAmountViewController.swift */,
 			);
 			path = DialogAmount;
+			sourceTree = "<group>";
+		};
+		34E8457A29DD6A9600B207E7 /* DialogPassphrase */ = {
+			isa = PBXGroup;
+			children = (
+				34E8457B29DD6ABB00B207E7 /* DialogPassphraseViewController.swift */,
+			);
+			path = DialogPassphrase;
 			sourceTree = "<group>";
 		};
 		34EB66FF28212E9C0036D615 /* AnalyticsManager */ = {
@@ -2737,6 +2748,7 @@
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
 				3458AB18292D289F006EC7FB /* AnyAssetExpandableView.swift in Sources */,
 				34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */,
+				34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */,
 				3457F4BA2923B0B500EF33B5 /* AccountPrefs.swift in Sources */,
 				811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */,
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,

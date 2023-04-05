@@ -405,13 +405,21 @@ class LoginViewController: UIViewController {
     }
 
     func loginWithPassphrase(isAlwaysAsk: Bool) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogLoginPassphraseViewController") as? DialogLoginPassphraseViewController {
+        
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogPassphraseViewController") as? DialogPassphraseViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.isAlwaysAsk = isAlwaysAsk
             present(vc, animated: false, completion: nil)
         }
+//        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+//        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogLoginPassphraseViewController") as? DialogLoginPassphraseViewController {
+//            vc.modalPresentationStyle = .overFullScreen
+//            vc.delegate = self
+//            vc.isAlwaysAsk = isAlwaysAsk
+//            present(vc, animated: false, completion: nil)
+//        }
     }
 
     @IBAction func btnFaceID(_ sender: Any) {
@@ -488,7 +496,18 @@ extension LoginViewController: WalletSettingsViewControllerDelegate {
     }
 }
 
-extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
+//extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
+//    func didConfirm(passphrase: String, alwaysAsk: Bool) {
+//        bip39passphare = passphrase
+//        account.askEphemeral = alwaysAsk
+//        AccountsRepository.shared.upsert(account)
+//        if account.hasBioPin {
+//            loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
+//        }
+//    }
+//}
+
+extension LoginViewController: DialogPassphraseViewControllerDelegate {
     func didConfirm(passphrase: String, alwaysAsk: Bool) {
         bip39passphare = passphrase
         account.askEphemeral = alwaysAsk
