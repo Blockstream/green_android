@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.base.Urls
 import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.AccountAsset
 import com.blockstream.green.R
 import com.blockstream.green.data.AddressInputType
 import com.blockstream.green.data.NavigateEvent
@@ -250,7 +249,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
         recipientBinding.buttonAddressScan.setOnClickListener {
             viewModel.activeRecipient = recipientBinding.index ?: 0
-            CameraBottomSheetDialogFragment.showSingle(fragmentManager = childFragmentManager)
+            CameraBottomSheetDialogFragment.showSingle(screenName = screenName, fragmentManager = childFragmentManager)
         }
 
         recipientBinding.accountAsset.root.setOnClickListener {

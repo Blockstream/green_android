@@ -11,8 +11,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CameraBottomSheetBinding
-import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.extensions.setNavigationResult
+import com.blockstream.green.ui.onboarding.AbstractOnboardingFragment
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
+import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
@@ -26,7 +28,7 @@ import mu.KLogging
 @AndroidEntryPoint
 class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraBottomSheetBinding>(){
 
-    override val screenName = "Camera"
+    override val screenName = "Scan"
 
     override fun inflate(layoutInflater: LayoutInflater) = CameraBottomSheetBinding.inflate(layoutInflater)
 
@@ -143,11 +145,17 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
         if(isDevelopmentOrDebug){
             logger.info { "QR:  $result" }
         }
+
+        val session = (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel()?.session
+        val onBoardingOptions = (requireParentFragment() as? AbstractOnboardingFragment<*>)?.options
+        countly.qrScan(session = session, onBoardingOptions = onBoardingOptions, arguments?.getString(SCREEN_NAME))
+
         setNavigationResult(result = result, key = CAMERA_SCAN_RESULT, destinationId = findNavController().currentDestination?.id)
         dismiss()
     }
 
     companion object : KLogging() {
+        private const val SCREEN_NAME = "SCREEN_NAME"
         const val DECODE_CONTINUOUS = "DECODE_CONTINUOUS"
         const val CAMERA_SCAN_RESULT = "CAMERA_SCAN_RESULT"
 
@@ -157,10 +165,11 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
         private const val DEFAULT_FRAME_CORNER_SIZE_DP = 50f
         private const val DEFAULT_FRAME_SIZE = 0.65f
 
-        fun showSingle(decodeContinuous: Boolean = false, fragmentManager: FragmentManager){
+        fun showSingle(screenName: String?, decodeContinuous: Boolean = false, fragmentManager: FragmentManager){
             showSingle(CameraBottomSheetDialogFragment().also {
                 it.arguments = Bundle().apply {
                     putBoolean(DECODE_CONTINUOUS, decodeContinuous)
+                    putString(SCREEN_NAME, screenName)
                 }
             }, fragmentManager)
         }

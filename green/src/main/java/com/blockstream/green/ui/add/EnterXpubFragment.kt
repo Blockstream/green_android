@@ -6,12 +6,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.EnterXpubFragmentBinding
-import com.blockstream.green.gdk.getNetworkIcon
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.gdk.getNetworkIcon
+import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -55,7 +55,7 @@ class EnterXpubFragment : AbstractWalletFragment<EnterXpubFragmentBinding>(
         }
 
         binding.buttonScan.setOnClickListener {
-            CameraBottomSheetDialogFragment.showSingle(fragmentManager = childFragmentManager)
+            CameraBottomSheetDialogFragment.showSingle(screenName = screenName, fragmentManager = childFragmentManager)
         }
 
         binding.buttonContinue.setOnClickListener {

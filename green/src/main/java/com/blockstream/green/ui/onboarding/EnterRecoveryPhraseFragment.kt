@@ -155,7 +155,7 @@ class EnterRecoveryPhraseFragment :
         }
 
         binding.buttonScan.setOnClickListener {
-            CameraBottomSheetDialogFragment.showSingle(fragmentManager = childFragmentManager)
+            CameraBottomSheetDialogFragment.showSingle(screenName = screenName, fragmentManager = childFragmentManager)
         }
 
         binding.message.setOnClickListener {

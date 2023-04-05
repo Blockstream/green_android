@@ -8,14 +8,14 @@ import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.LoginWatchOnlyFragmentBinding
-import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
-import com.blockstream.green.ui.login.LoginFragmentDirections
-import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
+import com.blockstream.green.ui.login.LoginFragmentDirections
+import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -62,7 +62,7 @@ class LoginWatchOnlyFragment :
         }
 
         binding.buttonScan.setOnClickListener {
-            CameraBottomSheetDialogFragment.showSingle(fragmentManager = childFragmentManager)
+            CameraBottomSheetDialogFragment.showSingle(screenName = screenName, fragmentManager = childFragmentManager)
         }
 
         binding.buttonLogin.setOnClickListener {

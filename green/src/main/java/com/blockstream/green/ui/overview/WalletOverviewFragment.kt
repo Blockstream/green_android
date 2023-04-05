@@ -593,7 +593,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 }
             }
             else -> {
-                CameraBottomSheetDialogFragment.showSingle(decodeContinuous = false, childFragmentManager)
+                CameraBottomSheetDialogFragment.showSingle(screenName = screenName, decodeContinuous = false, childFragmentManager)
             }
         }
     }

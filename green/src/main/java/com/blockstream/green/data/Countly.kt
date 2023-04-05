@@ -561,6 +561,20 @@ class Countly constructor(
         )
     }
 
+    fun qrScan(session: GdkSession?, onBoardingOptions: OnboardingOptions?, screenName: String?) {
+        if (screenName == null) return
+
+        val segmentation = session?.let { sessionSegmentation(it) }
+            ?: onBoardingOptions?.let { onBoardingSegmentation(it) } ?: hashMapOf()
+
+        events.recordEvent(
+            Events.QR_SCAN.toString(),
+            segmentation.also {
+                it[PARAM_SCREEN] = screenName
+            }
+        )
+    }
+
     fun appReview(session: GdkSession, account: Account?) {
         events.recordEvent(Events.APP_REVIEW.toString(),
             accountSegmentation(session, account))
@@ -800,6 +814,7 @@ class Countly constructor(
         RECEIVE_ADDRESS("receive_address"),
 
         SHARE_TRANSACTION("share_transaction"),
+        QR_SCAN("qr_scan"),
 
         APP_REVIEW("app_review"),
 
@@ -838,6 +853,7 @@ class Countly constructor(
         const val PARAM_TYPE = "type"
         const val PARAM_MEDIA = "media"
         const val PARAM_METHOD = "method"
+        const val PARAM_SCREEN = "screen"
         const val PARAM_PAGE = "page"
         const val PARAM_BRAND = "brand"
         const val PARAM_MODEL = "model"
