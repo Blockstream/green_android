@@ -128,9 +128,7 @@
                             <constraint firstItem="Gc0-07-oJn" firstAttribute="leading" secondItem="mwS-yc-07h" secondAttribute="leading" constant="20" id="pez-vA-KKJ"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="sHu-JB-blG">
-                        <barButtonItem key="backBarButtonItem" title=" " id="KWb-4D-S1L"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="sHu-JB-blG"/>
                     <connections>
                         <outlet property="btnAbout" destination="1qh-XN-G1D" id="xYD-Ql-TKu"/>
                         <outlet property="btnSettings" destination="RGw-5k-mGd" id="7AN-2E-iPc"/>

@@ -52,12 +52,16 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func customBack() {
-        var arrow = UIImage.init(named: "backarrow")
-        if #available(iOS 13.0, *) {
-            arrow = UIImage(systemName: "chevron.backward")
-        }
-        let newBackButton = UIBarButtonItem(image: arrow, style: UIBarButtonItem.Style.plain, target: self, action: #selector(RecoveryVerifyViewController.back(sender:)))
-        navigationItem.leftBarButtonItem = newBackButton
+        let view = UIView()
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
+        button.setTitle("Back", for: .normal)
+        button.addTarget(self, action: #selector(RecoveryVerifyViewController.back(sender:)), for: .touchUpInside)
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: -5)
+        button.sizeToFit()
+        view.addSubview(button)
+        view.frame = button.bounds
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: view)
         navigationItem.hidesBackButton = true
     }
 

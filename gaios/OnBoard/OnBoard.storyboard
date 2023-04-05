@@ -1710,9 +1710,7 @@
                             <constraint firstItem="mtm-xd-iuy" firstAttribute="trailing" secondItem="Efl-tQ-DEj" secondAttribute="trailing" constant="25" id="yKq-CY-cd4"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="7hY-X1-m97">
-                        <barButtonItem key="backBarButtonItem" title=" " id="AbS-lj-kLF"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="7hY-X1-m97"/>
                     <connections>
                         <outlet property="btnAppSettings" destination="UjX-PK-uL0" id="6uM-gO-Wfh"/>
                         <outlet property="btnCheckTerms" destination="gzO-XT-Dzj" id="YMG-I0-P8i"/>
@@ -1830,9 +1828,7 @@
                             <constraint firstItem="Xp6-kx-V21" firstAttribute="trailing" secondItem="W1G-BK-xCX" secondAttribute="trailing" constant="25" id="yKw-GM-OSy"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="ABf-W8-tfG">
-                        <barButtonItem key="backBarButtonItem" title=" " id="yth-Ul-KK4"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="ABf-W8-tfG"/>
                     <connections>
                         <outlet property="btnNewWallet" destination="N2y-59-pT1" id="Lbe-Ul-ph5"/>
                         <outlet property="btnRestoreWallet" destination="Z0k-AE-vCg" id="YZv-0h-blT"/>
