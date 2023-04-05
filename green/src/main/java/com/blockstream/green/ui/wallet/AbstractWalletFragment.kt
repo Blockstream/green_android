@@ -48,15 +48,9 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
     val wallet: Wallet
         get() = getWalletViewModel().wallet
 
-    open val toolbarIcon: Int?
-        get() = null
-
     override fun updateToolbar() {
         super.updateToolbar()
         if (isSessionAndWalletRequired() && isSessionInitialized) {
-
-            // Only show toolbar icon if it's overridden eg. add account flow
-            toolbarIcon?.let { toolbar.setLogo(it) }
 
             // Prevent showing network icon when the title is empty
             if(toolbar.title.isNotBlank() || !title.isNullOrBlank()) {

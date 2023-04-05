@@ -84,6 +84,7 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     open val title : String? = null
     open val subtitle : String? = null
+    open val toolbarIcon: Int? = null
 
     override var screenIsRecorded = false
     override val segmentation: HashMap<String, Any>? = null
@@ -97,6 +98,8 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
         toolbar.subtitle = subtitle
         toolbar.logo = null
+        // Only show toolbar icon if it's overridden eg. add account flow
+        toolbarIcon?.let { toolbar.setLogo(it) }
         toolbar.setBubble(null)
         toolbar.setButton(null)
     }

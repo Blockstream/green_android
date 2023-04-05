@@ -12,14 +12,12 @@ import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.gdk.network
 import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.items.ContentCardListItem
-import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
-import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -108,13 +106,14 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
     private fun createAdapter(): FastItemAdapter<GenericItem> {
         val adapter = FastItemAdapter<GenericItem>()
 
-        adapter.add(
-            ContentCardListItem(
-                key = TwoOfThreeRecovery.HARDWARE_WALLET,
-                title = StringHolder(R.string.id_hardware_wallet),
-                caption = StringHolder(R.string.id_use_a_hardware_wallet_as_your)
-            )
-        )
+//        adapter.add(
+//            ContentCardListItem(
+//                key = TwoOfThreeRecovery.HARDWARE_WALLET,
+//                title = StringHolder(R.string.id_hardware_wallet),
+//                caption = StringHolder(R.string.id_use_a_hardware_wallet_as_your)
+//            )
+//        )
+
         adapter.add(
             ContentCardListItem(
                 key = TwoOfThreeRecovery.NEW_RECOVERY,
@@ -123,8 +122,7 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
             )
         )
 
-        val expandable = TitleExpandableListItem(StringHolder(R.string.id_more_options))
-        expandable.subItems.add(
+        adapter.add(
             ContentCardListItem(
                 key = TwoOfThreeRecovery.EXISTING_RECOVERY,
                 title = StringHolder(R.string.id_existing_recovery_phrase),
@@ -132,16 +130,13 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
             )
         )
 
-        expandable.subItems.add(
+        adapter.add(
             ContentCardListItem(
                 key = TwoOfThreeRecovery.XPUB,
                 title = StringHolder(R.string.id_use_a_public_key),
                 caption = StringHolder(R.string.id_use_an_xpub_for_which_you_own)
             )
         )
-
-        adapter.getExpandableExtension()
-        adapter.add(expandable)
 
         return adapter
     }

@@ -196,7 +196,6 @@
     <fragment
         android:id="@+id/enterRecoveryPhraseFragment"
         android:name="com.blockstream.green.ui.onboarding.EnterRecoveryPhraseFragment"
-        android:label=""
         tools:layout="@layout/enter_recovery_phrase_fragment">
         <argument
             android:name="onboardingOptions"

@@ -20,6 +20,7 @@ import com.blockstream.green.extensions.clearClipboard
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.HelpBottomSheetDialogFragment
 import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
@@ -46,6 +47,12 @@ class EnterRecoveryPhraseFragment :
 
     override val screenName = "OnBoardEnterRecovery"
     override val segmentation: HashMap<String, Any>? = null
+
+    override val title: String?
+        get() = args.network?.canonicalName
+
+    override val toolbarIcon: Int?
+        get() = args.network?.getNetworkIcon()
 
     @Inject
     lateinit var assistedFactory: EnterRecoveryPhraseViewModel.AssistedFactory

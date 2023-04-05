@@ -106,7 +106,8 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
         var assetWithoutIconShown = false
 
-        val walletAssets = session.walletAssets.filterValues { it != -1L }.keys // Filter loading asset
+        // Filter loading asset & zero balance assets
+        val walletAssets = session.walletAssets.filterValues { it > 0 }.keys
 
         binding.assets = walletAssets.size
 

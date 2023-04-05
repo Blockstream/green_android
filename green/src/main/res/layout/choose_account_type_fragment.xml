@@ -23,12 +23,13 @@
 
             <TextView
                 android:id="@+id/assetTextView"
+                style="@style/TextAppearance.Green.Overline"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="4dp"
                 android:text="@string/id_asset"
-                android:textAppearance="@style/TextAppearance.Green.Overline"
                 app:layout_constraintEnd_toEndOf="@+id/assetMaterialCardView"
                 app:layout_constraintStart_toStartOf="@+id/assetMaterialCardView"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -52,12 +53,13 @@
 
             <TextView
                 android:id="@+id/chooseSecurityTextView"
+                style="@style/TextAppearance.Green.Overline"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="24dp"
+                android:layout_marginEnd="4dp"
                 android:text="@string/id_choose_security_policy"
-                android:textAppearance="@style/TextAppearance.Green.Overline"
                 app:layout_constraintEnd_toEndOf="@+id/assetMaterialCardView"
                 app:layout_constraintStart_toStartOf="@+id/assetMaterialCardView"
                 app:layout_constraintTop_toBottomOf="@+id/assetMaterialCardView" />
@@ -66,6 +68,7 @@
                 android:id="@+id/recycler"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginTop="2dp"
                 app:layout_constraintBottom_toTopOf="@+id/buttonAdvanced"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
