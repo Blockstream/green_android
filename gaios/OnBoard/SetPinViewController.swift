@@ -35,6 +35,7 @@ class SetPinViewController: UIViewController {
 
         setContent()
         setStyle()
+        customBack()
         setActions()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.view
@@ -52,6 +53,24 @@ class SetPinViewController: UIViewController {
                 AnalyticsManager.shared.recordView(.onBoardPin, sgmt: AnalyticsManager.shared.onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow.strRestore))
             }
         }
+    }
+
+    func customBack() {
+        let view = UIView()
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
+        button.setTitle("id_back".localized, for: .normal)
+        button.addTarget(self, action: #selector(SetPinViewController.back(sender:)), for: .touchUpInside)
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: -5)
+        button.sizeToFit()
+        view.addSubview(button)
+        view.frame = button.bounds
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: view)
+        navigationItem.hidesBackButton = true
+    }
+
+    @objc func back(sender: UIBarButtonItem) {
+        navigationController?.popViewController(animated: true)
     }
 
     func setContent() {

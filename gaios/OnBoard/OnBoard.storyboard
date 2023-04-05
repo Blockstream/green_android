@@ -1010,9 +1010,7 @@
                             <constraint firstItem="kqH-JR-dUI" firstAttribute="trailing" secondItem="vmq-E5-XHS" secondAttribute="trailing" id="wWV-Ep-56l"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="e9t-Wh-nWR">
-                        <barButtonItem key="backBarButtonItem" title=" " id="cDm-j2-aEN"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="e9t-Wh-nWR"/>
                     <connections>
                         <outlet property="btnNext" destination="pKN-Xv-DWq" id="Klr-Wv-9B4"/>
                         <outlet property="cancelButton" destination="QA4-XK-ial" id="Jjk-lu-w2V"/>
