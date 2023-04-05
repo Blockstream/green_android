@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.0-beta5] - 2023-04-05
+
+### Added
+- Add animations and improve user interface
+
+### Changed
+- Bug fixes
+
 ## [4.0.0-beta4] - 2023-03-27
 
 ### Changed
