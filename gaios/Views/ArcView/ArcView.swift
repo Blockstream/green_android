@@ -22,7 +22,7 @@ class ArcView: UIView {
         }
 
         let c = CGPoint(x: rect.size.width / 2.0, y: rect.size.width / 2.0)
-        let borderWidth = 4.0
+        let borderWidth = 2.0
         let radius = (rect.size.width - borderWidth) / 2.0
         let startAngle = -CGFloat.pi / 2.0
         let endAngle = -CGFloat.pi / 2.0 + (CGFloat(step)) / CGFloat(steps) * 2 * CGFloat.pi

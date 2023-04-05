@@ -12,7 +12,7 @@ class TransactionAmountCell: UITableViewCell {
     @IBOutlet weak var copyRecipientIcon: UIImageView!
     @IBOutlet weak var copyAmountIcon: UIImageView!
     @IBOutlet weak var recipientView: UIView!
-    
+
     var copyAmount: ((String) -> Void)?
     var copyRecipient: ((String) -> Void)?
 

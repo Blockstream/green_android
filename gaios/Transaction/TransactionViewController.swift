@@ -78,18 +78,19 @@ class TransactionViewController: UIViewController {
     }
 
     func navBarSetup() {
-        var status = NSLocalizedString("id_sent", comment: "")
-        if transaction.type == .redeposit {
-            status = NSLocalizedString("id_redeposited", comment: "")
-        } else if transaction.type == .incoming {
-            status = NSLocalizedString("id_received_on", comment: "")
-        }
-        let leftBarItem = ((Bundle.main.loadNibNamed("TransactionBarItem", owner: self, options: nil)![0] as? TransactionBarItem)!)
-        leftBarItem.configure(status: status, account: "") {
-            [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftBarItem)
+        title = "id_details".localized
+//        var status = NSLocalizedString("id_sent", comment: "")
+//        if transaction.type == .redeposit {
+//            status = NSLocalizedString("id_redeposited", comment: "")
+//        } else if transaction.type == .incoming {
+//            status = NSLocalizedString("id_received_on", comment: "")
+//        }
+//        let leftBarItem = ((Bundle.main.loadNibNamed("TransactionBarItem", owner: self, options: nil)![0] as? TransactionBarItem)!)
+//        leftBarItem.configure(status: status, account: "") {
+//            [weak self] in
+//            self?.navigationController?.popViewController(animated: true)
+//        }
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftBarItem)
 
         let shareBtn = UIButton(type: .system)
         shareBtn.setImage(UIImage(named: "ic_export"), for: .normal)
