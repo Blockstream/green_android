@@ -556,7 +556,10 @@
                                                                     <rect key="frame" x="25" y="37" width="303" height="60"/>
                                                                     <subviews>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="lbl_note_txt" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QbE-2J-3RC">
-                                                                            <rect key="frame" x="20" y="16" width="223" height="28"/>
+                                                                            <rect key="frame" x="20" y="20" width="223" height="20"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="fXH-cv-0e0"/>
+                                                                            </constraints>
                                                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <nil key="highlightedColor"/>
@@ -575,8 +578,8 @@
                                                                     <color key="backgroundColor" name="gGrayCard"/>
                                                                     <constraints>
                                                                         <constraint firstItem="9DZ-yK-zVe" firstAttribute="centerY" secondItem="dmd-YB-eUi" secondAttribute="centerY" id="cQl-gf-gvR"/>
-                                                                        <constraint firstItem="QbE-2J-3RC" firstAttribute="top" secondItem="dmd-YB-eUi" secondAttribute="top" constant="16" id="ffd-UD-fqX"/>
-                                                                        <constraint firstAttribute="bottom" secondItem="QbE-2J-3RC" secondAttribute="bottom" constant="16" id="mP5-uQ-74a"/>
+                                                                        <constraint firstItem="QbE-2J-3RC" firstAttribute="top" secondItem="dmd-YB-eUi" secondAttribute="top" constant="20" id="ffd-UD-fqX"/>
+                                                                        <constraint firstAttribute="bottom" secondItem="QbE-2J-3RC" secondAttribute="bottom" constant="20" id="mP5-uQ-74a"/>
                                                                         <constraint firstItem="9DZ-yK-zVe" firstAttribute="leading" secondItem="QbE-2J-3RC" secondAttribute="trailing" constant="10" id="nz5-yY-Ibm"/>
                                                                         <constraint firstItem="QbE-2J-3RC" firstAttribute="leading" secondItem="dmd-YB-eUi" secondAttribute="leading" constant="20" id="qYH-ky-Bhf"/>
                                                                         <constraint firstAttribute="trailing" secondItem="9DZ-yK-zVe" secondAttribute="trailing" constant="20" id="svD-8Z-Z5v"/>
