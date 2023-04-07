@@ -168,11 +168,16 @@ class BLEManager {
         return account
     }
 
+    func getWalletIdentifier(network: GdkNetwork, xpub: String) -> String? {
+        return SessionManager(network).walletIdentifier(network.network, masterXpub: xpub)?.xpubHashId
+    }
+
     func logging(_ peripheral: Peripheral, account: Account) -> Observable<WalletManager> {
         let device: HWDevice = peripheral.isJade() ? .defaultJade(fmwVersion: self.fmwVersion) : .defaultLedger()
         let network = NetworkSecurityCase(rawValue: account.networkName)
         var account = account
         return getMasterXpub(device, gdkNetwork: network?.gdkNetwork)
+            .compactMap { self.getWalletIdentifier(network: network!.gdkNetwork!, xpub: $0) }
             .compactMap { account.xpubHashId = $0; return account }
             .compactMap { self.normalizeAccount($0) }
             .compactMap { WalletsRepository.shared.getOrAdd(for: $0) }
