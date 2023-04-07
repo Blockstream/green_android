@@ -13,13 +13,6 @@ class AssetsManager {
 
     init(testnet: Bool) {
         self.testnet = testnet
-        if testnet {
-            self.infos = [AssetInfo.testId: AssetInfo.test,
-                          AssetInfo.ltestId: AssetInfo.ltest]
-        } else {
-            self.infos = [AssetInfo.btcId: AssetInfo.btc,
-                          AssetInfo.lbtcId: AssetInfo.lbtc]
-        }
     }
 
     var all: [AssetInfo] {
@@ -70,6 +63,13 @@ class AssetsManager {
     }
 
     func loadAsync(session: SessionManager?) {
+        if testnet {
+            infos = [AssetInfo.testId: AssetInfo.test,
+                          AssetInfo.ltestId: AssetInfo.ltest]
+        } else {
+            infos = [AssetInfo.btcId: AssetInfo.btc,
+                          AssetInfo.lbtcId: AssetInfo.lbtc]
+        }
         self.session = session ?? self.session
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
