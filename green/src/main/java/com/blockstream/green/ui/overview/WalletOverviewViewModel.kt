@@ -82,6 +82,23 @@ class WalletOverviewViewModel @AssistedInject constructor(
             }
         }.launchIn(viewModelScope)
 
+        // Support only for Bitcoin
+        session.bitcoinMultisig?.let { network ->
+            session.twoFactorResetFlow(network).onEach {
+                _twoFactorStateLiveData.postValue(
+                    if (it != null && it.isActive == true) {
+                        if (it.isDisputed == true) {
+                            AlertType.Dispute2FA(network, it)
+                        } else {
+                            AlertType.Reset2FA(network, it)
+                        }
+                    } else {
+                        null
+                    }
+                )
+            }.launchIn(viewModelScope)
+        }
+
         session.failedNetworksFlow.onEach {
             _failedNetworkLoginsLiveData.value = it
         }.launchIn(viewModelScope)

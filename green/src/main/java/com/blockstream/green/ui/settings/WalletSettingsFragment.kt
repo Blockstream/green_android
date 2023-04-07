@@ -443,7 +443,7 @@ class WalletSettingsFragment :
                     list += requestRecoveryTransactionsPreference
                 }
 
-            }else {
+            } else {
                 val is2faReset = session.getTwoFactorReset(network)?.isActive == true
                 if (is2faReset) {
                     // TODO cancel 2fa
@@ -495,7 +495,7 @@ class WalletSettingsFragment :
                         list += recoveryPreference
                     }
 
-                    if(session.activeBitcoinMultisig != null) {
+                    if(session.activeBitcoinMultisig != null && session.walletExistsAndIsUnlocked(session.activeBitcoinMultisig)) {
                         list += recoveryTransactionsPreference
                     }
                 }

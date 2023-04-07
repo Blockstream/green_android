@@ -12,7 +12,8 @@ import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 const val BTC_UNIT = "BTC"
 
@@ -34,29 +35,6 @@ fun String.getFiatUnit(network: Network): String {
 
 fun String.getFiatUnit(session: GdkSession): String {
     return if(session.isTestnet) "FIAT" else this
-}
-
-// Use it for UI purposes
-@Deprecated("Use the AssetId")
-fun getBitcoinOrLiquidUnit(network: Network, session: GdkSession, overrideDenomination: String? = null): String {
-    var unit = overrideDenomination ?: session.getSettings(network)?.unit ?: "n/a"
-
-    if (network.isTestnet) {
-        unit = when (unit.lowercase()) {
-            "btc" -> "TEST"
-            "mbtc" -> "mTEST"
-            "\u00B5btc" -> "\u00B5TEST"
-            "bits" -> "bTEST"
-            "sats" -> "sTEST"
-            else -> unit
-        }
-    }
-
-    return if (network.isLiquid) {
-        "L-$unit"
-    } else {
-        unit
-    }
 }
 
 fun getBitcoinOrLiquidUnit(assetId: String? = null, session: GdkSession, overrideDenomination: String? = null): String {

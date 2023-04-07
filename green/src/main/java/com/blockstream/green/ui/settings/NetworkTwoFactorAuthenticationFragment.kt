@@ -23,6 +23,7 @@ import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.localized2faMethods
 import com.blockstream.green.gdk.getNetworkIcon
+import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
@@ -114,7 +115,7 @@ class NetworkTwoFactorAuthenticationFragment :
         val fastAdapter = FastAdapter.with(itemAdapter)
 
         fastAdapter.onClickListener =
-            { _: View?, _: IAdapter<GenericItem>, item: GenericItem, position: Int ->
+            { _: View?, _: IAdapter<GenericItem>, item: GenericItem, _: Int ->
                 viewModel.networkTwoFactorConfigLiveData(network).value?.let {
                     when (item) {
                         emailPreference -> {
@@ -185,7 +186,17 @@ class NetworkTwoFactorAuthenticationFragment :
             }
 
         fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
-            openBrowser(settingsManager.getApplicationSettings(), Urls.RECOVERY_TOOL)
+            if(session.walletExistsAndIsUnlocked(network)){
+                session.getTwoFactorReset(network)?.also {
+                    TwoFactorResetBottomSheetDialogFragment.show(
+                        network,
+                        it,
+                        childFragmentManager
+                    )
+                }
+            }else{
+                openBrowser(settingsManager.getApplicationSettings(), Urls.RECOVERY_TOOL)
+            }
         }
 
         binding.recycler.apply {
@@ -231,89 +242,100 @@ class NetworkTwoFactorAuthenticationFragment :
             return
         }
 
+
         val list = mutableListOf<GenericItem>()
+        if(session.walletExistsAndIsUnlocked(network)) {
+            list += TitleListItem(StringHolder(R.string.id_2fa_methods))
 
-        list += TitleListItem(StringHolder(R.string.id_2fa_methods))
-        
-
-        twoFactorConfig.allMethods.also { methods ->
-            if(methods.contains(TwoFactorMethod.EMAIL.gdkType)){
-                list += emailPreference.also {
-                    it.switchChecked = twoFactorConfig.email.enabled
-                    // email has the old value even if disabled
-                    it.subtitle = StringHolder(if(twoFactorConfig.email.enabled) twoFactorConfig.email.data.ifBlank { null } else null)
-                }
-            }
-            if(methods.contains(TwoFactorMethod.SMS.gdkType)) {
-                list += smsPreference.also {
-                    it.switchChecked = twoFactorConfig.sms.enabled
-                    it.subtitle = StringHolder(twoFactorConfig.sms.data.ifBlank { null })
-                    // it.withButton = twoFactorConfig.sms.enabled
-                }
-            }
-            if(methods.contains(TwoFactorMethod.PHONE.gdkType)) {
-                list += callPreference.also {
-                    it.switchChecked = twoFactorConfig.phone.enabled
-                    it.subtitle = StringHolder(twoFactorConfig.phone.data.ifBlank { null })
-                }
-            }
-            if(methods.contains(TwoFactorMethod.AUTHENTICATOR.gdkType)) {
-                list += toptPreference.also {
-                    it.switchChecked = twoFactorConfig.gauth.enabled
-                    it.subtitle =
-                        StringHolder(if (twoFactorConfig.gauth.enabled) getString(R.string.id_enabled) else null)
-                }
-            }
-            if(methods.contains(TwoFactorMethod.TELEGRAM.gdkType)) {
-                list += telegramPreference.also {
-                    it.switchChecked = twoFactorConfig.telegram.enabled
-                    it.subtitle =
-                        StringHolder(if (twoFactorConfig.telegram.enabled) getString(R.string.id_enabled) else null)
-                }
-            }
-        }
-
-        if(!network.isLiquid){
-            list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
-            list += HelpListItem(message = StringHolder(R.string.id_spend_your_bitcoin_without_2fa))
-
-            list += thresholdPreference.also {
-                it.subtitle = StringHolder(twoFactorConfig.limits.let { limits ->
-                    if (!limits.isFiat && limits.satoshi == 0L) {
-                        getString(R.string.id_set_twofactor_threshold)
-                    } else {
-                        if(limits.isFiat){
-                            // GDK 0.0.58.post1 - GA_get_twofactor_config: Fiat pricing limits no longer return corresponding
-                            // converted BTC amounts. When "is_fiat" is true, the caller should convert
-                            // the amount themselves using GA_convert_amount if desired.
-                            limits.fiat
-                        }else{
-                            limits.toAmountLook(
-                                session = session
-                            )
-                        }
+            twoFactorConfig.allMethods.also { methods ->
+                if (methods.contains(TwoFactorMethod.EMAIL.gdkType)) {
+                    list += emailPreference.also {
+                        it.switchChecked = twoFactorConfig.email.enabled
+                        // email has the old value even if disabled
+                        it.subtitle =
+                            StringHolder(if (twoFactorConfig.email.enabled) twoFactorConfig.email.data.ifBlank { null } else null)
                     }
-                })
+                }
+                if (methods.contains(TwoFactorMethod.SMS.gdkType)) {
+                    list += smsPreference.also {
+                        it.switchChecked = twoFactorConfig.sms.enabled
+                        it.subtitle = StringHolder(twoFactorConfig.sms.data.ifBlank { null })
+                        // it.withButton = twoFactorConfig.sms.enabled
+                    }
+                }
+                if (methods.contains(TwoFactorMethod.PHONE.gdkType)) {
+                    list += callPreference.also {
+                        it.switchChecked = twoFactorConfig.phone.enabled
+                        it.subtitle = StringHolder(twoFactorConfig.phone.data.ifBlank { null })
+                    }
+                }
+                if (methods.contains(TwoFactorMethod.AUTHENTICATOR.gdkType)) {
+                    list += toptPreference.also {
+                        it.switchChecked = twoFactorConfig.gauth.enabled
+                        it.subtitle =
+                            StringHolder(if (twoFactorConfig.gauth.enabled) getString(R.string.id_enabled) else null)
+                    }
+                }
+                if (methods.contains(TwoFactorMethod.TELEGRAM.gdkType)) {
+                    list += telegramPreference.also {
+                        it.switchChecked = twoFactorConfig.telegram.enabled
+                        it.subtitle =
+                            StringHolder(if (twoFactorConfig.telegram.enabled) getString(R.string.id_enabled) else null)
+                    }
+                }
+            }
+
+            if (!network.isLiquid) {
+                list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
+                list += HelpListItem(message = StringHolder(R.string.id_spend_your_bitcoin_without_2fa))
+
+                list += thresholdPreference.also {
+                    it.subtitle = StringHolder(twoFactorConfig.limits.let { limits ->
+                        if (!limits.isFiat && limits.satoshi == 0L) {
+                            getString(R.string.id_set_twofactor_threshold)
+                        } else {
+                            if (limits.isFiat) {
+                                // GDK 0.0.58.post1 - GA_get_twofactor_config: Fiat pricing limits no longer return corresponding
+                                // converted BTC amounts. When "is_fiat" is true, the caller should convert
+                                // the amount themselves using GA_convert_amount if desired.
+                                limits.fiat
+                            } else {
+                                limits.toAmountLook(
+                                    session = session
+                                )
+                            }
+                        }
+                    })
+                }
+            }
+
+            list += TitleListItem(StringHolder(R.string.id_2fa_expiry))
+
+            if (!network.isLiquid) {
+                list += HelpListItem(message = StringHolder(R.string.id_customize_2fa_expiration_of))
+                list += csvBucketPreferences
+
+                val selectedIndex = network.csvBuckets.indexOf(settings.csvTime)
+
+                csvBucketPreferences.forEachIndexed { index, radioPreference ->
+                    radioPreference.radioChecked = index == selectedIndex
+                }
+            }
+
+            list += HelpListItem(
+                message = StringHolder(R.string.id_your_2fa_expires_so_that_if_you),
+                button = StringHolder(R.string.id_recovery_tool)
+            )
+        }else{
+            list += TitleListItem(StringHolder(R.string.id_2fa_reset_in_progress))
+
+            session.getTwoFactorReset(network)?.also {
+                list += HelpListItem(
+                    message = StringHolder(getString(R.string.id_your_wallet_is_locked_for_a, it.daysRemaining)),
+                    button = StringHolder(R.string.id_learn_more)
+                )
             }
         }
-
-        list += TitleListItem(StringHolder(R.string.id_2fa_expiry))
-
-        if (!network.isLiquid) {
-            list += HelpListItem(message = StringHolder(R.string.id_customize_2fa_expiration_of))
-            list += csvBucketPreferences
-
-            val selectedIndex = network.csvBuckets.indexOf(settings.csvTime)
-
-            csvBucketPreferences.forEachIndexed { index, radioPreference ->
-                radioPreference.radioChecked = index == selectedIndex
-            }
-        }
-
-        list += HelpListItem(
-            message = StringHolder(R.string.id_your_2fa_expires_so_that_if_you),
-            button = StringHolder(R.string.id_recovery_tool)
-        )
 
         itemAdapter.set(list)
         // Redraw all cells as we use checkboxes and radio buttons
@@ -327,7 +349,7 @@ class NetworkTwoFactorAuthenticationFragment :
         binding.amountInputLayout.endIconCustomMode()
 
         // Warning, don't change the order of fiat and btc,
-        val currencies = listOf(getBitcoinOrLiquidUnit(network, session), getFiatCurrency(network, session))
+        val currencies = listOf(getBitcoinOrLiquidUnit(assetId = network.policyAsset, session), getFiatCurrency(network, session))
         val adapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencies)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -402,15 +424,20 @@ class NetworkTwoFactorAuthenticationFragment :
                     dialog.dismiss()
                 }
                 .setNegativeButton(android.R.string.cancel, null)
-                .setNeutralButton(R.string.id_i_lost_my_2fa) { _: DialogInterface, _: Int ->
-                    navigate(
-                        TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
-                            wallet = wallet,
-                            action = TwoFactorSetupAction.RESET,
-                            network = network
-                        )
-                    )
+                .apply {
+                    if(network.isBitcoin) {
+                        setNeutralButton(R.string.id_i_lost_my_2fa) { _: DialogInterface, _: Int ->
+                            navigate(
+                                TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
+                                    wallet = wallet,
+                                    action = TwoFactorSetupAction.RESET,
+                                    network = network
+                                )
+                            )
+                        }
+                    }
                 }
+
                 .show()
         }
     }

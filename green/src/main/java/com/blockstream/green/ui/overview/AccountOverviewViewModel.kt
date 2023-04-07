@@ -12,6 +12,7 @@ import com.blockstream.green.gdk.Assets
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.policyAsset
 import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
@@ -30,6 +31,8 @@ class AccountOverviewViewModel @AssistedInject constructor(
 ) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, initWallet, account) {
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
+    private val _twoFactorStateLiveData: MutableLiveData<List<AlertType>> = MutableLiveData()
+    val twoFactorStateLiveData: LiveData<List<AlertType>> get() = _twoFactorStateLiveData
 
     private val _transactionsLiveData: MutableLiveData<List<Transaction>> =
         MutableLiveData(listOf(Transaction.LoadingTransaction))
@@ -62,6 +65,22 @@ class AccountOverviewViewModel @AssistedInject constructor(
 
         session.accountTransactionsPagerFlow(account).onEach {
             _transactionsPagerLiveData.value = it
+        }.launchIn(viewModelScope)
+
+        session.twoFactorResetFlow(network).onEach {
+            _twoFactorStateLiveData.postValue(
+                listOfNotNull(
+                    if (it != null && it.isActive == true) {
+                        if (it.isDisputed == true) {
+                            AlertType.Dispute2FA(network, it)
+                        } else {
+                            AlertType.Reset2FA(network, it)
+                        }
+                    } else {
+                        null
+                    }
+                )
+            )
         }.launchIn(viewModelScope)
 
         session.getTransactions(account = account, isReset = true, isLoadMore = false)

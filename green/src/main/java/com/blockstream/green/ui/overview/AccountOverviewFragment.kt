@@ -28,6 +28,7 @@ import com.blockstream.green.gdk.needs2faActivation
 import com.blockstream.green.ui.bottomsheets.AssetDetailsBottomSheetFragment
 import com.blockstream.green.ui.bottomsheets.Call2ActionBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameAccountBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.wallet.AbstractAccountWalletFragment
 import com.blockstream.green.utils.*
@@ -81,6 +82,9 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
     override val overrideSubtitle: Boolean = false
 
     override val screenName = "AccountOverview"
+
+    override val title: String
+        get() = if (isSessionNetworkInitialized) viewModel.wallet.name else ""
 
     override val segmentation
         get() = if (isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.accountSegmentation(
@@ -357,6 +361,32 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             }
         }
 
+        // Alert cards
+        val alertCardsAdapter = ModelAdapter<AlertType, GenericItem> {
+            AlertListItem(it).also { alertListItem ->
+                alertListItem.action = { isClose ->
+                    when (alertListItem.alertType) {
+                        is AlertType.Reset2FA -> {
+                            TwoFactorResetBottomSheetDialogFragment.show(
+                                alertListItem.alertType.network,
+                                alertListItem.alertType.twoFactorReset,
+                                childFragmentManager
+                            )
+                        }
+                        is AlertType.Dispute2FA -> {
+                            TwoFactorResetBottomSheetDialogFragment.show(
+                                alertListItem.alertType.network,
+                                alertListItem.alertType.twoFactorReset,
+                                childFragmentManager
+                            )
+                        }
+                        else -> {}
+                    }
+                }
+            }
+        }.observeList(viewLifecycleOwner, viewModel.twoFactorStateLiveData)
+
+
         val titleAdapter = FastItemAdapter<GenericItem>()
 
         viewModel.transactionsLiveData.observe(viewLifecycleOwner) { transactions ->
@@ -406,6 +436,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         val adapters = listOfNotNull(
             accountAdapter,
             ampAccountHelpAdapter,
+            alertCardsAdapter,
             assetsBalanceAdapter,
             call2ActionAdapter,
             titleAdapter,

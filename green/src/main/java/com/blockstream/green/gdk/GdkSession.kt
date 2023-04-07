@@ -292,7 +292,7 @@ class GdkSession constructor(
                     }
         }
     }
-
+    fun walletExistsAndIsUnlocked(network: Network?) = network?.let { getTwoFactorReset(network)?.isActive != true } ?: false
     fun getTwoFactorReset(network: Network): TwoFactorReset? = twoFactorResetFlow(network).value
     fun getSettings(network: Network? = null): Settings? {
         return settingsStateFlow(network ?: defaultNetwork).value ?: try {
@@ -310,11 +310,20 @@ class GdkSession constructor(
         val exceptions = mutableListOf<Exception>()
         activeSessions.forEach { network ->
             getSettings(network)?.also { networkSettings ->
-                try{
-                    changeSettings(network, Settings.normalizeFromProminent(networkSettings = networkSettings, prominentSettings = settings))
-                }catch (e: Exception){
-                    e.printStackTrace()
-                    exceptions.add(e)
+
+                if(walletExistsAndIsUnlocked(network)) {
+                    try {
+                        changeSettings(
+                            network,
+                            Settings.normalizeFromProminent(
+                                networkSettings = networkSettings,
+                                prominentSettings = settings
+                            )
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        exceptions.add(e)
+                    }
                 }
             }
         }

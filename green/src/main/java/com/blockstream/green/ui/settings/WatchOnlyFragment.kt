@@ -89,7 +89,7 @@ class WatchOnlyFragment :
                 iconLeft = ContextCompat.getDrawable(requireContext(), R.drawable.ic_multisig)
             )
 
-            if (session.activeBitcoinMultisig != null) {
+            if (session.activeBitcoinMultisig != null && session.walletExistsAndIsUnlocked(session.activeBitcoinMultisig)) {
                 list += bitcoinMultisigPreference
 
                 viewModel.watchOnlyUsernameLiveData(session.activeBitcoinMultisig!!).observe(viewLifecycleOwner) {
@@ -107,7 +107,7 @@ class WatchOnlyFragment :
                 }
             }
 
-            if (session.activeLiquidMultisig != null) {
+            if (session.activeLiquidMultisig != null && session.walletExistsAndIsUnlocked(session.activeLiquidMultisig)) {
                 list += liquidMultisigPreference
 
                 viewModel.watchOnlyUsernameLiveData(session.activeLiquidMultisig!!).observe(viewLifecycleOwner) {

@@ -6,12 +6,11 @@ import com.blockstream.gdk.params.Convert
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.gdk.asset
 import com.blockstream.green.gdk.isPolicyAsset
+import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.utils.UserInput
-
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 import com.blockstream.green.utils.getFiatCurrency
 import com.blockstream.green.utils.toAmountLook
@@ -76,7 +75,7 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
                 amountCurrency.value = if (it) {
                     getFiatCurrency(network, session)
                 } else if (accountAsset.assetId.isPolicyAsset(accountAsset.account.network)) {
-                    getBitcoinOrLiquidUnit(network, session)
+                    getBitcoinOrLiquidUnit(network.policyAsset, session)
                 } else {
                     accountAsset.asset(session)?.ticker ?: ""
                 }
