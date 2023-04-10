@@ -11,6 +11,7 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.ConsumableEvent
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -72,13 +73,27 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         whenever(sessionManager.getOnBoardingSession(anyOrNull())).thenReturn(session)
         whenever(session.defaultNetwork).thenReturn(testnetNetwork)
 
-        whenever(session.loginWithMnemonic(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            // value is same as requested key
-            val loginCredentials = it.arguments.find { it is LoginCredentialsParams } as LoginCredentialsParams
-            if (loginCredentials.mnemonic == "valid") {
-                LoginData("walletHashId", "")
-            }else{
-                throw Exception("invalid recovery phrase")
+        runBlocking {
+            whenever(
+                session.loginWithMnemonic(
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull()
+                )
+            ).thenAnswer {
+                // value is same as requested key
+                val loginCredentials =
+                    it.arguments.find { it is LoginCredentialsParams } as LoginCredentialsParams
+                if (loginCredentials.mnemonic == "valid") {
+                    LoginData("walletHashId", "")
+                } else {
+                    throw Exception("invalid recovery phrase")
+                }
             }
         }
 

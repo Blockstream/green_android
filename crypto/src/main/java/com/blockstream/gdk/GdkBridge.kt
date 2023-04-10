@@ -37,6 +37,8 @@ import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.GDK
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
@@ -295,17 +297,21 @@ class GdkBridge constructor(
 
     fun setTransactionMemo(session: GASession, txHash: String, memo: String) = gdk.setTransactionMemo(session, txHash, memo)
 
-    fun convertAmount(session: GASession, amount: Convert): Balance = Balance.fromJsonElement(
-        JsonDeserializer,
-        gdk.convertAmount(session, amount) as JsonElement,
-        amount
-    )
+    suspend fun convertAmount(session: GASession, amount: Convert): Balance = withContext(context = Dispatchers.IO) {
+        Balance.fromJsonElement(
+            JsonDeserializer,
+            gdk.convertAmount(session, amount) as JsonElement,
+            amount
+        )
+    }
 
-    fun convertAmount(session: GASession, amount: Convert, assetConvert :JsonElement): Balance = Balance.fromJsonElement(
-        JsonDeserializer,
-        gdk.convertAmount(session, assetConvert) as JsonElement,
-        amount
-    )
+    suspend fun convertAmount(session: GASession, amount: Convert, assetConvert :JsonElement): Balance = withContext(context = Dispatchers.IO) {
+        Balance.fromJsonElement(
+            JsonDeserializer,
+            gdk.convertAmount(session, assetConvert) as JsonElement,
+            amount
+        )
+    }
 
     fun getMnemonicWordList(): List<String> {
         val wordList = mutableListOf<String>()

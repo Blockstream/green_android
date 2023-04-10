@@ -96,7 +96,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
     }
 
     @Test
-    fun test_error_with_wrong_credentials() {
+    fun test_error_with_wrong_credentials() = runTest {
         mockSession(false)
 
         viewModel.username.value = "username"
@@ -127,7 +127,7 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
         verify(errorObserver, never()).onChanged(any())
     }
 
-    private fun mockSession(isSuccess: Boolean) {
+    private suspend fun mockSession(isSuccess: Boolean) {
         if (isSuccess) {
             whenever(gdkSession.loginWatchOnly(any<Network>(), any(), any())).then {
                 LoginData("", "")

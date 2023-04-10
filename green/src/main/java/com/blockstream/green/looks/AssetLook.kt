@@ -6,6 +6,7 @@ import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getAssetName
 import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.utils.toAmountLookOrNa
+import kotlinx.coroutines.runBlocking
 
 
 class AssetLook constructor(
@@ -19,7 +20,7 @@ class AssetLook constructor(
 
     private val isPolicyAsset by lazy { assetId.isPolicyAsset(session) }
 
-    fun balance(
+    suspend fun balance(
         isFiat: Boolean? = null,
         withUnit: Boolean = false,
         withMinimumDigits: Boolean = true
@@ -34,7 +35,7 @@ class AssetLook constructor(
 
     val fiatValue: Balance?
         get() = if (isPolicyAsset) {
-            session.convertAmount(assetId, Convert(satoshi = amount))
+            runBlocking { session.convertAmount(assetId, Convert(satoshi = amount)) }
         } else {
             null
         }

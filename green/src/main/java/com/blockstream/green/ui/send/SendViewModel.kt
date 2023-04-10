@@ -19,6 +19,7 @@ import com.blockstream.green.utils.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonElement
@@ -311,7 +312,7 @@ class SendViewModel @AssistedInject constructor(
             feeRate ?: network.defaultFee.coerceAtLeast(feeEstimation?.getOrNull(0) ?: 0)
         }
 
-    private fun createTransactionParams(): CreateTransactionParams {
+    private suspend fun createTransactionParams(): CreateTransactionParams {
         val unspentOutputs = session.getUnspentOutputs(account, isBump)
 
         return when{
@@ -525,44 +526,51 @@ class SendViewModel @AssistedInject constructor(
     fun toggleCurrency(index: Int) {
         getRecipientLiveData(index)?.let { addressParams ->
 
-            val isFiat = addressParams.isFiat.value ?: false
+            viewModelScope.launch {
+                val isFiat = addressParams.isFiat.value ?: false
 
-            // Toggle it first as the amount trigger will be called with wrong isFiat value
-            addressParams.isFiat.value = !isFiat
+                // Toggle it first as the amount trigger will be called with wrong isFiat value
+                addressParams.isFiat.value = !isFiat
 
-            // Get value from the transaction object to get the actual send all amount
-            val amountToConvert = if(checkedTransaction?.isSendAll == true){
-                addressParams.accountAsset.value?.assetId?.let { assetId ->
-                    checkedTransaction?.let {
-                        getSendAmountCompat(addressParams.index, assetId, it)
+                // Get value from the transaction object to get the actual send all amount
+                val amountToConvert = if (checkedTransaction?.isSendAll == true) {
+                    addressParams.accountAsset.value?.assetId?.let { assetId ->
+                        checkedTransaction?.let {
+                            getSendAmountCompat(addressParams.index, assetId, it)
+                        }
+                            ?.toAmountLook(
+                                session = session,
+                                assetId = assetId,
+                                withUnit = false,
+                                withMinimumDigits = false,
+                                withGrouping = false
+                            )
                     }
-                    ?.toAmountLook(session = session, assetId = assetId , withUnit = false, withMinimumDigits = false, withGrouping = false)
+                } else {
+                    addressParams.amount.value ?: ""
                 }
-            }else{
-                addressParams.amount.value ?: ""
-            }
 
-            // If isSend All, skip conversion and get the actual value
-            if(checkedTransaction?.isSendAll == true && isFiat){
-                addressParams.amount.value = amountToConvert
-                return
-            }
-
-            // Convert between BTC / Fiat
-            addressParams.amount.value = try {
-                UserInput
-                    .parseUserInput(session, amountToConvert, isFiat = isFiat)
-                    .getBalance(session)
-                    ?.toAmountLook(
-                        session = session,
-                        isFiat = !isFiat,
-                        withUnit = false,
-                        withGrouping = false,
-                        withMinimumDigits = false
-                    )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                ""
+                // If isSend All, skip conversion and get the actual value
+                if (checkedTransaction?.isSendAll == true && isFiat) {
+                    addressParams.amount.value = amountToConvert
+                } else {
+                    // Convert between BTC / Fiat
+                    addressParams.amount.value = try {
+                        UserInput
+                            .parseUserInput(session, amountToConvert, isFiat = isFiat)
+                            .getBalance(session)
+                            ?.toAmountLook(
+                                session = session,
+                                isFiat = !isFiat,
+                                withUnit = false,
+                                withGrouping = false,
+                                withMinimumDigits = false
+                            )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        ""
+                    }
+                }
             }
         }
     }
@@ -615,7 +623,7 @@ data class AddressParamsLiveData constructor(
     val network: Network
         get() = accountAsset.value!!.account.network
 
-    fun toAddressParams(session: GdkSession, isSendAll: Boolean): AddressParams {
+    suspend fun toAddressParams(session: GdkSession, isSendAll: Boolean): AddressParams {
 
         val satoshi = when {
             isSendAll -> 0

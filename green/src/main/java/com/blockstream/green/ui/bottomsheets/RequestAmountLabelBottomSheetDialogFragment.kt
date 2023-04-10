@@ -12,6 +12,7 @@ import com.blockstream.green.ui.receive.RequestAmountLabelViewModel
 import com.blockstream.green.utils.AmountTextWatcher
 import com.blockstream.green.utils.UserInput
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import javax.inject.Inject
 
@@ -47,24 +48,26 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
         AmountTextWatcher.watch(binding.amountEditText)
 
         binding.buttonOK.setOnClickListener {
-            var amount : String? = null
-
-            try{
+            val amount: String? = try{
                 val input = UserInput.parseUserInput(session = session, input = requestViewModel.requestAmount.value, assetId = viewModel.accountAsset.assetId, isFiat = requestViewModel.isFiat.value ?: false)
 
                 // Convert it to BTC as per BIP21 spec
-                amount = input.getBalance(session).let { balance ->
-                    if(balance != null && balance.satoshi > 0){
-                        balance.valueInMainUnit.let {
-                            // Remove trailing zeros if needed
-                            if(it.contains(".")) it.replace("0*$".toRegex(), "").replace("\\.$".toRegex(), "") else it
+                runBlocking {
+                    input.getBalance(session).let { balance ->
+                        if (balance != null && balance.satoshi > 0) {
+                            balance.valueInMainUnit.let {
+                                // Remove trailing zeros if needed
+                                if (it.contains(".")) it.replace("0*$".toRegex(), "")
+                                    .replace("\\.$".toRegex(), "") else it
+                            }
+                        } else {
+                            null
                         }
-                    }else{
-                        null
                     }
                 }
             }catch (e: Exception){
                 e.printStackTrace()
+                null
             }
 
             viewModel.setRequestAmount(amount)

@@ -11,7 +11,7 @@ import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.gdk.networkForAsset
 import java.text.DecimalFormat
 import java.text.ParsePosition
-import java.util.*
+import java.util.Locale
 
 // Parse user input respecting user Locale and convert the value to GDK compatible value (US Locale)
 data class UserInput(
@@ -26,7 +26,7 @@ data class UserInput(
 
     fun toLimit() = Limits.fromUnit(unitKey, amount)
 
-    fun getBalance(session: GdkSession): Balance? {
+    suspend fun getBalance(session: GdkSession): Balance? {
         return if(amount.isNotBlank()){
             if (asset == null) {
                 session.convertAmount(assetId, Convert.forUnit(unitKey, amount))

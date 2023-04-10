@@ -780,7 +780,7 @@ class GdkSession constructor(
         )
     }
 
-    fun loginWithPin(
+    suspend fun loginWithPin(
         wallet: Wallet,
         pin: String,
         loginCredentials: LoginCredentials,
@@ -796,7 +796,7 @@ class GdkSession constructor(
         )
     }
 
-    fun loginWithMnemonic(
+    suspend fun loginWithMnemonic(
         isTestnet: Boolean,
         wallet: Wallet? = null,
         loginCredentialsParams: LoginCredentialsParams,
@@ -818,11 +818,11 @@ class GdkSession constructor(
         )
     }
 
-    fun loginWatchOnly(wallet: Wallet, username: String, password: String) {
+    suspend fun loginWatchOnly(wallet: Wallet, username: String, password: String) {
         loginWatchOnly(prominentNetwork(wallet), username, password)
     }
 
-    fun loginWatchOnly(network: Network, username: String, password: String): LoginData {
+    suspend fun loginWatchOnly(network: Network, username: String, password: String): LoginData {
         return loginWithLoginCredentials(
             prominentNetwork = network,
             initNetworks = listOf(network),
@@ -832,7 +832,7 @@ class GdkSession constructor(
         )
     }
 
-    fun loginWithDevice(
+    suspend fun loginWithDevice(
         wallet: Wallet,
         device: Device,
         hardwareWalletResolver: HardwareWalletResolver,
@@ -874,7 +874,7 @@ class GdkSession constructor(
         )
     }
 
-    private fun loginWithLoginCredentials(
+    private suspend fun loginWithLoginCredentials(
         prominentNetwork: Network,
         initNetworks: List<Network>? = null,
         wallet: Wallet? = null,
@@ -1079,7 +1079,7 @@ class GdkSession constructor(
         }
     }
 
-    private fun onLoginSuccess(
+    private suspend fun onLoginSuccess(
         loginData: LoginData?,
         initNetwork: String?,
         initAccount: Long?,
@@ -1096,7 +1096,7 @@ class GdkSession constructor(
         blockNotificationHandling = false
     }
 
-    private fun initializeSessionData(initNetwork:String?, initAccount: Long?) {
+    private suspend fun initializeSessionData(initNetwork:String?, initAccount: Long?) {
         // Check if active account index was archived from 1) a different client (multisig) or 2) from cached Singlesig hww session
         // Expect refresh = true to be already called
         updateAccounts()
@@ -1704,7 +1704,7 @@ class GdkSession constructor(
 
     // asset_info in Convert object can be null for liquid assets that don't have asset metadata
     // if no asset is given, no conversion is needed (conversion will be identified as a btc value in gdk)
-    fun convertAmount(network: Network, convert: Convert, isAsset: Boolean = false) = try {
+    suspend fun convertAmount(network: Network, convert: Convert, isAsset: Boolean = false) = try {
         if(isAsset && convert.asset == null){
             Balance.fromAssetWithoutMetadata(convert)
         }else if(isAsset && convert.assetAmount != null){
@@ -1713,7 +1713,7 @@ class GdkSession constructor(
                 put(convert.asset?.assetId ?: "", convert.assetAmount)
             }
             gdkBridge.convertAmount(gdkSession(network), convert, jsonElement)
-        } else{
+        } else {
             gdkBridge.convertAmount(gdkSession(network), convert)
         }
     }catch (e: Exception){
@@ -1721,11 +1721,11 @@ class GdkSession constructor(
         null
     }
 
-    fun convertAmount(assetId: String?, convert: Convert, isAsset: Boolean = false): Balance? {
+    suspend fun convertAmount(assetId: String?, convert: Convert, isAsset: Boolean = false): Balance? {
         return convertAmount(assetId.networkForAsset(this@GdkSession), convert, isAsset)
     }
 
-    fun getUnspentOutputs(network: Network, params: BalanceParams) = authHandler(
+    private fun getUnspentOutputs(network: Network, params: BalanceParams) = authHandler(
         network,
         gdkBridge.getUnspentOutputs(gdkSession(network), params)
     ).result<UnspentOutputs>().also {

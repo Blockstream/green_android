@@ -19,6 +19,8 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class RequestAmountLabelViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
@@ -35,16 +37,17 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
         MutableLiveData(initialRequestAmount?.let { amount ->
             if(isPolicyAsset) {
                 try {
-                    // Amount is always in BTC value, convert it to user's settings
-                    session
-                        .convertAmount(network, Convert.forUnit(amount = amount))
-                        ?.toAmountLook(
-                            session,
-                            withUnit = false,
-                            withGrouping = false,
-                            withMinimumDigits = false
-                        )!!
-
+                    runBlocking {
+                        // Amount is always in BTC value, convert it to user's settings
+                        session
+                            .convertAmount(network, Convert.forUnit(amount = amount))
+                            ?.toAmountLook(
+                                session,
+                                withUnit = false,
+                                withGrouping = false,
+                                withMinimumDigits = false
+                            )!!
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     amount
@@ -112,33 +115,40 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
     }
 
     fun toggleCurrency() {
+        viewModelScope.launch {
 
-        val isFiat = isFiat.value ?: false
+            val isFiat = isFiat.value ?: false
 
-        // Toggle it first as the amount trigger will be called with wrong isFiat value
-        this.isFiat.value = !isFiat
+            // Toggle it first as the amount trigger will be called with wrong isFiat value
+            this@RequestAmountLabelViewModel.isFiat.value = !isFiat
 
-        // Convert between BTC / Fiat
-        requestAmount.value = try {
-            val input =
-                UserInput.parseUserInput(session, requestAmount.value, assetId = accountAsset.assetId, isFiat = isFiat)
-            input.getBalance(session)?.let {
-                if (it.satoshi > 0) {
-                    it.toAmountLook(
-                        session = session,
+            // Convert between BTC / Fiat
+            requestAmount.value = try {
+                val input =
+                    UserInput.parseUserInput(
+                        session,
+                        requestAmount.value,
                         assetId = accountAsset.assetId,
-                        isFiat = !isFiat,
-                        withUnit = false,
-                        withGrouping = false,
-                        withMinimumDigits = false
+                        isFiat = isFiat
                     )
-                } else {
-                    ""
+                input.getBalance(session)?.let {
+                    if (it.satoshi > 0) {
+                        it.toAmountLook(
+                            session = session,
+                            assetId = accountAsset.assetId,
+                            isFiat = !isFiat,
+                            withUnit = false,
+                            withGrouping = false,
+                            withMinimumDigits = false
+                        )
+                    } else {
+                        ""
+                    }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ""
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
         }
     }
 

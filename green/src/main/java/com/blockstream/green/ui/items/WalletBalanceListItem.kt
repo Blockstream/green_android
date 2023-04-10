@@ -42,7 +42,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
     private var view = 0
 
-    private fun balanceInBtc() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLook(
+    private suspend fun balanceInBtc() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLook(
         session = session,
         assetId = session.walletAssets.keys.firstOrNull(), // Expect the first asset to be the policy BTC or L-BTC
         isFiat = false,
@@ -51,7 +51,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
         overrideDenomination = view == 2
     )
 
-    private fun balanceInFiat() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLookOrNa(
+    private suspend fun balanceInFiat() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLookOrNa(
         session = session,
         assetId = session.walletAssets.keys.firstOrNull(), // Expect the first asset to be the policy BTC or L-BTC
         isFiat = true,

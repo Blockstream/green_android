@@ -17,6 +17,7 @@ import com.blockstream.green.extensions.share
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.toAmountLook
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -61,11 +62,15 @@ class SwapProposalFragment : AbstractWalletFragment<SwapProposalFragmentBinding>
         }
 
         val from = args.proposal.inputs[0].let {
-            it.amount.toAmountLook(session = session, assetId = it.assetId, withUnit = true)
+            runBlocking {
+                it.amount.toAmountLook(session = session, assetId = it.assetId, withUnit = true)
+            }
         }
 
         val to = args.proposal.outputs[0].let {
-            it.amount.toAmountLook(session = session, assetId = it.assetId, withUnit = true)
+            runBlocking {
+                it.amount.toAmountLook(session = session, assetId = it.assetId, withUnit = true)
+            }
         }
 
         binding.swapDescriptionTextView.text = buildSpannedString {

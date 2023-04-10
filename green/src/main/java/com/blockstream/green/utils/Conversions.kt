@@ -159,7 +159,7 @@ fun Balance?.toAmountLook(
     }
 }
 
-fun Long?.toAmountLookOrNa(
+suspend fun Long?.toAmountLookOrNa(
     session: GdkSession,
     assetId: String? = null,
     isFiat: Boolean? = null,
@@ -173,7 +173,7 @@ fun Long?.toAmountLookOrNa(
     return toAmountLook(session, assetId, isFiat, withUnit, withGrouping, withDirection, withMinimumDigits, overrideDenomination) ?: "n/a"
 }
 
-fun Long?.toAmountLook(
+suspend fun Long?.toAmountLook(
     session: GdkSession,
     assetId: String? = null,
     isFiat: Boolean? = null,
