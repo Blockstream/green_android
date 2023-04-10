@@ -23,6 +23,10 @@ enum NetworkSecurityCase: String, CaseIterable {
         network.replacingOccurrences(of: "electrum-", with: "")
     }
 
+    var singleSig: Bool {
+        gdkNetwork?.electrum ?? true
+    }
+
     func name() -> String {
         switch self {
         case .bitcoinMS:

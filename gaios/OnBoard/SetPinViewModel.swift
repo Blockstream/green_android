@@ -34,10 +34,16 @@ class SetPinViewModel {
                     throw LoginError.walletMismatch()
                 }
             }.then { wm.restore(self.credentials, forceJustRestored: account.xpubHashId != nil) }
-            .map { AnalyticsManager.shared.restoreWallet(account: account) }
             .then { wm.login(self.credentials) }
-            .map { wm.account.attempts = 0 }
-            .then { wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!) }
+            .map { _ in
+                if let multisig = wm.activeNetworks.first(where: { !$0.singleSig }) {
+                    wm.account.network = multisig.chain
+                    wm.account.isSingleSig = multisig.singleSig
+                    wm.prominentNetwork = multisig
+                }
+                wm.account.attempts = 0
+                AnalyticsManager.shared.restoreWallet(account: account)
+            }.then { wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!) }
             .asVoid()
     }
 
