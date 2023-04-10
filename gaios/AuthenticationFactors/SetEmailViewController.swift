@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import PromiseKit
+import gdk
 
 class SetEmailViewController: KeyboardViewController {
 

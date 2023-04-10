@@ -4,6 +4,7 @@ import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
 import UIKit
+import gdk
 
 enum BLEManagerError: Error {
     case powerOff(txt: String)
@@ -341,16 +342,6 @@ class BLEManager {
 
 extension BLEManager: JadeGdkRequest {
     func httpRequest(params: [String: Any]) -> [String: Any]? {
-        return try? self.session?.session?.httpRequest(params: params)
-    }
-}
-
-extension Observable {
-    func timeoutIfNoEvent(_ dueTime: RxTimeInterval) -> Observable<Element> {
-        let timeout = Observable
-            .never()
-            .timeout(dueTime, scheduler: MainScheduler.instance)
-
-        return self.amb(timeout)
+        return self.session?.httpRequest(params: params)
     }
 }

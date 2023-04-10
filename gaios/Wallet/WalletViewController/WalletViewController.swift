@@ -1,6 +1,7 @@
 import UIKit
 import PromiseKit
 import RiveRuntime
+import gdk
 
 enum WalletSection: Int, CaseIterable {
     case card

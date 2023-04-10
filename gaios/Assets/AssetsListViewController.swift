@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import PromiseKit
+import gdk
 
 protocol AssetsListViewControllerDelegate: AnyObject {
     func didSelect(assetId: String, index: Int?)

@@ -62,6 +62,17 @@
                </Test>
             </SkippedTests>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "81961A5429E46B5500E9B94D"
+               BuildableName = "gdkTests.xctest"
+               BlueprintName = "gdkTests"
+               ReferencedContainer = "container:gaios.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

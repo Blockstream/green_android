@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import PromiseKit
+import gdk
 
 class WalletViewModel {
 
@@ -175,7 +176,7 @@ class WalletViewModel {
             }
         }
         // All sessions should login with the passphrase
-        if wm.account.isEphemeral ?? false {
+        if wm.account.isEphemeral {
             // Bip39 ephemeral wallet
             cards.append(.ephemeralWallet)
         }

@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import gdk
 
 class WalletAssetCellModel {
     var asset: AssetInfo?

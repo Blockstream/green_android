@@ -1,3 +1,6 @@
+import Foundation
+import gdk
+
 enum AnalyticsEventName: String {
     case debugEvent = "debug_event"
     case walletActive = "wallet_active"

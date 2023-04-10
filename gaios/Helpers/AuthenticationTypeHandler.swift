@@ -1,6 +1,7 @@
 import Foundation
 import LocalAuthentication
 import Security
+import gdk
 
 class AuthenticationTypeHandler {
     public enum AuthError: Error, Equatable {

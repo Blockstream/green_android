@@ -1,4 +1,5 @@
 import UIKit
+import gdk
 
 enum TransactionStatus {
     case confirmed

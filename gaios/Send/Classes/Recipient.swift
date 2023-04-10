@@ -1,4 +1,5 @@
 import Foundation
+import gdk
 
 class Recipient: Codable {
     var address: String?

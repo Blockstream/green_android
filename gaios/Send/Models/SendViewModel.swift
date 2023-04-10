@@ -1,5 +1,6 @@
 import Foundation
 import PromiseKit
+import gdk
 
 class SendViewModel {
 
@@ -112,9 +113,6 @@ class SendViewModel {
     func defaultTransactionPriority() -> TransactionPriority {
         guard let settings = WalletManager.current?.prominentSession?.settings else {
             return .High
-        }
-        if let pref = TransactionPriority.getPreference() {
-            settings.transactionPriority = pref
         }
         return settings.transactionPriority
     }

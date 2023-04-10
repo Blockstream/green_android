@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import PromiseKit
+import gdk
 
 protocol DialogWatchOnlySetUpViewControllerDelegate: AnyObject {
     func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction)

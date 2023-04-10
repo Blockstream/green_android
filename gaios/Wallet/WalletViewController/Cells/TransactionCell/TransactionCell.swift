@@ -1,4 +1,5 @@
 import UIKit
+import gdk
 
 class TransactionCell: UITableViewCell {
 

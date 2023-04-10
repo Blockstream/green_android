@@ -1,10 +1,11 @@
 import Foundation
 import PromiseKit
+import gdk
 
 class MnemonicViewModel {
 
     func validateMnemonic(_ mnemonic: String) -> Promise<Void> {
-        if let validated = try? gaios.validateMnemonic(mnemonic: mnemonic),
+        if let validated = try? gdk.validateMnemonic(mnemonic: mnemonic),
            validated {
             return Promise().asVoid()
         }

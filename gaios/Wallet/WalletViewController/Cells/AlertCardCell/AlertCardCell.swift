@@ -1,4 +1,5 @@
 import UIKit
+import gdk
 
 enum AlertCardType {
     case reset(TwoFactorResetMessage)

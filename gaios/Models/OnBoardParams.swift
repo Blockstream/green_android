@@ -1,4 +1,5 @@
 import Foundation
+import gdk
 
 enum MnemonicSize: Int {
     case _12 = 12

@@ -1,5 +1,6 @@
 import Foundation
 import PromiseKit
+import gdk
 
 enum InputType {
     case transaction

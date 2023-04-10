@@ -1,5 +1,7 @@
 import Foundation
 import PromiseKit
+import UIKit
+import gdk
 
 // Section of settings
 enum WOSection: String, Codable, CaseIterable {

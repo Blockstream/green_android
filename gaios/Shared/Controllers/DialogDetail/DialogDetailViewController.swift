@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import PromiseKit
+import gdk
 
 enum DetailCellType: CaseIterable {
     case name

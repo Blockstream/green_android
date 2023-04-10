@@ -1,5 +1,6 @@
 import UIKit
 import PromiseKit
+import gdk
 
 protocol TwoFactorAuthenticationViewControllerDelegate: AnyObject {
     func userLogout()

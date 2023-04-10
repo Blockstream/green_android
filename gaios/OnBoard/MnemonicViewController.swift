@@ -1,5 +1,6 @@
 import UIKit
 import PromiseKit
+import gdk
 
 enum MnemonicActionType {
     case recoverWallet

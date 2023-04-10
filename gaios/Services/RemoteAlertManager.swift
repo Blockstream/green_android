@@ -1,4 +1,5 @@
 import Foundation
+import gdk
 
 struct RemoteAlert: Decodable {
     var dismissable: Bool?

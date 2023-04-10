@@ -1,4 +1,5 @@
 import Foundation
+import gdk
 
 enum MigrationFlag: String {
     case appDataVersion = "app_data_version"

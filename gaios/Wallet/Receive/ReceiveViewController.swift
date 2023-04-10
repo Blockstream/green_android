@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 import LinkPresentation
+import gdk
 
 public enum TransactionBaseType: UInt32 {
     case BTC = 0

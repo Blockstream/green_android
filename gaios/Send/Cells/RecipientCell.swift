@@ -1,4 +1,5 @@
 import UIKit
+import gdk
 
 protocol RecipientCellDelegate: AnyObject {
     func removeRecipient(_ index: Int)

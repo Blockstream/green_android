@@ -1,5 +1,6 @@
 import UIKit
 import PromiseKit
+import gdk
 
 protocol AssetExpandableSelectViewControllerDelegate: AnyObject {
     func didSelectReceiver(assetId: String, account: WalletItem)

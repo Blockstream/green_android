@@ -1,6 +1,7 @@
 import UIKit
 import PromiseKit
 import RxBluetoothKit
+import gdk
 
 func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate
