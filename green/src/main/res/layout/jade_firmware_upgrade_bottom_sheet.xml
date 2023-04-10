@@ -74,7 +74,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@{firmware}"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
                 tools:text="Firmware" />
 
             <TextView

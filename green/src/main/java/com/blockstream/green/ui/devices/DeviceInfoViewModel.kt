@@ -68,10 +68,6 @@ class DeviceInfoViewModel @AssistedInject constructor(
         }
     }
 
-    fun upgradeFirmware(jadeFirmwareManager: JadeFirmwareManager) {
-        authenticateAndContinue(jadeFirmwareManager = jadeFirmwareManager)
-    }
-
     private fun unlockDevice(context: Context) {
         onProgress.value = true
         navigationLock.value = true

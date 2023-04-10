@@ -35,6 +35,7 @@ data class FirmwareImage constructor(
     @SerialName("version") val version: String,
     @SerialName("config") val config: String,
     @SerialName("fwsize") val fwsize: Int,
+    @SerialName("fwhash") val fwhash: String? = null,
     @SerialName("from_version") val fromVersion: String? = null,
     @SerialName("from_config") val fromConfig: String? = null,
     @SerialName("patch_size") val patchSize: Int? = null
@@ -206,6 +207,7 @@ class JadeFirmwareManager(private val firmwareInteraction: FirmwareInteraction,
             val updated: Boolean = jade.otaUpdate(
                 fwFile.firmware,
                 fwFile.image.fwsize,
+                fwFile.image.fwhash,
                 fwFile.image.patchSize,
                 chunksize,
                 cmphash

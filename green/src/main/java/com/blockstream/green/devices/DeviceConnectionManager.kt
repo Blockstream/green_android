@@ -52,7 +52,7 @@ class DeviceConnectionManager constructor(
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO + logException(countly))
 
-    val jadeFirmwareManager by lazy {
+    private val jadeFirmwareManager by lazy {
         JadeFirmwareManager(
             interaction,
             httpRequestProvider,
@@ -158,11 +158,6 @@ class DeviceConnectionManager constructor(
             )
 
             val jadeWallet = JadeHWWallet(jade, jadeDevice, verInfo, qaTester)
-
-            // CHECK IF THIS IS NEEDED
-            if(makeDeviceReady){
-               // authenticateJade(jadeWallet, jadeFirmwareManager)
-            }
 
             onHWalletCreated(device, jadeWallet, jadeWallet.isUninitialized)
 

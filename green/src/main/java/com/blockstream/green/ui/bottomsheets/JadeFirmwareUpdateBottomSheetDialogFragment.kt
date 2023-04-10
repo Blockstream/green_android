@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.JadeFirmwareUpgradeBottomSheetBinding
 import com.blockstream.green.extensions.dismissIn
+import com.blockstream.green.extensions.padHex
 import com.blockstream.green.ui.devices.AbstractDeviceFragment
 import com.blockstream.green.ui.devices.AbstractDeviceViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +34,7 @@ class JadeFirmwareUpdateBottomSheetDialogFragment : AbstractBottomSheetDialogFra
                         is AbstractDeviceViewModel.DeviceEvent.FirmwarePushedToDevice -> {
                             logger.info { "FirmwarePushedToDevice ${it.firmwareFileData.image} ${it.hash}" }
                             binding.firmware = getString(R.string.id_firmware_version_s, "${it.firmwareFileData.image.version} ${it.firmwareFileData.image.config}")
-                            binding.hash = getString(R.string.id_hash_s, it.hash)
+                            binding.hash = getString(R.string.id_hash_s, it.hash.padHex())
 
                         }
                         is AbstractDeviceViewModel.DeviceEvent.FirmwareUpdateProgress -> {

@@ -135,6 +135,9 @@ fun MutableLiveData<Boolean>.toggle() : Boolean = (value?.let { !it } ?: false).
 fun String?.isBlank() = isNullOrBlank()
 fun String?.isNotBlank() = !isNullOrBlank()
 
+fun String?.padHex() = this?.replace("........".toRegex(), "$0 ")
+
+
 fun String.fromHtml(): Spanned {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT)

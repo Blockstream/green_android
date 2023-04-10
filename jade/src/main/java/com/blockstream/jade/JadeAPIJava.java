@@ -217,6 +217,7 @@ public abstract class JadeAPIJava {
     // OTA firmware update
     public boolean otaUpdate(final byte[] compressed_firmware,
                              final int uncompressed_size,
+                             final String fwhash,
                              final Integer patchsize,
                              final int chunksize,
                              final byte[] cmphash,
@@ -229,6 +230,7 @@ public abstract class JadeAPIJava {
         final String method = patchsize == null ? "ota" : "ota_delta";
         final JsonNode result = this.jadeRpc(method,
                 makeParams("fwsize", uncompressed_size)
+                        .put("fwhash", fwhash)
                         .put("cmpsize", compressed_size)
                         .put("cmphash", cmphash)
                         .put("otachunk", chunksize)
