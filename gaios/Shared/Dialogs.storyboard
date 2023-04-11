@@ -808,7 +808,6 @@
                                                             <constraint firstAttribute="trailing" secondItem="SMk-u0-qjV" secondAttribute="trailing" id="J68-Ep-VXR"/>
                                                             <constraint firstItem="P67-0Z-ctv" firstAttribute="top" secondItem="6RN-wm-qn5" secondAttribute="top" id="RPo-o2-O2g"/>
                                                             <constraint firstAttribute="trailing" secondItem="P67-0Z-ctv" secondAttribute="trailing" id="U6r-HX-Qz8"/>
-                                                            <constraint firstAttribute="bottom" secondItem="SMk-u0-qjV" secondAttribute="bottom" constant="36.666666666666629" id="VRZ-Ch-44x"/>
                                                             <constraint firstItem="P67-0Z-ctv" firstAttribute="leading" secondItem="6RN-wm-qn5" secondAttribute="leading" id="egU-0G-bL4"/>
                                                         </constraints>
                                                     </view>
@@ -883,6 +882,7 @@
                         <outlet property="lblHint" destination="Oid-OU-FMD" id="61d-aB-mCu"/>
                         <outlet property="lblTitle" destination="nEI-Xj-VbJ" id="nK2-qf-zHN"/>
                         <outlet property="scrollView" destination="Tbr-1l-GL6" id="OOa-Pm-ZBm"/>
+                        <outlet property="stackBottom" destination="2Lv-Tw-RGF" id="3FX-Np-Oir"/>
                         <outlet property="tappableBg" destination="UiR-by-VPi" id="MbD-EU-oFX"/>
                     </connections>
                 </viewController>
@@ -941,7 +941,7 @@
                                                                 </constraints>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c78-pw-isc">
-                                                                <rect key="frame" x="0.0" y="65.666666666666686" width="393" height="311.99999999999994"/>
+                                                                <rect key="frame" x="0.0" y="65.666666666666686" width="393" height="312"/>
                                                                 <subviews>
                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aof-id-7WI">
                                                                         <rect key="frame" x="0.0" y="0.0" width="393" height="312"/>
@@ -960,7 +960,7 @@
                                                                                 </connections>
                                                                             </textField>
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ICg-2U-L4Q">
-                                                                                <rect key="frame" x="231.66666666666663" y="64.000000000000057" width="136.33333333333337" height="40"/>
+                                                                                <rect key="frame" x="231.66666666666663" y="64" width="136.33333333333337" height="40"/>
                                                                                 <subviews>
                                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_checkbox_on" translatesAutoresizingMaskIntoConstraints="NO" id="sSG-og-rND">
                                                                                         <rect key="frame" x="20" y="11" width="18" height="18"/>
@@ -998,7 +998,7 @@
                                                                                 </constraints>
                                                                             </view>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="0s0-cL-yBe">
-                                                                                <rect key="frame" x="25" y="129.00000000000006" width="343" height="17"/>
+                                                                                <rect key="frame" x="25" y="129" width="343" height="17"/>
                                                                                 <subviews>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint_1" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0qc-kK-C5h">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="343" height="17"/>
@@ -1009,7 +1009,7 @@
                                                                                 </subviews>
                                                                             </stackView>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="tar-OG-EvB">
-                                                                                <rect key="frame" x="25" y="166.00000000000006" width="343" height="110"/>
+                                                                                <rect key="frame" x="25" y="166" width="343" height="110"/>
                                                                                 <subviews>
                                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Cy-kO-ypm" userLabel="Next">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
@@ -1073,7 +1073,6 @@
                                                             <constraint firstItem="y7J-qz-4QG" firstAttribute="top" secondItem="Zq7-Xy-nun" secondAttribute="top" id="3do-K3-RBd"/>
                                                             <constraint firstAttribute="trailing" secondItem="y7J-qz-4QG" secondAttribute="trailing" id="HvT-7D-C5y"/>
                                                             <constraint firstItem="c78-pw-isc" firstAttribute="leading" secondItem="Zq7-Xy-nun" secondAttribute="leading" id="Jnu-1g-peb"/>
-                                                            <constraint firstAttribute="bottom" secondItem="c78-pw-isc" secondAttribute="bottom" constant="36.666666666666629" id="VgM-QJ-psO"/>
                                                             <constraint firstAttribute="trailing" secondItem="c78-pw-isc" secondAttribute="trailing" id="bVZ-Zf-Gyk"/>
                                                             <constraint firstItem="y7J-qz-4QG" firstAttribute="leading" secondItem="Zq7-Xy-nun" secondAttribute="leading" id="uaQ-Jj-3zb"/>
                                                             <constraint firstItem="c78-pw-isc" firstAttribute="top" secondItem="y7J-qz-4QG" secondAttribute="bottom" id="weP-Rk-Z9i"/>
@@ -1151,6 +1150,7 @@
                         <outlet property="lblHint1" destination="0qc-kK-C5h" id="WZz-5Z-kqQ"/>
                         <outlet property="lblTitle" destination="OK1-v1-YvZ" id="Eye-Sd-sz5"/>
                         <outlet property="scrollView" destination="poR-Bm-Hfj" id="2DV-1x-2wY"/>
+                        <outlet property="stackBottom" destination="FoS-Lf-0kN" id="aoh-71-jUm"/>
                         <outlet property="tappableBg" destination="POZ-bt-UHN" id="u69-HS-8zQ"/>
                     </connections>
                 </viewController>

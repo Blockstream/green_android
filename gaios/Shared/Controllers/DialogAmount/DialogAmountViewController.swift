@@ -29,11 +29,11 @@ class DialogAmountViewController: KeyboardViewController {
     @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var btnsStack: UIStackView!
     @IBOutlet weak var bgField: UIView!
+    @IBOutlet weak var stackBottom: NSLayoutConstraint!
 
     var selectedType = TransactionBaseType.BTC
     var prefill: Int64?
     var wallet: WalletItem?
-    var buttonConstraint: NSLayoutConstraint?
 
     weak var delegate: DialogAmountViewControllerDelegate?
 
@@ -150,17 +150,15 @@ class DialogAmountViewController: KeyboardViewController {
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
             let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-            self.buttonConstraint = self.btnsStack.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height - 14.0)
-            self.buttonConstraint?.isActive = true
+            self.stackBottom.constant = keyboardFrame.height
         })
     }
 
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
+            self.stackBottom.constant = 36.0
         })
     }
 

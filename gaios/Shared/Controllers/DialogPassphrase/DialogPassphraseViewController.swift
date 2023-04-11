@@ -30,8 +30,7 @@ class DialogPassphraseViewController: KeyboardViewController {
     @IBOutlet weak var askView: UIView!
     @IBOutlet weak var iconAsk: UIImageView!
     @IBOutlet weak var btnAlwaysAsk: UIButton!
-
-    var buttonConstraint: NSLayoutConstraint?
+    @IBOutlet weak var stackBottom: NSLayoutConstraint!
 
     weak var delegate: DialogPassphraseViewControllerDelegate?
     var isAlwaysAsk: Bool = false
@@ -110,17 +109,15 @@ class DialogPassphraseViewController: KeyboardViewController {
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
             let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-            self.buttonConstraint = self.btnsStack.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height - 14.0)
-            self.buttonConstraint?.isActive = true
+            self.stackBottom.constant = keyboardFrame.height
         })
     }
 
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
+            self.stackBottom.constant = 36.0
         })
     }
 
