@@ -17,6 +17,8 @@ class JadeWaitViewController: HWFlowBaseViewController {
     var timer: Timer?
     var idx = 0
 
+    private var activeToken, resignToken: NSObjectProtocol?
+
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
         progress.translatesAutoresizingMaskIntoConstraints = false
@@ -38,6 +40,8 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
+        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         timer = Timer.scheduledTimer(timeInterval: Constants.jadeAnimInterval, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         BLEViewModel.shared.scan(jade: true,
                                  completion: self.next,
@@ -46,10 +50,17 @@ class JadeWaitViewController: HWFlowBaseViewController {
         UIView.animate(withDuration: 0.3) {
             self.animateView.alpha = 1.0
         }
+        start()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = resignToken {
+            NotificationCenter.default.removeObserver(token)
+        }
         stop()
         timer?.invalidate()
         BLEViewModel.shared.scanDispose?.dispose()
@@ -145,5 +156,13 @@ class JadeWaitViewController: HWFlowBaseViewController {
             vc.isJade = true
             self.navigationController?.pushViewController(vc, animated: true)
         }
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        start()
+    }
+
+    func applicationWillResignActive(_ notification: Notification) {
+        stop()
     }
 }

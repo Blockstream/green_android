@@ -7,7 +7,7 @@ enum Constants {
     static let wordsPerQuiz = 4
     static let electrumPrefix = "electrum-"
     static let trxPerPage: UInt32 = 30
-    static let jadeAnimInterval: Double = 4.5
+    static let jadeAnimInterval: Double = 6.0
 
     // SPV Settings
     static let spvEnabled = "spv_enabled"
