@@ -24,11 +24,11 @@ class TransactionAmountCell: UITableViewCell {
         super.awakeFromNib()
         bg.layer.cornerRadius = 5.0
 
-        lblTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        lblTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
         lblTitle.textColor = .white.withAlphaComponent(0.4)
-        lblRecipient.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
-        lblAmount.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
-        lblAsset.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+        lblRecipient.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
+        lblAmount.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
+        lblAsset.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblFiat.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
     }
 

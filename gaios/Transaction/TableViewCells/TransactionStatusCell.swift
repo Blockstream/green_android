@@ -44,6 +44,9 @@ class TransactionStatusCell: UITableViewCell {
         lblStatusTitle.text = "id_transaction_status".localized
         lblDate.text = transaction.date(dateStyle: .long, timeStyle: .short)
 
+        lblDate.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
+        lblStatus.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
+
         var step: Int = 0
         var steps: Int = 0
         steps = isLiquid ? 2 : 6

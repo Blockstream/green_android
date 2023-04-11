@@ -16,7 +16,7 @@ class TransactionDetailCell: UITableViewCell {
         bgArea.layer.cornerRadius = 5.0
         lblTxidTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
         lblTxidTitle.textColor = .white.withAlphaComponent(0.4)
-        lblTxidHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lblTxidHint.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
