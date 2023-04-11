@@ -198,11 +198,9 @@
 		3487657729D43B2A0059D05F /* Illustration Error.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656B29D43B2A0059D05F /* Illustration Error.riv */; };
 		3487657829D43B2A0059D05F /* Illustration Checkmark.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */; };
 		3487657929D43B2A0059D05F /* Illustration Stars Success.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */; };
-		3487657A29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656E29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv */; };
 		3487657B29D43B2A0059D05F /* Illustration Envelope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487656F29D43B2A0059D05F /* Illustration Envelope.riv */; };
 		3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */; };
 		3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */; };
-		3487657E29D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657229D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv */; };
 		3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */; };
 		3488FC69290AE26E00122628 /* BalanceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3488FC68290AE26E00122628 /* BalanceCell.xib */; };
 		3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488FC6A290AE28000122628 /* BalanceCell.swift */; };
@@ -226,6 +224,8 @@
 		3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */; };
 		3498079F291CF05700F8DB95 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079E291CF05600F8DB95 /* Collection.swift */; };
 		3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655429E542D70092B5BD /* DialogRenameViewController.swift */; };
+		3499655829E569D60092B5BD /* Jade 01 - Adjusted.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655629E569D60092B5BD /* Jade 01 - Adjusted.riv */; };
+		3499655929E569D60092B5BD /* Jade 02 - Adjusted.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655729E569D60092B5BD /* Jade 02 - Adjusted.riv */; };
 		349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75042791BCA60046DA59 /* ChangeCell.swift */; };
 		349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75212796D99E0046DA59 /* AssetsListViewController.swift */; };
 		349C75242796DBB90046DA59 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75232796DBB90046DA59 /* AssetCell.swift */; };
@@ -683,11 +683,9 @@
 		3487656B29D43B2A0059D05F /* Illustration Error.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Error.riv"; sourceTree = "<group>"; };
 		3487656C29D43B2A0059D05F /* Illustration Checkmark.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Checkmark.riv"; sourceTree = "<group>"; };
 		3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Stars Success.riv"; sourceTree = "<group>"; };
-		3487656E29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 01 - Faster + BG + Power Button.riv"; sourceTree = "<group>"; };
 		3487656F29D43B2A0059D05F /* Illustration Envelope.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Envelope.riv"; sourceTree = "<group>"; };
 		3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 04 - Faster + BG + Refresh.riv"; sourceTree = "<group>"; };
 		3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Recovery Phrase.riv"; sourceTree = "<group>"; };
-		3487657229D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 02 - Faster + BG + Select Button.riv"; sourceTree = "<group>"; };
 		3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 03 - Faster + BG + Side Scroll.riv"; sourceTree = "<group>"; };
 		3488FC68290AE26E00122628 /* BalanceCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BalanceCell.xib; sourceTree = "<group>"; };
 		3488FC6A290AE28000122628 /* BalanceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceCell.swift; sourceTree = "<group>"; };
@@ -711,6 +709,8 @@
 		3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectCellModel.swift; sourceTree = "<group>"; };
 		3498079E291CF05600F8DB95 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		3499655429E542D70092B5BD /* DialogRenameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRenameViewController.swift; sourceTree = "<group>"; };
+		3499655629E569D60092B5BD /* Jade 01 - Adjusted.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 01 - Adjusted.riv"; sourceTree = "<group>"; };
+		3499655729E569D60092B5BD /* Jade 02 - Adjusted.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 02 - Adjusted.riv"; sourceTree = "<group>"; };
 		349C75042791BCA60046DA59 /* ChangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeCell.swift; sourceTree = "<group>"; };
 		349C75212796D99E0046DA59 /* AssetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsListViewController.swift; sourceTree = "<group>"; };
 		349C75232796DBB90046DA59 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
@@ -1798,8 +1798,8 @@
 				3487657129D43B2A0059D05F /* Illustration Recovery Phrase.riv */,
 				3487656D29D43B2A0059D05F /* Illustration Stars Success.riv */,
 				3487656A29D43B2A0059D05F /* Illustration Wallet.riv */,
-				3487656E29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv */,
-				3487657229D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv */,
+				3499655629E569D60092B5BD /* Jade 01 - Adjusted.riv */,
+				3499655729E569D60092B5BD /* Jade 02 - Adjusted.riv */,
 				3487657329D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv */,
 				3487657029D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv */,
 			);
@@ -2514,6 +2514,7 @@
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
 				3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */,
+				3499655829E569D60092B5BD /* Jade 01 - Adjusted.riv in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				34E0CA8C2981395600695304 /* Survey.storyboard in Resources */,
@@ -2526,7 +2527,6 @@
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				3487657929D43B2A0059D05F /* Illustration Stars Success.riv in Resources */,
-				3487657E29D43B2A0059D05F /* Jade 02 - Faster + BG + Select Button.riv in Resources */,
 				3487657D29D43B2A0059D05F /* Illustration Recovery Phrase.riv in Resources */,
 				3447553C290A5BD300B9C1AF /* AccountCell.xib in Resources */,
 				349D1ED927424F200095B5CA /* Transaction.storyboard in Resources */,
@@ -2548,6 +2548,7 @@
 				3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */,
 				34560BA629BF349E007E916F /* OtherDeviceCell.xib in Resources */,
 				3487657729D43B2A0059D05F /* Illustration Error.riv in Resources */,
+				3499655929E569D60092B5BD /* Jade 02 - Adjusted.riv in Resources */,
 				34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */,
 				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
 				3458AB10292D1F0B006EC7FB /* AnyAssetCell.xib in Resources */,
@@ -2559,7 +2560,6 @@
 				340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */,
 				34204708291A67E900EDE945 /* MultiLabelView.xib in Resources */,
 				3458AB1A292D28A9006EC7FB /* AnyAssetExpandableView.xib in Resources */,
-				3487657A29D43B2A0059D05F /* Jade 01 - Faster + BG + Power Button.riv in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,

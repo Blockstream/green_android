@@ -66,8 +66,8 @@ enum ExternalUrls {
 
 enum RiveModel {
     static let animationWallet = RiveViewModel(fileName: "Illustration Wallet")
-    static let animationJade1 = RiveViewModel(fileName: "Jade 01 - Faster + BG + Power Button")
-    static let animationJade2 = RiveViewModel(fileName: "Jade 02 - Faster + BG + Select Button")
+    static let animationJade1 = RiveViewModel(fileName: "Jade 01 - Adjusted")
+    static let animationJade2 = RiveViewModel(fileName: "Jade 02 - Adjusted")
     static let animationJade3 = RiveViewModel(fileName: "Jade 03 - Faster + BG + Side Scroll")
     static let animationJadeFirmware = RiveViewModel(fileName: "Jade 04 - Faster + BG + Refresh")
     static let animationArchived = RiveViewModel(fileName: "Illustration Account Archived")
