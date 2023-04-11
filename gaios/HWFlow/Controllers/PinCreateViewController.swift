@@ -2,7 +2,7 @@ import UIKit
 import RxBluetoothKit
 import RxSwift
 import gdk
-
+import hw
 
 class PinCreateViewController: HWFlowBaseViewController {
 

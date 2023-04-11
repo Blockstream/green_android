@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 import gdk
+import hw
 
 protocol UpdateFirmwareViewControllerDelegate: AnyObject {
     func didUpdate(version: String, firmware: Firmware)

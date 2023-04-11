@@ -1,6 +1,7 @@
 import Foundation
 import Countly
 import gdk
+import greenaddress
 
 enum AnalyticsConsent: Int {
     case notDetermined

@@ -2,6 +2,7 @@ import Foundation
 import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
+import greenaddress
 
 // Communication class with a Ledger device connected using Bluetooth Low Energy (Nano X)
 

@@ -2,6 +2,7 @@ import Foundation
 import RxBluetoothKit
 import RxSwift
 import gdk
+import hw
 
 class BLEViewModel {
 

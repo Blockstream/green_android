@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 import gdk
+import greenaddress
 
 protocol DialogWatchOnlySetUpViewControllerDelegate: AnyObject {
     func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction)

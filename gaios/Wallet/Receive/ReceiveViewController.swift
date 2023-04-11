@@ -3,6 +3,7 @@ import UIKit
 import PromiseKit
 import LinkPresentation
 import gdk
+import hw
 
 public enum TransactionBaseType: UInt32 {
     case BTC = 0
@@ -140,9 +141,9 @@ class ReceiveViewController: UIViewController {
                 }
             }.catch { err in
                 switch err {
-                case JadeError.Abort(let desc),
-                     JadeError.URLError(let desc),
-                     JadeError.Declined(let desc):
+                case HWError.Abort(let desc),
+                    HWError.URLError(let desc),
+                    HWError.Declined(let desc):
                     DropAlert().error(message: desc)
                 default:
                     DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))

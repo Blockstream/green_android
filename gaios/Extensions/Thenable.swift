@@ -1,6 +1,7 @@
 import Foundation
 import PromiseKit
 import gdk
+import greenaddress
 
 extension Thenable {
 

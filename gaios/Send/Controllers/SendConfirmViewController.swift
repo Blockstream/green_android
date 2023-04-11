@@ -2,6 +2,8 @@ import Foundation
 import UIKit
 import PromiseKit
 import gdk
+import greenaddress
+import hw
 
 class SendConfirmViewController: KeyboardViewController {
 
@@ -108,8 +110,8 @@ class SendConfirmViewController: KeyboardViewController {
             self?.sliderView.isUserInteractionEnabled = true
             self?.sliderView.reset()
             switch error {
-            case JadeError.Abort(let desc),
-                 JadeError.Declined(let desc):
+            case HWError.Abort(let desc),
+                 HWError.Declined(let desc):
                 self?.showError(desc)
                 prettyError = desc
             case LedgerWrapper.LedgerError.IOError,

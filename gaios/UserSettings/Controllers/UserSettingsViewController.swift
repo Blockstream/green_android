@@ -1,6 +1,7 @@
 import UIKit
 import PromiseKit
 import gdk
+import greenaddress
 
 protocol UserSettingsViewControllerDelegate: AnyObject {
     func userLogout()

@@ -1,6 +1,9 @@
 import Foundation
 import ga.wally
 
+public let WALLY_EC_SIGNATURE_RECOVERABLE_LEN = EC_SIGNATURE_RECOVERABLE_LEN
+public let WALLY_BLINDING_FACTOR_LEN = BLINDING_FACTOR_LEN
+
 public func hexToDataNil(_ hex: String?) -> Data? {
     guard let hex = hex else {
         return nil
@@ -74,7 +77,7 @@ public func sha256d(_ input: [UInt8]) throws -> [UInt8] {
     return Array(UnsafeBufferPointer(start: outputPtr, count: Int(SHA256_LEN)))
 }
 
-func asset_final_vbf(values: [UInt64], numInputs: Int, abf: [UInt8], vbf: [UInt8]) throws -> [UInt8] {
+public func asset_final_vbf(values: [UInt64], numInputs: Int, abf: [UInt8], vbf: [UInt8]) throws -> [UInt8] {
     let valuesPtr: UnsafePointer<UInt64> = UnsafePointer(values)
     let abfPtr: UnsafePointer<UInt8> = UnsafePointer(abf)
     let vbfPtr: UnsafePointer<UInt8> = UnsafePointer(vbf)
@@ -86,7 +89,7 @@ func asset_final_vbf(values: [UInt64], numInputs: Int, abf: [UInt8], vbf: [UInt8
     return Array(UnsafeBufferPointer(start: bufferPtr, count: len))
 }
 
-func flatten(_ inputs: [[UInt8]], fixedSize: Int32?) -> [UInt8] {
+public func flatten(_ inputs: [[UInt8]], fixedSize: Int32?) -> [UInt8] {
     return inputs
         .reduce([UInt8](), { (prev, item) in
             if let size = fixedSize, item.count < size {

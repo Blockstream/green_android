@@ -2,6 +2,8 @@ import Foundation
 import UIKit
 import PromiseKit
 import gdk
+import hw
+import greenaddress
 
 enum PolicyCellType: String, CaseIterable {
     case Standard

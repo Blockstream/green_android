@@ -1,6 +1,8 @@
 import Foundation
 import PromiseKit
 import gdk
+import greenaddress
+import hw
 
 public enum LoginError: Error, Equatable {
     case walletsJustRestored(_ localizedDescription: String? = nil)

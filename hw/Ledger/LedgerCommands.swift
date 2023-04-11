@@ -73,7 +73,7 @@ public class LedgerCommands: LedgerChannel {
     func inputBytes(_ input: [String: Any], isSegwit: Bool) -> Data? {
         let txHashHex = input["txhash"] as? String
         let ptIdx = input["pt_idx"] as? UInt
-        let txId: [UInt8]? = hexToData(txHashHex!).reversed()
+        let txId: [UInt8]? = txHashHex!.hexToData().reversed()
         return Data(txId! + ptIdx!.uint32LE() + (isSegwit ? (input["satoshi"] as? UInt64)!.uint64LE() : []))
     }
 
@@ -82,7 +82,7 @@ public class LedgerCommands: LedgerChannel {
         for out in outputs {
             let satoshi = out["satoshi"] as? UInt64
             let script = out["script"] as? String
-            let hex = hexToData(script!)
+            let hex = script!.hexToData()
             buffer += satoshi!.uint64LE() + hex.count.varInt() + hex
         }
         return Data(buffer)
@@ -174,7 +174,7 @@ public class LedgerCommands: LedgerChannel {
         if path.count == 0 {
             return [0]
         } else if path.count > 10 {
-            throw GaError.GenericError()
+            throw HWError.Abort("")
         }
         var buffer = [UInt8(path.count)]
         for p in path {

@@ -2,6 +2,7 @@ import UIKit
 import RxBluetoothKit
 import RxSwift
 import gdk
+import hw
 
 enum PairingState: Int {
     case unknown

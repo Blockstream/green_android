@@ -3,6 +3,7 @@ import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
 import SwiftCBOR
+import greenaddress
 
 public protocol JadeGdkRequest: AnyObject {
     func httpRequest(params: [String: Any]) -> [String: Any]?
@@ -49,7 +50,7 @@ final public class Jade: JadeOTA, HWProtocol {
                 if let result = res.result, result {
                     return result
                 }
-                throw JadeError.Abort(res.error?.message ?? "Invalid pin")
+                throw HWError.Abort(res.error?.message ?? "Invalid pin")
             }
     }
 
@@ -75,7 +76,7 @@ final public class Jade: JadeOTA, HWProtocol {
                 if let result = res.result, result {
                     return result
                 }
-                throw JadeError.Abort(res.error?.message ?? "Invalid pin")
+                throw HWError.Abort(res.error?.message ?? "Invalid pin")
             }
     }
 
@@ -116,11 +117,11 @@ final public class Jade: JadeOTA, HWProtocol {
         return signMessage!.compactMap { (sign, signerCom) -> (signature: String?, signerCommitment: String?) in
             // Convert the signature from Base64 into DER hex for GDK
             guard var sigDecoded = Data(base64Encoded: sign ?? "") else {
-                throw JadeError.Abort("Invalid signature")
+                throw HWError.Abort("Invalid signature")
             }
 
             // Need to truncate lead byte if recoverable signature
-            if sigDecoded.count == EC_SIGNATURE_RECOVERABLE_LEN {
+            if sigDecoded.count == WALLY_EC_SIGNATURE_RECOVERABLE_LEN {
                 sigDecoded = sigDecoded[1...sigDecoded.count-1]
             }
 
@@ -155,7 +156,7 @@ final public class Jade: JadeOTA, HWProtocol {
     public func signTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         if transactions.isEmpty {
-            return Observable.error(JadeError.Abort("Input transactions missing"))
+            return Observable.error(HWError.Abort("Input transactions missing"))
         }
 
         let txInputs = inputs.map { input -> TxInputBtc? in
@@ -179,7 +180,7 @@ final public class Jade: JadeOTA, HWProtocol {
         }
 
         if txInputs.contains(where: { $0 == nil }) {
-            return Observable.error(JadeError.Abort("Input transactions missing"))
+            return Observable.error(HWError.Abort("Input transactions missing"))
         }
 
         let changes = getChangeData(outputs: outputs)
@@ -222,7 +223,7 @@ final public class Jade: JadeOTA, HWProtocol {
                     } else if let inputLiquid = inp as? TxInputLiquid {
                         return self.exchange(JadeRequest(method: "tx_input", params: inputLiquid))
                     } else {
-                        return Observable.error(JadeError.Abort(""))
+                        return Observable.error(HWError.Abort(""))
                     }
                 }.compactMap { (res: JadeResponse<Data>) -> String in
                     return dataToHex(res.result!)
@@ -288,9 +289,9 @@ final public class Jade: JadeOTA, HWProtocol {
                                 observer.onNext(result)
                                 observer.onCompleted()
                             } else if let error = res.error {
-                                observer.onError(JadeError.Declined(error.message))
+                                observer.onError(HWError.Declined(error.message))
                             } else {
-                                observer.onError(JadeError.Declined(""))
+                                observer.onError(HWError.Declined(""))
                             }
                             return Disposables.create { }
                         }
@@ -389,14 +390,14 @@ final public class Jade: JadeOTA, HWProtocol {
             var recoveryxpub: String?
             if let chaincode = chaincode, !chaincode.isEmpty {
                 recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: mainnet,
-                                                               pubKey: [UInt8](recoveryPubKey?.hexToData())),
-                                                               chainCode: [UInt8](chaincode.hexToData())),
+                                                               pubKey: [UInt8](recoveryPubKey?.hexToData() ?? Data()),
+                                                               chainCode: [UInt8](chaincode.hexToData()),
                                                                branch: branch)
             }
             // Get receive address from Jade for the path elements given
             let cmd = JadeGetReceiveMultisigAddress(network: chain,
-                                                             pointer: pointer,
-                                                             subaccount: walletPointer,
+                                                    pointer: pointer ,
+                                                             subaccount: walletPointer ?? 0,
                                                              branch: branch,
                                                              recoveryXpub: recoveryxpub,
                                                              csvBlocks: csvBlocks)
@@ -501,8 +502,8 @@ extension Jade {
         }.flatMap { lastAbf -> Observable<Commitment> in
             abfs.append([UInt8](lastAbf!))
             // For the last blinded output we need to calculate the correct vbf so everything adds up
-            let flattenAbfs = flatten(abfs, fixedSize: BLINDING_FACTOR_LEN)
-            let flattenVbfs = flatten(vbfs, fixedSize: BLINDING_FACTOR_LEN)
+            let flattenAbfs = flatten(abfs, fixedSize: WALLY_BLINDING_FACTOR_LEN)
+            let flattenVbfs = flatten(vbfs, fixedSize: WALLY_BLINDING_FACTOR_LEN)
             let lastVbf = try asset_final_vbf(values: values, numInputs: inputs.count, abf: flattenAbfs, vbf: flattenVbfs)
             vbfs.append(lastVbf)
             // Fetch the last commitment using that explicit vbf
@@ -538,7 +539,7 @@ extension Jade {
         return exchange(JadeRequest(method: "sign_liquid_tx", params: cmd))
             .flatMap { (res: JadeResponse<Bool>) -> Observable<(commitments: [String], signatures: [String])> in
                 if let result = res.result, !result {
-                    throw JadeError.Abort("Error response from initial sign_liquid_tx call: \(res.error?.message ?? "")")
+                    throw HWError.Abort("Error response from initial sign_liquid_tx call: \(res.error?.message ?? "")")
                 }
                 if useAeProtocol {
                     return self.signTxInputsAntiExfil(inputs: inputs)

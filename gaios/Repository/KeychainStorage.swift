@@ -1,5 +1,6 @@
 import Foundation
 import gdk
+import greenaddress
 
 class KeychainStorage {
 

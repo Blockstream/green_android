@@ -5,6 +5,8 @@ import RxBluetoothKit
 import CoreBluetooth
 import UIKit
 import gdk
+import hw
+import greenaddress
 
 enum BLEManagerError: Error {
     case powerOff(txt: String)
@@ -272,11 +274,11 @@ class BLEManager {
             return BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
         case is Ledger.SWError:
             return BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
-        case is JadeError:
+        case is HWError:
             switch err {
-            case JadeError.Abort(let desc),
-                 JadeError.URLError(let desc),
-                 JadeError.Declined(let desc):
+            case HWError.Abort(let desc),
+                HWError.URLError(let desc),
+                HWError.Declined(let desc):
                 return BLEManagerError.genericErr(txt: desc)
             default:
                 AnalyticsManager.shared.failedWalletLogin(account: AccountsRepository.shared.current, error: err, prettyError: "id_login_failed")
