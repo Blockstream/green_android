@@ -1340,6 +1340,7 @@
                         <outlet property="lblTitle" destination="OfR-gr-pdy" id="nT3-Lu-azg"/>
                         <outlet property="nameTextField" destination="08J-sA-epH" id="Jwp-5S-J9g"/>
                         <outlet property="scrollView" destination="eYF-Zn-7T4" id="Woz-wq-ufL"/>
+                        <outlet property="submitBottom" destination="AW0-qU-6XA" id="JH3-Dg-GSc"/>
                         <outlet property="tappableBg" destination="81k-vl-ifb" id="jPQ-G0-0dS"/>
                     </connections>
                 </viewController>

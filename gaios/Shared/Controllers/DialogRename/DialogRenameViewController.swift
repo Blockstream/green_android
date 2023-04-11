@@ -24,7 +24,7 @@ class DialogRenameViewController: KeyboardViewController {
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var btnSave: UIButton!
 
-    var buttonConstraint: NSLayoutConstraint?
+    @IBOutlet weak var submitBottom: NSLayoutConstraint!
 
     weak var delegate: DialogRenameViewControllerDelegate?
 
@@ -114,18 +114,17 @@ class DialogRenameViewController: KeyboardViewController {
 
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
+
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
             let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-            self.buttonConstraint = self.btnSave.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height - 14.0)
-            self.buttonConstraint?.isActive = true
+            self.submitBottom.constant = keyboardFrame.height
         })
     }
 
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
+            self.submitBottom.constant = 36.0
         })
     }
 
