@@ -81,7 +81,7 @@ public struct JadeGetBlindingKey: Codable {
     let script: Data
 
     init(scriptHex: String) {
-        script = hexToData(scriptHex)
+        script = scriptHex.hexToData()
     }
 }
 
@@ -94,8 +94,8 @@ public struct JadeGetSharedNonce: Codable {
     let theirPubkey: Data
 
     init(scriptHex: String, theirPubkeyHex: String) {
-        script = hexToData(scriptHex)
-        theirPubkey = hexToData(theirPubkeyHex)
+        script = scriptHex.hexToData()
+        theirPubkey = theirPubkeyHex.hexToData()
     }
 }
 

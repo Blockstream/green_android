@@ -39,8 +39,14 @@ public struct Address: Codable {
 
     public static func validate(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String) -> Promise<String> {
         return Promise { seal in
-            _ = hw.newReceiveAddress(network: wallet.gdkNetwork,
-                                     wallet: wallet,
+            let network = wallet.gdkNetwork
+            _ = hw.newReceiveAddress(chain: network.chain,
+                                     mainnet: network.mainnet,
+                                     multisig: !network.electrum,
+                                     chaincode: wallet.recoveryChainCode,
+                                     recoveryPubKey: wallet.recoveryPubKey,
+                                     walletPointer: wallet.pointer,
+                                     walletType: wallet.type.rawValue,
                                      path: addr.userPath ?? [],
                                      csvBlocks: addr.subtype ?? 0)
                 .subscribe(onNext: { data in

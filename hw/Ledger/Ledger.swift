@@ -27,7 +27,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
         // Provide the first script instead of a null script to initialize the P2SH confirmation logic
         let version = tx["transaction_version"] as? UInt
         let prevoutScript = inputs.first?["prevout_script"] as? String
-        let script0 = hexToData(prevoutScript!)
+        let script0 = prevoutScript!.hexToData()
         let locktime = tx["transaction_locktime"] as? UInt
         return startUntrustedTransaction(txVersion: version!, newTransaction: true, inputIndex: 0, usedInputList: hwInputs, redeemScript: script0, segwit: true)
         .flatMap { _ -> Observable<[String: Any]> in
@@ -61,7 +61,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
 
     public func signSWInput(hwInput: [String: Any], input: [String: Any], version: UInt, locktime: UInt) -> Observable<Data> {
         let prevoutScript = input["prevout_script"] as? String
-        let script = hexToData(prevoutScript!)
+        let script = prevoutScript!.hexToData()
         return startUntrustedTransaction(txVersion: version, newTransaction: false, inputIndex: 0, usedInputList: [hwInput], redeemScript: script, segwit: true)
         .flatMap { _ -> Observable <Data> in
             let paths = input["user_path"] as? [Int64]
@@ -111,36 +111,44 @@ final public class Ledger: LedgerCommands, HWProtocol {
         }
     }
 
-    public func newReceiveAddress(network: GdkNetwork, wallet: WalletItem, path: [UInt32], csvBlocks: UInt32) -> Observable<String> {
-        return Observable.error(JadeError.Abort(""))
+    public func newReceiveAddress(chain: String,
+                                  mainnet: Bool,
+                                  multisig: Bool,
+                                  chaincode: String?,
+                                  recoveryPubKey: String?,
+                                  walletPointer: UInt32?,
+                                  walletType: String?,
+                                  path: [UInt32],
+                                  csvBlocks: UInt32) -> Observable<String> {
+        return Observable.error(HWError.Abort(""))
     }
 
     // Liquid not support
     public func getBlindingKey(scriptHex: String) -> Observable<String?> {
-        return Observable.error(JadeError.Abort(""))
+        return Observable.error(HWError.Abort(""))
     }
 
     public func getBlindingNonce(pubkey: String, scriptHex: String) -> Observable<String?> {
-        return Observable.error(JadeError.Abort(""))
+        return Observable.error(HWError.Abort(""))
     }
 
     // swiftlint:disable:next function_parameter_count
     public func signLiquidTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
-        return Observable.error(JadeError.Abort(""))
+        return Observable.error(HWError.Abort(""))
     }
 
     public func nonces(bscripts: [[String: Any]]) -> Observable<[String?]> {
-        return Observable.error(JadeError.Abort(""))
+        return Observable.error(HWError.Abort(""))
     }
 
     public func blindingKey(scriptHex: String) -> Observable<String?> {
-        return Observable.error(JadeError.Abort(""))
+        return Observable.error(HWError.Abort(""))
     }
     public func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?> {
-        return Observable.error(JadeError.Abort(""))
+        return Observable.error(HWError.Abort(""))
     }
 
     public func getMasterBlindingKey() -> Observable<String> {
-        return Observable.error(JadeError.Abort(""))
+        return Observable.error(HWError.Abort(""))
     }
 }

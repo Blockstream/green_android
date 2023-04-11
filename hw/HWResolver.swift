@@ -13,7 +13,7 @@ public class HWResolver {
         switch action {
         case "get_xpubs":
             guard let paths = requiredData["paths"] as? [[Int]] else {
-                return Promise { $0.reject(GaError.GenericError()) }
+                return Promise { $0.reject(HWError.Abort("Invalid xpubs request")) }
             }
             return getXpubs(hw: hw, paths: paths, chain: chain).compactMap {
                 let data = try JSONSerialization.data(withJSONObject: ["xpubs": $0], options: .fragmentsAllowed)
@@ -32,7 +32,7 @@ public class HWResolver {
         case "get_blinding_nonces":
             guard let scripts = requiredData["scripts"] as? [String],
                   let publicKeys = requiredData["public_keys"] as? [String] else {
-                return Promise { $0.reject(GaError.GenericError()) }
+                return Promise { $0.reject(HWError.Abort("Invalid nonces request")) }
             }
             var output = [String: Any]()
             return getBlindingNonces(hw: hw, scripts: scripts, publicKeys: publicKeys)
@@ -50,7 +50,7 @@ public class HWResolver {
                 }
         case "get_blinding_public_keys":
             guard let scripts = requiredData["scripts"] as? [String] else {
-                return Promise { $0.reject(GaError.GenericError()) }
+                return Promise { $0.reject(HWError.Abort("Invalid public keys request")) }
             }
             return getBlindingPublicKeys(hw: hw, scripts: scripts).compactMap {
                 let data = try JSONSerialization.data(withJSONObject: ["public_keys": $0], options: .fragmentsAllowed)
@@ -62,7 +62,7 @@ public class HWResolver {
                 return String(data: data, encoding: .utf8)
             }
         default:
-            return Promise { $0.reject(GaError.GenericError()) }
+            return Promise { $0.reject(HWError.Abort("Invalid request")) }
         }
     }
 

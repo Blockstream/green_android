@@ -22,11 +22,11 @@ public struct TxInputBtc: TxInputProtocol {
 
     public init(isWitness: Bool, inputTxHex: String?, scriptHex: String?, satoshi: UInt64?, path: [UInt32]?, aeHostEntropyHex: String?, aeHostCommitmentHex: String?) {
         self.isWitness = isWitness
-        self.inputTx = hexToDataNil(inputTxHex)
-        self.script = hexToDataNil(scriptHex)
+        self.inputTx = inputTxHex?.hexToData()
+        self.script = scriptHex?.hexToData()
         self.satoshi = satoshi
         self.path = path
-        self.aeHostEntropy = hexToDataNil(aeHostEntropyHex)
-        self.aeHostCommitment = hexToDataNil(aeHostCommitmentHex)
+        self.aeHostEntropy = aeHostEntropyHex?.hexToData()
+        self.aeHostCommitment = aeHostCommitmentHex?.hexToData()
     }
 }

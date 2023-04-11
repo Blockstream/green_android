@@ -73,6 +73,17 @@
                ReferencedContainer = "container:gaios.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "81961ADF29E4EC2F00E9B94D"
+               BuildableName = "hwTests.xctest"
+               BlueprintName = "hwTests"
+               ReferencedContainer = "container:gaios.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

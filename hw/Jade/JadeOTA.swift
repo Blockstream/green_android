@@ -87,13 +87,13 @@ public class JadeOTA: JadeChannel {
     public func firmwareData(_ verInfo: JadeVersionInfo) throws -> Firmware {
         // Get relevant fmw path (or if hw not supported)
         guard let fwPath = firmwarePath(verInfo) else {
-            throw JadeError.Abort("Unsupported hardware")
+            throw HWError.Abort("Unsupported hardware")
         }
         guard let res = download("\(fwPath)index.json"),
               let body = res["body"] as? [String: Any],
               let json = try? JSONSerialization.data(withJSONObject: body, options: []),
               let channels = try? JSONDecoder().decode(FirmwareChannels.self, from: json) else {
-            throw JadeError.Abort("Failed to fetch firmware index")
+            throw HWError.Abort("Failed to fetch firmware index")
         }
         #if DEBUG
         let images = [channels.beta?.delta, channels.beta?.full, channels.stable?.delta, channels.stable?.full]
@@ -105,19 +105,19 @@ public class JadeOTA: JadeChannel {
                 return fmw
             }
         }
-        throw JadeError.Abort("No newer firmware found")
+        throw HWError.Abort("No newer firmware found")
     }
 
     public func getBinary(_ verInfo: JadeVersionInfo, _ fmw: Firmware) throws -> Data {
         guard let fwPath = firmwarePath(verInfo) else {
-            throw JadeError.Abort("Unsupported hardware")
+            throw HWError.Abort("Unsupported hardware")
         }
         if let res = download("\(fwPath)\(fmw.filename)", base64: true),
             let body = res["body"] as? String,
             let data = Data(base64Encoded: body) {
             return data
         }
-        throw JadeError.Abort("Error downloading firmware file")
+        throw HWError.Abort("Error downloading firmware file")
     }
 
     public func sha256(_ data: Data) -> Data {

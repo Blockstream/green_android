@@ -390,27 +390,9 @@
 		81961A7929E4819F00E9B94D /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81961A7829E4819F00E9B94D /* PromiseKit */; };
 		81961A7A29E484EE00E9B94D /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
 		81961A7B29E4867500E9B94D /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7122374E8B0035F95A /* URL.swift */; };
-		81961A7C29E4873D00E9B94D /* HWDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818EE77F26A5C2ED008CD09E /* HWDevice.swift */; };
 		81961A7D29E488FF00E9B94D /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F1C0D26B7FDDE009293E6 /* UIApplication.swift */; };
-		81961A7E29E4A8FD00E9B94D /* HWResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062CF245322B0003464A0 /* HWResolver.swift */; };
-		81961A7F29E4A91300E9B94D /* HWChannelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWChannelProtocol.swift */; };
-		81961A8029E4A91300E9B94D /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
-		81961A8129E4A91300E9B94D /* TxInputBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D922541F0D1001159D6 /* TxInputBtc.swift */; };
-		81961A8229E4A91300E9B94D /* TxInputLiquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */; };
-		81961A8329E4A91300E9B94D /* TxChangeOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D962541F110001159D6 /* TxChangeOutput.swift */; };
-		81961A8429E4A91300E9B94D /* Commitment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4CA25531470001C8544 /* Commitment.swift */; };
-		81961A8529E4A91300E9B94D /* Jade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8169EBBC2445F16F0053BC73 /* Jade.swift */; };
-		81961A8629E4A91300E9B94D /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
-		81961A8729E4A91300E9B94D /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
-		81961A8829E4A91300E9B94D /* JadeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */; };
-		81961A8929E4A91300E9B94D /* JadeOTA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8111485E287891F500C6F030 /* JadeOTA.swift */; };
-		81961A8A29E4A91300E9B94D /* LedgerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */; };
-		81961A8B29E4A91300E9B94D /* LedgerChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2922E9E9EA005A04C6 /* LedgerChannel.swift */; };
-		81961A8C29E4A91300E9B94D /* LedgerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */; };
-		81961A8D29E4A91300E9B94D /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2722E9E9EA005A04C6 /* Ledger.swift */; };
 		81961A9029E4A9AD00E9B94D /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 81961A8F29E4A9AD00E9B94D /* RxSwift */; };
 		81961A9429E4AB5200E9B94D /* RxBluetoothKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81961A9329E4AB5200E9B94D /* RxBluetoothKit */; };
-		81961A9729E4ABC100E9B94D /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = 81961A9629E4ABC100E9B94D /* SwiftCBOR */; };
 		81961A9829E4AC0600E9B94D /* Gdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81004E2E292B57FD001C2E4D /* Gdk.swift */; };
 		81961A9929E4AC1500E9B94D /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F72E0828904D3F00D4DEFF /* Credentials.swift */; };
 		81961A9A29E4AC1A00E9B94D /* TorNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F226C80D6B00682508 /* TorNotification.swift */; };
@@ -443,6 +425,34 @@
 		81961AC029E4C40700E9B94D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961ABF29E4C40700E9B94D /* Utils.swift */; };
 		81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 81961ACD29E4E41600E9B94D /* RiveRuntime */; };
 		81961AD129E4E44200E9B94D /* Countly in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AD029E4E44200E9B94D /* Countly */; };
+		81961AEC29E4EC2F00E9B94D /* hw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; };
+		81961AED29E4EC2F00E9B94D /* hw.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		81961AF729E4EC6A00E9B94D /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AF629E4EC6A00E9B94D /* RxSwift */; };
+		81961AF929E4EC6F00E9B94D /* RxBluetoothKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AF829E4EC6F00E9B94D /* RxBluetoothKit */; };
+		81961AFB29E4EC7300E9B94D /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AFA29E4EC7300E9B94D /* SwiftCBOR */; };
+		81961B0229E4ECB300E9B94D /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81961B0129E4ECB300E9B94D /* PromiseKit */; };
+		81961B0729E4ED7400E9B94D /* hw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; };
+		81961B0829E4ED7400E9B94D /* hw.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		81961B0C29E4EE3C00E9B94D /* HWResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062CF245322B0003464A0 /* HWResolver.swift */; };
+		81961B0D29E4EE3C00E9B94D /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961B0529E4ED0E00E9B94D /* Promise.swift */; };
+		81961B0E29E4EE3C00E9B94D /* HWChannelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWChannelProtocol.swift */; };
+		81961B0F29E4EE3C00E9B94D /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
+		81961B1029E4EE3C00E9B94D /* HWDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818EE77F26A5C2ED008CD09E /* HWDevice.swift */; };
+		81961B1129E4EE3C00E9B94D /* TxInputBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D922541F0D1001159D6 /* TxInputBtc.swift */; };
+		81961B1229E4EE3C00E9B94D /* TxInputLiquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */; };
+		81961B1329E4EE3C00E9B94D /* TxChangeOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D962541F110001159D6 /* TxChangeOutput.swift */; };
+		81961B1429E4EE3C00E9B94D /* Commitment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4CA25531470001C8544 /* Commitment.swift */; };
+		81961B1529E4EE3C00E9B94D /* Jade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8169EBBC2445F16F0053BC73 /* Jade.swift */; };
+		81961B1629E4EE3C00E9B94D /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
+		81961B1729E4EE3C00E9B94D /* HWError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* HWError.swift */; };
+		81961B1829E4EE3C00E9B94D /* JadeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */; };
+		81961B1929E4EE3C00E9B94D /* JadeOTA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8111485E287891F500C6F030 /* JadeOTA.swift */; };
+		81961B1A29E4EE3C00E9B94D /* LedgerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */; };
+		81961B1B29E4EE3C00E9B94D /* LedgerChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2922E9E9EA005A04C6 /* LedgerChannel.swift */; };
+		81961B1C29E4EE3C00E9B94D /* LedgerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */; };
+		81961B1D29E4EE3C00E9B94D /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2722E9E9EA005A04C6 /* Ledger.swift */; };
+		81961B1F29E4EEFE00E9B94D /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961B1E29E4EEFE00E9B94D /* String.swift */; };
+		81961B2129E4F36F00E9B94D /* UInt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961B2029E4F36F00E9B94D /* UInt.swift */; };
 		819DFBAC26038E8B0022BD85 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819DFBAB26038E8B0022BD85 /* Account.swift */; };
 		81A34FED29C4659B004B27F4 /* BLEViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */; };
 		81A34FF129C547F4004B27F4 /* AvailableNetworks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FF029C547F4004B27F4 /* AvailableNetworks.swift */; };
@@ -494,6 +504,20 @@
 			remoteGlobalIDString = 81961A4B29E46B5400E9B94D;
 			remoteInfo = gdk;
 		};
+		81961AEA29E4EC2F00E9B94D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 676FCF141F9D0CF800354E93 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 81961AD629E4EC2E00E9B94D;
+			remoteInfo = hw;
+		};
+		81961B0929E4ED7400E9B94D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 676FCF141F9D0CF800354E93 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 81961AD629E4EC2E00E9B94D;
+			remoteInfo = hw;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -504,8 +528,20 @@
 			dstSubfolderSpec = 10;
 			files = (
 				81961A6229E46B5600E9B94D /* gdk.framework in Embed Libraries */,
+				81961AED29E4EC2F00E9B94D /* hw.framework in Embed Libraries */,
 			);
 			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81961B0B29E4ED7500E9B94D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				81961B0829E4ED7400E9B94D /* hw.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -893,7 +929,7 @@
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
 		8157CDA9299BE1E800365F1B /* AddresseeCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddresseeCellModel.swift; sourceTree = "<group>"; };
 		8157CDAB299BE9E100365F1B /* SendConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirmViewModel.swift; sourceTree = "<group>"; };
-		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
+		8158974A2701980700DDF6D4 /* HWError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWError.swift; sourceTree = "<group>"; };
 		815A804329B3D44300269027 /* AccountsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsRepository.swift; sourceTree = "<group>"; };
 		815A804529B3D4B600269027 /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
 		815A804729B6443F00269027 /* WalletsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsRepository.swift; sourceTree = "<group>"; };
@@ -954,6 +990,10 @@
 		81961ABA29E4B9C600E9B94D /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		81961ABC29E4BAFF00E9B94D /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		81961ABF29E4C40700E9B94D /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		81961AD729E4EC2E00E9B94D /* hw.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = hw.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		81961B0529E4ED0E00E9B94D /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
+		81961B1E29E4EEFE00E9B94D /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		81961B2029E4F36F00E9B94D /* UInt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt.swift; sourceTree = "<group>"; };
 		819DFBAB26038E8B0022BD85 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
@@ -1015,6 +1055,7 @@
 				81961AD129E4E44200E9B94D /* Countly in Frameworks */,
 				81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */,
 				81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */,
+				81961AEC29E4EC2F00E9B94D /* hw.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1038,10 +1079,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81961A9729E4ABC100E9B94D /* SwiftCBOR in Frameworks */,
 				81961A9029E4A9AD00E9B94D /* RxSwift in Frameworks */,
 				81961A9429E4AB5200E9B94D /* RxBluetoothKit in Frameworks */,
 				81961A7929E4819F00E9B94D /* PromiseKit in Frameworks */,
+				81961B0729E4ED7400E9B94D /* hw.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81961AD429E4EC2E00E9B94D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81961B0229E4ECB300E9B94D /* PromiseKit in Frameworks */,
+				81961AF929E4EC6F00E9B94D /* RxBluetoothKit in Frameworks */,
+				81961AF729E4EC6A00E9B94D /* RxSwift in Frameworks */,
+				81961AFB29E4EC7300E9B94D /* SwiftCBOR in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2055,6 +2107,7 @@
 				676FCF351F9D0CF800354E93 /* gaiosTests */,
 				676FCF401F9D0CF800354E93 /* gaiosUITests */,
 				81961A4D29E46B5400E9B94D /* gdk */,
+				81961AD829E4EC2E00E9B94D /* hw */,
 				676FCF1D1F9D0CF800354E93 /* Products */,
 				3190F6274186A0301E5E66B2 /* Frameworks */,
 			);
@@ -2067,6 +2120,7 @@
 				676FCF321F9D0CF800354E93 /* gaiosTests.xctest */,
 				676FCF3D1F9D0CF800354E93 /* gaiosUITests.xctest */,
 				81961A4C29E46B5400E9B94D /* gdk.framework */,
+				81961AD729E4EC2E00E9B94D /* hw.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2217,7 +2271,6 @@
 			children = (
 				8169EBBC2445F16F0053BC73 /* Jade.swift */,
 				815431952445C0EE00EE34DB /* JadeChannel.swift */,
-				8158974A2701980700DDF6D4 /* JadeError.swift */,
 				8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */,
 				8111485E287891F500C6F030 /* JadeOTA.swift */,
 			);
@@ -2246,6 +2299,8 @@
 		818EE78126A5C429008CD09E /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				8158974A2701980700DDF6D4 /* HWError.swift */,
+				818EE77F26A5C2ED008CD09E /* HWDevice.swift */,
 				81DA3D922541F0D1001159D6 /* TxInputBtc.swift */,
 				81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */,
 				81DA3D962541F110001159D6 /* TxChangeOutput.swift */,
@@ -2268,23 +2323,10 @@
 			children = (
 				81961AC329E4C86C00E9B94D /* Extensions */,
 				81961AC229E4C83E00E9B94D /* Models */,
-				81961AC129E4C6D300E9B94D /* HW */,
 				6770BF6D235E50D400BDB7DA /* GreenAddress.swift */,
 				816F0AF523E47E1E00569A5D /* Wally.swift */,
 			);
 			path = gdk;
-			sourceTree = "<group>";
-		};
-		81961AC129E4C6D300E9B94D /* HW */ = {
-			isa = PBXGroup;
-			children = (
-				81A062CF245322B0003464A0 /* HWResolver.swift */,
-				818EE78226A5C52F008CD09E /* Protocols */,
-				818EE78126A5C429008CD09E /* Models */,
-				81387E5E2452067800A63C1D /* Jade */,
-				81387E5D2452066500A63C1D /* Ledger */,
-			);
-			path = HW;
 			sourceTree = "<group>";
 		};
 		81961AC229E4C83E00E9B94D /* Models */ = {
@@ -2308,9 +2350,7 @@
 				81D671F226C80D6B00682508 /* TorNotification.swift */,
 				81F72E0828904D3F00D4DEFF /* Credentials.swift */,
 				81004E2E292B57FD001C2E4D /* Gdk.swift */,
-				818EE77F26A5C2ED008CD09E /* HWDevice.swift */,
 				811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */,
-				81310C442189D10F00563B91 /* TwoFactorCall.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2318,6 +2358,7 @@
 		81961AC329E4C86C00E9B94D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				81310C442189D10F00563B91 /* TwoFactorCall.swift */,
 				81961ABC29E4BAFF00E9B94D /* Observable.swift */,
 				8122D7282554848C003F2785 /* Promise.swift */,
 				81BF4E2822E9E9EA005A04C6 /* Utils.swift */,
@@ -2340,6 +2381,29 @@
 				81961AB329E4B5AF00E9B94D /* WalletItem.swift */,
 			);
 			path = Gdk;
+			sourceTree = "<group>";
+		};
+		81961AD829E4EC2E00E9B94D /* hw */ = {
+			isa = PBXGroup;
+			children = (
+				81A062CF245322B0003464A0 /* HWResolver.swift */,
+				81961B0429E4ECFA00E9B94D /* Extensions */,
+				818EE78226A5C52F008CD09E /* Protocols */,
+				818EE78126A5C429008CD09E /* Models */,
+				81387E5E2452067800A63C1D /* Jade */,
+				81387E5D2452066500A63C1D /* Ledger */,
+			);
+			path = hw;
+			sourceTree = "<group>";
+		};
+		81961B0429E4ECFA00E9B94D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				81961B0529E4ED0E00E9B94D /* Promise.swift */,
+				81961B1E29E4EEFE00E9B94D /* String.swift */,
+				81961B2029E4F36F00E9B94D /* UInt.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		81A3B53F2244AE9A0091B6BC /* Wallet */ = {
@@ -2456,6 +2520,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		81961AD229E4EC2E00E9B94D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -2472,6 +2543,7 @@
 			);
 			dependencies = (
 				81961A6029E46B5600E9B94D /* PBXTargetDependency */,
+				81961AEB29E4EC2F00E9B94D /* PBXTargetDependency */,
 			);
 			name = gaios;
 			packageProductDependencies = (
@@ -2526,20 +2598,45 @@
 				81961A4829E46B5400E9B94D /* Sources */,
 				81961A4929E46B5400E9B94D /* Frameworks */,
 				81961A4A29E46B5400E9B94D /* Resources */,
+				81961B0B29E4ED7500E9B94D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				81961B0A29E4ED7400E9B94D /* PBXTargetDependency */,
 			);
 			name = gdk;
 			packageProductDependencies = (
 				81961A7829E4819F00E9B94D /* PromiseKit */,
 				81961A8F29E4A9AD00E9B94D /* RxSwift */,
 				81961A9329E4AB5200E9B94D /* RxBluetoothKit */,
-				81961A9629E4ABC100E9B94D /* SwiftCBOR */,
 			);
 			productName = gdk;
 			productReference = 81961A4C29E46B5400E9B94D /* gdk.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		81961AD629E4EC2E00E9B94D /* hw */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 81961AF429E4EC3000E9B94D /* Build configuration list for PBXNativeTarget "hw" */;
+			buildPhases = (
+				81961AD229E4EC2E00E9B94D /* Headers */,
+				81961AD329E4EC2E00E9B94D /* Sources */,
+				81961AD429E4EC2E00E9B94D /* Frameworks */,
+				81961AD529E4EC2E00E9B94D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = hw;
+			packageProductDependencies = (
+				81961AF629E4EC6A00E9B94D /* RxSwift */,
+				81961AF829E4EC6F00E9B94D /* RxBluetoothKit */,
+				81961AFA29E4EC7300E9B94D /* SwiftCBOR */,
+				81961B0129E4ECB300E9B94D /* PromiseKit */,
+			);
+			productName = hw;
+			productReference = 81961AD729E4EC2E00E9B94D /* hw.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -2570,6 +2667,9 @@
 						TestTargetID = 676FCF1B1F9D0CF800354E93;
 					};
 					81961A4B29E46B5400E9B94D = {
+						CreatedOnToolsVersion = 14.2;
+					};
+					81961AD629E4EC2E00E9B94D = {
 						CreatedOnToolsVersion = 14.2;
 					};
 				};
@@ -2614,6 +2714,7 @@
 				676FCF311F9D0CF800354E93 /* gaiosTests */,
 				676FCF3C1F9D0CF800354E93 /* gaiosUITests */,
 				81961A4B29E46B5400E9B94D /* gdk */,
+				81961AD629E4EC2E00E9B94D /* hw */,
 			);
 		};
 /* End PBXProject section */
@@ -2709,6 +2810,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		81961A4A29E46B5400E9B94D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81961AD529E4EC2E00E9B94D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3084,30 +3192,14 @@
 			files = (
 				81961A9D29E4AC2900E9B94D /* Transactions.swift in Sources */,
 				81961AAD29E4B0D400E9B94D /* AccountType.swift in Sources */,
-				81961A7F29E4A91300E9B94D /* HWChannelProtocol.swift in Sources */,
 				81961A9A29E4AC1A00E9B94D /* TorNotification.swift in Sources */,
-				81961A8029E4A91300E9B94D /* HWProtocol.swift in Sources */,
 				81961AA729E4AC3F00E9B94D /* Events.swift in Sources */,
-				81961A8129E4A91300E9B94D /* TxInputBtc.swift in Sources */,
 				81961AB129E4B43000E9B94D /* Utils.swift in Sources */,
 				81961AA429E4AC3F00E9B94D /* Balance.swift in Sources */,
 				81961AA229E4AC3F00E9B94D /* Network.swift in Sources */,
-				81961A8229E4A91300E9B94D /* TxInputLiquid.swift in Sources */,
 				81961AA629E4AC3F00E9B94D /* Assets.swift in Sources */,
 				81961A9929E4AC1500E9B94D /* Credentials.swift in Sources */,
-				81961A8329E4A91300E9B94D /* TxChangeOutput.swift in Sources */,
 				81961AA029E4AC2900E9B94D /* PinData.swift in Sources */,
-				81961A8429E4A91300E9B94D /* Commitment.swift in Sources */,
-				81961A8529E4A91300E9B94D /* Jade.swift in Sources */,
-				81961A8629E4A91300E9B94D /* JadeChannel.swift in Sources */,
-				81961A8729E4A91300E9B94D /* JadeError.swift in Sources */,
-				81961A8829E4A91300E9B94D /* JadeMessage.swift in Sources */,
-				81961A8929E4A91300E9B94D /* JadeOTA.swift in Sources */,
-				81961A8A29E4A91300E9B94D /* LedgerCommands.swift in Sources */,
-				81961A8B29E4A91300E9B94D /* LedgerChannel.swift in Sources */,
-				81961A8C29E4A91300E9B94D /* LedgerWrapper.swift in Sources */,
-				81961A8D29E4A91300E9B94D /* Ledger.swift in Sources */,
-				81961A7E29E4A8FD00E9B94D /* HWResolver.swift in Sources */,
 				81961AA129E4AC3F00E9B94D /* Settings.swift in Sources */,
 				81961A9C29E4AC2900E9B94D /* EventType.swift in Sources */,
 				81961AA529E4AC3F00E9B94D /* Address.swift in Sources */,
@@ -3119,7 +3211,6 @@
 				81961A9B29E4AC2900E9B94D /* WalletItem.swift in Sources */,
 				81961A6B29E46B7700E9B94D /* GreenAddress.swift in Sources */,
 				81961A6E29E47E5D00E9B94D /* GDKSession.swift in Sources */,
-				81961A7C29E4873D00E9B94D /* HWDevice.swift in Sources */,
 				81961A7A29E484EE00E9B94D /* TwoFactorConfig.swift in Sources */,
 				81961A9F29E4AC2900E9B94D /* Connection.swift in Sources */,
 				81961A6C29E472B000E9B94D /* Wally.swift in Sources */,
@@ -3127,6 +3218,33 @@
 				81961A7B29E4867500E9B94D /* URL.swift in Sources */,
 				81961AA929E4AC7F00E9B94D /* NetworkSecurityCase.swift in Sources */,
 				81961A9829E4AC0600E9B94D /* Gdk.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81961AD329E4EC2E00E9B94D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81961B1F29E4EEFE00E9B94D /* String.swift in Sources */,
+				81961B0C29E4EE3C00E9B94D /* HWResolver.swift in Sources */,
+				81961B0D29E4EE3C00E9B94D /* Promise.swift in Sources */,
+				81961B0E29E4EE3C00E9B94D /* HWChannelProtocol.swift in Sources */,
+				81961B0F29E4EE3C00E9B94D /* HWProtocol.swift in Sources */,
+				81961B2129E4F36F00E9B94D /* UInt.swift in Sources */,
+				81961B1029E4EE3C00E9B94D /* HWDevice.swift in Sources */,
+				81961B1129E4EE3C00E9B94D /* TxInputBtc.swift in Sources */,
+				81961B1229E4EE3C00E9B94D /* TxInputLiquid.swift in Sources */,
+				81961B1329E4EE3C00E9B94D /* TxChangeOutput.swift in Sources */,
+				81961B1429E4EE3C00E9B94D /* Commitment.swift in Sources */,
+				81961B1529E4EE3C00E9B94D /* Jade.swift in Sources */,
+				81961B1629E4EE3C00E9B94D /* JadeChannel.swift in Sources */,
+				81961B1729E4EE3C00E9B94D /* HWError.swift in Sources */,
+				81961B1829E4EE3C00E9B94D /* JadeMessage.swift in Sources */,
+				81961B1929E4EE3C00E9B94D /* JadeOTA.swift in Sources */,
+				81961B1A29E4EE3C00E9B94D /* LedgerCommands.swift in Sources */,
+				81961B1B29E4EE3C00E9B94D /* LedgerChannel.swift in Sources */,
+				81961B1C29E4EE3C00E9B94D /* LedgerWrapper.swift in Sources */,
+				81961B1D29E4EE3C00E9B94D /* Ledger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3147,6 +3265,16 @@
 			isa = PBXTargetDependency;
 			target = 81961A4B29E46B5400E9B94D /* gdk */;
 			targetProxy = 81961A5F29E46B5600E9B94D /* PBXContainerItemProxy */;
+		};
+		81961AEB29E4EC2F00E9B94D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 81961AD629E4EC2E00E9B94D /* hw */;
+			targetProxy = 81961AEA29E4EC2F00E9B94D /* PBXContainerItemProxy */;
+		};
+		81961B0A29E4ED7400E9B94D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 81961AD629E4EC2E00E9B94D /* hw */;
+			targetProxy = 81961B0929E4ED7400E9B94D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3633,6 +3761,121 @@
 			};
 			name = Staging;
 		};
+		81961AEE29E4EC3000E9B94D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = D9W37S9468;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		81961AEF29E4EC3000E9B94D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = D9W37S9468;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		81961AF029E4EC3000E9B94D /* Staging */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = D9W37S9468;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Blockstream Corporation. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.hw;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Staging;
+		};
 		81CF900E28EC77B0003CC793 /* Staging */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 81CF900D28EC7631003CC793 /* DevSettings.xcconfig */;
@@ -3823,6 +4066,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		81961AF429E4EC3000E9B94D /* Build configuration list for PBXNativeTarget "hw" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				81961AEE29E4EC3000E9B94D /* Debug */,
+				81961AEF29E4EC3000E9B94D /* Release */,
+				81961AF029E4EC3000E9B94D /* Staging */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -3892,11 +4145,6 @@
 			package = 81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */;
 			productName = RxBluetoothKit;
 		};
-		81961A9629E4ABC100E9B94D /* SwiftCBOR */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
-			productName = SwiftCBOR;
-		};
 		81961ACD29E4E41600E9B94D /* RiveRuntime */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 81961ACC29E4E41600E9B94D /* XCRemoteSwiftPackageReference "rive-ios" */;
@@ -3906,6 +4154,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 81961ACF29E4E44200E9B94D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */;
 			productName = Countly;
+		};
+		81961AF629E4EC6A00E9B94D /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81961A8E29E4A98900E9B94D /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		81961AF829E4EC6F00E9B94D /* RxBluetoothKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */;
+			productName = RxBluetoothKit;
+		};
+		81961AFA29E4EC7300E9B94D /* SwiftCBOR */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
+			productName = SwiftCBOR;
+		};
+		81961B0129E4ECB300E9B94D /* PromiseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81961A7729E4819E00E9B94D /* XCRemoteSwiftPackageReference "PromiseKit" */;
+			productName = PromiseKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

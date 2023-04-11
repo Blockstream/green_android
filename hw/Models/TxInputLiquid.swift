@@ -18,10 +18,10 @@ struct TxInputLiquid: TxInputProtocol {
 
     init(isWitness: Bool, scriptHex: String?, valueCommitmentHex: String?, path: [UInt32]?, aeHostEntropyHex: String?, aeHostCommitmentHex: String?) {
         self.isWitness = isWitness
-        self.script = hexToDataNil(scriptHex)
-        self.valueCommitment = hexToDataNil(valueCommitmentHex)
+        self.script = scriptHex?.hexToData()
+        self.valueCommitment = valueCommitmentHex?.hexToData()
         self.path = path
-        self.aeHostEntropy = hexToDataNil(aeHostEntropyHex)
-        self.aeHostCommitment = hexToDataNil(aeHostCommitmentHex)
+        self.aeHostEntropy = aeHostEntropyHex?.hexToData()
+        self.aeHostCommitment = aeHostCommitmentHex?.hexToData()
     }
 }

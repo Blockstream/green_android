@@ -22,7 +22,15 @@ public protocol HWProtocol {
                          transactions: [String: String],
                          useAeProtocol: Bool) -> Observable<[String: Any]>
 
-    func newReceiveAddress(network: GdkNetwork, wallet: WalletItem, path: [UInt32], csvBlocks: UInt32) -> Observable<String>
+    func newReceiveAddress(chain: String,
+                                  mainnet: Bool,
+                                  multisig: Bool,
+                                  chaincode: String?,
+                                  recoveryPubKey: String?,
+                                  walletPointer: UInt32?,
+                                  walletType: String?,
+                                  path: [UInt32],
+                                  csvBlocks: UInt32) -> Observable<String>
 
     func getMasterBlindingKey() -> Observable<String>
 

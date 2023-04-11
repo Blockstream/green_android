@@ -3,7 +3,6 @@ import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
 import SwiftCBOR
-import ga.wally
 
 public protocol JadeGdkRequest: AnyObject {
     func httpRequest(params: [String: Any]) -> [String: Any]?
@@ -372,24 +371,32 @@ final public class Jade: JadeOTA, HWProtocol {
         return Data(txId! + ptIdx!.uint32LE() + (isSegwit ? (input["satoshi"] as? UInt64)!.uint64LE() : []))
     }
 
-    public func newReceiveAddress(network: GdkNetwork, wallet: WalletItem, path: [UInt32], csvBlocks: UInt32) -> Observable<String> {
-        if network.multisig {
+    public func newReceiveAddress(chain: String,
+                                  mainnet: Bool,
+                                  multisig: Bool,
+                                  chaincode: String?,
+                                  recoveryPubKey: String?,
+                                  walletPointer: UInt32?,
+                                  walletType: String?,
+                                  path: [UInt32],
+                                  csvBlocks: UInt32) -> Observable<String> {
+        if multisig {
             // Green Multisig Shield - pathlen should be 2 for subact 0, and 4 for subact > 0
             // In any case the last two entries are 'branch' and 'pointer'
             let pathlen = path.count
             let branch = path[pathlen - 2]
             let pointer = path[pathlen - 1]
             var recoveryxpub: String?
-            if let chaincode = wallet.recoveryChainCode, !chaincode.isEmpty {
-                recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: !network.mainnet,
-                                                               pubKey: [UInt8](hexToData(wallet.recoveryPubKey!)),
-                                                               chainCode: [UInt8](hexToData(chaincode)),
+            if let chaincode = chaincode, !chaincode.isEmpty {
+                recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: mainnet,
+                                                               pubKey: [UInt8](recoveryPubKey?.hexToData())),
+                                                               chainCode: [UInt8](chaincode.hexToData())),
                                                                branch: branch)
             }
             // Get receive address from Jade for the path elements given
-            let cmd = JadeGetReceiveMultisigAddress(network: network.chain,
+            let cmd = JadeGetReceiveMultisigAddress(network: chain,
                                                              pointer: pointer,
-                                                             subaccount: wallet.pointer,
+                                                             subaccount: walletPointer,
                                                              branch: branch,
                                                              recoveryXpub: recoveryxpub,
                                                              csvBlocks: csvBlocks)
@@ -399,8 +406,8 @@ final public class Jade: JadeOTA, HWProtocol {
                 }
         } else {
             // Green Electrum Singlesig
-            let variant = mapAddressType(wallet.type.rawValue)
-            let cmd = JadeGetReceiveSinglesigAddress(network: network.chain, path: path, variant: variant ?? "")
+            let variant = mapAddressType(walletType)
+            let cmd = JadeGetReceiveSinglesigAddress(network: chain, path: path, variant: variant ?? "")
             return exchange(JadeRequest<JadeGetReceiveSinglesigAddress>(method: "get_receive_address", params: cmd))
                 .compactMap { (res: JadeResponse<String>) -> String in
                     res.result!

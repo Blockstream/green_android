@@ -1,15 +1,15 @@
 import Foundation
 
-public enum JadeError: Error {
+public enum HWError: Error {
     case Abort(_ localizedDescription: String)
     case URLError(_ localizedDescription: String)
     case Declined(_ localizedDescription: String)
 
     static let CBOR_RPC_USER_CANCELLED = -32000
 
-    static func from(code: Int, message: String) -> JadeError {
+    static func from(code: Int, message: String) -> HWError {
         switch code {
-        case JadeError.CBOR_RPC_USER_CANCELLED:
+        case HWError.CBOR_RPC_USER_CANCELLED:
             return .Declined(message)
         default:
             return .Abort(message)
