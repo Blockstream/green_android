@@ -1940,23 +1940,6 @@ class GdkSession constructor(
     }
 }
 
-fun NetworkLayer.hasActiveNetwork(session: GdkSession): Boolean{
-    return session.hasActiveNetwork(this.network(session))
-}
-
-fun NetworkLayer.network(session: GdkSession): Network? = if (this is NetworkPolicy) {
-    if (this.isSinglesig) {
-        if (this.isBitcoin) session.bitcoinSinglesig else session.liquidSinglesig
-    } else if (this.isMultisig) {
-        if (this.isBitcoin) session.bitcoinMultisig else session.liquidMultisig
-    } else {
-        TODO("Lightning not supported yet")
-    }
-} else {
-    if (this.isBitcoin) session.bitcoin else session.liquid
-}
-fun NetworkLayer.policyAsset(session: GdkSession): String = if(this.isBitcoin) BTC_POLICY_ASSET else session.liquid?.policyAsset ?: ""
-
 fun AccountAsset.asset(session: GdkSession) = session.getAsset(assetId)
 fun AccountAsset.assetName(session: GdkSession) = assetId.getAssetName(session)
 fun AccountAsset.assetTicker(session: GdkSession) = assetId.getAssetTicker(session)

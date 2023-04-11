@@ -7,12 +7,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.NetworkLayer
-import com.blockstream.gdk.data.belongsToLayer
 import com.blockstream.green.databinding.SelectUtxosBottomSheetBinding
+import com.blockstream.green.extensions.logException
 import com.blockstream.green.ui.items.UtxoListItem
 import com.blockstream.green.ui.send.SendViewModel
-import com.blockstream.green.extensions.logException
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
@@ -31,7 +29,6 @@ class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<Sel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val networkLayer: NetworkLayer? = arguments?.getParcelable(NETWORK_LAYER)
         val account: Account? = arguments?.getParcelable(ACCOUNT)
 
         val utxoAdapter = ItemAdapter<UtxoListItem>()
@@ -41,8 +38,6 @@ class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<Sel
 
             val accounts = if(account != null){
                 listOf(account)
-            }else if(networkLayer != null){
-                session.accounts.filter { it.belongsToLayer(networkLayer) }
             }else{
                 session.accounts
             }
@@ -106,13 +101,11 @@ class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<Sel
     }
 
     companion object : KLogging() {
-        const val NETWORK_LAYER = "NETWORK_LAYER"
         const val ACCOUNT = "ACCOUNT"
 
-        fun show(networkLayer: NetworkLayer? = null, account: Account? = null, fragmentManager: FragmentManager){
+        fun show(account: Account? = null, fragmentManager: FragmentManager){
             show(SelectUtxosBottomSheetDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
-                    bundle.putParcelable(NETWORK_LAYER, networkLayer)
                     bundle.putParcelable(ACCOUNT, account)
                 }
             }, fragmentManager)

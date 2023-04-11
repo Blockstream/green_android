@@ -4,27 +4,23 @@ package com.blockstream.green.ui.archived
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.belongsToLayer
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
+import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.ui.bottomsheets.RenameAccountBottomSheetDialogFragment
 import com.blockstream.green.ui.items.AccountListItem
 import com.blockstream.green.ui.items.TextListItem
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.observeList
-import com.blockstream.green.extensions.showPopupMenu
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,16 +33,14 @@ class ArchivedAccountsFragment :
     override val screenName = "ArchivedAccounts"
 
     @Inject
-    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
-    val viewModel: WalletViewModel by viewModels {
-        WalletViewModel.provideFactory(viewModelFactory, args.wallet)
+    lateinit var viewModelFactory: ArchivedAccountsViewModel.AssistedFactory
+    val viewModel: ArchivedAccountsViewModel by viewModels {
+        ArchivedAccountsViewModel.provideFactory(viewModelFactory, args.wallet)
     }
 
     override fun getWalletViewModel() = viewModel
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        val layer = args.layer
-
         binding.vm = viewModel
 
         val titleAdapter = FastItemAdapter<GenericItem>()
@@ -56,11 +50,8 @@ class ArchivedAccountsFragment :
                 session = session,
                 account = account,
             )
-        }.observeList(lifecycleScope, session.allAccountsFlow.map { accounts ->
-            accounts.filter { (layer == null || it.belongsToLayer(layer)) && it.hidden }
-        }) {
+        }.observeList(viewLifecycleOwner, viewModel.archivedAccountsLiveData) {
             if (it.isEmpty()) {
-                // findNavController().popBackStack(R.id.walletOverviewFragment, false)
                 titleAdapter.set(
                     listOf(
                         TextListItem(

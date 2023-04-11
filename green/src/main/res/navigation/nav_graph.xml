@@ -33,12 +33,6 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
-
-        <argument
-            android:name="layer"
-            android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.NetworkLayer"
-            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -494,8 +488,8 @@
             android:name="assetId"
             app:argType="string" />
         <argument
-            android:name="layer"
-            app:argType="com.blockstream.gdk.data.NetworkLayer" />
+            android:name="network"
+            app:argType="com.blockstream.gdk.data.Network" />
         <action
             android:id="@+id/action_account2of3Fragment_to_enterXpubFragment"
             app:destination="@id/enterXpubFragment" />

@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.BTC_POLICY_ASSET
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.NetworkLayer
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseAccountTypeFragmentBinding
@@ -76,13 +75,15 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
                 val nav = {
                     if (item.accountType == AccountType.TWO_OF_THREE) {
                         if (isBitcoin()) {
-                            navigate(
-                                ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToAccount2of3Fragment(
-                                    wallet = args.wallet,
-                                    assetId = viewModel.assetId,
-                                    layer = NetworkLayer.Bitcoin,
+                            session.bitcoinMultisig?.also { bitcoinMultisig ->
+                                navigate(
+                                    ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToAccount2of3Fragment(
+                                        wallet = args.wallet,
+                                        assetId = viewModel.assetId,
+                                        network = bitcoinMultisig,
+                                    )
                                 )
-                            )
+                            }
                         }else{
                             ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
                         }

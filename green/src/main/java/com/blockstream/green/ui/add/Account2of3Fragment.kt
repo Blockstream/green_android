@@ -6,10 +6,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.AccountType
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.databinding.Account2of3FragmentBinding
 import com.blockstream.green.gdk.getNetworkIcon
-import com.blockstream.green.gdk.network
 import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.items.ContentCardListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
@@ -31,11 +31,14 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
 
     override val screenName by lazy { "AddAccountChooseRecovery" }
 
-    override val title: String?
-        get() = args.layer.network(session)?.canonicalName
+    override val title: String
+        get() = args.network.canonicalName
 
-    override val toolbarIcon: Int?
-        get() = args.layer.network(session)?.getNetworkIcon()
+    override val toolbarIcon: Int
+        get() = args.network.getNetworkIcon()
+
+    val network: Network
+        get() = args.network
 
     @Inject
     lateinit var viewModelFactory: WalletViewModel.AssistedFactory
@@ -52,12 +55,6 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _: Int ->
             if (item is ContentCardListItem) {
-                val network = if (args.layer.isBitcoin) {
-                    session.bitcoinSinglesig
-                } else {
-                    session.liquidSinglesig
-                } ?: session.defaultNetwork
-
                 when (item.key) {
                     TwoOfThreeRecovery.NEW_RECOVERY -> {
                         navigate(

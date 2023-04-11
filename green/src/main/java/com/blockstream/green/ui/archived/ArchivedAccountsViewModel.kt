@@ -2,8 +2,6 @@ package com.blockstream.green.ui.archived
 
 import androidx.lifecycle.*
 import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.NetworkLayer
-import com.blockstream.gdk.data.belongsToLayer
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -18,8 +16,7 @@ class ArchivedAccountsViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted layer: NetworkLayer?,
+    @Assisted wallet: Wallet
 ) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
 
     private val _archivedAccountsLiveData: MutableLiveData<List<Account>> = MutableLiveData()
@@ -30,27 +27,25 @@ class ArchivedAccountsViewModel @AssistedInject constructor(
         session
             .allAccountsFlow
             .onEach { accounts ->
-                _archivedAccountsLiveData.value = accounts.filter { (layer == null || it.belongsToLayer(layer)) && it.hidden }
+                _archivedAccountsLiveData.value = accounts.filter { it.hidden }
             }.launchIn(viewModelScope)
     }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            wallet: Wallet,
-            layer: NetworkLayer?,
+            wallet: Wallet
         ): ArchivedAccountsViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            layer: NetworkLayer?
+            wallet: Wallet
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, layer) as T
+                return assistedFactory.create(wallet) as T
             }
         }
     }
