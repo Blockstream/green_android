@@ -10,7 +10,7 @@ fi
 
 SIGN_EXPORT=0
 
-TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim,build-gdk,sign-and-export,update-cocoapods -- "$@"`
+TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim,build-gdk,sign-and-export -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case $1 in
@@ -18,22 +18,9 @@ while true; do
         --iphonesim) DEVICE=iphonesim; TARGET=iphonesim; shift ;;
         --build-gdk) BUILD_GDK=1; shift ;;
         --sign-and-export) SIGN_EXPORT=1; shift ;;
-        --update-cocoapods) UPDATE_COCOAPODS=1; shift ;;
         -- ) break ;;
     esac
 done
-
-if [[ "$UPDATE_COCOAPODS" -eq 1 ]]; then
-    gem install cocoapods --user-install
-    $(which pod) repo update
-fi
-
-if [ ! -d Pods ]; then
-    $(which pod) install
-fi
-
-# Call linter
-Pods/SwiftLint/swiftlint --strict
 
 # check gdk build
 TAGNAME="release_0.0.58.post2"

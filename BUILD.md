@@ -68,13 +68,6 @@ or for iphone simulators:
 `./tools/build.sh --iphonesim static --lto=true --install $PWD/gdk-iphone`
 
 
-#### CocoaPods requirements
-
-Install CocoaPods dependencies:
-
-`pod install`
-
-
 #### Install the app
 
 Open the project with Xcode and hit Play.

@@ -6,7 +6,6 @@ default_platform(:ios)
 platform :ios do
   desc "Build unsigned debug"
   lane :build_unsigned_debug do
-    cocoapods()
     build_ios_app(
       configuration: "Debug",
       scheme: "gaios",
@@ -25,7 +24,6 @@ platform :ios do
 
   desc "Build dev release"
   lane :build_dev_release do
-    cocoapods()
     build_ios_app(
       configuration: "Staging",
       scheme: "gaios",
@@ -45,7 +43,6 @@ platform :ios do
 
   desc "Build signed prod release"
   lane :build_signed_prod_release do
-    cocoapods()
     build_ios_app(
       configuration: "Release",
       scheme: "gaios",
