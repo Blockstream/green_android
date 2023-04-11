@@ -107,10 +107,10 @@ class HomeViewController: UIViewController {
     }
 
     @IBAction func btnAbout(_ sender: Any) {
-
-        let storyboard = UIStoryboard(name: "About", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "AboutViewController") as? AboutViewController {
-            self.navigationController?.pushViewController(vc, animated: true)
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAboutViewController") as? DialogAboutViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 
