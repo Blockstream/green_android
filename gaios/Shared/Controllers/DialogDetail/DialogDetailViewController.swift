@@ -11,7 +11,16 @@ enum DetailCellType: CaseIterable {
     case issuer
 }
 
-class DialogAssetDetailViewController: UIViewController {
+class DialogDetailViewController: KeyboardViewController {
+
+    @IBOutlet weak var tappableBg: UIView!
+    @IBOutlet weak var handle: UIView!
+    @IBOutlet weak var anchorBottom: NSLayoutConstraint!
+    @IBOutlet weak var cardView: UIView!
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
 
     var tag: String!
     var asset: AssetInfo?
@@ -25,28 +34,81 @@ class DialogAssetDetailViewController: UIViewController {
     private var assetsUpdatedToken: NSObjectProtocol?
     var obs: NSKeyValueObservation?
 
-    @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var btnDismiss: UIButton!
-    @IBOutlet weak var bgLayer: UIView!
-    @IBOutlet weak var cardView: UIView!
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
-
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
     }
+
+    lazy var blurredView: UIView = {
+        let containerView = UIView()
+        let blurEffect = UIBlurEffect(style: .dark)
+        let customBlurEffectView = CustomVisualEffectView(effect: blurEffect, intensity: 0.4)
+        customBlurEffectView.frame = self.view.bounds
+
+        let dimmedView = UIView()
+        dimmedView.backgroundColor = .black.withAlphaComponent(0.3)
+        dimmedView.frame = self.view.bounds
+        containerView.addSubview(customBlurEffectView)
+        containerView.addSubview(dimmedView)
+        return containerView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setContent()
         setStyle()
+
+        view.addSubview(blurredView)
+        view.sendSubviewToBack(blurredView)
+
         view.alpha = 0.0
+        anchorBottom.constant = -cardView.frame.size.height
+
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+            swipeDown.direction = .down
+            self.view.addGestureRecognizer(swipeDown)
+        let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
+            tappableBg.addGestureRecognizer(tapToClose)
+
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
             self?.tableViewHeight.constant = table.contentSize.height
         }
 
         AnalyticsManager.shared.recordView(.assetDetails)
+    }
+
+    deinit {
+        print("deinit")
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        anchorBottom.constant = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.alpha = 1.0
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = assetsUpdatedToken {
+            NotificationCenter.default.removeObserver(token)
+            assetsUpdatedToken = nil
+        }
+
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if isLBTC { assetDetailCellTypes.remove(at: 1) }
+        assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
+    }
+
+    @objc func didTap(gesture: UIGestureRecognizer) {
+
+        dismiss()
     }
 
     func setContent() {
@@ -56,48 +118,38 @@ class DialogAssetDetailViewController: UIViewController {
     func setStyle() {
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        handle.cornerRadius = 1.5
+        lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if isLBTC { assetDetailCellTypes.remove(at: 1) }
-        assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let token = assetsUpdatedToken {
-            NotificationCenter.default.removeObserver(token)
-            assetsUpdatedToken = nil
-        }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        UIView.animate(withDuration: 0.3) {
-            self.view.alpha = 1.0
-        }
-    }
-
-    func dismiss(_ value: MnemonicLengthOption?) {
+    func dismiss() {
+        anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
+            self.view.layoutIfNeeded()
         }, completion: { _ in
             self.dismiss(animated: false, completion: nil)
         })
     }
 
+    @objc func didSwipe(gesture: UIGestureRecognizer) {
+
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            switch swipeGesture.direction {
+            case .down:
+                dismiss()
+            default:
+                break
+            }
+        }
+    }
+
     func onAssetsUpdated(_ notification: Notification) {
         self.tableView.reloadData()
     }
-
-    @IBAction func btnDismiss(_ sender: Any) {
-        dismiss(nil)
-    }
-
 }
 
-extension DialogAssetDetailViewController: UITableViewDelegate, UITableViewDataSource {
+extension DialogDetailViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension

@@ -7,6 +7,10 @@ class AssetDetailCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        lblTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lblTitle.textColor = .white
+        lblHint.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        lblHint.textColor = .white.withAlphaComponent(0.4)
     }
 
     func configure(_ title: String, _ hint: String) {

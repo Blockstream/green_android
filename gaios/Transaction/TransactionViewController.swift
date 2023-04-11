@@ -270,8 +270,8 @@ class TransactionViewController: UIViewController {
     func didSelectAmountAt(_ index: Int) {
         if !transaction.isLiquid { return }
 
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogAssetDetailViewController") as? DialogAssetDetailViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDetailViewController") as? DialogDetailViewController {
             let amount = transaction.amountsWithoutFees[index]
             vc.tag = amount.0
             vc.asset = wallet.session?.registry?.info(for: amount.0)

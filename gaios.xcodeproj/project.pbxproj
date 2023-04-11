@@ -95,7 +95,6 @@
 		34347677268320C200D7AD43 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347676268320C200D7AD43 /* Utils.swift */; };
 		34347679268322A100D7AD43 /* RecoveryVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347678268322A100D7AD43 /* RecoveryVerify.swift */; };
 		34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */; };
-		343A697B27E08921008D5F4C /* DialogAssetDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343A697A27E08921008D5F4C /* DialogAssetDetailViewController.swift */; };
 		343A697E27E08C29008D5F4C /* AssetDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343A697D27E08C29008D5F4C /* AssetDetailCell.swift */; };
 		34440E7A28B379C8006CD464 /* WalletListHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34440E7828B379C8006CD464 /* WalletListHDCell.swift */; };
 		34440E7B28B379C8006CD464 /* WalletListHDCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34440E7928B379C8006CD464 /* WalletListHDCell.xib */; };
@@ -226,6 +225,7 @@
 		3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655429E542D70092B5BD /* DialogRenameViewController.swift */; };
 		3499655829E569D60092B5BD /* Jade 01 - Adjusted.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655629E569D60092B5BD /* Jade 01 - Adjusted.riv */; };
 		3499655929E569D60092B5BD /* Jade 02 - Adjusted.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3499655729E569D60092B5BD /* Jade 02 - Adjusted.riv */; };
+		3499655C29E576300092B5BD /* DialogDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655B29E576300092B5BD /* DialogDetailViewController.swift */; };
 		349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75042791BCA60046DA59 /* ChangeCell.swift */; };
 		349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75212796D99E0046DA59 /* AssetsListViewController.swift */; };
 		349C75242796DBB90046DA59 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75232796DBB90046DA59 /* AssetCell.swift */; };
@@ -580,7 +580,6 @@
 		34347676268320C200D7AD43 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		34347678268322A100D7AD43 /* RecoveryVerify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerify.swift; sourceTree = "<group>"; };
 		34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountIdViewController.swift; sourceTree = "<group>"; };
-		343A697A27E08921008D5F4C /* DialogAssetDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAssetDetailViewController.swift; sourceTree = "<group>"; };
 		343A697D27E08C29008D5F4C /* AssetDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailCell.swift; sourceTree = "<group>"; };
 		34440E7828B379C8006CD464 /* WalletListHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListHDCell.swift; sourceTree = "<group>"; };
 		34440E7928B379C8006CD464 /* WalletListHDCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletListHDCell.xib; sourceTree = "<group>"; };
@@ -711,6 +710,7 @@
 		3499655429E542D70092B5BD /* DialogRenameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRenameViewController.swift; sourceTree = "<group>"; };
 		3499655629E569D60092B5BD /* Jade 01 - Adjusted.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 01 - Adjusted.riv"; sourceTree = "<group>"; };
 		3499655729E569D60092B5BD /* Jade 02 - Adjusted.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jade 02 - Adjusted.riv"; sourceTree = "<group>"; };
+		3499655B29E576300092B5BD /* DialogDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDetailViewController.swift; sourceTree = "<group>"; };
 		349C75042791BCA60046DA59 /* ChangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeCell.swift; sourceTree = "<group>"; };
 		349C75212796D99E0046DA59 /* AssetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsListViewController.swift; sourceTree = "<group>"; };
 		349C75232796DBB90046DA59 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
@@ -1702,6 +1702,14 @@
 			path = DialogRename;
 			sourceTree = "<group>";
 		};
+		3499655A29E5760F0092B5BD /* DialogDetail */ = {
+			isa = PBXGroup;
+			children = (
+				3499655B29E576300092B5BD /* DialogDetailViewController.swift */,
+			);
+			path = DialogDetail;
+			sourceTree = "<group>";
+		};
 		349D1ED727424ECE0095B5CA /* Transaction */ = {
 			isa = PBXGroup;
 			children = (
@@ -1932,13 +1940,13 @@
 				349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */,
 				3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */,
 				3423C6E627C380DD001D9E2C /* DialogMnemonicLengthViewController.swift */,
-				343A697A27E08921008D5F4C /* DialogAssetDetailViewController.swift */,
 				341B1F272874625100270629 /* DialogSendHWSummaryViewController.swift */,
 				34CAEBA2288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift */,
 				340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */,
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				34A862A02979432C0018E636 /* DialogShowQRViewController.swift */,
 				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
+				3499655A29E5760F0092B5BD /* DialogDetail */,
 				3499655329E542B70092B5BD /* DialogRename */,
 				34E8457A29DD6A9600B207E7 /* DialogPassphrase */,
 				34E8457529DBFA1C00B207E7 /* DialogAmount */,
@@ -2940,6 +2948,7 @@
 				81865F43299D5AA5002CBA87 /* Codable.swift in Sources */,
 				34EB6703282138710036D615 /* AMSegmentation.swift in Sources */,
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
+				3499655C29E576300092B5BD /* DialogDetailViewController.swift in Sources */,
 				3423C6E727C380DD001D9E2C /* DialogMnemonicLengthViewController.swift in Sources */,
 				81BF4E3122E9E9EA005A04C6 /* LedgerCommands.swift in Sources */,
 				3457F4AE292397A600EF33B5 /* DialogListViewModel.swift in Sources */,
@@ -3000,7 +3009,6 @@
 				6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */,
 				34440E7F28B37C2D006CD464 /* WalletListEmptyCell.swift in Sources */,
 				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,
-				343A697B27E08921008D5F4C /* DialogAssetDetailViewController.swift in Sources */,
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
 				345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */,
 				3488FC6F290BCB2500122628 /* AccountCellModel.swift in Sources */,
