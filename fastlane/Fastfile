@@ -9,7 +9,7 @@ platform :ios do
     build_ios_app(
       configuration: "Debug",
       scheme: "gaios",
-      workspace: "gaios.xcworkspace",
+      project: "gaios.xcodeproj",
       #silent: true,
       clean: true,
       output_directory: "./debug",
@@ -27,7 +27,7 @@ platform :ios do
     build_ios_app(
       configuration: "Staging",
       scheme: "gaios",
-      workspace: "gaios.xcworkspace",
+      project: "gaios.xcodeproj",
       #silent: true,
       clean: true,
       output_directory: "./dev",
@@ -46,7 +46,7 @@ platform :ios do
     build_ios_app(
       configuration: "Release",
       scheme: "gaios",
-      workspace: "gaios.xcworkspace",
+      project: "gaios.xcodeproj",
       #silent: true,
       clean: true,
       output_directory: "./release",
