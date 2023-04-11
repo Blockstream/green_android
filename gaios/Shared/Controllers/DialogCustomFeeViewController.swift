@@ -122,7 +122,7 @@ class DialogCustomFeeViewController: KeyboardViewController {
         })
     }
 
-    func dismiss(_ action: WalletNameAction, feeRate: UInt64?) {
+    func dismiss(_ action: RenameAction, feeRate: UInt64?) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in

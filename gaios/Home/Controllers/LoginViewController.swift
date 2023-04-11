@@ -383,8 +383,8 @@ class LoginViewController: UIViewController {
     }
 
     func walletRename() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.index = nil
@@ -405,7 +405,7 @@ class LoginViewController: UIViewController {
     }
 
     func loginWithPassphrase(isAlwaysAsk: Bool) {
-        
+
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogPassphraseViewController") as? DialogPassphraseViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -456,7 +456,7 @@ class LoginViewController: UIViewController {
     }
 }
 
-extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
+extension LoginViewController: DialogRenameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
         self.account?.name = name
         if let account = self.account {

@@ -90,7 +90,7 @@ class DialogNoteViewController: KeyboardViewController {
         })
     }
 
-    func dismiss(_ action: WalletNameAction) {
+    func dismiss(_ action: RenameAction) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in

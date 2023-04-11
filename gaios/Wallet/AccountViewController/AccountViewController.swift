@@ -193,8 +193,8 @@ class AccountViewController: UIViewController {
     }
 
     func renameDialog() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.isAccountRename = true
             vc.delegate = self
@@ -577,7 +577,7 @@ extension AccountViewController: DialogListViewControllerDelegate {
     }
 }
 
-extension AccountViewController: DialogWalletNameViewControllerDelegate {
+extension AccountViewController: DialogRenameViewControllerDelegate {
     func didRename(name: String, index: String?) {
         rename(name: name)
     }

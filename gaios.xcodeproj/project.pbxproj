@@ -225,6 +225,7 @@
 		349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */; };
 		3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */; };
 		3498079F291CF05700F8DB95 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498079E291CF05600F8DB95 /* Collection.swift */; };
+		3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499655429E542D70092B5BD /* DialogRenameViewController.swift */; };
 		349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75042791BCA60046DA59 /* ChangeCell.swift */; };
 		349C75222796D99E0046DA59 /* AssetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75212796D99E0046DA59 /* AssetsListViewController.swift */; };
 		349C75242796DBB90046DA59 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C75232796DBB90046DA59 /* AssetCell.swift */; };
@@ -300,7 +301,6 @@
 		34D535E629A77D4B00D3B5C5 /* MoreOptPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */; };
 		34D66CED29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
-		34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
 		34E0CA8C2981395600695304 /* Survey.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34E0CA8B2981395600695304 /* Survey.storyboard */; };
 		34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8D298139B200695304 /* SurveyViewController.swift */; };
@@ -710,6 +710,7 @@
 		349804D32772385600EAA1F4 /* DialogRecipientDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRecipientDeleteViewController.swift; sourceTree = "<group>"; };
 		3498079C291CE42100F8DB95 /* AssetSelectCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectCellModel.swift; sourceTree = "<group>"; };
 		3498079E291CF05600F8DB95 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
+		3499655429E542D70092B5BD /* DialogRenameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRenameViewController.swift; sourceTree = "<group>"; };
 		349C75042791BCA60046DA59 /* ChangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeCell.swift; sourceTree = "<group>"; };
 		349C75212796D99E0046DA59 /* AssetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsListViewController.swift; sourceTree = "<group>"; };
 		349C75232796DBB90046DA59 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
@@ -786,7 +787,6 @@
 		34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptPrefs.swift; sourceTree = "<group>"; };
 		34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuHomeViewController.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
-		34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletNameViewController.swift; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
 		34E0CA8B2981395600695304 /* Survey.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Survey.storyboard; sourceTree = "<group>"; };
 		34E0CA8D298139B200695304 /* SurveyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyViewController.swift; sourceTree = "<group>"; };
@@ -1694,6 +1694,14 @@
 			path = ProgressView;
 			sourceTree = "<group>";
 		};
+		3499655329E542B70092B5BD /* DialogRename */ = {
+			isa = PBXGroup;
+			children = (
+				3499655429E542D70092B5BD /* DialogRenameViewController.swift */,
+			);
+			path = DialogRename;
+			sourceTree = "<group>";
+		};
 		349D1ED727424ECE0095B5CA /* Transaction */ = {
 			isa = PBXGroup;
 			children = (
@@ -1909,7 +1917,6 @@
 		34DDD0AC260A48DF00020380 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */,
 				340F07EF2620A6BB0065A986 /* DialogRecoveryHelpViewController.swift */,
 				34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */,
 				349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */,
@@ -1932,6 +1939,7 @@
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				34A862A02979432C0018E636 /* DialogShowQRViewController.swift */,
 				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
+				3499655329E542B70092B5BD /* DialogRename */,
 				34E8457A29DD6A9600B207E7 /* DialogPassphrase */,
 				34E8457529DBFA1C00B207E7 /* DialogAmount */,
 				3448B5C929D475E4008D5746 /* DialogScan */,
@@ -2746,6 +2754,7 @@
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
+				3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */,
 				3458AB18292D289F006EC7FB /* AnyAssetExpandableView.swift in Sources */,
 				34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */,
 				34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */,
@@ -2784,7 +2793,6 @@
 				81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */,
 				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,
 				812DBDC42977EE7F002992D6 /* TwoFactorSettingsViewModel.swift in Sources */,
-				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				34BD7E7A278C93F3004AEC6F /* NoteCell.swift in Sources */,
 				81A5919929155F6A001D1A65 /* MultisigSettingsViewController.swift in Sources */,

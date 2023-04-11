@@ -575,7 +575,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension WalletViewController: DialogWalletNameViewControllerDelegate {
+extension WalletViewController: DialogRenameViewControllerDelegate {
 
     func didRename(name: String, index: String?) {
         //...

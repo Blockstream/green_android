@@ -126,8 +126,8 @@ class WatchOnlyLoginViewController: KeyboardViewController {
     }
 
     func walletRename() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.index = nil
             vc.delegate = self
@@ -183,7 +183,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
 }
 
-extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
+extension WatchOnlyLoginViewController: DialogRenameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
         account?.name = name
         if let account = self.account {

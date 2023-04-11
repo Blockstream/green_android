@@ -89,8 +89,8 @@ class HomeViewController: UIViewController {
 
     func walletRename(_ index: String) {
         let account = AccountsRepository.shared.get(for: index)
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRenameViewController") as? DialogRenameViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             vc.index = index
@@ -336,7 +336,7 @@ extension HomeViewController: PopoverMenuHomeDelegate {
     }
 }
 
-extension HomeViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
+extension HomeViewController: DialogRenameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
         if let index = index, var account = AccountsRepository.shared.get(for: index) {
             account.name = name
