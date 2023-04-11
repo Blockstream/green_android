@@ -41,7 +41,7 @@ public class JadeChannel: HWChannelProtocol {
             }.flatMap { res in
                 return Observable<JadeResponse<K>>.create { observer in
                     if let error = res.error {
-                        observer.onError(JadeError.from(code: error.code, message: error.message))
+                        observer.onError(HWError.from(code: error.code, message: error.message))
                     } else {
                         observer.onNext(res)
                         observer.onCompleted()
@@ -67,7 +67,7 @@ public class JadeChannel: HWChannelProtocol {
 
     public func write(_ data: Data) -> Observable<Characteristic> {
         guard let characteristic = characteristicWrite else {
-            return Observable.error(GaError.GenericError())
+            return Observable.error(HWError.Abort(""))
         }
         if data.count <= 128 {
             return characteristic.writeValue(data, type: .withResponse).asObservable()
@@ -81,7 +81,7 @@ public class JadeChannel: HWChannelProtocol {
         return self.characteristicNotify!.observeValueUpdate().take(1)
         .flatMap { characteristic -> Observable<Data> in
             guard let buffer = characteristic.value else {
-                return Observable.error(GaError.GenericError())
+                return Observable.error(HWError.Abort(""))
             }
             let payload = (prefix ?? Data()) + buffer
             let decode = try? CBOR.decode([UInt8](payload))

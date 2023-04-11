@@ -84,6 +84,17 @@
                ReferencedContainer = "container:gaios.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "81961B2F29E4F4A100E9B94D"
+               BuildableName = "greenaddressTests.xctest"
+               BlueprintName = "greenaddressTests"
+               ReferencedContainer = "container:gaios.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

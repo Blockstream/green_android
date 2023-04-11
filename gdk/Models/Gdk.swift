@@ -1,4 +1,5 @@
 import Foundation
+import greenaddress
 
 public struct WalletIdentifier: Codable {
     enum CodingKeys: String, CodingKey {

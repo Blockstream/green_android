@@ -7,7 +7,7 @@ public class HWResolver {
 
     public init() { }
 
-    func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<String> {
+    public func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<String> {
         let hw: HWProtocol = device.isJade ? Jade.shared : Ledger.shared
         let chain = chain ?? "mainnet"
         switch action {

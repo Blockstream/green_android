@@ -1,7 +1,8 @@
 import Foundation
-import hw
 import UIKit
 import PromiseKit
+import greenaddress
+import hw
 
 public enum TwoFactorCallError: Error {
     case failure(localizedDescription: String)

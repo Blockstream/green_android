@@ -1,5 +1,6 @@
 import Foundation
 import PromiseKit
+import greenaddress
 
 public struct GdkNetwork: Codable, Equatable, Comparable {
 

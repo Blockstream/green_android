@@ -2,6 +2,7 @@ import Foundation
 import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
+import greenaddress
 
 final public class Ledger: LedgerCommands, HWProtocol {
 

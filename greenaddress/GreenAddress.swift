@@ -598,7 +598,7 @@ public func getBIP39WordList() -> [String] {
     return words
 }
 
-func compressPublicKey(_ publicKey: [UInt8]) throws -> [UInt8] {
+public func compressPublicKey(_ publicKey: [UInt8]) throws -> [UInt8] {
     switch publicKey[0] {
     case 0x04:
         if publicKey.count != 65 {
