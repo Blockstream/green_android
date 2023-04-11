@@ -43,8 +43,8 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     func editNote() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNoteViewController") as? DialogNoteViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.prefill = viewModel.tx.memo
             vc.delegate = self
@@ -271,7 +271,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
     }
 }
 
-extension SendConfirmViewController: DialogNoteViewControllerDelegate {
+extension SendConfirmViewController: DialogEditViewControllerDelegate {
 
     func didSave(_ note: String) {
         viewModel.tx.memo = note

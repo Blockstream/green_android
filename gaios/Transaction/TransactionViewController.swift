@@ -106,8 +106,8 @@ class TransactionViewController: UIViewController {
 
     func editNote() {
         if isWatchonly { return }
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNoteViewController") as? DialogNoteViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.prefill = transaction.memo
             vc.delegate = self
@@ -445,7 +445,7 @@ extension TransactionViewController {
 //    }
 }
 
-extension TransactionViewController: DialogNoteViewControllerDelegate {
+extension TransactionViewController: DialogEditViewControllerDelegate {
 
     func didSave(_ note: String) {
         self.startAnimating()
