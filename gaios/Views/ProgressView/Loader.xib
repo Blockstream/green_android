@@ -25,21 +25,21 @@
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
                         <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCJ-3n-6KM">
-                            <rect key="frame" x="44" y="241.5" width="326" height="413.5"/>
+                            <rect key="frame" x="44" y="277.5" width="326" height="341.5"/>
                             <subviews>
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.59999999999999998" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_mash" translatesAutoresizingMaskIntoConstraints="NO" id="CiI-SW-D2M">
-                                    <rect key="frame" x="-100" y="0.0" width="426" height="613.5"/>
+                                    <rect key="frame" x="-100" y="0.0" width="426" height="541.5"/>
                                 </imageView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6N4-4c-rfw">
-                                    <rect key="frame" x="103" y="140" width="120" height="120"/>
+                                    <rect key="frame" x="118" y="100" width="90" height="90"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="120" id="DcC-dg-gbf"/>
-                                        <constraint firstAttribute="height" constant="120" id="HoC-HU-zCc"/>
+                                        <constraint firstAttribute="width" constant="90" id="DcC-dg-gbf"/>
+                                        <constraint firstAttribute="height" constant="90" id="HoC-HU-zCc"/>
                                     </constraints>
                                 </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Message" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ha-eL-thk">
-                                    <rect key="frame" x="36" y="292" width="254" height="21.5"/>
+                                    <rect key="frame" x="36" y="240" width="254" height="21.5"/>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -51,16 +51,16 @@
                                 <constraint firstItem="6N4-4c-rfw" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="2dJ-f2-jrb"/>
                                 <constraint firstItem="CiI-SW-D2M" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="-100" id="4yp-WD-x9h"/>
                                 <constraint firstAttribute="bottom" secondItem="CiI-SW-D2M" secondAttribute="bottom" constant="-200" id="61b-WJ-Wxd"/>
-                                <constraint firstItem="6N4-4c-rfw" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="140" id="AUJ-rx-TKn"/>
+                                <constraint firstItem="6N4-4c-rfw" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="100" id="AUJ-rx-TKn"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="36" id="FWm-D0-6zu"/>
-                                <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="6N4-4c-rfw" secondAttribute="bottom" constant="32" id="VQW-nP-JfK"/>
+                                <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="6N4-4c-rfw" secondAttribute="bottom" constant="50" id="VQW-nP-JfK"/>
                                 <constraint firstItem="CiI-SW-D2M" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" id="czR-v4-lCC"/>
                                 <constraint firstAttribute="trailing" secondItem="CiI-SW-D2M" secondAttribute="trailing" id="lBw-Up-hIM"/>
-                                <constraint firstAttribute="bottom" secondItem="5Ha-eL-thk" secondAttribute="bottom" constant="100" id="t0g-xx-YiH"/>
+                                <constraint firstAttribute="bottom" secondItem="5Ha-eL-thk" secondAttribute="bottom" constant="80" id="t0g-xx-YiH"/>
                             </constraints>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.3942610432330827" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.44430938444108764" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="rCJ-3n-6KM" firstAttribute="leading" secondItem="tn4-hX-RYH" secondAttribute="leading" constant="44" id="L8l-TP-daU"/>
                         <constraint firstItem="rCJ-3n-6KM" firstAttribute="centerY" secondItem="tn4-hX-RYH" secondAttribute="centerY" id="P2w-ef-dw6"/>

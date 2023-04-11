@@ -24,7 +24,7 @@ class Loader: UIView {
         tag = Loader.tag
         translatesAutoresizingMaskIntoConstraints = false
         setup()
-        rectangle.cornerRadius = 10.0
+        rectangle.cornerRadius = 5.0
         rectangle.borderWidth = 1.0
         rectangle.borderColor = .white.withAlphaComponent(0.05)
     }
