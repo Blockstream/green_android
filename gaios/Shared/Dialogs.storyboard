@@ -226,7 +226,7 @@
                                                                                         </constraints>
                                                                                     </imageView>
                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="lbl_more" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PWy-mS-QBS">
-                                                                                        <rect key="frame" x="20" y="18.666666666666686" width="273" height="17"/>
+                                                                                        <rect key="frame" x="20" y="18.666666666666629" width="273" height="17"/>
                                                                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         <nil key="highlightedColor"/>
@@ -277,7 +277,7 @@
                                                                                         </constraints>
                                                                                     </view>
                                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="McN-Ph-a61">
-                                                                                        <rect key="frame" x="20" y="105.00000000000006" width="303" height="47"/>
+                                                                                        <rect key="frame" x="20" y="105" width="303" height="47"/>
                                                                                         <subviews>
                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="lbl_more" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OSc-xC-3x7">
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="303" height="20"/>
@@ -315,7 +315,7 @@
                                                                         <color key="backgroundColor" red="0.21568627450980393" green="0.21568627450980393" blue="0.23529411764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     </stackView>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oLZ-Wq-bmo">
-                                                                        <rect key="frame" x="25" y="288.00000000000006" width="343" height="29"/>
+                                                                        <rect key="frame" x="25" y="288" width="343" height="29"/>
                                                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                         <state key="normal" title="Button"/>
@@ -324,7 +324,7 @@
                                                                         </connections>
                                                                     </button>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Qx3-oG-08a">
-                                                                        <rect key="frame" x="25" y="378.00000000000006" width="343" height="110"/>
+                                                                        <rect key="frame" x="25" y="378" width="343" height="110"/>
                                                                         <subviews>
                                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wiK-9r-rZb">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
@@ -393,7 +393,6 @@
                                                         <constraints>
                                                             <constraint firstItem="1YI-IY-Whc" firstAttribute="top" secondItem="faN-0V-t7L" secondAttribute="bottom" constant="-13.666666666666671" id="4gq-F5-fTh"/>
                                                             <constraint firstItem="faN-0V-t7L" firstAttribute="leading" secondItem="UN2-B4-A6X" secondAttribute="leading" id="As5-Vt-eDx"/>
-                                                            <constraint firstAttribute="bottom" secondItem="1YI-IY-Whc" secondAttribute="bottom" constant="36.666666666666629" id="T5X-Of-Ivh"/>
                                                             <constraint firstItem="1YI-IY-Whc" firstAttribute="leading" secondItem="UN2-B4-A6X" secondAttribute="leading" id="YXA-xS-TiA"/>
                                                             <constraint firstItem="faN-0V-t7L" firstAttribute="top" secondItem="UN2-B4-A6X" secondAttribute="top" id="hWW-mc-Da8"/>
                                                             <constraint firstAttribute="trailing" secondItem="faN-0V-t7L" secondAttribute="trailing" id="mSr-kh-3rS"/>
@@ -554,7 +553,6 @@
                                                         <color key="backgroundColor" red="0.1333333333" green="0.1333333333" blue="0.14901960780000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="trailing" secondItem="wqN-I7-UOZ" secondAttribute="trailing" id="29E-MD-XKw"/>
-                                                            <constraint firstAttribute="bottom" secondItem="wqN-I7-UOZ" secondAttribute="bottom" constant="36.666666666666629" id="4PM-Fo-gAa"/>
                                                             <constraint firstItem="Hlv-pB-Ptl" firstAttribute="leading" secondItem="Hfg-6n-f5s" secondAttribute="leading" id="Trm-Yq-mIX"/>
                                                             <constraint firstAttribute="trailing" secondItem="Hlv-pB-Ptl" secondAttribute="trailing" id="anF-a9-MUR"/>
                                                             <constraint firstItem="wqN-I7-UOZ" firstAttribute="top" secondItem="Hlv-pB-Ptl" secondAttribute="bottom" id="fCz-zp-ZNa"/>
