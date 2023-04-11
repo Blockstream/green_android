@@ -22,6 +22,7 @@ public protocol HWProtocol {
                          transactions: [String: String],
                          useAeProtocol: Bool) -> Observable<[String: Any]>
 
+    // swiftlint:disable:next function_parameter_count
     func newReceiveAddress(chain: String,
                                   mainnet: Bool,
                                   multisig: Bool,

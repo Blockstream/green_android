@@ -1,9 +1,10 @@
 excluded:
    - gaiosTests
    - gaiosUITests
-   - gdk*
+   - gdk-iphone
    - tools
    - Pods
+   - greenaddress/GreenAddress.swift
    - gaios/GreenApplication.swift
    - gaios/Wallet/Views/SlidingButton.swift
    - gaios/Helpers/AuthenticationTypeHandler.swift

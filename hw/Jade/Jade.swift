@@ -372,6 +372,7 @@ final public class Jade: JadeOTA, HWProtocol {
         return Data(txId! + ptIdx!.uint32LE() + (isSegwit ? (input["satoshi"] as? UInt64)!.uint64LE() : []))
     }
 
+    // swiftlint:disable:next function_parameter_count
     public func newReceiveAddress(chain: String,
                                   mainnet: Bool,
                                   multisig: Bool,

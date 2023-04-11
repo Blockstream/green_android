@@ -302,7 +302,6 @@
 		34E0CA8C2981395600695304 /* Survey.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34E0CA8B2981395600695304 /* Survey.storyboard */; };
 		34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8D298139B200695304 /* SurveyViewController.swift */; };
 		34E0CA9029817CE400695304 /* CountlyWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA8F29817CE400695304 /* CountlyWidget.swift */; };
-		34E0CA9229829C2A00695304 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0CA9129829C2A00695304 /* Collection.swift */; };
 		34E8457729DBFA4500B207E7 /* DialogAmountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457629DBFA4500B207E7 /* DialogAmountViewController.swift */; };
 		34E8457929DC26DD00B207E7 /* LoginPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457829DC26DD00B207E7 /* LoginPrefs.swift */; };
 		34E8457C29DD6ABB00B207E7 /* DialogPassphraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8457B29DD6ABB00B207E7 /* DialogPassphraseViewController.swift */; };
@@ -372,6 +371,7 @@
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */; };
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
+		817416AE29E8AFB100C5448D /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817416AD29E8AFB100C5448D /* Model.swift */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
 		81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B322992BC9800F05BF2 /* RecipientCellModel.swift */; };
 		81772B352992EDEA00F05BF2 /* SendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B342992EDE900F05BF2 /* SendViewModel.swift */; };
@@ -407,7 +407,6 @@
 		81961AA729E4AC3F00E9B94D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81205D6821C3B7EB005180CF /* Events.swift */; };
 		81961AA829E4AC5A00E9B94D /* Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81865F42299D5AA5002CBA87 /* Codable.swift */; };
 		81961AA929E4AC7F00E9B94D /* NetworkSecurityCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */; };
-		81961AAA29E4AC9900E9B94D /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675DBA6421B4B13B000C5D70 /* Model.swift */; };
 		81961AAC29E4B01F00E9B94D /* NetworkSecurityCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961AAB29E4B01F00E9B94D /* NetworkSecurityCase.swift */; };
 		81961AAD29E4B0D400E9B94D /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464E2670ECE0009E8FCE /* AccountType.swift */; };
 		81961AB029E4B29C00E9B94D /* AssetInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961AAF29E4B29C00E9B94D /* AssetInfo.swift */; };
@@ -889,7 +888,6 @@
 		671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCell.swift; sourceTree = "<group>"; };
 		67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = KeyboardSuggestions.xib; sourceTree = "<group>"; };
 		67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSuggestions.swift; sourceTree = "<group>"; };
-		675DBA6421B4B13B000C5D70 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		676FCF1C1F9D0CF800354E93 /* gaios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gaios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		676FCF281F9D0CF800354E93 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -957,6 +955,7 @@
 		816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogJadeCheckViewController.swift; sourceTree = "<group>"; };
 		816F0AF323E4713600569A5D /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
+		817416AD29E8AFB100C5448D /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		817417362236E85500A28E36 /* ScreenLockWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockWindow.swift; sourceTree = "<group>"; };
 		81772B322992BC9800F05BF2 /* RecipientCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientCellModel.swift; sourceTree = "<group>"; };
 		81772B342992EDE900F05BF2 /* SendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendViewModel.swift; sourceTree = "<group>"; };
@@ -2465,7 +2464,7 @@
 		81A3B5402244AFAC0091B6BC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				675DBA6421B4B13B000C5D70 /* Model.swift */,
+				817416AD29E8AFB100C5448D /* Model.swift */,
 				34AB8BA4260366A8009C930A /* WalletListItem.swift */,
 				819DFBAB26038E8B0022BD85 /* Account.swift */,
 				816282B0260BB201003E5FA6 /* OnBoardParams.swift */,
@@ -2931,6 +2930,7 @@
 				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
 				81961AB929E4B93F00E9B94D /* Transaction.swift in Sources */,
 				345ED1F429C088DC00BD9071 /* SelectOnBoardTypeViewController.swift in Sources */,
+				817416AE29E8AFB100C5448D /* Model.swift in Sources */,
 				346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */,
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
 				3418BAB6274285BD00F9B2D0 /* TransactionFeeCell.swift in Sources */,

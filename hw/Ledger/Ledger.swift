@@ -112,6 +112,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
         }
     }
 
+    // swiftlint:disable:next function_parameter_count
     public func newReceiveAddress(chain: String,
                                   mainnet: Bool,
                                   multisig: Bool,
