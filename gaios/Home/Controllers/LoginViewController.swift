@@ -11,6 +11,8 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var attempts: UILabel!
     @IBOutlet weak var connectionSettingsButton: UIButton!
     @IBOutlet weak var emergencyButton: UIButton!
+    @IBOutlet weak var attemptsView: UIView!
+    @IBOutlet weak var attemptsBg: UIView!
 
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -123,11 +125,18 @@ class LoginViewController: UIViewController {
         connectionSettingsButton.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
         cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
         lblPassphrase.text = NSLocalizedString("id_bip39_passphrase_login", comment: "")
+        emergencyButton.setTitle("id_emergency_recovery_phrase".localized, for: .normal)
     }
 
     func setStyle() {
         btnWalletLock.setStyle(.primary)
         alertCard.layer.cornerRadius = 6.0
+        attemptsBg.layer.cornerRadius = 5.0
+        emergencyButton.setTitleColor(.white, for: .normal)
+        emergencyButton.borderWidth = 1.0
+        emergencyButton.borderColor = .white.withAlphaComponent(0.5)
+        emergencyButton.setImage(UIImage(named: "ic_x_circle")!.maskWithColor(color: .white), for: .normal)
+        emergencyButton.cornerRadius = 5.0
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -329,6 +338,7 @@ class LoginViewController: UIViewController {
             attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinattempts)
         }
         attempts.isHidden = pinattempts == 0
+        attemptsView.isHidden = pinattempts == 0
     }
 
     @objc func keyClick(sender: UIButton) {
