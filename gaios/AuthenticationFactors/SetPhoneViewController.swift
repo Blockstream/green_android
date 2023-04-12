@@ -19,13 +19,14 @@ class SetPhoneViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         headerTitle.text = NSLocalizedString("id_enter_phone_number", comment: "")
-        countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
-        textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
+        countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
+        textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
         nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         nextButton.setStyle(.primary)
         textField.layer.cornerRadius = 5.0
         countryCodeField.layer.cornerRadius = 5.0
+        headerTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -47,7 +48,7 @@ class SetPhoneViewController: KeyboardViewController {
 
     override func keyboardWillShow(notification: Notification) {
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
+        buttonConstraint.constant = keyboardFrame.height
     }
 
     func updateConnection(_ notification: Notification) {

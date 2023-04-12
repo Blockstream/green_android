@@ -20,13 +20,18 @@ class SetEmailViewController: KeyboardViewController {
         super.viewDidLoad()
         headerTitle.text = NSLocalizedString("id_enter_your_email_address", comment: "")
         textField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
-                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
+                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
+        textField.setLeftPaddingPoints(10.0)
+        textField.setRightPaddingPoints(10.0)
         nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         nextButton.setStyle(.primary)
         setRecoveryLabel.text = isSetRecovery ?
             NSLocalizedString("id_set_up_an_email_to_get", comment: "") :
             NSLocalizedString("id_the_email_will_also_be_used_to", comment: "")
+        headerTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
+        setRecoveryLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+        setRecoveryLabel.textColor = .white.withAlphaComponent(0.6)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -48,7 +53,7 @@ class SetEmailViewController: KeyboardViewController {
 
     override func keyboardWillShow(notification: Notification) {
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
+        buttonConstraint.constant = keyboardFrame.height
     }
 
     func updateConnection(_ notification: Notification) {
