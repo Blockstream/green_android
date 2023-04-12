@@ -24,7 +24,7 @@ class TransactionFeeCell: UITableViewCell {
         lblValue.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblFiat.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         lblFiat.textColor = .white.withAlphaComponent(0.4)
-        lblHint.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
+        lblHint.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
