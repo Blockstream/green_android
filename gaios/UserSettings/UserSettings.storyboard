@@ -1236,9 +1236,7 @@
                             <constraint firstItem="l5h-kJ-WPe" firstAttribute="leading" secondItem="Vfo-eH-ZVY" secondAttribute="leading" id="vNn-2O-FQW"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="E3A-Ve-oBm">
-                        <barButtonItem key="backBarButtonItem" title=" " id="KsE-uf-apm"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="E3A-Ve-oBm"/>
                     <size key="freeformSize" width="414" height="1600"/>
                     <connections>
                         <outlet property="bg2faThreshold" destination="evc-DX-DkP" id="puL-pc-5AH"/>

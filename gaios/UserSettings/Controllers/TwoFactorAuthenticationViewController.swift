@@ -49,7 +49,6 @@ class TwoFactorAuthenticationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "2FA"
         setContent()
         setStyle()
 

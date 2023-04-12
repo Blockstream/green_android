@@ -4,13 +4,14 @@ import PromiseKit
 
 class SetGauthViewController: UIViewController {
 
+    @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var qrCodeImageView: UIImageView!
     @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var secretLabel: UILabel!
-    @IBOutlet weak var copyImage: UIImageView!
     @IBOutlet weak var nextButton: UIButton!
-
+    @IBOutlet weak var btnCopy: UIButton!
+    
     var session: SessionManager!
     private var gauthData: String?
     private var connected = true
@@ -18,7 +19,7 @@ class SetGauthViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_authenticator_qr_code", comment: "")
+        lblTitle.text = "id_authenticator_qr_code".localized
 
         guard let session = session.session,
               let dataTwoFactorConfig = try? session.getTwoFactorConfig(),
@@ -33,12 +34,13 @@ class SetGauthViewController: UIViewController {
         nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         subtitleLabel.text = NSLocalizedString("id_scan_the_qr_code_with_an", comment: "")
         warningLabel.text = NSLocalizedString("id_the_recovery_key_below_will_not", comment: "")
-        secretLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
-        copyImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
-        secretLabel.isUserInteractionEnabled = true
-        copyImage.isUserInteractionEnabled = true
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         nextButton.setStyle(.primary)
+        lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
+        subtitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+        subtitleLabel.textColor = .white.withAlphaComponent(0.6)
+        btnCopy.setTitle("id_copy_address".localized, for: .normal)
+        btnCopy.cornerRadius = 3.0
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -53,7 +55,7 @@ class SetGauthViewController: UIViewController {
         }
     }
 
-    @objc func copyToClipboard(_ sender: UIButton) {
+    func copyToClipboard() {
         UIPasteboard.general.string = secretLabel.text
         DropAlert().info(message: NSLocalizedString("id_copy_to_clipboard", comment: ""))
     }
@@ -92,5 +94,9 @@ class SetGauthViewController: UIViewController {
                 DropAlert().error(message: error.localizedDescription)
             }
         }
+    }
+
+    @IBAction func btnCopy(_ sender: Any) {
+        copyToClipboard()
     }
 }
