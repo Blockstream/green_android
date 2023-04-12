@@ -13,7 +13,7 @@ class DialogAboutViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var lblCopy: UILabel!
-    
+
     var obs: NSKeyValueObservation?
 
     lazy var blurredView: UIView = {
