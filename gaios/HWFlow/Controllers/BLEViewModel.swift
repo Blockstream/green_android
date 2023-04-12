@@ -31,7 +31,7 @@ class BLEViewModel {
     func login(account: Account,
                peripheral: Peripheral,
                progress: @escaping(String) -> Void,
-               completion: @escaping() -> Void,
+               completion: @escaping(WalletManager) -> Void,
                error: @escaping(Error) -> Void) {
         scanDispose?.dispose()
         progress("id_connecting".localized)
@@ -43,7 +43,7 @@ class BLEViewModel {
             .do(onNext: { _ in progress("id_logging_in".localized) })
             .flatMap { _ in BLEManager.shared.logging(peripheral, account: account) }
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in completion() },
+            .subscribe(onNext: { completion($0) },
                        onError: { error($0) })
     }
 

@@ -122,9 +122,8 @@ class ConnectViewController: HWFlowBaseViewController {
     }
 
     func next(_ peripheral: Peripheral) {
-        print("account.uuid \(account.uuid!)")
+        print("account.uuid \(account.uuid)")
         print("peripheral.identifier \(peripheral.identifier)")
-        var account = AccountsRepository.shared.current!
         account.uuid = peripheral.identifier
         AccountsRepository.shared.upsert(account)
         AccountNavigator.goLogged(account: account, nv: navigationController)
@@ -184,11 +183,11 @@ class ConnectViewController: HWFlowBaseViewController {
         BLEViewModel.shared.login(account: account,
                                   peripheral: peripheral,
                                   progress: { self.progress(self.account.isJade ? $0 : "id_logging_in".localized) },
-                                  completion: {
+                                  completion: { wm in
+            self.account = wm.account
             peripheral.isJade() ? self.jadeFirmwareUpgrade() : self.next(peripheral)
-            AnalyticsManager.shared.hwwConnected(account: AccountsRepository.shared.current)
-        },
-                                  error: self.error)
+            AnalyticsManager.shared.hwwConnected(account: self.account)
+        }, error: self.error)
     }
 }
 
