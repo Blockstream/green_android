@@ -216,7 +216,7 @@ class SetPinViewController: UIViewController {
         case LoginError.walletMismatch( _):
             self.showError("Wallet mismatch".localized)
         case LoginError.walletsJustRestored(_):
-            self.showError("Wallet just restored".localized)
+            self.showError("id_wallet_already_restored".localized)
         case LoginError.walletNotFound(_):
             self.showError("id_wallet_not_found".localized)
         case LoginError.invalidMnemonic(_):
