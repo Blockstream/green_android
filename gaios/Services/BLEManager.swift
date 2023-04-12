@@ -100,7 +100,18 @@ class BLEManager {
                 if name.contains("OLOS") {
                     throw DeviceError.dashboard // open app from dashboard
                 }
-                return name.lowercased() == "bitcoin test" ? .testnetSS : .bitcoinSS
+                switch name {
+                case "Bitcoin", "Bitcoin Legacy":
+                    return .bitcoinSS
+                case "Bitcoin Test", "Bitcoin Test Legacy":
+                    return .testnetSS
+                case "Liquid":
+                    return .liquidMS
+                case "Liquid Test":
+                    return .testnetLiquidMS
+                default:
+                    throw DeviceError.wrong_app
+                }
             }
     }
 
