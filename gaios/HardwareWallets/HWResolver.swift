@@ -112,7 +112,7 @@ class HWResolver {
             Ledger.shared.TIMEOUT = 120
             _ = Observable.just(hw)
                 .flatMap { hw -> Observable<[String: Any]> in
-                    if chain == "liquid" {
+                    if chain.contains("liquid") {
                         return hw.signLiquidTransaction(network: chain,
                                                         tx: tx!,
                                                         inputs: signingInputs!,
