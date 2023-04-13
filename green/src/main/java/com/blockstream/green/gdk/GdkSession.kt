@@ -448,28 +448,26 @@ class GdkSession constructor(
         }
     }
 
-    fun connect(network: Network, initNetworks: List<Network>? = null): List<Network> {
+    suspend fun connect(network: Network, initNetworks: List<Network>? = null): List<Network> {
         defaultNetworkOrNull = network
 
         disconnect()
 
         initGdkSessions(initNetworks = initNetworks)
 
-        return runBlocking {
-            gdkSessions.map {
-                scope.async(Dispatchers.IO) {
-                    try {
-                        gdkBridge.connect(it.value, createConnectionParams(it.key))
-                        it.key
-                    } catch (e: Exception) {
-                        _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + it.key
-                        null
-                    }
+        return gdkSessions.map {
+            scope.async(context = Dispatchers.IO, start = CoroutineStart.DEFAULT) {
+                try {
+                    gdkBridge.connect(it.value, createConnectionParams(it.key))
+                    it.key
+                } catch (e: Exception) {
+                    _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + it.key
+                    null
                 }
-            }.awaitAll().filterNotNull().also {
-                // Update the enriched assets
-                updateEnrichedAssets()
             }
+        }.awaitAll().filterNotNull().also {
+            // Update the enriched assets
+            updateEnrichedAssets()
         }
     }
 
@@ -584,7 +582,9 @@ class GdkSession constructor(
         disconnect()
 
         networks.bitcoinElectrum.also {
-            connect(network = it, initNetworks = listOf(it))
+            runBlocking {
+                connect(network = it, initNetworks = listOf(it))
+            }
         }
     }
     private fun httpRequest(data: JsonElement): JsonElement {
@@ -765,7 +765,7 @@ class GdkSession constructor(
         }
     }
 
-    fun emergencyRestoreOfRecoveryPhrase(
+    suspend fun emergencyRestoreOfRecoveryPhrase(
         wallet: Wallet,
         pin: String,
         loginCredentials: LoginCredentials,
@@ -930,7 +930,7 @@ class GdkSession constructor(
         val exceptions = mutableListOf<Exception>()
 
         return enabledGdkSessions.map { gdkSession ->
-            scope.async(start = CoroutineStart.DEFAULT) {
+            scope.async(context = Dispatchers.IO, start = CoroutineStart.LAZY) {
                 val isProminent = gdkSession.key == prominentNetwork
                 val network = gdkSession.key
                 try {
@@ -1029,10 +1029,16 @@ class GdkSession constructor(
                 }
             }
 
-        }.let { deferred ->
-            runBlocking {
-                deferred.awaitAll().filterNotNull() // Run all in parallel
-            }.let {
+        }.let { list ->
+            list.let { deferred ->
+                if(isHardwareWallet){ // On hardware connection in series to avoid any race condition with the hw api
+                    deferred.map { it.await() }
+                }else{
+                    deferred.awaitAll()
+                }
+            }
+            .filterNotNull()
+            .let {
                 it.firstOrNull() ?: throw exceptions.first() // Throw if all networks failed
             }.also{
                 _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + failedNetworkLogins
