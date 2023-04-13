@@ -12,7 +12,7 @@ struct Commitment: Codable {
         case blindingKey = "blinding_key"
     }
     let assetId: Data
-    let value: UInt32
+    let value: UInt64
     let abf: Data
     let vbf: Data
     let assetGenerator: Data
