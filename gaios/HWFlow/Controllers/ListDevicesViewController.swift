@@ -20,7 +20,9 @@ class ListDevicesViewController: HWFlowBaseViewController {
         ["JadeDeviceCell", "OtherDeviceCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
-        loadNavigationBtns()
+        if isJade {
+            loadNavigationBtns()
+        }
         setContent()
         setStyle()
     }
@@ -42,6 +44,7 @@ class ListDevicesViewController: HWFlowBaseViewController {
     func setContent() {
         title = "".localized
         btnTroubleshoot.setTitle("id_troubleshoot".localized, for: .normal)
+        btnTroubleshoot.isHidden = !isJade
     }
 
     func setStyle() {

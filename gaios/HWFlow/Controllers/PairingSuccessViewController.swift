@@ -24,7 +24,9 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         mash.isHidden = true
         setContent()
         setStyle()
-        loadNavigationBtns()
+        if peripheral.isJade() {
+            loadNavigationBtns()
+        }
         AnalyticsManager.shared.hwwConnect(account: AccountsRepository.shared.current)
     }
 
