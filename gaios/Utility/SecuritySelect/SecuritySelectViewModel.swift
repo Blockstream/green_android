@@ -101,11 +101,8 @@ class SecuritySelectViewModel {
     }
 
     func registerSession(session: SessionManager) -> Promise<Void> {
-        if wm.account.isHW {
-            if session.gdkNetwork.liquid && session.gdkNetwork.electrum {
-                return Promise() { seal in seal.reject(GaError.GenericError("Liquid singlesig not available"))}
-            }
-            return registerSession(session: session, credentials: nil, hw: device())
+        if session.gdkNetwork.liquid && wm.account.isLedger {
+            return Promise() { seal in seal.reject(GaError.GenericError("Liquid not supported on Ledger Nano X"))}
         } else {
             return Guarantee()
                 .compactMap { self.wm.prominentSession }

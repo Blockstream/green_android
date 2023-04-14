@@ -184,7 +184,6 @@ class WalletManager {
     func loginHW(_ device: HWDevice) -> Promise<Void> {
         var iterator = self.sessions.values
             .filter { !$0.logged }
-            .filter { $0.gdkNetwork.network != "electrum-liquid" }
             .makeIterator()
         let generator = AnyIterator<Promise<Void>> {
             guard let session = iterator.next() else {

@@ -150,11 +150,13 @@ public struct GdkInit: Codable {
         case tordir
         case registrydir
         case logLevel = "log_level"
+        case enableSsLiquidHww = "enable_ss_liquid_hww"
     }
     public let datadir: String?
     public let tordir: String?
     public let registrydir: String?
     public let logLevel: String
+    public let enableSsLiquidHww: Bool?
 
     public static func defaults() -> GdkInit {
         let appSupportDir = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -166,7 +168,8 @@ public struct GdkInit: Codable {
         return GdkInit(datadir: appSupportDir?.path,
                        tordir: cacheDir?.path,
                        registrydir: cacheDir?.path,
-                       logLevel: logLevel)
+                       logLevel: logLevel,
+                       enableSsLiquidHww: true)
     }
 
     public func run() {
