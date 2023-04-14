@@ -92,7 +92,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     }
 
     func onJadeConnected(jadeHasPin: Bool) {
-        let testnetAvailable = UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true
+        let testnetAvailable = AppSettings.read()?.testnet ?? false
         if !jadeHasPin {
             if testnetAvailable {
                 self.selectNetwork()

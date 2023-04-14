@@ -483,6 +483,8 @@
 		81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */; };
 		81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35C292041F800B2196B /* EnrichedAsset.swift */; };
 		81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */; };
+		81F328EF29E93ED100D54F1D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328EE29E93ED100D54F1D /* AppSettings.swift */; };
+		81F328F229E954FE00D54F1D /* NetworkSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328F029E9545200D54F1D /* NetworkSettings.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
 		DD1C96BAC43AE08FD1433D9E /* libPods-gaiosUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
@@ -1052,6 +1054,8 @@
 		81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveViewModel.swift; sourceTree = "<group>"; };
 		81E8C35C292041F800B2196B /* EnrichedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnrichedAsset.swift; sourceTree = "<group>"; };
 		81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlerCardCellModel.swift; sourceTree = "<group>"; };
+		81F328EE29E93ED100D54F1D /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		81F328F029E9545200D54F1D /* NetworkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSettings.swift; sourceTree = "<group>"; };
 		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
@@ -2359,6 +2363,7 @@
 		81961AC229E4C83E00E9B94D /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				81F328F029E9545200D54F1D /* NetworkSettings.swift */,
 				34C2464E2670ECE0009E8FCE /* AccountType.swift */,
 				81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */,
 				81DC54342885BD8300DC37C9 /* Balance.swift */,
@@ -2471,6 +2476,7 @@
 				81E8C35C292041F800B2196B /* EnrichedAsset.swift */,
 				34E0CA8F29817CE400695304 /* CountlyWidget.swift */,
 				81A34FF029C547F4004B27F4 /* AvailableNetworks.swift */,
+				81F328EE29E93ED100D54F1D /* AppSettings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -3050,6 +3056,7 @@
 				3497937125F8B18C0029ECB1 /* ProgressShapeLayer.swift in Sources */,
 				34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */,
 				349C75242796DBB90046DA59 /* AssetCell.swift in Sources */,
+				81F328EF29E93ED100D54F1D /* AppSettings.swift in Sources */,
 				34E0CA9029817CE400695304 /* CountlyWidget.swift in Sources */,
 				816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
@@ -3272,6 +3279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81961A9D29E4AC2900E9B94D /* Transactions.swift in Sources */,
+				81F328F229E954FE00D54F1D /* NetworkSettings.swift in Sources */,
 				81961AAD29E4B0D400E9B94D /* AccountType.swift in Sources */,
 				81961A9A29E4AC1A00E9B94D /* TorNotification.swift in Sources */,
 				81961AA729E4AC3F00E9B94D /* Events.swift in Sources */,

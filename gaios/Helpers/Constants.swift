@@ -9,18 +9,6 @@ enum Constants {
     static let trxPerPage: UInt32 = 30
     static let jadeAnimInterval: Double = 6.0
 
-    // SPV Settings
-    static let spvEnabled = "spv_enabled"
-    static let personalNodeEnabled = "personal_node_enabled"
-    static let btcElectrumSrv = "btc_electrum_srv"
-    static let liquidElectrumSrv = "liquid_electrum_srv"
-    static let testnetElectrumSrv = "testnet_electrum_srv"
-    static let liquidTestnetElectrumSrv = "liquid_testnet_electrum_srv"
-
-    static let btcElectrumSrvDefaultEndPoint = "blockstream.info:700"
-    static let liquidElectrumSrvDefaultEndPoint = "blockstream.info:995"
-    static let testnetElectrumSrvDefaultEndPoint = "blockstream.info:993"
-    static let liquidTestnetElectrumSrvDefaultEndPoint = "blockstream.info:465"
     static let countlyRemoteConfigAppReview = "app_review"
     static let countlyRemoteConfigBanners = "banners"
     static let countlyRemoteConfigAssets = "liquid_assets"
@@ -29,7 +17,6 @@ enum Constants {
 enum AppStorage {
     static let dontShowTorAlert = "dont_show_tor_alert"
     static let defaultTransactionPriority = "default_transaction_priority"
-    static let testnetIsVisible = "testnet_is_visible"
     static let userAnalyticsPreference = "user_analytics_preference"
     static let analyticsUUID = "analytics_uuid"
     static let countlyOffset = "countly_offset"

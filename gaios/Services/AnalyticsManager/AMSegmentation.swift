@@ -83,14 +83,25 @@ extension AnalyticsManager {
     }
 
     func appSettings() -> String {
-        let settings = UserDefaults.standard.value(forKey: "network_settings") as? [String: Any] ?? [:]
+        
+        let settings = AppSettings.read()
         var settingsProps: [String] = []
-        if settings["proxy"] as? Bool ?? false == true { settingsProps.append(AnalyticsManager.strProxy) }
-        if settings["tor"] as? Bool ?? false == true { settingsProps.append(AnalyticsManager.strTor) }
-        if settings[Constants.spvEnabled] as? Bool ?? false == true { settingsProps.append(AnalyticsManager.strSpv) }
-        if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true { settingsProps.append(AnalyticsManager.strTestnet) }
-        if settings[Constants.personalNodeEnabled] as? Bool ?? false == true { settingsProps.append(AnalyticsManager.strElectrumServer) }
-        if settings.count == 0 {
+        if settings?.proxy ?? false == true {
+            settingsProps.append(AnalyticsManager.strProxy)
+        }
+        if settings?.tor ?? false == true {
+            settingsProps.append(AnalyticsManager.strTor)
+        }
+        if settings?.spvEnabled ?? false == true {
+            settingsProps.append(AnalyticsManager.strSpv)
+        }
+        if settings?.testnet ?? false {
+            settingsProps.append(AnalyticsManager.strTestnet)
+        }
+        if settings?.personalNodeEnabled ?? false == true {
+            settingsProps.append(AnalyticsManager.strElectrumServer)
+        }
+        if settingsProps.count == 0 {
             return ""
         }
         return settingsProps.sorted().joined(separator: ",")

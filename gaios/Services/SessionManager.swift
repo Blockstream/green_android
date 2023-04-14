@@ -74,7 +74,7 @@ class SessionManager {
             if let notificationManager = notificationManager {
                 session?.setNotificationHandler(notificationCompletionHandler: notificationManager.newNotification)
             }
-            try session?.connect(netParams: networkParams(network, params: params))
+            try session?.connect(netParams: networkParams(network).toDict() ?? [:])
         } catch {
             switch error {
             case GaError.GenericError(let txt), GaError.SessionLost(let txt), GaError.TimeoutError(let txt):
@@ -85,48 +85,48 @@ class SessionManager {
         }
     }
 
-    func networkParams(_ network: String, params: [String: Any]? = nil) -> [String: Any] {
-        let networkSettings = params ?? getUserNetworkSettings()
-        let useProxy = networkSettings["proxy"] as? Bool ?? false
-        let socks5Hostname = useProxy ? networkSettings["socks5_hostname"] as? String ?? "" : ""
-        let socks5Port = useProxy ? networkSettings["socks5_port"] as? String ?? "" : ""
-        let useTor = networkSettings["tor"] as? Bool ?? false
-        let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
+    func networkParams(_ network: String) -> NetworkSettings {
+        let appSettings = AppSettings.read()
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
-        let userAgent = String(format: "green_ios_%@", version)
-        var netParams: [String: Any] = ["name": network, "use_tor": useTor, "proxy": proxyURI, "user_agent": userAgent]
-
-        // SPV available only for btc singlesig
-        let spvEnabled = networkSettings[Constants.spvEnabled] as? Bool
-        netParams["spv_enabled"] = (spvEnabled ?? false) && !getGdkNetwork(network).liquid
-
-        // Personal nodes
-        if let personalNodeEnabled = networkSettings[Constants.personalNodeEnabled] as? Bool, personalNodeEnabled {
-            if let btcElectrumSrv = networkSettings[Constants.btcElectrumSrv] as? String,
-                    network == Constants.electrumPrefix + "mainnet" && !btcElectrumSrv.isEmpty {
-                netParams["electrum_url"] = btcElectrumSrv
-            } else if let testnetElectrumSrv = networkSettings[Constants.testnetElectrumSrv] as? String,
-                network == Constants.electrumPrefix + "testnet" && !testnetElectrumSrv.isEmpty {
-                netParams["electrum_url"] = testnetElectrumSrv
-            } else if let liquidElectrumSrv = networkSettings[Constants.liquidElectrumSrv] as? String,
-                network == Constants.electrumPrefix + "liquid" && !liquidElectrumSrv.isEmpty {
-                netParams["electrum_url"] = liquidElectrumSrv
-            } else if let liquidTestnetElectrumSrv = networkSettings[Constants.liquidTestnetElectrumSrv] as? String,
-                network == Constants.electrumPrefix + "testnet-liquid" && !liquidTestnetElectrumSrv.isEmpty {
-                netParams["electrum_url"] = liquidTestnetElectrumSrv
+        let proxyURI = String(format: "socks5://%@:%@/", appSettings?.socks5Hostname ?? "", appSettings?.socks5Port ?? "")
+        let gdkNetwork = getGdkNetwork(network)
+    
+        let electrumUrl: String? = {
+            if let srv = appSettings?.btcElectrumSrv, gdkNetwork.mainnet && !gdkNetwork.liquid && !srv.isEmpty {
+                return srv
+            } else if let srv = appSettings?.testnetElectrumSrv, !gdkNetwork.mainnet && !gdkNetwork.liquid && !srv.isEmpty {
+                return srv
+            } else if let srv = appSettings?.liquidElectrumSrv, gdkNetwork.mainnet && gdkNetwork.liquid && !srv.isEmpty {
+                return srv
+            } else if let srv = appSettings?.liquidTestnetElectrumSrv, !gdkNetwork.mainnet && gdkNetwork.liquid && !srv.isEmpty {
+                return srv
+            } else {
+                return nil
             }
-        }
-        return netParams
+        }()
+        
+        let networkSettings = NetworkSettings(
+            name: network,
+            useTor: appSettings?.tor ?? false,
+            proxy: (appSettings?.proxy ?? false) ? proxyURI : nil,
+            userAgent: String(format: "green_ios_%@", version),
+            spvEnabled: (appSettings?.spvEnabled ?? false) && !gdkNetwork.liquid,
+            electrumUrl: (appSettings?.personalNodeEnabled ?? false) ? electrumUrl : nil)
+        return networkSettings
     }
 
     func walletIdentifier(_ network: String, credentials: Credentials) -> WalletIdentifier? {
-        let res = try? self.session?.getWalletIdentifier(net_params: networkParams(network), details: credentials.toDict() ?? [:])
+        let res = try? self.session?.getWalletIdentifier(
+            net_params: networkParams(network).toDict() ?? [:],
+            details: credentials.toDict() ?? [:])
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
     func walletIdentifier(_ network: String, masterXpub: String) -> WalletIdentifier? {
         let details = ["master_xpub": masterXpub]
-        let res = try? self.session?.getWalletIdentifier(net_params: networkParams(network), details: details)
+        let res = try? self.session?.getWalletIdentifier(
+            net_params: networkParams(network).toDict() ?? [:],
+            details: details)
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 

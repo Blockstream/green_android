@@ -74,17 +74,6 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var btnSave: UIButton!
 
     weak var delegate: WalletSettingsViewControllerDelegate?
-    var account: Account?
-
-    private var networkSettings: [String: Any] {
-        get {
-            UserDefaults.standard.value(forKey: "network_settings") as? [String: Any] ?? [:]
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "network_settings")
-            UserDefaults.standard.synchronize()
-        }
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -144,10 +133,10 @@ class WalletSettingsViewController: KeyboardViewController {
         btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
 
-        fieldSPVbtcServer.placeholder = Constants.btcElectrumSrvDefaultEndPoint
-        fieldSPVliquidServer.placeholder = Constants.liquidElectrumSrvDefaultEndPoint
-        fieldSPVtestnetServer.placeholder = Constants.testnetElectrumSrvDefaultEndPoint
-        fieldSPVliquidTestnetServer.placeholder = Constants.liquidTestnetElectrumSrvDefaultEndPoint
+        fieldSPVbtcServer.placeholder = AppSettings.btcElectrumSrvDefaultEndPoint
+        fieldSPVliquidServer.placeholder = AppSettings.liquidElectrumSrvDefaultEndPoint
+        fieldSPVtestnetServer.placeholder = AppSettings.testnetElectrumSrvDefaultEndPoint
+        fieldSPVliquidTestnetServer.placeholder = AppSettings.liquidTestnetElectrumSrvDefaultEndPoint
     }
 
     func setStyle() {
@@ -176,28 +165,29 @@ class WalletSettingsViewController: KeyboardViewController {
     }
 
     func reload() {
-        switchTor.setOn(networkSettings["tor"] as? Bool ?? false, animated: true)
-        switchProxy.setOn(networkSettings["proxy"] as? Bool ?? false, animated: true)
-        if let socks5 = networkSettings["socks5_hostname"] as? String,
-           let port = networkSettings["socks5_port"] as? String,
+        guard let appSettings = AppSettings.read() else { return }
+        switchTor.setOn(appSettings.tor ?? false, animated: true)
+        switchProxy.setOn(appSettings.proxy ?? false, animated: true)
+        if let socks5 = appSettings.socks5Hostname,
+           let port = appSettings.socks5Port,
            !socks5.isEmpty && !port.isEmpty {
             fieldProxyIp.text = "\(socks5):\(port)"
         }
 
-        switchTestnet.setOn(UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true, animated: true)
-        switchTxCheck.setOn(networkSettings[Constants.spvEnabled] as? Bool ?? false, animated: true)
-        switchPSPVPersonalNode.setOn(networkSettings[Constants.personalNodeEnabled] as? Bool ?? false, animated: true)
+        switchTestnet.setOn(appSettings.testnet, animated: true)
+        switchTxCheck.setOn(appSettings.spvEnabled ?? false, animated: true)
+        switchPSPVPersonalNode.setOn(appSettings.personalNodeEnabled ?? false, animated: true)
 
-        if let uri = networkSettings[Constants.btcElectrumSrv] as? String, !uri.isEmpty {
+        if let uri = appSettings.btcElectrumSrv, !uri.isEmpty {
             fieldSPVbtcServer.text = uri
         }
-        if let uri = networkSettings[Constants.liquidElectrumSrv] as? String, !uri.isEmpty {
+        if let uri = appSettings.liquidElectrumSrv, !uri.isEmpty {
             fieldSPVliquidServer.text = uri
         }
-        if let uri = networkSettings[Constants.testnetElectrumSrv] as? String, !uri.isEmpty {
+        if let uri = appSettings.testnetElectrumSrv, !uri.isEmpty {
             fieldSPVtestnetServer.text = uri
         }
-        if let uri = networkSettings[Constants.liquidTestnetElectrumSrv] as? String, !uri.isEmpty {
+        if let uri = appSettings.liquidTestnetElectrumSrv, !uri.isEmpty {
             fieldSPVliquidTestnetServer.text = uri
         }
 
@@ -250,19 +240,19 @@ class WalletSettingsViewController: KeyboardViewController {
                       message: NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: ""))
             return
         }
-        networkSettings = [
-            "proxy": switchProxy.isOn,
-            "tor": switchTor.isOn,
-            "socks5_hostname": String(socks5.split(separator: ":").first ?? ""),
-            "socks5_port": String(socks5.split(separator: ":").last ?? ""),
-            Constants.spvEnabled: switchTxCheck.isOn,
-            Constants.personalNodeEnabled: switchPSPVPersonalNode.isOn,
-            Constants.btcElectrumSrv: fieldSPVbtcServer.text ?? "",
-            Constants.liquidElectrumSrv: fieldSPVliquidServer.text ?? "",
-            Constants.testnetElectrumSrv: fieldSPVtestnetServer.text ?? "",
-            Constants.liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text ?? ""
-        ]
-        UserDefaults.standard.set(switchTestnet.isOn, forKey: AppStorage.testnetIsVisible)
+        var appSettings = AppSettings(
+            tor:  switchTor.isOn,
+            proxy: switchProxy.isOn,
+            socks5Hostname: String(socks5.split(separator: ":").first ?? ""),
+            socks5Port: String(socks5.split(separator: ":").last ?? ""),
+            spvEnabled: switchTxCheck.isOn,
+            personalNodeEnabled: switchPSPVPersonalNode.isOn,
+            btcElectrumSrv: fieldSPVbtcServer.text,
+            liquidElectrumSrv: fieldSPVbtcServer.text ?? "",
+            testnetElectrumSrv: fieldSPVtestnetServer.text,
+            liquidTestnetElectrumSrv: fieldSPVliquidTestnetServer.text)
+        appSettings.testnet = switchTestnet.isOn
+        appSettings.write()
 
         switch AnalyticsManager.shared.consent { //current value
         case .authorized:

@@ -441,7 +441,6 @@ class LoginViewController: UIViewController {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
             vc.delegate = self
-            vc.account = account
             present(vc, animated: true) {}
         }
     }
