@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Use swift package dependecies instead cocoapods
 - Split workspace in multiple subprojects
+- Update to gdk 0.0.59
 
 ## [4.0.0] - 2023-04-12
 

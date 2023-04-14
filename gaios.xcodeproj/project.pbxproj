@@ -4007,7 +4007,15 @@
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a",
+					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"-lc++",
+					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"-lc++",
+					"$(SRCROOT)/gdk-iphone/lib/iphonesimulator/libgreenaddress_full.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -4053,7 +4061,15 @@
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a",
+					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"-lc++",
+					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"-lc++",
+					"$(SRCROOT)/gdk-iphone/lib/iphonesimulator/libgreenaddress_full.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -4099,7 +4115,15 @@
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
 					"-lc++",
-					"$(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a",
+					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"-lc++",
+					"$(SRCROOT)/gdk-iphone/lib/iphoneos/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"-lc++",
+					"$(SRCROOT)/gdk-iphone/lib/iphonesimulator/libgreenaddress_full.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.greenaddress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
