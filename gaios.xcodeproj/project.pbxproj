@@ -405,7 +405,6 @@
 		81961AA529E4AC3F00E9B94D /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8124524125D6B0DD00537238 /* Address.swift */; };
 		81961AA629E4AC3F00E9B94D /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C602A422A553D3004E26E1 /* Assets.swift */; };
 		81961AA729E4AC3F00E9B94D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81205D6821C3B7EB005180CF /* Events.swift */; };
-		81961AA829E4AC5A00E9B94D /* Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81865F42299D5AA5002CBA87 /* Codable.swift */; };
 		81961AA929E4AC7F00E9B94D /* NetworkSecurityCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */; };
 		81961AAC29E4B01F00E9B94D /* NetworkSecurityCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961AAB29E4B01F00E9B94D /* NetworkSecurityCase.swift */; };
 		81961AAD29E4B0D400E9B94D /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464E2670ECE0009E8FCE /* AccountType.swift */; };
@@ -485,6 +484,8 @@
 		81EC465B293503A8000AA0E8 /* AlerCardCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */; };
 		81F328EF29E93ED100D54F1D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328EE29E93ED100D54F1D /* AppSettings.swift */; };
 		81F328F229E954FE00D54F1D /* NetworkSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328F029E9545200D54F1D /* NetworkSettings.swift */; };
+		81F328F429E9ABBE00D54F1D /* AuthResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F328F329E9ABBE00D54F1D /* AuthResolver.swift */; };
+		81F328F529E9C0FF00D54F1D /* Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81865F42299D5AA5002CBA87 /* Codable.swift */; };
 		81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE672423EB1D22001B2E48 /* ContainerViewController.swift */; };
 		DD1C96BAC43AE08FD1433D9E /* libPods-gaiosUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
@@ -1056,6 +1057,7 @@
 		81EC465A293503A8000AA0E8 /* AlerCardCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlerCardCellModel.swift; sourceTree = "<group>"; };
 		81F328EE29E93ED100D54F1D /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		81F328F029E9545200D54F1D /* NetworkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSettings.swift; sourceTree = "<group>"; };
+		81F328F329E9ABBE00D54F1D /* AuthResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResolver.swift; sourceTree = "<group>"; };
 		81F72E0828904D3F00D4DEFF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		81FE672423EB1D22001B2E48 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
@@ -2338,6 +2340,7 @@
 				81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */,
 				81DA3D962541F110001159D6 /* TxChangeOutput.swift */,
 				81E0B4CA25531470001C8544 /* Commitment.swift */,
+				81F328F329E9ABBE00D54F1D /* AuthResolver.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2392,7 +2395,6 @@
 				81310C442189D10F00563B91 /* TwoFactorCall.swift */,
 				8122D7282554848C003F2785 /* Promise.swift */,
 				81BF4E2822E9E9EA005A04C6 /* Utils.swift */,
-				81865F42299D5AA5002CBA87 /* Codable.swift */,
 				344F1C0D26B7FDDE009293E6 /* UIApplication.swift */,
 				FF29CA7122374E8B0035F95A /* URL.swift */,
 			);
@@ -2442,6 +2444,7 @@
 		81961B2829E4F4A100E9B94D /* greenaddress */ = {
 			isa = PBXGroup;
 			children = (
+				81865F42299D5AA5002CBA87 /* Codable.swift */,
 				81961A6D29E47E5D00E9B94D /* GDKSession.swift */,
 				6770BF6D235E50D400BDB7DA /* GreenAddress.swift */,
 				816F0AF523E47E1E00569A5D /* Wally.swift */,
@@ -3293,7 +3296,6 @@
 				81961A9C29E4AC2900E9B94D /* EventType.swift in Sources */,
 				81961AA529E4AC3F00E9B94D /* Address.swift in Sources */,
 				81961A7D29E488FF00E9B94D /* UIApplication.swift in Sources */,
-				81961AA829E4AC5A00E9B94D /* Codable.swift in Sources */,
 				81961AB229E4B4FB00E9B94D /* Promise.swift in Sources */,
 				81961A9E29E4AC2900E9B94D /* Transaction.swift in Sources */,
 				81961A9B29E4AC2900E9B94D /* WalletItem.swift in Sources */,
@@ -3311,6 +3313,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81961B1F29E4EEFE00E9B94D /* String.swift in Sources */,
+				81F328F429E9ABBE00D54F1D /* AuthResolver.swift in Sources */,
 				81961B0C29E4EE3C00E9B94D /* HWResolver.swift in Sources */,
 				81961B0D29E4EE3C00E9B94D /* Promise.swift in Sources */,
 				81961B0E29E4EE3C00E9B94D /* HWChannelProtocol.swift in Sources */,
@@ -3342,6 +3345,7 @@
 			files = (
 				81961B4929E4F4F000E9B94D /* Wally.swift in Sources */,
 				81A8F8E429E4F71C0052B214 /* GDKSession.swift in Sources */,
+				81F328F529E9C0FF00D54F1D /* Codable.swift in Sources */,
 				81961B4829E4F4F000E9B94D /* GreenAddress.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -25,8 +25,9 @@ public class HWResolver {
                 return String(data: data ?? Data(), encoding: .utf8)
             }
         case "sign_tx":
-            return signTransaction(hw: hw, params: requiredData, chain: chain).compactMap {
-                let data = try? JSONSerialization.data(withJSONObject: $0, options: .fragmentsAllowed)
+            let data = AuthSignTransaction.from(requiredData) as? AuthSignTransaction
+            return signTransaction(hw: hw, params: data!, chain: chain).compactMap {
+                let data = try? JSONSerialization.data(withJSONObject: $0.toDict() ?? [:], options: .fragmentsAllowed)
                 return String(data: data ?? Data(), encoding: .utf8)
             }
         case "get_blinding_nonces":
@@ -97,31 +98,26 @@ public class HWResolver {
         }
     }
 
-    func signTransaction(hw: HWProtocol, params: [String: Any], chain: String) -> Promise<[String: Any]> {
+    func signTransaction(hw: HWProtocol, params: AuthSignTransaction, chain: String) -> Promise<AuthSignTransactionResponse> {
         return Promise { seal in
-            let tx = params["transaction"] as? [String: Any]
-            let signingInputs = params["signing_inputs"] as? [[String: Any]]
-            let txOutputs = params["transaction_outputs"] as? [[String: Any]]
-            let signingTxs = params["signing_transactions"] as? [String: String]
-            let useAeProtocol = params["use_ae_protocol"] as? Bool
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
             _ = Observable.just(hw)
-                .flatMap { hw -> Observable<[String: Any]> in
+                .flatMap { hw -> Observable<AuthSignTransactionResponse> in
                     if chain.contains("liquid") {
                         return hw.signLiquidTransaction(network: chain,
-                                                        tx: tx!,
-                                                        inputs: signingInputs!,
-                                                        outputs: txOutputs!,
-                                                        transactions: signingTxs ?? [:],
-                                                        useAeProtocol: useAeProtocol ?? false)
+                                                        tx: params.transaction,
+                                                        inputs: params.signingInputs,
+                                                        outputs: params.txOutputs,
+                                                        transactions: params.signingTxs ?? [:],
+                                                        useAeProtocol: params.useAeProtocol ?? false)
                     }
                     return hw.signTransaction(network: chain,
-                                              tx: tx!,
-                                              inputs: signingInputs!,
-                                              outputs: txOutputs!,
-                                              transactions: signingTxs ?? [:],
-                                              useAeProtocol: useAeProtocol ?? false)
+                                              tx: params.transaction,
+                                              inputs: params.signingInputs,
+                                              outputs: params.txOutputs,
+                                              transactions: params.signingTxs ?? [:],
+                                              useAeProtocol: params.useAeProtocol ?? false)
                 }.subscribe(onNext: { res in
                     seal.fulfill(res)
                     Ledger.shared.TIMEOUT = 30

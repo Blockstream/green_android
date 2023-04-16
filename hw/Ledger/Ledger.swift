@@ -10,32 +10,27 @@ final public class Ledger: LedgerCommands, HWProtocol {
     let SIGHASH_ALL: UInt8 = 1
 
     // swiftlint:disable:next function_parameter_count
-    public func signTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],
-                         transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    public func signTransaction(network: String, tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput],
+                         transactions: [String: String], useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse> {
         return signSW(tx: tx, inputs: inputs, outputs: outputs)
-            .compactMap { sigs in
-                return ["signatures": sigs, "signer_commitments": []]
-            }
+            .compactMap { AuthSignTransactionResponse(signatures: $0, signerCommitments: []) }
     }
 
-    public func signSW(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]]) -> Observable<[String]> {
+    public func signSW(tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput]) -> Observable<[String]> {
         let hwInputs = inputs.map { input -> [String: Any] in
             let bytes = inputBytes(input, isSegwit: true)!
-            let sequence = (input["sequence"] as? UInt)!.uint32LE()
+            let sequence = (input.sequence ?? 0).uint32LE()
             return ["value": bytes, "sequence": Data(sequence), "trusted": false, "segwit": true]
         }
         // Prepare the pseudo transaction
         // Provide the first script instead of a null script to initialize the P2SH confirmation logic
-        let version = tx["transaction_version"] as? UInt
-        let prevoutScript = inputs.first?["prevout_script"] as? String
-        let script0 = prevoutScript!.hexToData()
-        let locktime = tx["transaction_locktime"] as? UInt
-        return startUntrustedTransaction(txVersion: version!, newTransaction: true, inputIndex: 0, usedInputList: hwInputs, redeemScript: script0, segwit: true)
+        let prevoutScript = inputs.first?.prevoutScript.hexToData()
+        return startUntrustedTransaction(txVersion: tx.transactionVersion ?? 0, newTransaction: true, inputIndex: 0, usedInputList: hwInputs, redeemScript: prevoutScript!, segwit: true)
         .flatMap { _ -> Observable<[String: Any]> in
             let bytes = self.outputBytes(outputs)
             return self.finalizeInputFull(data: bytes!)
         }.flatMap { _ -> Observable<[Data]> in
-            return self.signSWInputs(hwInputs: hwInputs, inputs: inputs, version: version!, locktime: locktime!)
+            return self.signSWInputs(hwInputs: hwInputs, inputs: inputs, version: tx.transactionVersion ?? 0, locktime: tx.transactionLocktime ?? 0)
         }.flatMap { sigs -> Observable<[String]> in
             var strings = [String]()
             for sig in sigs {
@@ -46,7 +41,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
         }
     }
 
-    public func signSWInputs(hwInputs: [[String: Any]], inputs: [[String: Any]], version: UInt, locktime: UInt) -> Observable<[Data]> {
+    public func signSWInputs(hwInputs: [[String: Any]], inputs: [AuthTxInput], version: UInt, locktime: UInt) -> Observable<[Data]> {
         let allObservables = hwInputs
             .enumerated()
             .map { hwInput -> Observable<Data> in
@@ -60,13 +55,11 @@ final public class Ledger: LedgerCommands, HWProtocol {
         })
     }
 
-    public func signSWInput(hwInput: [String: Any], input: [String: Any], version: UInt, locktime: UInt) -> Observable<Data> {
-        let prevoutScript = input["prevout_script"] as? String
-        let script = prevoutScript!.hexToData()
-        return startUntrustedTransaction(txVersion: version, newTransaction: false, inputIndex: 0, usedInputList: [hwInput], redeemScript: script, segwit: true)
+    public func signSWInput(hwInput: [String: Any], input: AuthTxInput, version: UInt, locktime: UInt) -> Observable<Data> {
+        let prevoutScript = input.prevoutScript.hexToData()
+        return startUntrustedTransaction(txVersion: version, newTransaction: false, inputIndex: 0, usedInputList: [hwInput], redeemScript: prevoutScript, segwit: true)
         .flatMap { _ -> Observable <Data> in
-            let paths = input["user_path"] as? [Int64]
-            let userPaths: [Int] = paths!.map { Int($0) }
+            let userPaths: [Int] = input.userPath.map { Int($0) }
             return self.untrustedHashSign(privateKeyPath: userPaths, pin: "0", lockTime: locktime, sigHashType: self.SIGHASH_ALL)
         }
     }
@@ -135,7 +128,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
     }
 
     // swiftlint:disable:next function_parameter_count
-    public func signLiquidTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    public func signLiquidTransaction(network: String, tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput], transactions: [String: String], useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse> {
         return Observable.error(HWError.Abort(""))
     }
 

@@ -9,6 +9,6 @@ struct TxChangeOutput: Codable {
     }
     let path: [UInt32]
     let recoveryxpub: String?
-    let csvBlocks: Int
+    let csvBlocks: UInt32
     let variant: String?
 }

@@ -212,16 +212,3 @@ class SecuritySelectViewModel {
         return "\(type.string)\(network)"
     }
 }
-
-struct CreateSubaccountParams: Codable {
-    enum CodingKeys: String, CodingKey {
-        case name = "name"
-        case type = "type"
-        case recoveryMnemonic = "recovery_mnemonic"
-        case recoveryXpub = "recovery_xpub"
-    }
-    let name: String
-    let type: AccountType
-    let recoveryMnemonic: String?
-    let recoveryXpub: String?
-}

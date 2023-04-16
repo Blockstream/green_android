@@ -123,6 +123,27 @@ public struct GetAssetsResult: Codable {
     public let icons: [String: String]
 }
 
+public struct CreateSubaccountParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case name = "name"
+        case type = "type"
+        case recoveryMnemonic = "recovery_mnemonic"
+        case recoveryXpub = "recovery_xpub"
+    }
+
+    public let name: String
+    public let type: AccountType
+    public let recoveryMnemonic: String?
+    public let recoveryXpub: String?
+
+    public init(name: String, type: AccountType, recoveryMnemonic: String? = nil, recoveryXpub: String? = nil) {
+        self.name = name
+        self.type = type
+        self.recoveryMnemonic = recoveryMnemonic
+        self.recoveryXpub = recoveryXpub
+    }
+}
+
 public struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {
         case datadir

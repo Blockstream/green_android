@@ -153,22 +153,16 @@ final public class Jade: JadeOTA, HWProtocol {
     }
 
     // swiftlint:disable:next function_parameter_count
-    public func signTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    public func signTransaction(network: String, tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput], transactions: [String: String], useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse> {
 
         if transactions.isEmpty {
             return Observable.error(HWError.Abort("Input transactions missing"))
         }
 
         let txInputs = inputs.map { input -> TxInputBtc? in
-            let addressType = input["address_type"] as? String
-            let swInput = isSegwit(addressType)
-            let prevoutScript = input["prevout_script"] as? String
-            let userPath = input["user_path"] as? [UInt32]
-            let aeHostCommitment = input["ae_host_commitment"] as? String
-            let aeHostEntropy = input["ae_host_entropy"] as? String
-            var satoshi = input["satoshi"] as? UInt64
-            var txhash = input["txhash"] as? String
-            if swInput && inputs.count == 1 {
+            var txhash: String? = input.txhash
+            var satoshi: UInt64? = input.satoshi
+            if isSegwit(input.addressType) && inputs.count == 1 {
                 txhash = nil
             } else if let hash = txhash, let tx = transactions[hash] {
                 satoshi = nil
@@ -176,7 +170,14 @@ final public class Jade: JadeOTA, HWProtocol {
             } else {
                 return nil
             }
-            return TxInputBtc(isWitness: swInput, inputTxHex: txhash, scriptHex: prevoutScript, satoshi: satoshi, path: userPath, aeHostEntropyHex: aeHostEntropy, aeHostCommitmentHex: aeHostCommitment)
+            return TxInputBtc(
+                isWitness: isSegwit(input.addressType),
+                inputTxHex: txhash,
+                scriptHex: input.prevoutScript,
+                satoshi: satoshi,
+                path: input.userPath,
+                aeHostEntropyHex: input.aeHostEntropy,
+                aeHostCommitmentHex: input.aeHostCommitment)
         }
 
         if txInputs.contains(where: { $0 == nil }) {
@@ -184,8 +185,7 @@ final public class Jade: JadeOTA, HWProtocol {
         }
 
         let changes = getChangeData(outputs: outputs)
-        let txhex = tx["transaction"] as? String
-        let txn = hexToData(txhex ?? "")
+        let txn = hexToData(tx.transaction)
 
         let signtx = JadeSignTx(change: changes,
                                 network: network,
@@ -201,7 +201,7 @@ final public class Jade: JadeOTA, HWProtocol {
                     return self.signTxInputs(inputs: txInputs)
                 }
             }.compactMap { (commitments, signatures) in
-                return ["signatures": signatures, "signer_commitments": commitments]
+                return AuthSignTransactionResponse(signatures: signatures, signerCommitments: commitments)
             }
     }
 
@@ -347,29 +347,20 @@ final public class Jade: JadeOTA, HWProtocol {
     }
 
     // Helper to get the change paths for auto-validation
-    func getChangeData(outputs: [[String: Any]]) -> [TxChangeOutput?] {
-        return outputs.map { output -> TxChangeOutput? in
-            let isChange = output["is_change"] as? Bool
-            if isChange == false {
+    func getChangeData(outputs: [AuthTxOutput]) -> [TxChangeOutput?] {
+        return outputs.map { out -> TxChangeOutput? in
+            if out.isChange == false {
                 return nil
             }
-            var csvBlock = 0
-            let addressType = output["address_type"] as? String
-            if addressType == "csv" {
-                csvBlock = output["subtype"] as? Int  ?? 0
+            var csvBlock: UInt32 = 0
+            if out.addressType == "csv" {
+                csvBlock = out.subtype ?? 0
             }
-            return TxChangeOutput(path: output["user_path"] as? [UInt32] ?? [],
-                                  recoveryxpub: output["recovery_xpub"] as? String,
+            return TxChangeOutput(path: out.userPath ?? [],
+                                  recoveryxpub: out.recoveryXpub,
                                   csvBlocks: csvBlock,
-                                  variant: mapAddressType(addressType))
+                                  variant: mapAddressType(out.addressType))
         }
-    }
-
-    func inputBytes(_ input: [String: Any], isSegwit: Bool) -> Data? {
-        let txHashHex = input["txhash"] as? String
-        let ptIdx = input["pt_idx"] as? UInt
-        let txId: [UInt8]? = hexToData(txHashHex!).reversed()
-        return Data(txId! + ptIdx!.uint32LE() + (isSegwit ? (input["satoshi"] as? UInt64)!.uint64LE() : []))
     }
 
     // swiftlint:disable:next function_parameter_count
@@ -445,30 +436,26 @@ extension Jade {
     }
 
     // swiftlint:disable:next function_parameter_count
-    public func signLiquidTransaction(network: String, tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], useAeProtocol: Bool) -> Observable<[String: Any]> {
+    public func signLiquidTransaction(network: String, tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput], transactions: [String: String], useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse> {
         let txInputs = inputs.map { input -> TxInputLiquid? in
-            let swInput = !(input["address_type"] as? String == "p2sh")
-            let script = input["prevout_script"] as? String
-            let commitment = input["commitment"] as? String
-            let aeHostCommitment = input["ae_host_commitment"] as? String
-            let aeHostEntropy = input["ae_host_entropy"] as? String
-            let path = input["user_path"] as? [UInt32]
-            return TxInputLiquid.init(isWitness: swInput, scriptHex: script, valueCommitmentHex: commitment, path: path, aeHostEntropyHex: aeHostEntropy, aeHostCommitmentHex: aeHostCommitment)
+            return TxInputLiquid(
+                isWitness: !(input.addressType == "p2sh"),
+                scriptHex: input.prevoutScript,
+                valueCommitmentHex: input.commitment,
+                path: input.userPath,
+                aeHostEntropyHex: input.aeHostEntropy,
+                aeHostCommitmentHex: input.aeHostCommitment)
         }
 
         // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
-        var values = inputs.map { $0["satoshi"] as? UInt64 ?? 0 }
-        var abfs = inputs.map { input -> [UInt8] in
-            return [UInt8](hexToData(input["assetblinder"] as? String ?? "")).reversed()
-        }
-        var vbfs = inputs.map { input -> [UInt8] in
-            return [UInt8](hexToData(input["amountblinder"] as? String ?? "")).reversed()
-        }
+        var values = inputs.map { $0.satoshi }
+        var abfs = inputs.map { $0.assetblinderHex }
+        var vbfs = inputs.map { $0.amountblinderHex }
 
         var inputPrevouts = [Data]()
         inputs.forEach { input in
-            inputPrevouts += [Data(hexToData(input["txhash"] as? String ?? "").reversed())]
-            inputPrevouts += [Data((input["pt_idx"] as? UInt ?? 0).uint32LE())]
+            inputPrevouts += [Data(input.txhashHex)]
+            inputPrevouts += [Data(input.ptIdxHex)]
         }
 
         // Compute the hash of all input prevouts for making deterministic blinding factors
@@ -485,7 +472,7 @@ extension Jade {
         var obsCommitments = [Observable<Commitment>]()
         let lastBlindedOutput = outputs[lastBlindedIndex]
         for (i, output) in outputs.enumerated() where i < lastBlindedIndex {
-            values.append(output["satoshi"] as? UInt64 ?? 0)
+            values.append(output.satoshi ?? 0)
             obsCommitments.append( Observable.just(output).flatMap {
                 self.getTrustedCommitment(index: i, output: $0, hashPrevOuts: hashPrevOuts, customVbf: nil)
             })
@@ -498,7 +485,7 @@ extension Jade {
             return []
         }).flatMap { _ -> Observable<Data?> in
             // For the last blinded output, get the abf only
-            values.append(lastBlindedOutput["satoshi"] as? UInt64 ?? 0)
+            values.append(lastBlindedOutput.satoshi ?? 0)
             return self.getBlindingFactor(hashPrevouts: hashPrevOuts, outputIdx: lastBlindedIndex, type: "ASSET")
         }.flatMap { lastAbf -> Observable<Commitment> in
             abfs.append([UInt8](lastAbf!))
@@ -516,20 +503,20 @@ extension Jade {
             // Get the change outputs and paths
             let change = self.getChangeData(outputs: outputs)
             // Make jade-api call to sign the txn
-            let txhex = tx["transaction"] as? String
-            let txn = hexToData(txhex ?? "")
+            let txn = hexToData(tx.transaction )
             return self.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, changes: change, useAeProtocol: useAeProtocol)
         }.compactMap { (commitments: [String], signatures: [String]) in
             let assetGenerators = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.assetGenerator)) : nil) }
             let valueCommitments = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.valueCommitment)) : nil) }
             let abfs = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.abf.reversed())) : nil) }
             let vbfs = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.vbf.reversed())) : nil) }
-            return ["signatures": signatures,
-                    "signer_commitments": commitments,
-                    "asset_commitments": assetGenerators,
-                    "value_commitments": valueCommitments,
-                    "assetblinders": abfs,
-                    "amountblinders": vbfs]
+            return AuthSignTransactionResponse(
+                signatures: signatures,
+                signerCommitments: commitments,
+                assetCommitments: assetGenerators,
+                valueCommitments: valueCommitments,
+                assetblinders: abfs,
+                amountblinders: vbfs)
         }
     }
 
@@ -551,17 +538,17 @@ extension Jade {
     }
 
     // Helper to get the commitment and blinding key from Jade
-    func getTrustedCommitment(index: Int, output: [String: Any], hashPrevOuts: Data, customVbf: Data?) -> Observable<Commitment> {
+    func getTrustedCommitment(index: Int, output: AuthTxOutput, hashPrevOuts: Data, customVbf: Data?) -> Observable<Commitment> {
         let package = JadeGetCommitment(hashPrevouts: hashPrevOuts,
                                         outputIdx: index,
-                                        assetId: hexToData(output["asset_id"] as? String ?? ""),
-                                        value: output["satoshi"] as? UInt64 ?? 0,
+                                        assetId: hexToData(output.asset_id ?? ""),
+                                        value: output.satoshi ?? 0,
                                         vbf: customVbf)
         return Jade.shared.exchange(JadeRequest(method: "get_commitments", params: package))
             .compactMap { (res: JadeResponse<Commitment>) in
                 // Add the script blinding key
                 var comm = res.result
-                comm?.blindingKey = hexToData(output["blinding_key"] as? String ?? "")
+                comm?.blindingKey = (output.blindingKey ?? "").hexToData()
                 return comm!
             }
     }

@@ -16,11 +16,11 @@ public protocol HWProtocol {
 
     // swiftlint:disable:next function_parameter_count
     func signTransaction(network: String,
-                         tx: [String: Any],
-                         inputs: [[String: Any]],
-                         outputs: [[String: Any]],
+                         tx: AuthTx,
+                         inputs: [AuthTxInput],
+                         outputs: [AuthTxOutput],
                          transactions: [String: String],
-                         useAeProtocol: Bool) -> Observable<[String: Any]>
+                         useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse>
 
     // swiftlint:disable:next function_parameter_count
     func newReceiveAddress(chain: String,
@@ -41,9 +41,9 @@ public protocol HWProtocol {
 
     // swiftlint:disable:next function_parameter_count
     func signLiquidTransaction(network: String,
-                               tx: [String: Any],
-                               inputs: [[String: Any]],
-                               outputs: [[String: Any]],
+                               tx: AuthTx,
+                               inputs: [AuthTxInput],
+                               outputs: [AuthTxOutput],
                                transactions: [String: String],
-                               useAeProtocol: Bool) -> Observable<[String: Any]>
+                               useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse>
 }

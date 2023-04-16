@@ -70,20 +70,16 @@ public class LedgerCommands: LedgerChannel {
         }
     }
 
-    func inputBytes(_ input: [String: Any], isSegwit: Bool) -> Data? {
-        let txHashHex = input["txhash"] as? String
-        let ptIdx = input["pt_idx"] as? UInt
-        let txId: [UInt8]? = txHashHex!.hexToData().reversed()
-        return Data(txId! + ptIdx!.uint32LE() + (isSegwit ? (input["satoshi"] as? UInt64)!.uint64LE() : []))
+    func inputBytes(_ input: AuthTxInput, isSegwit: Bool) -> Data? {
+        return Data(input.txhashHex + input.ptIdxHex + (isSegwit ? input.satoshi.uint64LE() : []))
     }
 
-    func outputBytes(_ outputs: [[String: Any]]) -> Data? {
+    func outputBytes(_ outputs: [AuthTxOutput]) -> Data? {
         var buffer = outputs.count.varInt()
         for out in outputs {
-            let satoshi = out["satoshi"] as? UInt64
-            let script = out["script"] as? String
+            let script = out.script
             let hex = script!.hexToData()
-            buffer += satoshi!.uint64LE() + hex.count.varInt() + hex
+            buffer += (out.satoshi ?? 0).uint64LE() + hex.count.varInt() + hex
         }
         return Data(buffer)
     }
