@@ -3,7 +3,11 @@ import UIKit
 import PromiseKit
 import RxSwift
 
-public class HWResolver {
+public protocol HwResolverDelegate {
+    func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<String>
+}
+
+public class HWResolver: HwResolverDelegate {
 
     public init() { }
 

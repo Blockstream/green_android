@@ -162,13 +162,12 @@ class SessionManager {
     }
 
     func transactions(subaccount: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
-        let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .compactMap(on: bgq) { _ in try self.session?.getTransactions(details: ["subaccount": subaccount,
+            .compactMap { _ in try self.session?.getTransactions(details: ["subaccount": subaccount,
                                                         "first": first,
                                                         "count": Constants.trxPerPage]) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }
-            .compactMap(on: bgq) { data in
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .compactMap { data in
                 let result = data["result"] as? [String: Any]
                 let dict = result?["transactions"] as? [[String: Any]]
                 let list = dict?.map { Transaction($0) }
@@ -177,11 +176,10 @@ class SessionManager {
     }
 
     func subaccount(_ pointer: UInt32) -> Promise<WalletItem> {
-        let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getSubaccount(subaccount: pointer) }
-            .then(on: bgq) { $0.resolve(chain: self.gdkNetwork.chain) }
-            .compactMap(on: bgq) { data in
+            .compactMap { try self.session?.getSubaccount(subaccount: pointer) }
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .compactMap { data in
                 let result = data["result"] as? [String: Any]
                 let wallet = WalletItem.from(result ?? [:]) as? WalletItem
                 wallet?.network = self.gdkNetwork.network
@@ -202,9 +200,8 @@ class SessionManager {
     }
 
     func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
-       let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getTwoFactorConfig() }
+            .compactMap { try self.session?.getTwoFactorConfig() }
             .compactMap { dataTwoFactorConfig in
                 let res = TwoFactorConfig.from(dataTwoFactorConfig) as? TwoFactorConfig
                 self.twoFactorConfig = res
@@ -224,13 +221,12 @@ class SessionManager {
 
     // create a default segwit account if doesn't exist on singlesig
     func createDefaultSubaccount(wallets: [WalletItem]) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
         let notFound = !wallets.contains(where: {$0.type == AccountType.segWit })
         if gdkNetwork.electrum && notFound {
             return Guarantee()
-                .compactMap(on: bgq) { try self.session?.createSubaccount(details: ["name": "",
+                .compactMap { try self.session?.createSubaccount(details: ["name": "",
                                                              "type": AccountType.segWit.rawValue]) }
-                .then(on: bgq) { $0.resolve(chain: self.gdkNetwork.chain) }
+                .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
                 .tapLogger()
                 .asVoid()
         }
@@ -240,7 +236,7 @@ class SessionManager {
     func reconnect() -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.loginUserSW(details: [:]) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .tapLogger()
             .asVoid()
     }
@@ -286,7 +282,7 @@ class SessionManager {
         let dict = params.toDict()
         return Guarantee()
             .compactMap(on: bgq) { try fun?(dict ?? [:]) }
-            .then(on: bgq) { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
                 return K.from(result ?? [:]) as? K
@@ -322,7 +318,7 @@ class SessionManager {
         return Guarantee()
             .then(on: bgq) { self.connect() }
             .compactMap(on: bgq) { try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]]) }
-            .then(on: bgq) { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .tapLogger()
             .asVoid()
     }
@@ -335,21 +331,24 @@ class SessionManager {
     func resetTwoFactor(email: String, isDispute: Bool) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.resetTwoFactor(email: email, isDispute: isDispute) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }.asVoid()
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .asVoid()
             .tapLogger()
     }
 
     func cancelTwoFactorReset() -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.cancelTwoFactorReset() }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }.asVoid()
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .asVoid()
             .tapLogger()
     }
 
     func undoTwoFactorReset(email: String) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.undoTwoFactorReset(email: email) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }.asVoid()
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .asVoid()
             .tapLogger()
     }
 
@@ -367,13 +366,15 @@ class SessionManager {
     func setCSVTime(value: Int) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.setCSVTime(details: ["value": value]) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }.asVoid()
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .asVoid()
     }
 
     func setTwoFactorLimit(details: [String: Any]) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.setTwoFactorLimit(details: details) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }.asVoid()
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .asVoid()
             .tapLogger()
     }
 
@@ -394,7 +395,7 @@ class SessionManager {
     func getBalance(subaccount: UInt32, numConfs: Int) -> Promise<[String: Int64]> {
         return Guarantee()
             .compactMap { try self.session?.getBalance(details: ["subaccount": subaccount, "num_confs": numConfs]) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .compactMap { $0["result"] as? [String: Int64] }
             .tapLogger()
     }
@@ -402,14 +403,16 @@ class SessionManager {
     func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:]) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }.asVoid()
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .asVoid()
             .tapLogger()
     }
 
     func updateSubaccount(subaccount: UInt32, hidden: Bool) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.updateSubaccount(details: ["subaccount": subaccount, "hidden": hidden]) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }.asVoid()
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .asVoid()
             .tapLogger()
     }
 
@@ -433,7 +436,7 @@ class SessionManager {
     func getUnspentOutputs(subaccount: UInt32, numConfs: Int) -> Promise<[String: Any]> {
         return Guarantee()
             .compactMap { try self.session?.getUnspentOutputs(details: ["subaccount": subaccount, "num_confs": numConfs]) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .compactMap { res in
                 let result = res["result"] as? [String: Any]
                 return result?["unspent_outputs"] as? [String: Any]
@@ -444,7 +447,7 @@ class SessionManager {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.createTransaction(details: tx.details) }
-            .then(on: bgq) { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .compactMap(on: bgq) { Transaction($0["result"] as? [String: Any] ?? [:]) }
             .tapLogger()
     }
@@ -453,7 +456,7 @@ class SessionManager {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.signTransaction(details: tx.details) }
-            .then(on: bgq) { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .compactMap(on: bgq) { $0["result"] as? [String: Any] }
             .tapLogger()
     }
@@ -470,7 +473,7 @@ class SessionManager {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .compactMap(on: bgq) { try self.session?.sendTransaction(details: tx.details) }
-            .then(on: bgq) { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .tapLogger()
             .asVoid()
     }
@@ -489,7 +492,7 @@ class SessionManager {
     func ackSystemMessage(message: String) -> Promise<Void> {
         return Guarantee()
             .compactMap { try self.session?.ackSystemMessage(message: message) }
-            .then { $0.resolve(chain: self.gdkNetwork.chain) }
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .tapLogger()
             .asVoid()
     }
