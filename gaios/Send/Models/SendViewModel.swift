@@ -162,10 +162,7 @@ class SendViewModel {
             recipientCellModels[0].isSendAll = tx.sendAll
             if tx.sendAll {
                 let assetId = addreessee?.assetId ?? tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? ""
-                var value = addreessee?.satoshi ?? 0
-                if !session.gdkNetwork.electrum {
-                    value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
-                }
+                let value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
                 if let balance = Balance.fromSatoshi(value, assetId: assetId) {
                     let (amount, _) = value == 0 ? ("", "") : balance.toValue()
                     recipientCellModels[0].amount = amount

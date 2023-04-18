@@ -59,11 +59,8 @@ class DialogSendHWSummaryViewController: UIViewController {
             lblRecipientAddress.text = addressee.address
 
             let addreessee = transaction.addressees.first
-            var value = addreessee?.satoshi ?? 0
             let assetId = (account.gdkNetwork.liquid ) ? addreessee?.assetId ?? "" : "btc"
-            if !account.gdkNetwork.electrum && transaction.sendAll {
-                value = transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
-            }
+            let value = transaction.amounts.filter({$0.key == assetId}).first?.value ?? 0
             let registry = WalletManager.current?.registry
             if let balance = Balance.fromSatoshi(value, assetId: assetId) {
                 let (value, ticker) = balance.toValue()
