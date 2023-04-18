@@ -31,7 +31,8 @@ class SetPinViewModel {
             .then { $0.connect() }
             .then { self.getXpubHashId(session: wm.prominentSession!) }
             .map {
-                if let restoredAccount = self.restoredAccount, restoredAccount.xpubHashId != $0 {
+                if let restoredAccount = self.restoredAccount,
+                    let xpubHashId = restoredAccount.xpubHashId, xpubHashId != $0 {
                     throw LoginError.walletMismatch()
                 }
             }.then { wm.restore(self.credentials, forceJustRestored: account.xpubHashId != nil) }
