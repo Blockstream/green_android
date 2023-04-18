@@ -106,32 +106,28 @@ class SendConfirmViewController: KeyboardViewController {
             if account?.isHW ?? false {
                 self?.dismissHWSummary()
             }
-            var prettyError: String?
             self?.sliderView.isUserInteractionEnabled = true
             self?.sliderView.reset()
-            switch error {
-            case HWError.Abort(let desc),
-                 HWError.Declined(let desc):
-                self?.showError(desc)
-                prettyError = desc
-            case LedgerWrapper.LedgerError.IOError,
-                 LedgerWrapper.LedgerError.InvalidParameter:
-                self?.showError(NSLocalizedString("id_operation_failure", comment: ""))
-                prettyError = "id_operation_failure"
-            case TwoFactorCallError.failure(let localizedDescription),
-                 TwoFactorCallError.cancel(let localizedDescription):
-                self?.showError(localizedDescription)
-                prettyError = localizedDescription
-            case TransactionError.invalid(let localizedDescription):
-                self?.showError(localizedDescription)
-                prettyError = localizedDescription
-            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                self?.showError(NSLocalizedString("id_you_are_not_connected", comment: ""))
-                prettyError = "id_you_are_not_connected"
-            default:
-                self?.showError(error.localizedDescription)
-                prettyError = error.localizedDescription
-            }
+            let prettyError: String = {
+                switch error {
+                case HWError.Abort(let desc),
+                    HWError.Declined(let desc):
+                    return desc
+                case LedgerWrapper.LedgerError.IOError,
+                    LedgerWrapper.LedgerError.InvalidParameter:
+                    return "id_operation_failure"
+                case TwoFactorCallError.failure(let localizedDescription),
+                    TwoFactorCallError.cancel(let localizedDescription):
+                    return localizedDescription
+                case TransactionError.invalid(let localizedDescription):
+                    return localizedDescription
+                case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
+                    return "id_you_are_not_connected"
+                default:
+                    return error.localizedDescription
+                }
+            }()
+            self?.showError(NSLocalizedString(prettyError, comment: ""))
             AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current, error: error, prettyError: prettyError)
         }
     }
