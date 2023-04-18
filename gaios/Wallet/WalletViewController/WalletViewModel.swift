@@ -75,13 +75,17 @@ class WalletViewModel {
 
     var analyticsDone = false
 
+    let bgq = DispatchQueue.global(qos: .background)
+
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
     }
 
     func loadSubaccounts(_ newAccount: WalletItem? = nil) {
         cachedSubaccounts = self.subaccounts
-        wm?.balances(subaccounts: self.subaccounts)
+        Guarantee()
+            .compactMap { self.wm }
+            .then(on: bgq) { $0.balances(subaccounts: self.subaccounts) }
             .done { amounts in
                 self.cachedBalance = AssetAmountList(amounts).sorted()
                 let models = self.subaccounts.map { AccountCellModel(subaccount: $0,
@@ -106,7 +110,9 @@ class WalletViewModel {
     func getTransactions(subaccounts: [WalletItem]? = nil, max: Int? = nil) {
         let accounts = subaccounts != nil ? subaccounts : self.subaccounts
         isTxLoading = true
-        wm?.transactions(subaccounts: accounts ?? [])
+        Guarantee()
+            .compactMap { self.wm }
+            .then(on: bgq) { $0.transactions(subaccounts: accounts ?? []) }
             .done { txs in
                 self.isTxLoading = false
                 self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
@@ -129,7 +135,9 @@ class WalletViewModel {
     }
 
     func getAssets() {
-        wm?.balances(subaccounts: self.subaccounts)
+        Guarantee()
+            .compactMap { self.wm }
+            .then(on: bgq) { $0.balances(subaccounts: self.subaccounts) }
             .done { amounts in
                 self.cachedBalance = AssetAmountList(amounts).sorted()
 
@@ -196,7 +204,6 @@ class WalletViewModel {
         cards += wm.failureSessions.map { AlertCardType.login($0.key, $0.value) }
 
         // load system messages
-        let bgq = DispatchQueue.global(qos: .background)
         Guarantee()
             .then(on: bgq) { wm.loadSystemMessages() }
             .done { (messages: [SystemMessage]) in
@@ -230,9 +237,7 @@ class WalletViewModel {
             guard let connected = dict["connected"] as? Bool else { return }
             guard let loginRequired = dict["login_required"] as? Bool else { return }
             if connected == true && loginRequired == false {
-                DispatchQueue.main.async { [weak self] in
-                    self?.loadSubaccounts()
-                }
+                loadSubaccounts()
             }
         case .Settings, .Ticker, .TwoFactorReset:
             loadSubaccounts()

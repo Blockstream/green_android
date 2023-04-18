@@ -17,6 +17,7 @@ class AccountViewModel {
     var cachedTransactions = [Transaction]()
     var page = 0
     var fetchingTxs = false
+    let bgq = DispatchQueue.global(qos: .background)
 
     var showAssets: Bool {
         account.gdkNetwork.liquid
@@ -92,7 +93,8 @@ class AccountViewModel {
             return
         }
         fetchingTxs = true
-        wm.transactions(subaccounts: [account], first: (restart == true) ? 0 : self.cachedTransactions.count)
+        Guarantee()
+            .then(on: bgq) { self.wm.transactions(subaccounts: [self.account], first: (restart == true) ? 0 : self.cachedTransactions.count) }
             .done { txs in
                 if restart {
                     self.page = 0
@@ -116,7 +118,8 @@ class AccountViewModel {
     }
 
     func getBalance() {
-        wm.balances(subaccounts: [self.account])
+        Guarantee()
+            .then(on: bgq) { self.wm.balances(subaccounts: [self.account]) }
             .done { _ in
                 self.cachedBalance = AssetAmountList(self.account.satoshi ?? [:]).sorted()
                 self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)]
@@ -139,8 +142,8 @@ class AccountViewModel {
             return Promise().asVoid()
         }
         return Guarantee()
-            .then { session.updateSubaccount(subaccount: self.account.pointer, hidden: true) }
-            .then { self.wm.subaccount(account: self.account) }
+            .then(on: bgq) { session.updateSubaccount(subaccount: self.account.pointer, hidden: true) }
+            .then(on: bgq) { self.wm.subaccount(account: self.account) }
             .compactMap { self.account = $0 }
             .compactMap { self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)] }
             .asVoid()
@@ -151,8 +154,8 @@ class AccountViewModel {
             return Promise().asVoid()
         }
         return Guarantee()
-            .then { session.renameSubaccount(subaccount: self.account.pointer, newName: name) }
-            .then { self.wm.subaccount(account: self.account) }
+            .then(on: bgq) { session.renameSubaccount(subaccount: self.account.pointer, newName: name) }
+            .then(on: bgq) { self.wm.subaccount(account: self.account) }
             .compactMap { self.account = $0 }
             .compactMap { self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)] }
             .asVoid()
