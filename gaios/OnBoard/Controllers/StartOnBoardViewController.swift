@@ -88,7 +88,8 @@ class StartOnBoardViewController: UIViewController {
             let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController")
             navigationController?.pushViewController(vc, animated: true)
         case .watchonly:
-            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
+            let storyboard = UIStoryboard(name: "WOFlow", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "WOSelectViewController")
             navigationController?.pushViewController(vc, animated: true)
         }
     }

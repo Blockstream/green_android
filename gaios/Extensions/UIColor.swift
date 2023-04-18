@@ -143,6 +143,9 @@ extension UIColor {
     class func gGrayTxt() -> UIColor {
         return UIColor(named: "gGrayTxt")!
     }
+    class func gW40() -> UIColor {
+        return UIColor(named: "gW40")!
+    }
 }
 
 extension UIColor {

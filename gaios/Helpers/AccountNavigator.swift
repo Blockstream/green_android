@@ -12,7 +12,7 @@ class AccountNavigator {
         let vcHome: HomeViewController? = instantiateViewController(storyboard: "Home", identifier: "Home")
         let vcLogin: LoginViewController? = instantiateViewController(storyboard: "Home", identifier: "LoginViewController")
         let vcConnect: ConnectViewController? = instantiateViewController(storyboard: "HWFlow", identifier: "ConnectViewController")
-        let vcWatch: WatchOnlyLoginViewController? = instantiateViewController(storyboard: "OnBoard", identifier: "WatchOnlyLoginViewController")
+        let vcWatch: WOLoginViewController? = instantiateViewController(storyboard: "WOFlow", identifier: "WOLoginViewController")
 
         // switch on selected active session
         if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {

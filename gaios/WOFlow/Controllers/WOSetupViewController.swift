@@ -8,68 +8,84 @@ enum SecurityOption: String {
     case multi = "MultiSig"
 }
 
-class WatchOnlyViewController: KeyboardViewController {
+class WOSetupViewController: KeyboardViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
-    @IBOutlet weak var rememberSwitch: UISwitch!
-    @IBOutlet weak var rememberTitle: UILabel!
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var warningLabel: UILabel!
-    @IBOutlet weak var cardTestnet: UIView!
-    @IBOutlet weak var lblTestnet: UILabel!
-    @IBOutlet weak var testnetSwitch: UISwitch!
     @IBOutlet weak var btnSettings: UIButton!
-
+    @IBOutlet weak var lblUsername: UILabel!
+    @IBOutlet weak var lblPassword: UILabel!
+    @IBOutlet weak var remView: UIView!
+    @IBOutlet weak var iconRem: UIImageView!
+    @IBOutlet weak var btnRem: UIButton!
+    @IBOutlet weak var lblRem: UILabel!
+    
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
     private var networks = [NetworkSecurityCase]()
 
     var network: AvailableNetworks?
     var watchOnlySecurityOption: SecurityOption = .multi
+    var isRem: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = NSLocalizedString("id_login", comment: "")
-        lblHint.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
-        rememberTitle.text = NSLocalizedString("id_remember_me", comment: "")
-        warningLabel.text = NSLocalizedString("id_watchonly_mode_can_be_activated", comment: "")
-        lblTestnet.text = "Testnet"
-        rememberSwitch.addTarget(self, action: #selector(rememberSwitchChange), for: .valueChanged)
-        testnetSwitch.addTarget(self, action: #selector(testnetSwitchChange), for: .valueChanged)
-        loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
+        setContent()
+        setStyle()
+        refresh()
+
         loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-        loginButton.setStyle(.primary)
-        usernameTextField.attributedPlaceholder = NSAttributedString(
-            string: NSLocalizedString("id_username", comment: ""),
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        passwordTextField.attributedPlaceholder = NSAttributedString(
-            string: NSLocalizedString("id_password", comment: ""),
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
-
-        usernameTextField.setLeftPaddingPoints(10.0)
-        usernameTextField.setRightPaddingPoints(10.0)
-        passwordTextField.setLeftPaddingPoints(10.0)
-        passwordTextField.setRightPaddingPoints(10.0)
-
-        usernameTextField.leftViewMode = .always
-        passwordTextField.leftViewMode = .always
-
+        usernameTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
+        passwordTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
         view.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.view
         usernameTextField.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.usernameField
         passwordTextField.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.passwordField
-        testnetSwitch.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.testnetSwitch
         loginButton.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.loginBtn
-
-        cardTestnet.isHidden = true
 
         AnalyticsManager.shared.recordView(.onBoardWatchOnlyCredentials)
     }
 
+    func setContent() {
+        lblTitle.text = NSLocalizedString("id_login", comment: "")
+        lblHint.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
+        warningLabel.text = NSLocalizedString("id_watchonly_mode_can_be_activated", comment: "")
+        loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
+        lblUsername.text = "id_username".localized
+        lblPassword.text = "id_password".localized
+        lblRem.text = NSLocalizedString("id_remember_me", comment: "")
+    }
+
+    func setStyle() {
+        lblTitle.setStyle(.title)
+        lblHint.setStyle(.txt)
+        warningLabel.setStyle(.txt)
+        lblUsername.setStyle(.sectionTitle)
+        lblPassword.setStyle(.sectionTitle)
+        warningLabel.textColor = UIColor.gW40()
+        loginButton.setStyle(.primary)
+        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        usernameTextField.setLeftPaddingPoints(10.0)
+        usernameTextField.setRightPaddingPoints(10.0)
+        passwordTextField.setLeftPaddingPoints(10.0)
+        passwordTextField.setRightPaddingPoints(10.0)
+        usernameTextField.leftViewMode = .always
+        passwordTextField.leftViewMode = .always
+        usernameTextField.layer.cornerRadius = 5.0
+        passwordTextField.layer.cornerRadius = 5.0
+        remView.borderWidth = 1.0
+        remView.borderColor = .white.withAlphaComponent(0.7)
+        remView.layer.cornerRadius = 5.0
+    }
+
+    func refresh() {
+        iconRem.image = isRem ? UIImage(named: "ic_checkbox_on")! : UIImage(named: "ic_checkbox_off")!
+    }
+    
     @objc func rememberSwitchChange(_ sender: UISwitch) {
         if sender.isOn {
             let alert = UIAlertController(title: NSLocalizedString("id_warning_watchonly_credentials", comment: ""), message: NSLocalizedString("id_your_watchonly_username_and", comment: ""), preferredStyle: .alert)
@@ -119,25 +135,10 @@ class WatchOnlyViewController: KeyboardViewController {
 
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
-        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
-            let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-            self.buttonConstraint = self.loginButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height)
-            self.buttonConstraint?.isActive = true
-            if UIScreen.main.nativeBounds.height <= 1334 {
-                self.lblHint.isHidden = true
-            }
-        })
     }
 
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
-        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
-            if UIScreen.main.nativeBounds.height <= 1334 {
-                self.lblHint.isHidden = false
-            }
-        })
     }
 
     func selectNetwork() {
@@ -163,14 +164,13 @@ class WatchOnlyViewController: KeyboardViewController {
         let username = self.usernameTextField.text ?? ""
         let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
-        let appDelegate = getAppDelegate()!
 
         let name = AccountsRepository.shared.getUniqueAccountName(
             testnet: !network.mainnet,
             watchonly: true)
 
         var account = Account(name: name, network: network.network, username: username, isSingleSig: network.electrum)
-        if self.rememberSwitch.isOn {
+        if self.isRem {
             account.password = password
         }
         firstly {
@@ -186,7 +186,7 @@ class WatchOnlyViewController: KeyboardViewController {
         }.done { _ in
             let account = AccountsRepository.shared.current
             AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: account)
-            AccountNavigator.goLogged(account: account!, nv: self.navigationController)
+            _ = AccountNavigator.goLogged(account: account!, nv: self.navigationController)
         }.catch { error in
             var prettyError = "id_login_failed"
             switch error {
@@ -205,6 +205,11 @@ class WatchOnlyViewController: KeyboardViewController {
         }
     }
 
+    @IBAction func btnRem(_ sender: Any) {
+        isRem = !isRem
+        refresh()
+    }
+
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
@@ -214,7 +219,7 @@ class WatchOnlyViewController: KeyboardViewController {
     }
 }
 
-extension WatchOnlyViewController: WalletSettingsViewControllerDelegate {
+extension WOSetupViewController: WalletSettingsViewControllerDelegate {
     func didSet(tor: Bool) {
         //
     }
@@ -223,7 +228,7 @@ extension WatchOnlyViewController: WalletSettingsViewControllerDelegate {
     }
 }
 
-extension WatchOnlyViewController: DialogListViewControllerDelegate {
+extension WOSetupViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         login(for: getGdkNetwork(networks[index].rawValue))
     }

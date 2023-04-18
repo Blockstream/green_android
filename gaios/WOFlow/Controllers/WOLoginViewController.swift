@@ -3,9 +3,12 @@ import UIKit
 import PromiseKit
 import gdk
 
-class WatchOnlyLoginViewController: KeyboardViewController {
+class WOLoginViewController: KeyboardViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var lblHint: UILabel!
+    @IBOutlet weak var lblUsername: UILabel!
+    @IBOutlet weak var lblPassword: UILabel!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
@@ -19,39 +22,18 @@ class WatchOnlyLoginViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = account?.name ?? ""
-        navigationItem.setHidesBackButton(true, animated: false)
 
-        let ntwBtn = UIButton(type: .system)
-        let img = account?.icon ?? UIImage()
-        ntwBtn.setImage(img.withRenderingMode(.alwaysOriginal), for: .normal)
-        ntwBtn.imageView?.contentMode = .scaleAspectFit
-        ntwBtn.addTarget(self, action: #selector(WatchOnlyLoginViewController.back), for: .touchUpInside)
-        ntwBtn.contentEdgeInsets = UIEdgeInsets(top: 9, left: -16, bottom: 9, right: 0)
+        setContent()
+        setStyle()
 
-        navigationItem.leftBarButtonItems = [UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(WatchOnlyLoginViewController.back)), UIBarButtonItem(customView: ntwBtn)]
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
 
-        lblTitle.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
-        loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
         loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-        loginButton.setStyle(.primary)
-        usernameTextField.attributedPlaceholder = NSAttributedString(
-            string: NSLocalizedString("id_username", comment: ""),
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        passwordTextField.attributedPlaceholder = NSAttributedString(
-            string: NSLocalizedString("id_password", comment: ""),
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        usernameTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
+        passwordTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
 
-        usernameTextField.setLeftPaddingPoints(10.0)
-        usernameTextField.setRightPaddingPoints(10.0)
-        passwordTextField.setLeftPaddingPoints(10.0)
-        passwordTextField.setRightPaddingPoints(10.0)
-
-        usernameTextField.leftViewMode = .always
-        passwordTextField.leftViewMode = .always
         if let username = account?.username {
             usernameTextField.text = username
         }
@@ -60,6 +42,32 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }
     }
 
+    func setContent() {
+        lblTitle.text = "id_log_in_via_watchonly_to_receive".localized
+        lblHint.text = ""
+        lblUsername.text = "id_username".localized
+        lblPassword.text = "id_password".localized
+        loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
+        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+    }
+
+    func setStyle() {
+        lblTitle.setStyle(.title)
+        lblHint.setStyle(.txt)
+        lblUsername.setStyle(.sectionTitle)
+        lblPassword.setStyle(.sectionTitle)
+        loginButton.setStyle(.primary)
+
+        usernameTextField.setLeftPaddingPoints(10.0)
+        usernameTextField.setRightPaddingPoints(10.0)
+        passwordTextField.setLeftPaddingPoints(10.0)
+        passwordTextField.setRightPaddingPoints(10.0)
+        usernameTextField.layer.cornerRadius = 5.0
+        passwordTextField.layer.cornerRadius = 5.0
+        usernameTextField.leftViewMode = .always
+        passwordTextField.leftViewMode = .always
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         progressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: progress)
@@ -70,10 +78,6 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         if let token = progressToken {
             NotificationCenter.default.removeObserver(token)
         }
-    }
-
-    @objc func back(sender: UIBarButtonItem) {
-        navigationController?.popViewController(animated: true)
     }
 
     @objc func menuButtonTapped(_ sender: Any) {
@@ -102,19 +106,10 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
-        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
-            let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-            self.buttonConstraint = self.loginButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height)
-            self.buttonConstraint?.isActive = true
-        })
     }
 
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
-        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
-            self.buttonConstraint?.isActive = false
-        })
     }
 
     func walletDelete() {
@@ -184,7 +179,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
 }
 
-extension WatchOnlyLoginViewController: DialogRenameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
+extension WOLoginViewController: DialogRenameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
         account?.name = name
         if let account = self.account {
@@ -204,7 +199,7 @@ extension WatchOnlyLoginViewController: DialogRenameViewControllerDelegate, Dial
     }
 }
 
-extension WatchOnlyLoginViewController: UIPopoverPresentationControllerDelegate {
+extension WOLoginViewController: UIPopoverPresentationControllerDelegate {
 
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
@@ -215,7 +210,7 @@ extension WatchOnlyLoginViewController: UIPopoverPresentationControllerDelegate 
     }
 }
 
-extension WatchOnlyLoginViewController: DialogListViewControllerDelegate {
+extension WOLoginViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .loginPrefs:

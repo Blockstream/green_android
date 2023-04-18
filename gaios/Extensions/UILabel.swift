@@ -1,5 +1,39 @@
 import UIKit
 
+enum LabelStyle {
+    case title
+    case titleCard
+    case txt
+    case txtCard
+    case err
+    case sectionTitle
+}
+
+extension UILabel {
+    func setStyle(_ type: LabelStyle) {
+        switch type {
+        case .title:
+            textColor = .white
+            font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
+        case .titleCard:
+            textColor = .white
+            font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
+        case .txt:
+            textColor = .white
+            font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        case .txtCard:
+            textColor = UIColor.gW40()
+            font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+        case .err:
+            textColor = UIColor.customDestructiveRed()
+            font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+        case .sectionTitle:
+            textColor = UIColor.gW40()
+            font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
+        }
+    }
+}
+
 @IBDesignable
 class DesignableLabel: UILabel {}
 
