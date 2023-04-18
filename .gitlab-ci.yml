@@ -46,10 +46,12 @@ build_dev_release:
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - fastlane build_dev_release
     - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
-    - $(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1) $COUNTLY_APP_HOST $COUNTLY_APP_KEY ./tmp/gaios.app.dSYM
+    - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
+    - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
     - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
-    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
-    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html" | qrencode -t UTF8
+    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
+    - echo $LINK
+    - echo $LINK | qrencode -t UTF8
 
 build_signed_prod_release:
   stage: deploy
@@ -70,7 +72,8 @@ build_signed_prod_release:
     - ./tools/fetch_gdk_binaries.sh
     - fastlane build_signed_prod_release
     - mkdir tmp && unzip ./release/Green.app.dSYM.zip -d tmp
-    - $(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1) $COUNTLY_APP_HOST $COUNTLY_APP_KEY ./tmp/gaios.app.dSYM
+    - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
+    - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
 
 ui_tests:
   stage: test
