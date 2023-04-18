@@ -23,7 +23,7 @@ while true; do
 done
 
 # check gdk build
-TAGNAME="release_0.0.59"
+TAGNAME="release_0.0.61"
 if [[ "$BUILD_GDK" -eq 1 ]]; then
     git clone https://github.com/Blockstream/gdk.git
     cd gdk
