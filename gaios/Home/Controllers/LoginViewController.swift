@@ -330,6 +330,8 @@ class LoginViewController: UIViewController {
         cardEnterPin.isHidden = showLockPage
         lblTitle.isHidden = showLockPage
         cardWalletLock.isHidden = !showLockPage
+        attempts.isHidden = emergencyRestore || account?.attempts == 0
+        attemptsView.isHidden = emergencyRestore || account?.attempts == 0
     }
 
     func updateAttemptsLabel() {
@@ -341,8 +343,8 @@ class LoginViewController: UIViewController {
         } else {
             attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinattempts)
         }
-        attempts.isHidden = pinattempts == 0
-        attemptsView.isHidden = pinattempts == 0
+        attempts.isHidden = emergencyRestore || pinattempts == 0
+        attemptsView.isHidden = emergencyRestore || pinattempts == 0
     }
 
     @objc func keyClick(sender: UIButton) {
