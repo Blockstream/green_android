@@ -165,11 +165,7 @@ class LoginViewModel @AssistedInject constructor(
                 loginCredentials.counter += 1
 
                 viewModelScope.launch {
-                    if (loginCredentials.counter < 3) {
-                        walletRepository.updateLoginCredentials(loginCredentials)
-                    } else {
-                        walletRepository.deleteLoginCredentials(loginCredentials)
-                    }
+                    walletRepository.updateLoginCredentials(loginCredentials)
                 }
             } else {
                 onErrorMessage.postValue(ConsumableEvent(it))
@@ -363,11 +359,7 @@ class LoginViewModel @AssistedInject constructor(
                     loginCredentials.counter += 1
 
                     viewModelScope.launch {
-                        if (loginCredentials.counter < 3) {
-                            walletRepository.updateLoginCredentials(loginCredentials)
-                        } else {
-                            walletRepository.deleteLoginCredentials(loginCredentials)
-                        }
+                        walletRepository.updateLoginCredentials(loginCredentials)
                     }
                 }
 

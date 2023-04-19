@@ -13,7 +13,7 @@ data class WalletAndLoginCredentials(
     val loginCredentials: List<LoginCredentials>
 ) {
     val pin
-        get() = loginCredentials.find { it.credentialType == CredentialType.PIN }
+        get() = loginCredentials.find { it.credentialType == CredentialType.PIN && it.counter < 3}
     val biometrics
         get() = loginCredentials.find { it.credentialType == CredentialType.BIOMETRICS }
     val keystore

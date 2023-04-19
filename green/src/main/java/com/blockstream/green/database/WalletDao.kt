@@ -74,14 +74,6 @@ interface WalletDao {
 
     @Transaction
     @Query("SELECT * FROM wallets WHERE id = :id")
-    fun getWalletLoginCredentials(id: WalletId): LiveData<WalletAndLoginCredentials>
-
-    @Transaction
-    @Query("SELECT * FROM wallets WHERE id = :id")
-    suspend fun getWalletLoginCredentialsSuspend(id: WalletId): WalletAndLoginCredentials
-
-    @Transaction
-    @Query("SELECT * FROM wallets WHERE id = :id")
     fun getWalletLoginCredentialsFlow(id: WalletId): Flow<WalletAndLoginCredentials>
 
     @Query("SELECT * FROM login_credentials WHERE wallet_id = :id")
