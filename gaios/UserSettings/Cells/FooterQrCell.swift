@@ -16,6 +16,7 @@ class FooterQrCell: UICollectionReusableView {
         self.mnemonic = mnemonic
 
         qrImg.image = QRImageGenerator.imageForTextWhite(text: mnemonic ?? "", frame: qrImg.frame)
+        qrImg.isHidden = true
 
         let isEphemeral = bip39Passphrase != nil
         passphraseView.isHidden = !isEphemeral
@@ -30,6 +31,7 @@ class FooterQrCell: UICollectionReusableView {
     }
 
     @IBAction func actionBtn(_ sender: Any) {
+        qrImg.isHidden = false
         actionBtn.isHidden = true
     }
 
