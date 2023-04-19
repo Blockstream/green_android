@@ -68,6 +68,7 @@ class SetPinViewModel {
         return Guarantee()
             .then { session.connect() }
             .then { wm.account.addPin(session: session, pin: pin, mnemonic: mnemonic) }
+            .map { wm.account.attempts = 0 }
     }
 
 }
