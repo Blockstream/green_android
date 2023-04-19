@@ -63,6 +63,8 @@ class LoginViewController: UIViewController {
             UserDefaults.standard.value(forKey: "network_settings") as? [String: Any] ?? [:]
         }
     }
+    
+    private var showLockPage: Bool { !emergencyRestore && (account?.attempts ?? 0 >= self.MAXATTEMPTS  || account?.hasPin == false) }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -162,9 +164,7 @@ class LoginViewController: UIViewController {
         } else if account.hasBioPin {
             loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
         }
-        if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
-            showLock()
-        }
+        reloadLock()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -230,7 +230,7 @@ class LoginViewController: UIViewController {
             self.pinCode = ""
             self.reload()
         }.catch { err in
-            self.errorLogin(error: err)
+            self.errorLogin(error: err, enableFailingCounter: false)
         }
     }
 
@@ -259,11 +259,11 @@ class LoginViewController: UIViewController {
             _ = AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
             self.stopLoader()
         }.catch { error in
-            self.errorLogin(error: error)
+            self.errorLogin(error: error, enableFailingCounter: true)
         }
     }
 
-    func errorLogin(error: Error) {
+    func errorLogin(error: Error, enableFailingCounter: Bool) {
         var prettyError = "id_login_failed"
         self.stopLoader()
         switch error {
@@ -283,7 +283,9 @@ class LoginViewController: UIViewController {
         case TwoFactorCallError.failure(let localizedDescription):
             if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
                 prettyError = "id_invalid_pin"
-                self.wrongPin()
+                if enableFailingCounter {
+                    wrongPin()
+                }
             } else {
                 DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             }
@@ -304,7 +306,7 @@ class LoginViewController: UIViewController {
         AccountsRepository.shared.upsert(account)
         if account?.attempts == self.MAXATTEMPTS {
             WalletsRepository.shared.delete(for: account)
-            showLock()
+            self.reloadLock()
         } else {
             self.pinCode = ""
             self.updateAttemptsLabel()
@@ -324,16 +326,16 @@ class LoginViewController: UIViewController {
         }
     }
 
-    func showLock() {
-        cardEnterPin.isHidden = true
-        lblTitle.isHidden = true
-        cardWalletLock.isHidden = false
+    func reloadLock() {
+        cardEnterPin.isHidden = showLockPage
+        lblTitle.isHidden = showLockPage
+        cardWalletLock.isHidden = !showLockPage
     }
 
     func updateAttemptsLabel() {
         let pinattempts = account?.attempts ?? 0
         if pinattempts == MAXATTEMPTS {
-            showLock()
+            reloadLock()
         } else if MAXATTEMPTS - pinattempts == 1 {
             attempts.text = NSLocalizedString("id_last_attempt_if_failed_you_will", comment: "")
         } else {
@@ -412,6 +414,7 @@ class LoginViewController: UIViewController {
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { (_: UIAlertAction) in
             self.emergencyRestore = true
+            self.reloadLock()
         })
         self.present(alert, animated: true, completion: nil)
     }
