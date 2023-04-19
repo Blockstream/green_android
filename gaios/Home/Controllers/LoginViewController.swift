@@ -417,6 +417,9 @@ class LoginViewController: UIViewController {
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { (_: UIAlertAction) in
             self.emergencyRestore = true
             self.reloadLock()
+            if self.account.hasBioPin {
+                self.loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
+            }
         })
         self.present(alert, animated: true, completion: nil)
     }
@@ -430,13 +433,6 @@ class LoginViewController: UIViewController {
             vc.isAlwaysAsk = isAlwaysAsk
             present(vc, animated: false, completion: nil)
         }
-//        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogLoginPassphraseViewController") as? DialogLoginPassphraseViewController {
-//            vc.modalPresentationStyle = .overFullScreen
-//            vc.delegate = self
-//            vc.isAlwaysAsk = isAlwaysAsk
-//            present(vc, animated: false, completion: nil)
-//        }
     }
 
     @IBAction func btnFaceID(_ sender: Any) {
@@ -511,17 +507,6 @@ extension LoginViewController: WalletSettingsViewControllerDelegate {
         //
     }
 }
-
-//extension LoginViewController: DialogLoginPassphraseViewControllerDelegate {
-//    func didConfirm(passphrase: String, alwaysAsk: Bool) {
-//        bip39passphare = passphrase
-//        account.askEphemeral = alwaysAsk
-//        AccountsRepository.shared.upsert(account)
-//        if account.hasBioPin {
-//            loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: passphrase)
-//        }
-//    }
-//}
 
 extension LoginViewController: DialogPassphraseViewControllerDelegate {
     func didConfirm(passphrase: String, alwaysAsk: Bool) {
