@@ -155,12 +155,14 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         // Handle pending BIP-21 uri
         sessionManager.pendingBip21Uri.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
-                navigate(
-                    WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
-                        wallet = wallet, address = bip21Uri, accountAsset = AccountAsset.fromAccount(session.activeAccount)
+                session.activeAccountOrNull?.also { account ->
+                    navigate(
+                        WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
+                            wallet = wallet, address = bip21Uri, accountAsset = AccountAsset.fromAccount(account)
+                        )
                     )
-                )
-                snackbar(R.string.id_address_was_filled_by_a_payment)
+                    snackbar(R.string.id_address_was_filled_by_a_payment)
+                }
             }
         }
 

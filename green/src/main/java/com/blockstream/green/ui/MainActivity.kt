@@ -43,6 +43,7 @@ import com.blockstream.green.extensions.handleException
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.services.TaskService
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.fadeIn
@@ -314,6 +315,15 @@ class MainActivity : AppActivity() {
                 return super.onPreBind(binding)
             }
         })
+
+        // Start TaskService
+        try {
+            // Prefer starting the service here instead of GreenApplication as Android may restart the App
+            // and this leads to BackgroundServiceStartNotAllowedException be thrown
+            startService(Intent(applicationContext, TaskService::class.java))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onStart() {

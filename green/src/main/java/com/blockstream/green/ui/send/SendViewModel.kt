@@ -113,7 +113,7 @@ class SendViewModel @AssistedInject constructor(
         // TODO CHANGE THIS TO SUPPORT MULTI NETWORKS
         session
             .networkEventsFlow(session.defaultNetwork).filterNotNull()
-            .onEach {  event ->
+            .onEach { event ->
                 if (event.isConnected) {
                     checkTransaction()
                 }

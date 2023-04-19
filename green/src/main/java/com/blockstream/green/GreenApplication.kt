@@ -14,7 +14,6 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.services.TaskService
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.MainActivity
@@ -81,9 +80,6 @@ class GreenApplication : Application() {
         if (isDevelopmentFlavor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             initShortcuts()
         }
-
-        // Start TaskService
-        startService(Intent(applicationContext, TaskService::class.java))
     }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)

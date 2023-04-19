@@ -58,48 +58,6 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
                 toolbar.setLogo(
                     toolbarIcon ?: wallet.iconResource(session)
                 )
-
-//                toolbar.setLogo(
-//                    when {
-//                        toolbarIcon != null -> {
-//                            toolbarIcon
-//                        }
-//                        wallet.isBip39Ephemeral -> {
-//                            R.drawable.ic_bip39_passphrase_24
-//                        }
-//                        session.isHardwareWallet -> {
-//                            session.device!!.getIcon()
-//                        }
-//                        else -> null
-//                    } ?: session.getIcon()
-//                )
-
-//                if(wallet.isWatchOnly){
-//                    toolbar.setBubble(
-//                        ContextCompat.getDrawable(
-//                            requireContext(),
-//                            R.drawable.ic_watch_18
-//                        )
-//                    )
-//                }
-
-                // BIP39 Passhphrase
-//                if(wallet.isBip39Ephemeral){
-//                    toolbar.logo = ContextCompat.getDrawable(
-//                        requireContext(),
-//                        R.drawable.ic_bip39_passphrase_24
-//                    )
-//                }
-
-//                session.device?.let {
-//                    // toolbar.subtitle = subtitle ?: it.name
-//                    toolbar.setBubble(
-//                        ContextCompat.getDrawable(
-//                            requireContext(),
-//                            it.getIcon()
-//                        )
-//                    )
-//                }
             }
         }
     }
@@ -263,7 +221,12 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
                 if (isSessionNetworkInitialized) {
                     getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
                 } else {
-                    navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
+                    // Use walletOrNull else wallet will trigger ViewModel initialization
+                    walletOrNull?.also {
+                        navigate(NavGraphDirections.actionGlobalLoginFragment(it))
+                    } ?: run {
+                        navigate(NavGraphDirections.actionGlobalIntroFragment())
+                    }
                 }
             }
         }
