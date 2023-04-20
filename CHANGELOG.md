@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.3] - 2023-04-29
+
+### Added
+- Enable watch-only for Singlesig Bitcoin
+
+### Fixed
+- Bug fixes
+- Fix F-Droid build
+
 ## [4.0.1] - 2023-04-19
 
 ### Changed
