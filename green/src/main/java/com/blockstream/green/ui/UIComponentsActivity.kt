@@ -3,7 +3,6 @@ package com.blockstream.green.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.blockstream.green.databinding.UiComponentsBinding
-import com.blockstream.green.utils.RiveListener
 import com.blockstream.green.utils.isDevelopmentFlavor
 import dagger.hilt.android.AndroidEntryPoint
 import ly.count.android.sdk.Countly

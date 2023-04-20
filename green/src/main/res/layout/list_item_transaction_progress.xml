@@ -117,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
                     android:text="@{confirmations + `/` + confirmationsRequired}"
-                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
                     app:layout_constraintBottom_toBottomOf="@+id/progress"
                     app:layout_constraintEnd_toEndOf="@+id/progress"
                     app:layout_constraintStart_toStartOf="@+id/progress"

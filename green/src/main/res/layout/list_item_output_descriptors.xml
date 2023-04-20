@@ -38,7 +38,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textStyle="bold"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"

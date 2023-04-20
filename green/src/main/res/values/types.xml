@@ -5,6 +5,8 @@
         <item name="android:textSize">36sp</item>
         <item name="lineHeight">40sp</item>
         <item name="android:lineHeight" tools:ignore="NewApi">40sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
@@ -12,6 +14,8 @@
         <item name="android:textSize">30sp</item>
         <item name="lineHeight">36sp</item>
         <item name="android:lineHeight" tools:ignore="NewApi">36sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
@@ -19,6 +23,8 @@
         <item name="android:textSize">28sp</item>
         <item name="lineHeight">33sp</item>
         <item name="android:lineHeight" tools:ignore="NewApi">33sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
@@ -26,6 +32,8 @@
         <item name="android:textSize">26sp</item>
         <item name="lineHeight">28sp</item>
         <item name="android:lineHeight" tools:targetApi="p">28sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
@@ -33,6 +41,8 @@
         <item name="android:textSize">24sp</item>
         <item name="lineHeight">26sp</item>
         <item name="android:lineHeight" tools:targetApi="p">26sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
@@ -40,57 +50,77 @@
         <item name="android:textSize">22sp</item>
         <item name="lineHeight">24sp</item>
         <item name="android:lineHeight" tools:targetApi="p">24sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:textSize">16sp</item>
         <item name="lineHeight">20sp</item>
         <item name="android:lineHeight" tools:targetApi="p">20sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textSize">14sp</item>
         <item name="lineHeight">16sp</item>
         <item name="android:lineHeight" tools:targetApi="p">16sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.BodySmall" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textSize">11sp</item>
         <item name="lineHeight">12sp</item>
         <item name="android:lineHeight" tools:targetApi="p">12sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
         <item name="android:textSize">14sp</item>
         <item name="lineHeight">20sp</item>
         <item name="android:lineHeight" tools:targetApi="p">20sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
         <item name="android:textSize">12sp</item>
         <item name="lineHeight">16sp</item>
         <item name="android:lineHeight" tools:targetApi="p">16sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">9sp</item>
         <item name="lineHeight">9sp</item>
         <item name="android:lineHeight" tools:targetApi="p">9sp</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="TextAppearance.Green.Overline" parent="TextAppearance.Green.LabelMedium">

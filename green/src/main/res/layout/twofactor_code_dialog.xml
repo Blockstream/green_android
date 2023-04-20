@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:text="@{attemptsRemaining}"
             android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceBody1"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -100,7 +100,7 @@
                     android:ellipsize="end"
                     android:lines="1"
                     android:text="@{account.name}"
-                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="@color/color_on_surface_emphasis_high"
                     android:textSize="16sp"
                     android:textStyle="bold"
