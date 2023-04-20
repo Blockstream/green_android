@@ -3595,7 +3595,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.1;
+				MARKETING_VERSION = 4.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -3636,7 +3636,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.1;
+				MARKETING_VERSION = 4.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -4226,7 +4226,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.1;
+				MARKETING_VERSION = 4.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -4374,8 +4374,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ReactiveX/RxSwift";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.1;
+				kind = exactVersion;
+				version = 5.1.1;
 			};
 		};
 		81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */ = {
@@ -4398,8 +4398,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rive-app/rive-ios";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				kind = exactVersion;
+				version = 3.1.10;
 			};
 		};
 		81961ACF29E4E44200E9B94D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */ = {
