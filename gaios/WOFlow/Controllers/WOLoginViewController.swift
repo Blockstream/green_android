@@ -11,17 +11,24 @@ class WOLoginViewController: KeyboardViewController {
     @IBOutlet weak var lblPassword: UILabel!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
-    @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var loginMSButton: UIButton!
+    @IBOutlet weak var loginSSButton: UIButton!
     @IBOutlet weak var btnSettings: UIButton!
+    @IBOutlet weak var ssModeView: UIView!
+    @IBOutlet weak var msModeView: UIView!
 
     var account: Account!
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
     let menuButton = UIButton(type: .system)
+    var isSS = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = account?.name ?? ""
+
+        ssModeView.isHidden = !isSS
+        msModeView.isHidden = isSS
 
         setContent()
         setStyle()
@@ -30,7 +37,8 @@ class WOLoginViewController: KeyboardViewController {
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
 
-        loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
+        loginMSButton.addTarget(self, action: #selector(click), for: .touchUpInside)
+        loginSSButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         usernameTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
         passwordTextField.addDoneButtonToKeyboard(myAction: #selector(self.usernameTextField.resignFirstResponder))
 
@@ -47,7 +55,8 @@ class WOLoginViewController: KeyboardViewController {
         lblHint.text = ""
         lblUsername.text = "id_username".localized
         lblPassword.text = "id_password".localized
-        loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
+        loginMSButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
+        loginSSButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
         btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
@@ -56,7 +65,8 @@ class WOLoginViewController: KeyboardViewController {
         lblHint.setStyle(.txt)
         lblUsername.setStyle(.sectionTitle)
         lblPassword.setStyle(.sectionTitle)
-        loginButton.setStyle(.primary)
+        loginMSButton.setStyle(.primary)
+        loginSSButton.setStyle(.primary)
 
         usernameTextField.setLeftPaddingPoints(10.0)
         usernameTextField.setRightPaddingPoints(10.0)
@@ -135,38 +145,42 @@ class WOLoginViewController: KeyboardViewController {
     @objc func click(_ sender: Any) {
         view.endEditing(true)
 
-        let username = self.account?.username ?? ""
-        let password = self.passwordTextField.text ?? ""
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            view.endEditing(true)
-            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-            return Guarantee()
-        }.compactMap {
-            WalletsRepository.shared.getOrAdd(for: self.account)
-        }.then(on: bgq) {
-            $0.login(credentials: Credentials(username: username, password: password))
-        }.ensure {
-            self.stopLoader()
-        }.done { _ in
-            let account = AccountsRepository.shared.current
-            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: account)
-            _ = AccountNavigator.goLogged(account: account!, nv: self.navigationController)
-        }.catch { error in
-            var prettyError = "id_login_failed"
-            switch error {
-            case TwoFactorCallError.failure(let localizedDescription):
-                prettyError = localizedDescription
-            case LoginError.connectionFailed:
-                prettyError = "id_connection_failed"
-            case LoginError.failed:
-                prettyError = "id_login_failed"
-            default:
-                break
+        if isSS {
+            print("login SS")
+        } else {
+            let username = self.account?.username ?? ""
+            let password = self.passwordTextField.text ?? ""
+            let bgq = DispatchQueue.global(qos: .background)
+            firstly {
+                view.endEditing(true)
+                self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+                return Guarantee()
+            }.compactMap {
+                WalletsRepository.shared.getOrAdd(for: self.account)
+            }.then(on: bgq) {
+                $0.login(Credentials(username: username, password: password))
+            }.ensure {
+                self.stopLoader()
+            }.done { _ in
+                let account = AccountsRepository.shared.current
+                AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: account)
+                _ = AccountNavigator.goLogged(account: account!, nv: self.navigationController)
+            }.catch { error in
+                var prettyError = "id_login_failed"
+                switch error {
+                case TwoFactorCallError.failure(let localizedDescription):
+                    prettyError = localizedDescription
+                case LoginError.connectionFailed:
+                    prettyError = "id_connection_failed"
+                case LoginError.failed:
+                    prettyError = "id_login_failed"
+                default:
+                    break
+                }
+                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+                AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
+                WalletsRepository.shared.delete(for: self.account)
             }
-            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
-            WalletsRepository.shared.delete(for: self.account)
         }
     }
 
