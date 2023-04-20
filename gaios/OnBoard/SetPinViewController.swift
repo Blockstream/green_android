@@ -243,6 +243,10 @@ class SetPinViewController: UIViewController {
         case LoginError.invalidMnemonic(_):
             self.showError("id_invalid_mnemonic".localized)
         default:
+            if let error = error as? AuthenticationTypeHandler.AuthError {
+                self.showError(error.localizedDescription)
+                return
+            }
             self.showError("id_operation_failure".localized)
         }
     }

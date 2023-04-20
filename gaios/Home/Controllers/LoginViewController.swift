@@ -163,6 +163,10 @@ class LoginViewController: UIViewController {
             loginWithPassphrase(isAlwaysAsk: account.askEphemeral ?? false)
         } else if account.hasBioPin {
             loginWithPin(usingAuth: .AuthKeyBiometric, withPIN: nil, bip39passphrase: nil)
+        } else {
+            if !AuthenticationTypeHandler.supportsPasscodeAuthentication() {
+                showAlert(title: "id_error".localized, message: "id_set_up_a_passcode_for_your_ios".localized)
+            }
         }
         reloadLock()
     }
