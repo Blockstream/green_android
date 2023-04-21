@@ -92,7 +92,7 @@ class WODetailsViewController: KeyboardViewController {
         let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.text])
         documentPicker.delegate = self
         documentPicker.allowsMultipleSelection = false
-        documentPicker.modalPresentationStyle = .overFullScreen
+        documentPicker.modalPresentationStyle = .automatic
         present(documentPicker, animated: true)
     }
 
