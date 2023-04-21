@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textAppearance="?textAppearanceSubtitle1"
-                android:textSize="18sp"
+                android:textSize="18dp"
                 android:textStyle="bold"
                 tools:text="Bitcoin" />
 

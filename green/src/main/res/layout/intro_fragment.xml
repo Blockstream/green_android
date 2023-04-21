@@ -113,7 +113,7 @@
             android:layout_marginStart="9dp"
             android:text="@string/id_about"
             android:textColor="@color/color_on_surface_emphasis_medium"
-            android:textSize="12sp"
+            android:textSize="12dp"
             app:icon="@drawable/ic_shield_white"
             app:iconSize="24dp"
             app:iconTint="@color/color_on_surface_emphasis_medium"
@@ -136,7 +136,7 @@
             android:enabled="@{!vm.onProgress}"
             android:text="@string/id_app_settings"
             android:textColor="@color/color_on_surface_emphasis_medium"
-            android:textSize="12sp"
+            android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

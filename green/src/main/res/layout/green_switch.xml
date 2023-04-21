@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 android:visibility="gone"
                 android:includeFontPadding="false"
                 tools:text="Caption\nMultiline"

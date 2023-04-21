@@ -143,7 +143,7 @@
             android:enabled="@{!vm.onProgress}"
             android:text="@string/id_app_settings"
             android:textColor="@color/color_on_surface_emphasis_low"
-            android:textSize="12sp"
+            android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
