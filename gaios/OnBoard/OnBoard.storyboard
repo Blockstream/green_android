@@ -1196,7 +1196,7 @@
                                 <rect key="frame" x="0.0" y="704" width="414" height="192"/>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="arq-qY-AT9">
-                                <rect key="frame" x="25" y="712" width="364" height="150"/>
+                                <rect key="frame" x="25" y="702" width="364" height="150"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LiZ-60-THo" userLabel="btnNext">
                                         <rect key="frame" x="0.0" y="0.0" width="364" height="50"/>
@@ -1241,7 +1241,7 @@
                             <constraint firstItem="Ww8-MG-gHy" firstAttribute="top" secondItem="Bp2-7w-4JG" secondAttribute="top" constant="30" id="WSU-HZ-VKN"/>
                             <constraint firstItem="zCz-Yh-H4M" firstAttribute="bottom" secondItem="Ww8-MG-gHy" secondAttribute="bottom" id="YXS-Uq-hfZ"/>
                             <constraint firstItem="Bp2-7w-4JG" firstAttribute="trailing" secondItem="Ww8-MG-gHy" secondAttribute="trailing" id="bbI-Vd-0vm"/>
-                            <constraint firstItem="arq-qY-AT9" firstAttribute="bottom" secondItem="Bp2-7w-4JG" secondAttribute="bottom" id="fPh-b9-yV6"/>
+                            <constraint firstItem="arq-qY-AT9" firstAttribute="bottom" secondItem="Bp2-7w-4JG" secondAttribute="bottom" constant="-10" id="fPh-b9-yV6"/>
                             <constraint firstItem="Ww8-MG-gHy" firstAttribute="leading" secondItem="Bp2-7w-4JG" secondAttribute="leading" id="hHa-8p-b3j"/>
                             <constraint firstItem="arq-qY-AT9" firstAttribute="leading" secondItem="Bp2-7w-4JG" secondAttribute="leading" constant="25" id="nwH-Aw-IdC"/>
                         </constraints>

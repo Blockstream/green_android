@@ -65,6 +65,8 @@ class WODetailsViewController: KeyboardViewController {
         bioView.borderWidth = 1.0
         bioView.borderColor = .white.withAlphaComponent(0.7)
         bioView.layer.cornerRadius = 5.0
+        segment.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
+        segment.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.lightGray], for: .normal)
     }
 
     @objc func onTextChange() {
