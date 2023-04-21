@@ -9,140 +9,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Dialog Wallet Delete View Controller-->
-        <scene sceneID="hZC-ir-Ksa">
-            <objects>
-                <viewController storyboardIdentifier="DialogWalletDeleteViewController" id="jRI-KK-O5R" customClass="DialogWalletDeleteViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="vPd-0C-Rrd">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LLX-pO-Csq">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.70241784041021527" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                            </view>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="giX-pe-hg7">
-                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0QV-BJ-PLc">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="814"/>
-                                        <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S3p-hq-QcN">
-                                                <rect key="frame" x="0.0" y="559" width="414" height="255"/>
-                                                <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wallet name" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jpr-9x-r1S">
-                                                        <rect key="frame" x="36" y="20" width="314" height="29"/>
-                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="24"/>
-                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zpb-JG-u7L">
-                                                        <rect key="frame" x="36" y="79" width="342" height="19.5"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nzq-rD-9OG">
-                                                        <rect key="frame" x="36" y="123.5" width="342" height="19.5"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1h4-fp-MTP" userLabel="Next">
-                                                        <rect key="frame" x="36" y="179" width="342" height="40"/>
-                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="40" id="8ES-kz-DPP"/>
-                                                        </constraints>
-                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                        <state key="normal" title="Remove Wallet">
-                                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="btnDelete:" destination="jRI-KK-O5R" eventType="touchUpInside" id="pMD-dK-eMV"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Smt-j1-Dmi">
-                                                        <rect key="frame" x="350" y="16" width="44" height="44"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="44" id="Ati-bb-dli"/>
-                                                            <constraint firstAttribute="height" constant="44" id="cIi-Rt-TQp"/>
-                                                        </constraints>
-                                                        <state key="normal" image="cancel"/>
-                                                        <connections>
-                                                            <action selector="btnDismiss:" destination="jRI-KK-O5R" eventType="touchUpInside" id="eiP-1O-2CL"/>
-                                                        </connections>
-                                                    </button>
-                                                </subviews>
-                                                <color key="backgroundColor" name="customModalBlueDark"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="1h4-fp-MTP" secondAttribute="bottom" constant="36" id="15R-Hl-9bQ"/>
-                                                    <constraint firstAttribute="trailing" secondItem="1h4-fp-MTP" secondAttribute="trailing" constant="36" id="6lB-q6-KRr"/>
-                                                    <constraint firstItem="1h4-fp-MTP" firstAttribute="top" secondItem="Nzq-rD-9OG" secondAttribute="bottom" constant="36" id="AEa-fG-Ynd"/>
-                                                    <constraint firstItem="Nzq-rD-9OG" firstAttribute="leading" secondItem="S3p-hq-QcN" secondAttribute="leading" constant="36" id="HHF-nm-ln9"/>
-                                                    <constraint firstItem="Smt-j1-Dmi" firstAttribute="leading" secondItem="jpr-9x-r1S" secondAttribute="trailing" id="IQC-Mw-qDW"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Zpb-JG-u7L" secondAttribute="trailing" constant="36" id="JIf-rE-1mW"/>
-                                                    <constraint firstItem="Smt-j1-Dmi" firstAttribute="top" secondItem="S3p-hq-QcN" secondAttribute="top" constant="16" id="JuY-Hf-WdL"/>
-                                                    <constraint firstItem="1h4-fp-MTP" firstAttribute="leading" secondItem="S3p-hq-QcN" secondAttribute="leading" constant="36" id="L88-PU-yer"/>
-                                                    <constraint firstItem="jpr-9x-r1S" firstAttribute="leading" secondItem="S3p-hq-QcN" secondAttribute="leading" constant="36" id="LbW-Wf-1KD"/>
-                                                    <constraint firstItem="Zpb-JG-u7L" firstAttribute="leading" secondItem="S3p-hq-QcN" secondAttribute="leading" constant="36" id="N2z-7s-4Mi"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Smt-j1-Dmi" secondAttribute="trailing" constant="20" id="Sby-DH-f2R"/>
-                                                    <constraint firstItem="Zpb-JG-u7L" firstAttribute="top" secondItem="jpr-9x-r1S" secondAttribute="bottom" constant="30" id="Tbp-cl-qHC"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Nzq-rD-9OG" secondAttribute="trailing" constant="36" id="bPX-8o-bG4"/>
-                                                    <constraint firstItem="Nzq-rD-9OG" firstAttribute="top" secondItem="Zpb-JG-u7L" secondAttribute="bottom" constant="25" id="fQI-uc-Kn0"/>
-                                                    <constraint firstItem="jpr-9x-r1S" firstAttribute="top" secondItem="S3p-hq-QcN" secondAttribute="top" constant="20" id="pyl-8d-dgB"/>
-                                                </constraints>
-                                            </view>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstItem="S3p-hq-QcN" firstAttribute="leading" secondItem="0QV-BJ-PLc" secondAttribute="leading" id="Z06-X9-ggK"/>
-                                            <constraint firstAttribute="trailing" secondItem="S3p-hq-QcN" secondAttribute="trailing" id="dw2-6r-trd"/>
-                                            <constraint firstAttribute="bottom" secondItem="S3p-hq-QcN" secondAttribute="bottom" id="mSA-zl-lwr"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="0QV-BJ-PLc" firstAttribute="leading" secondItem="giX-pe-hg7" secondAttribute="leading" id="2BQ-1T-wsH"/>
-                                    <constraint firstItem="0QV-BJ-PLc" firstAttribute="height" secondItem="giX-pe-hg7" secondAttribute="height" id="2zK-g6-NP3"/>
-                                    <constraint firstAttribute="bottom" secondItem="0QV-BJ-PLc" secondAttribute="bottom" id="A46-jH-Hli"/>
-                                    <constraint firstItem="0QV-BJ-PLc" firstAttribute="top" secondItem="giX-pe-hg7" secondAttribute="top" id="DsQ-oa-FtM"/>
-                                    <constraint firstAttribute="trailing" secondItem="0QV-BJ-PLc" secondAttribute="trailing" id="J7r-iq-Jo4"/>
-                                </constraints>
-                                <viewLayoutGuide key="contentLayoutGuide" id="GAc-iu-wR1"/>
-                                <viewLayoutGuide key="frameLayoutGuide" id="9Hu-bW-tTd"/>
-                            </scrollView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="lgI-Sz-grh"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="0QV-BJ-PLc" firstAttribute="width" secondItem="vPd-0C-Rrd" secondAttribute="width" id="4A7-OV-WF2"/>
-                            <constraint firstAttribute="bottom" secondItem="LLX-pO-Csq" secondAttribute="bottom" id="7Eo-n8-9ec"/>
-                            <constraint firstItem="LLX-pO-Csq" firstAttribute="leading" secondItem="lgI-Sz-grh" secondAttribute="leading" id="8IE-GE-q54"/>
-                            <constraint firstItem="lgI-Sz-grh" firstAttribute="trailing" secondItem="LLX-pO-Csq" secondAttribute="trailing" id="fPS-je-Y68"/>
-                            <constraint firstItem="LLX-pO-Csq" firstAttribute="top" secondItem="vPd-0C-Rrd" secondAttribute="top" id="jMD-vz-1SS"/>
-                            <constraint firstItem="lgI-Sz-grh" firstAttribute="bottom" secondItem="giX-pe-hg7" secondAttribute="bottom" id="qxd-X5-cgj"/>
-                            <constraint firstItem="lgI-Sz-grh" firstAttribute="top" secondItem="giX-pe-hg7" secondAttribute="top" id="tel-MF-hco"/>
-                            <constraint firstItem="giX-pe-hg7" firstAttribute="leading" secondItem="lgI-Sz-grh" secondAttribute="leading" id="yYX-IH-FA9"/>
-                            <constraint firstItem="lgI-Sz-grh" firstAttribute="trailing" secondItem="giX-pe-hg7" secondAttribute="trailing" id="zIQ-Rq-Stu"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="bgLayer" destination="LLX-pO-Csq" id="dK7-0c-VyD"/>
-                        <outlet property="btnDelete" destination="1h4-fp-MTP" id="VZb-Dw-RUR"/>
-                        <outlet property="btnDismiss" destination="Smt-j1-Dmi" id="rOY-T4-XKT"/>
-                        <outlet property="cardView" destination="S3p-hq-QcN" id="LCj-vi-vdO"/>
-                        <outlet property="lblDesc" destination="Nzq-rD-9OG" id="D29-dJ-yx8"/>
-                        <outlet property="lblHint" destination="Zpb-JG-u7L" id="TSq-zb-6mu"/>
-                        <outlet property="lblTitle" destination="jpr-9x-r1S" id="Nia-AP-a5c"/>
-                        <outlet property="scrollView" destination="giX-pe-hg7" id="AMe-Z5-DOI"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ipe-Ei-GpN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2017" y="837"/>
-        </scene>
         <!--Dialog Recovery Help View Controller-->
         <scene sceneID="F8g-lU-fFS">
             <objects>
@@ -498,7 +364,6 @@
                                                         </constraints>
                                                         <state key="normal" image="cancel"/>
                                                         <connections>
-                                                            <action selector="btnDismiss:" destination="jRI-KK-O5R" eventType="touchUpInside" id="JFi-L2-bp8"/>
                                                             <action selector="btnDismiss:" destination="I8j-zH-scA" eventType="touchUpInside" id="b0A-mX-xsZ"/>
                                                         </connections>
                                                     </button>
@@ -1788,7 +1653,6 @@
                                                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 </state>
                                                                 <connections>
-                                                                    <action selector="btnDelete:" destination="jRI-KK-O5R" eventType="touchUpInside" id="ERY-ph-8YS"/>
                                                                     <action selector="btnDelete:" destination="buk-t5-cT8" eventType="touchUpInside" id="KN5-B7-VGR"/>
                                                                 </connections>
                                                             </button>

@@ -394,8 +394,8 @@ class LoginViewController: UIViewController {
     }
 
     func walletDelete() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletDeleteViewController") as? DialogWalletDeleteViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDeleteViewController") as? DialogDeleteViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: false, completion: nil)
@@ -472,7 +472,7 @@ class LoginViewController: UIViewController {
     }
 }
 
-extension LoginViewController: DialogRenameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
+extension LoginViewController: DialogRenameViewControllerDelegate, DialogDeleteViewControllerDelegate {
     func didRename(name: String, index: String?) {
         self.account?.name = name
         if let account = self.account {
