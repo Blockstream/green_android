@@ -136,11 +136,11 @@ final public class Jade: JadeOTA, HWProtocol {
             .map {
                 Observable.just($0)
                     .flatMap { self.xpubs(network: network, path: $0) }
-        }
+            }
         return Observable.concat(allObservables)
-        .reduce([], accumulator: { result, element in
-            result + [element]
-        })
+            .reduce([], accumulator: { result, element in
+                result + [element]
+            })
     }
 
     public func xpubs(network: String, path: [Int]) -> Observable<String> {

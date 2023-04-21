@@ -61,6 +61,7 @@ public class GDKResolver {
     private func resolving(json: [String: Any]) throws -> Promise<Void> {
         guard let status = json["status"] as? String else { throw GaError.GenericError() }
         let bgq = DispatchQueue.global(qos: .background)
+        print("\(chain) \(json)")
         switch status {
         case "done":
             return Guarantee().asVoid()

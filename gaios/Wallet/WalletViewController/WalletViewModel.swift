@@ -201,7 +201,15 @@ class WalletViewModel {
             cards.append(AlertCardType.remoteAlert(remoteAlert))
         }
         // Failure login session
-        cards += wm.failureSessions.map { AlertCardType.login($0.key, $0.value) }
+        cards += wm.failureSessions
+            .filter {
+                switch $0.value {
+                case TwoFactorCallError.failure(localizedDescription: let txt):
+                    return txt != "id_login_failed"
+                default:
+                    return true
+                }
+            }.map { AlertCardType.login($0.key, $0.value) }
 
         // load system messages
         Guarantee()

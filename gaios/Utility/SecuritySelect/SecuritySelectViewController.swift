@@ -219,8 +219,9 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                     }
                 }
             } else {
+                let bgq = DispatchQueue.global(qos: .background)
                 firstly { self.startLoader(message: ""); return Guarantee() }
-                    .then { self.viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) }
+                    .then(on: bgq) { self.viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) }
                     .ensure { self.stopLoader() }
                     .done { wallet in
                         DropAlert().success(message: "id_new_account_created".localized)
@@ -246,8 +247,9 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         if AccountsRepository.shared.current?.isHW ?? false {
             showHWCheckDialog()
         }
+        let bgq = DispatchQueue.global(qos: .background)
         firstly { self.startLoader(message: ""); return Guarantee() }
-            .then { self.viewModel.create(policy: policy, asset: asset, params: params) }
+            .then(on: bgq) { self.viewModel.create(policy: policy, asset: asset, params: params) }
             .ensure { self.stopLoader(); self.dialogJadeCheckViewController?.dismiss()}
             .done { wallet in
                 DropAlert().success(message: "id_new_account_created".localized)

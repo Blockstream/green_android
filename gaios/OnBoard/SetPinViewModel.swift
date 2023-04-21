@@ -30,13 +30,18 @@ class SetPinViewModel {
             .compactMap { wm.prominentSession }
             .then { $0.connect() }
             .then { self.getXpubHashId(session: wm.prominentSession!) }
-            .map {
+            .map { xpub in
+                // Avoid to restore an different wallet if restoredAccount is defined
                 if let restoredAccount = self.restoredAccount,
-                    let xpubHashId = restoredAccount.xpubHashId, xpubHashId != $0 {
+                   let xpubHashId = restoredAccount.xpubHashId, xpubHashId != xpub {
                     throw LoginError.walletMismatch()
                 }
-            }.then { wm.restore(self.credentials, forceJustRestored: account.xpubHashId != nil) }
-            .then { wm.login(self.credentials) }
+                // Avoid to restore an existing wallets
+                if let prevAccount = AccountsRepository.shared.find(xpubHashId: xpub),
+                   prevAccount.gdkNetwork == account.gdkNetwork && !account.isHW {
+                   throw LoginError.walletsJustRestored()
+                }
+            }.then { wm.login(credentials: self.credentials) }
             .map { _ in
                 if let multisig = wm.activeNetworks.first(where: { !$0.singleSig }) {
                     wm.account.network = multisig.chain
@@ -56,7 +61,7 @@ class SetPinViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         return Guarantee()
             .then { [self] in wm.create(credentials) }
-            .then { [self] in wm.login(credentials) }
+            .then { [self] in wm.login(credentials: credentials) }
             .then { wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!) }
     }
 

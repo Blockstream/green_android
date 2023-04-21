@@ -117,44 +117,8 @@ class WalletManager {
             .compactMap { DecryptWithPinParams(pin: pin, pinData: pinData)}
             .then { mainSession.decryptWithPin($0) }
             .map { bip39passphrase.isNilOrEmpty ? $0 : Credentials(mnemonic: $0.mnemonic, bip39Passphrase: bip39passphrase) }
-            .map { (self.account.xpubHashId == nil || ( mainSession.gdkNetwork.electrum && !mainSession.existDatadir(credentials: $0)), $0) }
-            .then { (discovery, cred) in discovery ? self.restore(cred).map { cred } : Promise.value(cred) }
-            .then { self.login($0) }
+            .then { self.login(credentials: $0) }
             .map { AccountsRepository.shared.current = self.account }
-    }
-
-    func loginWithHW(_ device: HWDevice, masterXpub: String) -> Promise<Void> {
-        guard let mainSession = sessions[prominentNetwork.rawValue] else {
-            fatalError()
-        }
-        return Guarantee()
-            .compactMap { mainSession.existDatadir(masterXpub: masterXpub) }
-            .then { !$0 ? self.restore(hw: device) : Guarantee().asVoid() }
-            .then { self.loginHW(device) }
-            .map { AccountsRepository.shared.current = self.account }
-            .asVoid()
-    }
-
-    func login(_ credentials: Credentials) -> Promise<Void> {
-        self.failureSessions = [:]
-        return when(guarantees: self.sessions.values
-            .filter { !$0.logged && ($0 === prominentSession || !($0.gdkNetwork.electrum && !$0.existDatadir(credentials: credentials))) }
-            .map { session in
-                session.loginUser(credentials)
-                    .map { self.account.xpubHashId = $0.xpubHashId }
-                    .recover { err in
-                        switch err {
-                        case TwoFactorCallError.failure(_):
-                            break
-                        default:
-                            self.failureSessions[session.gdkNetwork.network] = err
-                        }
-                    }.asVoid()
-            })
-        .map { if self.activeSessions.count == 0 { throw LoginError.failed() } }
-        .then { self.subaccounts() }.asVoid()
-        .compactMap { self.loadRegistry() }
-        .map { AccountsRepository.shared.current = self.account }
     }
 
     func create(_ credentials: Credentials) -> Promise<Void> {
@@ -163,38 +127,51 @@ class WalletManager {
         return Promise()
             .then { btcSession.connect() }
             .then { btcSession.register(credentials: credentials) }
-            .then { btcSession.loginUser(credentials) }
+            .compactMap { btcSession.walletIdentifier(btcNetwork.network, credentials: credentials) }
+            .then { _ in btcSession.loginUser(credentials) }
             .map { self.account.xpubHashId = $0.xpubHashId }
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
             .map { AccountsRepository.shared.current = self.account }
     }
 
-    func restore(_ credentials: Credentials? = nil, hw: HWDevice? = nil, forceJustRestored: Bool = false) -> Promise<Void> {
-        let btcNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        let btcSession = self.sessions[btcNetwork.rawValue]
-        let btcPromise = btcSession?.restore(credentials: credentials, hw: hw, forceJustRestored: forceJustRestored)
-            .map { self.account.xpubHashId = $0.xpubHashId }.asVoid()
-        let liquidNetwork: NetworkSecurityCase = testnet ? .testnetLiquidSS : .liquidSS
-        let liquidSession = self.sessions[liquidNetwork.rawValue]
-        let liquidPromise = hw == nil ? liquidSession?.restore(credentials: credentials, hw: hw, forceJustRestored: forceJustRestored).asVoid() : nil
-        return when(fulfilled: [btcPromise ?? Promise().asVoid(), liquidPromise ?? Promise().asVoid()])
-            .map { AccountsRepository.shared.current = self.account }
-    }
-
-    func loginHW(_ device: HWDevice) -> Promise<Void> {
-        var iterator = self.sessions.values
-            .filter { !$0.logged }
-            .makeIterator()
-        let generator = AnyIterator<Promise<Void>> {
-            guard let session = iterator.next() else {
-                return nil
+    func login(credentials: Credentials? = nil, device: HWDevice? = nil, masterXpub: String? = nil) -> Promise<Void> {
+        let walletId: ((_ session: SessionManager) -> WalletIdentifier?) = { session in
+            if let credentials = credentials {
+                return session.walletIdentifier(session.gdkNetwork.network, credentials: credentials)
+            } else if device != nil, let masterXpub = masterXpub {
+                return session.walletIdentifier(session.gdkNetwork.network, masterXpub: masterXpub)
             }
-            return session.loginUser(device).asVoid()
-                .recover { _ in return Guarantee().asVoid() }
+            return nil
         }
-        return when(fulfilled: generator, concurrently: 1)
-            .then { _ in self.subaccounts() }.asVoid()
-            .compactMap { self.loadRegistry() }
+        let existDatadir:((_ session: SessionManager) -> Bool) = { session in
+            !session.gdkNetwork.electrum || session.existDatadir(walletHashId: walletId(session)!.walletHashId)
+        }
+        
+        guard let session = sessions[prominentNetwork.rawValue] else { fatalError() }
+        let restore = account.xpubHashId == nil || !existDatadir(session)
+        self.failureSessions = [:]
+        let networks = self.sessions.values
+            .filter { !$0.logged }
+            .filter { restore || $0.gdkNetwork.network == prominentNetwork.gdkNetwork!.network || existDatadir(session) }
+            .filter { !$0.gdkNetwork.liquid || device?.supportsLiquid ?? 1 == 1 }
+            .map { $0.gdkNetwork.network }
+        let concurrently = device != nil ? 1 : 2
+        return Promise<String>.chain(networks, concurrently) { network -> Promise<Void> in
+            guard let session = self.sessions[network] else { return Promise(error: LoginError.failed()) }
+            let walletHashId = walletId(session)!.walletHashId
+            let existDatadir = existDatadir(session)
+            let removeDatadir = !existDatadir && session.gdkNetwork.network != self.prominentNetwork.network
+            return session.loginUser(credentials: credentials, hw: device)
+                .map { self.account.xpubHashId = $0.xpubHashId }
+                .recover { self.failureSessions[session.gdkNetwork.network] = $0 }
+                .then { session.logged && (restore || !existDatadir) ? session.discovery(credentials: credentials, hw: device, removeDatadir: removeDatadir, walletHashId: walletHashId) : Promise().asVoid() }
+                .asVoid()
+        }
+        .map { _ in if
+            self.activeSessions.count == 0 { throw LoginError.failed() } }
+        .then { self.subaccounts(true) }.asVoid()
+        .compactMap { self.loadRegistry() }
+        .map { AccountsRepository.shared.current = self.account }
     }
 
     func loadSystemMessages() -> Promise<[SystemMessage]> {

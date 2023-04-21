@@ -90,7 +90,7 @@ class SessionManager {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
         let proxyURI = String(format: "socks5://%@:%@/", appSettings?.socks5Hostname ?? "", appSettings?.socks5Port ?? "")
         let gdkNetwork = getGdkNetwork(network)
-    
+        
         let electrumUrl: String? = {
             if let srv = appSettings?.btcElectrumSrv, gdkNetwork.mainnet && !gdkNetwork.liquid && !srv.isEmpty {
                 return srv
@@ -104,7 +104,6 @@ class SessionManager {
                 return nil
             }
         }()
-        
         let networkSettings = NetworkSettings(
             name: network,
             useTor: appSettings?.tor ?? false,
@@ -130,33 +129,43 @@ class SessionManager {
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
-    func existDatadir(credentials: Credentials? = nil, masterXpub: String? = nil) -> Bool {
+    func existDatadir(masterXpub: String) -> Bool  {
+        if let hash = walletIdentifier(gdkNetwork.network, masterXpub: masterXpub) {
+            return existDatadir(walletHashId: hash.walletHashId)
+        }
+        return false
+    }
+
+    func existDatadir(credentials: Credentials) -> Bool  {
+        if let hash = walletIdentifier(gdkNetwork.network, credentials: credentials) {
+            return existDatadir(walletHashId: hash.walletHashId)
+        }
+        return false
+    }
+
+    func existDatadir(walletHashId: String) -> Bool  {
         if let path = GdkInit.defaults().datadir {
-            let hashes: WalletIdentifier? = {
-                if let masterXpub = masterXpub {
-                    return walletIdentifier(gdkNetwork.network, masterXpub: masterXpub)
-                } else if let credentials = credentials {
-                    return walletIdentifier(gdkNetwork.network, credentials: credentials)
-                }
-                return nil
-            }()
-            let dir = "\(path)/state/\(hashes?.walletHashId ?? "")"
+            let dir = "\(path)/state/\(walletHashId)"
             return FileManager.default.fileExists(atPath: dir)
         }
         return false
     }
 
-    func removeDatadir(credentials: Credentials? = nil, masterXpub: String? = nil) {
+    func removeDatadir(masterXpub: String) {
+        if let hash = walletIdentifier(gdkNetwork.network, masterXpub: masterXpub) {
+            removeDatadir(walletHashId: hash.walletHashId)
+        }
+    }
+
+    func removeDatadir(credentials: Credentials) {
+        if let hash = walletIdentifier(gdkNetwork.network, credentials: credentials) {
+            removeDatadir(walletHashId: hash.walletHashId)
+        }
+    }
+
+    func removeDatadir(walletHashId: String) {
         if let path = GdkInit.defaults().datadir {
-            let hashes: WalletIdentifier? = {
-                if let masterXpub = masterXpub {
-                    return walletIdentifier(gdkNetwork.network, masterXpub: masterXpub)
-                } else if let credentials = credentials {
-                    return walletIdentifier(gdkNetwork.network, credentials: credentials)
-                }
-                return nil
-            }()
-            let dir = "\(path)/state/\(hashes?.walletHashId ?? "")"
+            let dir = "\(path)/state/\(walletHashId)"
             try? FileManager.default.removeItem(atPath: dir)
         }
     }
@@ -164,8 +173,8 @@ class SessionManager {
     func transactions(subaccount: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
         return Guarantee()
             .compactMap { _ in try self.session?.getTransactions(details: ["subaccount": subaccount,
-                                                        "first": first,
-                                                        "count": Constants.trxPerPage]) }
+                                                                           "first": first,
+                                                                           "count": Constants.trxPerPage]) }
             .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .compactMap { data in
                 let result = data["result"] as? [String: Any]
@@ -225,7 +234,7 @@ class SessionManager {
         if gdkNetwork.electrum && notFound {
             return Guarantee()
                 .compactMap { try self.session?.createSubaccount(details: ["name": "",
-                                                             "type": AccountType.segWit.rawValue]) }
+                                                                           "type": AccountType.segWit.rawValue]) }
                 .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
                 .tapLogger()
                 .asVoid()
@@ -242,12 +251,10 @@ class SessionManager {
     }
 
     func loginUser(_ params: Credentials) -> Promise<LoginUserResult> {
-        let discovery = gdkNetwork.electrum && !existDatadir(credentials: params)
         return connect()
             .then { self.wrapper(fun: self.session?.loginUserSW, params: params) }
             .compactMap { $0 }
             .then { res in self.onLogin(res).compactMap { res } }
-            .then { res in discovery ? self.discovery(credentials: params, removeDatadir: false).compactMap { res } : Promise.value(res) }
     }
 
     func loginUser(_ params: HWDevice) -> Promise<LoginUserResult> {
@@ -257,7 +264,7 @@ class SessionManager {
             .then { res in self.onLogin(res).compactMap { res } }
     }
 
-    func login(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<LoginUserResult> {
+    func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<LoginUserResult> {
         if let credentials = credentials {
             return loginUser(credentials)
         } else if let hw = hw {
@@ -314,11 +321,10 @@ class SessionManager {
     }
 
     func register(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .then(on: bgq) { self.connect() }
-            .compactMap(on: bgq) { try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
+            .then { self.connect() }
+            .compactMap { try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]]) }
+            .then { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
             .tapLogger()
             .asVoid()
     }
@@ -357,6 +363,7 @@ class SessionManager {
             .compactMap { try self.session?.setWatchOnly(username: username, password: password) }
             .tapLogger()
     }
+
     func getWatchOnlyUsername() -> Promise<String> {
         return Guarantee()
             .compactMap { try self.session?.getWatchOnlyUsername() }
@@ -518,37 +525,18 @@ class SessionManager {
         return nil
     }
 
-    func restore(credentials: Credentials? = nil, hw: HWDevice? = nil, forceJustRestored: Bool = false) -> Promise<LoginUserResult> {
-        let existDatadir = existDatadir(credentials: credentials)
-        var loginData: LoginUserResult?
-        return Guarantee()
-            .then { self.login(credentials: credentials, hw: hw) }
-            .map {
-                loginData = $0
-                // Avoid to restore existing wallets, unless HW
-                if let account = AccountsRepository.shared.find(xpubHashId: $0.xpubHashId),
-                   account.gdkNetwork == self.gdkNetwork && hw == nil && !forceJustRestored {
-                    throw LoginError.walletsJustRestored()
-                }
-            }
-            .then { self.discovery(credentials: credentials, hw: hw, removeDatadir: !existDatadir) }
-            .compactMap { loginData }
-    }
-
-    func discovery(credentials: Credentials? = nil, hw: HWDevice? = nil, removeDatadir: Bool) -> Promise<Void> {
-        return Guarantee()
-            .then { _ in self.subaccounts(true).recover { _ in Promise(error: LoginError.connectionFailed()) }}
+    func discovery(credentials: Credentials? = nil, hw: HWDevice? = nil, removeDatadir: Bool, walletHashId: String) -> Promise<Void> {
+        return self.subaccounts(true)
+            .recover { _ in Promise(error: LoginError.connectionFailed()) }
             .compactMap { $0.filter({ $0.pointer == 0 }).first }
-            .then { !($0.bip44Discovered ?? false) ? self.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
+            .compactMap { $0.gdkNetwork.electrum && !($0.bip44Discovered ?? false) }
+            .then { $0 ? self.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
             .then { _ in self.subaccounts() }
-            .compactMap { subaccounts in
-                // Remove liquid account if not found
-                if subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty {
-                    if removeDatadir {
-                        self.disconnect()
-                        self.removeDatadir(credentials: credentials)
-                    }
-                    return
+            .map { subaccounts in
+                let notFunds = subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty
+                if self.gdkNetwork.electrum && notFunds && removeDatadir {
+                    self.disconnect()
+                    self.removeDatadir(walletHashId: walletHashId)
                 }
             }.asVoid()
     }

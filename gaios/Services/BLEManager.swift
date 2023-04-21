@@ -57,7 +57,7 @@ class BLEManager {
         sheduler = SerialDispatchQueueScheduler(queue: queue, internalSerialQueueName: "manager.sheduler")
         Jade.shared.gdkRequestDelegate = self
 #if DEBUG
-        RxBluetoothKitLog.setLogLevel(.debug)
+        //RxBluetoothKitLog.setLogLevel(.debug)
 #endif
     }
 
@@ -190,14 +190,17 @@ class BLEManager {
         let device: HWDevice = peripheral.isJade() ? .defaultJade(fmwVersion: self.fmwVersion) : .defaultLedger()
         let network = NetworkSecurityCase(rawValue: account.networkName)
         var account = account
+        var masterXpub = ""
+        
         return getMasterXpub(device, gdkNetwork: network?.gdkNetwork)
+            .compactMap { masterXpub = $0; return $0 }
             .compactMap { self.getWalletIdentifier(network: network!.gdkNetwork!, xpub: $0) }
             .compactMap { account.xpubHashId = $0; return account }
             .compactMap { self.normalizeAccount($0) }
             .compactMap { WalletsRepository.shared.getOrAdd(for: $0) }
             .flatMap { wm in
                 return Observable<WalletManager>.create { observer in
-                    wm.loginWithHW(device, masterXpub: wm.account.xpubHashId ?? "")
+                    wm.login(device: device, masterXpub: masterXpub)
                         .done { _ in
                             observer.onNext(wm)
                             observer.onCompleted()
@@ -225,32 +228,6 @@ class BLEManager {
                                       isLedger: device.isLedger,
                                       isSingleSig: network.gdkNetwork?.electrum ?? true,
                                       uuid: peripheral.identifier)
-            }
-    }
-
-    private func loginDevice(peripheral: Peripheral, network: NetworkSecurityCase, device: HWDevice) -> Observable<Account> {
-        let account = Account(name: peripheral.name ?? device.name,
-                              network: network.chain,
-                              isJade: device.isJade,
-                              isLedger: device.isLedger,
-                              isSingleSig: network.gdkNetwork?.electrum ?? true,
-                              uuid: peripheral.identifier)
-        let wm = WalletManager(account: account, prominentNetwork: network)
-        return getMasterXpub(device, gdkNetwork: network.gdkNetwork)
-            .flatMap { masterXpub in
-                return Observable<WalletManager>.create { observer in
-                    wm.loginWithHW(device, masterXpub: masterXpub)
-                        .done { _ in
-                            observer.onNext(wm)
-                            observer.onCompleted()
-                        }.catch { err in
-                            observer.onError(err)
-                        }
-                    return Disposables.create { }
-                }
-            }.compactMap { wm in
-                WalletsRepository.shared.add(for: account, wm: wm)
-                return account
             }
     }
 

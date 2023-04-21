@@ -103,18 +103,21 @@ class SecuritySelectViewModel {
     func registerSession(session: SessionManager) -> Promise<Void> {
         if session.gdkNetwork.liquid && wm.account.isLedger {
             return Promise() { seal in seal.reject(GaError.GenericError("Liquid not supported on Ledger Nano X"))}
-        } else {
-            return Guarantee()
-                .compactMap { self.wm.prominentSession }
-                .then { $0.getCredentials(password: "") }
+        } else if wm.account.isHW {
+            let hw = wm.account.isJade ? HWDevice.defaultJade(fmwVersion: nil) : HWDevice.defaultLedger()
+            return self.registerSession(session: session, credentials: nil, hw: hw)
+        } else if let prominentSession = wm.prominentSession {
+            return prominentSession.getCredentials(password: "")
                 .then { self.registerSession(session: session, credentials: $0, hw: nil) }
+        } else {
+            return Promise() { seal in seal.reject(GaError.GenericError("Invalid session"))}
         }
     }
 
     func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         return Promise()
             .then { session.register(credentials: credentials, hw: hw) }
-            .then { session.login(credentials: credentials, hw: hw) }
+            .then { _ in session.loginUser(credentials: credentials, hw: hw) }
             .then { _ in session.subaccounts(true) }
             .then { self.isUsedDefaultAccount(for: session, account: $0.first) }
             .then { !$0 ? session.updateSubaccount(subaccount: 0, hidden: true).asVoid() : Promise().asVoid() }
