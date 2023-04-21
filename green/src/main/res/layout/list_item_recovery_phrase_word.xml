@@ -23,7 +23,7 @@
             android:minWidth="40dp"
             android:textAlignment="textEnd"
             android:textColor="@color/brand_green"
-            android:textSize="14sp"
+            android:textSize="14dp"
             app:layout_constraintBaseline_toBaselineOf="@+id/word"
             app:layout_constraintEnd_toStartOf="@+id/word"
             tools:text="99" />
@@ -42,7 +42,7 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:textColor="@color/color_on_surface_emphasis_high"
-            android:textSize="16sp"
+            android:textSize="16dp"
             android:singleLine="true"
             android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="parent"

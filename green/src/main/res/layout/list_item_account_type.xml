@@ -80,7 +80,7 @@
                 android:textAllCaps="true"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 android:textColor="@color/color_on_surface_emphasis_medium"
-                android:textSize="11sp"
+                android:textSize="11dp"
                 app:layout_constraintEnd_toStartOf="@+id/arrow"
                 app:layout_constraintStart_toEndOf="@+id/policyIcon"
                 app:layout_constraintTop_toTopOf="parent"

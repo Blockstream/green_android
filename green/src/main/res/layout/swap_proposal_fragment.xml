@@ -95,7 +95,7 @@
                         android:text="@{vm.currentFrame + `/` + vm.totalFrames}"
                         android:textAppearance="?attr/textAppearanceBodySmall"
                         android:textColor="@color/color_on_surface_emphasis_low"
-                        android:textSize="10sp"
+                        android:textSize="10dp"
                         app:layout_constraintEnd_toEndOf="@+id/qrWrap"
                         app:layout_constraintTop_toBottomOf="@+id/qrWrap"
                         tools:text="1/30" />

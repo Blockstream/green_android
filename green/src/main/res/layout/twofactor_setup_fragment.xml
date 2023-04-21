@@ -176,7 +176,7 @@
                         android:drawablePadding="8dp"
                         android:textAlignment="center"
                         android:textColor="@color/brand_green"
-                        android:textSize="13sp"
+                        android:textSize="13dp"
                         android:text="@{vm.authenticatorCode}"
                         android:layout_marginTop="16dp"
                         android:textStyle="bold"

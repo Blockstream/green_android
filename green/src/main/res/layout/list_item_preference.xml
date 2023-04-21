@@ -95,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:text="@string/id_change"
-                    android:textSize="12sp"
+                    android:textSize="12dp"
                     tools:visibility="gone"
                     app:textAllCaps="true" />
 

@@ -250,7 +250,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="WORD1"
-            android:textSize="16sp" />
+            android:textSize="16dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/word2"
@@ -259,7 +259,7 @@
             android:layout_height="wrap_content"
 
             android:text="WORD2"
-            android:textSize="16sp" />
+            android:textSize="16dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/word3"
@@ -267,7 +267,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="WORD2"
-            android:textSize="16sp" />
+            android:textSize="16dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/word4"
@@ -275,7 +275,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="WORD2"
-            android:textSize="16sp" />
+            android:textSize="16dp" />
 
     </LinearLayout>
 
