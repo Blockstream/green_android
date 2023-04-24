@@ -1269,17 +1269,17 @@
                                 <rect key="frame" x="0.0" y="48" width="414" height="764"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="v4w-zh-TnA">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="522"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="507"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="blockstreamGreen" translatesAutoresizingMaskIntoConstraints="NO" id="o4E-t9-4wf">
-                                                <rect key="frame" x="107" y="70" width="200" height="65"/>
+                                                <rect key="frame" x="107" y="60" width="200" height="65"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="200" id="7Nj-OL-rP9"/>
                                                     <constraint firstAttribute="height" constant="65" id="fRV-aU-FXr"/>
                                                 </constraints>
                                             </imageView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Hrc-JF-kpz">
-                                                <rect key="frame" x="25" y="185" width="364" height="57"/>
+                                                <rect key="frame" x="25" y="170" width="364" height="57"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fvb-bf-cZT">
                                                         <rect key="frame" x="154" y="0.0" width="56" height="20.5"/>
@@ -1299,7 +1299,7 @@
                                                 </constraints>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Efl-tQ-DEj">
-                                                <rect key="frame" x="25" y="312" width="364" height="116"/>
+                                                <rect key="frame" x="25" y="297" width="364" height="116"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vdf-JK-vMz">
                                                         <rect key="frame" x="0.0" y="0.0" width="364" height="50"/>
@@ -1332,7 +1332,7 @@
                                                 </subviews>
                                             </stackView>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ggG-wr-sKO">
-                                                <rect key="frame" x="62" y="458" width="290" height="44"/>
+                                                <rect key="frame" x="62" y="443" width="290" height="44"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gzO-XT-Dzj" customClass="CheckButton" customModule="gaios" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="10" width="24" height="24"/>
@@ -1364,8 +1364,8 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="o4E-t9-4wf" firstAttribute="top" secondItem="v4w-zh-TnA" secondAttribute="top" constant="70" id="1FY-oJ-MpJ"/>
-                                            <constraint firstItem="Hrc-JF-kpz" firstAttribute="top" secondItem="o4E-t9-4wf" secondAttribute="bottom" constant="50" id="39A-96-0P2"/>
+                                            <constraint firstItem="o4E-t9-4wf" firstAttribute="top" secondItem="v4w-zh-TnA" secondAttribute="top" constant="60" id="1FY-oJ-MpJ"/>
+                                            <constraint firstItem="Hrc-JF-kpz" firstAttribute="top" secondItem="o4E-t9-4wf" secondAttribute="bottom" constant="45" id="39A-96-0P2"/>
                                             <constraint firstAttribute="trailing" secondItem="Efl-tQ-DEj" secondAttribute="trailing" constant="25" id="5GM-lO-KzO"/>
                                             <constraint firstAttribute="trailing" secondItem="Hrc-JF-kpz" secondAttribute="trailing" constant="25" id="9FX-Ul-aDG"/>
                                             <constraint firstItem="ggG-wr-sKO" firstAttribute="centerX" secondItem="v4w-zh-TnA" secondAttribute="centerX" id="BK9-V1-usl"/>
