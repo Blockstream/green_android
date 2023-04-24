@@ -93,17 +93,8 @@ struct Account: Codable, Equatable {
         self.isSingleSig = isSingleSig
     }
 
-    var isHW: Bool {
-        get {
-            return isJade || isLedger
-        }
-    }
-
-    var isWatchonly: Bool {
-        get {
-            return !(username?.isEmpty ?? true)
-        }
-    }
+    var isHW: Bool { isJade || isLedger }
+    var isWatchonly: Bool { username != nil }
 
     var hasManualPin: Bool {
         get {
@@ -160,26 +151,20 @@ struct Account: Codable, Equatable {
     func removePinKeychainData() {
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: keychain)
     }
-
-    func addBioPin(session: SessionManager) -> Promise<Void> {
+    
+    func addBiometrics(session: SessionManager, credentials: Credentials) -> Promise<Void> {
         let password = String.random(length: 14)
-        let authKeyBiometricPrivateKey = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + keychain)
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .map(on: bgq) {
-                if authKeyBiometricPrivateKey == nil {
-                    try AuthenticationTypeHandler.generateBiometricPrivateKey(network: keychain)
-                }
-            }.then(on: bgq) { session.getCredentials(password: "") }
-            .compactMap { EncryptWithPinParams(pin: password, plaintext: ["mnemonic": $0.mnemonic ?? ""]) }
+            .compactMap { EncryptWithPinParams(pin: password, credentials: credentials) }
             .then(on: bgq) { session.encryptWithPin($0) }
-            .compactMap(on: bgq) { try AuthenticationTypeHandler.addBiometryType(pinData: $0.pinData, extraData: password, forNetwork: keychain) }
+            .compactMap(on: bgq) { try AuthenticationTypeHandler.addBiometry(pinData: $0.pinData, extraData: password, forNetwork: keychain) }
     }
 
     func addPin(session: SessionManager, pin: String, mnemonic: String) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
-            .compactMap { EncryptWithPinParams(pin: pin, plaintext: ["mnemonic": mnemonic]) }
+            .compactMap { EncryptWithPinParams(pin: pin, credentials: Credentials(mnemonic: mnemonic)) }
             .then(on: bgq) { session.encryptWithPin($0) }
             .map(on: bgq) { try AuthenticationTypeHandler.addPIN(pinData: $0.pinData, forNetwork: keychain) }
     }

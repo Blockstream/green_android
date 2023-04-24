@@ -1,4 +1,6 @@
 import UIKit
+import PromiseKit
+import gdk
 
 class WODetailsViewController: KeyboardViewController {
 
@@ -18,9 +20,9 @@ class WODetailsViewController: KeyboardViewController {
     @IBOutlet weak var iconBio: UIImageView!
     @IBOutlet weak var btnBio: UIButton!
     @IBOutlet weak var lblBio: UILabel!
-    
-    let viewModel = WOSelectViewModel()
-    var isBio: Bool = false
+
+    private let viewModel = WOViewModel()
+    private var isBio: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +35,7 @@ class WODetailsViewController: KeyboardViewController {
         textView.textContainer.maximumNumberOfLines = 10
         textView.textContainer.heightTracksTextView = true
         textView.isScrollEnabled = false
+        btnBio.isEnabled = AuthenticationTypeHandler.supportsBiometricAuthentication()
 
         refresh()
     }
@@ -107,10 +110,11 @@ class WODetailsViewController: KeyboardViewController {
     @IBAction func btnPaste(_ sender: Any) {
         if let txt = UIPasteboard.general.string {
             textView.text = txt
+            refresh()
         }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
-    
+
     @IBAction func btnScan(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
@@ -126,7 +130,40 @@ class WODetailsViewController: KeyboardViewController {
     }
 
     @IBAction func btnImport(_ sender: Any) {
-        print("Done")
+        let testnet = OnBoardManager.shared.chainType == .testnet
+        let network: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
+        login(for: network.gdkNetwork!)
+    }
+
+    func login(for network: GdkNetwork) {
+        let account = viewModel.newAccountSinglesig(for: network)
+        let keys = textView.text.split(separator:  ",").map { $0.trimmingCharacters(in: CharacterSet(charactersIn: " ")) }
+        firstly {
+            dismissKeyboard()
+            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+            return Guarantee()
+        }
+        .compactMap { self.segment.selectedSegmentIndex == 0 ? Credentials(slip132ExtendedPubkeys: keys) : Credentials(coreDescriptors: keys) }
+        .then { self.viewModel.setupSinglesig(for: account, enableBio: self.isBio, credentials: $0) }
+        .then { self.viewModel.loginSinglesig(for: account) }
+        .ensure { self.stopLoader() }
+        .done { _ = AccountNavigator.goLogged(account: account, nv: self.navigationController) }
+        .catch { error in
+            var prettyError = "id_login_failed"
+            switch error {
+            case TwoFactorCallError.failure(let localizedDescription):
+                prettyError = localizedDescription
+            case LoginError.connectionFailed:
+                prettyError = "id_connection_failed"
+            case LoginError.failed:
+                prettyError = "id_login_failed"
+            default:
+                break
+            }
+            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
+            WalletsRepository.shared.delete(for: account)
+        }
     }
 }
 
@@ -134,6 +171,7 @@ extension WODetailsViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.onTextChange), object: nil)
         perform(#selector(self.onTextChange), with: nil, afterDelay: 0.5)
+        refresh()
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -161,19 +199,49 @@ extension WODetailsViewController: UIDocumentPickerDelegate {
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        
         guard let url = urls.first else { return }
         guard url.startAccessingSecurityScopedResource() else { return }
         defer { url.stopAccessingSecurityScopedResource() }
         do {
             // Get the contents
-            let contents = try String(contentsOfFile: url.path, encoding: .utf8)
-            textView.text = contents
+            let txt = try String(contentsOfFile: url.path, encoding: .utf8)
+            let data = txt.data(using: .utf8)!
+            let content = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [String: Any] ?? [:]
+            if let keys = parseGenericJson(content), !keys.isEmpty {
+                textView.text = keys.joined(separator: ", ")
+            } else if let keys = parseElectrumJson(content), !keys.isEmpty {
+                textView.text = keys.joined(separator: ", ")
+            }
+            if textView.text.isEmpty {
+                throw NSError(domain: "No xpubs found", code: 42)
+            }
+            refresh()
+        } catch {
+            print(error)
+            showAlert(title: "id_error", message: "No xpubs found")
             refresh()
         }
-        catch let error as NSError {
-            print("\(error)")
+    }
+
+    func parseGenericJson(_ content: [String: Any]) -> [String]? {
+        // Colcard format
+        return content.compactMap { $0.value as? [String: Any] }
+            .compactMap { bip -> String? in
+            let name = bip?["name"] as? String
+            if let name = name, let type = AccountType(rawValue: name), AccountType.allCases.contains(type) {
+                let pub = bip?["_pub"] as? String
+                let xpub = bip?["xpub"] as? String
+                return pub ?? xpub ?? nil
+            }
+            return nil
         }
+    }
+
+    func parseElectrumJson(_ content: [String: Any]) -> [String]? {
+        // Electrum format
+        return content.filter { $0.key == "keystore" }
+            .compactMap { $0.value as? [String: Any] }
+            .compactMap { $0["xpub"] as? String }
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {

@@ -295,14 +295,15 @@ extension UserSettingsViewController {
             onAuthError(message: NSLocalizedString("id_please_enable_pin", comment: ""))
             return
         }
+        guard let session = self.session else { return }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap {
-            self.session
+        }.then {
+            session.getCredentials(password: "")
         }.then(on: bgq) {
-            self.account.addBioPin(session: $0)
+            self.account.addBiometrics(session: session, credentials: $0)
         }.ensure {
             self.stopAnimating()
         }.done {

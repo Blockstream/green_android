@@ -310,22 +310,24 @@ class AuthenticationTypeHandler {
         return callWrapper(fun: SecItemDelete(q as CFDictionary)) == errSecSuccess
     }
 
-    static func addBiometryType(pinData: PinData, extraData: String, forNetwork: String) throws {
-        let encrypted = try encrypt(plaintext: extraData, forNetwork: forNetwork)
-        var pindata = pinData
-        pindata.encryptedBiometric = encrypted
-        let data = try? JSONEncoder().encode(pindata)
-        let extended = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
-        try set(method: .AuthKeyBiometric, data: extended ?? [:], forNetwork: forNetwork)
-    }
-
     static func addPIN(pinData: PinData, forNetwork: String) throws {
         let data = try? JSONEncoder().encode(pinData)
         let extended = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
         try set(method: .AuthKeyPIN, data: extended ?? [:], forNetwork: forNetwork)
     }
 
-    static func addWatchonly(password: String, forNetwork: String) throws {
+    static func addWatchonlyMultisig(password: String, forNetwork: String) throws {
         try set(method: .AuthKeyWOPassword, data: [:], forNetwork: forNetwork)
+    }
+
+    public static func addBiometry(pinData: PinData, extraData: String, forNetwork: String) throws {
+        let authKeyBiometricPrivateKey = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
+        if authKeyBiometricPrivateKey == nil {
+            try AuthenticationTypeHandler.generateBiometricPrivateKey(network: forNetwork)
+        }
+        let encrypted = try encrypt(plaintext: extraData, forNetwork: forNetwork)
+        var pindata = pinData
+        pindata.encryptedBiometric = encrypted
+        try set(method: .AuthKeyBiometric, data: pindata.toDict() ?? [:], forNetwork: forNetwork)
     }
 }

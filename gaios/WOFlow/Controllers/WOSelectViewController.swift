@@ -6,7 +6,7 @@ class WOSelectViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
 
-    let viewModel = WOSelectViewModel()
+    let viewModel = WOViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()

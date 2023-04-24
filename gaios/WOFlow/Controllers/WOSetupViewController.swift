@@ -27,10 +27,10 @@ class WOSetupViewController: KeyboardViewController {
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
     private var networks = [NetworkSecurityCase]()
-
-    var network: AvailableNetworks?
+    private let viewModel = WOViewModel()
+    private var network: AvailableNetworks?
+    private var isRem: Bool = false
     var watchOnlySecurityOption: SecurityOption = .multi
-    var isRem: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -141,53 +141,38 @@ class WOSetupViewController: KeyboardViewController {
         super.keyboardWillShow(notification: notification)
     }
 
-    func selectNetwork() {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
-            let testnet = OnBoardManager.shared.chainType == .testnet
-            networks = testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS]
-            let cells = networks.map { DialogListCellModel(type: .list,
-                                                           icon: nil,
-                                                           title: $0.name()) }
-            vc.viewModel = DialogListViewModel(title: "Select Network", type: .watchOnlyPrefs, items: cells)
-            vc.delegate = self
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
-    }
-
     @objc func click(_ sender: Any) {
         selectNetwork()
     }
 
-    func login(for network: GdkNetwork) {
-        let username = self.usernameTextField.text ?? ""
-        let password = self.passwordTextField.text ?? ""
-        let bgq = DispatchQueue.global(qos: .background)
 
-        let name = AccountsRepository.shared.getUniqueAccountName(
-            testnet: !network.mainnet,
-            watchonly: true)
+    @IBAction func btnRem(_ sender: Any) {
+        isRem = !isRem
+        refresh()
+    }
 
-        var account = Account(name: name, network: network.network, username: username, isSingleSig: network.electrum)
-        if self.isRem {
-            account.password = password
+    @IBAction func btnSettings(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            vc.delegate = self
+            present(vc, animated: true) {}
         }
+    }
+
+    func login(for network: GdkNetwork) {
+        let account = viewModel.newAccountMultisig(
+            for: network,
+            username: self.usernameTextField.text ?? "",
+            password: isRem ? self.passwordTextField.text ?? "" : "",
+            remember: isRem)
         firstly {
             dismissKeyboard()
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
-        }.compactMap {
-            WalletsRepository.shared.getOrAdd(for: account)
-        }.then(on: bgq) {
-            $0.login(credentials: Credentials(username: username, password: password))
-        }.ensure {
-            self.stopLoader()
-        }.done { _ in
-            let account = AccountsRepository.shared.current
-            AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: account)
-            _ = AccountNavigator.goLogged(account: account!, nv: self.navigationController)
-        }.catch { error in
+        }.then { self.viewModel.loginMultisig(for: account, password: self.passwordTextField.text) }
+        .ensure { self.stopLoader() }
+        .done { _ = AccountNavigator.goLogged(account: account, nv: self.navigationController) }
+        .catch { error in
             var prettyError = "id_login_failed"
             switch error {
             case TwoFactorCallError.failure(let localizedDescription):
@@ -204,19 +189,6 @@ class WOSetupViewController: KeyboardViewController {
             WalletsRepository.shared.delete(for: account)
         }
     }
-
-    @IBAction func btnRem(_ sender: Any) {
-        isRem = !isRem
-        refresh()
-    }
-
-    @IBAction func btnSettings(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            vc.delegate = self
-            present(vc, animated: true) {}
-        }
-    }
 }
 
 extension WOSetupViewController: WalletSettingsViewControllerDelegate {
@@ -229,6 +201,22 @@ extension WOSetupViewController: WalletSettingsViewControllerDelegate {
 }
 
 extension WOSetupViewController: DialogListViewControllerDelegate {
+
+    func selectNetwork() {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            let testnet = OnBoardManager.shared.chainType == .testnet
+            networks = testnet ? [.testnetMS, .testnetLiquidMS] : [.bitcoinMS, .liquidMS]
+            let cells = networks.map { DialogListCellModel(type: .list,
+                                                           icon: nil,
+                                                           title: $0.name()) }
+            vc.viewModel = DialogListViewModel(title: "Select Network", type: .watchOnlyPrefs, items: cells)
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     func didSelectIndex(_ index: Int, with type: DialogType) {
         login(for: getGdkNetwork(networks[index].rawValue))
     }

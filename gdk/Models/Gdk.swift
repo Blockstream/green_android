@@ -58,11 +58,11 @@ public struct EncryptWithPinParams: Codable {
         case plaintext
     }
     public let pin: String
-    public let plaintext: [String: String]
+    public let plaintext: Credentials
 
-    public init(pin: String, plaintext: [String : String]) {
+    public init(pin: String, credentials: Credentials) {
         self.pin = pin
-        self.plaintext = plaintext
+        self.plaintext = credentials
     }
 }
 
