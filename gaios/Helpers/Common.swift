@@ -17,7 +17,7 @@ class Common {
 
     private func singleAttachment(color: UIColor, size: Double) -> NSAttributedString {
 
-        if #available(iOS 13.0, *) {
+        if #available(iOS 15.0, *) {
             let attachment = NSTextAttachment()
             let image = UIImage(systemName: "asterisk")?
                 .withTintColor(color)
@@ -30,7 +30,7 @@ class Common {
             fullString.append(NSAttributedString(attachment: attachment))
             return fullString
         } else {
-            return NSAttributedString()
+            return NSAttributedString(string: "*")
         }
     }
 }
