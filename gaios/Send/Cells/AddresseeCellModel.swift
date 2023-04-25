@@ -13,8 +13,7 @@ struct AddresseeCellModel {
 
     var satoshi: Int64 {
         var value = addreessee.satoshi
-        //let asset = (account?.gdkNetwork.liquid ?? false) ? addreessee?.assetId ?? "" : "btc"
-        if tx.subaccountItem?.gdkNetwork.multisig ?? false && tx.sendAll {
+        if tx.sendAll {
             value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
         }
         return value
