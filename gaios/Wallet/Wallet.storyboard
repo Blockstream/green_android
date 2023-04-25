@@ -977,7 +977,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6UG-os-h6J">
-                                                <rect key="frame" x="10" y="200" width="300" height="186"/>
+                                                <rect key="frame" x="10" y="141" width="300" height="186"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="300" id="1vO-A1-zCH"/>
@@ -985,7 +985,7 @@
                                                 </constraints>
                                             </view>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="D2N-Uc-aV4">
-                                                <rect key="frame" x="35" y="416" width="250" height="48.5"/>
+                                                <rect key="frame" x="35" y="357" width="250" height="48.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PHW-wa-vai">
                                                         <rect key="frame" x="0.0" y="0.0" width="250" height="21.5"/>
@@ -1002,7 +1002,7 @@
                                                 </subviews>
                                             </stackView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Kr-eh-Uy5" userLabel="Next">
-                                                <rect key="frame" x="83.5" y="484.5" width="153" height="50"/>
+                                                <rect key="frame" x="83.5" y="425.5" width="153" height="50"/>
                                                 <color key="backgroundColor" name="gGreenMatrix"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="50" id="PlH-qV-l2Q"/>
@@ -1022,8 +1022,8 @@
                                             <constraint firstItem="6UG-os-h6J" firstAttribute="centerX" secondItem="lg4-SM-cHo" secondAttribute="centerX" id="8bY-N0-EVB"/>
                                             <constraint firstItem="9Kr-eh-Uy5" firstAttribute="top" secondItem="D2N-Uc-aV4" secondAttribute="bottom" constant="20" id="8r2-VU-qWe"/>
                                             <constraint firstItem="D2N-Uc-aV4" firstAttribute="leading" secondItem="lg4-SM-cHo" secondAttribute="leading" constant="35" id="ALl-Sg-Gud"/>
-                                            <constraint firstItem="6UG-os-h6J" firstAttribute="top" secondItem="lg4-SM-cHo" secondAttribute="top" constant="200" id="IPX-f8-jAr"/>
                                             <constraint firstItem="D2N-Uc-aV4" firstAttribute="top" secondItem="6UG-os-h6J" secondAttribute="bottom" constant="30" id="KvG-7P-aNJ"/>
+                                            <constraint firstItem="6UG-os-h6J" firstAttribute="centerY" secondItem="lg4-SM-cHo" secondAttribute="centerY" constant="-50" id="YCk-SK-hJI"/>
                                             <constraint firstAttribute="trailing" secondItem="D2N-Uc-aV4" secondAttribute="trailing" constant="35" id="hUz-9e-CIb"/>
                                             <constraint firstItem="9Kr-eh-Uy5" firstAttribute="centerX" secondItem="lg4-SM-cHo" secondAttribute="centerX" id="xEW-3U-Rfr"/>
                                         </constraints>
