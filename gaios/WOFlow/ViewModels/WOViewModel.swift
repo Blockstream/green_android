@@ -39,13 +39,13 @@ class WOViewModel {
 
     func loginMultisig(for account: Account, password: String?) -> Promise<Void> {
         guard let username = account.username,
-              let password = password.isNilOrEmpty ? password : account.password else {
+              let password = !password.isNilOrEmpty ? password : account.password else {
             return Promise(error: GaError.GenericError("Invalid credentials"))
         }
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         return Guarantee()
-            .then(on: bgq) { wm.login(credentials: Credentials.watchonlyMultisig(username: username, password: password)) }
-            .then(on: bgq) { wm.subaccounts() }
+            .compactMap { Credentials.watchonlyMultisig(username: username, password: password) }
+            .then(on: bgq) { wm.loginWatchonly(credentials: $0) }
             .map { _ in AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: account) }
     }
 
@@ -75,8 +75,7 @@ class WOViewModel {
             .compactMap { try account.auth(bioEnabled ? .AuthKeyBiometric : .AuthKeyPIN) }
             .compactMap { DecryptWithPinParams(pin: $0.plaintextBiometric ?? "", pinData: $0) }
             .then(on: bgq) { session.decryptWithPin($0) }
-            .then(on: bgq) { wm.login(credentials: $0) }
-            .then(on: bgq) { _ in wm.subaccounts() }
+            .then(on: bgq) { wm.loginWatchonly(credentials: $0) }
             .map { _ in AnalyticsManager.shared.loginWallet(loginType: .watchOnly, ephemeralBip39: false, account: account) }
             .asVoid()
     }

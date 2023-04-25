@@ -134,6 +134,15 @@ class WalletManager {
             .map { AccountsRepository.shared.current = self.account }
     }
 
+    func loginWatchonly(credentials: Credentials) -> Promise<Void> {
+        guard let session = prominentSession else { fatalError() }
+        return session.loginUser(credentials: credentials)
+            .map { self.account.xpubHashId = $0.xpubHashId }
+            .then { self.subaccounts() }.asVoid()
+            .compactMap { self.loadRegistry() }
+            .map { AccountsRepository.shared.current = self.account }
+    }
+
     func login(credentials: Credentials? = nil, device: HWDevice? = nil, masterXpub: String? = nil) -> Promise<Void> {
         let walletId: ((_ session: SessionManager) -> WalletIdentifier?) = { session in
             if let credentials = credentials {
