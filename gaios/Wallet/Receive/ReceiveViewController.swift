@@ -244,6 +244,8 @@ class ReceiveViewController: UIViewController {
 
     @IBAction func btnChangeReceiver(_ sender: Any) {
         AnalyticsManager.shared.changeAsset(account: AccountsRepository.shared.current)
+        let isWO = AccountsRepository.shared.current?.isWatchonly ?? false
+
         let previousViewController = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if previousViewController is WalletViewController {
@@ -251,16 +253,16 @@ class ReceiveViewController: UIViewController {
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
                 var assets = WalletManager.current?.registry.all ?? []
 
-                if AccountsRepository.shared.current?.isWatchonly ?? false {
-                    var showBtc = !(AccountsRepository.shared.current?.gdkNetwork?.liquid ?? false)
-                    var showLiquid = (AccountsRepository.shared.current?.gdkNetwork?.liquid ?? false)
+                if isWO {
+                    let showBtc = !(AccountsRepository.shared.current?.gdkNetwork?.liquid ?? false)
+                    let showLiquid = (AccountsRepository.shared.current?.gdkNetwork?.liquid ?? false)
                     assets = assets.filter {
                         (showLiquid && $0.assetId != AssetInfo.btcId) ||
                         (showBtc && $0.assetId == AssetInfo.btcId)
                     }
                 }
 
-                vc.viewModel = AssetExpandableSelectViewModel(assets: assets, enableAnyAsset: true, onlyFunded: false)
+                vc.viewModel = AssetExpandableSelectViewModel(assets: assets, enableAnyAsset: !isWO, onlyFunded: false)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
@@ -275,7 +277,7 @@ class ReceiveViewController: UIViewController {
                     (showLiquid && $0.assetId != AssetInfo.btcId) ||
                     (showBtc && $0.assetId == AssetInfo.btcId)
                 }.map { ($0.assetId, 0) }
-                vc.viewModel = AssetSelectViewModel(assets: assets ?? AssetAmountList(), enableAnyAsset: true)
+                vc.viewModel = AssetSelectViewModel(assets: assets ?? AssetAmountList(), enableAnyAsset: !isWO)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }

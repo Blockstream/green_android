@@ -76,7 +76,7 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
 
     func numberOfSections(in tableView: UITableView) -> Int {
         let cnt = viewModel.assetSelectCellModelsFilter.count
-        return cnt + 1
+        return viewModel.enableAnyAsset ? cnt + 1 : cnt
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
