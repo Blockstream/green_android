@@ -6,10 +6,12 @@ class AccountCreateFooterView: UIView {
     @IBOutlet weak var btnDisclose: UIButton!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var topMask: UIView!
+    @IBOutlet weak var hiddenFooterLine: UIView!
 
     var onTap: (() -> Void)?
 
-    func configure(hasAccounts: Bool, onTap: (() -> Void)?
+    func configure(hasAccounts: Bool,
+                   onTap: (() -> Void)?
     ) {
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
         btnDisclose.cornerRadius = 4.0
@@ -21,6 +23,17 @@ class AccountCreateFooterView: UIView {
         createNew.layer.cornerRadius = 5
         createNew.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         topMask.isHidden = false //hasAccounts
+
+        if AccountsRepository.shared.current?.isWatchonly ?? false {
+            createNew.isHidden = true
+            hiddenFooterLine.isHidden = false
+            if !hasAccounts {
+                hiddenFooterLine.isHidden = true
+            }
+        } else {
+            createNew.isHidden = false
+            hiddenFooterLine.isHidden = true
+        }
     }
 
     @IBAction func btnOnCreate(_ sender: Any) {
