@@ -127,14 +127,17 @@ class AccountViewController: UIViewController {
         btnSend.setTitle( "id_send".localized, for: .normal )
         btnReceive.setTitle( "id_receive".localized, for: .normal )
 
+        // Sweep is only supported in watch-only for btc multisig wallets
         if viewModel.watchOnly {
-            if (AccountsRepository.shared.current?.isSingleSig ?? false) {
-                btnSend.isEnabled = false
-                btnSend.setTitleColor(.white.withAlphaComponent(0.5), for: .normal)
-            } else {
-                btnSend.setTitle( "id_sweep".localized, for: .normal )
-                btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
-            }
+            if let account = AccountsRepository.shared.current,
+               let network = account.gdkNetwork,
+               !network.electrum && !network.liquid {
+                   btnSend.setTitle( "id_sweep".localized, for: .normal )
+                   btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
+               } else {
+                   btnSend.isEnabled = false
+                   btnSend.setTitleColor(.white.withAlphaComponent(0.5), for: .normal)
+               }
         }
 
         tableView.prefetchDataSource = self
