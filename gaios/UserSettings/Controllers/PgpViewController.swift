@@ -29,33 +29,24 @@ class PgpViewController: KeyboardViewController {
     }
 
     func getPgp() -> String? {
-        let wm = WalletManager.current
-        let networks: [NetworkSecurityCase] = wm?.testnet ?? false ? [.testnetMS, .testnetLiquidMS] : [.liquidMS, .testnetLiquidMS]
-        for network in networks {
-            let session = wm?.activeSessions.filter { $0.key == network.network }.first?.value
-            if let pgp = session?.settings?.pgp {
-                return pgp
-            }
-        }
-        return nil
+        return WalletManager.current?.activeSessions.values
+            .filter { !$0.gdkNetwork.electrum }
+            .map { $0.settings?.pgp ?? "" }
+            .filter { !$0.isEmpty }
+            .first
     }
 
     func setPgp(pgp: String) -> Promise<Void> {
-        let wm = WalletManager.current
-        let sessions = wm?.activeSessions.values.filter { !$0.gdkNetwork.electrum && $0.logged }
-        guard let sessions = sessions, !sessions.isEmpty else {
-            return Promise().asVoid()
-        }
-        let promises = sessions.compactMap { changeSettings(session: $0, pgp: pgp) }
-        return when(fulfilled: promises).asVoid()
+         let sessions = WalletManager.current?.activeSessions.values
+            .filter { !$0.gdkNetwork.electrum }
+         return Promise<Void>.chain(sessions ?? [], 1) { self.changeSettings(session: $0, pgp: pgp).asVoid() }.asVoid()
     }
 
     func changeSettings(session: SessionManager, pgp: String) -> Promise<Void> {
-        guard let settings = session.settings else {
-            return Promise().asVoid()
-        }
+        guard let settings = session.settings else { return Promise().asVoid() }
+        let bgq = DispatchQueue.global(qos: .background)
         settings.pgp = pgp
-        return session.changeSettings(settings: settings).asVoid()
+        return Guarantee().then(on: bgq) { session.changeSettings(settings: settings) }.asVoid()
     }
 
     @objc func save(_ sender: UIButton) {
