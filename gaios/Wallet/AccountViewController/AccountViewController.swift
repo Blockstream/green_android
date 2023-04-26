@@ -128,8 +128,13 @@ class AccountViewController: UIViewController {
         btnReceive.setTitle( "id_receive".localized, for: .normal )
 
         if viewModel.watchOnly {
-            btnSend.setTitle( "id_sweep".localized, for: .normal )
-            btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
+            if (AccountsRepository.shared.current?.isSingleSig ?? false) {
+                btnSend.isEnabled = false
+                btnSend.setTitleColor(.white.withAlphaComponent(0.5), for: .normal)
+            } else {
+                btnSend.setTitle( "id_sweep".localized, for: .normal )
+                btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
+            }
         }
 
         tableView.prefetchDataSource = self
