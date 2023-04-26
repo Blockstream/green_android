@@ -426,6 +426,7 @@
                                             <outlet property="btnCancelAmount" destination="7n4-mm-ccq" id="nbR-5I-jMM"/>
                                             <outlet property="btnChooseAsset" destination="dkC-OX-npl" id="pkB-2y-mvS"/>
                                             <outlet property="btnConvert" destination="ShT-Ex-eKW" id="ieS-aM-I7e"/>
+                                            <outlet property="btnEdit" destination="paW-zN-gpe" id="Jho-JT-MOx"/>
                                             <outlet property="btnPasteAddress" destination="evo-pv-U1t" id="2cK-m7-fIN"/>
                                             <outlet property="btnPasteAmount" destination="mxf-E0-r1z" id="iqv-NX-cgG"/>
                                             <outlet property="btnSendAll" destination="THB-xG-rQM" id="O0b-RQ-e0l"/>

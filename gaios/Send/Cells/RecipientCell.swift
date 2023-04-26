@@ -30,6 +30,7 @@ class RecipientCell: UITableViewCell {
     @IBOutlet weak var lblAssetName: UILabel!
     @IBOutlet weak var lblAccount: UILabel!
     @IBOutlet weak var btnChooseAsset: UIButton!
+    @IBOutlet weak var btnEdit: UIButton!
     @IBOutlet weak var assetBox: UIView!
 
     @IBOutlet weak var amountContainer: UIView!
@@ -177,6 +178,7 @@ class RecipientCell: UITableViewCell {
             btnPasteAmount.isUserInteractionEnabled = false
             btnCancelAmount.isUserInteractionEnabled = false
             amountFieldIsEnabled(false)
+            btnEdit.alpha = 0.5
         }
         if model.inputType == .bumpFee {
             isUserInteractionEnabled = false
@@ -286,6 +288,7 @@ class RecipientCell: UITableViewCell {
     }
 
     @IBAction func btnChooseAsset(_ sender: Any) {
+        if model?.inputType == .sweep { return }
         if let i = index {
             delegate?.chooseAsset(i)
         }
