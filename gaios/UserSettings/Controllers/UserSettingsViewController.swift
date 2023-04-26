@@ -377,6 +377,7 @@ extension UserSettingsViewController: UserSettingsViewControllerDelegate, TwoFac
         self.delegate?.userLogout()
     }
     func refresh() {
+        self.viewModel.load()
         self.delegate?.refresh()
     }
 }

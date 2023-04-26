@@ -26,6 +26,9 @@ class TransactionViewController: UIViewController {
     var isWatchonly: Bool {
         WalletManager.current?.account.isWatchonly ?? false
     }
+    var isSinglesig: Bool {
+        transaction.subaccountItem?.isSinglesig ?? true
+    }
 
     var viewInExplorerPreference: Bool {
         get {
@@ -106,7 +109,7 @@ class TransactionViewController: UIViewController {
     }
 
     func editNote() {
-        if isWatchonly { return }
+        if isWatchonly && !isSinglesig { return }
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
             vc.modalPresentationStyle = .overFullScreen

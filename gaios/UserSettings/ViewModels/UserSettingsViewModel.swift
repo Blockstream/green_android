@@ -12,6 +12,7 @@ class UserSettingsViewModel {
     var session: SessionManager? { wm.prominentSession }
     var settings: Settings? { session?.settings }
     var isWatchonly: Bool { wm.account.isWatchonly }
+    var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
     var isHW: Bool { wm.account.isHW }
     var multiSigSession: SessionManager? { wm.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
 
@@ -119,6 +120,9 @@ class UserSettingsViewModel {
             subtitle: "",
             section: .General,
             type: .WatchOnly)
+        if isWatchonly && isSinglesig {
+            return [bitcoinDenomination, referenceExchangeRate]
+        }
         return [bitcoinDenomination, referenceExchangeRate, archievedAccounts, watchOnly]
     }
 
@@ -144,7 +148,7 @@ class UserSettingsViewModel {
 
     func getLogout() -> [UserSettingsItem] {
         let logout = UserSettingsItem(
-            title: (wm.account.name ?? "").localizedCapitalized,
+            title: wm.account.name.localizedCapitalized,
             subtitle: "id_log_out".localized,
             section: .Logout,
             type: .Logout)
@@ -160,8 +164,13 @@ class UserSettingsViewModel {
             .Recovery: getRecovery(),
             .About: getAbout()]
         if isWatchonly {
-            sections = [ .Logout, .About ]
-            items = [ .Logout: getLogout(), .About: getAbout()]
+            if isSinglesig {
+                sections = [ .Logout, .General, .About ]
+                items = [ .Logout: getLogout(), .General: getGeneral(), .About: getAbout()]
+            } else {
+                sections = [ .Logout, .About ]
+                items = [ .Logout: getLogout(), .About: getAbout()]
+            }
         }
         cellModels = items.mapValues { $0.map { UserSettingsCellModel($0) } }
     }
