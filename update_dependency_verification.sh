@@ -6,23 +6,22 @@ help_message() {
   cat <<- _EOF_
   Update Gradle Dependency Verification checksums
 
-  Usage: $SCRIPT_NAME [-h|--help] [-l|--local] [-a|--add] [-al]
+  Usage: $SCRIPT_NAME [-h|--help] [-d|--docker] [-a|--add] [-al]
 
   Options:
-    -h, --help  Display this help message and exit
-    -l, --local Run in local environment
-    -a, --add   Add new checksums
-    -b, --build Run build task to get more dependencies (takes longer)
-    -t, --test  Run test task to get more dependencies (takes longer)
-    -al         Run in local environment, only adding checksums
+    -h, --help        Display this help message and exit
+    -d, --docker      Run in Docker container
+    -o, --overwrite   Add new checksums
+    -b, --build       Run build task to get more dependencies (takes longer)
+    -t, --test        Run test task to get more dependencies (takes longer)
 
 _EOF_
   exit 0
 }
 
 # ----- Vars
-GRADLE="docker"
-OVERWRITE=true
+GRADLE="local"
+OVERWRITE=false
 TASK="help"
 
 # --- Argument handling
@@ -35,21 +34,17 @@ key="$1"
 case $key in
     -h | --help)
       help_message ;;
-    -l | --local)
-      GRADLE="local"
+    -d | --docker)
+      GRADLE="docker"
       shift ;;
     -b | --build)
-      TASK="verifyDependencies"
+      TASK="assembleDevelopmentRelease"
       shift ;;
     -t | --test)
       TASK="test"
       shift ;;
-    -a | --add | --only-add)
-      OVERWRITE=false
-      shift ;;
-    -al)
-      GRADLE="local"
-      OVERWRITE=false
+    -o | --overwrite)
+      OVERWRITE=true
       shift ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
@@ -63,6 +58,7 @@ set -- "${POSITIONAL[@]:-}" # restore positional parameters
 # --- Execution
 if [[ $OVERWRITE = true ]]; then
   # remove all checksums
+  # TODO: Fix sed in linux
   sed -i '' -e '/<components>/,/<\/components>/d' gradle/verification-metadata.xml
 fi
 
@@ -70,5 +66,8 @@ fi
 if [[ $GRADLE == "local" ]]; then
     ./gradlew --write-verification-metadata sha256 "${TASK}"
 else
-  docker run --rm --name green_dependency_verification -v $PWD:/ga greenaddress/android@sha256:29edd621500bbbdaf61af8ec6ec52c6ae3fd10cd2199267ddd61c4a2150efb05 /bin/sh -c "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
+  echo "Using Docker"
+  # Deprecated: Use `docker run -it -v $PWD:/ga greenaddress/android -u` instead
+  # docker run --rm -v $PWD:/ga --entrypoint /bin/sh greenaddress/android@sha256:6c319f48b63af1107aa3d144fb9ea4ad909648bf6d0c538fa4724690bb64edc6 "-c" "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
+  docker run --rm -it -v $PWD:/ga greenaddress/android -u --write-verification-metadata sha256 ${TASK}
 fi

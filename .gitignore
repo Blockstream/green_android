@@ -25,3 +25,4 @@ crypto/src/main/java/com/blockstream/libgreenaddress/GDK.java
 crypto/src/main/java/com/blockstream/libwally/Wally.java
 keystore.properties
 gdk_commit
+local.keystore

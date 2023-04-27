@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import com.polidea.rxandroidble2.RxBleDevice
 import io.reactivex.Single
 import io.reactivex.disposables.Disposables
@@ -29,7 +30,16 @@ internal object JadePairingManager : KLogging(){
                 else -> {
                     val receiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context, intent: Intent) {
-                            val deviceBeingPaired = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                            val deviceBeingPaired: BluetoothDevice? =
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    intent.getParcelableExtra(
+                                        BluetoothDevice.EXTRA_DEVICE,
+                                        BluetoothDevice::class.java
+                                    )
+                                } else {
+                                    @Suppress("DEPRECATION")
+                                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                                }
                             val state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.BOND_NONE)
 
                             // Jade BLE devices using RPA is better to use the unique device name rather than the changing mac address

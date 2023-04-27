@@ -17,6 +17,7 @@ import kotlinx.serialization.encodeToString
 @Database(
     entities = [Wallet::class, LoginCredentials::class],
     version = 5,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun walletDao(): WalletDao

@@ -97,7 +97,7 @@ class GreenApplication : Application() {
                 ShortcutInfo.Builder(this, "QATester")
                     .setShortLabel("QA Tester")
                     .setLongLabel("QA Tester")
-                    .setIcon(Icon.createWithResource(this, R.drawable.blockstream_jade_device))
+                    .setIcon(Icon.createWithResource(this,  R.drawable.blockstream_jade_device))
                     .setIntent(Intent(Intent.ACTION_VIEW, null, this, QATesterActivity::class.java))
                     .build()
             } else {

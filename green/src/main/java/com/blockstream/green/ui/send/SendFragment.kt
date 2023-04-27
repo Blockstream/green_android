@@ -344,12 +344,10 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
                 recipientBinding.canConvert = assetId.isPolicyAsset(session)
 
-                recipientBinding.amountCurrency = assetId.let { assetId ->
-                    if (it.isFiat.value == true) {
-                        getFiatCurrency(account.network, session)
-                    } else {
-                        assetId.assetTicker(session)
-                    }
+                recipientBinding.amountCurrency = if (it.isFiat.value == true) {
+                    getFiatCurrency(account.network, session)
+                } else {
+                    assetId.assetTicker(session)
                 }
             }.launchIn(lifecycleScope)
 

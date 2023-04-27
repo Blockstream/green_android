@@ -49,13 +49,7 @@
 -keep public class android.support.v7.internal.widget.** { *; }
 -keep public class android.support.v7.internal.view.menu.** { *; }
 
-
 -keep class androidx.core.app.CoreComponentFactory { *; }
-
-# BEGIN for protobuf in trezor:
--keep class com.satoshilabs.trezor.** { *; }
--keepattributes InnerClasses,EnclosingMethod
-# END for protobuf in trezor
 
 -dontwarn com.google.common.**
 -dontwarn com.google.errorprone.annotations.**
@@ -73,15 +67,7 @@
 -keepnames class ** {*;}
 -keepattributes SourceFile,LineNumberTable
 
--keep class mehdi.sakout.aboutpage.** {*;}
--keep class com.blockstream.libwally.** {*;}
--keep class com.blockstream.libgreenaddress.** {*;}
--keep class com.blockstream.greenapi.data.** {*;}
--keep class com.blockstream.jade.entities** {*;}
-
-
 -keepattributes InnerClasses,EnclosingMethod
-
 
 # Proguard configuration for Jackson 2.x (fasterxml package instead of codehaus package)
 -keep class com.fasterxml.jackson.databind.ObjectMapper {
@@ -101,3 +87,13 @@
 # Countly
 -keep class org.openudid.** { *; }
 -keep class ly.count.android.sdk.** { *; }
+
+
+# Until this is fixed https://youtrack.jetbrains.com/issue/KTOR-5528/Missing-class-warning-when-using-R8-with-ktor-client-in-android-application
+# https://github.com/square/okhttp/commit/9da841c24c3b3dabc1d9230ab2f1e71105768771
+# https://stackoverflow.com/questions/76042330/android-gradle-plugin-8-0-0-with-kotlin-1-8-20-causes-okhttp3-r8-minify-problem
+-dontwarn okhttp3.internal.platform.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+-dontwarn org.slf4j.impl.StaticLoggerBinder

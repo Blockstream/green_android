@@ -7,8 +7,7 @@ plugins {
 
 android {
     namespace 'com.blockstream.crypto'
-    compileSdkVersion 33
-    buildToolsVersion "33.0.0"
+    compileSdk 33
 
     defaultConfig {
         minSdkVersion 23
@@ -23,7 +22,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
         }
     }
 }
@@ -54,17 +53,17 @@ afterEvaluate {
 
 dependencies {
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation libs.kotlinx.serialization.core
+    implementation libs.kotlinx.serialization.json
+    implementation(libs.kotlinx.datetime)
     /** ----------------------------------------------------------------------------------------- */
     
     /**  --- AndroidX --------------------------------------------------------------------------- */
-    implementation 'androidx.annotation:annotation:1.6.0'
+    implementation libs.androidx.annotation
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.0"
+    implementation libs.androidx.lifecycle.livedata.ktx
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava  ---------------------------------------------------------------------------- */
@@ -73,11 +72,11 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Logging ---------------------------------------------------------------------------- */
-    implementation "org.slf4j:slf4j-simple:$slf4j_android"
-    implementation "io.github.microutils:kotlin-logging-jvm:$kotlin_logging"
+    implementation libs.slf4j.simple
+    implementation libs.kotlin.logging.jvm
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Testing ---------------------------------------------------------------------------- */
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation libs.junit
     /** ----------------------------------------------------------------------------------------- */
 }

@@ -12,7 +12,7 @@ import com.google.android.material.card.MaterialCardView
 class GreenContentCardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.materialCardViewStyle
+    defStyleAttr: Int = com.google.android.material.R.attr.materialCardViewStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
     internal var icon: ImageView

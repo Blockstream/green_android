@@ -13,7 +13,7 @@ import com.google.android.material.card.MaterialCardView
 class GreenAlertView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.materialCardViewStyle
+    defStyleAttr: Int = com.google.android.material.R.attr.materialCardViewStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
     val binding: GreenAlertViewBinding by lazy { GreenAlertViewBinding.inflate(LayoutInflater.from(context), this, true) }

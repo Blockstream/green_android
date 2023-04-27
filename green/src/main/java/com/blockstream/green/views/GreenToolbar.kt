@@ -13,7 +13,7 @@ import com.google.android.material.appbar.MaterialToolbar
 class GreenToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.toolbarStyle
+    defStyleAttr: Int = com.google.android.material.R.attr.toolbarStyle
 ) : MaterialToolbar(context, attrs, defStyleAttr) {
 
     private val binding : GreenToolbarBinding by lazy { GreenToolbarBinding.inflate(LayoutInflater.from(context), this, true) }

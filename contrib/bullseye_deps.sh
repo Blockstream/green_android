@@ -2,13 +2,13 @@
 set -e
 
 ANDROID_SDK_ROOT=/opt/android-sdk-linux
-COMMAND_LINE_TOOLS_FILENAME=commandlinetools-linux-7583922_latest.zip
-COMMAND_LINE_TOOLS_HASH=124f2d5115eee365df6cf3228ffbca6fc3911d16f8025bebd5b1c6e2fcfa7faf
+COMMAND_LINE_TOOLS_FILENAME=commandlinetools-linux-9477386_latest.zip
+COMMAND_LINE_TOOLS_HASH=bd1aa17c7ef10066949c88dc6c9c8d536be27f992a1f3b5a584f9bd2ba5646a0
 
 apt update -qq
 apt upgrade -yqq
-apt install -yqq --no-install-recommends ca-certificates-java unzip curl gzip perl git software-properties-common gnupg openjdk-11-jdk
-update-java-alternatives -s java-1.11.0-openjdk-amd64
+apt install -yqq --no-install-recommends ca-certificates-java unzip curl gzip perl git sed software-properties-common gnupg openjdk-11-jdk openjdk-17-jdk
+update-java-alternatives -s java-1.17.0-openjdk-amd64
 
 
 cd /opt && curl -sSO https://dl.google.com/android/repository/${COMMAND_LINE_TOOLS_FILENAME}
@@ -23,7 +23,7 @@ ls -la ${ANDROID_SDK_ROOT}/cmdline-tools/latest/
 # Non-standard components: MIPS system images, preview versions, GDK (Google Glass) and Android Google TV require separate licenses, not accepted there
 yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses
 
-${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "tools" "platform-tools" "build-tools;33.0.0"
+${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "tools" "platform-tools" "build-tools;30.0.3" "build-tools;33.0.2"
 ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository"
 
 # The `yes` is for accepting all non-standard tool licenses.

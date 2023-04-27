@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-parcelize'
     id 'kotlinx-serialization'
     id 'com.google.dagger.hilt.android'
+    alias libs.plugins.google.devtools.ksp
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.adarshr.test-logger' version '3.2.0'
@@ -26,8 +27,8 @@ if (keystorePropertiesFile.exists()){
 }
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion "33.0.0"
+    namespace 'com.blockstream.green'
+    compileSdk 33
 
     defaultConfig {
         minSdkVersion 23
@@ -35,14 +36,6 @@ android {
         versionCode 404
         versionName "4.0.4"
         setProperty("archivesBaseName", "BlockstreamGreen" + "-v" + versionName)
-
-        // Export schemas
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += ["room.schemaLocation":
-                                      "$projectDir/schemas".toString()]
-            }
-        }
 
         testApplicationId "com.blockstream.green.test"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -111,7 +104,6 @@ android {
     }
     buildTypes {
         release {
-            multiDexEnabled true
             minifyEnabled true
             shrinkResources true
             matchingFallbacks = ['normal']
@@ -140,7 +132,11 @@ android {
         disable 'MissingTranslation'
         ignoreWarnings false
     }
-    namespace 'com.blockstream.green'
+}
+
+// For KSP, configure using KSP extension:
+ksp {
+    arg(new RoomSchemaArgProvider(new File(projectDir, "schemas")))
 }
 
 kotlin {
@@ -168,54 +164,54 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Navigation ------------------------------------------------------------------------- */
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.3"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
-    testImplementation "androidx.navigation:navigation-testing:2.5.3"
-    androidTestImplementation "androidx.navigation:navigation-testing:2.5.3"
+    implementation libs.navigation.fragment.ktx
+    implementation libs.navigation.ui.ktx
+    testImplementation libs.navigation.testing
+    androidTestImplementation libs.androidx.navigation.navigation.testing
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Room ------------------------------------------------------------------------------- */
-    implementation "androidx.room:room-runtime:2.5.1"
-    kapt "androidx.room:room-compiler:2.5.1"
-    implementation "androidx.room:room-ktx:2.5.1"
-    testImplementation "androidx.room:room-testing:2.5.1"
+    implementation libs.androidx.room.runtime
+    ksp libs.androidx.room.compiler
+    implementation libs.androidx.room.ktx
+    testImplementation libs.androidx.room.testing
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    implementation libs.hilt.android
+    kapt libs.hilt.android.compiler
 
     // For instrumentation tests
-    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+    androidTestImplementation libs.hilt.android.testing
+    kaptAndroidTest libs.hilt.android.compiler
 
     // For local unit tests
-    testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    kaptTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+    testImplementation libs.google.hilt.android.testing
+    kaptTest libs.hilt.android.compiler
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava  ---------------------------------------------------------------------------- */
-    implementation "io.reactivex.rxjava3:rxjava:3.1.2"
-    implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
-    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+    implementation libs.rxjava
+    implementation libs.rxkotlin
+    implementation libs.rxandroid
     implementation "com.jakewharton.rxbinding4:rxbinding:4.0.0"
     implementation "com.github.akarnokd:rxjava3-bridge:3.0.2"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- FastAdapter  ----------------------------------------------------------------------- */
-    implementation "com.mikepenz:fastadapter:5.7.0"
-    implementation "com.mikepenz:fastadapter-extensions-diff:5.7.0" // diff util helpers
-    implementation "com.mikepenz:fastadapter-extensions-binding:5.7.0" // view binding helpers
-    implementation "com.mikepenz:fastadapter-extensions-expandable:5.7.0"
-    implementation "com.mikepenz:fastadapter-extensions-ui:5.7.0" // pre-defined ui components
-    implementation "com.mikepenz:fastadapter-extensions-scroll:5.7.0"
-    implementation "com.mikepenz:fastadapter-extensions-utils:5.7.0"
-    implementation "com.mikepenz:itemanimators:1.1.0"
+    implementation libs.fastadapter
+    implementation libs.fastadapter.extensions.diff // diff util helpers
+    implementation libs.fastadapter.extensions.binding // view binding helpers
+    implementation libs.fastadapter.extensions.expandable
+    implementation libs.fastadapter.extensions.ui // pre-defined ui components
+    implementation libs.fastadapter.extensions.scroll
+    implementation libs.fastadapter.extensions.utils
+    implementation libs.itemanimators
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- QR Scanner ------------------------------------------------------------------------- */
-    implementation('com.journeyapps:zxing-android-embedded:4.3.0') { transitive = false }
-    implementation 'com.google.zxing:core:3.3.3' // API <= 24 compatibility
+    implementation(libs.zxing.android.embedded) { transitive = false }
+    implementation libs.zxing.core // API <= 24 compatibility
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Uniform Resources ------------------------------------------------------------------ */
@@ -223,42 +219,42 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Jackson ---------------------------------------------------------------------------- */
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.9.6'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.9.6'
+    implementation libs.jackson.datatype.json.org
+    implementation libs.jackson.dataformat.cbor
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Countly ---------------------------------------------------------------------------- */
-    implementation 'com.github.angelix:countly-sdk-android:8af847f00d'
+    implementation libs.countly.sdk.android
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Beagle  ---------------------------------------------------------------------------- */
-    developmentImplementation "io.github.pandulapeter.beagle:ui-drawer:2.9.0"
-    developmentImplementation "io.github.pandulapeter.beagle:log-crash:2.9.0"
+    developmentImplementation libs.beagle.ui.drawer
+    developmentImplementation libs.beagle.log.crash
 
-    productionGoogleImplementation "io.github.pandulapeter.beagle:noop:2.9.0"
-    productionGoogleImplementation "io.github.pandulapeter.beagle:log-crash-noop:2.9.0"
+    productionGoogleImplementation libs.beagle.noop
+    productionGoogleImplementation libs.beagle.log.crash.noop
 
-    productionImplementation "io.github.pandulapeter.beagle:noop:2.9.0"
-    productionImplementation "io.github.pandulapeter.beagle:log-crash-noop:2.9.0"
+    productionImplementation libs.beagle.noop
+    productionImplementation libs.beagle.log.crash.noop
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Slide To Act ----------------------------------------------------------------------- */
-    implementation "com.ncorti:slidetoact:0.10.0"
+    implementation libs.slidetoact
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Rive ------------------------------------------------------------------------------- */
-    implementation 'app.rive:rive-android:4.3.2'
+    implementation libs.rive.android
     /** ----------------------------------------------------------------------------------------- */
 
     testImplementation fileTree(dir: 'libs', include: ['.jar', '.so'])
 
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'androidx.arch.core:core-testing:2.2.0'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.1.0'
+    testImplementation libs.junit
+    testImplementation libs.androidx.core.testing
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.mockito.kotlin
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
 }
 
 static def appendGdkCommitHash(Project project, Boolean enableGitSubmodule) {
@@ -282,4 +278,20 @@ static def appendGdkCommitHash(Project project, Boolean enableGitSubmodule) {
 
 task verifyDependencies(type: GradleBuild) {
     tasks = ['lintDevelopmentRelease', 'assembleProductionRelease']
+}
+
+class RoomSchemaArgProvider implements CommandLineArgumentProvider {
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File schemaDir
+
+    RoomSchemaArgProvider(File schemaDir) {
+        this.schemaDir = schemaDir
+    }
+
+    @Override
+    Iterable<String> asArguments() {
+        return ["room.schemaLocation=${schemaDir.path}".toString()]
+    }
 }
