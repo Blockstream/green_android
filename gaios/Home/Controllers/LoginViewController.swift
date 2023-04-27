@@ -240,7 +240,14 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
+        var currentAccount = account!
+        if !account.isEphemeral && !bip39passphrase.isNilOrEmpty {
+            currentAccount = Account(name: account.name, network: account?.network ?? "mainnet", keychain: account.keychain, isSingleSig: account?.isSingleSig ?? true)
+            currentAccount.isEphemeral = true
+            currentAccount.attempts = account.attempts
+            currentAccount.xpubHashId = account.xpubHashId
+        }
+        let wm = WalletsRepository.shared.getOrAdd(for: currentAccount)
         self.session = wm.prominentSession
         firstly {
             return Guarantee()
@@ -258,9 +265,9 @@ class LoginViewController: UIViewController {
                 self.account.attempts = 0
             }
             AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
-                                                ephemeralBip39: self.account.isEphemeral,
-                                                account: self.account)
-            _ = AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
+                                                ephemeralBip39: currentAccount.isEphemeral,
+                                                account: currentAccount)
+            _ = AccountNavigator.goLogged(account: currentAccount, nv: self.navigationController)
             self.stopLoader()
         }.catch { error in
             self.errorLogin(error: error, enableFailingCounter: true)

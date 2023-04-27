@@ -116,7 +116,14 @@ class WalletManager {
             .then { mainSession.connect() }
             .compactMap { DecryptWithPinParams(pin: pin, pinData: pinData)}
             .then { mainSession.decryptWithPin($0) }
-            .map { bip39passphrase.isNilOrEmpty ? $0 : Credentials(mnemonic: $0.mnemonic, bip39Passphrase: bip39passphrase) }
+            .map { credentials in
+                // for bip39passphrase login, singlesig is the prominent network
+                if !bip39passphrase.isNilOrEmpty {
+                    self.prominentNetwork = self.testnet ? .testnetSS : .bitcoinSS
+                    return Credentials(mnemonic: credentials.mnemonic, bip39Passphrase: bip39passphrase)
+                }
+                return credentials
+            }
             .then { self.login(credentials: $0) }
             .map { AccountsRepository.shared.current = self.account }
     }
@@ -169,7 +176,7 @@ class WalletManager {
             guard let session = self.sessions[network] else { return Promise(error: LoginError.failed()) }
             let walletHashId = walletId(session)!.walletHashId
             let existDatadir = existDatadir(session)
-            let removeDatadir = !existDatadir && session.gdkNetwork.network != self.prominentNetwork.network
+            let removeDatadir = !existDatadir && session.gdkNetwork.network != self.prominentNetwork.network && (credentials == nil || credentials?.bip39Passphrase.isNilOrEmpty ?? false)
             return session.loginUser(credentials: credentials, hw: device)
                 .map { self.account.xpubHashId = $0.xpubHashId }
                 .recover { self.failureSessions[session.gdkNetwork.network] = $0 }
@@ -178,7 +185,7 @@ class WalletManager {
         }
         .map { _ in if
             self.activeSessions.count == 0 { throw LoginError.failed() } }
-        .then { self.subaccounts(true) }.asVoid()
+        .then { self.subaccounts() }.asVoid()
         .compactMap { self.loadRegistry() }
         .map { AccountsRepository.shared.current = self.account }
     }
