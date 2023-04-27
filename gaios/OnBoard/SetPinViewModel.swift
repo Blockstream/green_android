@@ -37,8 +37,8 @@ class SetPinViewModel {
                     throw LoginError.walletMismatch()
                 }
                 // Avoid to restore an existing wallets
-                if let prevAccount = AccountsRepository.shared.find(xpubHashId: xpub),
-                   prevAccount.gdkNetwork == account.gdkNetwork && !account.isHW {
+                if let prevAccount = AccountsRepository.shared.find(xpubHashId: xpub), self.restoredAccount == nil &&
+                   prevAccount.gdkNetwork == account.gdkNetwork && !prevAccount.isHW && !prevAccount.isWatchonly {
                    throw LoginError.walletsJustRestored()
                 }
             }.then { wm.login(credentials: self.credentials) }
