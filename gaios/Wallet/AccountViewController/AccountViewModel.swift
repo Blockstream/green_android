@@ -28,7 +28,7 @@ class AccountViewModel {
     }
 
     var satoshi: Int64 {
-        cachedBalance.first(where: { $0.0 == account.gdkNetwork.getFeeAsset() })?.1 ?? account.btc
+        cachedBalance.first(where: { $0.0 == account.gdkNetwork.getFeeAsset() })?.1 ?? account.btc ?? 0
     }
 
     var accountCellModels: [AccountCellModel] {

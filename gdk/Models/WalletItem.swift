@@ -37,9 +37,9 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
 
     public var gdkNetwork: GdkNetwork { getGdkNetwork(network!)}
 
-    public var btc: Int64 {
+    public var btc: Int64? {
         let feeAsset = gdkNetwork.getFeeAsset()
-        return satoshi?[feeAsset] ?? 0
+        return satoshi?[feeAsset]
     }
 
     public var bip32Pointer: UInt32 { isSinglesig ? pointer / 16 : pointer}

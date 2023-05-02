@@ -15,6 +15,7 @@ class WalletViewController: UIViewController {
 
     enum FooterType {
         case noTransactions
+        case noBalance
         case none
     }
 
@@ -27,8 +28,6 @@ class WalletViewController: UIViewController {
     @IBOutlet weak var lblWelcomeHint: UILabel!
     @IBOutlet weak var btnWelcomeCreate: UIButton!
     @IBOutlet weak var animateView: UIView!
-
-    //    var assetId: String?
 
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
@@ -44,12 +43,10 @@ class WalletViewController: UIViewController {
     }
     private var sIdx: Int = 0
     private var userWillLogout = false
-
-    var viewModel: WalletViewModel = WalletViewModel()
-    var cachedAccount: WalletItem?
+    private var viewModel: WalletViewModel = WalletViewModel()
+    private var cachedAccount: WalletItem?
     private var notificationObservers: [NSObjectProtocol] = []
-
-    let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletViewController.self, options: nil)![0] as? DrawerBarItem)!)
+    private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletViewController.self, options: nil)![0] as? DrawerBarItem)!)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,25 +69,13 @@ class WalletViewController: UIViewController {
             }
         }
         viewModel.reloadAccountView = reloadAccountView
-        let welcomeLayerVisibility: (() -> Void)? = { [weak self] () in
-            self?.navigationItem.leftBarButtonItem = nil
-            self?.navigationItem.rightBarButtonItems = []
-            self?.drawerIcon(false)
-            if self?.viewModel.accountCellModels.count ?? 0 > 0 {
-                self?.welcomeLayer.isHidden = true
-                self?.loadNavigationBtns()
-                self?.drawerIcon(true)
-            } else {
-                self?.welcomeLayer.isHidden = false
-            }
-        }
         viewModel.welcomeLayerVisibility = welcomeLayerVisibility
         viewModel.preselectAccount = {[weak self] idx in
             self?.sIdx = idx
         }
         setContent()
         setStyle()
-        welcomeLayer.isHidden = true
+        welcomeLayerVisibility()
 
         AnalyticsManager.shared.recordView(.walletOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
         AnalyticsManager.shared.getSurvey { [weak self] widget in
@@ -99,6 +84,19 @@ class WalletViewController: UIViewController {
                     self?.surveyUI(widget)
                 }
             }
+        }
+    }
+
+    func welcomeLayerVisibility() {
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.rightBarButtonItems = []
+        drawerIcon(false)
+        if viewModel.subaccounts.count > 0 {
+            welcomeLayer.isHidden = true
+            loadNavigationBtns()
+            drawerIcon(true)
+        } else {
+            welcomeLayer.isHidden = false
         }
     }
 
@@ -119,8 +117,10 @@ class WalletViewController: UIViewController {
         super.viewWillAppear(animated)
 
         if userWillLogout == true { return }
-        viewModel.loadSubaccounts()
         viewModel.reloadAlertCards()
+        viewModel.loadSubaccounts()
+        viewModel.loadBalances()
+        viewModel.loadTransactions(max: 10)
 
         [EventType.Transaction, .Block, .AssetsUpdated, .Network, .Settings, .Ticker, .TwoFactorReset].forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
@@ -231,8 +231,10 @@ class WalletViewController: UIViewController {
 
     // tableview refresh gesture
     @objc func callPullToRefresh(_ sender: UIRefreshControl? = nil) {
+        viewModel.reloadAlertCards()
         viewModel.loadSubaccounts()
-        // viewModel.reloadAlertCards()
+        viewModel.loadBalances()
+        viewModel.loadTransactions()
     }
 
     // open wallet selector drawer
@@ -263,7 +265,7 @@ class WalletViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
             guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
             vc.viewModel = SendViewModel(account: model.account, inputType: viewModel.watchOnly ? .sweep : .transaction, transaction: nil)
-            vc.accounts = viewModel.cachedSubaccounts
+            vc.accounts = viewModel.subaccounts
             vc.fixedWallet = false
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -380,7 +382,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch WalletSection(rawValue: section) {
         case .balance:
-            return viewModel.balanceCellModel == nil ? 0 : 1
+            return 1
         case .account:
             return viewModel.accountCellModels.count
         case .card:
@@ -512,6 +514,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch WalletSection(rawValue: section) {
+        case .balance:
+            return viewModel.cachedBalance.count == 0 ? footerH : 1.0
         case .transaction:
             return viewModel.cachedTransactions.count == 0 ? footerH : 1.0
         case .footer:
@@ -543,6 +547,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch WalletSection(rawValue: section) {
+        case .balance:
+            return viewModel.cachedBalance.count == 0 ? footerView(.noBalance) : footerView(.none)
         case .account:
             return footerView(.none)
         case .transaction:
@@ -656,6 +662,22 @@ extension WalletViewController {
         case .none:
             let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
             section.backgroundColor = .clear
+            return section
+        case .noBalance:
+            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
+            section.backgroundColor = .clear
+            let loader = UIActivityIndicatorView(style: .white)
+            section.addSubview(loader)
+            loader.startAnimating()
+            loader.translatesAutoresizingMaskIntoConstraints = false
+            let horizontalConstraint = NSLayoutConstraint(item: loader,
+                                                              attribute: .left,
+                                                              relatedBy: .equal,
+                                                              toItem: section,
+                                                              attribute: .left,
+                                                              multiplier: 1,
+                                                              constant: 25.0)
+            NSLayoutConstraint.activate([horizontalConstraint])
             return section
         case .noTransactions:
             let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))

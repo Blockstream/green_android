@@ -18,7 +18,7 @@ class AccountCellModel {
     var account: WalletItem
     var hasTxs: Bool = false
 
-    init(subaccount: WalletItem, satoshi: Int64) {
+    init(subaccount: WalletItem, satoshi: Int64?) {
         account = subaccount
         name = account.localizedName
         type = account.localizedType
@@ -27,14 +27,13 @@ class AccountCellModel {
         isTest = !account.gdkNetwork.mainnet
         security = (isSS ? "Singlesig" : "Multisig").uppercased()
         lblType = security + " / " + type
-
-        if let converted = Balance.fromSatoshi(satoshi, assetId: account.gdkNetwork.getFeeAsset()) {
+        hasTxs = subaccount.hasTxs
+        let assetId = account.gdkNetwork.getFeeAsset()
+        if let satoshi = satoshi,let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {
             let (amount, denom) = converted.toValue()
             balanceStr = "\(amount) \(denom)"
-
             let (fAmount, fDenom) = converted.toFiat()
             fiatStr = "\(fAmount) \(fDenom)"
         }
-        hasTxs = subaccount.hasTxs
     }
 }
