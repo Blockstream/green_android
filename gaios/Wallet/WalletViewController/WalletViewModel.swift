@@ -169,9 +169,9 @@ class WalletViewModel {
         getAssets()
     }
 
-    func reloadAlertCards() {
+    func loadDisputeCards() -> [AlertCardType] {
+        guard let wm = wm else { return [] }
         var cards: [AlertCardType] = []
-        guard let wm = wm else { return }
         wm.sessions.values.forEach { session in
             if session.logged && session.isResetActive ?? false,
                 let twoFaReset = session.twoFactorConfig?.twofactorReset {
@@ -183,6 +183,12 @@ class WalletViewModel {
                 }
             }
         }
+        return cards
+    }
+
+    func loadMetadataCards() -> [AlertCardType] {
+        guard let wm = wm else { return [] }
+        var cards: [AlertCardType] = []
         // All sessions should login with the passphrase
         if wm.account.isEphemeral {
             // Bip39 ephemeral wallet
@@ -192,11 +198,7 @@ class WalletViewModel {
             // Testnet wallet
             cards.append(AlertCardType.testnetNoValue)
         }
-        if Balance.fromSatoshi(0, assetId: session!.gdkNetwork.getFeeAsset())?.toFiat().0 == "n/a" {
-            // Price provider not available
-            cards.append(AlertCardType.fiatMissing)
-        }
-        /// countly alerts
+        // countly alerts
         if let remoteAlert = remoteAlert {
             cards.append(AlertCardType.remoteAlert(remoteAlert))
         }
@@ -210,9 +212,17 @@ class WalletViewModel {
                     return true
                 }
             }.map { AlertCardType.login($0.key, $0.value) }
+        return cards
+    }
 
-        // load system messages
+    func reloadAlertCards() {
+        guard let wm = wm, let session = session else { return }
+        var cards: [AlertCardType] = []
         Guarantee()
+            .compactMap(on: bgq) { cards += self.loadMetadataCards() }
+            .compactMap(on: bgq) { cards += self.loadDisputeCards() }
+            .compactMap(on: bgq) { Balance.fromSatoshi(0, assetId: session.gdkNetwork.getFeeAsset())?.toFiat().0 == "n/a" }
+            .map { $0 ? cards.append(AlertCardType.fiatMissing) : () }
             .then(on: bgq) { wm.loadSystemMessages() }
             .done { (messages: [SystemMessage]) in
                 messages.forEach { msg in
