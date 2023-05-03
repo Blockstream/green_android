@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.4] - 2023-05-03
+
+### Changed
+- Bump GDK version to 0.0.62
+ 
 ## [4.0.3] - 2023-04-29
 
 ### Added
