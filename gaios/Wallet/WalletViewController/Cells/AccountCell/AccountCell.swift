@@ -25,7 +25,8 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var trailing3_2: NSLayoutConstraint!
     @IBOutlet weak var trailing4_3: NSLayoutConstraint!
     @IBOutlet weak var titlesTrailing: NSLayoutConstraint!
-
+    @IBOutlet weak var loader: UIActivityIndicatorView!
+    
     private var sIdx: Int = 0
     private var cIdx: Int = 0
     private var hideBalance: Bool = false
@@ -92,6 +93,7 @@ class AccountCell: UITableViewCell {
                    onSelect: (() -> Void)?,
                    onCopy: (() -> Void)?,
                    onShield: ((Int) -> Void)?) {
+        setIsLoading(model.satoshi == nil)
         self.cIdx = cIdx
         self.sIdx = sIdx
         self.hideBalance = hideBalance
@@ -179,6 +181,12 @@ class AccountCell: UITableViewCell {
                 self.updateUI(value)
             })
         }
+    }
+
+    func setIsLoading(_ state: Bool) {
+        state ? loader.startAnimating() : loader.stopAnimating()
+        lblAmount.isHidden = state
+        lblFiat.isHidden = state
     }
 
     @IBAction func btnSelect(_ sender: Any) {

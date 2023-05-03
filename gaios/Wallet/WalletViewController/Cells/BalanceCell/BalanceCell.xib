@@ -33,8 +33,12 @@
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="KrQ-SM-fsW">
                         <rect key="frame" x="25" y="44.5" width="359" height="120.5"/>
                         <subviews>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="dtj-ap-ZpK">
+                                <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
+                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </activityIndicatorView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="lbl_balance_value" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cwj-w8-ZQr">
-                                <rect key="frame" x="0.0" y="0.0" width="359" height="101"/>
+                                <rect key="frame" x="0.0" y="20" width="359" height="81"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="34"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -148,6 +152,7 @@
                 <outlet property="lblBalanceFiat" destination="pwm-j0-vaS" id="ZwJ-Fm-xai"/>
                 <outlet property="lblBalanceTitle" destination="UWo-Pa-oSR" id="S2Y-1p-iAD"/>
                 <outlet property="lblBalanceValue" destination="cwj-w8-ZQr" id="dLB-bq-Skq"/>
+                <outlet property="loader" destination="dtj-ap-ZpK" id="qSP-J7-PXf"/>
             </connections>
             <point key="canvasLocation" x="146.37681159420291" y="115.51339285714285"/>
         </tableViewCell>

@@ -11,7 +11,8 @@ class BalanceCell: UITableViewCell {
     @IBOutlet weak var iconsStackWidth: NSLayoutConstraint!
     @IBOutlet weak var btnEye: UIButton!
     @IBOutlet weak var assetsBox: UIView!
-
+    @IBOutlet weak var loader: UIActivityIndicatorView!
+    
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
     private var onConvert: (() -> Void)?
@@ -31,17 +32,20 @@ class BalanceCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(model: BalanceCellModel,
+    func configure(model: BalanceCellModel?,
                    hideBalance: Bool,
                    onHide: ((Bool) -> Void)?,
                    onAssets: (() -> Void)?,
                    onConvert:(() -> Void)?) {
         self.hideBalance = hideBalance
         self.model = model
-        lblBalanceValue.text = model.value
-        lblBalanceFiat.text = model.valueChange
+        lblBalanceValue.text = ""
+        lblBalanceFiat.text = ""
 
-        let assets = model.cachedBalance.sorted().nonZero()
+        var assets: [(String, Int64)] = [(String, Int64)]()
+        if let model = model {
+            assets = model.cachedBalance.sorted().nonZero()
+        }
         assetsBox.isHidden = assets.count < 2
 
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
@@ -87,6 +91,9 @@ class BalanceCell: UITableViewCell {
     }
 
     func refreshVisibility() {
+        model == nil ? loader.startAnimating() : loader.stopAnimating()
+        lblBalanceValue.isHidden = model == nil
+        lblBalanceFiat.isHidden = model == nil
         if hideBalance {
             lblBalanceValue.attributedText = Common.obfuscate(color: .white, size: 24, length: 5)
             lblBalanceFiat.attributedText = Common.obfuscate(color: .gray, size: 12, length: 5)

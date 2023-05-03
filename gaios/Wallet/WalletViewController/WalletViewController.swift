@@ -15,7 +15,6 @@ class WalletViewController: UIViewController {
 
     enum FooterType {
         case noTransactions
-        case noBalance
         case none
     }
 
@@ -398,8 +397,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch WalletSection(rawValue: indexPath.section) {
         case .balance:
-            if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell, let model = viewModel.balanceCellModel {
-                cell.configure(model: model,
+            if let cell = tableView.dequeueReusableCell(withIdentifier: BalanceCell.identifier, for: indexPath) as? BalanceCell {
+                cell.configure(model: viewModel.balanceCellModel,
                                hideBalance: hideBalance,
                                onHide: {[weak self] value in
                     self?.hideBalance = value
@@ -548,7 +547,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch WalletSection(rawValue: section) {
         case .balance:
-            return viewModel.cachedBalance.count == 0 ? footerView(.noBalance) : footerView(.none)
+            return footerView(.none)
         case .account:
             return footerView(.none)
         case .transaction:
@@ -663,22 +662,6 @@ extension WalletViewController {
             let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
             section.backgroundColor = .clear
             return section
-        case .noBalance:
-            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
-            section.backgroundColor = .clear
-            let loader = UIActivityIndicatorView(style: .white)
-            section.addSubview(loader)
-            loader.startAnimating()
-            loader.translatesAutoresizingMaskIntoConstraints = false
-            let horizontalConstraint = NSLayoutConstraint(item: loader,
-                                                              attribute: .left,
-                                                              relatedBy: .equal,
-                                                              toItem: section,
-                                                              attribute: .left,
-                                                              multiplier: 1,
-                                                              constant: 25.0)
-            NSLayoutConstraint.activate([horizontalConstraint])
-            return section
         case .noTransactions:
             let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
             section.backgroundColor = .clear
@@ -706,7 +689,7 @@ extension WalletViewController {
             ])
 
             if viewModel.isTxLoading {
-                let loader = UIActivityIndicatorView(style: .white)
+                let loader = UIActivityIndicatorView(style: .medium)
                 section.addSubview(loader)
                 loader.startAnimating()
                 loader.translatesAutoresizingMaskIntoConstraints = false
@@ -761,7 +744,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
 
     // accounts drawer: add new waller
     func didSelectAddWallet() {
-        AccountNavigator.goAddWallet(nv: navigationController)
+        _ = AccountNavigator.goAddWallet(nv: navigationController)
     }
 
     // accounts drawer: select another account
@@ -770,7 +753,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
         if account.id == viewModel.wm?.account.id ?? "" {
             return
         }
-        AccountNavigator.goLogin(account: account, nv: navigationController)
+        _ = AccountNavigator.goLogin(account: account, nv: navigationController)
     }
 
     // accounts drawer: select app settings

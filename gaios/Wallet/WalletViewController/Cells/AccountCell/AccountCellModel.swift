@@ -17,8 +17,10 @@ class AccountCellModel {
     var fiatStr: String = ""
     var account: WalletItem
     var hasTxs: Bool = false
+    var satoshi: Int64?
 
     init(subaccount: WalletItem, satoshi: Int64?) {
+        self.satoshi = satoshi
         account = subaccount
         name = account.localizedName
         type = account.localizedType

@@ -158,6 +158,7 @@ class WalletViewModel {
             isBTC = settings.denomination == .BTC
         }
         balanceDisplayMode = balanceDisplayMode.next(isBTC)
+        loadBalances()
     }
 
     func loadDisputeCards() -> [AlertCardType] {
