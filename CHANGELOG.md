@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Improves performance on login
+- UI improvements on content loading
+- Update gdk to 0.0.62
 
 ## [4.0.3] - 2023-04-28
 
