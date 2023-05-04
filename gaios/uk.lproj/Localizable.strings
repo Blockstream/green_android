@@ -39,6 +39,7 @@
 "id_account" = "Акаунт";
 "id_account__asset" = "Акаунт та Актив";
 "id_account_address" = "Адреса акаунту";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "Баланс акаунту";
 "id_account_extended_public_keys" = "Extended Public Keys акаунту";
 "id_account_for_special_assets" = "Акаунт для особливих активів, контрольованих або санкціонованих емітентом активів.";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "Видалення PIN-коду заблокує ваш гаманець, доки ви не скористуєтесь мнемонічною фразою для відновлення доступу. Натисніть \"OK\" для продовження.";
 "id_denomination" = "Номінал";
 "id_deposit" = "Депозит";
+"id_descriptor" = "Descriptor";
 "id_details" = "Деталі";
 "id_device" = "Пристрій";
 "id_devices" = "Пристрої";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "Якщо у вас є доступ до двофакторного метода для цього гаманця, скасуйте скидання, щоб мати можливість витрачати і отримувати кошти миттєво, або почекайте %d днів.";
 "id_if_you_have_some_coins_on_the" = "Якщо у вас є монети на legacy-адресі і ви не збираєтеся витрачати їх найближчим часом, вам можливо буде потрібно налаштувати електронну пошту і отримувати транзакції відновлення, щоб бути впевненим, що ви завжди контролюєте свої кошти.";
 "id_if_you_initiated_the_2fa_reset" = "Якщо ви помилково ініціювали оскарження скидання 2FA, ви можете його скасувати  і повернути гаманець в стан скидання 2FA.";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Імпортуйте гаманець Multisig Shield, створений у Blockstream Green.";
 "id_import_a_wallet_created_on" = "Імпортуйте гаманець, створений у Blockstream Green.";
 "id_import_a_wallet_created_with" = "Імпортуйте гаманець, створений в інших додатках. Ця опція працює тільки з однопідписними гаманцями, які використовують мнемоніку BIP39 і її похідні BIP44, BIP49 або BIP84.";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "Надходження";
 "id_inconsistent_data_provided_for" = "Неузгоджені дані, надані для включення аутентифікатора 2FA";
 "id_increase_fee" = "Підвищити комісію";
@@ -904,6 +908,7 @@
 "id_seconds" = "секунд";
 "id_security" = "Безпека";
 "id_security_change" = "Зміна безпеки";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "Дивіться нашу політику конфіденційності %@";
 "id_see_our_terms_of_service_s" = "Дивіться наші Умови використання %@";
 "id_segwit" = "SegWit";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "Показати резервну копію мого гаманця";
 "id_show_qr_code" = "Показати QR-код";
 "id_show_recovery_phrase" = "Показати фразу відновлення";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Перевірка підпису не вдалася. Якщо ця помилка є несподіваною і повторювалася неодноразово, можливо, апаратний гаманець несправний або був зламаний. Можливо, стався витік ваших ключів, що може призвести до втрати коштів. Будь ласка, подумайте про заміну апаратного гаманця.";
 "id_signup_in_progress" = "Реєстрація продовжується";
 "id_simple" = "Простий";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "Використовуйте існуючу фразу відновлення в якості третього ключа відновлення.";
 "id_use_an_xpub_for_which_you_own" = "Використовуйте xpub, для якого у вас є відповідний приватний ключ, в якості третього ключа відновлення.";
 "id_use_android_screen_lock_to_log" = "Використовуйте блокування екрану Android для входу в систему";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Використовувати апаратний пристрій";
 "id_use_secure_display_and_screen" = "Використовувати захищений дисплей та блокування екрану";
 "id_use_the_jogwheel_to_select_the" = "Використовуйте колесо прокрутки для вибору слова, яке відповідає вашій фразі відновлення.";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "Ви не підключені, будь ласка, зачекайте";
 "id_you_are_now_connected" = "З'єднання є";
 "id_you_can_change_these_later_on" = "Ви можете змінити їх пізніше.";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "Ви не можете створити або відновити гаманець на %@ так як у вас вже є гаманець, захищений PIN-кодом.";
 "id_you_have_a_significant_amount" = "У вас значна сума коштів тут, розгляньте можливість захисту їх за допомогою 2FA.";
 "id_you_have_clicked_a_payment_uri" = "Ви натиснули платіжний URI, виберіть гаманець для обробки";

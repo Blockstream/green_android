@@ -39,6 +39,7 @@
 "id_account" = "Account";
 "id_account__asset" = "Account & Asset";
 "id_account_address" = "Indirizzo account";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "Saldo account";
 "id_account_extended_public_keys" = "Extended public keys dell'account";
 "id_account_for_special_assets" = "Account per asset speciali, monitorati o autorizzati dall'emittente dell'asset.";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "Cancellando il tuo PIN non potrai più accedere al tuo wallet se non tramite mnemonica. Seleziona \"OK\" per continuare.";
 "id_denomination" = "Denominazione";
 "id_deposit" = "Deposita";
+"id_descriptor" = "Descriptor";
 "id_details" = "Dettagli";
 "id_device" = "Dispositivo";
 "id_devices" = "Dispositivi";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "Se hai accesso a un metodo a Due Fattori per questo wallet, cancella il reset per poter spendere e ricevere immediatamente, oppure attendi %d giorni.";
 "id_if_you_have_some_coins_on_the" = "Se sei in possesso di alcuni coin sull'indirizzo legacy, che non spenderai a breve, potresti dover impostare un indirizzo e-mail e ricevere le tue recovery transaction per essere sicuro di mantenere sempre il controllo sui tuoi fondi.";
 "id_if_you_initiated_the_2fa_reset" = "Se hai iniziato la contestazione del reset della 2FA per sbaglio, potrai annullare l'azione e ripristinare il reset della 2FA del tuoi wallet.";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importa un wallet Multisig Shield creato su Blockstream Green.";
 "id_import_a_wallet_created_on" = "Importa un wallet creato su Blockstream Green";
 "id_import_a_wallet_created_with" = "Importa un wallet creato con altre app. Questa opzione funziona solo con wallet singlesig che utilizzano BIP39, BIP44, BIP49 e BIP84.";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "In arrivo";
 "id_inconsistent_data_provided_for" = "Dati insufficienti per poter abilitare Authenticator 2FA";
 "id_increase_fee" = "Aumenta fee";
@@ -904,6 +908,7 @@
 "id_seconds" = "secondi";
 "id_security" = "Sicurezza";
 "id_security_change" = "Modifica sicurezza";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "Consulta la nostra privacy policy %@ ";
 "id_see_our_terms_of_service_s" = "Consulta i nostri Termini di Servizio%@ ";
 "id_segwit" = "SegWit";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "Mostra il backup del mio wallet";
 "id_show_qr_code" = "Mostra QR code";
 "id_show_recovery_phrase" = "Mostra Recovery Phrase";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Convalida firma fallita. In caso di errore inaspettato e ripetuto, controllare che l'hardware wallet non sia danneggiato o compromesso. Il wallet potrebbe rivelare le tue chiavi e di conseguenza farti pendere dei fondi. Sostituiscilo.";
 "id_signup_in_progress" = "Registrazione in corso";
 "id_simple" = "Semplice";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "Utilizza una recovery phrase già esistente come terza recovery key.";
 "id_use_an_xpub_for_which_you_own" = "Utilizza una xpub di cui possiedi la private key corrispondente come terza recovery key.";
 "id_use_android_screen_lock_to_log" = "Utilizza il blocco schermo di Android per accedere";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Utilizza dispositivo hardware";
 "id_use_secure_display_and_screen" = "Usa Secure Display e Screen Lock";
 "id_use_the_jogwheel_to_select_the" = "Utilizza la jog-wheel per selezionare la parola che corrisponda con la tua recovery phrase.";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "Non sei connesso, attendi";
 "id_you_are_now_connected" = "Ora sei connesso";
 "id_you_can_change_these_later_on" = "Potrai modificare in seguito.";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "Non puoi creare o ripristinare un wallet  %@ in quanto esiste già un wallet protetto da PIN.";
 "id_you_have_a_significant_amount" = "L'importo dei tuoi fondi è elevato. Prendi in considerazione l'idea di proteggerli con un 2FA.";
 "id_you_have_clicked_a_payment_uri" = "Hai selezionato un Payment URI. Seleziona un wallet per gestirlo";

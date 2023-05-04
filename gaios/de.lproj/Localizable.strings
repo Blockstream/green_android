@@ -39,6 +39,7 @@
 "id_account" = "Konto";
 "id_account__asset" = "Konto & Guthaben";
 "id_account_address" = "Konto-Adresse";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "Kontostand";
 "id_account_extended_public_keys" = "Extended Public Keys des Kontos";
 "id_account_for_special_assets" = "Konto für besondere Vermögenswerte, beaufsichtigt und autorisiert durch deren Herausgeber.";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "Beim Löschen Ihres PINs wird der Zugriff auf Ihre Wallet dauerhaft entfernt. Die Wiederherstellung erfolgt nur über Ihren Merksatz. Drücken Sie \"OK\" um fortzufahren.";
 "id_denomination" = "Denominierung";
 "id_deposit" = "Einzahlung";
+"id_descriptor" = "Descriptor";
 "id_details" = "Details";
 "id_device" = "Gerät";
 "id_devices" = "Geräte";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "Wenn du Zugriff auf eine Zwei-Faktor-Methode für dieses Wallet hast, kannst du das Reset abbrechen, um sofort wieder senden und empfangen zu können, oder %d Tage warten.";
 "id_if_you_have_some_coins_on_the" = "Falls du noch ein paar Coins auf dem alten (Legacy) Adress-Typ hast und sie nicht in nächster Zeit ausgibst, musst du gegebenenfalls eine Email schicken und deine Wiederherstellungs-Transaktion empfangen, um sicherzugehen, dass du die volle Kontrolle über deine Gelder behälst.";
 "id_if_you_initiated_the_2fa_reset" = "Falls du die Anfechtung des 2FA-Reset aus Versehen initiiert hast, kannst du dies ungeschehen machen und die Wallet in den Status 2FA-Reset zurück bringen.";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importiere eine in Blockstream Green erstellte Multisig Shield-Wallet.";
 "id_import_a_wallet_created_on" = "Importiere eine Wallet, die mit Blockstream Green erstellt wurde.";
 "id_import_a_wallet_created_with" = "Importiere eine Wallet, die mit einer anderen App erstellt wurde. Diese Option funktioniert nur mit Singlesig-Wallets, die das BIP39-Mnemonik verwenden und Ableitungen gemäß BIP44, BIP49 oder BIP84 befolgen.";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "Eingang";
 "id_inconsistent_data_provided_for" = "Inkonsistente Daten bei der Aktivierung der Authenticator 2FA eingegeben";
 "id_increase_fee" = "Gebühr erhöhen";
@@ -904,6 +908,7 @@
 "id_seconds" = "Sekunden";
 "id_security" = "Sicherheit";
 "id_security_change" = "Sicherheits-Änderung";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "Siehe unsere Datenschutzerklärung %@";
 "id_see_our_terms_of_service_s" = "Siehe unsere Allgemeinen Geschäftsbedingungen %@";
 "id_segwit" = "SegWit";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "Mein Wallet-Backup anzeigen";
 "id_show_qr_code" = "QR-Code anzeigen";
 "id_show_recovery_phrase" = "Wiederherstellungs-Phrase anzeigen";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Signatur-Validierung fehlgeschlagen. Falls dieser Fehler unerwartet und wiederholt auftritt, ist es möglich, dass die Hardware-Wallet fehlerhaft ist oder kompromittiert wurde. Sie könnte deine Schlüssel preisgeben, was zum Verlust deiner Gelder führen könnte. Bitte ziehe in Betracht, deine Hardware-Wallet auszutauschen.";
 "id_signup_in_progress" = "Signup wird bearbeitet";
 "id_simple" = "Einfach";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "Nutze eine bestehende Wiederherstellungs-Phrase als deinen dritten Schlüssel.";
 "id_use_an_xpub_for_which_you_own" = "Verwende einen xpub, für den du die korrespondierenden private keys hälst, als deinen dritten Wiederherstellungs-Schlüssel";
 "id_use_android_screen_lock_to_log" = "Android-Bildschirmsperre zur Anmeldung verwenden";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Verwende ein Hardware-Gerät";
 "id_use_secure_display_and_screen" = "Verwende Secure Display und Bildschirm-Sperre";
 "id_use_the_jogwheel_to_select_the" = "Verwende das Drehrädchen, um das Wort auszuwählen, das zu deiner Wiederherstellungs-Phrase gehört.";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "Sie sind nicht verbunden, bitte warten";
 "id_you_are_now_connected" = "Sie sind jetzt verbunden";
 "id_you_can_change_these_later_on" = "Du kannst dies später ändern.";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "Du kannst keine %@ Wallet erstellen oder wiederherstellen, da du bereits eine PIN-gesicherte Wallet hast. ";
 "id_you_have_a_significant_amount" = "Du hast eine beträchtliche Summe an Geld hier, denk mal darüber nach, das mit 2FA zu schützen.";
 "id_you_have_clicked_a_payment_uri" = "Du hast eine Payment URI angeklickt, wähle ein Wallet um fortzufahren";

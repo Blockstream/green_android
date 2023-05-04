@@ -44,13 +44,13 @@ class WODetailsViewController: KeyboardViewController {
         lblTitle.text = "id_watchonly_details".localized
         lblHint.text = "".localized
         segment.setTitle("id_xpub".localized, forSegmentAt: 0)
-        segment.setTitle("Descriptor".localized, forSegmentAt: 1)
+        segment.setTitle("id_descriptor".localized, forSegmentAt: 1)
         let font = UIFont.systemFont(ofSize: 14.0, weight: .medium)
         segment.setTitleTextAttributes([NSAttributedString.Key.font: font], for: .normal)
-        lblCoda.text = "Watch-only wallets let you receive funds and check your balance."
-        btnImport.setTitle("Import", for: .normal)
+        lblCoda.text = "id_log_in_via_watchonly_to_receive".localized
+        btnImport.setTitle("id_import".localized, for: .normal)
         lblError.text = "This is not a valid descriptor"
-        btnFile.setTitle("Import from file", for: .normal)
+        btnFile.setTitle("id_import_from_file".localized, for: .normal)
         lblBio.text = NSLocalizedString("id_login_with_biometrics", comment: "")
     }
 

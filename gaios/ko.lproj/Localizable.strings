@@ -39,6 +39,7 @@
 "id_account" = "계정";
 "id_account__asset" = "계정 및 자산";
 "id_account_address" = "계정 주소";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "계정 잔고";
 "id_account_extended_public_keys" = "계정 확장 공개 키";
 "id_account_for_special_assets" = "자산 발행인이 모니터링하거나 승인한 특수 자산 관련 계정.";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "니모닉이 없는 상태에서 PIN을 삭제하면 지갑을 영구적으로 사용하실 수 없게 됩니다. 계속하시려면 \"OK\"를 누르세요.";
 "id_denomination" = "기본 단위";
 "id_deposit" = "입금하기";
+"id_descriptor" = "Descriptor";
 "id_details" = "세부 사항";
 "id_device" = "기기";
 "id_devices" = "기기";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "이 지갑의 이중 인증 방법에 액세스할 수 있다면 초기화를 취소하여 즉시 또는 %d일 후 자금을 사용하거나 받을 수 있습니다.";
 "id_if_you_have_some_coins_on_the" = "레거시 주소 유형에 어느 정도 코인을 갖고 있고 곧 사용할 계획이 없다면 자금을 언제나 관리할 수 있도록 이메일을 설정하여 복구 거래 내역을 받으실 수 있습니다.";
 "id_if_you_initiated_the_2fa_reset" = "실수로 2FA 초기화 이의 신청을 시작했다면 이를 취소하고 지갑을 2FA 초기화 상태로 되돌릴 수 있습니다.";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Blockstream Green에서 생성된 Multisig Shield 지갑 가져오기";
 "id_import_a_wallet_created_on" = "Blockstream Green에서 생성된 지갑 가져오기";
 "id_import_a_wallet_created_with" = "다른 앱으로 만든 지갑 가져오기. 이 옵션은 BIP39 니모닉을 사용하고 BIP44 또는 BIP49, BIP84 파생을 따르는 단일 서명 지갑에서만 사용 가능합니다.";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "입금";
 "id_inconsistent_data_provided_for" = "Authenticator 2FA 활성화를 위해 제공된 데이터 불일치";
 "id_increase_fee" = "수수료 높이기";
@@ -904,6 +908,7 @@
 "id_seconds" = "초";
 "id_security" = "보안";
 "id_security_change" = "보안 변경";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "개인 정보 보호 정책 보기 %@";
 "id_see_our_terms_of_service_s" = "서비스 약관 보기 %@";
 "id_segwit" = "세그윗";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "내 지갑 백업 보기";
 "id_show_qr_code" = "QR 코드 보기";
 "id_show_recovery_phrase" = "복구 문구 보이기";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "서명 검증에 실패했습니다. 이 오류가 예상치 못한 오류이고 반복적으로 발생했다면 하드웨어 지갑에 결함이 있거나 지갑이 위험에 노출되었을 수 있습니다. 사용자 키가 유출되었다면 자금 손실이 발생할 수 있습니다. 하드웨어 지갑을 교체하시는 것이 좋습니다.";
 "id_signup_in_progress" = "회원가입 진행 중";
 "id_simple" = "단순";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "기존 복구 문구를 세 번째 복구 키로 사용하세요.";
 "id_use_an_xpub_for_which_you_own" = "해당 개인 키의 xpub를 세 번째 복구 키로 사용하세요.";
 "id_use_android_screen_lock_to_log" = "Android 화면 잠금을 사용하여 로그인";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "하드웨어 장치 사용하기";
 "id_use_secure_display_and_screen" = "보안 디스플레이 및 스크린 잠금 사용하기";
 "id_use_the_jogwheel_to_select_the" = "조그 휠을 사용하여 복구 문구와 일치하는 단어를 선택하십시오.";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "연결되지 않았습니다. 잠시만 기다려 주세요";
 "id_you_are_now_connected" = "이제 연결되었습니다";
 "id_you_can_change_these_later_on" = "나중에 변경 가능합니다.";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "이미 PIN으로 보호된 지갑이 있기 때문에 %@에서 지갑을 생성하거나 복구할 수 없습니다.";
 "id_you_have_a_significant_amount" = "귀하는 여기에 상당한 양의 자금을 보유하고 있으므로, 2FA로써  보호하는 것을 고려해보시기 바랍니다.";
 "id_you_have_clicked_a_payment_uri" = "결제 URI를 클릭하셨습니다. 결제할 지갑을 선택하세요.";

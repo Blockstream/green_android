@@ -39,6 +39,7 @@
 "id_account" = "アカウント";
 "id_account__asset" = "アカウントと資産";
 "id_account_address" = "アカウントのアドレス";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "アカウント残高";
 "id_account_extended_public_keys" = "アカウントの拡張公開鍵一覧";
 "id_account_for_special_assets" = "発行者による許可や監視が必要な特殊なアセット用のアカウントです。";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "PINを削除した場合、ニモニックが無いと永久にウォレットへのアクセスが出来なくなります。続行するには\"OK\"ボタンを押してください。";
 "id_denomination" = "単位";
 "id_deposit" = "入金";
+"id_descriptor" = "Descriptor";
 "id_details" = "詳細";
 "id_device" = "デバイス";
 "id_devices" = "デバイス一覧";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "このウォレットに紐づいた2段階認証手段が残されている場合、リセットをキャンセルして送受信機能を取り戻すか、%d日待つことができます。";
 "id_if_you_have_some_coins_on_the" = "レガシーアドレスに資金があり、近日中に送金する予定がない場合、万が一の際に資金にアクセスできるようメールアドレスを登録してリカバリー用トランザクションを受け取る必要があります。";
 "id_if_you_initiated_the_2fa_reset" = "誤って2段階認証リセットの係争申請をしてしまった場合、取り消すことでウォレットを2段階認証リセット中の状態に戻すことができます。";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Blockstream Greenで作成されたマルチシグ・シールドウォレットを取り込みます。";
 "id_import_a_wallet_created_on" = "Blockstream Greenで作成されたウォレットを取り込みます。";
 "id_import_a_wallet_created_with" = "他のアプリで作成されたウォレットを取り込みます。BIP39のニモニックとBIP44, BIP49, BIP84のいずれかの標準デリベーションを使って作成されたウォレットのみ対応しています。";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "受信中";
 "id_inconsistent_data_provided_for" = "Authenticatorによる2段階認証に必要なデータが一致しません";
 "id_increase_fee" = "手数料を追加する";
@@ -904,6 +908,7 @@
 "id_seconds" = "秒";
 "id_security" = "セキュリティ";
 "id_security_change" = "セキュリティの変更";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "プライバシーポリシーを確認する %@";
 "id_see_our_terms_of_service_s" = "利用規約を確認する %@";
 "id_segwit" = "SegWit";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "ウォレットのバックアップ情報を確認する";
 "id_show_qr_code" = "QRコードを表示する";
 "id_show_recovery_phrase" = "リカバリーフレーズを表示する";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "署名の検証に失敗しました。このエラーが原因不明で繰り返し発生する場合、ハードウェアウォレットの故障か改造が疑われます。秘密鍵の流出と資金の盗難につながる恐れがあるので、ハードウェアウォレットの交換をお勧めします。";
 "id_signup_in_progress" = "登録中です";
 "id_simple" = "シンプル";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "既存のリカバリーフレーズを第3のリカバリーキーとして使用します。";
 "id_use_an_xpub_for_which_you_own" = "自身で秘密鍵を所有するウォレットのxpubを第3のリカバリーキーとして使用します。";
 "id_use_android_screen_lock_to_log" = "Android画面ロックでログインする";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "ハードウェアデバイスを利用する";
 "id_use_secure_display_and_screen" = "セキュアディスプレイおよびスクリーンロック機能を利用する";
 "id_use_the_jogwheel_to_select_the" = "ダイヤルを使ってあなたのリカバリーフレーズと同じ単語を選択してください。";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "接続できません。しばらくお待ちください。";
 "id_you_are_now_connected" = "接続しました。";
 "id_you_can_change_these_later_on" = "これらは後からも変更できます。";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "すでにPINで保護されている%@ウォレットが存在するため、ウォレットの作成や復元ができません。";
 "id_you_have_a_significant_amount" = "大きな資金は2段階認証で保護することを強くお勧めします。";
 "id_you_have_clicked_a_payment_uri" = "Payment URIをクリックしました。使用するウォレットを選択してください";

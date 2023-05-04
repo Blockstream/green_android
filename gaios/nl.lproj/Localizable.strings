@@ -39,6 +39,7 @@
 "id_account" = "Account";
 "id_account__asset" = "Account en asset";
 "id_account_address" = "Accountadres";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "Accountbalans";
 "id_account_extended_public_keys" = "Account Extended Public Keys";
 "id_account_for_special_assets" = "Rekening voor speciale assets, gecontroleerd of geautoriseerd door de uitgever van de asset.";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "Het verwijderen van je PIN zorgt ervoor dat je permanent geen toegang meer hebt tot je wallet, tenzij je beschikt over de herstelzin. Druk op \"OK\" om door te gaan.";
 "id_denomination" = "Waardevertoning";
 "id_deposit" = "Storten";
+"id_descriptor" = "Descriptor";
 "id_details" = "Details";
 "id_device" = "Apparaat";
 "id_devices" = "Apparaten";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "Als je toegang hebt tot een 2FA-methode voor je wallet, annuleer dan de reset om de wallet onmiddellijk te kunnen gebruiken, of wacht %d dagen.";
 "id_if_you_have_some_coins_on_the" = "Als je munten van het oude adrestype hebt en deze niet binnenkort gaat gebruiken, moet je mogelijk een e-mailadres instellen en je hersteltransacties ontvangen om er zeker van te zijn dat je altijd de controle behoudt over je geld.";
 "id_if_you_initiated_the_2fa_reset" = "Als je per ongeluk het 2FA-resetgeschil hebt gestart, kun je dit ongedaan maken en de wallet terugzetten naar de 2FA-resetstatus.";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importeer een Multisig Shield-wallet die is gemaakt op Blockstream Green.";
 "id_import_a_wallet_created_on" = "Importeer een wallet die is gemaakt op Blockstream Green.";
 "id_import_a_wallet_created_with" = "Importeer een wallet die is gemaakt met andere apps. Deze optie werkt alleen met singlesig-wallets die BIP39-herstelzinnen gebruiken en de BIP44-, BIP49- of BIP84-regels volgen.";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "Binnenkomend";
 "id_inconsistent_data_provided_for" = "Inconsistente gegevens voor inschakelen Authenticator 2FA";
 "id_increase_fee" = "Tarief verhogen";
@@ -904,6 +908,7 @@
 "id_seconds" = "sec.";
 "id_security" = "Beveiliging";
 "id_security_change" = "Beveiligingswijziging";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "Zie ons privacybeleid %@";
 "id_see_our_terms_of_service_s" = "Zie onze dienstvoorwaarden %@";
 "id_segwit" = "SegWit";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "Toon mijn wallet-back-up";
 "id_show_qr_code" = "QR-code tonen";
 "id_show_recovery_phrase" = "Herstelzin weergeven";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Signature-validatie mislukt. Als deze fout onverwacht is en herhaaldelijk optreedt, is het mogelijk dat de hardware wallet defect of gecompromitteerd is. Het apparaat kan mogelijk je sleutels lekken, wat kan leiden tot verlies van geld. Overweeg om de hardware wallet te vervangen.";
 "id_signup_in_progress" = "Aanmelding in behandeling";
 "id_simple" = "Simpel";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "Gebruik een bestaande herstelzin als derde herstelsleutel.";
 "id_use_an_xpub_for_which_you_own" = "Gebruik een xpub waarvan je de bijbehorende privésleutel bezit als derde herstelsleutel.";
 "id_use_android_screen_lock_to_log" = "Gebruik Android-schermvergrendeling om in te loggen";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Hardwareapparaat gebruiken";
 "id_use_secure_display_and_screen" = "Veilige weergave en schermvergrendeling gebruiken";
 "id_use_the_jogwheel_to_select_the" = "Gebruik het draaiwiel om het woord te selecteren dat overeenkomt met je herstelzin.";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "Een moment, je bent niet verbonden";
 "id_you_are_now_connected" = "Je bent nu verbonden";
 "id_you_can_change_these_later_on" = "Je kunt dit later wijzigen.";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "Je kunt geen wallet maken of herstellen op %@ omdat je al een wallet met PIN hebt.";
 "id_you_have_a_significant_amount" = "Je hebt hier een aanzienlijk bedrag, overweeg om het te beschermen met 2FA.";
 "id_you_have_clicked_a_payment_uri" = "Je hebt op een betalings-URI geklikt, selecteer een wallet om deze te verwerken";

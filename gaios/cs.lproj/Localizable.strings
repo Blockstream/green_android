@@ -39,6 +39,7 @@
 "id_account" = "Účet";
 "id_account__asset" = "Účet & aktiva";
 "id_account_address" = "Adresa účtu";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "Zůstatek účtu";
 "id_account_extended_public_keys" = "Rozšířené veřejné klíče (xpub) k účtu";
 "id_account_for_special_assets" = "Účet pro zvláštní aktiva sledovaná nebo schválená emitentem aktiv.";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "Smazáním kódu PIN se trvale odstraní přístup k peněžence, pokud nemáte k dispozici mnemonickou frázi. Pokračujte stisknutím tlačítka „OK“.";
 "id_denomination" = "Nominální hodnota";
 "id_deposit" = "Vklad";
+"id_descriptor" = "Descriptor";
 "id_details" = "Podrobnosti";
 "id_device" = "Zařízení";
 "id_devices" = "Zařízení";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "Pokud pro tuto peněženku máte přístup k dvoufaktorové metodě, zrušte reset, abyste mohli okamžitě utrácet a přijímat nebo čekat %d dny.";
 "id_if_you_have_some_coins_on_the" = "Pokud máte nějaké mince na starším typu adresy a v nejbližší době je neutratíte, možná budete muset nastavit e-mail a přijímat transakce na obnovu, abyste měli jistotu, že máte své prostředky vždy pod kontrolou.";
 "id_if_you_initiated_the_2fa_reset" = "Pokud jste spor o resetování 2FA zahájili omylem, můžete jej vrátit zpět a nastavit peněženku zpět do stavu resetování 2FA.";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importovat Multisig Shield peněženku vytvořenou na Blockstream Green.";
 "id_import_a_wallet_created_on" = "Importujte peněženku vytvořenou na Blockstream Green.";
 "id_import_a_wallet_created_with" = "Importujte peněženku vytvořenou pomocí jiných aplikací. Tato možnost funguje pouze s peněženkami s jedním podpisem používajícími mnemonické fráze BIP39 s následujícími derivacemi BIP44, BIP49 nebo BIP84.";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "Příchozí";
 "id_inconsistent_data_provided_for" = "Pro povolení 2FA autentikátoru byly poskytnuty nekonzistentní údaje";
 "id_increase_fee" = "Zvyšte poplatek";
@@ -904,6 +908,7 @@
 "id_seconds" = "sekund(y)";
 "id_security" = "Zabezpečení";
 "id_security_change" = "Změna zabezpečení";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "Přečtěte si naše zásady ochrany osobních údajů %@";
 "id_see_our_terms_of_service_s" = "Přečtěte si naše smluvní podmínky %@";
 "id_segwit" = "SegWit";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "Zobrazit zálohu peněženky";
 "id_show_qr_code" = "Zobrazit QR kód";
 "id_show_recovery_phrase" = "Zobrazit frázi pro obnovení";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Ověření podpisu se nezdařilo. Pokud je tato chyba neočekávaná a stala se opakovaně, je možné, že je hardwarová peněženka vadná nebo byla kompromitována. Mohlo by dojít k úniku klíčů, což by mohlo vést ke ztrátě finančních prostředků. Zvažte prosím výměnu hardwarové peněženky.";
 "id_signup_in_progress" = "Probíhá registrace";
 "id_simple" = "Jednoduše";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "Jako třetí klíč pro obnovení použijte stávající frázi pro obnovení.";
 "id_use_an_xpub_for_which_you_own" = "Jako třetí klíč pro obnovení použijte xpub, ke kterému vlastníte odpovídající soukromý klíč.";
 "id_use_android_screen_lock_to_log" = "Přihlaste se pomocí zámku obrazovky Android";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Použít hardwarové zařízení";
 "id_use_secure_display_and_screen" = "Použití zabezpečeného zobrazení a zámku obrazovky";
 "id_use_the_jogwheel_to_select_the" = "Pomocí kolečka vyberte slovo, které odpovídá vaší frázi pro obnovení.";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "Nejste připojeni, počkejte prosím";
 "id_you_are_now_connected" = "Nyní jste připojeni";
 "id_you_can_change_these_later_on" = "Později je můžete změnit.";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "Nelze vytvořit ani obnovit peněženku na %@, protože již máte peněženku chráněnou pomocí PIN.";
 "id_you_have_a_significant_amount" = "Máte zde značné množství finančních prostředků, zvažte jejich ochranu pomocí 2FA.";
 "id_you_have_clicked_a_payment_uri" = "Klikli jste na URI platby, vyberte peněženku, která ji bude zpracovávat.";

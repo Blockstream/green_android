@@ -39,6 +39,7 @@
 "id_account" = "Cuenta";
 "id_account__asset" = "Cuenta y activo";
 "id_account_address" = "Dirección de la cuenta";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "Saldo de la cuenta";
 "id_account_extended_public_keys" = "Claves Públicas Extendidas de la Cuenta ";
 "id_account_for_special_assets" = "Cuenta para activos especiales, monitoreada o autorizada por el emisor de los activos.";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "Si elimina su PIN, deshabilitará permanentemente el acceso a la cartera, a menos que tenga disponible la frase semilla. Presione \"OK\" para continuar.";
 "id_denomination" = "Denominación";
 "id_deposit" = "Depósito";
+"id_descriptor" = "Descriptor";
 "id_details" = "Detalles";
 "id_device" = "Dispositivo";
 "id_devices" = "Dispositivos";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "Si tiene acceso a alguno de los métodos 2FA de esta cartera, cancele el restablecimiento para poder gastar y recibir fondos de inmediato, o bien espere %d días.";
 "id_if_you_have_some_coins_on_the" = "Si tiene monedas en un tipo de dirección legacy y no va a gastarlas en el corto plazo, le conviene configurar un correo electrónico para recibir sus transacciones de recuperación a fin de asegurarse de que nunca perderá el control de sus fondos.";
 "id_if_you_initiated_the_2fa_reset" = "Si presentó una disputa errónea por un restablecimiento 2FA, puede anularlo y restaurar el proceso de restablecimiento de la cartera.";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Importe una cartera Multisig Shield creada en Blockstream Green.";
 "id_import_a_wallet_created_on" = "Importe una cartera creada en Blockstream Green.";
 "id_import_a_wallet_created_with" = "Importe una cartera creada en otra app. Esta opción solo se aplica a carteras singlesig que emplean frases semilla BIP39 y se rigen por los estándares BIP44, BIP49 o derivaciones BIP84.";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "Entrante";
 "id_inconsistent_data_provided_for" = "Los datos proporcionados para habilitar el autenticador 2FA no coinciden";
 "id_increase_fee" = "Aumentar comisión";
@@ -904,6 +908,7 @@
 "id_seconds" = "segundos";
 "id_security" = "Seguridad";
 "id_security_change" = "Cambio de seguridad";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "Consulte nuestra política de privacidad %@";
 "id_see_our_terms_of_service_s" = "Consulte nuestros Términos de servicio %@";
 "id_segwit" = "SegWit";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "Mostrar el respaldo de mi cartera";
 "id_show_qr_code" = "Mostrar código QR";
 "id_show_recovery_phrase" = "Mostrar la frase de recuperación";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Falló la validación de firmas. Si este error es inesperado y recurrente, es posible que el hardware wallet esté dañado o haya sido vulnerado. Por ejemplo, podría estar filtrando sus llaves, lo cual lo expone a perder sus fondos. Le recomendamos que cambie de hardware wallet.";
 "id_signup_in_progress" = "Suscripción en curso";
 "id_simple" = "Simple";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "Utilice una frase semilla preexistente como tercera llave de recuperación.";
 "id_use_an_xpub_for_which_you_own" = "Utilice un xpub cuya correspondiente llave privada le pertenece como tercera clave de recuperación.";
 "id_use_android_screen_lock_to_log" = "Utilice el bloqueo de pantalla de Android para iniciar sesión";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Utilice un dispositivo hardware";
 "id_use_secure_display_and_screen" = "Usar Visualización Segura y Bloqueo de Pantalla";
 "id_use_the_jogwheel_to_select_the" = "Utilice la rueda para seleccionar la palabra que coincide con su frase de recuperación.";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "No está conectado. Espere.";
 "id_you_are_now_connected" = "Ahora está conectado";
 "id_you_can_change_these_later_on" = "Podrá cambiarlas más adelante.";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "No puede crear o restaurar una cartera en %@ porque ya tiene una cartera protegida con PIN.";
 "id_you_have_a_significant_amount" = "Esta cuenta contiene una cantidad de fondos considerable. Le recomendamos que los proteja con 2FA.";
 "id_you_have_clicked_a_payment_uri" = "Ha seleccionado un URI de pago; ahora elija una cartera para gestionarlo.";

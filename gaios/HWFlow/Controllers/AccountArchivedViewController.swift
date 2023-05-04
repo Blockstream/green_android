@@ -46,10 +46,10 @@ class AccountArchivedViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Account archived"
-        lblHint.text = "You can still receive funds, but they won’t be shown on your total balance."
+        lblTitle.text = "id_account_archived".localized
+        lblHint.text = "id_you_can_still_receive_funds_but".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
-        btnArchive.setTitle("See Archived Accounts (\(subaccounts.count))", for: .normal)
+        btnArchive.setTitle(String(format: "id_see_archived_accounts_s".localized, String(subaccounts.count)), for: .normal)
     }
 
     func setStyle() {

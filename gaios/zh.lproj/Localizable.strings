@@ -39,6 +39,7 @@
 "id_account" = "账户";
 "id_account__asset" = "账户与资产";
 "id_account_address" = "账户地址";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "账户余额";
 "id_account_extended_public_keys" = "账户扩展公钥";
 "id_account_for_special_assets" = "由资产发行人监控或授权的特殊资产账户。";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "如果没有助记词的话，删除PIN将导致永久失去钱包访问权限。点击“确认”以继续。";
 "id_denomination" = "面值";
 "id_deposit" = "充值";
+"id_descriptor" = "Descriptor";
 "id_details" = "详情";
 "id_device" = "设备";
 "id_devices" = "设备";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "如果您可以访问此钱包的双重验证，请取消重置以便能够立即转账和接收，或者等待%d天。";
 "id_if_you_have_some_coins_on_the" = "如果您有一些代币保存在旧的地址类型，并且您不会很快花费它们，您可能需要设置电子邮件并接收您的恢复转账，以确保您始终可以控制您的资金。";
 "id_if_you_initiated_the_2fa_reset" = "如果您错误地发起了2FA重置争议，您可以撤消它并设置钱包回到2FA重置状态。";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "导入在Blockstream Green上创建的Multisig Shield钱包。";
 "id_import_a_wallet_created_on" = "导入一个在Blockstream Green上创建的钱包。";
 "id_import_a_wallet_created_with" = "导入其他应用程序创建的钱包。该选项仅适用于使用BIP39助记词并遵循BIP44、BIP49或BIP84派生的单签钱包。";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "输入";
 "id_inconsistent_data_provided_for" = "启用Authenticator 2FA提供的数据不一致";
 "id_increase_fee" = "提高费用";
@@ -904,6 +908,7 @@
 "id_seconds" = "秒";
 "id_security" = "安全";
 "id_security_change" = "安全变更";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "查看隐私政策%@";
 "id_see_our_terms_of_service_s" = "查看服务条款%@";
 "id_segwit" = "隔离见证";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "显示我的钱包备份";
 "id_show_qr_code" = "显示二维码";
 "id_show_recovery_phrase" = "显示助记词";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "签名验证失败。如果该错误是意料之外的并且反复发生，则可能是硬件钱包出现故障或已被盗用。它可能会泄露您的私钥，从而导致资金损失。请考虑更换硬件钱包。";
 "id_signup_in_progress" = "正在注册";
 "id_simple" = "简洁";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "使用现有的助记词作为您的第三个恢复秘钥。";
 "id_use_an_xpub_for_which_you_own" = "使用您拥有相应私钥的xpub作为您的第三个恢复密钥。";
 "id_use_android_screen_lock_to_log" = "使用安卓屏幕锁登录";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "使用硬件设备";
 "id_use_secure_display_and_screen" = "使用安全显示和屏幕锁定";
 "id_use_the_jogwheel_to_select_the" = "使用滚轮选择与您的助记词相匹配的单词。";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "未连接，请稍候";
 "id_you_are_now_connected" = "现已连接";
 "id_you_can_change_these_later_on" = "您之后可以做出修改";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "你不能在%@上创建或恢复钱包，因为你已经有一个设置过PIN的钱包了。";
 "id_you_have_a_significant_amount" = "您在这里存放有大量资金，请考虑使用2FA保护它们。";
 "id_you_have_clicked_a_payment_uri" = "你点击了一个付款URI，请选择一个钱包来处理它";

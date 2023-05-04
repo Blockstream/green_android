@@ -39,6 +39,7 @@
 "id_account" = "Аккаунт";
 "id_account__asset" = "Аккаунт и Актив";
 "id_account_address" = "Адрес аккаунта";
+"id_account_archived" = "Account archived";
 "id_account_balance" = "Баланс аккаунта";
 "id_account_extended_public_keys" = "Extended Public Keys аккаунта";
 "id_account_for_special_assets" = "Аккаунт для особых активов, контролируемых или санкционированных эмитентом активов.";
@@ -322,6 +323,7 @@
 "id_deleting_your_pin_will_remove" = "Удаление PIN-кода заблокирует ваш кошелек, доступ к которому может быть восстановлен только в случае использования мнемонической фразы. Нажмите \"OK\" для продолжения.";
 "id_denomination" = "Деноминация";
 "id_deposit" = "Депозит";
+"id_descriptor" = "Descriptor";
 "id_details" = "Детали";
 "id_device" = "Устройство";
 "id_devices" = "Устройства";
@@ -522,9 +524,11 @@
 "id_if_you_have_access_to_a" = "Если у вас есть доступ к двухфакторному методу для этого кошелька, отмените сброс, чтобы иметь возможность тратить и получать средства моментально, или подождите %d дней.";
 "id_if_you_have_some_coins_on_the" = "Если у вас есть монеты на legacy-адресе и вы не собираетесь их тратить в ближайшее время, вам может потребоваться настроить электронную почту и получать транзакции восстановления, чтобы знать, что вы всегда контролируете свои средства.";
 "id_if_you_initiated_the_2fa_reset" = "Если вы инициировали спор о сбросе 2FA по ошибке, вы можете отменить его и вернуть кошелек в состояние сброса 2FA.";
+"id_import" = "Import";
 "id_import_a_multisig_shield_wallet" = "Импортируйте кошелек Multisig Shield, созданный в Blockstream Green.";
 "id_import_a_wallet_created_on" = "Импортируйте кошелек, созданный в Blockstream Green.";
 "id_import_a_wallet_created_with" = "Импортируйте кошелек, созданный в других приложениях. Эта опция работает только с одноподписными кошельками, использующими мнемонику BIP39 и ее производные BIP44, BIP49 или BIP84.";
+"id_import_from_file" = "Import from file";
 "id_incoming" = "Поступление";
 "id_inconsistent_data_provided_for" = "Для включения аутентификатора 2FA предоставлены непоследовательные данные";
 "id_increase_fee" = "Повышение комиссии";
@@ -904,6 +908,7 @@
 "id_seconds" = "секунд";
 "id_security" = "Безопасность";
 "id_security_change" = "Изменение уровня безопасности";
+"id_see_archived_accounts_s" = "See Archived Accounts (%@)";
 "id_see_our_privacy_policy_s" = "Смотрите нашу политику конфиденциальности %@";
 "id_see_our_terms_of_service_s" = "Смотрите наши Условия использования %@";
 "id_segwit" = "SegWit";
@@ -980,6 +985,7 @@
 "id_show_my_wallet_backup" = "Показать резервную копию моего кошелька";
 "id_show_qr_code" = "Показать QR-код";
 "id_show_recovery_phrase" = "Показать фразу восстановления";
+"id_sign_transaction" = "Sign Transaction";
 "id_signature_validation_failed_if" = "Проверка подписи не удалась. Если эта ошибка является неожиданной и повторяется неоднократно, возможно, аппаратный кошелек неисправен или был взломан. Возможно, произошла утечка ваших ключей, что может привести к потере средств. Пожалуйста, подумайте о замене аппаратного кошелька.";
 "id_signup_in_progress" = "Регистрация продолжается";
 "id_simple" = "Простой";
@@ -1149,6 +1155,7 @@
 "id_use_an_existing_recovery_phrase" = "Используйте существующую фразу восстановления в качестве третьего ключа восстановления.";
 "id_use_an_xpub_for_which_you_own" = "Используйте xpub, для которого у вас есть соответствующий приватный ключ, в качестве третьего ключа восстановления.";
 "id_use_android_screen_lock_to_log" = "Используйте блокировку экрана Android для входа в систему";
+"id_use_comma_separated_values_or" = "Use comma separated values or keep scanning";
 "id_use_hardware_device" = "Использовать аппаратное устройство";
 "id_use_secure_display_and_screen" = "Использовать защищенный дисплей и блокировку экрана";
 "id_use_the_jogwheel_to_select_the" = "С помощью колеса прокрутки выберите слово, соответствующее вашей фразе восстановления.";
@@ -1234,6 +1241,7 @@
 "id_you_are_not_connected_please" = "Вы не подключены, подождите";
 "id_you_are_now_connected" = "Соединение есть";
 "id_you_can_change_these_later_on" = "Вы можете изменить их позже.";
+"id_you_can_still_receive_funds_but" = "You can still receive funds, but they won’t be shown on your total balance.";
 "id_you_cannot_create_or_restore_a" = "Вы не можете создать или восстановить кошелек на %@ так как у вас уже есть кошелек, защищенный PIN-кодом.";
 "id_you_have_a_significant_amount" = "У вас есть значительная сумма средств, рассмотрите возможность их защиты с помощью 2FA.";
 "id_you_have_clicked_a_payment_uri" = "Вы нажали платежный URI, выберите кошелек для его обработки";
