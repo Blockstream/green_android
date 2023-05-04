@@ -11,13 +11,13 @@ enum AmpEducationalMode {
 
 class AccountViewModel {
 
-    var wm: WalletManager { WalletManager.current! }
+    private var wm: WalletManager { WalletManager.current! }
+    private var cachedBalance: [(String, Int64)]
+    private var cachedTransactions = [Transaction]()
+    private let bgq = DispatchQueue.global(qos: .background)
     var account: WalletItem!
-    var cachedBalance: [(String, Int64)]
-    var cachedTransactions = [Transaction]()
     var page = 0
     var fetchingTxs = false
-    let bgq = DispatchQueue.global(qos: .background)
 
     var showAssets: Bool {
         account.gdkNetwork.liquid
@@ -36,6 +36,7 @@ class AccountViewModel {
             reloadSections?([AccountSection.account], true)
         }
     }
+
     var addingCellModels: [AddingCellModel] {
         let enabled2fa = account.session?.twoFactorConfig?.anyEnabled ?? false
         if account.type == .standard && !enabled2fa && !watchOnly {

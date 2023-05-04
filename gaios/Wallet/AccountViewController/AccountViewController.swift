@@ -62,6 +62,7 @@ class AccountViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        reloadSections([AccountSection.assets, AccountSection.adding, AccountSection.disclose], animated: false)
 
         [EventType.Transaction, .Block, .AssetsUpdated, .Network].forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
@@ -354,7 +355,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch AccountSection(rawValue: section) {
         case .transaction:
-            return viewModel.cachedTransactions.count == 0 ? footerH : 1.0
+            return viewModel.txCellModels.count == 0 ? footerH : 1.0
         case .footer:
             return 100.0
         default:
@@ -387,7 +388,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch AccountSection(rawValue: section) {
         case .transaction:
-            return viewModel.cachedTransactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
+            return viewModel.txCellModels.count == 0 ? footerView(.noTransactions) : footerView(.none)
         default:
             return footerView(.none)
         }
@@ -423,7 +424,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                 present(vc, animated: false, completion: nil)
             }
         case .transaction:
-            let transaction = viewModel?.cachedTransactions[indexPath.row]
+            let transaction = viewModel?.txCellModels[indexPath.row].tx
             let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController, let account = transaction?.subaccountItem {
                 vc.transaction = transaction

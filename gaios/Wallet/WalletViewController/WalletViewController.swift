@@ -295,7 +295,8 @@ class WalletViewController: UIViewController {
         print(model)
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
-            vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: viewModel.cachedBalance)
+            let balance = AssetAmountList(model.account.satoshi ?? [:]).sorted()
+            vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: balance)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -514,9 +515,9 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch WalletSection(rawValue: section) {
         case .balance:
-            return viewModel.cachedBalance.count == 0 ? footerH : 1.0
+            return viewModel.balanceCellModel == nil ? footerH : 1.0
         case .transaction:
-            return viewModel.cachedTransactions.count == 0 ? footerH : 1.0
+            return viewModel.txCellModels.count == 0 ? footerH : 1.0
         case .footer:
             return 100.0
         default:
@@ -551,7 +552,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         case .account:
             return footerView(.none)
         case .transaction:
-            return viewModel.cachedTransactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
+            return viewModel.txCellModels.count == 0 ? footerView(.noTransactions) : footerView(.none)
         default:
             return footerView(.none)
         }
@@ -574,7 +575,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             tableView.beginUpdates()
             tableView.endUpdates()
         case .transaction:
-            let transaction = viewModel.cachedTransactions[indexPath.row]
+            let transaction = viewModel.txCellModels[indexPath.row].tx
             let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
                 vc.transaction = transaction
