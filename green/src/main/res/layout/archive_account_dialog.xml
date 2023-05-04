@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@string/id_you_can_still_receive_funds"
+            android:text="@string/id_you_can_still_receive_funds_but"
             android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="@color/color_on_surface_emphasis_medium"
@@ -95,7 +95,7 @@
                 style="@style/Widget.Green.Button.Text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{String.format(@string/id_see_archived_accounts, archivedAccounts)}"
+                android:text="@{String.format(@string/id_see_archived_accounts_s, archivedAccounts)}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/buttonWrap"
                 app:layout_constraintStart_toStartOf="parent" />
 
