@@ -168,7 +168,7 @@ class WalletManager {
         self.failureSessions = [:]
         let networks = self.sessions.values
             .filter { !$0.logged }
-            .filter { restore || $0.gdkNetwork.network == prominentNetwork.gdkNetwork!.network || existDatadir(session) }
+            .filter { restore || $0.gdkNetwork.network == prominentNetwork.gdkNetwork!.network || existDatadir($0) }
             .filter { !$0.gdkNetwork.liquid || device?.supportsLiquid ?? 1 == 1 }
             .map { $0.gdkNetwork.network }
         let concurrently = device != nil ? 1 : 2
