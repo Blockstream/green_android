@@ -122,7 +122,7 @@ class WalletViewModel {
         Guarantee()
             .compactMap { self.wm }
             .then(on: bgq) { $0.transactions(subaccounts: self.subaccounts) }
-            .done { txs in
+            .done(on: bgq) { txs in
                 self.isTxLoading = false
                 self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
                 self.txCellModels = self.cachedTransactions
@@ -229,32 +229,36 @@ class WalletViewModel {
             }
     }
 
+    func reload() {
+        loadSubaccounts()
+        loadBalances()
+        loadTransactions(max: 10)
+    }
+
     func handleEvent(_ notification: Notification) {
         guard let eventType = EventType(rawValue: notification.name.rawValue) else { return }
-
         print("..... \(eventType.rawValue)")
         switch eventType {
         case .Transaction:
-            loadSubaccounts()
+            reload()
         case .Block:
-//            if cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
-                loadSubaccounts()
-//            }
+            if cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
+                reload()
+            }
         case .AssetsUpdated:
-            loadSubaccounts()
+            reload()
         case .Network:
             guard let dict = notification.userInfo as NSDictionary? else { return }
             guard let connected = dict["connected"] as? Bool else { return }
             guard let loginRequired = dict["login_required"] as? Bool else { return }
             if connected == true && loginRequired == false {
-                loadSubaccounts()
+                reload()
             }
         case .Settings, .Ticker, .TwoFactorReset:
-            loadSubaccounts()
+            reload()
         default:
             break
         }
-        reloadAlertCards()
     }
 
     func onCreateAccount(_ wallet: WalletItem) {
