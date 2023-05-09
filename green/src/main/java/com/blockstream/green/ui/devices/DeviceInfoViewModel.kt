@@ -49,7 +49,6 @@ class DeviceInfoViewModel @AssistedInject constructor(
     val deviceState = device.deviceState.asLiveData()
 
     override val deviceConnectionManagerOrNull = DeviceConnectionManager(
-        makeDeviceReady = false,
         countly = countly,
         gdkBridge = gdkBridge,
         settingsManager = settingsManager,

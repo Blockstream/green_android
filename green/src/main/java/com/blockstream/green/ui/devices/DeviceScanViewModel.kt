@@ -49,7 +49,6 @@ class DeviceScanViewModel @AssistedInject constructor(
         }
 
     override val deviceConnectionManagerOrNull = DeviceConnectionManager(
-        makeDeviceReady = true,
         countly = countly,
         gdkBridge = gdkBridge,
         settingsManager = settingsManager,

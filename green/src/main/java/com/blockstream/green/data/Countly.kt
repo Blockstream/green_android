@@ -31,6 +31,7 @@ import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
 import com.blockstream.green.views.GreenAlertView
+import com.greenaddress.greenbits.wallets.FirmwareFileData
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.decodeFromString
@@ -374,13 +375,18 @@ class Countly constructor(
         }
     }
 
-    fun activeWallet(
+    fun activeWalletStart(){
+        events.cancelEvent(Events.WALLET_ACTIVE.toString())
+        events.startEvent(Events.WALLET_ACTIVE.toString())
+    }
+
+    fun activeWalletEnd(
         session: GdkSession,
         walletAssets: Map<String, Long>,
         accountAssets: Map<AccountId, Assets>,
         accounts: List<Account>
     ) {
-        events.recordEvent(
+        events.endEvent(
             Events.WALLET_ACTIVE.toString(),
             sessionSegmentation(session).also { segmentation ->
                 // Total account balance
@@ -392,17 +398,22 @@ class Countly constructor(
 
                 segmentation[PARAM_ACCOUNTS] = accounts.size
                 segmentation[PARAM_ACCOUNTS_TYPES] = accounts.map { it.type.gdkType }.toSet().sorted().joinToString(",")
-            }
+            },1, 0.0
         )
     }
 
-    fun loginWallet(
+    fun loginWalletStart(){
+        events.cancelEvent(Events.WALLET_LOGIN.toString())
+        events.startEvent(Events.WALLET_LOGIN.toString())
+    }
+
+    fun loginWalletEnd(
         wallet: Wallet,
         session: GdkSession,
         loginCredentials: LoginCredentials? = null
     ) {
         events
-            .recordEvent(
+            .endEvent(
                 Events.WALLET_LOGIN.toString(),
                 sessionSegmentation(session).also { segmentation ->
                     when {
@@ -422,7 +433,8 @@ class Countly constructor(
                     }?.let { method ->
                         segmentation[PARAM_METHOD] = method
                     }
-                }
+                },
+                1, 0.0
             )
     }
 
@@ -436,6 +448,25 @@ class Countly constructor(
 
     fun jadeInitialize() {
         events.recordEvent(Events.JADE_INITIALIZE.toString())
+    }
+
+    fun jadeOtaStart(device: Device, firmwareFileData: FirmwareFileData) {
+        events.recordEvent(Events.OTA_START.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
+            segmentation[PARAM_SELECTED_CONFIG] = firmwareFileData.image.config.lowercase()
+            segmentation[PARAM_SELECTED_DELTA] = firmwareFileData.image.patchSize != null
+            segmentation[PARAM_SELECTED_VERSION] = firmwareFileData.image.version
+        })
+
+        events.cancelEvent(Events.OTA_COMPLETE.toString())
+        events.startEvent(Events.OTA_COMPLETE.toString())
+    }
+
+    fun jadeOtaComplete(device: Device, firmwareFileData: FirmwareFileData) {
+        events.endEvent(Events.OTA_COMPLETE.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
+            segmentation[PARAM_SELECTED_CONFIG] = firmwareFileData.image.config.lowercase()
+            segmentation[PARAM_SELECTED_DELTA] = firmwareFileData.image.patchSize != null
+            segmentation[PARAM_SELECTED_VERSION] = firmwareFileData.image.version
+        }, 1, 0.0)
     }
 
     fun addWallet() {
@@ -618,6 +649,13 @@ class Countly constructor(
             )
     }
 
+    private fun baseSegmentation(): HashMap<String, Any>{
+        return hashMapOf<String, Any>().also { segmentation ->
+            appSettingsAsString?.also {
+                segmentation[USER_PROPERTY_APP_SETTINGS] = it
+            }
+        }
+    }
 
     private fun networkSegmentation(session: GdkSession): HashMap<String, Any> {
         if(!session.isNetworkInitialized){
@@ -648,10 +686,10 @@ class Countly constructor(
             else -> "none"
         }
 
-        return hashMapOf(
-            PARAM_NETWORKS to network,
-            PARAM_SECURITY to security,
-        )
+        return baseSegmentation().also{
+            it[PARAM_NETWORKS] = network
+            it[PARAM_SECURITY] = security
+        }
     }
 
 
@@ -690,10 +728,6 @@ class Countly constructor(
                     if(it.isBip39Ephemeral){
                         segmentation[PARAM_EPHEMERAL_BIP39] = true
                     }
-                }
-
-                appSettingsAsString?.also {
-                    segmentation[USER_PROPERTY_APP_SETTINGS] = it
                 }
             }
 
@@ -785,6 +819,9 @@ class Countly constructor(
         HWW_CONNECTED("hww_connected"),
         JADE_INITIALIZE("jade_initialize"),
 
+        OTA_START("ota_start"),
+        OTA_COMPLETE("ota_complete"),
+
         WALLET_ADD("wallet_add"),
         WALLET_HWW("wallet_hww"),
 
@@ -866,6 +903,10 @@ class Countly constructor(
         const val PARAM_FLOW = "flow"
         const val PARAM_EPHEMERAL_BIP39 = "ephemeral_bip39"
         const val PARAM_MAINNET = "mainnet"
+
+        const val PARAM_SELECTED_CONFIG = "selected_config"
+        const val PARAM_SELECTED_DELTA = "selected_delta"
+        const val PARAM_SELECTED_VERSION = "selected_version"
 
         const val PARAM_TRANSACTION_TYPE = "transaction_type"
         const val PARAM_ADDRESS_INPUT = "address_input"

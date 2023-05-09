@@ -62,4 +62,11 @@ class JadeHWWallet(
             )
         }
     }
+
+    @Synchronized
+    fun updateFirmwareVersion(firmwareVersion: String?) {
+        firmwareVersion?.also {
+            mFirmwareVersion = it
+        }
+    }
 }

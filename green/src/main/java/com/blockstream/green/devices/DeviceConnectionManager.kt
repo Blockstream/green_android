@@ -42,7 +42,6 @@ import kotlinx.coroutines.launch
 import mu.KLogging
 
 class DeviceConnectionManager constructor(
-    private val makeDeviceReady: Boolean,
     countly: Countly,
     val gdkBridge: GdkBridge,
     val settingsManager: SettingsManager,

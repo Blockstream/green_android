@@ -3,6 +3,7 @@ package com.blockstream.green.ui.devices
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.DeviceBrand
 import com.blockstream.HwWalletLogin
+import com.blockstream.JadeHWWallet
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
@@ -112,14 +113,6 @@ abstract class AbstractDeviceViewModel constructor(
         }
     }
 
-    override fun askForFirmwareUpgradeSync(
-        firmwareUpgradeRequest: FirmwareUpgradeRequest
-    ): Int? {
-        return runBlocking {
-            askForFirmwareUpgrade(firmwareUpgradeRequest).await()
-        }
-    }
-
     override fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean) {
         if(requireBleRebonding){
             onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(DeviceInfoViewModel.REQUIRE_REBONDING)))
@@ -153,14 +146,28 @@ abstract class AbstractDeviceViewModel constructor(
 
     override fun firmwarePushedToDevice(firmwareFileData: FirmwareFileData, hash: String) {
         onEvent.postValue(ConsumableEvent(DeviceEvent.FirmwarePushedToDevice(firmwareFileData, hash)))
+        device?.also {
+            countly.jadeOtaStart(it, firmwareFileData)
+        }
     }
 
     override fun firmwareProgress(written: Int, totalSize: Int) {
         onEvent.postValue(ConsumableEvent(DeviceEvent.FirmwareUpdateProgress(written, totalSize)))
     }
 
-    override fun firmwareComplete(success: Boolean) {
+    override fun firmwareComplete(success: Boolean, firmwareFileData: FirmwareFileData) {
+        logger.info { "firmwareComplete: $success" }
+
+        (device?.hwWallet as? JadeHWWallet)?.also {
+            it.updateFirmwareVersion(firmwareFileData.image.version)
+        }
+
         onEvent.postValue(ConsumableEvent(DeviceEvent.FirmwareUpdateComplete(success)))
+        if(success) {
+            device?.also {
+                countly.jadeOtaComplete(it, firmwareFileData)
+            }
+        }
     }
 
     override fun onCleared() {

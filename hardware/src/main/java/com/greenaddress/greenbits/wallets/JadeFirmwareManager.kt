@@ -21,7 +21,7 @@ import java.security.MessageDigest
 // A firmware instance on the file server
 // Meta data, and optionally the actual fw binary
 @Serializable
-data class FirmwareFileData constructor(
+class FirmwareFileData constructor(
     @SerialName("filepath") val filepath: String,
     @SerialName("image") val image: FirmwareImage,
     @SerialName("firmware") var firmware: ByteArray? = null
@@ -61,10 +61,11 @@ data class FirmwareChannels constructor(
     override fun kSerializer() = serializer()
 }
 
-class JadeFirmwareManager(private val firmwareInteraction: FirmwareInteraction,
-                          private val httpRequestProvider: HttpRequestProvider,
-                          private val jadeFwVersionsFile: String = JADE_FW_VERSIONS_LATEST,
-                          private val forceFirmwareUpdate: Boolean = false
+class JadeFirmwareManager constructor(
+    private val firmwareInteraction: FirmwareInteraction,
+    private val httpRequestProvider: HttpRequestProvider,
+    private val jadeFwVersionsFile: String = JADE_FW_VERSIONS_LATEST,
+    private val forceFirmwareUpdate: Boolean = false
 ) {
 
     companion object: KLogging(){
@@ -214,10 +215,12 @@ class JadeFirmwareManager(private val firmwareInteraction: FirmwareInteraction,
             ) { written, totalSize ->
                 firmwareInteraction.firmwareProgress(written, totalSize)
             }
-            firmwareInteraction.firmwareComplete(updated)
+
+            firmwareInteraction.firmwareComplete(updated, fwFile)
             logger.info { "Jade OTA Update returned: $updated" }
-            jade.disconnect()
+
             if (jade.isUsb) {
+                jade.disconnect()
                 // Sleep to allow jade to reboot
                 SystemClock.sleep(5000)
             }

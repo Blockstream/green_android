@@ -9,15 +9,11 @@ interface FirmwareInteraction: HardwareQATester {
         firmwareUpgradeRequest: FirmwareUpgradeRequest
     ): Deferred<Int?>
 
-    fun askForFirmwareUpgradeSync(
-        firmwareUpgradeRequest: FirmwareUpgradeRequest
-    ): Int?
-
     fun firmwarePushedToDevice(firmwareFileData: FirmwareFileData, hash: String)
 
     fun firmwareProgress(written: Int, totalSize: Int)
 
-    fun firmwareComplete(success: Boolean)
+    fun firmwareComplete(success: Boolean, firmwareFileData: FirmwareFileData)
 
     fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean)
 }

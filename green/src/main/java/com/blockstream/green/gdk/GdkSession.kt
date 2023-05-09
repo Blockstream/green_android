@@ -1063,7 +1063,6 @@ class GdkSession constructor(
                 it.firstOrNull() ?: throw exceptions.first() // Throw if all networks failed
             }.also{
                 _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + failedNetworkLogins
-
                 onLoginSuccess(
                     loginData = it,
                     initAccount = initAccount,
@@ -1104,6 +1103,7 @@ class GdkSession constructor(
         walletHashId = if(isWatchOnly) loginData?.networkHashId else loginData?.walletHashId
 
         if(initializeSession) {
+            countly.activeWalletStart()
             initializeSessionData(initNetwork, initAccount)
         }
 
@@ -1821,7 +1821,7 @@ class GdkSession constructor(
 
     private fun walletActiveEventIfNeeded(){
         if(walletActiveEventInvalidated) {
-            countly.activeWallet(
+            countly.activeWalletEnd(
                 session = this,
                 walletAssets = walletAssets,
                 accountAssets = _accountAssetsFlow.mapValues { entry -> entry.value.value },

@@ -280,6 +280,8 @@ class LoginViewModel @AssistedInject constructor(
     ) {
 
         doUserAction({
+            countly.loginWalletStart()
+
             logInMethod.invoke(session)
 
             // Migrate - add walletHashId
@@ -378,7 +380,7 @@ class LoginViewModel @AssistedInject constructor(
         }, postAction = {
             onProgress.value = it == null
         }, onSuccess = { pair ->
-            countly.loginWallet(
+            countly.loginWalletEnd(
                 wallet = pair.first,
                 session = pair.second,
                 loginCredentials = loginCredentials

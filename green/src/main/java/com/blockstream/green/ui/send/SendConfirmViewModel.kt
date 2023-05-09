@@ -40,6 +40,8 @@ class SendConfirmViewModel @AssistedInject constructor(
 
     fun signTransaction(broadcast: Boolean, twoFactorResolver: TwoFactorResolver) {
         doUserAction({
+            countly.startSendTransaction()
+
             // Create transaction with memo
             val params = session.pendingTransaction!!.first.copy(
                 memo = transactionNote

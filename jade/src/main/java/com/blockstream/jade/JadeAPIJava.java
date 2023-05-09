@@ -257,7 +257,8 @@ public abstract class JadeAPIJava {
             }
         }
 
-        final JsonNode status = this.jadeRpc("ota_complete", TIMEOUT_AUTONOMOUS);
+        // ota_complete sometimes takes a bit more than 2 secs
+        final JsonNode status = this.jadeRpc("ota_complete", TIMEOUT_AUTONOMOUS * 4);
         return status.asBoolean();
     }
 

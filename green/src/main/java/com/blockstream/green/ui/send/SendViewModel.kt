@@ -81,8 +81,6 @@ class SendViewModel @AssistedInject constructor(
     private val checkTransactionMutex = Mutex()
 
     init {
-        countly.startSendTransaction()
-
         // Update fee estimation on network change
         accountAssetLiveData.asFlow().map {
             it.account.network
