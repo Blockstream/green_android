@@ -1797,6 +1797,12 @@ class GdkSession constructor(
             gdkBridge.updateTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
         ).result<CreateTransaction>()
 
+    fun blindTransaction(network: Network, createTransaction: CreateTransaction) =
+        authHandler(
+            network,
+            gdkBridge.blindTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
+        ).result<CreateTransaction>()
+
     fun signTransaction(network: Network, createTransaction: CreateTransaction) =
         authHandler(
             network,

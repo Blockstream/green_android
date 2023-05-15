@@ -253,6 +253,8 @@ class GdkBridge constructor(
 
     fun updateTransaction(session: GASession, createTransaction: JsonElement) = gdk.updateTransaction(session, createTransaction)
 
+    fun blindTransaction(session: GASession, createTransaction: JsonElement) = gdk.blindTransaction(session, createTransaction)
+
     fun signTransaction(session: GASession, createTransaction: JsonElement) = gdk.signTransaction(session, createTransaction)
 
     fun broadcastTransaction(session: GASession, transaction: String) = gdk.broadcastTransaction(session, transaction)

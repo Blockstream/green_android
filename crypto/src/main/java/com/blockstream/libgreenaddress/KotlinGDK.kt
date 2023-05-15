@@ -89,6 +89,9 @@ class KotlinGDK {
     fun updateTransaction(session: GASession, createTransaction: JsonElement): GAAuthHandler =
         GDK.create_transaction(session, createTransaction)
 
+    fun blindTransaction(session: GASession, createTransaction: JsonElement): GAAuthHandler =
+        GDK.blind_transaction(session, createTransaction)
+
     fun signTransaction(session: GASession, createTransaction: JsonElement): GAAuthHandler =
         GDK.sign_transaction(session, createTransaction)
 

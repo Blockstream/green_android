@@ -56,6 +56,11 @@ class SendConfirmViewModel @AssistedInject constructor(
                 }
             }
 
+            // If liquid, blind the transaction before signing
+            if (network.isLiquid) {
+                transaction = session.blindTransaction(network, transaction)
+            }
+
             if (session.isHardwareWallet) {
                 deviceAddressValidationEvent.postValue(ConsumableEvent(null))
             }
