@@ -387,7 +387,8 @@ abstract public class JadeHWWalletJava extends HWWallet {
         final List<String> signatures = hexFromBytes(signResult.getSignatures());
         final List<String> signerCommitments = hexFromBytes(signResult.getSignerCommitments());
 
-        return new SignTxResult(signatures, signerCommitments, assetGenerators, valueCommitments, abfs, vbfs);
+        //return new SignTxResult(signatures, signerCommitments, assetGenerators, valueCommitments, abfs, vbfs);
+        return new SignTxResult(signatures, signerCommitments);
     }
 
     private static byte[] valueToLE(final int i) {
@@ -556,6 +557,12 @@ abstract public class JadeHWWalletJava extends HWWallet {
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    public synchronized BlindingFactorsResult getBlindingFactors(final HWWalletBridge parent, final List<InputOutput> inputs, final List<InputOutput> outputs) {
+        // FIXME: implement
+        return new BlindingFactorsResult(0);
     }
 
     @Override

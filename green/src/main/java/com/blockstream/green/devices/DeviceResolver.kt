@@ -123,22 +123,19 @@ class DeviceResolver constructor(
                     }
                 }
 
+                DeviceResolvedData(
+                    signatures = signatures,
+                    signerCommitments = result.signerCommitments
+                )
+            }
 
-                if (network.isLiquid) {
-                    DeviceResolvedData(
-                        signatures = signatures,
-                        signerCommitments = result.signerCommitments,
-                        assetCommitments = result.assetCommitments,
-                        valueCommitments = result.valueCommitments,
-                        assetBlinders = result.assetBlinders,
-                        amountBlinders = result.amountBlinders
-                    )
-                } else {
-                    DeviceResolvedData(
-                        signatures = signatures,
-                        signerCommitments = result.signerCommitments
-                    )
-                }
+            "get_blinding_factors" -> {
+                val allbfs = hwWallet.getBlindingFactors(hwWalletBridge, requiredData.usedUtxos, requiredData.transactionOutputs)
+
+                DeviceResolvedData(
+                    assetBlinders = allbfs.assetblinders,
+                    amountBlinders = allbfs.amountblinders
+                )
             }
 
             "get_master_blinding_key" -> {

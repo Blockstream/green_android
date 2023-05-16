@@ -6,6 +6,8 @@ import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -38,29 +40,11 @@ public abstract class HWWallet {
     public static class SignTxResult {
         private final List<String> signatures;
         private final List<String> signerCommitments;
-        private final List<String> assetCommitments;
-        private final List<String> valueCommitments;
-        private final List<String> assetBlinders;
-        private final List<String> amountBlinders;
 
         // Ctor for standard btc signature results
         public SignTxResult(List<String> signatures, List<String> signerCommitments) {
             this.signatures = signatures;
             this.signerCommitments = signerCommitments;
-            this.assetCommitments = null;
-            this.valueCommitments = null;
-            this.assetBlinders = null;
-            this.amountBlinders = null;
-        }
-
-        // Ctor for liquid signature results
-        public SignTxResult(List<String> signatures, List<String> signerCommitments, List<String> assetCommitments, List<String> valueCommitments, List<String> assetBlinders, List<String> amountBlinders) {
-            this.signatures = signatures;
-            this.signerCommitments = signerCommitments;
-            this.assetCommitments = assetCommitments;
-            this.valueCommitments = valueCommitments;
-            this.assetBlinders = assetBlinders;
-            this.amountBlinders = amountBlinders;
         }
 
         public List<String> getSignatures() {
@@ -70,21 +54,28 @@ public abstract class HWWallet {
         public List<String> getSignerCommitments() {
             return signerCommitments;
         }
+    }
 
-        public List<String> getAssetCommitments() {
-            return assetCommitments;
+    public static class BlindingFactorsResult {
+        private final List<String> assetblinders;
+        private final List<String> amountblinders;
+
+        public BlindingFactorsResult(final int capacity) {
+            this.assetblinders = new ArrayList<>(capacity);
+            this.amountblinders = new ArrayList<>(capacity);
         }
 
-        public List<String> getValueCommitments() {
-            return valueCommitments;
+        public void append(final String assetblinder, final String amountblinder) {
+            this.assetblinders.add(assetblinder);
+            this.amountblinders.add(amountblinder);
         }
 
-        public List<String> getAssetBlinders() {
-            return assetBlinders;
+        public List<String> getAssetblinders() {
+            return assetblinders;
         }
 
-        public List<String> getAmountBlinders() {
-            return amountBlinders;
+        public List<String> getAmountblinders() {
+            return amountblinders;
         }
     }
 
@@ -116,6 +107,8 @@ public abstract class HWWallet {
     public abstract String getBlindingKey(final HWWalletBridge parent, final String scriptHex);
 
     public abstract String getBlindingNonce(final HWWalletBridge parent, final String pubkey, final String scriptHex);
+
+    public abstract BlindingFactorsResult getBlindingFactors(final HWWalletBridge parent, final List<InputOutput> inputs, final List<InputOutput> outputs);
 
     public abstract int getIconResourceId();
 

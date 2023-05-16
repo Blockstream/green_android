@@ -270,6 +270,11 @@ public class TrezorHWWallet extends HWWallet {
         return null;
     }
 
+    @Override
+    public synchronized BlindingFactorsResult getBlindingFactors(final HWWalletBridge parent, final List<InputOutput> inputs, final List<InputOutput> outputs) {
+        return null;
+    }
+
     private TrezorType.HDNodePathType makeHDNode(final TrezorType.HDNodeType node, final Integer pointer) {
         return TrezorType.HDNodePathType.newBuilder().setNode(node).addAddressN(pointer).build();
     }

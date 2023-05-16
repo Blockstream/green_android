@@ -154,6 +154,12 @@ public class BTChipHWWallet extends HWWallet {
         }
     }
 
+    @Override
+    public synchronized BlindingFactorsResult getBlindingFactors(final HWWalletBridge parent, final List<InputOutput> inputs, final List<InputOutput> outputs) {
+        // FIXME: implement
+        return new BlindingFactorsResult(0);
+    }
+
     private synchronized static List<Integer> getIntegerPath(final List<Long> unsigned) {
         //return unsigned.stream().map(Long::intValue).collect(Collectors.toList());
         final List<Integer> signed = new ArrayList<>(unsigned.size());
@@ -297,7 +303,8 @@ public class BTChipHWWallet extends HWWallet {
                 sigs.add(Wally.hex_from_bytes(sig));
             }
 
-            return new SignTxResult(sigs, null, assetCommitments, valueCommitments, assetBlinders, amountBlinders);
+            //return new SignTxResult(sigs, null, assetCommitments, valueCommitments, assetBlinders, amountBlinders);
+            return new SignTxResult(sigs, null);
         } catch (final BTChipException e) {
             e.printStackTrace();
             throw new RuntimeException("Signing Error: " + e.getMessage());

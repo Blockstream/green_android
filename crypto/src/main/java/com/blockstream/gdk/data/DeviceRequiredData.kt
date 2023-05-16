@@ -27,6 +27,7 @@ data class DeviceRequiredData constructor(
     @SerialName("public_keys") val publicKeys: List<String>? = null,
 
     @SerialName("transaction") val transaction: JsonElement? = null,
+    @SerialName("used_utxos") val usedUtxos: List<InputOutput>? = null,
 ): GAJson<DeviceRequiredData>() {
 
     override fun kSerializer(): KSerializer<DeviceRequiredData> {
