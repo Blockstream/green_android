@@ -69,7 +69,9 @@ class JadeFirmwareManager constructor(
 ) {
 
     companion object: KLogging(){
-        val JADE_MIN_ALLOWED_FW_VERSION = JadeVersion("0.1.24")
+        // FIXME: Should bump to "0.1.48" soon and remove the version-specific handling in liquid blinding/signing
+        // FIXME: Also we'd then be able to set any new 'supports-swaps' gdk capability to 'true' for Jade.
+        val JADE_MIN_ALLOWED_FW_VERSION = JadeVersion("0.1.44")
 
         const val JADE_FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
         const val JADE_FW_SERVER_ONION =

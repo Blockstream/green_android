@@ -12,8 +12,6 @@ public class Commitment {
     private byte[] vbf;
     private byte[] assetGenerator;
     private byte[] valueCommitment;
-    private byte[] hmac;
-
     private byte[] blindingKey;
 
     @JsonGetter("asset_id")
@@ -74,16 +72,6 @@ public class Commitment {
     @JsonSetter("value_commitment")
     public void setValueCommitment(byte[] valueCommitment) {
         this.valueCommitment = valueCommitment;
-    }
-
-    @JsonGetter("hmac")
-    public byte[] getHmac() {
-        return hmac;
-    }
-
-    @JsonSetter("hmac")
-    public void setHmac(byte[] hmac) {
-        this.hmac = hmac;
     }
 
     @JsonGetter("blinding_key")

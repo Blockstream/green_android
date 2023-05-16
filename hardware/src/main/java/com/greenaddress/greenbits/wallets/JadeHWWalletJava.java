@@ -14,11 +14,11 @@ import com.blockstream.hardware.R;
 import com.blockstream.jade.data.JadeNetworks;
 import com.blockstream.jade.data.JadeState;
 import com.blockstream.jade.data.VersionInfo;
+import com.blockstream.jade.entities.JadeVersion;
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.BaseEncoding;
-import com.google.common.primitives.Longs;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.blockstream.HardwareQATester;
@@ -33,9 +33,6 @@ import com.blockstream.jade.entities.TxInputBtc;
 import com.blockstream.jade.entities.TxInputLiquid;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +47,12 @@ import kotlinx.coroutines.CompletableDeferredKt;
 abstract public class JadeHWWalletJava extends HWWallet {
     private static final String TAG = "JadeHWWallet";
 
+    // FIXME: Should be "0.1.48" once that is released
+    private static final JadeVersion JADE_VER_SUPPORTS_SWAPS = new JadeVersion("0.1.48-alpha1");
     private final JadeAPI jade;
+
+    // FIXME: remove (an assume true) when 0.1.48 is made minimum allowed version.
+    private final boolean has_swap_support;
 
     public JadeHWWalletJava(final JadeAPI jade, final Device device, final VersionInfo verInfo, final HardwareQATester hardwareQATester) {
         super.mDevice = device;
@@ -58,6 +60,10 @@ abstract public class JadeHWWalletJava extends HWWallet {
         this.mHardwareQATester = hardwareQATester;
         this.mFirmwareVersion = verInfo.getJadeVersion();
         this.mModel = verInfo.getBoardType();
+
+        // Cache whether this fw version supports swap signing (and more efficient blinding calls)
+        final boolean pre_swap_support = new JadeVersion(this.mFirmwareVersion).isLessThan(JADE_VER_SUPPORTS_SWAPS);
+        this.has_swap_support = !pre_swap_support;
     }
 
     @Override
@@ -334,84 +340,6 @@ abstract public class JadeHWWalletJava extends HWWallet {
         }
     }
 
-    // Helper to get the commitment and blinding key from Jade
-    private Commitment getTrustedCommitment(final int index,
-                                            final InputOutput output,
-                                            final byte[] hashPrevOuts,
-                                            final byte[] customVbf) throws IOException {
-        final byte[] assetId = hexToBytes(output.getAssetId());
-        final Commitment commitment = this.jade.getCommitments(
-            assetId,
-            output.getSatoshi(),
-            hashPrevOuts,
-            index,
-            customVbf);
-
-        // Add the script blinding key
-        final byte[] blindingKey = hexToBytes(output.getBlindingKey());
-        commitment.setBlindingKey(blindingKey);
-
-        return commitment;
-    }
-
-    // Helper to pivot commitments and signatures into result structure
-    private static SignTxResult createResult(final List<Commitment> commitments, final SignTxInputsResult signResult) {
-        final List<String> assetGenerators = new ArrayList<>(commitments.size());
-        final List<String> valueCommitments = new ArrayList<>(commitments.size());
-        final List<String> abfs = new ArrayList<>(commitments.size());
-        final List<String> vbfs = new ArrayList<>(commitments.size());
-
-        for (final Commitment commitment : commitments) {
-            // un-blinded output
-            if (commitment == null || commitment.getAssetId() == null) {
-                assetGenerators.add(null);
-                valueCommitments.add(null);
-                abfs.add(null);
-                vbfs.add(null);
-            } else {
-                // Blinded output, populate commitments & blinding factors
-                final String assetGenerator = hexFromBytes(commitment.getAssetGenerator());
-                assetGenerators.add(assetGenerator);
-
-                final String valueCommitment = hexFromBytes(commitment.getValueCommitment());
-                valueCommitments.add(valueCommitment);
-
-                final String abf = hexFromBytes(ExtensionsKt.reverseBytes(commitment.getAbf()));
-                abfs.add(abf);
-
-                final String vbf = hexFromBytes(ExtensionsKt.reverseBytes(commitment.getVbf()));
-                vbfs.add(vbf);
-            }
-        }
-
-        final List<String> signatures = hexFromBytes(signResult.getSignatures());
-        final List<String> signerCommitments = hexFromBytes(signResult.getSignerCommitments());
-
-        //return new SignTxResult(signatures, signerCommitments, assetGenerators, valueCommitments, abfs, vbfs);
-        return new SignTxResult(signatures, signerCommitments);
-    }
-
-    private static byte[] valueToLE(final int i) {
-        final ByteBuffer buf = ByteBuffer.allocate(4);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.putInt(i);
-        return buf.array();
-    }
-
-    // Helper to flatten a list of byte arrays into one large byte array
-    private static byte[] flatten(final List<byte[]> arrays) {
-        if (arrays.isEmpty()) {
-            return new byte[0];
-        }
-
-        final int size_estimate = arrays.get(0).length * arrays.size();
-        final ByteArrayOutputStream output = new ByteArrayOutputStream(size_estimate);
-        for (final byte[] chunk : arrays) {
-            output.write(chunk, 0, chunk.length);
-        }
-        return output.toByteArray();
-    }
-
     @Override
     public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
                                               final List<InputOutput> inputs,
@@ -420,11 +348,14 @@ abstract public class JadeHWWalletJava extends HWWallet {
                                               final boolean useAeProtocol) {
         Log.d(TAG, "signLiquidTransaction() called for " + inputs.size() + " inputs");
         try {
-            final int combinedSize = inputs.size() + outputs.size();
-            final List<byte[]> inputPrevouts = new ArrayList<>(2*inputs.size());
-            final List<Long> values = new ArrayList<>(combinedSize);
-            final List<byte[]> abfs = new ArrayList<>(combinedSize);
-            final List<byte[]> vbfs = new ArrayList<>(combinedSize);
+            final byte[] txBytes = hexToBytes(tx.get("transaction").asText());
+
+            // Load the tx into wally for legacy fw versions as will need it later
+            // to access the output's asset[generator] and value[commitment].
+            // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly so
+            // no need to parse/load the transaction into wally.
+            // FIXME: remove when 0.1.48 is made minimum allowed version.
+            final Object wallytx = !this.has_swap_support ? Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_ELEMENTS) : null;
 
             // Collect data from the tx inputs
             final List<TxInputLiquid> txInputs = new ArrayList<>(inputs.size());
@@ -438,71 +369,45 @@ abstract public class JadeHWWalletJava extends HWWallet {
                                                input.getUserPath(),
                                                hexToBytes(input.getAeHostCommitment()),
                                                hexToBytes(input.getAeHostEntropy())));
-
-                // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
-                values.add(input.getSatoshi());
-                abfs.add(input.getAbfs());
-                vbfs.add(input.getVbfs());
-
-                // Get the input prevout txid and index for hashing later
-                inputPrevouts.add(input.getTxid());
-                inputPrevouts.add(valueToLE(input.getPtIdxInt()));
             }
 
-            // Compute the hash of all input prevouts for making deterministic blinding factors
-            final byte[] hashPrevOuts = Wally.sha256d(flatten(inputPrevouts));
-
-            // Get trusted commitments per output - null for unblinded outputs
+            // Get blinding factors and unblinding data per output - null for unblinded outputs
+            // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
             final List<Commitment> trustedCommitments = new ArrayList<>(outputs.size());
-
-            // For all-but-last blinded entry, do not pass custom vbf, so one is generated
-            // Append the output abfs and vbfs to the arrays
-            // FIXME: assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
-            final int lastBlindedIndex = outputs.size()-2;  // Could determine this properly
-            for (int i = 0; i < lastBlindedIndex; ++i) {
+            for (int i = 0; i < outputs.size(); ++i) {
                 final InputOutput output = outputs.get(i);
-                final Commitment commitment = getTrustedCommitment(i, output, hashPrevOuts, null);
-                trustedCommitments.add(commitment);
+                if (output.getBlindingKey() != null) {
+                    final Commitment commitment = new Commitment();
+                    commitment.setAssetId(output.getAssetIdBytes());
+                    commitment.setValue(output.getSatoshi());
+                    commitment.setAbf(output.getAbfs());
+                    commitment.setVbf(output.getVbfs());
+                    commitment.setBlindingKey(output.getPublicKeyBytes());
 
-                values.add(output.getSatoshi());
-                abfs.add(commitment.getAbf());
-                vbfs.add(commitment.getVbf());
+                    // Add asset-generator and value-commitment for legacy fw versions
+                    // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly
+                    if (wallytx != null) {
+                        commitment.setAssetGenerator(Wally.tx_get_output_asset(wallytx, i));
+                        commitment.setValueCommitment(Wally.tx_get_output_value(wallytx, i));
+                    }
+
+                    trustedCommitments.add(commitment);
+                } else {
+                    // Add a 'null' commitment for unblinded output
+                    trustedCommitments.add(null);
+                }
             }
-
-            // For the last blinded output, get the abf only
-            final InputOutput lastBlindedOutput = outputs.get(lastBlindedIndex);
-            values.add(lastBlindedOutput.getSatoshi());
-            final byte[] lastAbf = this.jade.getBlindingFactor(hashPrevOuts, lastBlindedIndex, "ASSET");
-            abfs.add(lastAbf);
-
-            // For the last blinded output we need to calculate the correct vbf so everything adds up
-            final byte[] lastVbf = Wally.asset_final_vbf(Longs.toArray(values), inputs.size(),
-                                                         flatten(abfs), flatten(vbfs));
-            vbfs.add(lastVbf);
-
-            // Fetch the last commitment using that explicit vbf
-            final Commitment lastCommitment = getTrustedCommitment(
-                lastBlindedIndex,
-                lastBlindedOutput,
-                hashPrevOuts,
-                lastVbf);
-            trustedCommitments.add(lastCommitment);
-
-            // Add a 'null' commitment for the final (fee) output
-            trustedCommitments.add(null);
 
             // Get the change outputs and paths
             final List<TxChangeOutput> change = getChangeData(outputs);
 
             // Make jade-api call to sign the txn
             final String canonicalNetworkId = network.getCanonicalNetworkId();
-            final String txhex = tx.get("transaction").asText();
-            final byte[] txn = hexToBytes(txhex);
-            final SignTxInputsResult result = this.jade.signLiquidTx(canonicalNetworkId, useAeProtocol, txn,
+            final SignTxInputsResult result = this.jade.signLiquidTx(canonicalNetworkId, useAeProtocol, txBytes,
                                                                      txInputs, trustedCommitments, change);
             // Pivot data into return structure
             Log.d(TAG, "signLiquidTransaction() returning " + result.getSignatures().size() + " signatures");
-            return createResult(trustedCommitments, result);
+            return new SignTxResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -559,10 +464,60 @@ abstract public class JadeHWWalletJava extends HWWallet {
         }
     }
 
+    private static byte[] sliceReversed(final byte[] data, final int offset, final int len) {
+        final byte[] result = new byte[len];
+        for (int i = 0; i < len; ++i) {
+            result[i] = data[offset + len - i - 1];
+        }
+        return result;
+    }
+
     @Override
     public synchronized BlindingFactorsResult getBlindingFactors(final HWWalletBridge parent, final List<InputOutput> inputs, final List<InputOutput> outputs) {
-        // FIXME: implement
-        return new BlindingFactorsResult(0);
+        Log.d(TAG, "getBlindingFactors() called for " + outputs.size() + " outputs");
+
+        try {
+            // Compute hashPrevouts to derive deterministic blinding factors from
+            final ByteArrayOutputStream txhashes = new ByteArrayOutputStream(inputs.size() * Wally.WALLY_TXHASH_LEN);
+            final int[] outputIdxs = new int[inputs.size()];
+            for (int i = 0; i < inputs.size(); ++i) {
+                final InputOutput input = inputs.get(i);
+                txhashes.write(input.getTxid());
+                outputIdxs[i] = input.getPtIdxInt();
+            }
+            // FIXME: Remove final (unnecessary) 'null' parameter when wally swig wrapper fixed
+            final byte[] hashPrevouts = Wally.get_hash_prevouts(txhashes.toByteArray(), outputIdxs, null);
+
+            // Enumerate the outputs and provide blinding factors as needed
+            // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
+            final BlindingFactorsResult rslt = new BlindingFactorsResult(outputs.size());
+            for (int i = 0; i < outputs.size(); ++i) {
+                final InputOutput output = outputs.get(i);
+                if (output.getBlindingKey() != null) {
+                    // Call Jade to get the blinding factors
+                    // NOTE: 0.1.48+ Jade fw accepts 'ASSET_AND_VALUE', and returns abf and vbf concatenated abf||vbf
+                    // (Previous versions need two calls, for 'ASSET' and 'VALUE' separately)
+                    // FIXME: remove when 0.1.48 is made minimum allowed version.
+                    if (this.has_swap_support) {
+                        final byte[] bfs = this.jade.getBlindingFactor(hashPrevouts, i, "ASSET_AND_VALUE");
+                        rslt.append(hexFromBytes(sliceReversed(bfs, 0, Wally.BLINDING_FACTOR_LEN)),
+                                hexFromBytes(sliceReversed(bfs, Wally.BLINDING_FACTOR_LEN, Wally.BLINDING_FACTOR_LEN)));
+                    } else {
+                        final byte[] abf = this.jade.getBlindingFactor(hashPrevouts, i, "ASSET");
+                        final byte[] vbf = this.jade.getBlindingFactor(hashPrevouts, i, "VALUE");
+                        rslt.append(hexFromBytes(ExtensionsKt.reverseBytes(abf)), hexFromBytes(ExtensionsKt.reverseBytes(vbf)));
+                    }
+                } else {
+                    // Empty string placeholders
+                    rslt.append("", "");
+                }
+                Log.d(TAG, "getBlindingFactors() for output " + i + ": " + rslt.getAssetblinders().get(i) + " / " + rslt.getAmountblinders().get(i));
+            }
+            Log.d(TAG, "getBlindingFactors() returning for " + outputs.size() + " outputs");
+            return rslt;
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
