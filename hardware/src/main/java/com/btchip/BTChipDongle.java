@@ -657,14 +657,25 @@ public class BTChipDongle implements BTChipConstants {
 		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_ISSUANCE_INFORMATION, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
 	}
 
+	public byte[] getBlindingFactor(final int outputIndex, final byte bfType) throws BTChipException {
+		ByteArrayOutputStream getAssetBlinderData = new ByteArrayOutputStream(4);
+		BufferUtils.writeUint32BE(getAssetBlinderData, outputIndex);
+		final byte[] result = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR, bfType, (byte)0x00, getAssetBlinderData.toByteArray(), OK);
+		return result;
+	}
+
 	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> abfs, List<byte[]> vbfs, final long numInputs, List<InputOutput> outputData) throws BTChipException {
+		// Cannot remove getLiquidCommitments() even though tx already blinded and we should be able to fetch
+		// the commitment data from the tx.  The hw signs/hmacs the data in this step, which is verified when
+		// the commitments are passed back in for signing.  So, for now at least, this step has to remain.
+		// We'll assert it arrives at the same blinders as we already have from the blinding step.
 		ByteArrayOutputStream data;
 		List<BTChipLiquidTrustedCommitments> out = new ArrayList<>();
 
 		int i = 0;
 		for (InputOutput output : outputData) {
-			// skip the fee output TODO: also skip the voluntarily unblinded outputs (currently unsupported by gdk)
-			if (output.getScriptPubkey().length() == 0) {
+			// Skip outputs without a blinding key as these are not blinded
+			if (output.getBlindingKey() == null) {
 				out.add(null);
 				i++;
 				continue;

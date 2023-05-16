@@ -58,6 +58,9 @@ public interface BTChipConstants {
     byte BTCHIP_INS_COMPOSE_MOFN_ADDRESS = (byte)0xc6;
     byte BTCHIP_INS_GET_POS_SEED = (byte)0xca;
 
+    byte BTCHIP_BLINDING_FACTOR_ASSET = (byte)0x01;
+    byte BTCHIP_BLINDING_FACTOR_AMOUNT = (byte)0x02;
+
     // Nano X stuff
     byte BTCHIP_CLA_COMMON_SDK = (byte) 0xB0;
     byte BTCHIP_INS_GET_APP_NAME_AND_VERSION = (byte) 0x01;

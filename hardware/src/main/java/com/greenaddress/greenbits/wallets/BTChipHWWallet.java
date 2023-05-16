@@ -8,14 +8,12 @@ import com.blockstream.gdk.data.AccountType;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
-import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
 import com.btchip.BitcoinTransaction;
-import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.btchip.comm.android.BTChipTransportAndroidHID;
 import com.btchip.utils.BufferUtils;
@@ -32,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,8 +155,34 @@ public class BTChipHWWallet extends HWWallet {
 
     @Override
     public synchronized BlindingFactorsResult getBlindingFactors(final HWWalletBridge parent, final List<InputOutput> inputs, final List<InputOutput> outputs) {
-        // FIXME: implement
-        return new BlindingFactorsResult(0);
+        try {
+            final BTChipDongle.BTChipLiquidInput hwInputs[] = new BTChipDongle.BTChipLiquidInput[inputs.size()];
+            for (int i = 0; i < hwInputs.length; ++i) {
+                final InputOutput in = inputs.get(i);
+                hwInputs[i] = mDongle.createLiquidInput(inputLiquidBytes(in, false), sequenceBytes(in));
+            }
+
+            // Prepare the pseudo transaction
+            final long version = 2; // irrelevant at this step
+            final byte script0[] = new byte[0]; // irrelevant at this step
+            mDongle.startUntrustedLiquidTransaction(version, true, 0, hwInputs, script0);
+
+            final BlindingFactorsResult rslt = new BlindingFactorsResult(outputs.size());
+            for (int i = 0; i < outputs.size(); ++i) {
+                final InputOutput output = outputs.get(i);
+                if (output.getBlindingKey() != null) {
+                    final byte[] abf = mDongle.getBlindingFactor(i, BTChipConstants.BTCHIP_BLINDING_FACTOR_ASSET);
+                    final byte[] vbf = mDongle.getBlindingFactor(i, BTChipConstants.BTCHIP_BLINDING_FACTOR_AMOUNT);
+                    rslt.append(Wally.hex_from_bytes(ExtensionsKt.reverseBytes(abf)), Wally.hex_from_bytes(ExtensionsKt.reverseBytes(vbf)));
+                } else {
+                    // Empty string placeholders
+                    rslt.append("", "");
+                }
+            }
+            return rslt;
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     private synchronized static List<Integer> getIntegerPath(final List<Long> unsigned) {
@@ -276,155 +301,78 @@ public class BTChipHWWallet extends HWWallet {
             if (!mDongle.shouldUseNewSigningApi())
                 throw new RuntimeException("Segwit not supported");
 
-            final LiquidSigCommitment resp = signLiquid(parent, tx, inputs, outputs);
+            final BTChipDongle.BTChipLiquidInput hwInputs[] = new BTChipDongle.BTChipLiquidInput[inputs.size()];
 
-            // TODO: refactor using map or something like that
-            final List<String> assetCommitments = new ArrayList<>(outputs.size());
-            final List<String> valueCommitments = new ArrayList<>(outputs.size());
-            final List<String> amountBlinders = new ArrayList<>(outputs.size());
-            final List<String> assetBlinders = new ArrayList<>(outputs.size());
-            for (int i = 0; i < outputs.size(); i++) {
-                if (resp.getAssetCommitments().get(i) == null) {
-                    assetCommitments.add(null);
-                    valueCommitments.add(null);
-                    assetBlinders.add(null);
-                    amountBlinders.add(null);
-                    continue;
-                }
-
-                assetCommitments.add(Wally.hex_from_bytes(resp.getAssetCommitments().get(i)));
-                valueCommitments.add(Wally.hex_from_bytes(resp.getValueCommitments().get(i)));
-                assetBlinders.add(Wally.hex_from_bytes(ExtensionsKt.reverseBytes(resp.getAbfs().get(i))));
-                amountBlinders.add(Wally.hex_from_bytes(ExtensionsKt.reverseBytes(resp.getVbfs().get(i))));
+            for (int i = 0; i < hwInputs.length; ++i) {
+                final InputOutput in = inputs.get(i);
+                hwInputs[i] = mDongle.createLiquidInput(inputLiquidBytes(in, true), sequenceBytes(in));
             }
 
-            final List<String> sigs = new ArrayList<>(inputs.size());
-            for (final byte[] sig : resp.getSignatures()) {
+            // Prepare the pseudo transaction
+            // Provide the first script instead of a null script to initialize the P2SH confirmation logic
+            final long version = tx.get("transaction_version").asLong();
+            final byte script0[] = Wally.hex_to_bytes(inputs.get(0).getPrevoutScript());
+            mDongle.startUntrustedLiquidTransaction(version, true, 0, hwInputs, script0);
+
+            if (mDongle.supportScreen() && parent != null) {
+                parent.interactionRequest(this, null, null);
+            }
+
+            // Cannot remove getLiquidCommitments() even though tx already blinded and we should be able to fetch
+            // the commitment data from the tx.  The hw signs/hmacs the data in this step, which is verified when
+            // the commitments are passed back in for signing.  So, for now at least, this step has to remain.
+            final List<Long> inputValues = new ArrayList<>();
+            final List<byte[]> abfs = new ArrayList<>();
+            final List<byte[]> vbfs = new ArrayList<>();
+            for (InputOutput in : inputs) {
+                inputValues.add(in.getSatoshi());
+                abfs.add(in.getAbfs());
+                vbfs.add(in.getVbfs());
+            }
+            final List<BTChipDongle.BTChipLiquidTrustedCommitments> commitments = mDongle.getLiquidCommitments(inputValues, abfs, vbfs, inputs.size(), outputs);
+
+            // Check commitments are same as we already have in the tx from the blinding step
+            // Could be removed/commented or only run in debug mode ?
+            final Object wallytx = Wally.tx_from_hex(tx.get("transaction").asText(), Wally.WALLY_TX_FLAG_USE_ELEMENTS);
+            if (commitments.size() != outputs.size() || Wally.tx_get_num_outputs(wallytx) != outputs.size()) {
+                throw new RuntimeException("outputs/blinders length mismatch");
+            }
+            for (int i = 0; i < outputs.size(); ++i) {
+                final InputOutput output = outputs.get(i);
+                if (output.getBlindingKey() != null) {
+                    if (!Arrays.equals(Wally.tx_get_output_asset(wallytx, i), commitments.get(i).getAssetCommitment()) ||
+                            !Arrays.equals(Wally.tx_get_output_value(wallytx, i), commitments.get(i).getValueCommitment())) {
+                        throw new RuntimeException("Output " + i + " blinded commitments mismatch");
+                    }
+                } else {
+                    if (commitments.get(i) != null) {
+                        throw new RuntimeException("Output " + i + " unblinded null-commitments mismatch");
+                    }
+                }
+            }
+            // end commitments check
+
+            // Prepare for liquid signing, pass commitments
+            mDongle.finalizeLiquidInputFull(outputLiquidBytes(outputs, commitments));
+            mDongle.provideLiquidIssuanceInformation(inputs.size());
+
+            // Sign each input
+            final long locktime = tx.get("transaction_locktime").asLong();
+            final List<String> sigs = new ArrayList<>(hwInputs.length);
+            for (int i = 0; i < hwInputs.length; ++i) {
+                final InputOutput in = inputs.get(i);
+                final BTChipDongle.BTChipLiquidInput singleInput[] = { hwInputs[i] };
+                final byte[] script = Wally.hex_to_bytes(in.getPrevoutScript());
+                mDongle.startUntrustedLiquidTransaction(version, false, 0, singleInput, script);
+                final byte[] sig = mDongle.untrustedLiquidHashSign(in.getUserPathAsInts(), locktime, SIGHASH_ALL);
                 sigs.add(Wally.hex_from_bytes(sig));
             }
 
-            //return new SignTxResult(sigs, null, assetCommitments, valueCommitments, assetBlinders, amountBlinders);
             return new SignTxResult(sigs, null);
         } catch (final BTChipException e) {
             e.printStackTrace();
             throw new RuntimeException("Signing Error: " + e.getMessage());
         }
-    }
-
-    public static class LiquidSigCommitment {
-        private final List<byte[]> signatures;
-        private final List<byte[]> assetCommitments;
-        private final List<byte[]> valueCommitments;
-        private final List<byte[]> abfs;
-        private final List<byte[]> vbfs;
-
-        public LiquidSigCommitment(List<byte[]> signatures, List<byte[]> assetCommitments,
-                                   List<byte[]> valueCommitments, List<byte[]> abfs, List<byte[]> vbfs) {
-            this.signatures = signatures;
-            this.assetCommitments = assetCommitments;
-            this.valueCommitments = valueCommitments;
-            this.abfs = abfs;
-            this.vbfs = vbfs;
-        }
-
-        public List<byte[]> getSignatures() {
-            return signatures;
-        }
-
-        public List<byte[]> getAssetCommitments() {
-            return assetCommitments;
-        }
-
-        public List<byte[]> getValueCommitments() {
-            return valueCommitments;
-        }
-
-        public List<byte[]> getAbfs() {
-            return abfs;
-        }
-
-        public List<byte[]> getVbfs() {
-            return vbfs;
-        }
-    }
-
-    // This assumes segwit = true
-    private LiquidSigCommitment signLiquid(final HWWalletBridge parent, final ObjectNode tx,
-                                           final List<InputOutput> inputs,
-                                           final List<InputOutput> outputs) throws BTChipException {
-        final BTChipDongle.BTChipLiquidInput hwInputs[] = new BTChipDongle.BTChipLiquidInput[inputs.size()];
-
-        for (int i = 0; i < hwInputs.length; ++i) {
-            final InputOutput in = inputs.get(i);
-            hwInputs[i] = mDongle.createLiquidInput(inputLiquidBytes(in), sequenceBytes(in));
-        }
-
-        // Prepare the pseudo transaction
-        // Provide the first script instead of a null script to initialize the P2SH confirmation logic
-        final long version = tx.get("transaction_version").asLong();
-        final byte script0[] = Wally.hex_to_bytes(inputs.get(0).getPrevoutScript());
-        mDongle.startUntrustedLiquidTransaction(version, true, 0, hwInputs, script0);
-
-        if (mDongle.supportScreen() && parent != null) {
-            parent.interactionRequest(this, null, null);
-        }
-
-        List<Long> inputValues = new ArrayList<>();
-        List<byte[]> abfs = new ArrayList<>();
-        List<byte[]> vbfs = new ArrayList<>();
-
-        for (InputOutput in : inputs) {
-            inputValues.add(in.getSatoshi());
-            abfs.add(in.getAbfs());
-            vbfs.add(in.getVbfs());
-        }
-
-        List <BTChipDongle.BTChipLiquidTrustedCommitments> commitments = mDongle.getLiquidCommitments(inputValues, abfs, vbfs, inputs.size(), outputs);
-
-        mDongle.finalizeLiquidInputFull(outputLiquidBytes(outputs, commitments));
-        mDongle.provideLiquidIssuanceInformation(inputs.size());
-
-        final long locktime = tx.get("transaction_locktime").asLong();
-
-        // Sign each input
-        final BTChipDongle.BTChipLiquidInput singleInput[] = new BTChipDongle.BTChipLiquidInput[1];
-
-        final List<byte[]> sigs = new ArrayList<>(hwInputs.length);
-        final List<byte[]> assetCommitents = new ArrayList<>(outputs.size());
-        final List<byte[]> valueCommitents = new ArrayList<>(outputs.size());
-
-        for (int i = 0; i < outputs.size(); i++) {
-            if (commitments.get(i) == null) {
-                assetCommitents.add(null);
-                valueCommitents.add(null);
-                continue;
-            }
-
-            final byte[] aComm = new byte[33];
-            final byte[] vComm = new byte[33];
-            System.arraycopy(commitments.get(i).getAssetCommitment(), 0, aComm, 0, 33);
-            System.arraycopy(commitments.get(i).getValueCommitment(), 0, vComm, 0, 33);
-
-            assetCommitents.add(aComm);
-            valueCommitents.add(vComm);
-        }
-
-        for (int i = 0; i < hwInputs.length; ++i) {
-            final InputOutput in = inputs.get(i);
-            singleInput[0] = hwInputs[i];
-            final byte script[] = Wally.hex_to_bytes(in.getPrevoutScript());
-
-            mDongle.startUntrustedLiquidTransaction(version, false, 0, singleInput, script);
-            sigs.add(mDongle.untrustedLiquidHashSign(in.getUserPathAsInts(), locktime, SIGHASH_ALL));
-        }
-
-        // remove the inputs from assetBlinders/amountBlinders
-        for (int i = 0; i < inputs.size(); i++) {
-            abfs.remove(0);
-            vbfs.remove(0);
-        }
-
-        return new LiquidSigCommitment(sigs, assetCommitents, valueCommitents, abfs, vbfs);
     }
 
     // Helper to get the hw inputs
@@ -538,13 +486,12 @@ public class BTChipHWWallet extends HWWallet {
 
         int index = 0;
         for (final InputOutput out : outputs) {
-            if (out.getScriptPubkey().length() == 0) { // TODO: should be used for every unblinded output, not only for fees
+            if (out.getBlindingKey() == null) {
                 os = new ByteArrayOutputStream(33 + 9);
                 os.write(0x01);
                 os.write(out.getRevertedAssetIdBytes(), 0, 32);
                 os.write(0x01);
                 BufferUtils.writeUint64BE(os, out.getSatoshi());
-
                 res.add(os.toByteArray());
             } else {
                 final byte[] trustedCommitment = commitments.get(index).getDataForFinalize();
@@ -555,9 +502,9 @@ public class BTChipHWWallet extends HWWallet {
                 res.add(out.getEphKeypairPubBytes());
                 res.add(out.getPublicKeyBytes());
             } else {
-                final byte[] nonce = new byte[1];
-                res.add(nonce); // one null byte as nonce
-                res.add(nonce); // one null byte for the pubkey
+                final byte[] dummy = new byte[1];
+                res.add(dummy); // one null byte as nonce
+                res.add(dummy); // one null byte for the pubkey
             }
 
             os = new ByteArrayOutputStream(128);
@@ -585,12 +532,22 @@ public class BTChipHWWallet extends HWWallet {
         return os.toByteArray();
     }
 
-    private byte[] inputLiquidBytes(final InputOutput in) {
+    private byte[] inputLiquidBytes(final InputOutput in, final boolean strict) {
         final ByteArrayOutputStream os = new ByteArrayOutputStream(32 + 4 + 33);
         final byte[] txid = in.getTxid();
         os.write(txid, 0, txid.length);
         BufferUtils.writeUint32LE(os, in.getPtIdxInt());
-        os.write(in.getCommitmentBytes(), 0, in.getCommitmentBytes().length);
+        if (strict || in.getCommitment() != null) {
+            os.write(in.getCommitmentBytes(), 0, in.getCommitmentBytes().length);
+        } else {
+            // If commitment data is not available but we are not going to need/use it anyway, we
+            // can pass a dummy commitment value here - although it must look like a valid commitment.
+            // ie. it must begin 0x08 or 0x09 and be 33 bytes long.
+            final byte[] dummy = { 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+            for (int i = 0; i < 3; ++i) {
+                os.write(dummy, 0, dummy.length);
+            }
+        }
         return os.toByteArray();
     }
 
