@@ -664,7 +664,7 @@ public class BTChipDongle implements BTChipConstants {
 		int i = 0;
 		for (InputOutput output : outputData) {
 			// skip the fee output TODO: also skip the voluntarily unblinded outputs (currently unsupported by gdk)
-			if (output.getScript().length() == 0) {
+			if (output.getScriptPubkey().length() == 0) {
 				out.add(null);
 				i++;
 				continue;

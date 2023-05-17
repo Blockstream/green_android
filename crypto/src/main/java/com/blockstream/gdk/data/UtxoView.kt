@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class UtxoView constructor(
     val address: String? = null,
     val isBlinded: Boolean? = null,
+    val isConfidential: Boolean? = null,
     val assetId: String? = null,
     val satoshi: Long? = null,
     val isChange: Boolean = false,

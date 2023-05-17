@@ -172,6 +172,7 @@ data class Transaction(
                 UtxoView(
                     address = outAddress,
                     isBlinded = it.isBlinded,
+                    isConfidential = it.isConfidential,
                     assetId = it.assetId,
                     satoshi = outSatoshi,
                     isChange = it.isChange ?: false

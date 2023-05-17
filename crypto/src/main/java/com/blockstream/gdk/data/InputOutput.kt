@@ -19,6 +19,7 @@ data class InputOutput constructor(
     @SerialName("addressee") val addressee: String? = null,
     @SerialName("address_type") val addressType: String? = null,
     @SerialName("is_blinded") val isBlinded: Boolean? = null,
+    @SerialName("is_confidential") val isConfidential: Boolean? = null,
     @SerialName("unblinded_address") val unblindedAddress: String? = null,
     @SerialName("is_change") val isChange: Boolean? = null,
     @SerialName("is_output") val isOutput: Boolean? = null,
@@ -33,6 +34,7 @@ data class InputOutput constructor(
     @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("script") val script: String? = null,
     @SerialName("script_type") val scriptType: Int? = null,
+    @SerialName("scriptpubkey") val scriptPubkey: String? = null,
 
     @SerialName("sequence") val sequence: Long? = null, // this is UInt until Parcelize is supported
     @SerialName("subaccount") val subaccount: Int? = null,
@@ -52,7 +54,7 @@ data class InputOutput constructor(
     @SerialName("asset_id") val assetId: String? = null, // asset id for Liquid txs
     @SerialName("blinding_key") val blindingKey: String? = null, // the blinding public key embedded into the blinded address we are sending to
 
-    @SerialName("eph_private_key") val ephPrivateKey: String? = null, // our secret key used for the blinding
+    @SerialName("eph_public_key") val ephPublicKey: String? = null, // our ephemeral public key for [un]blinding
 ) : Parcelable {
 
     // Called from Java to use the UInt.toInt() inline fun
@@ -93,7 +95,7 @@ data class InputOutput constructor(
     }
 
     fun getEphKeypairPubBytes(): ByteArray {
-        return Wally.ec_public_key_from_private_key(Wally.hex_to_bytes(ephPrivateKey))
+        return Wally.hex_to_bytes(ephPublicKey)
     }
 
     fun getPublicKeyBytes(): ByteArray {

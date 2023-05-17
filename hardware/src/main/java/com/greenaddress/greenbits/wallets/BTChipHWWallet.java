@@ -516,7 +516,7 @@ public class BTChipHWWallet extends HWWallet {
         putVarInt(os, outputs.size());
         for (final InputOutput out : outputs) {
             BufferUtils.writeUint64LE(os, out.getSatoshi()); // int64ToByteStreamLE in bitcoinj
-            final byte[] script = Wally.hex_to_bytes(out.getScript());
+            final byte[] script = Wally.hex_to_bytes(out.getScriptPubkey());
             putVarInt(os, script.length).write(script, 0, script.length);
         }
         return os.toByteArray();
@@ -531,7 +531,7 @@ public class BTChipHWWallet extends HWWallet {
 
         int index = 0;
         for (final InputOutput out : outputs) {
-            if (out.getScript().length() == 0) { // TODO: should be used for every unblinded output, not only for fees
+            if (out.getScriptPubkey().length() == 0) { // TODO: should be used for every unblinded output, not only for fees
                 os = new ByteArrayOutputStream(33 + 9);
                 os.write(0x01);
                 os.write(out.getRevertedAssetIdBytes(), 0, 32);
@@ -554,10 +554,10 @@ public class BTChipHWWallet extends HWWallet {
             }
 
             os = new ByteArrayOutputStream(128);
-            if (out.getScript().length() == 0) { // fee
+            if (out.getScriptPubkey().length() == 0) { // fee
                 putVarInt(os, 0);
             } else {
-                final byte script[] = Wally.hex_to_bytes(out.getScript());
+                final byte script[] = Wally.hex_to_bytes(out.getScriptPubkey());
                 putVarInt(os, script.length).write(script, 0, script.length);
             }
             res.add(os.toByteArray());
