@@ -21,9 +21,9 @@ _EOF_
 NAME="gdk-android-jni"
 TARBALL="${NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.0.62"
+TAGNAME="release_0.0.63"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="698d021cdccc8db7ec45262ed44c790b4bacb00afe9e45aa6b9e5890be2dd3f8"
+SHA256="2dd5d1fdb2a83fddf7b6f51ac53427575ace381b67222e2788a2889a5faf511d"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
@@ -85,7 +85,7 @@ if [ -f gdk_commit ] ; then
 fi
 
 if [[ $COMMIT != false ]]; then
-  URL="${GCLOUD_URL}${COMMIT}/${TARBALL}"
+  URL="${GCLOUD_URL}${COMMIT}/android/${TARBALL}"
   VALIDATE_CHECKSUM=false
   echo $COMMIT > gdk_commit
 fi

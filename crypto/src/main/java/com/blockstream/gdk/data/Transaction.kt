@@ -31,9 +31,6 @@ data class Transaction(
     @SerialName("rbf_optin") val rbfOptin: Boolean,
 
     @SerialName("spv_verified") val spvVerified: String,
-    @SerialName("transaction_size") val txSize: Long,
-    @SerialName("transaction_vsize") val txVSize: Long,
-    @SerialName("transaction_weight") val txWeight: Long,
 
     @SerialName("txhash") val txHash: String,
 
@@ -247,9 +244,6 @@ data class Transaction(
             memo = "",
             rbfOptin = false,
             spvVerified = "",
-            txSize = 0,
-            txVSize = 0,
-            txWeight = 0,
             txHash = "",
             type = "",
             satoshi = mapOf()
