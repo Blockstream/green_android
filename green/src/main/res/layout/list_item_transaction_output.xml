@@ -59,7 +59,7 @@
                 android:text="@{address}"
                 android:includeFontPadding="false"
                 isVisible="@{address != null}"
-                android:fontFamily="monospace"
+                android:fontFamily="@font/monospace"
                 tools:text="33ttwPQbgNkKvQbW8KaVp3tDNaxa3f1MAA" />
 
             <include

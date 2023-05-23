@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{hash}"
-                android:fontFamily="monospace"
+                android:fontFamily="@font/monospace"
                 android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 tools:text="Hash" />

@@ -180,7 +180,7 @@
                                     android:layout_marginBottom="8dp"
                                     android:breakStrategy="high_quality"
                                     android:drawablePadding="8dp"
-                                    android:fontFamily="monospace"
+                                    android:fontFamily="@font/monospace"
                                     android:text="@{vm.addressUri}"
                                     android:textAlignment="center"
                                     android:textAppearance="?attr/textAppearanceBodyMedium"

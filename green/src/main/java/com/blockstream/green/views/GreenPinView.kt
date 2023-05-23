@@ -38,12 +38,16 @@ class GreenPinView @JvmOverloads constructor(
             binding.deleteEnabled = false
 
             binding.clickListener = OnClickListener { view ->
-                if (view.id == R.id.buttonDelete) {
-                    deletePinDigit(false)
-                } else if (view.id == R.id.buttonPaste) {
-                    paste()
-                } else {
-                    setPinDigit((view as Button).text.toString())
+                when (view.id) {
+                    R.id.buttonDelete -> {
+                        deletePinDigit(false)
+                    }
+                    R.id.buttonPaste -> {
+                        paste()
+                    }
+                    else -> {
+                        setPinDigit((view as Button).text.toString())
+                    }
                 }
             }
 

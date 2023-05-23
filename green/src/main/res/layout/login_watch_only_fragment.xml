@@ -165,7 +165,7 @@
                                 android:layout_marginEnd="16dp"
                                 android:layout_weight="1"
                                 android:background="@android:color/transparent"
-                                android:fontFamily="monospace"
+                                android:fontFamily="@font/monospace"
                                 android:gravity="start|top"
                                 android:hint="@{vm.isOutputDescriptors ? `Descriptor1,Descriptor2,…` : `xPub1,yPub1,zPub1,xPub2,…`}"
                                 android:imeOptions="flagNoPersonalizedLearning|actionGo"

@@ -85,7 +85,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
             android:breakStrategy="balanced"
-            android:fontFamily="monospace"
+            android:fontFamily="@font/monospace"
             android:text="@{address}"
             android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceBodyMedium"

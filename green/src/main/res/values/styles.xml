@@ -245,8 +245,8 @@
     <style name="GreenPinViewDigit">
         <item name="android:textColor">@color/brand_green</item>
         <item name="android:textSize">@dimen/pin_textsize</item>
-        <item name="android:fontFamily">monospace</item>
-        <item name="fontFamily">monospace</item>
+        <item name="android:fontFamily">@font/monospace</item>
+        <item name="fontFamily">@font/monospace</item>
         <item name="android:textStyle">bold</item>
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>

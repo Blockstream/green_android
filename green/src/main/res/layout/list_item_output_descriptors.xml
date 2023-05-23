@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
-                android:fontFamily="monospace"
+                android:fontFamily="@font/monospace"
                 android:textAppearance="?textAppearanceBodySmall"
                 android:textColor="@color/color_on_surface_emphasis_medium"
                 android:textIsSelectable="true"

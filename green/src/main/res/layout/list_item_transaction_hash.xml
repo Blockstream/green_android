@@ -47,7 +47,7 @@
                     android:lines="1"
                     android:ellipsize="marquee"
                     android:text="@{hash}"
-                    android:fontFamily="monospace"
+                    android:fontFamily="@font/monospace"
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                 <ImageButton
