@@ -480,6 +480,7 @@
 		81BF5D4928C885AF006225C6 /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF5D4828C885AF006225C6 /* WalletManager.swift */; };
 		81C56B6B29BA2B02003E0E19 /* SetPinViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C56B6A29BA2B02003E0E19 /* SetPinViewModel.swift */; };
 		81D404DF2A1D5F4C002631F5 /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404DE2A1D5F4C002631F5 /* GreenAddress.swift */; };
+		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
 		81D671EB26C8007600682508 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671EA26C8007600682508 /* SessionManager.swift */; };
 		81D671F726C81B0800682508 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F626C81B0800682508 /* NotificationManager.swift */; };
 		81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C358291FDAF000B2196B /* DialogTableViewController.swift */; };
@@ -1052,6 +1053,7 @@
 		81CF900C28EC75FE003CC793 /* ProdSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ProdSettings.xcconfig; sourceTree = "<group>"; };
 		81CF900D28EC7631003CC793 /* DevSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevSettings.xcconfig; sourceTree = "<group>"; };
 		81D404DE2A1D5F4C002631F5 /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = "gdk-iphone/share/gdk/GreenAddress.swift"; sourceTree = SOURCE_ROOT; };
+		81D404E02A1D6138002631F5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		81D671EA26C8007600682508 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		81D671EE26C80D3400682508 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		81D671F026C80D4E00682508 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
@@ -2402,6 +2404,7 @@
 				81DA3D962541F110001159D6 /* TxChangeOutput.swift */,
 				81E0B4CA25531470001C8544 /* Commitment.swift */,
 				81F328F329E9ABBE00D54F1D /* AuthResolver.swift */,
+				81D404E02A1D6138002631F5 /* Utils.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -3385,6 +3388,7 @@
 				81961B0C29E4EE3C00E9B94D /* HWResolver.swift in Sources */,
 				81961B0D29E4EE3C00E9B94D /* Promise.swift in Sources */,
 				81961B0E29E4EE3C00E9B94D /* HWChannelProtocol.swift in Sources */,
+				81D404E12A1D6138002631F5 /* Utils.swift in Sources */,
 				81961B0F29E4EE3C00E9B94D /* HWProtocol.swift in Sources */,
 				81961B2129E4F36F00E9B94D /* UInt.swift in Sources */,
 				81961B1029E4EE3C00E9B94D /* HWDevice.swift in Sources */,

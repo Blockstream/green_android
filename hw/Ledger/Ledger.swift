@@ -99,7 +99,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
             .flatMap { data -> Observable<String> in
                 let chainCode = Array((data["chainCode"] as? Data)!)
                 let publicKey = Array((data["publicKey"] as? Data)!)
-                let compressed = try! compressPublicKey(publicKey)
+                let compressed = compressPublicKey(publicKey) ?? []
                 let base58 = try! bip32KeyToBase58(isMainnet: isMainnet, pubKey: compressed, chainCode: chainCode)
                 return Observable.just(base58)
         }
