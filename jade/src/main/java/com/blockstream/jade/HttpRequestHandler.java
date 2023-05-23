@@ -6,14 +6,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import kotlinx.serialization.json.JsonElement;
+
 // HttpRequestHandler is used for network calls during pinserver handshake
 // useful on TOR enabled sessions
 public interface HttpRequestHandler{
 
     void prepareHttpRequest();
-    JsonNode httpRequest(final JsonNode details) throws IOException;
+    JsonElement httpRequest(final JsonElement details) throws IOException;
 
-    JsonNode httpRequest(final String method,
+    JsonElement httpRequest(final String method,
                                 final List<URL> urls,
                                 final String data,
                                 final String accept,

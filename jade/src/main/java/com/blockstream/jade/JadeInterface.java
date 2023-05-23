@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
-import com.polidea.rxandroidble2.RxBleDevice;
+import com.polidea.rxandroidble3.RxBleDevice;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

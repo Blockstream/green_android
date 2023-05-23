@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -14,11 +15,10 @@ import com.blockstream.hardware.BuildConfig;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerDeviceBLE;
 
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
-import io.reactivex.schedulers.Schedulers;
 
 public class LedgerBLEAdapter {
     private PublishSubject<Boolean> bleDisconnectEvent = PublishSubject.create();
@@ -40,6 +40,7 @@ public class LedgerBLEAdapter {
     private Disposable connectionDisposable;
     private final LedgerDeviceBLE ledgerDevice;
 
+    @SuppressLint("MissingPermission")
     private LedgerBLEAdapter(final Context context, final BluetoothDevice btDevice, final OnConnectedListener onConnected, final OnErrorListener onError) {
 
         // Adapter callback to route callbacks from the BLE stack to the LedgerDeviceBLE handler

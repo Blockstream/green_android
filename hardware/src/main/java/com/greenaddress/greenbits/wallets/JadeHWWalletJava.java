@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.blockstream.HwWalletLogin;
+import com.blockstream.JadeHWWallet;
 import com.blockstream.gdk.ExtensionsKt;
 import com.blockstream.gdk.data.Account;
 import com.blockstream.gdk.data.Device;
@@ -17,6 +18,7 @@ import com.blockstream.jade.data.VersionInfo;
 import com.blockstream.jade.entities.JadeVersion;
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.BaseEncoding;
 import com.greenaddress.greenapi.HWWallet;
@@ -38,11 +40,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.Single;
 import io.reactivex.rxjava3.subjects.CompletableSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import kotlinx.coroutines.CompletableDeferred;
 import kotlinx.coroutines.CompletableDeferredKt;
+import kotlinx.serialization.json.Json;
+import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonKt;
 
 abstract public class JadeHWWalletJava extends HWWallet {
     private static final String TAG = "JadeHWWallet";
@@ -280,11 +284,14 @@ abstract public class JadeHWWalletJava extends HWWallet {
 
     @Override
     public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent,
-                                        final ObjectNode tx,
+                                        final JsonElement transaction,
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
                                         final boolean useAeProtocol) {
+
+        final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
+
         Log.d(TAG, "signTransaction() called for " + inputs.size() + " inputs");
         try {
             if (transactions == null || transactions.isEmpty()) {
@@ -341,11 +348,13 @@ abstract public class JadeHWWalletJava extends HWWallet {
     }
 
     @Override
-    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final JsonElement transaction,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String,String> transactions,
                                               final boolean useAeProtocol) {
+        final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
+
         Log.d(TAG, "signLiquidTransaction() called for " + inputs.size() + " inputs");
         try {
             final byte[] txBytes = hexToBytes(tx.get("transaction").asText());

@@ -21,9 +21,6 @@ import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.jade.HttpRequestProvider
 import com.blockstream.libgreenaddress.GAAuthHandler
 import com.blockstream.libgreenaddress.GASession
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import kotlinx.coroutines.*
@@ -31,13 +28,14 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import mu.KLogging
 import java.net.URL
 import kotlin.properties.Delegates
@@ -588,7 +586,7 @@ class GdkSession constructor(
             }
         }
     }
-    private fun httpRequest(data: JsonElement): JsonElement {
+    override fun httpRequest(data: JsonElement): JsonElement {
         if(!isNetworkInitialized){
             prepareHttpRequest()
         }
@@ -602,43 +600,40 @@ class GdkSession constructor(
         }
     }
 
-    override fun httpRequest(details: JsonNode?): JsonNode {
-        val json = httpRequest(Json.parseToJsonElement(details.toString()))
-
-        val mapper = ObjectMapper()
-        val actualObj = mapper.readTree(json.toString())
-        return actualObj
-    }
-
     override fun httpRequest(
-        method: String?,
-        urls: MutableList<URL>?,
+        method: String,
+        urls: List<URL>?,
         data: String?,
         accept: String?,
-        certs: MutableList<String>?
-    ): JsonNode {
-        val mapper = ObjectMapper()
-        // Build the json parameters
-        val details: ObjectNode = mapper.createObjectNode()
+        certs: List<String>?
+    ): JsonElement {
 
-        // Method and URLs
-        details.put("method", method)
-        val urlsArray = details.putArray("urls")
-        for (url in urls!!) {
-            urlsArray.add(url.toExternalForm())
-        }
+        val details = buildJsonObject {
+            put("method", method)
 
-        // Optional (POST) data, 'accept' strings, and additional certificates.
-        if (data != null) {
-            details.put("data", data)
-        }
-        if (accept != null) {
-            details.put("accept", accept)
-        }
-        if (certs != null) {
-            val certsArray = details.putArray("root_certificates")
-            for (cert in certs) {
-                certsArray.add(cert)
+            if(urls != null){
+
+                putJsonArray("urls") {
+                    urls.forEach {
+                        this.add(it.toExternalForm())
+                    }
+                }
+            }
+            // Optional (POST) data, 'accept' strings, and additional certificates.
+            if (data != null) {
+                put("data", data)
+            }
+
+            if (accept != null) {
+                put("accept", accept)
+            }
+
+            if (certs != null){
+                putJsonArray("root_certificates") {
+                    certs.forEach {
+                        add(it)
+                    }
+                }
             }
         }
 

@@ -3,19 +3,19 @@ package com.blockstream.jade;
 import android.content.Context;
 import android.util.Log;
 
-import com.jakewharton.rx.ReplayingShare;
-import com.polidea.rxandroidble2.NotificationSetupMode;
-import com.polidea.rxandroidble2.RxBleConnection;
-import com.polidea.rxandroidble2.RxBleDevice;
+import com.jakewharton.rx3.ReplayingShare;
+import com.polidea.rxandroidble3.NotificationSetupMode;
+import com.polidea.rxandroidble3.RxBleConnection;
+import com.polidea.rxandroidble3.RxBleDevice;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
  * Low-level BLE backend interface to Jade
@@ -156,7 +156,7 @@ public class JadeBleImpl extends JadeConnectionImpl {
         Single<Boolean> bondingEvent = JadePairingManager.INSTANCE.pairWithDevice(context, device);
 
         // Block until BLE is bootstrapped properly
-        createBleConnection(bondingEvent).blockingGet();
+        createBleConnection(bondingEvent).blockingAwait();
     }
 
     @Override

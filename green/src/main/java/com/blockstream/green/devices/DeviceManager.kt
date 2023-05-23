@@ -1,5 +1,6 @@
 package com.blockstream.green.devices
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -12,20 +13,18 @@ import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.managers.SessionManager
-import com.btchip.comm.LedgerDeviceBLE
 import com.blockstream.jade.JadeBleImpl
-import com.polidea.rxandroidble2.RxBleClient
-import com.polidea.rxandroidble2.scan.ScanCallbackType
-import com.polidea.rxandroidble2.scan.ScanFilter
-import com.polidea.rxandroidble2.scan.ScanSettings
-import hu.akarnokd.rxjava3.bridge.RxJavaBridge
+import com.btchip.comm.LedgerDeviceBLE
+import com.polidea.rxandroidble3.RxBleClient
+import com.polidea.rxandroidble3.scan.ScanCallbackType
+import com.polidea.rxandroidble3.scan.ScanFilter
+import com.polidea.rxandroidble3.scan.ScanSettings
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import mu.KLogging
@@ -55,6 +54,7 @@ class DeviceManager constructor(
     private var bleScanDisposable = CompositeDisposable()
 
     private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        @SuppressLint("MissingPermission")
         override fun onReceive(context: Context, intent: Intent) {
 
             logger.info { "onReceive: ${intent.action}" }
@@ -138,7 +138,6 @@ class DeviceManager constructor(
 
         rxBleClient
             .observeStateChanges()
-            .`as`(RxJavaBridge.toV3Observable())
             .startWithItem(rxBleClient.state)
             .distinctUntilChanged()
             .subscribeOn(Schedulers.io())
@@ -164,7 +163,6 @@ class DeviceManager constructor(
                     }.toTypedArray()
 
                     return@switchMap  rxBleClient.scanBleDevices(scanSettings, *scanFilter)
-                        .`as`(RxJavaBridge.toV3Observable())
                         .onErrorComplete() // Important! Prevent errors from escaping
 
                 }else{
@@ -210,7 +208,7 @@ class DeviceManager constructor(
             }
         } ?: run {
             // Add it if new
-            _bluetoothDevicesStateFlow.value = (_bluetoothDevicesStateFlow.value ?: listOf()) + newDevice
+            _bluetoothDevicesStateFlow.value = _bluetoothDevicesStateFlow.value + newDevice
         }
     }
 
@@ -258,7 +256,7 @@ class DeviceManager constructor(
                 it.offline()
                 false
             }
-        } ?: listOf()
+        }
 
         val newDevices = mutableListOf<Device>()
         for (usbDevice in newUsbDevices){
@@ -272,6 +270,7 @@ class DeviceManager constructor(
         _usbDevicesStateFlow.value = oldDevices + newDevices
     }
 
+    @SuppressLint("MissingPermission")
     fun bondDevice(
         device: Device,
         onSuccess: (() -> Unit),

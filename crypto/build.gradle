@@ -66,11 +66,6 @@ dependencies {
     implementation libs.androidx.lifecycle.livedata.ktx
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- RxJava  ---------------------------------------------------------------------------- */
-    implementation "io.reactivex.rxjava3:rxjava:3.1.2"
-    implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
-    /** ----------------------------------------------------------------------------------------- */
-
     /**  --- Logging ---------------------------------------------------------------------------- */
     implementation libs.slf4j.simple
     implementation libs.kotlin.logging.jvm

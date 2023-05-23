@@ -1,6 +1,5 @@
 package com.blockstream.jade;
 
-import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 
 import java.io.ByteArrayInputStream;
@@ -12,8 +11,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Completable;
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**

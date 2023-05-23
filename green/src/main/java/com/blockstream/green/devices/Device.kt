@@ -1,15 +1,16 @@
 package com.blockstream.green.devices
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.hardware.usb.UsbDevice
 import android.os.ParcelUuid
 import android.os.SystemClock
 import com.blockstream.DeviceBrand
 import com.blockstream.green.BuildConfig
+import com.blockstream.jade.JadeBleImpl
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.greenapi.HWWallet
-import com.blockstream.jade.JadeBleImpl
-import com.polidea.rxandroidble2.RxBleDevice
+import com.polidea.rxandroidble3.RxBleDevice
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
@@ -17,7 +18,6 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import mu.KLogging
-import java.lang.Exception
 import kotlin.properties.Delegates
 
 /*
@@ -117,11 +117,13 @@ class Device constructor(
         }
 
     val name
+        @SuppressLint("MissingPermission")
         get() = (if (isJade && isUsb) "Jade" else usbDevice?.productName
             ?: bleDevice?.bluetoothDevice?.name) ?: deviceBrand.name
 
     // Jade v1 has the controller manufacturer as a productName
     val manufacturer
+        @SuppressLint("MissingPermission")
         get() = if (isJade) deviceBrand.name else usbDevice?.productName
             ?: bleDevice?.bluetoothDevice?.name
 
@@ -149,6 +151,7 @@ class Device constructor(
         return usbDevice?.let { deviceManager.hasPermissions(it) } ?: false
     }
 
+    @SuppressLint("MissingPermission")
     fun isBonded() = bleDevice?.bluetoothDevice?.bondState == BluetoothDevice.BOND_BONDED
 
     fun hasPermissionsOrIsBonded(): Boolean {

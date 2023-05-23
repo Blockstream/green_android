@@ -248,7 +248,7 @@ class DeviceConnectionManager constructor(
             LedgerBLEAdapter.connectLedgerBLE(
                 context,
                 device.bleDevice!!.bluetoothDevice,
-                { transport: BTChipTransport, hasScreen: Boolean, bleDisconnectEvent: PublishSubject<Boolean?>? ->
+                { transport: BTChipTransport, hasScreen: Boolean, _: PublishSubject<Boolean?>? ->
                     scope.launch {
                         onLedger(
                             device,

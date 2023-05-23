@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.blockstream.DeviceBrand;
+import com.blockstream.JadeHWWallet;
 import com.blockstream.gdk.ExtensionsKt;
 import com.blockstream.gdk.data.Account;
 import com.blockstream.gdk.data.AccountType;
@@ -33,6 +34,7 @@ import java.util.Map;
 import io.reactivex.rxjava3.subjects.CompletableSubject;
 import kotlinx.coroutines.CompletableDeferred;
 import kotlinx.coroutines.CompletableDeferredKt;
+import kotlinx.serialization.json.JsonElement;
 
 
 public class TrezorHWWallet extends HWWallet {
@@ -102,13 +104,15 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
-                                        final List<InputOutput> inputs,
-                                        final List<InputOutput> outputs,
-                                        final Map<String, String> transactions,
-                                        final boolean useAeProtocol)
+    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final JsonElement transaction,
+                                                     final List<InputOutput> inputs,
+                                                     final List<InputOutput> outputs,
+                                                     final Map<String, String> transactions,
+                                                     final boolean useAeProtocol)
     {
         try {
+            final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
+
             if (useAeProtocol) {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
@@ -124,7 +128,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final JsonElement tx,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String, String> transactions,

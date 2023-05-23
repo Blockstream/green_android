@@ -192,10 +192,8 @@ dependencies {
 
     /**  --- RxJava  ---------------------------------------------------------------------------- */
     implementation libs.rxjava
-    implementation libs.rxkotlin
     implementation libs.rxandroid
-    implementation "com.jakewharton.rxbinding4:rxbinding:4.0.0"
-    implementation "com.github.akarnokd:rxjava3-bridge:3.0.2"
+    implementation libs.rxkotlin
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- FastAdapter  ----------------------------------------------------------------------- */
@@ -216,11 +214,6 @@ dependencies {
 
     /**  --- Uniform Resources ------------------------------------------------------------------ */
     implementation('com.sparrowwallet:hummingbird:1.6.6')
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Jackson ---------------------------------------------------------------------------- */
-    implementation libs.jackson.datatype.json.org
-    implementation libs.jackson.dataformat.cbor
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Countly ---------------------------------------------------------------------------- */

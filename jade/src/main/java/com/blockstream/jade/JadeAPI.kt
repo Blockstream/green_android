@@ -5,9 +5,15 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import com.blockstream.jade.data.JadeJson
 import com.blockstream.jade.data.VersionInfo
-import com.polidea.rxandroidble2.RxBleDevice
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.polidea.rxandroidble3.RxBleDevice
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import mu.KLogging
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -84,6 +90,16 @@ class JadeAPI private constructor(
 
         const val METHOD_GET_VERSION_INFO = "get_version_info"
         const val METHOD_LOGOUT = "logout"
+
+        private val objectMapper by lazy { ObjectMapper() }
+
+        fun toObjectNode(jsonElement: JsonElement?): ObjectNode {
+            return objectMapper.readTree(Json.encodeToString(jsonElement)) as ObjectNode
+        }
+
+        fun toJsonElement(jsonNode: JsonNode): JsonElement{
+            return Json.parseToJsonElement(jsonNode.toString())
+        }
 
         fun createSerial(
             requestProvider: HttpRequestProvider,

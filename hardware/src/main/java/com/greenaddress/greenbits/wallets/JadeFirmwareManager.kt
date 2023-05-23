@@ -13,6 +13,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import mu.KLogging
 import java.io.IOException
 import java.net.URL
@@ -131,10 +133,10 @@ class JadeFirmwareManager constructor(
     private fun downloadBinary(path: String): ByteArray? {
         logger.info { "Fetching firmware file: $path" }
         val ret = httpRequestProvider.httpRequest.httpRequest("GET", urls(path), null, "base64", emptyList())
-        if (!ret.has("body")) {
+        if(!ret.jsonObject.containsKey("body")){
             throw IOException("Failed to fetch firmware file: $path")
         }
-        val body = ret["body"].asText()
+        val body = ret.jsonObject["body"]!!.jsonPrimitive.content
         return Base64.decode(body, Base64.DEFAULT)
     }
 
@@ -143,15 +145,15 @@ class JadeFirmwareManager constructor(
     private fun downloadIndex(path: String): FirmwareChannels {
         logger.info { "Fetching index file: $path" }
         val ret = httpRequestProvider.httpRequest.httpRequest("GET", urls(path), null, "json", emptyList())
-        if (!ret.has("body")) {
+        if(!ret.jsonObject.containsKey("body")){
             throw IOException("Failed to fetch firmware file: $path")
         }
         val deserializer = Json {
             ignoreUnknownKeys = true
             isLenient = true
         }
-        val txt = ret["body"].toString()
-        return deserializer.decodeFromString(txt)
+        val body = ret.jsonObject["body"]!!.jsonPrimitive.content
+        return deserializer.decodeFromString(body)
     }
 
     // Get index file and filter channels as appropriate for the passed info

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import kotlinx.serialization.json.JsonElement;
 
 public abstract class HWWallet {
     protected Device mDevice;
@@ -90,13 +91,13 @@ public abstract class HWWallet {
     public abstract SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
                                               final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy);
 
-    public abstract SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public abstract SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final JsonElement tx,
                                                  final List<InputOutput> inputs,
                                                  final List<InputOutput> outputs,
                                                  final Map<String,String> transactions,
                                                  final boolean useAeProtocol);
 
-    public abstract SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public abstract SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final JsonElement tx,
                                                        final List<InputOutput> inputs,
                                                        final List<InputOutput> outputs,
                                                        final Map<String,String> transactions,

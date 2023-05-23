@@ -14,17 +14,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.polidea.rxandroidble2.exceptions.BleException;
+import com.polidea.rxandroidble3.exceptions.BleException;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import io.reactivex.exceptions.UndeliverableException;
-import io.reactivex.plugins.RxJavaPlugins;
+
+import io.reactivex.rxjava3.exceptions.UndeliverableException;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
@@ -141,7 +140,7 @@ public abstract class JadeAPIJava {
         // If it fails retry up to 3 times
         for (int attempt = 2; attempt >= 0; --attempt) {
             Log.i(TAG,"Making gdk http request: " + request.toString());
-            final JsonNode response = requestHandler.httpRequest(request);
+            final JsonNode response = JadeAPI.Companion.toObjectNode(requestHandler.httpRequest(JadeAPI.Companion.toJsonElement(request)));
             Log.i(TAG,"Received gdk http response: " + response.toString());
 
             // Return the 'body' if received

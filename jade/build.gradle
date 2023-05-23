@@ -44,8 +44,7 @@ dependencies {
 
     /**  --- RxJava ----------------------------------------------------------------------------- */
     implementation libs.rxjava
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
-    implementation 'com.jakewharton.rx2:replaying-share:2.2.0'
+    implementation libs.replaying.share
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Bluetooth -------------------------------------------------------------------------- */

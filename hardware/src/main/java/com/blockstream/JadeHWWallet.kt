@@ -6,8 +6,14 @@ import com.blockstream.jade.data.JadeNetworks
 import com.blockstream.jade.data.JadeState
 import com.blockstream.jade.data.VersionInfo
 import com.blockstream.jade.entities.JadeError
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import com.greenaddress.greenbits.wallets.JadeHWWalletJava
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import mu.KLogging
 
 class JadeHWWallet(
     val jadeApi: JadeAPI,
@@ -67,6 +73,14 @@ class JadeHWWallet(
     fun updateFirmwareVersion(firmwareVersion: String?) {
         firmwareVersion?.also {
             mFirmwareVersion = it
+        }
+    }
+
+    companion object:KLogging(){
+        private val objectMapper by lazy { ObjectMapper() }
+
+        fun toObjectNode(jsonElement: JsonElement?): ObjectNode {
+            return objectMapper.readTree(Json.encodeToString(jsonElement)) as ObjectNode
         }
     }
 }

@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.usb.UsbManager
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.managers.SessionManager
-import com.polidea.rxandroidble2.RxBleClient
+import com.polidea.rxandroidble3.RxBleClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

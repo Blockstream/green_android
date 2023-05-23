@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.wallets;
 
 import androidx.annotation.Nullable;
 
+import com.blockstream.JadeHWWallet;
 import com.blockstream.gdk.ExtensionsKt;
 import com.blockstream.gdk.data.Account;
 import com.blockstream.gdk.data.AccountType;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import kotlinx.serialization.json.JsonElement;
 
 
 public class BTChipHWWallet extends HWWallet {
@@ -246,12 +248,14 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final JsonElement transaction,
                                         final List<InputOutput> inputs,
                                         final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
                                         final boolean useAeProtocol) {
         try {
+            final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
+
             if (useAeProtocol) {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
@@ -287,12 +291,14 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final JsonElement transaction,
                                               final List<InputOutput> inputs,
                                               final List<InputOutput> outputs,
                                               final Map<String, String> transactions,
                                               final boolean useAeProtocol) {
         try {
+            final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
+
             if (useAeProtocol) {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }

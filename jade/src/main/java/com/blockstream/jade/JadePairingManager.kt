@@ -7,9 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import com.polidea.rxandroidble2.RxBleDevice
-import io.reactivex.Single
-import io.reactivex.disposables.Disposables
+import com.polidea.rxandroidble3.RxBleDevice
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.Disposable
+
 import mu.KLogging
 
 // Solution based on propasal from @ craigzour
@@ -54,7 +55,7 @@ internal object JadePairingManager : KLogging(){
                         }
                     }
 
-                    single.setDisposable(Disposables.fromAction { context.unregisterReceiver(receiver) })
+                    single.setDisposable(Disposable.fromAction { context.unregisterReceiver(receiver) })
                     context.registerReceiver(receiver, IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
                 }
             }

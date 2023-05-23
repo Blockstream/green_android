@@ -4,22 +4,15 @@ import com.blockstream.gdk.data.DeviceRequiredData
 import com.blockstream.gdk.data.DeviceResolvedData
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.gdk.HardwareWalletResolver
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWallet.SignTxResult
 import com.greenaddress.greenapi.HWWalletBridge
 import io.reactivex.rxjava3.core.Single
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 
 class DeviceResolver constructor(
     private val hwWallet: HWWallet?,
     private val hwWalletBridge: HWWalletBridge? = null
 ) : HardwareWalletResolver {
-
-    private val objectMapper by lazy { ObjectMapper() }
 
     override fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): Single<String> {
         return Single.create { emitter ->
@@ -36,10 +29,6 @@ class DeviceResolver constructor(
         }
     }
 
-
-    private fun toObjectNode(jsonElement: JsonElement?): ObjectNode {
-        return objectMapper.readTree(Json.encodeToString(jsonElement)) as ObjectNode
-    }
 
     @Synchronized
     private fun requestDataFromHardware(network: Network, requiredData: DeviceRequiredData): String? {
@@ -94,7 +83,7 @@ class DeviceResolver constructor(
                     result = hwWallet.signLiquidTransaction(
                         network,
                         hwWalletBridge,
-                        toObjectNode(requiredData.transaction),
+                        requiredData.transaction,
                         requiredData.signingInputs,
                         requiredData.transactionOutputs,
                         requiredData.signingTransactions,
@@ -104,7 +93,7 @@ class DeviceResolver constructor(
                     result = hwWallet.signTransaction(
                         network,
                         hwWalletBridge,
-                        toObjectNode(requiredData.transaction),
+                        requiredData.transaction,
                         requiredData.signingInputs,
                         requiredData.transactionOutputs,
                         requiredData.signingTransactions,

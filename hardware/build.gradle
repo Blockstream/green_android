@@ -44,20 +44,16 @@ dependencies {
 
     /**  --- Guava ------------------------------------------------------------------------------ */
     // Upgrade Guava to remove this package
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-    implementation 'com.google.guava:guava:24.1-android'
+    implementation 'com.google.guava:guava:31.1-android'
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version:'3.4.0'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava ----------------------------------------------------------------------------- */
     implementation libs.rxjava
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
-    implementation 'com.jakewharton.rx2:replaying-share:2.2.0'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Jackson ---------------------------------------------------------------------------- */
     implementation libs.jackson.datatype.json.org
-    implementation libs.jackson.dataformat.cbor
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Bluetooth -------------------------------------------------------------------------- */
