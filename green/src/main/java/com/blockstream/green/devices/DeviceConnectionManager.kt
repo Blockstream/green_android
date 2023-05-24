@@ -145,13 +145,14 @@ class DeviceConnectionManager constructor(
     private suspend fun onJadeConnected(device: Device, verInfo: VersionInfo, jade: JadeAPI) {
         try {
             val version = JadeVersion(verInfo.jadeVersion)
-            val supportsHostUnblinding = JADE_VERSION_SUPPORTS_HOST_UNBLINDING <= version
+            val supportsExternalBlinding = JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING <= version
 
             val jadeDevice = com.blockstream.gdk.data.Device(
                 name = "Jade",
                 supportsArbitraryScripts = true,
                 supportsLowR = true,
-                supportsHostUnblinding = supportsHostUnblinding,
+                supportsHostUnblinding = true,
+                supportsExternalBlinding = supportsExternalBlinding,
                 supportsLiquid = DeviceSupportsLiquid.Lite,
                 supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.Optional
             )
@@ -227,6 +228,7 @@ class DeviceConnectionManager constructor(
             supportsArbitraryScripts = false,
             supportsLowR = false,
             supportsHostUnblinding = false,
+            supportsExternalBlinding = false,
             supportsLiquid = DeviceSupportsLiquid.None,
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
         )
@@ -403,6 +405,7 @@ class DeviceConnectionManager constructor(
             supportsArbitraryScripts = true,
             supportsLowR = false,
             supportsHostUnblinding = false,
+            supportsExternalBlinding = false,
             supportsLiquid = DeviceSupportsLiquid.Lite,
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
         )
@@ -494,6 +497,6 @@ class DeviceConnectionManager constructor(
     }
 
     companion object : KLogging() {
-        val JADE_VERSION_SUPPORTS_HOST_UNBLINDING = JadeVersion("0.1.27")
+        val JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING = JadeVersion("0.1.48")
     }
 }

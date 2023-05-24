@@ -16,6 +16,7 @@ data class Device constructor(
     @SerialName("supports_arbitrary_scripts") val supportsArbitraryScripts: Boolean,
     @SerialName("supports_low_r") val supportsLowR: Boolean,
     @SerialName("supports_host_unblinding") val supportsHostUnblinding: Boolean,
+    @SerialName("supports_external_blinding") val supportsExternalBlinding: Boolean,
 
     @Serializable(with = DeviceSupportsLiquidSerializer::class)
     @SerialName("supports_liquid") val supportsLiquid: DeviceSupportsLiquid,
