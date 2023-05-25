@@ -111,3 +111,54 @@ public func bip32KeyFromBase58(_ input: String) throws -> ga.ext_key {
     return output.pointee
 }
 
+public func bip85FromMnemonic(
+    mnemonic: String,
+    passphrase: String?,
+    isTestnet: Bool = false,
+    index: UInt32 = 0,
+    numOfWords: UInt32 = 12
+) -> String? {
+    let version = isTestnet ? BIP32_VER_TEST_PRIVATE : BIP32_VER_MAIN_PRIVATE
+    let seed512Ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(BIP39_SEED_LEN_512))
+    var bip32KeyPtr: UnsafeMutablePointer<ga.ext_key>?
+    let bip85Ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(HMAC_SHA512_LEN))
+    var bip85Len: Int = 0
+    var wordlistPtr: OpaquePointer?
+    var resultPtr: UnsafeMutablePointer<CChar>?
+    defer {
+        bip32_key_free(bip32KeyPtr)
+    }
+    if bip39_mnemonic_to_seed512(strdup(mnemonic)!, passphrase != nil ? strdup(passphrase ?? "")! : nil , seed512Ptr, Int(BIP39_SEED_LEN_512)) != WALLY_OK {
+        return nil
+    }
+    if bip32_key_from_seed_alloc(seed512Ptr, Int(BIP39_SEED_LEN_512), UInt32(version), UInt32(BIP32_FLAG_SKIP_HASH), &bip32KeyPtr) != WALLY_OK {
+        return nil
+    }
+    if bip85_get_bip39_entropy(bip32KeyPtr, strdup(BIP39_WORD_LIST_LANG)!, numOfWords, index, bip85Ptr, Int(HMAC_SHA512_LEN), &bip85Len) != WALLY_OK {
+        return nil
+    }
+    if bip39_get_wordlist(strdup(BIP39_WORD_LIST_LANG)!, &wordlistPtr) != WALLY_OK {
+        return nil
+    }
+    if bip39_mnemonic_from_bytes(wordlistPtr, bip85Ptr, bip85Len, &resultPtr) != WALLY_OK {
+        return nil
+    }
+    guard let resultPtr = resultPtr else {
+        return nil
+    }
+    return String(cString: resultPtr)
+}
+
+public func getHashPrevouts(
+    txhashes: [UInt8],
+    outputIdxs: [UInt32]
+) -> [UInt8]? {
+    let txhashesPtr: UnsafePointer<UInt8> = UnsafePointer(txhashes)
+    let outputIdxsPtr: UnsafePointer<UInt32> = UnsafePointer(outputIdxs)
+    let len = Int(SHA256_LEN)
+    let bufferPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: len)
+    if wally_get_hash_prevouts(txhashesPtr, txhashes.count, outputIdxsPtr, outputIdxs.count, bufferPtr, len) != WALLY_OK {
+        return nil
+    }
+    return Array(UnsafeBufferPointer(start: bufferPtr, count: len))
+}

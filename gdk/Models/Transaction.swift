@@ -73,6 +73,10 @@ public struct Transaction: Comparable {
         get { return get("addressees_read_only") ?? false }
     }
 
+    public var transaction: String? {
+        get { return get("transaction") }
+    }
+
     public var blockHeight: UInt32 {
         get { return get("block_height") ?? 0 }
     }

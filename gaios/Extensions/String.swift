@@ -64,6 +64,9 @@ extension Optional where Wrapped == String {
         }
         return true
     }
+    var isNotEmpty: Bool {
+        return !isNilOrEmpty
+    }
 }
 
 extension NSMutableAttributedString {

@@ -146,4 +146,8 @@ final public class Ledger: LedgerCommands, HWProtocol {
     public func getMasterBlindingKey() -> Observable<String> {
         return Observable.error(HWError.Abort(""))
     }
+    
+    public func getBlindingFactor(params: BlindingFactorsParams) -> Observable<BlindingFactorsResult> {
+        return Observable.error(HWError.Abort(""))
+    }
 }

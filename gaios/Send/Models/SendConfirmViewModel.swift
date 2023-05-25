@@ -19,15 +19,15 @@ class SendConfirmViewModel {
     }
 
     func send() -> Promise<Void> {
+        let bgq = session.bgq
         return Guarantee()
-            .then {
-                self.session.signTransaction(tx: self.tx)
-            }.then { result -> Promise<Void> in
+            .compactMap(on: bgq) { self.tx.subaccountItem?.gdkNetwork.liquid ?? false }
+            .then(on: bgq) { $0 ? self.session.blindTransaction(tx: self.tx) : Promise.value(self.tx) }
+            .then(on: bgq) { self.session.signTransaction(tx: $0) }
+            .then(on: bgq) { tx -> Promise<Void> in
                 if self.tx.isSweep {
-                    let tx = result["transaction"] as? String
-                    return self.session.broadcastTransaction(txHex: tx ?? "")
+                    return self.session.broadcastTransaction(txHex: tx.transaction ?? "")
                 } else {
-                    let tx = Transaction(result, subaccount: self.account.hashValue)
                     return self.session.sendTransaction(tx: tx)
                 }
             }

@@ -224,6 +224,18 @@ public struct JadeVersionInfo: Codable {
     public let jadeNetworks: String
     public let jadeFeatures: String
     public let jadeHasPin: Bool
+    var hasSwapSupport: Bool { jadeVersion >= "0.1.48" }
+}
+
+public struct GetBlindingFactorParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case hashPrevouts = "hash_prevouts"
+        case outputIndex = "output_index"
+        case type
+    }
+    let hashPrevouts: Data
+    let outputIndex: UInt32
+    let type: String
 }
 
 public var JadeRequestId = Int.random(in: 0 ..< 899999)

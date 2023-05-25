@@ -34,6 +34,17 @@ public class HWResolver: HwResolverDelegate {
                 let data = try? JSONSerialization.data(withJSONObject: $0.toDict() ?? [:], options: .fragmentsAllowed)
                 return String(data: data ?? Data(), encoding: .utf8)
             }
+        case "get_blinding_factors":
+            guard let usedUtxos = requiredData["used_utxos"] as? [[String: Any]],
+                  let transactionOutputs = requiredData["transaction_outputs"] as? [[String: Any]]
+            else {
+                return Promise { $0.reject(HWError.Abort("Invalid xpubs request")) }
+            }
+            let params = BlindingFactorsParams(usedUtxos: usedUtxos, transactionOutputs: transactionOutputs)
+            return getBlindingFactor(hw: hw, params: params).compactMap {
+                let data = try JSONSerialization.data(withJSONObject: $0.toDict() ?? [:], options: .fragmentsAllowed)
+                return String(data: data, encoding: .utf8)
+            }
         case "get_blinding_nonces":
             guard let scripts = requiredData["scripts"] as? [String],
                   let publicKeys = requiredData["public_keys"] as? [String] else {
@@ -129,6 +140,17 @@ public class HWResolver: HwResolverDelegate {
                     seal.reject(err)
                 })
             }
+    }
+
+    func getBlindingFactor(hw: HWProtocol, params: BlindingFactorsParams) -> Promise<BlindingFactorsResult> {
+        return Promise { seal in
+            _ = hw.getBlindingFactor(params: params)
+                .subscribe(onNext: { data in
+                    seal.fulfill(data)
+                }, onError: { err in
+                    seal.reject(err)
+                })
+        }
     }
 
     func getBlindingNonce(hw: HWProtocol, pubkey: String, script: String) -> Promise<String> {

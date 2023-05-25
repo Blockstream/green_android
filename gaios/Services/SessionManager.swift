@@ -448,20 +448,30 @@ class SessionManager {
             }.tapLogger()
     }
 
-    func createTransaction(tx: Transaction) -> Promise<Transaction> {
+    func wrapperTransaction(fun: GdkFunc?, tx: Transaction) -> Promise<Transaction> {
         return Guarantee()
-            .compactMap(on: bgq) { try self.session?.createTransaction(details: tx.details) }
+            .compactMap(on: bgq) { try fun?(tx.details) }
             .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
-            .compactMap(on: bgq) { Transaction($0["result"] as? [String: Any] ?? [:]) }
-            .tapLogger()
+            .compactMap { res in
+                let result = res["result"] as? [String: Any]
+                return Transaction(result ?? [:], subaccount: tx.subaccount)
+            }.tapLogger()
     }
 
-    func signTransaction(tx: Transaction) -> Promise<[String: Any]> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.signTransaction(details: tx.details) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
-            .compactMap(on: bgq) { $0["result"] as? [String: Any] }
-            .tapLogger()
+    func createTransaction(tx: Transaction) -> Promise<Transaction> {
+        wrapperTransaction(fun: self.session?.createTransaction, tx: tx)
+    }
+
+    func blindTransaction(tx: Transaction) -> Promise<Transaction> {
+        wrapperTransaction(fun: self.session?.blindTransaction, tx: tx)
+    }
+
+    func signTransaction(tx: Transaction) -> Promise<Transaction> {
+        wrapperTransaction(fun: self.session?.signTransaction, tx: tx)
+    }
+
+    func sendTransaction(tx: Transaction) -> Promise<Void> {
+        wrapperTransaction(fun: self.session?.sendTransaction, tx: tx).asVoid()
     }
 
     func broadcastTransaction(txHex: String) -> Promise<Void> {
@@ -471,13 +481,6 @@ class SessionManager {
             .asVoid()
     }
 
-    func sendTransaction(tx: Transaction) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.sendTransaction(details: tx.details) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain).run() }
-            .tapLogger()
-            .asVoid()
-    }
 
     func getFeeEstimates() -> [UInt64]? {
         let estimates = try? session?.getFeeEstimates()

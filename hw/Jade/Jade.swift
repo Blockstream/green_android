@@ -559,4 +559,62 @@ extension Jade {
                 dataToHex(res.result!)
             }
     }
+
+    public func getBlindingFactor_(hashPrevouts: Data, outputIdx: UInt32, type: String) -> Observable<Data> {
+        let package = GetBlindingFactorParams(hashPrevouts: hashPrevouts,
+                                              outputIndex: outputIdx,
+                                              type: type)
+        return exchange(JadeRequest<GetBlindingFactorParams>(method: "get_blinding_factor", params: package))
+            .compactMap { (res: JadeResponse<Data>) -> Data in
+                res.result ?? Data()
+            }
+    }
+
+    public func getBlindingFactor(params: BlindingFactorsParams) -> Observable<BlindingFactorsResult> {
+        version()
+            .flatMap { self.getBlindingFactor_(params: params, version: $0) }
+    }
+
+    func getBlindingFactor_(params: BlindingFactorsParams, version: JadeVersionInfo) -> Single<BlindingFactorsResult> {
+        // Compute hashPrevouts to derive deterministic blinding factors from
+        let txhashes = params.usedUtxos.map { $0.getTxid ?? []}.lazy.joined()
+        let outputIdxs = params.transactionOutputs.map { $0.ptIdx }
+        let hashPrevouts = getHashPrevouts(txhashes: [UInt8](txhashes), outputIdxs: outputIdxs)
+        // Enumerate the outputs and provide blinding factors as needed
+        // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
+        return Observable.from(params.transactionOutputs)
+            .enumerated()
+            .concatMap() { i, output -> Observable<(String, String)> in
+                // Call Jade to get the blinding factors
+                // NOTE: 0.1.48+ Jade fw accepts 'ASSET_AND_VALUE', and returns abf and vbf concatenated abf||vbf
+                // (Previous versions need two calls, for 'ASSET' and 'VALUE' separately)
+                // FIXME: remove when 0.1.48 is made minimum allowed version.
+                if output.blindingKey == nil {
+                    return Observable.just(("", ""))
+                } else if version.hasSwapSupport {
+                    return self.getBlindingFactor(hashPrevouts: Data(hashPrevouts ?? []), outputIdx: i, type: "ASSET_AND_VALUE")
+                        .compactMap { bfs in
+                            let assetblinder = dataToHex(bfs![0..<WALLY_BLINDING_FACTOR_LEN])
+                            let amountblinder = dataToHex(bfs![WALLY_BLINDING_FACTOR_LEN..<2*WALLY_BLINDING_FACTOR_LEN])
+                            return (assetblinder, amountblinder)
+                        }
+                } else {
+                    var abf = Data()
+                    return self.getBlindingFactor(hashPrevouts: Data(hashPrevouts ?? []), outputIdx: i, type: "ASSET")
+                        .compactMap { abf = $0! }
+                        .flatMap { self.getBlindingFactor(hashPrevouts: Data(hashPrevouts ?? []), outputIdx: i, type: "VALUE") }
+                        .compactMap { vbf in
+                            let assetblinder = dataToHex(Data(abf.reversed()))
+                            let amountblinder = dataToHex(Data(vbf!.reversed()))
+                            return (assetblinder, amountblinder)
+                        }
+                }
+            }
+            .toArray()
+            .flatMap { res -> Single<BlindingFactorsResult> in
+                let bfr = BlindingFactorsResult(assetblinders: res.map { $0.0 },
+                                                amountblinders: res.map { $0.1 })
+                return Single.just(bfr)
+            }
+    }
 }

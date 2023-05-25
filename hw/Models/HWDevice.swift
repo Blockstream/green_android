@@ -8,6 +8,7 @@ public struct HWDevice: Codable {
         case supportsLiquid = "supports_liquid"
         case supportsAntiExfilProtocol = "supports_ae_protocol"
         case supportsHostUnblinding = "supports_host_unblinding"
+        case supportsExternalBlinding = "supports_external_blinding"
         case deviceType = "device_type"
     }
 
@@ -17,6 +18,7 @@ public struct HWDevice: Codable {
     public let supportsLiquid: Int
     public let supportsAntiExfilProtocol: Int
     public let supportsHostUnblinding: Bool
+    public let supportsExternalBlinding: Bool
     public let deviceType: String = "hardware"
 
     public var isJade: Bool { "jade" == name.lowercased() }
@@ -29,16 +31,20 @@ public struct HWDevice: Codable {
                         supportsLowR: false,
                         supportsLiquid: 0,
                         supportsAntiExfilProtocol: 0,
-                        supportsHostUnblinding: false)
+                        supportsHostUnblinding: false,
+                        supportsExternalBlinding: false)
     }
 
+    
     public static func defaultJade(fmwVersion: String?) -> HWDevice {
-        let supportUnblinding = fmwVersion == nil || fmwVersion! >= "0.1.27"
+        let JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING = "0.1.48"
+        let supportUnblinding = JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING <= fmwVersion ?? ""
         return HWDevice(name: "Jade",
                         supportsArbitraryScripts: true,
                         supportsLowR: true,
                         supportsLiquid: 1,
                         supportsAntiExfilProtocol: 1,
-                        supportsHostUnblinding: supportUnblinding)
+                        supportsHostUnblinding: true,
+                        supportsExternalBlinding: supportUnblinding)
     }
 }

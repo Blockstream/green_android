@@ -17,3 +17,15 @@ func compressPublicKey(_ publicKey: [UInt8]) -> [UInt8]? {
     let type = publicKey[64] & 1 != 0 ? 0x03 : 0x02
     return [UInt8(type)] + publicKey[1..<32+1]
 }
+
+extension Optional where Wrapped == String {
+    var isNilOrEmpty: Bool {
+        if let strongSelf = self, !strongSelf.isEmpty {
+            return false
+        }
+        return true
+    }
+    var isNotEmpty: Bool {
+        return !isNilOrEmpty
+    }
+}

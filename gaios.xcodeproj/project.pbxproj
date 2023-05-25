@@ -483,6 +483,7 @@
 		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
 		81D671EB26C8007600682508 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671EA26C8007600682508 /* SessionManager.swift */; };
 		81D671F726C81B0800682508 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F626C81B0800682508 /* NotificationManager.swift */; };
+		81E6897E2A234DAC00102BFC /* InputOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E6897D2A234DAC00102BFC /* InputOutput.swift */; };
 		81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C358291FDAF000B2196B /* DialogTableViewController.swift */; };
 		81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */; };
 		81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35C292041F800B2196B /* EnrichedAsset.swift */; };
@@ -1065,6 +1066,7 @@
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
 		81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputLiquid.swift; sourceTree = "<group>"; };
+		81E6897D2A234DAC00102BFC /* InputOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputOutput.swift; sourceTree = "<group>"; };
 		81E8C358291FDAF000B2196B /* DialogTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTableViewController.swift; sourceTree = "<group>"; };
 		81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountArchiveViewModel.swift; sourceTree = "<group>"; };
 		81E8C35C292041F800B2196B /* EnrichedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnrichedAsset.swift; sourceTree = "<group>"; };
@@ -2405,6 +2407,7 @@
 				81E0B4CA25531470001C8544 /* Commitment.swift */,
 				81F328F329E9ABBE00D54F1D /* AuthResolver.swift */,
 				81D404E02A1D6138002631F5 /* Utils.swift */,
+				81E6897D2A234DAC00102BFC /* InputOutput.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -3408,6 +3411,7 @@
 				81961B1C29E4EE3C00E9B94D /* LedgerWrapper.swift in Sources */,
 				81961B1D29E4EE3C00E9B94D /* Ledger.swift in Sources */,
 				81A8F8E929E4FC660052B214 /* Observable.swift in Sources */,
+				81E6897E2A234DAC00102BFC /* InputOutput.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

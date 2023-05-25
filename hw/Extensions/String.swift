@@ -16,4 +16,7 @@ extension String {
         }
         return data
     }
+    public func hexToBytes() -> [UInt8] {
+        [UInt8](hexToData())
+    }
 }

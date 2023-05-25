@@ -109,3 +109,25 @@ public struct AuthSignTransactionResponse: Codable {
         self.amountblinders = amountblinders
     }
 }
+
+public struct BlindingFactorsParams {
+    enum CodingKeys: String, CodingKey {
+        case usedUtxos = "used_utxos"
+        case transactionOutputs = "transaction_outputs"
+    }
+    let usedUtxos: [InputOutput]
+    let transactionOutputs: [InputOutput]
+}
+
+public struct BlindingFactorsResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case assetblinders
+        case amountblinders
+    }
+    var assetblinders: [String]
+    var amountblinders: [String]
+    mutating func append(assetblinder: String, amountblinder: String) {
+        assetblinders.append(assetblinder)
+        amountblinders.append(amountblinder)
+    }
+}

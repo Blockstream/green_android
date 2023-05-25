@@ -38,7 +38,8 @@ public protocol HWProtocol {
     // Liquid calls
     func getBlindingKey(scriptHex: String) -> Observable<String?>
     func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?>
-
+    func getBlindingFactor(params: BlindingFactorsParams) -> Observable<BlindingFactorsResult>
+    
     // swiftlint:disable:next function_parameter_count
     func signLiquidTransaction(network: String,
                                tx: AuthTx,
