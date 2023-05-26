@@ -1,28 +1,26 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'kotlin-parcelize'
-    id 'kotlinx-serialization'
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.parcelize")
+    id("kotlinx-serialization")
 }
 
 android {
-    namespace 'com.blockstream.crypto'
-    compileSdk 33
+    namespace = "com.blockstream.crypto"
+    compileSdk = 33
 
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 33
-
-        consumerProguardFiles "consumer-rules.pro"
+        minSdk = 23
+        consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
     }
 }
@@ -31,27 +29,28 @@ kotlin {
     jvmToolchain(11)
 }
 
-task fetchBinaries {
+task("fetchBinaries") {
     doFirst{
-        def jniLibs = new File('./crypto/src/main/jniLibs')
-        if (!jniLibs.exists()) {
+        val exists = File("./crypto/src/main/jniLibs").exists()
+        if (!exists) {
             exec {
-                commandLine './fetch_gdk_binaries.sh'
+                commandLine("./fetch_gdk_binaries.sh")
             }
         }else{
-            print "-- Skipped --"
+            print("-- Skipped --")
         }
     }
     outputs.upToDateWhen { false }
 }
 
 afterEvaluate {
-    android.libraryVariants.all { variant ->
-        variant.getPreBuildProvider().configure { dependsOn(fetchBinaries) }
+    android.libraryVariants.all {
+        preBuildProvider.configure { dependsOn("fetchBinaries") }
     }
 }
 
 dependencies {
+
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
     implementation libs.kotlinx.serialization.core
     implementation libs.kotlinx.serialization.json
@@ -59,19 +58,19 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
     
     /**  --- AndroidX --------------------------------------------------------------------------- */
-    implementation libs.androidx.annotation
+    implementation(libs.androidx.annotation)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
-    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation(libs.androidx.lifecycle.livedata.ktx)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Logging ---------------------------------------------------------------------------- */
-    implementation libs.slf4j.simple
-    implementation libs.kotlin.logging.jvm
+    implementation(libs.slf4j.simple)
+    implementation(libs.kotlin.logging.jvm)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Testing ---------------------------------------------------------------------------- */
-    testImplementation libs.junit
+    testImplementation(libs.junit)
     /** ----------------------------------------------------------------------------------------- */
 }

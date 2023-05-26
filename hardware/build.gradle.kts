@@ -1,27 +1,25 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'kotlinx-serialization'
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("kotlinx-serialization")
 }
 
 android {
-    namespace 'com.blockstream.hardware'
-    compileSdk 33
+    namespace = "com.blockstream.hardware"
+    compileSdk = 33
 
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 33
-
-        consumerProguardFiles "consumer-rules.pro"
+        minSdk = 23
+        consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
     }
 }
@@ -32,42 +30,39 @@ kotlin {
 
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation project(':crypto')
-    implementation project(':jade')
+    implementation(project(":crypto"))
+    implementation(project(":jade"))
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-    implementation libs.kotlinx.coroutines.android
-    implementation libs.kotlinx.serialization.core
-    implementation libs.kotlinx.serialization.json
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Guava ------------------------------------------------------------------------------ */
-    // Upgrade Guava to remove this package
-    implementation 'com.google.guava:guava:31.1-android'
-    implementation group: 'com.google.protobuf', name: 'protobuf-java', version:'3.4.0'
+    implementation(libs.guava)
+    implementation(libs.protobuf.java)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava ----------------------------------------------------------------------------- */
-    implementation libs.rxjava
+    implementation(libs.rxjava)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Jackson ---------------------------------------------------------------------------- */
-    implementation libs.jackson.datatype.json.org
+    implementation(libs.jackson.datatype.json.org)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Bluetooth -------------------------------------------------------------------------- */
-    api libs.rxandroidble
+    api(libs.rxandroidble)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Logging ---------------------------------------------------------------------------- */
-    implementation libs.slf4j.simple
-    implementation libs.kotlin.logging.jvm
+    implementation(libs.slf4j.simple)
+    implementation(libs.kotlin.logging.jvm)
     /** ----------------------------------------------------------------------------------------- */
 
-    testImplementation fileTree(dir: 'libs', include: ['.jar', '.so'])
-
-    testImplementation libs.junit
-    testImplementation libs.androidx.core.testing
-    testImplementation libs.mockito.kotlin
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.mockito.kotlin)
 }

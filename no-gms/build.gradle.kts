@@ -1,26 +1,25 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'com.google.dagger.hilt.android'
-    id 'kotlin-kapt'
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
-    namespace 'com.blockstream.gms'
-    compileSdk 33
+    namespace = "com.blockstream.gms"
+    compileSdk = 33
 
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 33
+        minSdk = 23
     }
     compileOptions {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
     }
 }
@@ -31,11 +30,11 @@ kotlin {
 
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation project(':base')
+    implementation(project(":base"))
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
-    implementation libs.hilt.android
-    kapt libs.hilt.android.compiler
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
     /** ----------------------------------------------------------------------------------------- */
 }

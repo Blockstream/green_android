@@ -1,27 +1,25 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'kotlinx-serialization'
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("kotlinx-serialization")
 }
 
 android {
-    namespace 'com.blockstream.jade'
-    compileSdk 33
+    namespace = "com.blockstream.jade"
+    compileSdk = 33
 
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 33
-
-        consumerProguardFiles "consumer-rules.pro"
+        minSdk = 23
+        consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
     }
 }
@@ -32,33 +30,33 @@ kotlin {
 
 dependencies {
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-    implementation libs.kotlinx.coroutines.android
-    implementation libs.kotlinx.serialization.core
-    implementation libs.kotlinx.serialization.json
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Jackson ---------------------------------------------------------------------------- */
-    implementation libs.jackson.datatype.json.org
-    implementation libs.jackson.dataformat.cbor
+    implementation(libs.jackson.datatype.json.org)
+    implementation(libs.jackson.dataformat.cbor)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava ----------------------------------------------------------------------------- */
-    implementation libs.rxjava
-    implementation libs.replaying.share
+    implementation(libs.rxjava)
+    implementation(libs.replaying.share)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Bluetooth -------------------------------------------------------------------------- */
-    implementation libs.rxandroidble
+    implementation(libs.rxandroidble)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- USB -------------------------------------------------------------------------------- */
-    implementation libs.usb.serial
+    implementation(libs.usb.serial)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Logging ---------------------------------------------------------------------------- */
-    implementation libs.slf4j.simple
-    implementation libs.kotlin.logging.jvm
+    implementation(libs.slf4j.simple)
+    implementation(libs.kotlin.logging.jvm)
     /** ----------------------------------------------------------------------------------------- */
 
-    testImplementation libs.junit
+    testImplementation(libs.junit)
 }
