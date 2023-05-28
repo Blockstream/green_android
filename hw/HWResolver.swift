@@ -191,8 +191,8 @@ public class HWResolver: HwResolverDelegate {
             _ = hw.getMasterBlindingKey()
                 .subscribe(onNext: { data in
                     seal.fulfill(data.description)
-                }, onError: { err in
-                    seal.reject(err)
+                }, onError: { _ in
+                    seal.fulfill("")
                 })
         }
     }
