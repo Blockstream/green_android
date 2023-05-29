@@ -158,6 +158,10 @@ public struct Transaction: Comparable {
         get { return get("spv_verified") }
     }
 
+    public var isBlinded: Bool {
+        get { get("is_blinded") ?? false }
+    }
+
     public func date(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(Double(createdAtTs / 1000000)))
         return DateFormatter.localizedString(from: date, dateStyle: dateStyle, timeStyle: timeStyle)
