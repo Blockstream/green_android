@@ -77,9 +77,6 @@ class WalletSettingsFragment :
     private lateinit var multisigBitcoinPreference: PreferenceListItem
     private lateinit var multisigLiquidPreference: PreferenceListItem
 
-    // Recovery Transactions
-    private lateinit var recoveryTransactionsPreference: PreferenceListItem
-
     // Show Recovery Transactions
     private lateinit var setupEmailRecoveryTransactionsPreference: PreferenceListItem
     private lateinit var recoveryTransactionEmailsPreference: PreferenceListItem
@@ -90,7 +87,7 @@ class WalletSettingsFragment :
 
     private lateinit var versionPreference: PreferenceListItem
 
-    val networkOrNull: Network?
+    private val networkOrNull: Network?
         get() = args.network
 
     val network: Network
@@ -159,12 +156,6 @@ class WalletSettingsFragment :
             StringHolder(R.string.id_backup_recovery_phrase), StringHolder(
                 R.string.id_touch_to_display
             ), isInnerMenu = true
-        )
-        // Recovery Transactions
-        recoveryTransactionsPreference = PreferenceListItem(
-            StringHolder(R.string.id_recovery_transactions),
-            StringHolder(R.string.id_legacy_script_coins),
-            isInnerMenu = true
         )
         setupEmailRecoveryTransactionsPreference = PreferenceListItem(
             StringHolder(R.string.id_set_an_email_for_recovery)
@@ -268,16 +259,6 @@ class WalletSettingsFragment :
                             )
                         )
                     }
-
-                    recoveryTransactionsPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentSelf(
-                                wallet = wallet,
-                                showRecoveryTransactions = true,
-                                network = session.bitcoinMultisig!!
-                            )
-                        )
-                    }
                     recoveryTransactionEmailsPreference -> {
                         toggleRecoveryTransactionsEmails(network)
                     }
@@ -337,7 +318,12 @@ class WalletSettingsFragment :
             }
         }
 
-        viewModel.prominentNetworkSettings.observe(viewLifecycleOwner) {
+
+        (if(networkOrNull == null){
+            viewModel.prominentNetworkSettings
+        }else{
+            viewModel.networkSettingsLiveData(network)
+        }).observe(viewLifecycleOwner) {
             it?.let {
 
                 denominationAndExchangeRatePreference.subtitle = StringHolder(colorText(
@@ -493,10 +479,6 @@ class WalletSettingsFragment :
 
                     if (!session.isHardwareWallet) {
                         list += recoveryPreference
-                    }
-
-                    if(session.activeBitcoinMultisig != null && session.walletExistsAndIsUnlocked(session.activeBitcoinMultisig)) {
-                        list += recoveryTransactionsPreference
                     }
                 }
             }

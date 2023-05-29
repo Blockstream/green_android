@@ -92,6 +92,9 @@
         <action
             android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorSetupFragment"
             app:destination="@id/twoFactorSetupFragment" />
+        <action
+            android:id="@+id/action_twoFractorAuthenticationFragment_to_walletSettingsFragment"
+            app:destination="@id/walletSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/twoFactorSetupFragment"

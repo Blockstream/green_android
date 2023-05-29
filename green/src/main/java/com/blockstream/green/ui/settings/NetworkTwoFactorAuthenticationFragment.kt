@@ -68,6 +68,9 @@ class NetworkTwoFactorAuthenticationFragment :
     private lateinit var telegramPreference: PreferenceListItem
     private lateinit var thresholdPreference: PreferenceListItem
 
+    // Recovery Transactions
+    private lateinit var recoveryTransactionsPreference: PreferenceListItem
+
     private val csvBucketPreferences by lazy {
         val titles = resources.getStringArray(R.array.csv_titles)
         val subtitles = resources.getStringArray(R.array.csv_subtitles)
@@ -112,6 +115,12 @@ class NetworkTwoFactorAuthenticationFragment :
         telegramPreference = PreferenceListItem(StringHolder(R.string.id_telegram), withSwitch = true)
 
         thresholdPreference = PreferenceListItem(StringHolder(R.string.id_2fa_threshold))
+
+        recoveryTransactionsPreference = PreferenceListItem(
+            StringHolder(R.string.id_recovery_transactions),
+            StringHolder(R.string.id_legacy_script_coins),
+            isInnerMenu = true
+        )
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
@@ -161,6 +170,16 @@ class NetworkTwoFactorAuthenticationFragment :
 
                         thresholdPreference -> {
                             handleTwoFactorThreshold()
+                        }
+
+                        recoveryTransactionsPreference -> {
+                            navigate(
+                                    TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToWalletSettingsFragment(
+                                    wallet = wallet,
+                                    showRecoveryTransactions = true,
+                                    network = session.bitcoinMultisig!!
+                                )
+                            )
                         }
 
                         else -> {
@@ -329,6 +348,10 @@ class NetworkTwoFactorAuthenticationFragment :
                 message = StringHolder(R.string.id_your_2fa_expires_so_that_if_you),
                 button = StringHolder(R.string.id_recovery_tool)
             )
+
+            if(network.isBitcoin && session.walletExistsAndIsUnlocked(network)) {
+                list += recoveryTransactionsPreference
+            }
         }else{
             list += TitleListItem(StringHolder(R.string.id_2fa_reset_in_progress))
 
