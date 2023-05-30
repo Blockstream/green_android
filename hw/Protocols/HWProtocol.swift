@@ -6,21 +6,10 @@ import RxSwift
 public protocol HWProtocol {
 
     func xpubs(network: String, paths: [[Int]]) -> Observable<[String]>
-
-    func signMessage(path: [Int]?,
-                     message: String?,
-                     useAeProtocol: Bool?,
-                     aeHostCommitment: String?,
-                     aeHostEntropy: String?)
-    -> Observable<(signature: String?, signerCommitment: String?)>
+    func signMessage(_ params: HWSignMessageParams) -> Observable<HWSignMessageResult>
 
     // swiftlint:disable:next function_parameter_count
-    func signTransaction(network: String,
-                         tx: AuthTx,
-                         inputs: [AuthTxInput],
-                         outputs: [AuthTxOutput],
-                         transactions: [String: String],
-                         useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse>
+    func signTransaction(network: String, params: HWSignTxParams) -> Observable<HWSignTxResponse>
 
     // swiftlint:disable:next function_parameter_count
     func newReceiveAddress(chain: String,
@@ -33,18 +22,11 @@ public protocol HWProtocol {
                                   path: [UInt32],
                                   csvBlocks: UInt32) -> Observable<String>
 
-    func getMasterBlindingKey() -> Observable<String>
 
     // Liquid calls
+    func getMasterBlindingKey() -> Observable<String>
     func getBlindingKey(scriptHex: String) -> Observable<String?>
     func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?>
-    func getBlindingFactor(params: BlindingFactorsParams) -> Observable<BlindingFactorsResult>
-    
-    // swiftlint:disable:next function_parameter_count
-    func signLiquidTransaction(network: String,
-                               tx: AuthTx,
-                               inputs: [AuthTxInput],
-                               outputs: [AuthTxOutput],
-                               transactions: [String: String],
-                               useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse>
+    func getBlindingFactors(params: HWBlindingFactorsParams) -> Observable<HWBlindingFactorsResult>
+    func signLiquidTransaction(network: String, params: HWSignTxParams) -> Observable<HWSignTxResponse>
 }

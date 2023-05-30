@@ -84,8 +84,8 @@ class WalletViewModel {
         }
     }
 
-    func loadBalances() {
-        Guarantee()
+    func loadBalances() -> Promise<Void> {
+        return Guarantee()
             .compactMap { self.wm }
             .then(on: bgq) { $0.balances(subaccounts: self.subaccounts) }
             .map(on: bgq) { self.cachedBalance = AssetAmountList($0).sorted() }
@@ -95,17 +95,17 @@ class WalletViewModel {
             .compactMap(on: bgq) { BalanceCellModel(satoshi: $0,
                                                     cachedBalance: self.cachedBalance,
                                                     mode: self.balanceDisplayMode ) }
-            .done { cells in
+            .compactMap { cells in
                 self.balanceCellModel = cells
                 self.reloadAccountView?()
                 self.welcomeLayerVisibility?()
                 self.callAnalytics()
-            }.catch { err in print(err) }
+            }
     }
 
-    func loadTransactions(max: Int? = nil) {
+    func loadTransactions(max: Int? = nil) -> Promise<Void> {
         isTxLoading = true
-        Guarantee()
+        return Guarantee()
             .compactMap { self.wm }
             .then(on: bgq) { $0.transactions(subaccounts: self.subaccounts) }
             .compactMap(on: bgq) { txs in
@@ -115,8 +115,7 @@ class WalletViewModel {
                     .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
             }
             .ensure { self.isTxLoading = false }
-            .done { cells in self.txCellModels = cells }
-            .catch { err in print(err) }
+            .compactMap { cells in self.txCellModels = cells }
     }
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {

@@ -1,7 +1,7 @@
 import Foundation
 import greenaddress
 
-public struct AuthTxInput: Codable {
+public struct HWTxInput: Codable {
     enum CodingKeys: String, CodingKey {
         case addressType = "address_type"
         case prevoutScript = "prevout_script"
@@ -18,7 +18,7 @@ public struct AuthTxInput: Codable {
     }
     let addressType: String
     let prevoutScript: String
-    let userPath: [UInt32]
+    let userPath: [Int]
     let commitment: String?
     let aeHostCommitment: String?
     let aeHostEntropy: String?
@@ -35,7 +35,7 @@ public struct AuthTxInput: Codable {
     var amountblinderHex: [UInt8] { hexToData(amountblinder ?? "").reversed() }
 }
 
-public struct AuthTxOutput: Codable {
+public struct HWTxOutput: Codable {
     enum CodingKeys: String, CodingKey {
         case isChange = "is_change"
         case addressType = "address_type"
@@ -44,33 +44,33 @@ public struct AuthTxOutput: Codable {
         case recoveryXpub = "recovery_xpub"
         case satoshi
         case asset_id
-        case script
+        case scriptpubkey
         case blindingKey = "blinding_key"
     }
     let isChange: Bool?
     let addressType: String?
     let subtype: UInt32?
-    let userPath: [UInt32]?
+    let userPath: [Int]?
     let recoveryXpub: String?
     let satoshi: UInt64?
     let asset_id: String?
-    let script: String?
+    let scriptpubkey: String?
     let blindingKey: String?
 }
 
-public struct AuthTx: Codable {
-    enum CodingKeys: String, CodingKey {
-        case transaction
-        case transactionVersion = "transaction_version"
-        case transactionLocktime = "transaction_locktime"
+
+public typealias HWTransaction = [String: Any]
+
+public extension HWTransaction {
+    private func take<T>(_ key: String) -> T? {
+        return self[key] as? T
     }
-    let transaction: String
-    let transactionVersion: UInt?
-    let transactionLocktime: UInt?
-    var hex: Data { hexToData(transaction) }
+    var transaction: String? { take("transaction")}
+    var transactionVersion: UInt? { take("transaction_version")}
+    var transactionLocktime: UInt? { take("transaction_locktime")}
 }
 
-public struct AuthSignTransaction: Codable {
+public struct HWSignTxParams {
     enum CodingKeys: String, CodingKey {
         case transaction
         case signingInputs = "signing_inputs"
@@ -78,39 +78,34 @@ public struct AuthSignTransaction: Codable {
         case signingTxs = "signing_transactions"
         case useAeProtocol = "use_ae_protocol"
     }
-    let transaction: AuthTx
-    let signingInputs: [AuthTxInput]
-    let txOutputs: [AuthTxOutput]
-    let signingTxs: [String: String]?
-    let useAeProtocol: Bool?
+    let transaction: HWTransaction?
+    let signingInputs: [InputOutput]
+    let txOutputs: [InputOutput]
+    let signingTxs: [String: String]
+    let useAeProtocol: Bool
+    init(_ details: [String: Any]) {
+        transaction = details["transaction"] as? HWTransaction
+        signingInputs = details["signing_inputs"] as? [InputOutput] ?? []
+        txOutputs = details["transaction_outputs"] as? [InputOutput] ?? []
+        signingTxs = details["signing_transactions"] as? [String: String] ?? [:]
+        useAeProtocol = details["use_ae_protocol"] as? Bool ?? false
+    }
 }
 
-public struct AuthSignTransactionResponse: Codable {
+public struct HWSignTxResponse: Codable {
     enum CodingKeys: String, CodingKey {
         case signatures
         case signerCommitments = "signer_commitments"
-        case assetCommitments = "asset_commitments"
-        case valueCommitments = "value_commitments"
-        case assetblinders
-        case amountblinders
     }
     let signatures: [String]
     let signerCommitments: [String?]?
-    let assetCommitments: [String?]?
-    let valueCommitments: [String?]?
-    let assetblinders: [String?]?
-    let amountblinders: [String?]?
-    public init(signatures: [String], signerCommitments: [String?]? = nil, assetCommitments: [String?]? = nil, valueCommitments: [String?]? = nil, assetblinders: [String?]? = nil, amountblinders: [String?]? = nil) {
+    public init(signatures: [String], signerCommitments: [String?]? = nil) {
         self.signatures = signatures
         self.signerCommitments = signerCommitments
-        self.assetCommitments = assetCommitments
-        self.valueCommitments = valueCommitments
-        self.assetblinders = assetblinders
-        self.amountblinders = amountblinders
     }
 }
 
-public struct BlindingFactorsParams {
+public struct HWBlindingFactorsParams {
     enum CodingKeys: String, CodingKey {
         case usedUtxos = "used_utxos"
         case transactionOutputs = "transaction_outputs"
@@ -119,7 +114,7 @@ public struct BlindingFactorsParams {
     let transactionOutputs: [InputOutput]
 }
 
-public struct BlindingFactorsResult: Codable {
+public struct HWBlindingFactorsResult: Codable {
     enum CodingKeys: String, CodingKey {
         case assetblinders
         case amountblinders
@@ -129,5 +124,66 @@ public struct BlindingFactorsResult: Codable {
     mutating func append(assetblinder: String, amountblinder: String) {
         assetblinders.append(assetblinder)
         amountblinders.append(amountblinder)
+    }
+}
+
+public struct HWSignMessageParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case path
+        case message
+        case aeHostEntropy = "ae_host_entropy"
+        case aeHostCommitment = "ae_host_commitment"
+        case useAeProtocol = "use_ae_protocol"
+    }
+    let path: [Int]
+    let message: String
+    let aeHostEntropy: String?
+    let aeHostCommitment: String?
+    let useAeProtocol: Bool?
+}
+
+public struct HWSignMessageResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case signature
+        case signerCommitment = "signer_commitment"
+    }
+    let signature: String?
+    let signerCommitment: String?
+}
+
+public struct HWResolverResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case xpubs
+        case signerCommitment = "signer_commitment"
+        case signature
+        case signerCommitments = "signer_commitments"
+        case signatures
+        case assetblinders = "assetblinders"
+        case amountblinders = "amountblinders"
+        case masterBlindingKey = "master_blinding_key"
+        case nonces
+        case publicKeys = "public_keys"
+    }
+    let xpubs: [String?]?
+    let signerCommitment: String?
+    let signature: String?
+    let signerCommitments: [String?]?
+    let signatures: [String?]?
+    let assetblinders: [String?]?
+    let amountblinders: [String?]?
+    let masterBlindingKey: String?
+    let nonces: [String?]?
+    let publicKeys: [String?]?
+    internal init(xpubs: [String?]? = nil, signerCommitment: String? = nil, signature: String? = nil, signerCommitments: [String?]? = nil, signatures: [String?]? = nil, assetblinders: [String?]? = nil, amountblinders: [String?]? = nil, masterBlindingKey: String? = nil, nonces: [String?]? = nil, publicKeys: [String?]? = nil) {
+        self.xpubs = xpubs
+        self.signerCommitment = signerCommitment
+        self.signature = signature
+        self.signerCommitments = signerCommitments
+        self.signatures = signatures
+        self.assetblinders = assetblinders
+        self.amountblinders = amountblinders
+        self.masterBlindingKey = masterBlindingKey
+        self.nonces = nonces
+        self.publicKeys = publicKeys
     }
 }

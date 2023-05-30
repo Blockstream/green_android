@@ -15,22 +15,6 @@ final public class Jade: JadeOTA, HWProtocol {
     let SIGHASH_ALL: UInt8 = 1
     public weak var gdkRequestDelegate: JadeGdkRequest?
 
-    public func version() -> Observable<JadeVersionInfo> {
-        return exchange(JadeRequest<JadeEmpty>(method: "get_version_info"))
-            .compactMap { (res: JadeResponse<JadeVersionInfo>) -> JadeVersionInfo in
-                res.result!
-            }
-    }
-
-    public func addEntropy() -> Observable<Bool> {
-        let buffer = [UInt8](repeating: 0, count: 32).map { _ in UInt8(arc4random_uniform(0xff))}
-        let cmd = JadeAddEntropy(entropy: Data(buffer))
-        return exchange(JadeRequest<JadeAddEntropy>(method: "add_entropy", params: cmd))
-            .compactMap { (res: JadeResponse<Bool>) -> Bool in
-                res.result!
-            }
-    }
-
     public func httpRequest<T: Codable, K: Codable>(_ httpRequest: JadeHttpRequest<T>) throws -> K {
         let encoded = try JSONEncoder().encode(httpRequest.params)
         let serialized = try JSONSerialization.jsonObject(with: encoded, options: .allowFragments) as? [String: Any]
@@ -79,55 +63,38 @@ final public class Jade: JadeOTA, HWProtocol {
                 throw HWError.Abort(res.error?.message ?? "Invalid pin")
             }
     }
-
-    public func signMessage(path: [Int]?,
-                     message: String?,
-                     useAeProtocol: Bool?,
-                     aeHostCommitment: String?,
-                     aeHostEntropy: String?)
-    -> Observable<(signature: String?, signerCommitment: String?)> {
-        let pathstr = path?.map { UInt32($0) }
-        var signMessage: Observable<(String?, String?)>?
-        if useAeProtocol ?? false {
+    
+    public func signMessage(_ params: HWSignMessageParams) -> Observable<HWSignMessageResult> {
+        let pathstr = getUnsignedPath(params.path)
+        var obs: Observable<HWSignMessageResult>?
+        if params.useAeProtocol ?? false {
             // Anti-exfil protocol:
             // We send the signing request with the host-commitment and receive the signer-commitment
             // in reply once the user confirms.
             // We can then request the actual signature passing the host-entropy.
-            let aeHostCommitment = hexToData(aeHostCommitment ?? "")
-            let aeHostEntropy = hexToData(aeHostEntropy ?? "")
             var signerCommitment: String?
-            let cmd = JadeSignMessage(message: message ?? "", path: pathstr ?? [], aeHostCommitment: aeHostCommitment)
-            signMessage = exchange(JadeRequest<JadeSignMessage>(method: "sign_message", params: cmd))
-                .compactMap { (res: JadeResponse<Data>) in
-                    signerCommitment = res.result?.map { String(format: "%02hhx", $0) }.joined()
-                }.flatMap { _ -> Observable<JadeResponse<String>> in
-                    let cmd = JadeGetSignature(aeHostEntropy: aeHostEntropy)
-                    return self.exchange(JadeRequest<JadeGetSignature>(method: "get_signature", params: cmd))
-                }.compactMap { (res: JadeResponse<String>) -> (String?, String?) in
-                    return (res.result!, signerCommitment)
-                }
+            let msg = JadeSignMessage(message: params.message, path: pathstr, aeHostCommitment: params.aeHostCommitment?.hexToData())
+            obs = signMessage(msg)
+                .compactMap { signerCommitment = $0.hex }
+                .compactMap { JadeGetSignature(aeHostEntropy: params.aeHostEntropy?.hexToData() ?? Data()) }
+                .flatMap { self.getSignature($0) }
+                .compactMap { HWSignMessageResult(signature: $0, signerCommitment: signerCommitment) }
         } else {
             // Standard EC signature, simple case
-            let cmd = JadeSignMessage(message: message ?? "", path: pathstr ?? [], aeHostCommitment: nil)
-            signMessage = exchange(JadeRequest<JadeSignMessage>(method: "sign_message", params: cmd))
-                .compactMap { (res: JadeResponse<String>) -> (String?, String?) in
-                    return (res.result!, "")
-                }
+            let msg = JadeSignMessage(message: params.message, path: pathstr, aeHostCommitment: nil)
+            obs = signMessage(msg).compactMap { HWSignMessageResult(signature: $0.hex, signerCommitment: nil) }
         }
-        return signMessage!.compactMap { (sign, signerCom) -> (signature: String?, signerCommitment: String?) in
+        return obs!.compactMap { res -> HWSignMessageResult in
             // Convert the signature from Base64 into DER hex for GDK
-            guard var sigDecoded = Data(base64Encoded: sign ?? "") else {
+            guard var sigDecoded = Data(base64Encoded: res.signature ?? "") else {
                 throw HWError.Abort("Invalid signature")
             }
-
             // Need to truncate lead byte if recoverable signature
             if sigDecoded.count == WALLY_EC_SIGNATURE_RECOVERABLE_LEN {
                 sigDecoded = sigDecoded[1...sigDecoded.count-1]
             }
-
             let sigDer = try sigToDer(sig: Array(sigDecoded))
-            let hexSig = sigDer.map { String(format: "%02hhx", $0) }.joined()
-            return (signature: hexSig, signerCommitment: signerCom)
+            return HWSignMessageResult(signature: sigDer.hex, signerCommitment: res.signerCommitment)
         }
     }
 
@@ -143,28 +110,18 @@ final public class Jade: JadeOTA, HWProtocol {
             })
     }
 
-    public func xpubs(network: String, path: [Int]) -> Observable<String> {
-        let pathstr: [UInt32] = path.map { UInt32($0) }
-        let cmd = JadeGetXpub(network: network, path: pathstr)
-        return exchange(JadeRequest<JadeGetXpub>(method: "get_xpub", params: cmd))
-            .compactMap { (res: JadeResponse<String>) -> String in
-                res.result!
-            }
-    }
-
     // swiftlint:disable:next function_parameter_count
-    public func signTransaction(network: String, tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput], transactions: [String: String], useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse> {
-
-        if transactions.isEmpty {
+    public func signTransaction(network: String,
+                                params: HWSignTxParams) -> Observable<HWSignTxResponse> {
+        if params.signingInputs.isEmpty {
             return Observable.error(HWError.Abort("Input transactions missing"))
         }
-
-        let txInputs = inputs.map { input -> TxInputBtc? in
-            var txhash: String? = input.txhash
+        let txInputs = params.signingInputs.map { input -> TxInputBtc? in
+            var txhash: String? = input.txHash
             var satoshi: UInt64? = input.satoshi
-            if isSegwit(input.addressType) && inputs.count == 1 {
+            if input.isSegwit && params.signingInputs.count == 1 {
                 txhash = nil
-            } else if let hash = txhash, let tx = transactions[hash] {
+            } else if let hash = txhash, let tx = params.signingTxs[hash] {
                 satoshi = nil
                 txhash = tx
             } else {
@@ -172,36 +129,34 @@ final public class Jade: JadeOTA, HWProtocol {
             }
             return TxInputBtc(
                 isWitness: isSegwit(input.addressType),
-                inputTxHex: txhash,
-                scriptHex: input.prevoutScript,
+                inputTx: txhash?.hexToData(),
+                script: input.prevoutScript?.hexToData(),
                 satoshi: satoshi,
-                path: input.userPath,
-                aeHostEntropyHex: input.aeHostEntropy,
-                aeHostCommitmentHex: input.aeHostCommitment)
+                path: input.userPath ?? [],
+                aeHostEntropy: input.aeHostEntropy?.hexToData(),
+                aeHostCommitment: input.aeHostCommitment?.hexToData())
         }
 
         if txInputs.contains(where: { $0 == nil }) {
             return Observable.error(HWError.Abort("Input transactions missing"))
         }
 
-        let changes = getChangeData(outputs: outputs)
-        let txn = hexToData(tx.transaction)
-
+        let changes = getChangeData(outputs: params.txOutputs)
         let signtx = JadeSignTx(change: changes,
                                 network: network,
-                                numInputs: inputs.count,
+                                numInputs: params.signingInputs.count,
                                 trustedCommitments: nil,
-                                useAeProtocol: useAeProtocol,
-                                txn: txn)
+                                useAeProtocol: params.useAeProtocol,
+                                txn: params.transaction?.transaction?.hexToData() ?? Data())
         return exchange(JadeRequest(method: "sign_tx", params: signtx))
             .flatMap { (_ : JadeResponse<Bool>) -> Observable<(commitments: [String], signatures: [String])> in
-                if useAeProtocol {
+                if params.useAeProtocol {
                     return self.signTxInputsAntiExfil(inputs: txInputs)
                 } else {
                     return self.signTxInputs(inputs: txInputs)
                 }
             }.compactMap { (commitments, signatures) in
-                return AuthSignTransactionResponse(signatures: signatures, signerCommitments: commitments)
+                return HWSignTxResponse(signatures: signatures, signerCommitments: commitments)
             }
     }
 
@@ -233,9 +188,9 @@ final public class Jade: JadeOTA, HWProtocol {
             Observable.just($0!)
                 .compactMap { input -> Data? in
                     if let inputBtc = input as? TxInputBtc {
-                        return Data(inputBtc.aeHostEntropy!)
+                        return inputBtc.aeHostEntropy
                     } else if let inputLiquid = input as? TxInputLiquid {
-                        return Data(inputLiquid.aeHostEntropy!)
+                        return inputLiquid.aeHostEntropy
                     } else {
                         return nil
                     }
@@ -347,8 +302,8 @@ final public class Jade: JadeOTA, HWProtocol {
     }
 
     // Helper to get the change paths for auto-validation
-    func getChangeData(outputs: [AuthTxOutput]) -> [TxChangeOutput?] {
-        return outputs.map { out -> TxChangeOutput? in
+    func getChangeData(outputs: [InputOutput]) -> [TxChangeOutput?] {
+        return outputs.map { (out: InputOutput) -> TxChangeOutput? in
             if out.isChange == false {
                 return nil
             }
@@ -387,24 +342,18 @@ final public class Jade: JadeOTA, HWProtocol {
                                                                branch: branch)
             }
             // Get receive address from Jade for the path elements given
-            let cmd = JadeGetReceiveMultisigAddress(network: chain,
+            let params = JadeGetReceiveMultisigAddress(network: chain,
                                                     pointer: pointer ,
                                                              subaccount: walletPointer ?? 0,
                                                              branch: branch,
                                                              recoveryXpub: recoveryxpub,
                                                              csvBlocks: csvBlocks)
-            return exchange(JadeRequest<JadeGetReceiveMultisigAddress>(method: "get_receive_address", params: cmd))
-                .compactMap { (res: JadeResponse<String>) -> String in
-                    res.result!
-                }
+            return getReceiveAddress(params)
         } else {
             // Green Electrum Singlesig
             let variant = mapAddressType(walletType)
-            let cmd = JadeGetReceiveSinglesigAddress(network: chain, path: path, variant: variant ?? "")
-            return exchange(JadeRequest<JadeGetReceiveSinglesigAddress>(method: "get_receive_address", params: cmd))
-                .compactMap { (res: JadeResponse<String>) -> String in
-                    res.result!
-                }
+            let params = JadeGetReceiveSinglesigAddress(network: chain, path: path, variant: variant ?? "")
+            return getReceiveAddress(params)
         }
     }
 
@@ -412,173 +361,84 @@ final public class Jade: JadeOTA, HWProtocol {
 // Liquid calls
 extension Jade {
 
-    // Get blinding key for script
-    public func getBlindingKey(scriptHex: String) -> Observable<String?> {
-        return exchange(JadeRequest(method: "get_blinding_key", params: JadeGetBlindingKey(scriptHex: scriptHex)))
-            .compactMap { (res: JadeResponse<Data>) -> String? in
-                return res.result?.map { String(format: "%02hhx", $0) }.joined()
+    public func signLiquidTransaction(network: String,
+                                      params: HWSignTxParams) -> Observable<HWSignTxResponse> {
+        version().flatMap { self.signLiquidTransaction_(network: network, version: $0, params: params) }
+    }
+    
+    private func signLiquidTransaction_(network: String,
+                                        version: JadeVersionInfo,
+                                        params: HWSignTxParams) -> Observable<HWSignTxResponse> {
+        // Load the tx into wally for legacy fw versions as will need it later
+        // to access the output's asset[generator] and value[commitment].
+        // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly so
+        // no need to parse/load the transaction into wally.
+        // FIXME: remove when 0.1.48 is made minimum allowed version.
+        let wallytx = !version.hasSwapSupport ? wallyTxFromBytes(tx: params.transaction?.transaction?.hexToBytes() ?? []) : nil
+        let txInputs = params.signingInputs
+            .map { (txInput: InputOutput) -> TxInputLiquid in
+            return TxInputLiquid(isWitness: txInput.isSegwit,
+                                 script: txInput.prevoutScript?.hexToData(),
+                                 valueCommitment: txInput.commitment?.hexToData(),
+                                 path: txInput.userPath,
+                                 aeHostEntropy: txInput.aeHostEntropy?.hexToData(),
+                                 aeHostCommitment: txInput.aeHostCommitment?.hexToData())
+        }
+        // Get blinding factors and unblinding data per output - null for unblinded outputs
+        // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
+        let trustedCommitments = params.txOutputs.enumerated().map { res -> Commitment? in
+            let out = res.element
+            // Add a 'null' commitment for unblinded output
+            guard out.blindingKey != nil else { return nil }
+            var commitment = Commitment(assetId: out.getAssetIdBytes?.data,
+                       value: out.satoshi,
+                       abf: out.getAbfs?.data,
+                       vbf: out.getVbfs?.data,
+                       assetGenerator: nil,
+                       valueCommitment: nil,
+                       blindingKey: out.getPublicKeyBytes?.data)
+            // Add asset-generator and value-commitment for legacy fw versions
+            // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly
+            if let wallytx = wallytx, let asset = wallyTxGetOutputAsset(wallyTx: wallytx, index: res.offset) {
+                commitment.assetGenerator = asset.data
             }
-    }
-
-    public func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?> {
-        return exchange(JadeRequest(method: "get_shared_nonce", params: JadeGetSharedNonce(scriptHex: scriptHex, theirPubkeyHex: pubkey)))
-            .compactMap { (res: JadeResponse<Data>) -> String? in
-                return res.result?.map { String(format: "%02hhx", $0) }.joined()
+            if let wallytx = wallytx, let value = wallyTxGetOutputValue(wallyTx: wallytx, index: res.offset) {
+                commitment.valueCommitment = value.data
             }
-    }
-
-    func getBlindingFactor(hashPrevouts: Data, outputIdx: Int, type: String) -> Observable<Data?> {
-        let cmd = JadeGetBlingingFactor(hashPrevouts: hashPrevouts, outputIndex: outputIdx, type: type)
-        return exchange(JadeRequest(method: "get_blinding_factor", params: cmd))
-            .compactMap { (res: JadeResponse<Data>) -> Data? in
-                return res.result
-            }
-    }
-
-    // swiftlint:disable:next function_parameter_count
-    public func signLiquidTransaction(network: String, tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput], transactions: [String: String], useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse> {
-        let txInputs = inputs.map { input -> TxInputLiquid? in
-            return TxInputLiquid(
-                isWitness: !(input.addressType == "p2sh"),
-                scriptHex: input.prevoutScript,
-                valueCommitmentHex: input.commitment,
-                path: input.userPath,
-                aeHostEntropyHex: input.aeHostEntropy,
-                aeHostCommitmentHex: input.aeHostCommitment)
+            return commitment
         }
-
-        // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
-        var values = inputs.map { $0.satoshi }
-        var abfs = inputs.map { $0.assetblinderHex }
-        var vbfs = inputs.map { $0.amountblinderHex }
-
-        var inputPrevouts = [Data]()
-        inputs.forEach { input in
-            inputPrevouts += [Data(input.txhashHex)]
-            inputPrevouts += [Data(input.ptIdxHex)]
-        }
-
-        // Compute the hash of all input prevouts for making deterministic blinding factors
-        let prevOuts = flatten(inputPrevouts.map { [UInt8]($0) }, fixedSize: nil)
-        let hashPrevOuts = Data(try! sha256d(prevOuts))
-
-        // Get trusted commitments per output - null for unblinded outputs
-        var trustedCommitments = [Commitment?]()
-
-        // For all-but-last blinded entry, do not pass custom vbf, so one is generated
-        // Append the output abfs and vbfs to the arrays
-        // assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
-        let lastBlindedIndex = outputs.count - 2;  // Could determine this properly
-        var obsCommitments = [Observable<Commitment>]()
-        let lastBlindedOutput = outputs[lastBlindedIndex]
-        for (i, output) in outputs.enumerated() where i < lastBlindedIndex {
-            values.append(output.satoshi ?? 0)
-            obsCommitments.append( Observable.just(output).flatMap {
-                self.getTrustedCommitment(index: i, output: $0, hashPrevOuts: hashPrevOuts, customVbf: nil)
-            })
-        }
-        return Observable.concat(obsCommitments)
-        .reduce([], accumulator: { _, commitment in
-            trustedCommitments.append(commitment)
-            abfs.append([UInt8](commitment.abf))
-            vbfs.append([UInt8](commitment.vbf))
-            return []
-        }).flatMap { _ -> Observable<Data?> in
-            // For the last blinded output, get the abf only
-            values.append(lastBlindedOutput.satoshi ?? 0)
-            return self.getBlindingFactor(hashPrevouts: hashPrevOuts, outputIdx: lastBlindedIndex, type: "ASSET")
-        }.flatMap { lastAbf -> Observable<Commitment> in
-            abfs.append([UInt8](lastAbf!))
-            // For the last blinded output we need to calculate the correct vbf so everything adds up
-            let flattenAbfs = flatten(abfs, fixedSize: WALLY_BLINDING_FACTOR_LEN)
-            let flattenVbfs = flatten(vbfs, fixedSize: WALLY_BLINDING_FACTOR_LEN)
-            let lastVbf = try asset_final_vbf(values: values, numInputs: inputs.count, abf: flattenAbfs, vbf: flattenVbfs)
-            vbfs.append(lastVbf)
-            // Fetch the last commitment using that explicit vbf
-            return self.getTrustedCommitment(index: lastBlindedIndex, output: lastBlindedOutput, hashPrevOuts: hashPrevOuts, customVbf: Data(lastVbf))
-        }.flatMap { lastCommitment -> Observable<(commitments: [String], signatures: [String])> in
-            trustedCommitments.append(lastCommitment)
-            // Add a 'null' commitment for the final (fee) output
-            trustedCommitments.append(nil)
-            // Get the change outputs and paths
-            let change = self.getChangeData(outputs: outputs)
-            // Make jade-api call to sign the txn
-            let txn = hexToData(tx.transaction )
-            return self.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, changes: change, useAeProtocol: useAeProtocol)
-        }.compactMap { (commitments: [String], signatures: [String]) in
-            let assetGenerators = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.assetGenerator)) : nil) }
-            let valueCommitments = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.valueCommitment)) : nil) }
-            let abfs = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.abf.reversed())) : nil) }
-            let vbfs = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.vbf.reversed())) : nil) }
-            return AuthSignTransactionResponse(
-                signatures: signatures,
-                signerCommitments: commitments,
-                assetCommitments: assetGenerators,
-                valueCommitments: valueCommitments,
-                assetblinders: abfs,
-                amountblinders: vbfs)
-        }
-    }
-
-    // swiftlint:disable:next function_parameter_count
-    func signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], changes: [TxChangeOutput?], useAeProtocol: Bool) -> Observable<(commitments: [String], signatures: [String])> {
-        let cmd =
-        JadeSignTx(change: changes, network: network, numInputs: inputs.count, trustedCommitments: trustedCommitments, useAeProtocol: useAeProtocol, txn: txn)
-        return exchange(JadeRequest(method: "sign_liquid_tx", params: cmd))
-            .flatMap { (res: JadeResponse<Bool>) -> Observable<(commitments: [String], signatures: [String])> in
-                if let result = res.result, !result {
-                    throw HWError.Abort("Error response from initial sign_liquid_tx call: \(res.error?.message ?? "")")
-                }
-                if useAeProtocol {
-                    return self.signTxInputsAntiExfil(inputs: inputs)
+        // Get the change outputs and paths
+        let change = getChangeData(outputs: params.txOutputs)
+        // Make jade-api call to sign the txn
+        let params = JadeSignTx(change: change,
+                                network: network,
+                                numInputs: txInputs.count,
+                                trustedCommitments: trustedCommitments,
+                                useAeProtocol: params.useAeProtocol,
+                                txn: params.transaction?.transaction?.hexToData() ?? Data())
+        return signLiquidTx(params: params)
+            .flatMap { _ -> Observable<(commitments: [String], signatures: [String])> in
+                if params.useAeProtocol {
+                    return self.signTxInputsAntiExfil(inputs: txInputs)
                 } else {
-                    return self.signTxInputs(inputs: inputs)
+                    return self.signTxInputs(inputs: txInputs)
                 }
             }
-    }
-
-    // Helper to get the commitment and blinding key from Jade
-    func getTrustedCommitment(index: Int, output: AuthTxOutput, hashPrevOuts: Data, customVbf: Data?) -> Observable<Commitment> {
-        let package = JadeGetCommitment(hashPrevouts: hashPrevOuts,
-                                        outputIdx: index,
-                                        assetId: hexToData(output.asset_id ?? ""),
-                                        value: output.satoshi ?? 0,
-                                        vbf: customVbf)
-        return Jade.shared.exchange(JadeRequest(method: "get_commitments", params: package))
-            .compactMap { (res: JadeResponse<Commitment>) in
-                // Add the script blinding key
-                var comm = res.result
-                comm?.blindingKey = (output.blindingKey ?? "").hexToData()
-                return comm!
+            .compactMap { (commitments: [String], signatures: [String]) in
+                HWSignTxResponse(
+                    signatures: signatures,
+                    signerCommitments: commitments)
             }
     }
 
-    public func getMasterBlindingKey() -> Observable<String> {
-        return exchange(JadeRequest<JadeEmpty>(method: "get_master_blinding_key", params: nil))
-            .compactMap { (res: JadeResponse<Data>) -> String in
-                dataToHex(res.result!)
-            }
+    public func getBlindingFactors(params: HWBlindingFactorsParams) -> Observable<HWBlindingFactorsResult> {
+        version().flatMap { self.getBlindingFactors_(params: params, version: $0) }
     }
 
-    public func getBlindingFactor_(hashPrevouts: Data, outputIdx: UInt32, type: String) -> Observable<Data> {
-        let package = GetBlindingFactorParams(hashPrevouts: hashPrevouts,
-                                              outputIndex: outputIdx,
-                                              type: type)
-        return exchange(JadeRequest<GetBlindingFactorParams>(method: "get_blinding_factor", params: package))
-            .compactMap { (res: JadeResponse<Data>) -> Data in
-                res.result ?? Data()
-            }
-    }
-
-    public func getBlindingFactor(params: BlindingFactorsParams) -> Observable<BlindingFactorsResult> {
-        version()
-            .flatMap { self.getBlindingFactor_(params: params, version: $0) }
-    }
-
-    func getBlindingFactor_(params: BlindingFactorsParams, version: JadeVersionInfo) -> Single<BlindingFactorsResult> {
+    private func getBlindingFactors_(params: HWBlindingFactorsParams, version: JadeVersionInfo) -> Single<HWBlindingFactorsResult> {
         // Compute hashPrevouts to derive deterministic blinding factors from
         let txhashes = params.usedUtxos.map { $0.getTxid ?? []}.lazy.joined()
-        let outputIdxs = params.transactionOutputs.map { $0.ptIdx }
+        let outputIdxs = params.usedUtxos.map { $0.ptIdx }
         let hashPrevouts = getHashPrevouts(txhashes: [UInt8](txhashes), outputIdxs: outputIdxs)
         // Enumerate the outputs and provide blinding factors as needed
         // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
@@ -592,27 +452,25 @@ extension Jade {
                 if output.blindingKey == nil {
                     return Observable.just(("", ""))
                 } else if version.hasSwapSupport {
-                    return self.getBlindingFactor(hashPrevouts: Data(hashPrevouts ?? []), outputIdx: i, type: "ASSET_AND_VALUE")
+                    return self.getBlindingFactor(JadeGetBlingingFactor(hashPrevouts: hashPrevouts?.data, outputIndex: i, type: "ASSET_AND_VALUE"))
                         .compactMap { bfs in
-                            let assetblinder = dataToHex(bfs![0..<WALLY_BLINDING_FACTOR_LEN])
-                            let amountblinder = dataToHex(bfs![WALLY_BLINDING_FACTOR_LEN..<2*WALLY_BLINDING_FACTOR_LEN])
-                            return (assetblinder, amountblinder)
+                            let assetblinder = bfs[0..<WALLY_BLINDING_FACTOR_LEN].reversed()
+                            let amountblinder = bfs[WALLY_BLINDING_FACTOR_LEN..<2*WALLY_BLINDING_FACTOR_LEN].reversed()
+                            return (Data(assetblinder).hex, Data(amountblinder).hex)
                         }
                 } else {
                     var abf = Data()
-                    return self.getBlindingFactor(hashPrevouts: Data(hashPrevouts ?? []), outputIdx: i, type: "ASSET")
-                        .compactMap { abf = $0! }
-                        .flatMap { self.getBlindingFactor(hashPrevouts: Data(hashPrevouts ?? []), outputIdx: i, type: "VALUE") }
+                    return self.getBlindingFactor(JadeGetBlingingFactor(hashPrevouts: hashPrevouts?.data, outputIndex: i, type: "ASSET"))
+                        .compactMap { abf = $0 }
+                        .flatMap { self.getBlindingFactor(JadeGetBlingingFactor(hashPrevouts: hashPrevouts?.data, outputIndex: i, type: "VALUE")) }
                         .compactMap { vbf in
-                            let assetblinder = dataToHex(Data(abf.reversed()))
-                            let amountblinder = dataToHex(Data(vbf!.reversed()))
-                            return (assetblinder, amountblinder)
+                            return (Data(abf.reversed()).hex, Data(vbf.reversed()).hex)
                         }
                 }
             }
             .toArray()
-            .flatMap { res -> Single<BlindingFactorsResult> in
-                let bfr = BlindingFactorsResult(assetblinders: res.map { $0.0 },
+            .flatMap { res -> Single<HWBlindingFactorsResult> in
+                let bfr = HWBlindingFactorsResult(assetblinders: res.map { $0.0 },
                                                 amountblinders: res.map { $0.1 })
                 return Single.just(bfr)
             }

@@ -20,3 +20,15 @@ extension String {
         [UInt8](hexToData())
     }
 }
+
+extension Optional where Wrapped == String {
+    var isNilOrEmpty: Bool {
+        if let strongSelf = self, !strongSelf.isEmpty {
+            return false
+        }
+        return true
+    }
+    var isNotEmpty: Bool {
+        return !isNilOrEmpty
+    }
+}

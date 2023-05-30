@@ -42,7 +42,7 @@ public struct FirmwareChannels: Codable {
     public let previous: FirmwareVersions?
 }
 
-public class JadeOTA: JadeChannel {
+public class JadeOTA: JadeCommands {
 
     public static let MIN_ALLOWED_FW_VERSION = "0.1.24"
     public static let FW_SERVER_HTTPS = "https://jadefw.blockstream.com"

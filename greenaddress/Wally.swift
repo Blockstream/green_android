@@ -162,3 +162,31 @@ public func getHashPrevouts(
     }
     return Array(UnsafeBufferPointer(start: bufferPtr, count: len))
 }
+
+public func wallyTxFromBytes(
+    tx: [UInt8]
+) -> UnsafeMutablePointer<ga.wally_tx>? {
+    let txPtr: UnsafePointer<UInt8> = UnsafePointer(tx)
+    var bufferPtr: UnsafeMutablePointer<ga.wally_tx>?
+    
+    if wally_tx_from_bytes(txPtr, tx.count, UInt32(WALLY_TX_FLAG_USE_ELEMENTS), &bufferPtr) != WALLY_OK {
+        return nil
+    }
+    return bufferPtr
+}
+
+public func wallyTxGetOutputAsset(
+    wallyTx: UnsafeMutablePointer<ga.wally_tx>,
+    index: Int
+) -> [UInt8]? {
+    let output = wallyTx.pointee.outputs[index]
+    return Array(UnsafeBufferPointer(start: output.asset, count: output.asset_len))
+}
+
+public func wallyTxGetOutputValue(
+    wallyTx: UnsafeMutablePointer<ga.wally_tx>,
+    index: Int
+) -> [UInt8]? {
+    let output = wallyTx.pointee.outputs[index]
+    return Array(UnsafeBufferPointer(start: output.value, count: output.value_len))
+}

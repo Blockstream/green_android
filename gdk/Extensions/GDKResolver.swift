@@ -74,13 +74,10 @@ public class GDKResolver {
             let methods = json["methods"] as? [String] ?? []
             if methods.count > 1 {
                 return Promise()
-                    //.map { sender?.stopAnimating() }
                     .compactMap { self.popupDelegate }
                     .then { $0.method(methods) }
-                    //.map { method in sender?.startAnimating(); return method }
                     .then(on: bgq) { code in self.waitConnection().map { return code} }
                     .map(on: bgq) { method in try self.twoFactorCall.requestCode(method: method) }
-                    //.map { sender?.stopAnimating() }
             } else {
                 return Promise().map(on: bgq) { try self.twoFactorCall.requestCode(method: methods[0]) }
             }
@@ -92,19 +89,16 @@ public class GDKResolver {
                 let json = try? JSONSerialization.data(withJSONObject: device, options: []),
                 let hwdevice = try? JSONDecoder().decode(HWDevice.self, from: json) {
                 return HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain)
-                    .compactMap(on: bgq) { code in
-                        try self.twoFactorCall.resolveCode(code: code)
-                }
+                    .compactMap { $0.stringify() }
+                    .compactMap(on: bgq) { try self.twoFactorCall.resolveCode(code: $0) }
             }
             // Software wallet interface resolver
             let method = json["method"] as? String ?? ""
             return Promise()
                 .compactMap { self.popupDelegate }
                 .then { $0.code(method) }
-                //.map { code in sender?.startAnimating(); return code }
                 .then(on: bgq) { code in self.waitConnection().map { return code} }
                 .compactMap(on: bgq) { code in try self.twoFactorCall.resolveCode(code: code) }
-                //.map { sender?.stopAnimating() }
         default:
             return Guarantee().asVoid()
         }

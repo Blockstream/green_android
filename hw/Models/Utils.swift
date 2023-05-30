@@ -18,14 +18,9 @@ func compressPublicKey(_ publicKey: [UInt8]) -> [UInt8]? {
     return [UInt8(type)] + publicKey[1..<32+1]
 }
 
-extension Optional where Wrapped == String {
-    var isNilOrEmpty: Bool {
-        if let strongSelf = self, !strongSelf.isEmpty {
-            return false
-        }
-        return true
-    }
-    var isNotEmpty: Bool {
-        return !isNilOrEmpty
-    }
+
+// Helper to turn the BIP32 paths back into a list of Longs, rather than a list of Integers
+// (which may well be expressed as negative [for hardened paths]).
+func getUnsignedPath(_ signed: [Int]) -> [UInt32] {
+    signed.map { $0 < 0 ? UInt32(abs($0)) : UInt32($0) }
 }

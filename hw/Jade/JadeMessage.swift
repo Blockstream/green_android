@@ -120,7 +120,7 @@ public struct JadeGetBlingingFactor: Codable {
         case outputIndex = "output_index"
         case type = "type"
     }
-    let hashPrevouts: Data
+    let hashPrevouts: Data?
     let outputIndex: Int
     let type: String
 }

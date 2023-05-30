@@ -1,8 +1,8 @@
 import Foundation
 
-typealias InputOutput = [String: Any]
+public typealias InputOutput = [String: Any]
 
-extension InputOutput {
+public extension InputOutput {
     private func take<T>(_ key: String) -> T? {
         return self[key] as? T
     }
@@ -20,16 +20,16 @@ extension InputOutput {
     var prevoutScript: String? { take("prevout_script")}
     var ptIdx: UInt32 { take("pt_idx") ?? 0 }
     var recoveryXpub: String? { take("recovery_xpub")}
-    var satoshi: Int64? { take("satoshi")}
+    var satoshi: UInt64? { take("satoshi")}
     var script: String? { take("script")}
     var scriptType: UInt32? { take("script_type")}
     var scriptpubkey: String? { take("scriptpubkey")}
-    var sequence: Int64 { take("sequence") ?? 0}
+    var sequence: UInt { take("sequence") ?? 0}
     var subaccount: UInt32? { take("subaccount")}
     var subtype: UInt32? { take("subtype")}
     var txHash: String? { take("txhash")}
     var serviceXpub: String? { take("service_xpub")}
-    var userPath: [Int64]? { take("user_path")}
+    var userPath: [Int]? { take("user_path")}
     var aeHostCommitment: String? { take("ae_host_commitment")}
     var aeHostEntropy: String? { take("ae_host_entropy")}
     var commitment: String? { take("commitment")} // blinded value

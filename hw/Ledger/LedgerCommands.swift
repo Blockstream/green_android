@@ -70,14 +70,15 @@ public class LedgerCommands: LedgerChannel {
         }
     }
 
-    func inputBytes(_ input: AuthTxInput, isSegwit: Bool) -> Data? {
-        return Data(input.txhashHex + input.ptIdxHex + (isSegwit ? input.satoshi.uint64LE() : []))
+    func inputBytes(_ input: InputOutput, isSegwit: Bool) -> Data? {
+        let satoshi = isSegwit ? input.satoshi?.uint64LE() : nil
+        return Data(input.getTxid ?? [] + input.ptIdx.uint32LE() + (satoshi ?? []))
     }
 
-    func outputBytes(_ outputs: [AuthTxOutput]) -> Data? {
+    func outputBytes(_ outputs: [InputOutput]) -> Data? {
         var buffer = outputs.count.varInt()
         for out in outputs {
-            let script = out.script
+            let script = out.scriptpubkey
             let hex = script!.hexToData()
             buffer += (out.satoshi ?? 0).uint64LE() + hex.count.varInt() + hex
         }

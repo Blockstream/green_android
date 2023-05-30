@@ -10,6 +10,13 @@ public extension Encodable {
         let data = try? encoded()
         return try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
     }
+
+    func stringify() -> String? {
+        if let data = try? JSONSerialization.data(withJSONObject: self.toDict() ?? [:], options: .fragmentsAllowed) {
+            return String(data: data, encoding: .utf8)
+        }
+        return nil
+    }
 }
 
 public extension Decodable {

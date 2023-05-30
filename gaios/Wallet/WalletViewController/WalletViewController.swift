@@ -118,8 +118,7 @@ class WalletViewController: UIViewController {
         if userWillLogout == true { return }
         viewModel.reloadAlertCards()
         viewModel.loadSubaccounts()
-        viewModel.loadBalances()
-        viewModel.loadTransactions(max: 10)
+        viewModel.loadBalances().then { self.viewModel.loadTransactions(max: 10) }.done { _ in }
 
         [EventType.Transaction, .Block, .AssetsUpdated, .Network, .Settings, .Ticker, .TwoFactorReset].forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
@@ -232,8 +231,7 @@ class WalletViewController: UIViewController {
     @objc func callPullToRefresh(_ sender: UIRefreshControl? = nil) {
         viewModel.reloadAlertCards()
         viewModel.loadSubaccounts()
-        viewModel.loadBalances()
-        viewModel.loadTransactions()
+        viewModel.loadBalances().then { self.viewModel.loadTransactions(max: 10) }.done { _ in }
     }
 
     // open wallet selector drawer

@@ -7,7 +7,7 @@ struct TxChangeOutput: Codable {
         case csvBlocks = "csv_blocks"
         case variant
     }
-    let path: [UInt32]
+    let path: [Int]
     let recoveryxpub: String?
     let csvBlocks: UInt32
     let variant: String?

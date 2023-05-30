@@ -4,14 +4,14 @@ import PromiseKit
 import RxSwift
 
 public protocol HwResolverDelegate {
-    func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<String>
+    func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<HWResolverResult>
 }
 
 public class HWResolver: HwResolverDelegate {
 
     public init() { }
 
-    public func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<String> {
+    public func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<HWResolverResult> {
         let hw: HWProtocol = device.isJade ? Jade.shared : Ledger.shared
         let chain = chain ?? "mainnet"
         switch action {
@@ -19,63 +19,43 @@ public class HWResolver: HwResolverDelegate {
             guard let paths = requiredData["paths"] as? [[Int]] else {
                 return Promise { $0.reject(HWError.Abort("Invalid xpubs request")) }
             }
-            return getXpubs(hw: hw, paths: paths, chain: chain).compactMap {
-                let data = try JSONSerialization.data(withJSONObject: ["xpubs": $0], options: .fragmentsAllowed)
-                return String(data: data, encoding: .utf8)
-            }
+            return getXpubs(hw: hw, paths: paths, chain: chain).compactMap { HWResolverResult(xpubs: $0) }
         case "sign_message":
-            return signMessage(hw: hw, params: requiredData).compactMap {
-                let data = try? JSONSerialization.data(withJSONObject: $0, options: .fragmentsAllowed)
-                return String(data: data ?? Data(), encoding: .utf8)
+            guard let params = HWSignMessageParams.from(requiredData) as? HWSignMessageParams else {
+                return Promise { $0.reject(HWError.Abort("Invalid sign message request")) }
             }
+            return signMessage(hw: hw, params: params).compactMap { HWResolverResult(signerCommitment: $0.signerCommitment, signature: $0.signature) }
         case "sign_tx":
-            let data = AuthSignTransaction.from(requiredData) as? AuthSignTransaction
-            return signTransaction(hw: hw, params: data!, chain: chain).compactMap {
-                let data = try? JSONSerialization.data(withJSONObject: $0.toDict() ?? [:], options: .fragmentsAllowed)
-                return String(data: data ?? Data(), encoding: .utf8)
-            }
+            let data = HWSignTxParams(requiredData)
+            return signTransaction(hw: hw, params: data, chain: chain).compactMap { HWResolverResult(signerCommitments: $0.signerCommitments, signatures: $0.signatures) }
         case "get_blinding_factors":
-            guard let usedUtxos = requiredData["used_utxos"] as? [[String: Any]],
-                  let transactionOutputs = requiredData["transaction_outputs"] as? [[String: Any]]
-            else {
-                return Promise { $0.reject(HWError.Abort("Invalid xpubs request")) }
-            }
-            let params = BlindingFactorsParams(usedUtxos: usedUtxos, transactionOutputs: transactionOutputs)
-            return getBlindingFactor(hw: hw, params: params).compactMap {
-                let data = try JSONSerialization.data(withJSONObject: $0.toDict() ?? [:], options: .fragmentsAllowed)
-                return String(data: data, encoding: .utf8)
-            }
+            let usedUtxos = requiredData["used_utxos"] as? [[String: Any]]
+            let transactionOutputs = requiredData["transaction_outputs"] as? [[String: Any]]
+            let params = HWBlindingFactorsParams(usedUtxos: usedUtxos ?? [], transactionOutputs: transactionOutputs ?? [])
+            return getBlindingFactors(hw: hw, params: params).compactMap { HWResolverResult(assetblinders: $0.assetblinders, amountblinders: $0.amountblinders) }
         case "get_blinding_nonces":
             guard let scripts = requiredData["scripts"] as? [String],
                   let publicKeys = requiredData["public_keys"] as? [String] else {
                 return Promise { $0.reject(HWError.Abort("Invalid nonces request")) }
             }
-            var output = [String: Any]()
+            var nonces = [String]()
             return getBlindingNonces(hw: hw, scripts: scripts, publicKeys: publicKeys)
-                .then { nonces -> Promise<[String]> in
-                    output["nonces"] = nonces
+                .compactMap { nonces = $0 }
+                .then { _ -> Promise<[String]> in
                     if let blindingKeysRequired = requiredData["blinding_keys_required"] as? Bool,
                        blindingKeysRequired {
                         return self.getBlindingPublicKeys(hw: hw, scripts: scripts)
                     }
                     return Promise<[String]> { seal in seal.fulfill([]) }
-                }.compactMap { keys in
-                    output["public_keys"] = keys
-                    let data = try JSONSerialization.data(withJSONObject: output, options: .fragmentsAllowed)
-                    return String(data: data, encoding: .utf8)
-                }
+                }.compactMap { HWResolverResult(nonces: nonces, publicKeys: $0) }
         case "get_blinding_public_keys":
             guard let scripts = requiredData["scripts"] as? [String] else {
                 return Promise { $0.reject(HWError.Abort("Invalid public keys request")) }
             }
-            return getBlindingPublicKeys(hw: hw, scripts: scripts).compactMap {
-                let data = try JSONSerialization.data(withJSONObject: ["public_keys": $0], options: .fragmentsAllowed)
-                return String(data: data, encoding: .utf8)
+            return getBlindingPublicKeys(hw: hw, scripts: scripts).compactMap { HWResolverResult(publicKeys: $0)
             }
         case "get_master_blinding_key":
-            return getMasterBlindingKey(hw: hw).compactMap {
-                let data = try JSONSerialization.data(withJSONObject: ["master_blinding_key": $0], options: .fragmentsAllowed)
-                return String(data: data, encoding: .utf8)
+            return getMasterBlindingKey(hw: hw).compactMap { HWResolverResult(masterBlindingKey: $0)
             }
         default:
             return Promise { $0.reject(HWError.Abort("Invalid request")) }
@@ -93,46 +73,30 @@ public class HWResolver: HwResolverDelegate {
         }
     }
 
-    func signMessage(hw: HWProtocol, params: [String: Any]) -> Promise<[String: Any]> {
+    func signMessage(hw: HWProtocol, params: HWSignMessageParams) -> Promise<HWSignMessageResult> {
         return Promise { seal in
-            let path = params["path"] as? [Int]
-            let message = params["message"] as? String
-            let useAeProtocol = params["use_ae_protocol"] as? Bool
-            let aeHostCommitment = params["ae_host_commitment"] as? String
-            let aeHostEntropy = params["ae_host_entropy"] as? String
-            _ = Observable.just(message)
+            _ = Observable.just(params)
                 .observeOn(SerialDispatchQueueScheduler(qos: .background))
-                .flatMap { _ in hw.signMessage(path: path, message: message, useAeProtocol: useAeProtocol, aeHostCommitment: aeHostCommitment, aeHostEntropy: aeHostEntropy) }
+                .flatMap { _ in hw.signMessage(params) }
                 .takeLast(1)
-                .subscribe(onNext: { (signature, signatureCommitment) in
-                    seal.fulfill(["signature": signature ?? "",
-                                  "signer_commitment": signatureCommitment ?? ""])
+                .subscribe(onNext: { res in
+                    seal.fulfill(res)
                 }, onError: { err in
                     seal.reject(err)
                 })
         }
     }
 
-    func signTransaction(hw: HWProtocol, params: AuthSignTransaction, chain: String) -> Promise<AuthSignTransactionResponse> {
+    func signTransaction(hw: HWProtocol, params: HWSignTxParams, chain: String) -> Promise<HWSignTxResponse> {
         return Promise { seal in
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
             _ = Observable.just(hw)
-                .flatMap { hw -> Observable<AuthSignTransactionResponse> in
+                .flatMap { hw -> Observable<HWSignTxResponse> in
                     if chain.contains("liquid") {
-                        return hw.signLiquidTransaction(network: chain,
-                                                        tx: params.transaction,
-                                                        inputs: params.signingInputs,
-                                                        outputs: params.txOutputs,
-                                                        transactions: params.signingTxs ?? [:],
-                                                        useAeProtocol: params.useAeProtocol ?? false)
+                        return hw.signLiquidTransaction(network: chain, params: params)
                     }
-                    return hw.signTransaction(network: chain,
-                                              tx: params.transaction,
-                                              inputs: params.signingInputs,
-                                              outputs: params.txOutputs,
-                                              transactions: params.signingTxs ?? [:],
-                                              useAeProtocol: params.useAeProtocol ?? false)
+                    return hw.signTransaction(network: chain, params: params)
                 }.subscribe(onNext: { res in
                     seal.fulfill(res)
                     Ledger.shared.TIMEOUT = 30
@@ -142,9 +106,9 @@ public class HWResolver: HwResolverDelegate {
             }
     }
 
-    func getBlindingFactor(hw: HWProtocol, params: BlindingFactorsParams) -> Promise<BlindingFactorsResult> {
+    func getBlindingFactors(hw: HWProtocol, params: HWBlindingFactorsParams) -> Promise<HWBlindingFactorsResult> {
         return Promise { seal in
-            _ = hw.getBlindingFactor(params: params)
+            _ = hw.getBlindingFactors(params: params)
                 .subscribe(onNext: { data in
                     seal.fulfill(data)
                 }, onError: { err in
@@ -165,9 +129,7 @@ public class HWResolver: HwResolverDelegate {
     }
 
     func getBlindingNonces(hw: HWProtocol, scripts: [String], publicKeys: [String]) -> Promise<[String]> {
-        let promises = zip(scripts, publicKeys)
-            .map { (script, publicKey) in { self.getBlindingNonce(hw: hw, pubkey: publicKey, script: script) }        }
-        return Promise.chain(promises)
+        return Promise<[String]>.chain(Array(zip(scripts, publicKeys)), 1) { self.getBlindingNonce(hw: hw, pubkey: $0.1, script: $0.0) }
     }
 
     func getBlindingKey(hw: HWProtocol, script: String) -> Promise<String> {
@@ -182,8 +144,7 @@ public class HWResolver: HwResolverDelegate {
     }
 
     func getBlindingPublicKeys(hw: HWProtocol, scripts: [String]) -> Promise<[String]> {
-        let promises = scripts.map { script in { self.getBlindingKey(hw: hw, script: script) } }
-        return Promise.chain(promises)
+        return Promise<[String]>.chain(scripts, 1) { self.getBlindingKey(hw: hw, script: $0) }
     }
 
     func getMasterBlindingKey(hw: HWProtocol) -> Promise<String> {

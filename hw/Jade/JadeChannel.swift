@@ -34,12 +34,18 @@ public class JadeChannel: HWChannelProtocol {
     }
 
     public func exchange<T: Decodable, K: Decodable>(_ request: JadeRequest<T>) -> Observable<JadeResponse<K>> {
+        #if DEBUG
+        print("=> \(request)")
+        #endif
         return exchange(request.encoded!)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .map { (buffer: Data) -> JadeResponse<K> in
                 try CodableCBORDecoder().decode(JadeResponse<K>.self, from: buffer)
             }.flatMap { res in
                 return Observable<JadeResponse<K>>.create { observer in
+                    #if DEBUG
+                    print("<= \(res)")
+                    #endif
                     if let error = res.error {
                         observer.onError(HWError.from(code: error.code, message: error.message))
                     } else {

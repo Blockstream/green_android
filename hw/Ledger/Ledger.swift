@@ -10,27 +10,28 @@ final public class Ledger: LedgerCommands, HWProtocol {
     let SIGHASH_ALL: UInt8 = 1
 
     // swiftlint:disable:next function_parameter_count
-    public func signTransaction(network: String, tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput],
-                         transactions: [String: String], useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse> {
-        return signSW(tx: tx, inputs: inputs, outputs: outputs)
-            .compactMap { AuthSignTransactionResponse(signatures: $0, signerCommitments: []) }
+    public func signTransaction(network: String, params: HWSignTxParams) -> Observable<HWSignTxResponse> {
+        return signSW(tx: params.transaction,
+                      inputs: params.signingInputs ?? [],
+                      outputs: params.txOutputs ?? [])
+            .compactMap { HWSignTxResponse(signatures: $0, signerCommitments: []) }
     }
 
-    public func signSW(tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput]) -> Observable<[String]> {
+    public func signSW(tx: HWTransaction?, inputs: [InputOutput], outputs: [InputOutput]) -> Observable<[String]> {
         let hwInputs = inputs.map { input -> [String: Any] in
             let bytes = inputBytes(input, isSegwit: true)!
-            let sequence = (input.sequence ?? 0).uint32LE()
+            let sequence = input.sequence.uint32LE()
             return ["value": bytes, "sequence": Data(sequence), "trusted": false, "segwit": true]
         }
         // Prepare the pseudo transaction
         // Provide the first script instead of a null script to initialize the P2SH confirmation logic
-        let prevoutScript = inputs.first?.prevoutScript.hexToData()
-        return startUntrustedTransaction(txVersion: tx.transactionVersion ?? 0, newTransaction: true, inputIndex: 0, usedInputList: hwInputs, redeemScript: prevoutScript!, segwit: true)
+        let prevoutScript = inputs.first?.prevoutScript?.hexToData()
+        return startUntrustedTransaction(txVersion: tx?.transactionVersion ?? 0, newTransaction: true, inputIndex: 0, usedInputList: hwInputs, redeemScript: prevoutScript!, segwit: true)
         .flatMap { _ -> Observable<[String: Any]> in
             let bytes = self.outputBytes(outputs)
             return self.finalizeInputFull(data: bytes!)
         }.flatMap { _ -> Observable<[Data]> in
-            return self.signSWInputs(hwInputs: hwInputs, inputs: inputs, version: tx.transactionVersion ?? 0, locktime: tx.transactionLocktime ?? 0)
+            return self.signSWInputs(hwInputs: hwInputs, inputs: inputs, version: tx?.transactionVersion ?? 0, locktime: tx?.transactionLocktime ?? 0)
         }.flatMap { sigs -> Observable<[String]> in
             var strings = [String]()
             for sig in sigs {
@@ -41,7 +42,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
         }
     }
 
-    public func signSWInputs(hwInputs: [[String: Any]], inputs: [AuthTxInput], version: UInt, locktime: UInt) -> Observable<[Data]> {
+    public func signSWInputs(hwInputs: [[String: Any]], inputs: [InputOutput], version: UInt, locktime: UInt) -> Observable<[Data]> {
         let allObservables = hwInputs
             .enumerated()
             .map { hwInput -> Observable<Data> in
@@ -55,27 +56,21 @@ final public class Ledger: LedgerCommands, HWProtocol {
         })
     }
 
-    public func signSWInput(hwInput: [String: Any], input: AuthTxInput, version: UInt, locktime: UInt) -> Observable<Data> {
-        let prevoutScript = input.prevoutScript.hexToData()
+    public func signSWInput(hwInput: [String: Any], input: InputOutput, version: UInt, locktime: UInt) -> Observable<Data> {
+        let prevoutScript = input.prevoutScript!.hexToData()
         return startUntrustedTransaction(txVersion: version, newTransaction: false, inputIndex: 0, usedInputList: [hwInput], redeemScript: prevoutScript, segwit: true)
         .flatMap { _ -> Observable <Data> in
-            let userPaths: [Int] = input.userPath.map { Int($0) }
+            let userPaths: [Int] = input.userPath?.map { Int($0) } ?? []
             return self.untrustedHashSign(privateKeyPath: userPaths, pin: "0", lockTime: locktime, sigHashType: self.SIGHASH_ALL)
         }
     }
 
-    public func signMessage(path: [Int]?,
-                     message: String?,
-                     useAeProtocol: Bool?,
-                     aeHostCommitment: String?,
-                     aeHostEntropy: String?)
-    -> Observable<(signature: String?, signerCommitment: String?)> {
-        return signMessagePrepare(path: path ?? [], message: message?.data(using: .utf8) ?? Data())
+    public func signMessage(_ params: HWSignMessageParams) -> Observable<HWSignMessageResult> {
+        return signMessagePrepare(path: params.path, message: params.message.data(using: .utf8) ?? Data())
             .flatMap { _ in self.signMessageSign(pin: [0])}
             .compactMap { res in
                 let signature = res["signature"] as? [UInt8]
-                let hexSig = signature!.map { String(format: "%02hhx", $0) }.joined()
-                return (signature: hexSig, signerCommitment: nil)
+                return HWSignMessageResult(signature: signature?.hex, signerCommitment: nil)
         }
     }
 
@@ -128,7 +123,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
     }
 
     // swiftlint:disable:next function_parameter_count
-    public func signLiquidTransaction(network: String, tx: AuthTx, inputs: [AuthTxInput], outputs: [AuthTxOutput], transactions: [String: String], useAeProtocol: Bool) -> Observable<AuthSignTransactionResponse> {
+    public func signLiquidTransaction(network: String, params: HWSignTxParams) -> Observable<HWSignTxResponse> {
         return Observable.error(HWError.Abort(""))
     }
 
@@ -147,7 +142,7 @@ final public class Ledger: LedgerCommands, HWProtocol {
         return Observable.error(HWError.Abort(""))
     }
     
-    public func getBlindingFactor(params: BlindingFactorsParams) -> Observable<BlindingFactorsResult> {
+    public func getBlindingFactors(params: HWBlindingFactorsParams) -> Observable<HWBlindingFactorsResult> {
         return Observable.error(HWError.Abort(""))
     }
 }
