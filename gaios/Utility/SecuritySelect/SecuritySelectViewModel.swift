@@ -39,6 +39,8 @@ class SecuritySelectViewModel {
         }
     }
 
+    let bgq = DispatchQueue.global(qos: .background)
+
     func isAdvancedEnable() -> Bool {
         let asset = WalletManager.current?.registry.info(for: asset)
         if asset?.amp ?? false {
@@ -86,24 +88,24 @@ class SecuritySelectViewModel {
                 return Promise(error: GaError.GenericError("Cannot create a lightning account for an hardware wallet"))
             }
             return Guarantee()
-                .then { session.connect() }
-                .then { prominentSession.getCredentials(password: "")}
-                .then { session.loginUser($0) }
-                .then { _ in self.wm.subaccounts() }
-                .then { _ in session.subaccount(0) }
+                .then(on: bgq) { session.connect() }
+                .then(on: bgq) { prominentSession.getCredentials(password: "")}
+                .then(on: bgq) { session.loginUser($0) }
+                .then(on: bgq) { _ in self.wm.subaccounts() }
+                .then(on: bgq) { _ in session.subaccount(0) }
         } else if let session = getSession(for: network) {
             let params = params ?? CreateSubaccountParams(name: uniqueName(policy.accountType, liquid: asset != "btc"),
                                                           type: policy.accountType,
                                                           recoveryMnemonic: nil,
                                                           recoveryXpub: nil)
             return Guarantee()
-                .then { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
-                .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden} }
-                .then { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
-                .then { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, params: params) }
-                .then { res in self.wm.subaccounts().map { _ in res } }
+                .then(on: bgq) { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
+                .map(on: bgq) { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden} }
+                .then(on: bgq) { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
+                .then(on: bgq) { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, params: params) }
+                .then(on: bgq) { res in self.wm.subaccounts().map { _ in res } }
         } else {
-            return Promise(error: GaError.GenericError("Invalid session"))
+           return Promise(error: GaError.GenericError("Invalid session")) 
         }
     }
 
@@ -127,12 +129,12 @@ class SecuritySelectViewModel {
 
     func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         return Promise()
-            .then { session.register(credentials: credentials, hw: hw) }
-            .then { _ in session.loginUser(credentials: credentials, hw: hw) }
-            .then { _ in session.subaccounts(true) }
-            .then { self.isUsedDefaultAccount(for: session, account: $0.first) }
-            .then { !$0 ? session.updateSubaccount(subaccount: 0, hidden: true).asVoid() : Promise().asVoid() }
-            .then { self.wm.subaccounts() }
+            .then(on: bgq) { session.register(credentials: credentials, hw: hw) }
+            .then(on: bgq) { _ in session.loginUser(credentials: credentials, hw: hw) }
+            .then(on: bgq) { _ in session.subaccounts(true) }
+            .then(on: bgq) { self.isUsedDefaultAccount(for: session, account: $0.first) }
+            .then(on: bgq) { !$0 ? session.updateSubaccount(subaccount: 0, hidden: true).asVoid() : Promise().asVoid() }
+            .then(on: bgq) { self.wm.subaccounts() }
             .asVoid()
     }
 

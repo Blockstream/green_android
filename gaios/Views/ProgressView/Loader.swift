@@ -96,9 +96,7 @@ extension UIViewController {
             loader?.message = message
             loader?.activateConstraints(in: window)
             if !(loader?.loadingIndicator.isAnimating ?? false) {
-
-                // to change in "isRive"
-                loader?.start(true)
+                loader?.start(isRive)
             }
         }
     }

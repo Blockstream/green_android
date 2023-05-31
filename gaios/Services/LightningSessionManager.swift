@@ -41,21 +41,28 @@ class LightningSessionManager: SessionManager {
     }
 
     override func loginUser(_ params: Credentials) -> Promise<LoginUserResult> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .then(on: bgq) {
+                return Promise { seal in
+                    seal.fulfill( self.loginUser_(params) )
+                }
+            }
+    }
+
+    private func loginUser_(_ params: Credentials) -> LoginUserResult {
         let greenlightCredentials = LightningRepository.shared.get(for: keychain ?? "")
         let walletId = walletIdentifier(credentials: params)
         lightBridge = initLightningSdk(params, appGreenlightCredentials: greenlightCredentials)
-        return Promise { seal in
-            connectToGreenlight(credentials: params, create: greenlightCredentials == nil)
-            if let greenlightCredentials = lightBridge?.credentials {
-                LightningRepository.shared.upsert(for: keychain ?? "", credentials: greenlightCredentials)
-            }
-            logged = true
-            walletHashId = walletId?.walletHashId
-            nodeState = lightBridge?.updateNodeInfo()
-            lspInfo = lightBridge?.updateLspInformation()
-            let walletId = walletIdentifier(credentials: params)
-            seal.fulfill(LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? ""))
+        connectToGreenlight(credentials: params, create: greenlightCredentials == nil)
+        if let greenlightCredentials = lightBridge?.credentials {
+            LightningRepository.shared.upsert(for: keychain ?? "", credentials: greenlightCredentials)
         }
+        logged = true
+        walletHashId = walletId?.walletHashId
+        nodeState = lightBridge?.updateNodeInfo()
+        lspInfo = lightBridge?.updateLspInformation()
+        return LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
     }
 
     deinit {
