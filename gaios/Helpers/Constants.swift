@@ -62,4 +62,5 @@ enum RiveModel {
     static let animationJadeFirmware = RiveViewModel(fileName: "Jade 04 - Faster + BG + Refresh")
     static let animationArchived = RiveViewModel(fileName: "Illustration Account Archived")
     static let animationCheckList = RiveViewModel(fileName: "Illustration Checklist")
+    static let animationRocket = RiveViewModel(fileName: "Illustration Rocket")
 }

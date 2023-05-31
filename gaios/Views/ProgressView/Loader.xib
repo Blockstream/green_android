@@ -11,6 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="Loader" customModule="gaios" customModuleProvider="target">
             <connections>
+                <outlet property="animateView" destination="mjQ-HR-J10" id="Kck-vq-b06"/>
                 <outlet property="lblHint" destination="5Ha-eL-thk" id="Xdc-0v-NXq"/>
                 <outlet property="loaderPlaceholder" destination="6N4-4c-rfw" id="nxP-8S-3n9"/>
                 <outlet property="rectangle" destination="rCJ-3n-6KM" id="3eJ-Vh-lIc"/>
@@ -30,6 +31,14 @@
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.59999999999999998" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_mash" translatesAutoresizingMaskIntoConstraints="NO" id="CiI-SW-D2M">
                                     <rect key="frame" x="-100" y="0.0" width="426" height="541.5"/>
                                 </imageView>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mjQ-HR-J10">
+                                    <rect key="frame" x="58" y="30" width="210" height="210"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="210" id="0Vh-9X-WVk"/>
+                                        <constraint firstAttribute="width" constant="210" id="Alf-mL-Vh1"/>
+                                    </constraints>
+                                </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6N4-4c-rfw">
                                     <rect key="frame" x="118" y="100" width="90" height="90"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -52,10 +61,12 @@
                                 <constraint firstItem="CiI-SW-D2M" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="-100" id="4yp-WD-x9h"/>
                                 <constraint firstAttribute="bottom" secondItem="CiI-SW-D2M" secondAttribute="bottom" constant="-200" id="61b-WJ-Wxd"/>
                                 <constraint firstItem="6N4-4c-rfw" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="100" id="AUJ-rx-TKn"/>
+                                <constraint firstItem="mjQ-HR-J10" firstAttribute="centerX" secondItem="rCJ-3n-6KM" secondAttribute="centerX" id="Cc9-25-udP"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="leading" secondItem="rCJ-3n-6KM" secondAttribute="leading" constant="36" id="FWm-D0-6zu"/>
                                 <constraint firstItem="5Ha-eL-thk" firstAttribute="top" secondItem="6N4-4c-rfw" secondAttribute="bottom" constant="50" id="VQW-nP-JfK"/>
                                 <constraint firstItem="CiI-SW-D2M" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" id="czR-v4-lCC"/>
                                 <constraint firstAttribute="trailing" secondItem="CiI-SW-D2M" secondAttribute="trailing" id="lBw-Up-hIM"/>
+                                <constraint firstItem="mjQ-HR-J10" firstAttribute="top" secondItem="rCJ-3n-6KM" secondAttribute="top" constant="30" id="nFb-ya-vSq"/>
                                 <constraint firstAttribute="bottom" secondItem="5Ha-eL-thk" secondAttribute="bottom" constant="80" id="t0g-xx-YiH"/>
                             </constraints>
                         </view>

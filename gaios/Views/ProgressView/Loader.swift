@@ -1,5 +1,6 @@
 import UIKit
 import Foundation
+import RiveRuntime
 
 @IBDesignable
 class Loader: UIView {
@@ -13,7 +14,8 @@ class Loader: UIView {
     @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var rectangle: UIView!
-
+    @IBOutlet weak var animateView: UIView!
+    
     static let tag = 0x70726f6772657373
     var message: NSMutableAttributedString? {
         didSet { self.lblHint.attributedText = self.message }
@@ -42,7 +44,7 @@ class Loader: UIView {
         ])
     }
 
-    func start() {
+    func start(_ isRive: Bool) {
         self.addSubview(loadingIndicator)
 
         NSLayoutConstraint.activate([
@@ -56,7 +58,13 @@ class Loader: UIView {
                 .constraint(equalTo: self.loadingIndicator.widthAnchor)
         ])
 
-        loadingIndicator.isAnimating = true
+        if !isRive {
+            loadingIndicator.isAnimating = true
+        } else {
+            let riveView = RiveModel.animationRocket.createRiveView()
+            animateView.addSubview(riveView)
+            riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
+        }
     }
 
     func stop() {
@@ -68,16 +76,19 @@ extension UIViewController {
 
     @objc var loader: Loader? {
         get {
-            return UIApplication.shared.keyWindow?.viewWithTag(Loader.tag) as? Loader
+            if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
+                return window.viewWithTag(Loader.tag) as? Loader
+            }
+            return nil
         }
     }
 
-    func startLoader(message: String = "") {
-        startLoader(message: NSMutableAttributedString(string: message))
+    func startLoader(message: String = "", isRive: Bool = false) {
+        startLoader(message: NSMutableAttributedString(string: message), isRive: isRive)
     }
 
-    @objc func startLoader(message: NSMutableAttributedString) {
-        if let window = UIApplication.shared.keyWindow {
+    @objc func startLoader(message: NSMutableAttributedString, isRive: Bool = false) {
+        if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
             if loader == nil {
                 let loader = Loader()
                 window.addSubview(loader)
@@ -85,7 +96,9 @@ extension UIViewController {
             loader?.message = message
             loader?.activateConstraints(in: window)
             if !(loader?.loadingIndicator.isAnimating ?? false) {
-                loader?.start()
+
+                // to change in "isRive"
+                loader?.start(true)
             }
         }
     }

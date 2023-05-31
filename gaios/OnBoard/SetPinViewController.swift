@@ -205,26 +205,26 @@ class SetPinViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         switch pinFlow {
         case .settings:
-            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
+            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""), isRive: true)
             Guarantee()
                 .then(on: bgq) { self.viewModel.setup(pin: pin) }
                 .ensure { self.stopLoader() }
                 .done { self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true) }
                 .catch { self.error($0)}
         case .restore:
-            self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""))
+            self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""), isRive: true)
             Guarantee()
                 .then(on: bgq) { self.viewModel.restore(pin: pin) }
                 .ensure { self.stopLoader() }
-                .done { AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
+                .done { _ = AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
                                                   nv: self.navigationController) }
                 .catch { self.error($0)}
         case .create:
-            self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""))
+            self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: true)
             Guarantee()
                 .then(on: bgq) { self.viewModel.create(pin: pin) }
                 .ensure { self.stopLoader() }
-                .done { AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
+                .done { _ = AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
                                                   nv: self.navigationController) }
                 .catch { self.error($0)}
         }
