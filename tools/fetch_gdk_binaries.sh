@@ -20,15 +20,14 @@ _EOF_
 
 # ----- Vars
 NAME="gdk-iphone"
-SHA256="9176c65fd8ef6937f56c15cb90f5a9507c22b0b68a07946a568f278653becb89"
-TAGNAME="release_0.0.62"
+SHA256="646aaa497fd68779dfe42637de9d29393decd6edd59cf445b891db655bcc809b"
+TAGNAME="release_0.0.63"
 TARBALL="${NAME}.tar.gz"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
 NAME_IPHONESIM="gdk-iphone-sim"
-SHA256_IPHONESIM="aaca429deb54d79fb718f48719ca58d24a0d408dea1dbd79a702412287abed90"
+SHA256_IPHONESIM="d27fc10621c092002189bed5f5f33dceaeda0a8011c67301c3052dc1cd42fd5e"
 SIMULATOR=false
 VALIDATE_CHECKSUM=true
-COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
 
 # --- Argument handling
@@ -79,8 +78,8 @@ if [[ $SIMULATOR == true ]]; then
     URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
 fi
 
-if [[ $COMMIT != false ]]; then
-  URL="${GCLOUD_URL}${COMMIT}/${TARBALL}"
+if [[ -n "$COMMIT" ]]; then
+  URL="${GCLOUD_URL}${COMMIT}/ios/${TARBALL}"
   VALIDATE_CHECKSUM=false
 fi
 
