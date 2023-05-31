@@ -56,7 +56,7 @@ public class JadeCommands: JadeChannel {
     public func getMasterBlindingKey() -> Observable<String> {
         return exchange(JadeRequest<JadeEmpty>(method: "get_master_blinding_key", params: nil))
             .compactMap { (res: JadeResponse<Data>) -> String in
-                dataToHex(res.result!)
+                res.result?.hex ?? ""
             }
     }
 

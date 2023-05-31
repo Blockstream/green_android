@@ -30,9 +30,9 @@ public struct HWTxInput: Codable {
     let sequence: UInt?
 
     var ptIdxHex: [UInt8] { (ptIdx ?? 0).uint32LE() }
-    var txhashHex: [UInt8] { hexToData(txhash).reversed() }
-    var assetblinderHex: [UInt8] { hexToData(assetblinder ?? "").reversed() }
-    var amountblinderHex: [UInt8] { hexToData(amountblinder ?? "").reversed() }
+    var txhashHex: [UInt8] { txhash.hexToData().reversed() }
+    var assetblinderHex: [UInt8] { assetblinder?.hexToData().reversed() ?? [] }
+    var amountblinderHex: [UInt8] { amountblinder?.hexToData().reversed() ?? [] }
 }
 
 public struct HWTxOutput: Codable {

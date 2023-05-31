@@ -90,10 +90,10 @@ final public class Jade: JadeOTA, HWProtocol {
                 throw HWError.Abort("Invalid signature")
             }
             // Need to truncate lead byte if recoverable signature
-            if sigDecoded.count == WALLY_EC_SIGNATURE_RECOVERABLE_LEN {
+            if sigDecoded.count == Wally.WALLY_EC_SIGNATURE_RECOVERABLE_LEN {
                 sigDecoded = sigDecoded[1...sigDecoded.count-1]
             }
-            let sigDer = try sigToDer(sig: Array(sigDecoded))
+            let sigDer = try Wally.sigToDer(sig: Array(sigDecoded))
             return HWSignMessageResult(signature: sigDer.hex, signerCommitment: res.signerCommitment)
         }
     }
@@ -181,7 +181,7 @@ final public class Jade: JadeOTA, HWProtocol {
                         return Observable.error(HWError.Abort(""))
                     }
                 }.compactMap { (res: JadeResponse<Data>) -> String in
-                    return dataToHex(res.result!)
+                   res.result?.hex ?? ""
                 }
         }
         let signatures = inputs.map {
@@ -197,7 +197,7 @@ final public class Jade: JadeOTA, HWProtocol {
                 }.flatMap { aeHostEntropy in
                     self.exchange(JadeRequest(method: "get_signature", params: JadeGetSignature(aeHostEntropy: aeHostEntropy!)))
                 }.compactMap { (res: JadeResponse<Data>) -> String in
-                    return dataToHex(res.result!)
+                    res.result?.hex ?? ""
                 }
         }
 
@@ -336,7 +336,7 @@ final public class Jade: JadeOTA, HWProtocol {
             let pointer = path[pathlen - 1]
             var recoveryxpub: String?
             if let chaincode = chaincode, !chaincode.isEmpty {
-                recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: mainnet,
+                recoveryxpub = try? Wally.bip32KeyFromParentToBase58(isMainnet: mainnet,
                                                                pubKey: [UInt8](recoveryPubKey?.hexToData() ?? Data()),
                                                                chainCode: [UInt8](chaincode.hexToData()),
                                                                branch: branch)
@@ -374,7 +374,7 @@ extension Jade {
         // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly so
         // no need to parse/load the transaction into wally.
         // FIXME: remove when 0.1.48 is made minimum allowed version.
-        let wallytx = !version.hasSwapSupport ? wallyTxFromBytes(tx: params.transaction?.transaction?.hexToBytes() ?? []) : nil
+        let wallytx = !version.hasSwapSupport ? Wally.txFromBytes(tx: params.transaction?.transaction?.hexToBytes() ?? []) : nil
         let txInputs = params.signingInputs
             .map { (txInput: InputOutput) -> TxInputLiquid in
             return TxInputLiquid(isWitness: txInput.isSegwit,
@@ -399,10 +399,10 @@ extension Jade {
                        blindingKey: out.getPublicKeyBytes?.data)
             // Add asset-generator and value-commitment for legacy fw versions
             // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly
-            if let wallytx = wallytx, let asset = wallyTxGetOutputAsset(wallyTx: wallytx, index: res.offset) {
+            if let wallytx = wallytx, let asset = Wally.txGetOutputAsset(wallyTx: wallytx, index: res.offset) {
                 commitment.assetGenerator = asset.data
             }
-            if let wallytx = wallytx, let value = wallyTxGetOutputValue(wallyTx: wallytx, index: res.offset) {
+            if let wallytx = wallytx, let value = Wally.txGetOutputValue(wallyTx: wallytx, index: res.offset) {
                 commitment.valueCommitment = value.data
             }
             return commitment
@@ -439,7 +439,7 @@ extension Jade {
         // Compute hashPrevouts to derive deterministic blinding factors from
         let txhashes = params.usedUtxos.map { $0.getTxid ?? []}.lazy.joined()
         let outputIdxs = params.usedUtxos.map { $0.ptIdx }
-        let hashPrevouts = getHashPrevouts(txhashes: [UInt8](txhashes), outputIdxs: outputIdxs)
+        let hashPrevouts = Wally.getHashPrevouts(txhashes: [UInt8](txhashes), outputIdxs: outputIdxs)
         // Enumerate the outputs and provide blinding factors as needed
         // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
         return Observable.from(params.transactionOutputs)
@@ -454,8 +454,8 @@ extension Jade {
                 } else if version.hasSwapSupport {
                     return self.getBlindingFactor(JadeGetBlingingFactor(hashPrevouts: hashPrevouts?.data, outputIndex: i, type: "ASSET_AND_VALUE"))
                         .compactMap { bfs in
-                            let assetblinder = bfs[0..<WALLY_BLINDING_FACTOR_LEN].reversed()
-                            let amountblinder = bfs[WALLY_BLINDING_FACTOR_LEN..<2*WALLY_BLINDING_FACTOR_LEN].reversed()
+                            let assetblinder = bfs[0..<Wally.WALLY_BLINDING_FACTOR_LEN].reversed()
+                            let amountblinder = bfs[Wally.WALLY_BLINDING_FACTOR_LEN..<2*Wally.WALLY_BLINDING_FACTOR_LEN].reversed()
                             return (Data(assetblinder).hex, Data(amountblinder).hex)
                         }
                 } else {

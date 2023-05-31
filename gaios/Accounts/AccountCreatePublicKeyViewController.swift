@@ -49,7 +49,7 @@ class AccountCreatePublicKeyViewController: UIViewController {
 
     func isValid() -> Bool {
         do {
-            _ = try bip32KeyFromBase58(textViewKey.text)
+            _ = try Wally.bip32KeyFromBase58(textViewKey.text)
             return true
         } catch {
             return false
