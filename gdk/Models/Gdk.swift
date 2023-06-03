@@ -80,6 +80,10 @@ public struct LoginUserResult: Codable {
     }
     public let xpubHashId: String
     public let walletHashId: String
+    public init(xpubHashId: String, walletHashId: String) {
+        self.xpubHashId = xpubHashId
+        self.walletHashId = walletHashId
+    }
 }
 
 public struct GetSubaccountsParams: Codable {
@@ -123,6 +127,29 @@ public struct GetAssetsResult: Codable {
     public let icons: [String: String]
 }
 
+public struct ValidateAddresseesParams: Codable {
+    public let addressees: [Addressee]
+    public init(addressees: [Addressee]) {
+        self.addressees = addressees
+    }
+}
+
+public struct ValidateAddresseesResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case isValid = "is_valid"
+        case errors
+        case addressees
+    }
+    public let isValid: Bool
+    public let errors: [String]
+    public let addressees: [Addressee]
+    public init(isValid: Bool, errors: [String], addressees: [Addressee]) {
+        self.isValid = isValid
+        self.errors = errors
+        self.addressees = addressees
+    }
+}
+
 public struct CreateSubaccountParams: Codable {
     enum CodingKeys: String, CodingKey {
         case name = "name"
@@ -157,6 +184,7 @@ public struct GdkInit: Codable {
     public let registrydir: String?
     public let logLevel: String
     public let enableSsLiquidHww: Bool?
+    public var breezSdkDir: String { "\(datadir ?? "")/breezSdk" }
 
     public static func defaults() -> GdkInit {
         let appSupportDir = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)

@@ -4,6 +4,7 @@ import gdk
 extension WalletItem {
     
     var session: SessionManager? { WalletManager.current?.sessions[network ?? ""] }
+    var lightningSession: LightningSessionManager? { WalletManager.current?.lightningSession }
     
     var localizedName: String {
         if !name.isEmpty {
@@ -22,7 +23,7 @@ extension WalletItem {
     }
 
     var localizedType: String {
-        return type.shortString.localized.uppercased()
+        return type.subtitle.localized.uppercased()
     }
 
 }

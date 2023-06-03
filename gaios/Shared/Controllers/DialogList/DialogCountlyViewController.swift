@@ -148,7 +148,6 @@ class DialogCountlyViewController: UIViewController {
         handle.cornerRadius = 1.5
         detailsContainer.layer.cornerRadius = 5.0
         btnDeny.setStyle(.outlinedWhite)
-        btnDeny.layer.borderColor = UIColor.gGreenMatrix().cgColor
         btnAllow.setStyle(.primary)
         btnMore.setStyle(.inline)
         lblHint.textColor = .white.withAlphaComponent(0.6)

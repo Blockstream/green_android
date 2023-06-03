@@ -40,10 +40,14 @@ build_dev_release:
     GDK_COMMIT: latest
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
+    GREENLIGHT_DEVICE_CERT: $GREENLIGHT_DEVICE_CERT
+    BREEZ_API_KEY: $BREEZ_API_KEY
   script:
     - echo $COUNTLY_APP_KEY
     - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
+    - ./tools/setup_xcconfig.sh
     - fastlane build_dev_release
     - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
     - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
@@ -68,8 +72,12 @@ build_signed_prod_release:
   variables:
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
+    GREENLIGHT_DEVICE_CERT: $GREENLIGHT_DEVICE_CERT
+    BREEZ_API_KEY: $BREEZ_API_KEY
   script:
     - ./tools/fetch_gdk_binaries.sh
+    - ./tools/setup_xcconfig.sh
     - fastlane build_signed_prod_release
     - mkdir tmp && unzip ./release/Green.app.dSYM.zip -d tmp
     - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
@@ -89,6 +97,7 @@ ui_tests:
     - export LC_ALL=en_US.UTF-8
     - export LANG=en_US.UTF-8
     - ./tools/fetch_gdk_binaries.sh --simulator
+    - ./tools/setup_xcconfig.sh
     - fastlane ui_tests
   after_script:
     - xcrun simctl shutdown "iPhone 11"

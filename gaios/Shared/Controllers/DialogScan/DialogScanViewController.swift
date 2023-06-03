@@ -22,8 +22,7 @@ class DialogScanViewController: KeyboardViewController {
     @IBOutlet weak var scrollView: UIScrollView!
 
     var index: Int?
-
-    weak var delegate: DialogScanViewControllerDelegate?
+    var delegate: DialogScanViewControllerDelegate?
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -136,6 +135,15 @@ class DialogScanViewController: KeyboardViewController {
             return
         }
         qrScanView.startScan()
+    }
+
+    static var vc: DialogScanViewController? {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            return vc
+        }
+        return nil
     }
 }
 

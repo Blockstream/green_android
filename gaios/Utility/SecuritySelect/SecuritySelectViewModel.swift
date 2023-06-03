@@ -5,15 +5,6 @@ import gdk
 import hw
 import greenaddress
 
-enum PolicyCellType: String, CaseIterable {
-    case Standard
-    //case Instant
-    case TwoFAProtected
-    case TwoOfThreeWith2FA
-    case NativeSegwit
-    //case Taproot
-    case Amp
-}
 
 class SecuritySelectViewModel {
 
@@ -65,35 +56,53 @@ class SecuritySelectViewModel {
 
     func policiesForAsset(for assetId: String, extended: Bool) -> [PolicyCellType] {
         let asset = WalletManager.current?.registry.info(for: asset)
-        if asset?.amp ?? false {
+        if asset?.amp ?? false { // amp liquid asset
             return [.Amp]
+        } else if AssetInfo.btcId == assetId { // btc
+            var list: [PolicyCellType] = [.Standard, .NativeSegwit, .Lightning, .TwoFAProtected, .TwoOfThreeWith2FA]
+            if !extended {
+                list = [.Standard, .Lightning, .TwoFAProtected]
+            }
+            if !AppSettings.shared.experimental {
+                list.removeAll(where: { $0 == .Lightning })
+            }
+            return list
+        } else { // liquid
+            var list: [PolicyCellType] = [.Standard, .NativeSegwit, .TwoFAProtected, .Amp]
+            if !extended {
+                list = [.Standard, .TwoFAProtected]
+            }
+            return list
         }
-        if !extended {
-            return [.Standard, .TwoFAProtected]
-        }
-        if AssetInfo.btcId == assetId {
-            return [.Standard, .TwoFAProtected, .TwoOfThreeWith2FA, .NativeSegwit]
-        }
-        return [.Standard, .TwoFAProtected, .Amp, .NativeSegwit]
     }
 
     func create(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) -> Promise<WalletItem> {
-        guard
-            let network = getNetwork(for: policy, liquid: asset != "btc"),
-            let session = getSession(for: network) else {
-            return Promise(error: GaError.GenericError("Invalid session"))
+        let network = policy.getNetwork(testnet: wm.testnet, liquid: asset != "btc")!
+        let prominentSession = wm.prominentSession!
+        if network.lightning, let session = wm.lightningSession {
+            if session.logged {
+                return Promise(error: GaError.GenericError("Lightning account already exist"))
+            }
+            return Guarantee()
+                .then { session.connect() }
+                .then { prominentSession.getCredentials(password: "")}
+                .then { session.loginUser($0) }
+                .then { _ in self.wm.subaccounts() }
+                .then { _ in session.subaccount(0) }
         }
-        let cellModel = PolicyCellModel.from(policy: policy)
-        let params = params ?? CreateSubaccountParams(name: uniqueName(cellModel.accountType, liquid: asset != "btc"),
-                                   type: getAccountType(for: policy),
-                                   recoveryMnemonic: nil,
-                                   recoveryXpub: nil)
-        return Guarantee()
-            .then { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
-            .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden} }
-            .then { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
-            .then { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, params: params) }
-            .then { res in self.wm.subaccounts().map { _ in res } }
+        if let session = getSession(for: network) {
+            let params = params ?? CreateSubaccountParams(name: uniqueName(policy.accountType, liquid: asset != "btc"),
+                                                          type: policy.accountType,
+                                                          recoveryMnemonic: nil,
+                                                          recoveryXpub: nil)
+            return Guarantee()
+                .then { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
+                .map { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden} }
+                .then { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
+                .then { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, params: params) }
+                .then { res in self.wm.subaccounts().map { _ in res } }
+        }
+        return Promise(error: GaError.GenericError("Invalid session"))
     }
 
     func device() -> HWDevice {
@@ -164,43 +173,8 @@ class SecuritySelectViewModel {
         return session.createSubaccount(params)
     }
 
-    func getNetwork(for policy: PolicyCellType, liquid: Bool) -> NetworkSecurityCase? {
-        let btc: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .bitcoinSS, .TwoFAProtected: .bitcoinMS,
-         .TwoOfThreeWith2FA: .bitcoinMS, .NativeSegwit: .bitcoinSS, .Amp: .bitcoinMS]
-        let test: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .testnetSS, .TwoFAProtected: .testnetMS,
-         .TwoOfThreeWith2FA: .testnetMS, .NativeSegwit: .testnetSS, .Amp: .testnetMS]
-        let lbtc: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .liquidSS, .TwoFAProtected: .liquidMS,
-         .TwoOfThreeWith2FA: .liquidMS, .NativeSegwit: .liquidSS, .Amp: .liquidMS]
-        let ltest: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .testnetLiquidSS, .TwoFAProtected: .testnetLiquidMS,
-         .TwoOfThreeWith2FA: .testnetLiquidMS, .NativeSegwit: .testnetLiquidSS, .Amp: .testnetLiquidMS]
-        if liquid && wm.testnet { return ltest[policy] }
-        if liquid && !wm.testnet { return lbtc[policy] }
-        if !liquid && wm.testnet { return test[policy] }
-        return btc[policy]
-    }
-
     func getSession(for network: NetworkSecurityCase) -> SessionManager? {
         wm.sessions[network.network]
-    }
-
-    func getAccountType(for policy: PolicyCellType) -> AccountType {
-        switch policy {
-        case .Standard:
-             // singlesig legacy segwit
-            return .segwitWrapped
-        case .TwoFAProtected:
-            return .standard
-        case .TwoOfThreeWith2FA:
-            return .twoOfThree
-        case .NativeSegwit:
-            return .segWit
-        case .Amp:
-            return .amp
-        }
     }
 
     func uniqueName(_ type: AccountType, liquid: Bool) -> String {

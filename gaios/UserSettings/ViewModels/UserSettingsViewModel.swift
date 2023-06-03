@@ -102,7 +102,7 @@ class UserSettingsViewModel {
         let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
         let bitcoinDenomination = UserSettingsItem(
             title: USItem.BitcoinDenomination.string,
-            subtitle: settings.denomination.string(for: network.gdkNetwork!),
+            subtitle: settings.denomination.string(for: network.gdkNetwork),
             section: .General,
             type: .BitcoinDenomination)
         let referenceExchangeRate = UserSettingsItem(

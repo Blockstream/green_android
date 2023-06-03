@@ -11,7 +11,7 @@ class Recipient: Codable {
     var isSendAll: Bool = false
 
     private var btc: String {
-        return WalletManager.current?.account.gdkNetwork?.getFeeAsset() ?? ""
+        return WalletManager.current?.account.gdkNetwork.getFeeAsset() ?? ""
     }
 
     func getSatoshi() -> Int64? {

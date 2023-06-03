@@ -10,6 +10,7 @@ class SendConfirmViewModel {
     var addresseeCellModels: [AddresseeCellModel]
     var session: SessionManager { account.session! }
     var remoteAlert: RemoteAlert?
+    var lightningSession: LightningSessionManager? { WalletManager.current?.lightningSession }
 
     init(account: WalletItem, tx: Transaction) {
         self.account = account
@@ -31,5 +32,12 @@ class SendConfirmViewModel {
                     return self.session.sendTransaction(tx: tx)
                 }
             }
+    }
+
+    func compose(_ msg: String) -> String {
+        if let nodeId =  lightningSession?.nodeState?.id {
+            return msg + ", {\"nodeId\": \(nodeId)}"
+        }
+        return msg
     }
 }

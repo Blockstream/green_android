@@ -59,8 +59,8 @@ class AssetExpandableSelectViewController: UIViewController {
         AnalyticsManager.shared.newAccount(account: AccountsRepository.shared.current)
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SecuritySelectViewController") as? SecuritySelectViewController {
-            let asset = asset?.assetId ?? getGdkNetwork("liquid").getFeeAsset()
-            vc.viewModel = SecuritySelectViewModel(asset: asset)
+            let asset = asset?.assetId ?? GdkNetworks.shared.liquidSS.policyAsset
+            vc.viewModel = SecuritySelectViewModel(asset: asset!)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
         }

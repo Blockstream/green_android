@@ -13,15 +13,12 @@ class SafeNavigationManager {
     }
 
     func navigate(_ url: URL) {
-
-        let networkSettings = getUserNetworkSettings()
-        if let tor = networkSettings["tor"] as? Bool, tor { } else {
+        guard GdkSettings.read()?.tor ?? false else {
             UIApplication.shared.open( url )
             return
         }
 
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-
         appDelegate?.navigateWindow = UIWindow(frame: UIScreen.main.bounds)
         appDelegate?.navigateWindow?.windowLevel = .alert
         appDelegate?.navigateWindow?.tag = 999

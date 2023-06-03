@@ -154,8 +154,7 @@ class WOSetupViewController: KeyboardViewController {
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            vc.delegate = self
-            present(vc, animated: true) {}
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
@@ -191,15 +190,6 @@ class WOSetupViewController: KeyboardViewController {
     }
 }
 
-extension WOSetupViewController: WalletSettingsViewControllerDelegate {
-    func didSet(tor: Bool) {
-        //
-    }
-    func didSet(testnet: Bool) {
-        // cardTestnet.isHidden = !testnet
-    }
-}
-
 extension WOSetupViewController: DialogListViewControllerDelegate {
 
     func selectNetwork() {
@@ -218,6 +208,8 @@ extension WOSetupViewController: DialogListViewControllerDelegate {
     }
 
     func didSelectIndex(_ index: Int, with type: DialogType) {
-        login(for: getGdkNetwork(networks[index].rawValue))
+        if let network = NetworkSecurityCase(rawValue: networks[index].rawValue) {
+            login(for: network.gdkNetwork)
+        }
     }
 }

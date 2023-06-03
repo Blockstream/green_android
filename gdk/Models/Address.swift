@@ -1,5 +1,6 @@
 import Foundation
 import PromiseKit
+import BreezSDK
 import hw
 
 public struct Address: Codable {
@@ -56,5 +57,13 @@ public struct Address: Codable {
                     seal.reject(err)
                 })
         }
+    }
+
+    public static func from(invoice: LnInvoice) -> Address {
+        return Address(address: invoice.bolt11)
+    }
+
+    public static func from(swapInfo: SwapInfo) -> Address {
+        return Address(address: swapInfo.bitcoinAddress)
     }
 }

@@ -46,7 +46,7 @@ class WalletListCell: UITableViewCell {
         let img: UIImage? = {
             if item.isWatchonly {
                 return UIImage(named: "ic_eye_flat")
-            } else if item.gdkNetwork?.mainnet ?? true {
+            } else if item.gdkNetwork.mainnet ?? true {
                 return UIImage(named: "ic_wallet")
             } else {
                 return UIImage(named: "ic_wallet_testnet")

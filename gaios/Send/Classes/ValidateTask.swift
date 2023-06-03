@@ -2,32 +2,28 @@ import Foundation
 import PromiseKit
 import gdk
 
-enum InputType {
-    case transaction
-    case sweep
-    case bumpFee
-}
-
 class ValidateTask {
     var tx: Transaction?
     private var cancelme = false
     private var task: DispatchWorkItem?
 
-    init(details: [String: Any], inputType: InputType, session: SessionManager, account: WalletItem) {
+    init(tx: Transaction) {
         task = DispatchWorkItem {
-            var details = details
-            let subaccount = details["subaccount"] as? UInt32
-            if inputType == .transaction && details["utxos"] == nil {
-                let unspent = try? session.getUnspentOutputs(subaccount: subaccount ?? 0, numConfs: 0).wait()
-                details["utxos"] = unspent ?? [:]
-            } else if inputType == .sweep && details["addressees"] == nil {
-                let address = try? account.session?.getReceiveAddress(subaccount: account.pointer).wait()
-                let addressee: [String: Any] = ["address": address?.address ?? ""]
-                details["addressees"] = [addressee]
+            var tx = tx
+            if let subaccount = tx.subaccountItem,
+               let session = subaccount.session {
+                if tx.isSweep && tx.addressees.isEmpty {
+                    let address = try? session.getReceiveAddress(subaccount: subaccount.pointer).wait()
+                    tx.addressees = [Addressee.from(address: address?.address ?? "", satoshi: nil, assetId: nil)]
+                } else if !subaccount.gdkNetwork.lightning && tx.utxos == nil {
+                    let unspent = try? session.getUnspentOutputs(subaccount: subaccount.pointer, numConfs: 0).wait()
+                    tx.utxos = unspent ?? [:]
+                }
+                if let created = try? session.createTransaction(tx: tx).wait() {
+                    tx = created
+                    tx.subaccount = subaccount.hashValue
+                }
             }
-            let inputTx = Transaction(details, subaccount: account.hashValue)
-            var tx = try? session.createTransaction(tx: inputTx).wait()
-            tx?.subaccount = account.hashValue
             self.tx = tx
         }
     }

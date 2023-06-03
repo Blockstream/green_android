@@ -11,8 +11,8 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var btnSelect: UIButton!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnShield: UIButton!
+    @IBOutlet weak var btnShieldWide: UIButton!
     @IBOutlet weak var imgMS: UIImageView!
-    @IBOutlet weak var imgSS: UIImageView!
     @IBOutlet weak var lblType: UILabel!
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var lblFiat: UILabel!
@@ -27,6 +27,13 @@ class AccountCell: UITableViewCell {
     @IBOutlet weak var titlesTrailing: NSLayoutConstraint!
     @IBOutlet weak var loader: UIActivityIndicatorView!
     
+    @IBOutlet weak var ltExperimental: UIView!
+    @IBOutlet weak var lblLtEXperimental: UILabel!
+    @IBOutlet weak var lblLtExpBg: UIView!
+    @IBOutlet weak var ltIconExp: UIImageView!
+    @IBOutlet weak var btnExperimental: UIButton!
+    @IBOutlet weak var iconLeading: NSLayoutConstraint!
+
     private var sIdx: Int = 0
     private var cIdx: Int = 0
     private var hideBalance: Bool = false
@@ -34,6 +41,7 @@ class AccountCell: UITableViewCell {
     private var onSelect: (() -> Void)?
     private var onCopy: (() -> Void)?
     private var onShield: ((Int) -> Void)?
+    private var onExperiental: (() -> Void)?
     private let iconW: CGFloat = 24
     private var cColor: UIColor = .clear
 
@@ -49,7 +57,7 @@ class AccountCell: UITableViewCell {
         btnShield.borderColor = .black
         btnShield.cornerRadius = 16.0
         [btnSelect, btnCopy].forEach {
-            $0?.borderWidth = 1.0
+            $0?.borderWidth = 1.5
             $0?.borderColor = .white
             $0?.cornerRadius = 3.0
         }
@@ -92,7 +100,9 @@ class AccountCell: UITableViewCell {
                    isLast: Bool,
                    onSelect: (() -> Void)?,
                    onCopy: (() -> Void)?,
-                   onShield: ((Int) -> Void)?) {
+                   onShield: ((Int) -> Void)?,
+                   onExperiental: (() -> Void)?
+    ) {
         setIsLoading(model.satoshi == nil)
         self.cIdx = cIdx
         self.sIdx = sIdx
@@ -101,6 +111,7 @@ class AccountCell: UITableViewCell {
         self.onSelect = onSelect
         self.onCopy = onCopy
         self.onShield = onShield
+        self.onExperiental = onExperiental
 
         lblType.text = model.lblType
         lblName.text = NSLocalizedString(model.name, comment: "")
@@ -112,15 +123,23 @@ class AccountCell: UITableViewCell {
             lblFiat.text = model.fiatStr
             lblAmount.text = model.balanceStr
         }
-        imgSS.isHidden = !model.isSS
-        imgMS.isHidden = model.isSS
+        let network = model.networkType
         let session = model.account.session
         let watchOnly = WalletManager.current?.account.isWatchonly ?? false
         let enabled2FA = session?.twoFactorConfig?.anyEnabled ?? false
-        btnShield.isHidden = onSelect == nil || model.isSS || enabled2FA || watchOnly
-        btcImg.isHidden = model.isLiquid
-        model.isTest ? (cColor = model.isLiquid ? UIColor.gAccountTestLightBlue() : UIColor.gAccountTestGray()) :
-        (cColor = model.isLiquid ? UIColor.gAccountLightBlue() : UIColor.gAccountOrange())
+        let hideShield = onSelect == nil || !network.multisig || enabled2FA || watchOnly
+        btnShield.isHidden = hideShield
+        btnShieldWide.isHidden = hideShield
+        cColor = color(network: network)
+        btcImg.isHidden = network.liquid
+        btcImg.image = backgroundImage(network: network)
+        imgMS.image = backgroundIcon(network: network)
+
+        ltExperimental.isHidden = !(model.networkType.lightning && AppSettings.shared.lightningEnabled)
+        lblLtEXperimental.text = "Experimental"
+        ltIconExp.image = UIImage(named: "ic_lightning_info")?.maskWithColor(color: .white)
+        lblLtExpBg.layer.cornerRadius = 4.0
+
         [bg, effectView, btnShield].forEach {
             $0?.backgroundColor = cColor
         }
@@ -131,8 +150,13 @@ class AccountCell: UITableViewCell {
         let assets = AssetAmountList(list).sorted()
         let registry = WalletManager.current?.registry
         var icons = [UIImage]()
-        assets.compactMap { registry?.image(for: $0.0) }
-            .forEach { if !icons.contains($0) { icons += [$0] } }
+        assets.compactMap {
+            if network == .lightning && $0.0 == "btc" {
+                return UIImage(named: "ic_lightning_btc")
+            }
+            return registry?.image(for: $0.0)
+        }
+        .forEach { if !icons.contains($0) { icons += [$0] } }
 
         icContainers.forEach { $0.isHidden = true }
         icImgViews.forEach { $0.image = UIImage() }
@@ -162,6 +186,37 @@ class AccountCell: UITableViewCell {
             }
             titlesTrailing.constant = -width * CGFloat(icons.count) - 10.0 + CGFloat(icons.count - 1) * 10.0
         }
+    }
+
+    func color(network: NetworkSecurityCase) -> UIColor {
+        if network.liquid {
+            return network.testnet ? UIColor.gAccountTestLightBlue() : UIColor.gAccountLightBlue()
+        } else if network.lightning {
+            return UIColor.gLightning()
+        } else {
+            return network.testnet ? UIColor.gAccountTestGray() : UIColor.gAccountOrange()
+        }
+    }
+
+    func backgroundImage(network: NetworkSecurityCase) -> UIImage? {
+        if network.lightning {
+            return UIImage(named: "ic_lightning_bg")
+        } else {
+            return UIImage(named: "ic_btc_outlined")
+        }
+    }
+
+    func backgroundIcon(network: NetworkSecurityCase) -> UIImage? {
+        iconLeading.constant = 0.0
+        if network.lightning {
+            iconLeading.constant = -2.0
+            return UIImage(named: "ic_lightning_plain")
+        } else if network.multisig {
+            return UIImage(named: "ic_key_ms")
+        } else if network.singlesig {
+            return UIImage(named: "ic_key_ss")
+        }
+        return nil
     }
 
     func updateUI(_ value: Bool) {
@@ -197,7 +252,11 @@ class AccountCell: UITableViewCell {
         onCopy?()
     }
 
-    @IBAction func btnShield(_ sender: Any) {
+    @IBAction func btnShieldWide(_ sender: Any) {
         onShield?(cIdx)
+    }
+
+    @IBAction func btnExperimental(_ sender: Any) {
+        onExperiental?()
     }
 }

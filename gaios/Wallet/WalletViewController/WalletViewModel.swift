@@ -7,14 +7,13 @@ class WalletViewModel {
 
     var wm: WalletManager? { WalletManager.current }
     var session: SessionManager? { wm?.prominentSession }
-
     var isTxLoading = true // on init is always true
     var isBalanceLoading = true
 
     /// load visible subaccounts
     var subaccounts: [WalletItem] { wm?.subaccounts.filter { !($0.hidden) } ?? [] }
     var watchOnly: Bool { wm?.account.isWatchonly ?? false}
-    var headerIcon: UIImage { return UIImage(named: wm?.prominentNetwork.gdkNetwork?.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white) }
+    var headerIcon: UIImage { return UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white) }
 
     /// Cached data
     private var cachedTransactions = [Transaction]()
@@ -37,6 +36,9 @@ class WalletViewModel {
         didSet {
             self.reloadSections?([WalletSection.account], false)
         }
+    }
+    var accountLightningCellModels: AccountCellModel? {
+        accountCellModels.filter { $0.networkType == .lightning }.first
     }
     var txCellModels = [TransactionCellModel]() {
         didSet {
@@ -121,9 +123,8 @@ class WalletViewModel {
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
         if let subaccount = self.wm?.subaccounts.filter({ $0.hashValue == subaccountHash }).first,
             let network = subaccount.network,
-            let session = self.wm?.sessions[network],
-            let blockHeight = session.notificationManager?.blockHeight {
-                return blockHeight
+            let session = self.wm?.sessions[network] {
+            return session.blockHeight
         }
         return 0
     }
@@ -226,7 +227,7 @@ class WalletViewModel {
         guard let eventType = EventType(rawValue: notification.name.rawValue) else { return }
         print("..... \(eventType.rawValue)")
         switch eventType {
-        case .Transaction:
+        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
             reload()
         case .Block:
             if cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {

@@ -6,10 +6,6 @@ class AccountCellModel {
 
     var name: String
     var type: String
-    var security: String
-    var isSS: Bool
-    var isLiquid: Bool
-    var isTest: Bool
     var value: String?
     var fiat: String?
     var lblType: String
@@ -18,17 +14,15 @@ class AccountCellModel {
     var account: WalletItem
     var hasTxs: Bool = false
     var satoshi: Int64?
+    var networkType: NetworkSecurityCase
 
     init(subaccount: WalletItem, satoshi: Int64?) {
         self.satoshi = satoshi
         account = subaccount
         name = account.localizedName
         type = account.localizedType
-        isSS = account.gdkNetwork.electrum ? true : false
-        isLiquid = account.gdkNetwork.liquid
-        isTest = !account.gdkNetwork.mainnet
-        security = (isSS ? "Singlesig" : "Multisig").uppercased()
-        lblType = security + " / " + type
+        networkType = account.networkType
+        lblType = subaccount.localizedType
         hasTxs = subaccount.hasTxs
         let assetId = account.gdkNetwork.getFeeAsset()
         if let satoshi = satoshi,let converted = Balance.fromSatoshi(satoshi, assetId: assetId) {

@@ -41,6 +41,7 @@ class TransactionViewController: UIViewController {
 
     private var transactionToken: NSObjectProtocol?
     private var blockToken: NSObjectProtocol?
+    private let bgq = DispatchQueue.global(qos: .background)
     private var cantBumpFees: Bool {
         return wallet.session?.isResetActive ?? false ||
             !transaction.canRBF || isWatchonly
@@ -245,23 +246,23 @@ class TransactionViewController: UIViewController {
         if self.cantBumpFees { return }
         guard let session = wallet.session else { return }
         firstly {
-            self.startAnimating()
             return Guarantee()
-        }.then {
+        }.then(on: bgq) {
             session.getUnspentOutputs(subaccount: self.wallet?.pointer ?? 0, numConfs: 1)
         }.compactMap { unspentOutputs in
             return ["previous_transaction": self.transaction.details,
-                    "fee_rate": self.getFeeRate(),
+                    "fee_rate": self.getFeeRate() + 10,
                     "subaccount": self.wallet.pointer,
                     "utxos": unspentOutputs]
-        }.then { details in
+        }.then(on: bgq) { details in
             session.createTransaction(tx: Transaction(details))
-        }.ensure {
-            self.stopAnimating()
         }.done { tx in
             let storyboard = UIStoryboard(name: "Send", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-                vc.viewModel = SendViewModel(account: self.wallet, inputType: .bumpFee, transaction: tx)
+                vc.viewModel = SendViewModel(account: self.wallet,
+                                             inputType: .bumpFee,
+                                             transaction: tx,
+                                             input: nil)
                 vc.fixedWallet = true
                 vc.fixedAsset = true
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -288,29 +289,35 @@ class TransactionViewController: UIViewController {
 
 extension TransactionViewController: UITableViewDelegate, UITableViewDataSource {
 
+    var sections: [TransactionSection] {
+        if wallet.gdkNetwork.lightning {
+            return [.amount, .status, .note]
+        } else {
+            return TransactionSection.allCases
+        }
+    }
+
     func numberOfSections(in tableView: UITableView) -> Int {
-        return TransactionSection.allCases.count
+        return sections.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case TransactionSection.amount.rawValue:
+        switch sections[section] {
+        case TransactionSection.amount:
             return transaction.amountsWithoutFees.count
-        case TransactionSection.fee.rawValue:
+        case TransactionSection.fee:
             return 1
-        case TransactionSection.status.rawValue:
+        case TransactionSection.status:
             return 1
-        case TransactionSection.detail.rawValue:
+        case TransactionSection.detail:
             return 1
-        case TransactionSection.note.rawValue:
+        case TransactionSection.note:
             return 1
-        default:
-            return 0
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch TransactionSection(rawValue: indexPath.section) {
+        switch sections[indexPath.section] {
         case .amount:
             let copyAmount: ((String) -> Void)? = { [weak self] value in
                 self?.copyToClipboard(value)
@@ -321,6 +328,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
                 let amount = transaction.amountsWithoutFees[indexPath.row]
                 cell.configure(tx: transaction,
+                               isLightning: wallet.type.lightning,
                                id: amount.0,
                                value: amount.1,
                                hideBalance: hideBalance,
@@ -346,8 +354,8 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case .status:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionStatusCell") as? TransactionStatusCell {
-                let blockHeight = wallet.session?.notificationManager?.blockHeight
-                cell.configure(transaction: transaction, isLiquid: transaction.isLiquid, blockHeight: blockHeight ?? 0)
+                let blockHeight = wallet.session?.blockHeight
+                cell.configure(transaction: transaction, blockHeight: blockHeight ?? 0)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -465,7 +473,7 @@ extension TransactionViewController: DialogEditViewControllerDelegate {
             }.catch { _ in}
     }
 
-    func didCancel() { }
+    func didClose() { }
 }
 
 extension TransactionViewController: DialogExplorerOptionsViewControllerDelegate {

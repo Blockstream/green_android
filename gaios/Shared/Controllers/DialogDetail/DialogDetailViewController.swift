@@ -29,7 +29,7 @@ class DialogDetailViewController: KeyboardViewController {
     private var assetDetailCellTypes = DetailCellType.allCases
     private var isLBTC: Bool {
         get {
-            return tag == getGdkNetwork("liquid").policyAsset
+            return tag == GdkNetworks.shared.liquidSS.policyAsset
         }
     }
     private var assetsUpdatedToken: NSObjectProtocol?
@@ -56,6 +56,7 @@ class DialogDetailViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        register()
         setContent()
         setStyle()
 
@@ -123,6 +124,12 @@ class DialogDetailViewController: KeyboardViewController {
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
     }
 
+    func register() {
+        ["DialogDetailCell"].forEach {
+            tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
+        }
+    }
+
     func dismiss() {
         anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
@@ -161,7 +168,7 @@ extension DialogDetailViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "AssetDetailCell") as? AssetDetailCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: DialogDetailCell.identifier) as? DialogDetailCell {
             cell.selectionStyle = .none
             let cellType = assetDetailCellTypes[indexPath.row]
             let assetName = asset?.name == "" ? nil : asset?.name

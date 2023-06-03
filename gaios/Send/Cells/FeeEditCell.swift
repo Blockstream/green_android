@@ -6,10 +6,33 @@ protocol FeeEditCellDelegate: AnyObject {
     func updatePriority(_ priority: TransactionPriority)
 }
 
+struct FeeEditCellModel {
+    var fee: UInt64?
+    var feeRate: UInt64?
+    var txError: String?
+    var customFee: UInt64 = 1000
+    var feeEstimates: [UInt64?]
+    var transactionPriority: TransactionPriority?
+    
+    func selectedFee() -> Int {
+        switch transactionPriority {
+        case .High:
+            return 0
+        case .Medium:
+            return 1
+        case .Low:
+            return 2
+        case .Custom:
+            return 3
+        case .none:
+            return 0
+        }
+    }
+}
+
 class FeeEditCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
-    @IBOutlet weak var lblFeeTitle: UILabel!
     @IBOutlet weak var lblFeeValue: UILabel!
     @IBOutlet weak var lblFeeRate: UILabel!
     @IBOutlet weak var lblFeeFiat: UILabel!
@@ -29,26 +52,17 @@ class FeeEditCell: UITableViewCell {
     @IBOutlet weak var lblTipHigh: UILabel!
     @IBOutlet weak var lblInvalidFee: UILabel!
 
-    var fee: UInt64?
-    var feeRate: UInt64?
-    var txError: String?
-    var transactionPriority: TransactionPriority?
-    weak var delegate: FeeEditCellDelegate?
-
-    private var btc: String {
-        return WalletManager.current?.account.gdkNetwork?.getFeeAsset() ?? ""
-    }
+    private weak var delegate: FeeEditCellDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        bg.cornerRadius = 8.0
+        bg.cornerRadius = 5.0
         let icons = [icon1, icon2, icon3, icon4]
         icons.forEach { icon in
             if let icon = icon {
                 icon.image = icon.image?.maskWithColor(color: UIColor.customMatrixGreen())
             }
         }
-        lblFeeTitle.text = NSLocalizedString("id_fee", comment: "")
         lblTimeTitle.text = NSLocalizedString("id_confirmation_time", comment: "")
         lblTimeHint.text = ""
         lblTipCustom.text = NSLocalizedString("id_custom", comment: "")
@@ -56,10 +70,6 @@ class FeeEditCell: UITableViewCell {
         lblTipMedium.text = NSLocalizedString("id_medium", comment: "")
         lblTipHigh.text = NSLocalizedString("id_high", comment: "")
         lblInvalidFee.text = NSLocalizedString("id_invalid_replacement_fee_rate", comment: "")
-        [lblFeeTitle].forEach {
-            $0?.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-            $0?.textColor = .white.withAlphaComponent(0.4)
-        }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -73,24 +83,18 @@ class FeeEditCell: UITableViewCell {
         lblTipCustom.textColor = .white
     }
 
-    func configure(fee: UInt64?,
-                   feeRate: UInt64?,
-                   txError: String?,
-                   transactionPriority: TransactionPriority
-    ) {
-        self.fee = fee
-        self.feeRate = feeRate
-        self.txError = txError
+    func configure(tx: Transaction?, cellModel: FeeEditCellModel, delegate: FeeEditCellDelegate) {
         lblFeeValue.isHidden = true
         lblFeeRate.isHidden = true
         lblFeeFiat.isHidden = true
         lblInvalidFee.isHidden = true
+        self.delegate = delegate
 
-        let estimateConfirmTime = transactionPriority.time(isLiquid: WalletManager.current?.account.gdkNetwork?.liquid ?? false)
-        lblTimeHint.text = transactionPriority == .Custom ? NSLocalizedString("id_custom", comment: "") : "~ \(estimateConfirmTime)"
-        feeSlider.value = Float(feeToSwitchIndex(transactionPriority))
+        let estimateConfirmTime = cellModel.transactionPriority?.time(isLiquid: WalletManager.current?.account.gdkNetwork.liquid ?? false)
+        lblTimeHint.text = cellModel.transactionPriority == .Custom ? "id_custom".localized : "~ \(estimateConfirmTime ?? "")"
+        feeSlider.value = Float(feeToSwitchIndex(cellModel.transactionPriority ?? .Low))
 
-        switch transactionPriority {
+        switch cellModel.transactionPriority {
         case .Low:
             lblTipLow.textColor = UIColor.customMatrixGreen()
         case .Medium:
@@ -99,9 +103,12 @@ class FeeEditCell: UITableViewCell {
             lblTipHigh.textColor = UIColor.customMatrixGreen()
         case .Custom:
             lblTipCustom.textColor = UIColor.customMatrixGreen()
+        case .none:
+            break
         }
 
-        if ((txError ?? "").isEmpty || txError == "id_invalid_replacement_fee_rate"), let fee = fee, let feeRate = feeRate {
+        let btc = tx?.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
+        if ((cellModel.txError ?? "").isEmpty || cellModel.txError == "id_invalid_replacement_fee_rate"), let fee = cellModel.fee, let feeRate = cellModel.feeRate {
             if let balance = Balance.fromSatoshi(fee, assetId: btc) {
                 let (amount, denom) = balance.toDenom()
                 lblFeeValue.text = "\(amount) \(denom)"
@@ -113,7 +120,7 @@ class FeeEditCell: UITableViewCell {
                 lblFeeFiat.isHidden = false
             }
         }
-        lblInvalidFee.isHidden = !(txError == "id_invalid_replacement_fee_rate")
+        lblInvalidFee.isHidden = !(cellModel.txError == "id_invalid_replacement_fee_rate")
         btnCustomFee.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.setCutomFeeBtn
     }
 

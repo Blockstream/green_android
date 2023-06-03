@@ -2,6 +2,7 @@ import UIKit
 import PromiseKit
 import RiveRuntime
 import gdk
+import BreezSDK
 
 enum WalletSection: Int, CaseIterable {
     case card
@@ -27,6 +28,8 @@ class WalletViewController: UIViewController {
     @IBOutlet weak var lblWelcomeHint: UILabel!
     @IBOutlet weak var btnWelcomeCreate: UIButton!
     @IBOutlet weak var animateView: UIView!
+    @IBOutlet weak var btnScanView: UIView!
+    @IBOutlet weak var divider: UIView!
 
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
@@ -47,8 +50,13 @@ class WalletViewController: UIViewController {
     private var notificationObservers: [NSObjectProtocol] = []
     private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletViewController.self, options: nil)![0] as? DrawerBarItem)!)
 
+    var showScan = true
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        btnScanView.isHidden = !showScan
+        divider.isHidden = showScan
 
         drawerItem.configure(img: viewModel.headerIcon, onTap: {[weak self] () in
                 self?.switchNetwork()
@@ -120,7 +128,7 @@ class WalletViewController: UIViewController {
         viewModel.loadSubaccounts()
         viewModel.loadBalances().then { self.viewModel.loadTransactions(max: 10) }.done { _ in }
 
-        [EventType.Transaction, .Block, .AssetsUpdated, .Network, .Settings, .Ticker, .TwoFactorReset].forEach {
+        EventType.allCases.forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
                                                                   object: nil,
                                                                   queue: .main,
@@ -189,8 +197,7 @@ class WalletViewController: UIViewController {
         // Sweep is only supported in watch-only for btc multisig wallets
         if viewModel.watchOnly {
             if let account = AccountsRepository.shared.current,
-               let network = account.gdkNetwork,
-               !network.electrum && !network.liquid {
+               !account.gdkNetwork.electrum && !account.gdkNetwork.liquid {
                    btnSend.setTitle( "id_sweep".localized, for: .normal )
                    btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
                } else {
@@ -225,6 +232,7 @@ class WalletViewController: UIViewController {
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
         btnWelcomeCreate.setStyle(.primary)
+        btnScanView.layer.cornerRadius = 10.0
     }
 
     // tableview refresh gesture
@@ -261,8 +269,10 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
             guard let model = viewModel.accountCellModels[safe: sIdx] else { return }
-            vc.viewModel = SendViewModel(account: model.account, inputType: viewModel.watchOnly ? .sweep : .transaction, transaction: nil)
-            vc.accounts = viewModel.subaccounts
+            vc.viewModel = SendViewModel(account: model.account,
+                                         inputType: viewModel.watchOnly ? .sweep : .transaction,
+                                         transaction: nil,
+                                         input: nil)
             vc.fixedWallet = false
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -356,6 +366,14 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func showExperimental() {
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTExperimentalViewController") as? LTExperimentalViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -367,6 +385,13 @@ class WalletViewController: UIViewController {
     @IBAction func btnWelcomeCreate(_ sender: Any) {
         AnalyticsManager.shared.onAccountFirst(account: AccountsRepository.shared.current)
         createAccount()
+    }
+
+    @IBAction func btnQr(_ sender: Any) {
+        if let vc = DialogScanViewController.vc {
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
     }
 }
 
@@ -426,7 +451,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                                onSelect: {[weak self] in
                     self?.accountDetail(model: self?.viewModel.accountCellModels[indexPath.row])
                 }, onCopy: nil,
-                               onShield: onShield
+                               onShield: onShield,
+                               onExperiental: {[weak self] in self?.showExperimental()}
                 )
                 cell.selectionStyle = .none
                 return cell
@@ -760,7 +786,7 @@ extension WalletViewController: DrawerNetworkSelectionDelegate {
         self.presentedViewController?.dismiss(animated: true, completion: {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-                self.present(vc, animated: true) {}
+                self.navigationController?.pushViewController(vc, animated: true)
             }
         })
     }
@@ -833,5 +859,57 @@ extension WalletViewController: SecuritySelectViewControllerDelegate {
 extension WalletViewController: AccountViewControllerDelegate {
     func didArchiveAccount() {
         sIdx = 0
+    }
+}
+
+extension WalletViewController: DialogScanViewControllerDelegate {
+
+    func didScan(value: String, index: Int?) {
+        var account = viewModel.accountCellModels[sIdx].account
+        let parser = Parser(selectedAccount: account, input: value, discoverable: true)
+        parser.parse()
+            .done { [self] _ in
+                switch parser.lightningType {
+                case .lnUrlAuth(let data):
+                    ltAuthViewController(requestData: data)
+                    return
+                case .lnUrlPay(_), .bolt11(_):
+                    if let lightningSubaccount = parser.lightningSubaccount {
+                        account = lightningSubaccount
+                    }
+                case .none:
+                    break
+                default:
+                    DropAlert().warning(message: parser.error ?? "Invalid QR code")
+                    return
+                }
+                // open send page
+                let tx = parser.createTx?.tx
+                let sendModel = SendViewModel(account: account,
+                                              inputType: tx?.txType ?? .transaction,
+                                              transaction: tx,
+                                              input: value)
+                self.sendViewController(model: sendModel)
+            }.catch { _ in DropAlert().warning(message: parser.error ?? "Invalid QR code") }
+    }
+
+    func ltAuthViewController(requestData: LnUrlAuthRequestData) {
+        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTAuthViewController") as? LTAuthViewController {
+            vc.requestData = requestData
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func sendViewController(model: SendViewModel) {
+        let storyboard = UIStoryboard(name: "Send", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
+            vc.viewModel = model
+            vc.fixedWallet = false
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func didStop() {
     }
 }

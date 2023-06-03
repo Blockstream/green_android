@@ -1,8 +1,11 @@
 import Foundation
 import UIKit
 import gdk
+import PromiseKit
 
 class ShowMnemonicsViewController: UIViewController {
+
+    @IBOutlet weak var lblHint: UILabel!
 
     @IBOutlet weak var collectionView: UICollectionView!
     var items: [String] = []
@@ -13,20 +16,37 @@ class ShowMnemonicsViewController: UIViewController {
             self.bip39Passphrase = credentials?.bip39Passphrase
         }
     }
+    var showBip85: Bool = false
+    var lightningMnemonic: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_recovery_phrase", comment: "")
-
+        lblHint.text = "id_the_recovery_phrase_can_be_used".localized
         if credentials != nil {
             self.collectionView.reloadData()
             return
         }
-        WalletManager.current?.prominentSession?.getCredentials(password: "").done {
-            self.credentials = $0
-            self.collectionView.reloadData()
-        }.catch { err in
-            print(err)
+
+        if showBip85 {
+            Guarantee()
+                .compactMap{ WalletManager.current?.prominentSession }
+                .then{ $0.getCredentials(password: "") }
+                .get { self.credentials = $0 }
+                .compactMap{ WalletManager.current?.lightningSession?.getLightningMnemonic(credentials: $0) }
+                .get {
+                    self.lightningMnemonic = $0
+                    self.items = self.lightningMnemonic?.split(separator: " ").map(String.init) ?? []
+                    self.collectionView.reloadData()
+                }
+                .catch { err in print(err)}
+        } else {
+            WalletManager.current?.prominentSession?.getCredentials(password: "").done {
+                self.credentials = $0
+                self.collectionView.reloadData()
+            }.catch { err in
+                print(err)
+            }
         }
     }
 }
@@ -50,8 +70,13 @@ extension ShowMnemonicsViewController: UICollectionViewDelegate, UICollectionVie
           if let fView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                          withReuseIdentifier: "FooterQrCell",
                                                                          for: indexPath) as? FooterQrCell {
-              fView.configure(mnemonic: self.items.joined(separator: " "), bip39Passphrase: self.bip39Passphrase)
-              return fView
+              if showBip85 {
+                  fView.configureBip85(mnemonic: self.items.joined(separator: " "))
+                  return fView
+              } else {
+                  fView.configure(mnemonic: self.items.joined(separator: " "), bip39Passphrase: self.bip39Passphrase)
+                  return fView
+              }
           }
           return UICollectionReusableView()
       default:

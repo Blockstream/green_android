@@ -49,6 +49,9 @@ enum ExternalUrls {
 
     static let jadeTroubleshoot = URL(string: "https://help.blockstream.com/hc/en-us/articles/4406185830041-Why-is-my-Blockstream-Jade-not-connecting-over-Bluetooth-")!
     static let blockstreamStore = URL(string: "https://store.blockstream.com/product/jade-hardware-wallet/")!
+    static let helpReceiveCapacity = "https://help.blockstream.com/hc/en-us/articles/18788499177753"
+    static let helpReceiveFees = "https://help.blockstream.com/hc/en-us/articles/18788578831897"
+
 }
 
 enum RiveModel {

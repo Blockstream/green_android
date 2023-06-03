@@ -144,6 +144,7 @@ final class CheckButton: UIButton {
 extension UIButton {
 
     func setStyle(_ type: ButtonStyle) {
+        titleLabel?.font = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
         layer.cornerRadius = 4.0
         switch type {
         case .primary:

@@ -80,6 +80,10 @@ extension AnalyticsManager {
                 s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
             case .bumpFee:
                 s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.bump.rawValue
+            case .bolt11:
+                break
+            case .lnurl:
+                break
             }
 
             s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType.rawValue
@@ -256,7 +260,7 @@ extension AnalyticsManager {
     }
 
     struct TransactionSegmentation {
-        let transactionType: InputType
+        let transactionType: TxType
         let addressInputType: AddressInputType
         let sendAll: Bool
     }

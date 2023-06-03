@@ -124,9 +124,10 @@ class AlertCardCell: UITableViewCell {
                     return error.localizedDescription
                 }
             }()
-            let networkName = getGdkNetwork(network).name
+            
+            let networkName = NetworkSecurityCase(rawValue: network)?.name()
             let errText = NSLocalizedString(errorString, comment: "")
-            lblHint.text = "Login failure in network \(networkName): \(errText)"
+            lblHint.text = "Login failure in network \(networkName ?? ""): \(errText)"
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true

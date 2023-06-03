@@ -7,6 +7,9 @@ class FooterQrCell: UICollectionReusableView {
     @IBOutlet weak var lblPassphraseValue: UILabel!
     @IBOutlet weak var btnLearn: UIButton!
     @IBOutlet weak var lblQrInfo: UILabel!
+    @IBOutlet weak var bip85View: UIView!
+    @IBOutlet weak var infoPanel: UIView!
+    @IBOutlet weak var lblBip85: UILabel!
 
     @IBOutlet weak var actionBtn: UIButton!
     var mnemonic: String?
@@ -28,6 +31,20 @@ class FooterQrCell: UICollectionReusableView {
             btnLearn.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLearn.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
         }
+        bip85View.isHidden = true
+    }
+
+    func configureBip85(mnemonic: String?) {
+        self.mnemonic = mnemonic
+
+        qrImg.image = QRImageGenerator.imageForTextWhite(text: mnemonic ?? "", frame: qrImg.frame)
+        qrImg.isHidden = true
+        passphraseView.isHidden = true
+        lblQrInfo.isHidden = true
+        bip85View.isHidden = false
+        infoPanel.cornerRadius = 5.0
+        infoPanel.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
+        lblBip85.text = "This is your BIP85 derived recovery phrase only for your Lightning account.\n\nWARNING: You can't fully restore your wallet with that."
     }
 
     @IBAction func actionBtn(_ sender: Any) {

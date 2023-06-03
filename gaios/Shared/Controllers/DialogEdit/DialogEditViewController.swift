@@ -4,7 +4,7 @@ import PromiseKit
 
 protocol DialogEditViewControllerDelegate: AnyObject {
     func didSave(_ note: String)
-    func didCancel()
+    func didClose()
 }
 
 enum NoteAction {
@@ -122,7 +122,7 @@ class DialogEditViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "id_my_notes".localized.lowercased().firstUppercased
+        lblTitle.text = "id_add_note".localized.lowercased().firstUppercased
         btnSave.setTitle("id_submit".localized, for: .normal)
     }
 
@@ -146,7 +146,7 @@ class DialogEditViewController: KeyboardViewController {
             self.dismiss(animated: false, completion: nil)
             switch action {
             case .cancel:
-                self.delegate?.didCancel()
+                self.delegate?.didClose()
             case .save:
                 self.delegate?.didSave(self.nameTextField.text ?? "")
             }

@@ -40,7 +40,7 @@ class HomeViewController: UIViewController {
         tableView.register(UINib(nibName: "WalletListEmptyCell", bundle: nil), forCellReuseIdentifier: "WalletListEmptyCell")
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
+        remoteAlert = RemoteAlertManager.shared.alerts(screen: .home, networks: []).first
 
         AnalyticsManager.shared.delegate = self
         AnalyticsManager.shared.recordView(.home)
@@ -117,7 +117,7 @@ class HomeViewController: UIViewController {
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            present(vc, animated: true) {}
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

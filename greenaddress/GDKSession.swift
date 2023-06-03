@@ -1,14 +1,11 @@
 import Foundation
 
 public class GDKSession: Session {
-    public var connected = false
-    public var logged = false
     public var ephemeral = false
     public var netParams = [String: Any]()
 
     public override func connect(netParams: [String: Any]) throws {
         try super.connect(netParams: netParams)
-        self.connected = true
         self.netParams = netParams
     }
 

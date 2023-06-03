@@ -8,3 +8,5 @@ fastlane/screenshots
 fastlane/test_output
 dev
 dist
+breez_sdk
+.env

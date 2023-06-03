@@ -15,8 +15,7 @@ class TransactionDetailCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         bgArea.layer.cornerRadius = 5.0
-        lblTxidTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblTxidTitle.textColor = .white.withAlphaComponent(0.4)
+        lblTxidTitle.setStyle(.sectionTitle)
         lblTxidHint.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
     }
 

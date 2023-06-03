@@ -38,7 +38,7 @@
                                             <constraint firstAttribute="height" constant="10" id="pqB-Pk-0Vs"/>
                                         </constraints>
                                     </imageView>
-                                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_lightning" translatesAutoresizingMaskIntoConstraints="NO" id="duY-W7-Pph">
+                                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_lightning_plain" translatesAutoresizingMaskIntoConstraints="NO" id="duY-W7-Pph">
                                         <rect key="frame" x="15" y="0.0" width="10" height="10"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="10" id="AhC-dn-BKX"/>
@@ -123,7 +123,7 @@
         <image name="ic_arrow_card" width="16" height="15.333333015441895"/>
         <image name="ic_key_ms" width="15" height="10"/>
         <image name="ic_key_ss" width="10" height="10"/>
-        <image name="ic_lightning" width="13" height="15.666666984558105"/>
+        <image name="ic_lightning_plain" width="11" height="15"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -8,7 +8,7 @@ class AccountAssetCell: UITableViewCell {
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var imgMS: UIImageView!
     @IBOutlet weak var imgSS: UIImageView!
-
+    @IBOutlet weak var imgLigh: UIImageView!
     @IBOutlet weak var lblAsset: UILabel!
     @IBOutlet weak var lblAmount: UILabel!
 
@@ -34,17 +34,14 @@ class AccountAssetCell: UITableViewCell {
     }
 
     func configure(model: AccountAssetCellModel) {
-        let name = model.asset.name ?? model.asset.assetId
-        self.lblAsset.text = name
-        self.lblAccount.text = model.account.localizedName
-        self.lblType.text = model.account.localizedType
+        self.lblAsset.text = model.asset.name ?? model.asset.assetId
+        self.lblAccount.text = model.account.localizedName.uppercased()
+        self.lblType.text = model.account.localizedType.uppercased()
 
-        imgView.image = WalletManager.current?.registry.image(for: model.asset.assetId)
-        let isSS = model.account.gdkNetwork.electrum ? true : false
-        imgSS.isHidden = !isSS
-        imgMS.isHidden = isSS
-        // isLiquid = account.gdkNetwork.liquid
-        // isTest = !account.gdkNetwork.mainnet
+        imgView.image = model.icon
+        imgSS.isHidden = !model.account.gdkNetwork.singlesig
+        imgMS.isHidden = !model.account.gdkNetwork.multisig
+        imgLigh.isHidden = !model.account.gdkNetwork.lightning
 
         let satoshi = model.balance.first?.value ?? 0
         if let balance = Balance.fromSatoshi(satoshi, assetId: model.asset.assetId)?.toValue() {

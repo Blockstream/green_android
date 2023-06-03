@@ -22,7 +22,7 @@ class WOLoginViewController: KeyboardViewController {
     private var progressToken: NSObjectProtocol?
     private let viewModel = WOViewModel()
     let menuButton = UIButton(type: .system)
-    var isSS: Bool { account.gdkNetwork?.electrum ?? false }
+    var isSS: Bool { account.gdkNetwork.electrum ?? false }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -178,8 +178,7 @@ class WOLoginViewController: KeyboardViewController {
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController")
-        present(vc, animated: true) {
-        }
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 }

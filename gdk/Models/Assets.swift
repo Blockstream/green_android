@@ -47,6 +47,7 @@ public struct AssetInfo: Codable {
     // Default asset id
     public static var btcId = "btc"
     public static var testId = "btc"
-    public static var lbtcId = getGdkNetwork("liquid").getFeeAsset()
-    public static var ltestId = getGdkNetwork("testnet-liquid").getFeeAsset()
+    public static var lbtcId = GdkNetworks.shared.liquidSS.getFeeAsset()
+    public static var ltestId = GdkNetworks.shared.testnetLiquidSS.getFeeAsset()
+    public static var baseIds = [btcId, testId, lbtcId, ltestId]
 }

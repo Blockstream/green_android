@@ -91,9 +91,7 @@ class DialogSendHWSummaryViewController: UIViewController {
         if let outputs = transaction.transactionOutputs, !outputs.isEmpty {
             var changeAddress = [String]()
             outputs.forEach { output in
-                let isChange = output["is_change"] as? Bool ?? false
-                let isFee = output["is_fee"] as? Bool ?? false
-                if isChange && !isFee, let address = output["address"] as? String {
+                if output.isChange, let address = output.address {
                     changeAddress.append(address)
                 }
             }

@@ -87,8 +87,8 @@ class SecuritySelectViewController: UIViewController {
     }
 
     func setContent() {
-        title = "Create New Account"
-        btnAdvanced.setTitle( visibilityState ? "Hide Advanced Options" : "See Advanced Options", for: .normal)
+        title = "id_create_new_account".localized
+        btnAdvanced.setTitle( visibilityState ? "id_hide_advanced_options".localized : "id_show_advanced_options".localized, for: .normal)
     }
 
     func setStyle() {
@@ -211,7 +211,8 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
             if policy == .TwoOfThreeWith2FA {
                 let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
                 if let vc = storyboard.instantiateViewController(withIdentifier: "AccountCreateRecoveryKeyViewController") as? AccountCreateRecoveryKeyViewController {
-                    if let network = viewModel.getNetwork(for: policy, liquid: viewModel.asset != "btc"),
+                    if let network = policy.getNetwork(testnet: WalletManager.current?.testnet ?? false,
+                                                       liquid: viewModel.asset != "btc"),
                        let session = viewModel.getSession(for: network) {
                         vc.session = session
                         vc.delegate = self
@@ -219,19 +220,33 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
                     }
                 }
             } else {
-                let bgq = DispatchQueue.global(qos: .background)
-                firstly { self.startLoader(message: ""); return Guarantee() }
-                    .then(on: bgq) { self.viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) }
-                    .ensure { self.stopLoader() }
-                    .done { wallet in
-                        DropAlert().success(message: "id_new_account_created".localized)
-                        self.navigationController?.popViewController(animated: true)
-                        self.delegate?.didCreatedWallet(wallet)
-                    }.catch { err in self.showError(err)}
+                if policy == .Lightning {
+                    let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+                    if let vc = ltFlow.instantiateViewController(withIdentifier: "LTExperimentalViewController") as? LTExperimentalViewController {
+                        vc.delegate = self
+                        vc.modalPresentationStyle = .overFullScreen
+                        self.present(vc, animated: false, completion: nil)
+                    }
+                } else {
+                    accountCreate(policy)
+                }
             }
         default:
             break
         }
+    }
+
+    func accountCreate(_ policy: PolicyCellType) {
+        let bgq = DispatchQueue.global(qos: .background)
+        let msg = "Creating \(policy.accountType.shortString) account...".localized
+        firstly { self.startLoader(message: msg); return Guarantee() }
+            .then(on: bgq) { self.viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) }
+            .ensure { self.stopLoader() }
+            .done { wallet in
+                DropAlert().success(message: "id_new_account_created".localized)
+                self.navigationController?.popViewController(animated: true)
+                self.delegate?.didCreatedWallet(wallet)
+            }.catch { err in self.showError(err)}
     }
 
     func showHWCheckDialog() {
@@ -316,7 +331,7 @@ extension SecuritySelectViewController: SecuritySelectViewControllerDelegate {
 extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
     func didPublicKey(_ key: String) {
         let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
-        let name = viewModel.uniqueName(cellModel.accountType, liquid: viewModel.asset != "btc")
+        let name = viewModel.uniqueName(cellModel.policy.accountType, liquid: viewModel.asset != "btc")
         let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
                                             recoveryMnemonic: nil,
@@ -326,7 +341,7 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
 
     func didNewRecoveryPhrase(_ mnemonic: String) {
         let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
-        let name = viewModel.uniqueName(cellModel.accountType, liquid: viewModel.asset != "btc")
+        let name = viewModel.uniqueName(cellModel.policy.accountType, liquid: viewModel.asset != "btc")
         let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
@@ -336,11 +351,17 @@ extension SecuritySelectViewController: AccountCreateRecoveryKeyDelegate {
 
     func didExistingRecoveryPhrase(_ mnemonic: String) {
         let cellModel = PolicyCellModel.from(policy: .TwoOfThreeWith2FA)
-        let name = viewModel.uniqueName(cellModel.accountType, liquid: viewModel.asset != "btc")
+        let name = viewModel.uniqueName(cellModel.policy.accountType, liquid: viewModel.asset != "btc")
         let params = CreateSubaccountParams(name: name,
                                             type: .twoOfThree,
                                             recoveryMnemonic: mnemonic,
                                             recoveryXpub: nil)
         createSubaccount(policy: .TwoOfThreeWith2FA, asset: viewModel.asset, params: params)
+    }
+}
+
+extension SecuritySelectViewController: LTExperimentalViewControllerDelegate {
+    func onDone() {
+        accountCreate(.Lightning)
     }
 }

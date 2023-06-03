@@ -34,8 +34,7 @@ class PolicyCell: UITableViewCell {
     func configure(model: PolicyCellModel) {
         imgSS.isHidden = !model.isSS
         imgMS.isHidden = model.isSS
-
-        lblType.text = model.type
+        lblType.text = model.type.uppercased()
         lblName.text = model.name
         lblHint.text = model.hint
         if model.isLight == true {

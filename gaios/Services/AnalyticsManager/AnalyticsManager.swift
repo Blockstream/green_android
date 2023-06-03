@@ -228,29 +228,21 @@ class AnalyticsManager {
     }
 
     private func getHost() -> String {
-        let networkSettings = getUserNetworkSettings()
-        if let tor = networkSettings["tor"] as? Bool, tor {
-            return hostOnion
-        }
-        return host
+        GdkSettings.read()?.tor ?? false ? hostOnion : host
     }
 
     private func getSessionConfiguration(session: Session?) -> URLSessionConfiguration {
         let configuration = URLSessionConfiguration.ephemeral
-        let networkSettings = getUserNetworkSettings()
-        let useProxy = networkSettings["proxy"] as? Bool ?? false
-        let useTor = networkSettings["tor"] as? Bool ?? false
+        let settings = GdkSettings.read()
         // set explicit proxy
-        if useProxy {
-            let socks5Hostname = networkSettings["socks5_hostname"] as? String
-            let socks5Port = networkSettings["socks5_port"] as? String
+        if settings?.proxy ?? false {
             configuration.connectionProxyDictionary = [
-                kCFStreamPropertySOCKSProxyHost: socks5Hostname ?? "",
-                kCFStreamPropertySOCKSProxyPort: socks5Port ?? ""
+                kCFStreamPropertySOCKSProxyHost: settings?.socks5Hostname ?? "",
+                kCFStreamPropertySOCKSProxyPort: settings?.socks5Port ?? ""
             ]
         }
         // set implicit tor proxy
-        if useTor {
+        if settings?.tor ?? false {
             let proxySettings = try? session?.getProxySettings()
             let proxy = proxySettings?["proxy"] as? String ?? ""
             let parser = proxy.split(separator: ":").map { $0.replacingOccurrences(of: "/", with: "") }

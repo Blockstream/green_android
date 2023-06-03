@@ -18,15 +18,14 @@ class TransactionAmountCell: UITableViewCell {
     var copyRecipient: ((String) -> Void)?
 
     private var btc: String {
-        return WalletManager.current?.account.gdkNetwork?.getFeeAsset() ?? ""
+        return WalletManager.current?.account.gdkNetwork.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.layer.cornerRadius = 5.0
 
-        lblTitle.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
-        lblTitle.textColor = .white.withAlphaComponent(0.4)
+        lblTitle.setStyle(.sectionTitle)
         lblRecipient.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblAmount.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
         lblAsset.font = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
@@ -46,7 +45,7 @@ class TransactionAmountCell: UITableViewCell {
     }
 
     // swiftlint:disable function_parameter_count
-    func configure(tx: Transaction, id: String, value: Int64, hideBalance: Bool,
+    func configure(tx: Transaction, isLightning: Bool, id: String, value: Int64, hideBalance: Bool,
                    copyAmount: ((String) -> Void)?, copyRecipient: ((String) -> Void)?) {
 
         self.copyAmount = copyAmount
@@ -56,17 +55,23 @@ class TransactionAmountCell: UITableViewCell {
         let color: UIColor = value > 0 ? .customMatrixGreen() : .white
         copyAmountIcon.image = copyAmountIcon.image?.maskWithColor(color: color)
         lblTitle.text = NSLocalizedString(value > 0 ? "id_received_on" : "id_sent_to", comment: "")
-        lblRecipient.text = address(tx)
+        let address = address(tx)
+        lblRecipient.text = address
+        if address == nil { lblTitle.text = NSLocalizedString(value > 0 ? "id_received" : "id_sent", comment: "")}
         lblRecipient.isHidden = tx.isLiquid
         lblFiat.textColor = color
         copyRecipientIcon.isHidden = tx.isLiquid
-        recipientView.isHidden = tx.isLiquid
+        recipientView.isHidden = tx.isLiquid || isLightning
         lblAmount.textColor = color
         lblFiat.isHidden = id != tx.feeAsset
         lblAsset.textColor = color
 
-        let registry = WalletManager.current?.registry
-        icon.image =  registry?.image(for: id)
+        if tx.subaccountItem?.gdkNetwork.lightning ?? false {
+            icon.image = UIImage(named: "ic_lightning_btc")
+        } else {
+            let registry = WalletManager.current?.registry
+            icon.image =  registry?.image(for: id)
+        }
 
         if let balance = Balance.fromSatoshi(value, assetId: id) {
             let (amount, denom) = balance.toValue()

@@ -59,7 +59,7 @@ class StartOnBoardViewController: UIViewController {
         case .watchOnly:
             OnBoardManager.shared.flowType = .watchonly
         }
-        let testnetAvailable = AppSettings.read()?.testnet ?? false
+        let testnetAvailable = AppSettings.shared.testnet
         if testnetAvailable {
             selectNetwork()
         } else {

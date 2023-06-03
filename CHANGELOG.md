@@ -5,8 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Lightning support
+
 ### Changed
 - Update gdk to 0.0.63
+- UI improvements for lightning account
 
 ## [4.0.4] - 2023-05-04
 

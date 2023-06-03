@@ -1,25 +1,109 @@
 import Foundation
+import BreezSDK
+import lightning
 
 public enum TransactionError: Error {
     case invalid(localizedDescription: String)
 }
 
-public struct Addressee: Codable {
+public enum TxType: Codable {
+    case transaction
+    case sweep
+    case bumpFee
+    case bolt11
+    case lnurl
+}
 
+public struct Addressee: Codable {
     enum CodingKeys: String, CodingKey {
         case address
         case satoshi
         case assetId = "asset_id"
+        case hasLockedAmount = "has_locked_amount"
+        case minAmount = "min_amount"
+        case maxAmount = "max_amount"
+        case domain
+        case metadata
+        case type
+    }
+    public var address: String
+    public var satoshi: Int64?
+    public var assetId: String?
+    public let hasLockedAmount: Bool?
+    public let minAmount: UInt64?
+    public let maxAmount: UInt64?
+    public let domain: String?
+    public let metadata: [[String]]?
+    public let type: TxType?
+
+    public static func from(address: String, satoshi: Int64?, assetId: String?) -> Addressee {
+        return Addressee(address: address,
+                         satoshi: satoshi,
+                         assetId: assetId,
+                         hasLockedAmount: nil,
+                         minAmount: nil,
+                         maxAmount: nil,
+                         domain: nil,
+                         metadata: nil,
+                         type: .transaction)
     }
 
-    public let address: String
-    public let satoshi: Int64
-    public let assetId: String?
+    public static func fromLnInvoice(_ invoice: LnInvoice, fallbackAmount: UInt64) -> Addressee {
+        return Addressee(address: invoice.bolt11,
+                         satoshi: -Int64(invoice.amountSatoshi ?? fallbackAmount),
+                         assetId: nil,
+                         hasLockedAmount: invoice.amountMsat != nil,
+                         minAmount: nil,
+                         maxAmount: nil,
+                         domain: nil,
+                         metadata: nil,
+                         type: .bolt11)
+    }
 
-    public init(address: String, satoshi: Int64, assetId: String? = nil) {
-        self.address = address
-        self.satoshi = satoshi
-        self.assetId = assetId
+    public static func fromRequestData(_ requestData: LnUrlPayRequestData, input: String, satoshi: UInt64) -> Addressee {
+        return Addressee(
+            address: input,
+            satoshi: -Int64((requestData.sendableSatoshi(userSatoshi: satoshi) ?? 0)),
+            assetId: nil,
+            hasLockedAmount: requestData.isAmountLocked,
+            minAmount: requestData.minSendableSatoshi,
+            maxAmount: requestData.maxSendableSatoshi,
+            domain: requestData.domain,
+            metadata: requestData.metadata,
+            type: .lnurl)
+    }
+}
+
+public struct TransactionOutput: Codable {
+    enum CodingKeys: String, CodingKey {
+        case address
+        case domain
+        case assetId = "asset_id"
+        case isChange = "is_change"
+        case satoshi
+    }
+    public let address: String?
+    public let domain: String?
+    public let assetId: String?
+    public let isChange: Bool
+    public let satoshi: Int64
+    public static func fromLnInvoice(_ invoice: LnInvoice, fallbackAmount: Int64?) -> TransactionOutput {
+        return TransactionOutput(
+            address: invoice.bolt11,
+            domain: nil,
+            assetId: nil,
+            isChange: false,
+            satoshi: -Int64((invoice.amountSatoshi ?? UInt64(fallbackAmount ?? 0)))
+        )
+    }
+    public static func fromLnUrlPay(_ requestData: LnUrlPayRequestData, input: String, satoshi: Int64?) -> TransactionOutput {
+        return TransactionOutput(
+            address: input,
+            domain: requestData.domain,
+            assetId: nil,
+            isChange: false,
+            satoshi: -Int64(requestData.sendableSatoshi(userSatoshi: UInt64(satoshi ?? 0)) ?? 0)
+        )
     }
 }
 
@@ -44,29 +128,8 @@ public struct Transaction: Comparable {
     }
 
     public var addressees: [Addressee] {
-        get {
-            let out: [[String: Any]] = get("addressees") ?? []
-            return out.map { value in
-                let address = value["address"] as? String
-                let satoshi = value["satoshi"] as? Int64
-                let assetId = value["asset_id"] as? String
-                return Addressee(address: address!, satoshi: satoshi ?? 0, assetId: assetId)
-            }
-        }
-        set {
-            let addressees = newValue.map { addr -> [String: Any] in
-                var out = [String: Any]()
-                out["address"] = addr.address
-                out["satoshi"] = addr.satoshi
-                out["asset_id"] = addr.assetId
-                return out
-            }
-            details["addressees"] = addressees
-        }
-    }
-
-    public var addresseesList: [String] {
-        get { get("addressees") ?? [] }
+        get { (get("addressees") ?? []).compactMap { Addressee.from($0) as? Addressee }}
+        set { details["addressees"] = newValue.map { $0.toDict() }}
     }
 
     public var addresseesReadOnly: Bool {
@@ -79,14 +142,22 @@ public struct Transaction: Comparable {
 
     public var blockHeight: UInt32 {
         get { return get("block_height") ?? 0 }
+        set { details["block_height"] = newValue }
+    }
+
+    public var privateKey: String? {
+        get { return get("private_key") }
+        set { details["private_key"] = newValue }
     }
 
     public var canRBF: Bool {
         get { return get("can_rbf") ?? false }
+        set { details["can_rbf"] = newValue }
     }
 
-    public var createdAtTs: UInt64 {
+    public var createdAtTs: Int64 {
         get { return get("created_at_ts") ?? 0 }
+        set { details["created_at_ts"] = newValue }
     }
 
     public var error: String {
@@ -96,6 +167,7 @@ public struct Transaction: Comparable {
 
     public var fee: UInt64 {
         get { return get("fee") ?? 0 }
+        set { details["fee"] = newValue }
     }
 
     public var feeRate: UInt64 {
@@ -105,6 +177,7 @@ public struct Transaction: Comparable {
 
     public var hash: String {
         get { return get("txhash") ?? String() }
+        set { details["txhash"] = newValue }
     }
 
     public var isSweep: Bool {
@@ -121,9 +194,8 @@ public struct Transaction: Comparable {
     }
 
     public var amounts: [String: Int64] {
-        get {
-            return get("satoshi") as [String: Int64]? ?? [:]
-        }
+        get { get("satoshi") as [String: Int64]? ?? [:] }
+        set { details["satoshi"] = newValue }
     }
 
     public var sendAll: Bool {
@@ -133,29 +205,84 @@ public struct Transaction: Comparable {
 
     public var size: UInt64 {
         get { return get("transaction_vsize") ?? 0 }
+        set { details["transaction_vsize"] = newValue }
     }
 
     public var type: TransactionType {
         get { TransactionType(rawValue: get("type") ?? "") ?? .outgoing }
+        set { details["type"] = newValue.rawValue }
+    }
+
+    public var previousTransaction: [String: Any]? {
+        get { get("previous_transaction") }
+        set { details["previous_transaction"] = newValue }
     }
 
     // tx outputs in create transaction
-    public var transactionOutputs: [[String: Any]]? {
-        get { return get("transaction_outputs") }
+    public var transactionOutputs: [TransactionOutput]? {
+        get {
+            let params: [[String: Any]]? = get("transaction_outputs")
+            return params?.compactMap { TransactionOutput.from($0) as? TransactionOutput }
+        }
+        set { details["transaction_outputs"] = newValue?.map { $0.toDict() } }
+    }
+
+    // tx utxos
+    public var utxos: [String: Any]? {
+        get { return get("utxos") }
+        set { details["utxos"] = newValue }
     }
 
     // tx outputs in get transaction
     public var outputs: [[String: Any]]? {
         get { return get("outputs") }
+        set { details["outputs"] = newValue }
     }
 
     // tx inputs in get transaction
     public var inputs: [[String: Any]]? {
         get { return get("inputs") }
+        set { details["inputs"] = newValue }
     }
 
     public var spvVerified: String? {
         get { return get("spv_verified") }
+        set { details["spv_verified"] = newValue }
+    }
+
+    public var message: String? {
+        get { return get("message") }
+        set { details["message"] = newValue }
+    }
+
+    public var plaintext: [String: String]? {
+        get { return get("plaintext") }
+        set { details["plaintext"] = newValue }
+    }
+
+    public var url: [String: String]? {
+        get { return get("url") }
+        set { details["url"] = newValue }
+    }
+
+    public var isInProgressSwap: Bool? {
+        get { return get("isInProgressSwap") }
+        set { details["isInProgressSwap"] = newValue }
+    }
+
+    public var isRefundableSwap: Bool? {
+        get { return get("isRefundableSwap") }
+        set { details["isRefundableSwap"] = newValue }
+    }
+
+    public var txType: TxType {
+        if privateKey != nil {
+            return .sweep
+        } else if previousTransaction != nil {
+            return .bumpFee
+        } else {
+            return addressees.first?.type ?? .transaction
+        }
     }
 
     public var isBlinded: Bool {

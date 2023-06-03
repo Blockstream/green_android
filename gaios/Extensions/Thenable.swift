@@ -30,15 +30,14 @@ extension Thenable {
 }
 
 extension Promise {
-    static func chain<T, S>(_ datas: [T], _ concurrency: Int, _ iteratorHandle: @escaping (T) -> Promise<S>?) -> Promise<[S]> {
+    static func chain<T, S>(_ datas: [T], _ concurrency: Int, on: DispatchQueue? = conf.Q.map, _ iteratorHandle: @escaping (T) -> Promise<S>?) -> Guarantee<[Result<S>]> {
         var generator = datas.makeIterator()
         let iterator = AnyIterator<Promise<S>> {
             guard let next = generator.next() else {
                 return nil
             }
-            return iteratorHandle(next)
+            return Promise<S>() { seal in (on ?? .global()).async { iteratorHandle(next)?.pipe(to: seal.resolve) } }
         }
-        
-        return when(fulfilled: iterator, concurrently: concurrency)
+        return when(resolved: iterator, concurrently: concurrency)
     }
 }

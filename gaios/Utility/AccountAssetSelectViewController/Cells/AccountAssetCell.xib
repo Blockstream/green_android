@@ -29,7 +29,7 @@
                                 </constraints>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZhN-fs-UK9">
-                                <rect key="frame" x="37" y="50.666666666666664" width="15" height="10"/>
+                                <rect key="frame" x="22" y="50.666666666666664" width="30" height="10"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_key_ms" translatesAutoresizingMaskIntoConstraints="NO" id="zJc-06-ULe">
                                         <rect key="frame" x="0.0" y="0.0" width="15" height="10"/>
@@ -38,8 +38,15 @@
                                             <constraint firstAttribute="height" constant="10" id="okE-8j-Bgn"/>
                                         </constraints>
                                     </imageView>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_lightning" translatesAutoresizingMaskIntoConstraints="NO" id="UYz-h6-qKr" userLabel="ImgLigh">
+                                        <rect key="frame" x="15" y="0.0" width="15" height="10"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="15" id="DP0-Sy-bUW"/>
+                                            <constraint firstAttribute="height" constant="10" id="XHI-Zg-WMo"/>
+                                        </constraints>
+                                    </imageView>
                                     <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_key_ss" translatesAutoresizingMaskIntoConstraints="NO" id="JEx-rm-j2f">
-                                        <rect key="frame" x="15" y="0.0" width="10" height="10"/>
+                                        <rect key="frame" x="30" y="0.0" width="10" height="10"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="10" id="qWL-O0-4nL"/>
                                             <constraint firstAttribute="width" constant="10" id="t0p-qB-Yzc"/>
@@ -120,6 +127,7 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="bg" destination="635-L7-ihQ" id="cYg-ni-Phn"/>
+                <outlet property="imgLigh" destination="UYz-h6-qKr" id="CWR-KE-4dq"/>
                 <outlet property="imgMS" destination="zJc-06-ULe" id="AQC-U5-jEA"/>
                 <outlet property="imgSS" destination="JEx-rm-j2f" id="Ib7-4d-rVW"/>
                 <outlet property="imgView" destination="vYM-M0-7w9" id="8m2-K6-ZGP"/>
@@ -135,6 +143,7 @@
     <resources>
         <image name="ic_key_ms" width="15" height="10"/>
         <image name="ic_key_ss" width="10" height="10"/>
+        <image name="ic_lightning" width="13" height="15.666666984558105"/>
         <image name="ntw_btc" width="60" height="61"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

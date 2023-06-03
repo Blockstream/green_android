@@ -83,8 +83,7 @@ extension AnalyticsManager {
     }
 
     func appSettings() -> String {
-        
-        let settings = AppSettings.read()
+        let settings = GdkSettings.read()
         var settingsProps: [String] = []
         if settings?.proxy ?? false == true {
             settingsProps.append(AnalyticsManager.strProxy)
@@ -95,7 +94,7 @@ extension AnalyticsManager {
         if settings?.spvEnabled ?? false == true {
             settingsProps.append(AnalyticsManager.strSpv)
         }
-        if settings?.testnet ?? false {
+        if AppSettings.shared.testnet {
             settingsProps.append(AnalyticsManager.strTestnet)
         }
         if settings?.personalNodeEnabled ?? false == true {

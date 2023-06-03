@@ -1,0 +1,7 @@
+.DS_Store
+libbreez_sdk_bindings.a
+breez_sdkFFI.modulemap
+breez_sdkFFI.h
+breez_sdk.swift
+breez_sdk_*
+.DS_Store

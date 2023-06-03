@@ -17,7 +17,7 @@ class SetPinViewModel {
     func getXpubHashId(session: SessionManager) -> Promise<String> {
         return Guarantee()
             .then { session.connect() }
-            .compactMap { session.walletIdentifier(session.gdkNetwork.network, credentials: self.credentials) }
+            .compactMap { session.walletIdentifier(credentials: self.credentials) }
             .compactMap { $0.xpubHashId }
     }
 
@@ -38,15 +38,15 @@ class SetPinViewModel {
                 }
                 // Avoid to restore an existing wallets
                 if let prevAccount = AccountsRepository.shared.find(xpubHashId: xpub), self.restoredAccount == nil &&
-                   prevAccount.gdkNetwork == account.gdkNetwork && !prevAccount.isHW && !prevAccount.isWatchonly {
+                    prevAccount.gdkNetwork.mainnet == account.gdkNetwork.mainnet && !prevAccount.isHW && !prevAccount.isWatchonly {
                    throw LoginError.walletsJustRestored()
                 }
             }.then { wm.login(credentials: self.credentials) }
             .map { _ in
-                if let multisig = wm.activeNetworks.first(where: { !$0.singleSig }) {
-                    wm.account.network = multisig.chain
-                    wm.account.isSingleSig = multisig.singleSig
-                    wm.prominentNetwork = multisig
+                if let network = wm.activeNetworks.first(where: { $0.multisig }) {
+                    wm.account.network = network.chain
+                    wm.account.isSingleSig = network.singlesig
+                    wm.prominentNetwork = network
                 }
                 wm.account.attempts = 0
                 AnalyticsManager.shared.restoreWallet(account: account)
@@ -61,7 +61,7 @@ class SetPinViewModel {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         return Guarantee()
             .then { [self] in wm.create(credentials) }
-            .then { [self] in wm.login(credentials: credentials) }
+            //.then { [self] in wm.login(credentials: credentials) }
             .then { wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!) }
     }
 

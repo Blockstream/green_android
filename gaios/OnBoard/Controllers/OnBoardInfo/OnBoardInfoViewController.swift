@@ -30,6 +30,7 @@ class OnBoardInfoViewController: UIViewController {
     static weak var delegate: AccountCreateRecoveryKeyDelegate?
 
     var isSettingDisplay: Bool = false
+    var showBip85: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -124,8 +125,10 @@ class OnBoardInfoViewController: UIViewController {
             self.authenticated {
                 DispatchQueue.main.async { [weak self] in
                     let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-                    let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController")
-                    self?.navigationController?.pushViewController(vc, animated: true)
+                    if let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController") as? ShowMnemonicsViewController {
+                        vc.showBip85 = self?.showBip85 ?? false
+                        self?.navigationController?.pushViewController(vc, animated: true)
+                    }
                 }
             }
         } else {

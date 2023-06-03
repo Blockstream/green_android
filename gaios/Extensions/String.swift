@@ -9,12 +9,12 @@ extension String {
 
     static func random(length: Int) -> String {
         var partial: [Character] = []
-
+        
         for _ in 0..<length {
             let rand = Int(arc4random_uniform(UInt32(chars.count)))
             partial.append(chars[rand])
         }
-
+        
         return String(partial)
     }
 
@@ -39,7 +39,7 @@ extension String {
         }
         return self
     }
-    func unlocaleFormattedString(_ digits: Int) -> String {
+    func unlocaleFormattedString(_ digits: Int = 8) -> String {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         numberFormatter.roundingMode = .down
@@ -54,6 +54,23 @@ extension String {
             }
         }
         return self
+    }
+}
+
+extension DataProtocol {
+    var data: Data { .init(self) }
+    var hex: String { map { .init(format: "%02x", $0) }.joined() }
+}
+
+extension StringProtocol {
+    var hex: [UInt8] {
+        var start = self.startIndex
+        return (0..<count/2)
+            .compactMap { _ in
+                let end = index(after: start)
+                defer { start = index(after: end) }
+                return UInt8(self[start...end], radix: 16)
+        }
     }
 }
 

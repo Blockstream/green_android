@@ -15,12 +15,17 @@ public enum LoginError: Error, Equatable {
 
 class SessionManager {
 
-    var notificationManager: NotificationManager?
+    //var notificationManager: NotificationManager?
     var twoFactorConfig: TwoFactorConfig?
     var settings: Settings?
     var session: GDKSession?
     var gdkNetwork: GdkNetwork
     var registry: AssetsManager?
+    var blockHeight: UInt32 = 0
+
+    var connected = false
+    var logged = false
+    var walletHashId: String?
 
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
@@ -30,14 +35,6 @@ class SessionManager {
         get { twoFactorConfig?.twofactorReset.isResetActive }
     }
 
-    var connected: Bool {
-        self.session?.connected ?? false
-    }
-
-    var logged: Bool {
-        self.session?.logged ?? false
-    }
-
     init(_ gdkNetwork: GdkNetwork) {
         self.gdkNetwork = gdkNetwork
         session = GDKSession()
@@ -45,12 +42,12 @@ class SessionManager {
     }
 
     deinit {
-        session?.logged = false
-        session?.connected = false
+        logged = false
+        connected = false
     }
 
     public func connect() -> Promise<Void> {
-        if session?.connected ?? false {
+        if connected {
             return Promise().asVoid()
         }
         return Guarantee()
@@ -60,8 +57,8 @@ class SessionManager {
     }
 
     public func disconnect() {
-        session?.logged = false
-        session?.connected = false
+        logged = false
+        connected = false
         SessionManager.reconnectionQueue.async {
             self.session = GDKSession()
         }
@@ -69,13 +66,9 @@ class SessionManager {
 
     private func connect(network: String, params: [String: Any]? = nil) throws {
         do {
-            if notificationManager == nil {
-                self.notificationManager = NotificationManager(session: self)
-            }
-            if let notificationManager = notificationManager {
-                session?.setNotificationHandler(notificationCompletionHandler: notificationManager.newNotification)
-            }
-            try session?.connect(netParams: networkParams(network).toDict() ?? [:])
+            session?.setNotificationHandler(notificationCompletionHandler: newNotification)
+            try session?.connect(netParams: GdkSettings.read()?.toNetworkParams(network).toDict() ?? [:])
+            connected = true
         } catch {
             switch error {
             case GaError.GenericError(let txt), GaError.SessionLost(let txt), GaError.TimeoutError(let txt):
@@ -86,65 +79,40 @@ class SessionManager {
         }
     }
 
-    func networkParams(_ network: String) -> NetworkSettings {
-        let appSettings = AppSettings.read()
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
-        let proxyURI = String(format: "socks5://%@:%@/", appSettings?.socks5Hostname ?? "", appSettings?.socks5Port ?? "")
-        let gdkNetwork = getGdkNetwork(network)
-        
-        let electrumUrl: String? = {
-            if let srv = appSettings?.btcElectrumSrv, gdkNetwork.mainnet && !gdkNetwork.liquid && !srv.isEmpty {
-                return srv
-            } else if let srv = appSettings?.testnetElectrumSrv, !gdkNetwork.mainnet && !gdkNetwork.liquid && !srv.isEmpty {
-                return srv
-            } else if let srv = appSettings?.liquidElectrumSrv, gdkNetwork.mainnet && gdkNetwork.liquid && !srv.isEmpty {
-                return srv
-            } else if let srv = appSettings?.liquidTestnetElectrumSrv, !gdkNetwork.mainnet && gdkNetwork.liquid && !srv.isEmpty {
-                return srv
-            } else {
-                return nil
-            }
-        }()
-        let networkSettings = NetworkSettings(
-            name: network,
-            useTor: appSettings?.tor ?? false,
-            proxy: (appSettings?.proxy ?? false) ? proxyURI : nil,
-            userAgent: String(format: "green_ios_%@", version),
-            spvEnabled: (appSettings?.spvEnabled ?? false) && !gdkNetwork.liquid,
-            electrumUrl: (appSettings?.personalNodeEnabled ?? false) ? electrumUrl : nil)
-        return networkSettings
-    }
-
-    func walletIdentifier(_ network: String, credentials: Credentials) -> WalletIdentifier? {
+    func walletIdentifier(credentials: Credentials) -> WalletIdentifier? {
         let res = try? self.session?.getWalletIdentifier(
-            net_params: networkParams(network).toDict() ?? [:],
+            net_params: GdkSettings.read()?.toNetworkParams(gdkNetwork.network).toDict() ?? [:],
             details: credentials.toDict() ?? [:])
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
-    func walletIdentifier(_ network: String, masterXpub: String) -> WalletIdentifier? {
+    func walletIdentifier(masterXpub: String) -> WalletIdentifier? {
         let details = ["master_xpub": masterXpub]
         let res = try? self.session?.getWalletIdentifier(
-            net_params: networkParams(network).toDict() ?? [:],
+            net_params: GdkSettings.read()?.toNetworkParams(gdkNetwork.network).toDict() ?? [:],
             details: details)
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
 
     func existDatadir(masterXpub: String) -> Bool  {
-        if let hash = walletIdentifier(gdkNetwork.network, masterXpub: masterXpub) {
+        if let hash = walletIdentifier(masterXpub: masterXpub) {
             return existDatadir(walletHashId: hash.walletHashId)
         }
         return false
     }
 
     func existDatadir(credentials: Credentials) -> Bool  {
-        if let hash = walletIdentifier(gdkNetwork.network, credentials: credentials) {
+        if let hash = walletIdentifier(credentials: credentials) {
             return existDatadir(walletHashId: hash.walletHashId)
         }
         return false
     }
 
     func existDatadir(walletHashId: String) -> Bool  {
+        // true for multisig
+        if gdkNetwork.multisig {
+            return true
+        }
         if let path = GdkInit.defaults().datadir {
             let dir = "\(path)/state/\(walletHashId)"
             return FileManager.default.fileExists(atPath: dir)
@@ -153,13 +121,13 @@ class SessionManager {
     }
 
     func removeDatadir(masterXpub: String) {
-        if let hash = walletIdentifier(gdkNetwork.network, masterXpub: masterXpub) {
+        if let hash = walletIdentifier(masterXpub: masterXpub) {
             removeDatadir(walletHashId: hash.walletHashId)
         }
     }
 
     func removeDatadir(credentials: Credentials) {
-        if let hash = walletIdentifier(gdkNetwork.network, credentials: credentials) {
+        if let hash = walletIdentifier(credentials: credentials) {
             removeDatadir(walletHashId: hash.walletHashId)
         }
     }
@@ -169,6 +137,10 @@ class SessionManager {
             let dir = "\(path)/state/\(walletHashId)"
             try? FileManager.default.removeItem(atPath: dir)
         }
+    }
+
+    func enabled() -> Bool {
+        return true
     }
 
     func transactions(subaccount: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
@@ -207,6 +179,15 @@ class SessionManager {
                 wallets.forEach { $0.network = self.gdkNetwork.network }
                 return wallets.sorted()
             }
+    }
+
+    func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) -> Promise<ValidateAddresseesResult> {
+        let asset = assetId == AssetInfo.btcId ? nil : assetId
+        let addressee = Addressee.from(address: input, satoshi: satoshi, assetId: asset)
+        let addressees = ValidateAddresseesParams(addressees: [addressee])
+        return Guarantee()
+            .then(on: bgq) { self.wrapper(fun: self.session?.validate, params: addressees) }
+            .compactMap(on: bgq) { $0 }
     }
 
     func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
@@ -275,7 +256,8 @@ class SessionManager {
     }
 
     private func onLogin(_ data: LoginUserResult) -> Promise<Void> {
-        self.session?.logged = true
+        logged = true
+        walletHashId = data.walletHashId
         if !self.gdkNetwork.electrum {
             return self.loadTwoFactorConfig().asVoid().recover {_ in }
         }
@@ -553,5 +535,69 @@ class SessionManager {
 
     func httpRequest(params: [String: Any]) -> [String: Any]? {
         return try? session?.httpRequest(params: params)
+    }
+}
+extension SessionManager {
+    public func newNotification(notification: [String: Any]?) {
+        guard let notificationEvent = notification?["event"] as? String,
+                let event = EventType(rawValue: notificationEvent),
+                let data = notification?[event.rawValue] as? [String: Any] else {
+            return
+        }
+        #if DEBUG
+        print("notification \(event): \(data)")
+        #endif
+        switch event {
+        case .Block:
+            guard let height = data["block_height"] as? UInt32 else { break }
+            blockHeight = height
+            post(event: .Block, userInfo: data)
+        case .Transaction:
+            post(event: .Transaction, userInfo: data)
+            let txEvent = TransactionEvent.from(data) as? TransactionEvent
+            if txEvent?.type == "incoming" {
+                txEvent?.subAccounts.forEach { pointer in
+                    post(event: .AddressChanged, userInfo: ["pointer": UInt32(pointer)])
+                }
+                DispatchQueue.main.async {
+                    DropAlert().success(message: NSLocalizedString("id_new_transaction", comment: ""))
+                }
+            }
+        case .TwoFactorReset:
+            loadTwoFactorConfig()
+                .done { _ in self.post(event: .TwoFactorReset, userInfo: data) }
+                .catch { print($0) }
+        case .Settings:
+            settings = Settings.from(data)
+            post(event: .Settings, userInfo: data)
+        case .Network:
+            guard let connection = Connection.from(data) as? Connection else { return }
+            // avoid handling notification for unlogged session
+            guard connected && logged else { return }
+            // notify disconnected network state
+            if connection.currentState == "disconnected" {
+                self.post(event: EventType.Network, userInfo: data)
+                return
+            }
+            // Restore connection through hidden login
+            reconnect().done { _ in
+                self.post(event: EventType.Network, userInfo: data)
+            }.catch { err in
+                print("Error on reconnected with hw: \(err.localizedDescription)")
+                //let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                //appDelegate?.logout(with: false)
+            }
+        case .Tor:
+            post(event: .Tor, userInfo: data)
+        case .Ticker:
+            post(event: .Ticker, userInfo: data)
+        default:
+            break
+        }
+    }
+
+    func post(event: EventType, object: Any? = nil, userInfo: [String: Any] = [:]) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue),
+                                        object: object, userInfo: userInfo)
     }
 }

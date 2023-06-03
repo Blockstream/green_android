@@ -12,4 +12,17 @@ class AccountAssetCellModel {
         self.asset = asset
         self.balance = balance
     }
+
+    var icon: UIImage? {
+        if account.gdkNetwork.lightning {
+            return UIImage(named: "ic_lightning_btc")
+        } else {
+            let registry = WalletManager.current?.registry
+            return registry?.image(for: asset.assetId)
+        }
+    }
+
+    var ticker: String {
+        asset.ticker ?? ""
+    }
 }

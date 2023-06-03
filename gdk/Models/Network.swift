@@ -39,34 +39,99 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         "electrum" == serverType
     }
 
+
+    public var lightning: Bool {
+        "breez" == serverType
+    }
+
+    public var singlesig: Bool {
+        electrum
+    }
+
     public var multisig: Bool {
-        !electrum
+        !electrum && !lightning
     }
 
     public var chain: String {
         network.replacingOccurrences(of: "electrum-", with: "")
+            .replacingOccurrences(of: "lightning-", with: "")
     }
 
     public static func < (lhs: GdkNetwork, rhs: GdkNetwork) -> Bool {
-        if lhs.liquid && !rhs.liquid { return false }
-        if !lhs.liquid && rhs.liquid { return true }
-        return lhs.electrum
+        let index: ((_ network: GdkNetwork) -> Int) = {
+            $0.liquid ? 2 : $0.lightning ? 1 : 0
+        }
+        return index(lhs) < index(rhs)
     }
 }
 
-var cachedNetworks: [String: Any]?
-public func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {
-    if data ?? cachedNetworks == nil {
-        cachedNetworks = try? getNetworks()
+
+public struct GdkNetworks {
+    public static var shared = GdkNetworks()
+
+    public lazy var bitcoinSS = getGdkNetwork(NetworkSecurityCase.bitcoinSS.network)
+    public lazy var bitcoinMS = getGdkNetwork(NetworkSecurityCase.bitcoinMS.network)
+    public lazy var testnetSS = getGdkNetwork(NetworkSecurityCase.testnetSS.network)
+    public lazy var testnetMS = getGdkNetwork(NetworkSecurityCase.testnetMS.network)
+    public lazy var liquidSS = getGdkNetwork(NetworkSecurityCase.liquidSS.network)
+    public lazy var liquidMS = getGdkNetwork(NetworkSecurityCase.liquidMS.network)
+    public lazy var testnetLiquidSS = getGdkNetwork(NetworkSecurityCase.testnetLiquidSS.network)
+    public lazy var testnetLiquidMS = getGdkNetwork(NetworkSecurityCase.testnetLiquidMS.network)
+
+    public lazy var lightning = GdkNetwork(name: NetworkSecurityCase.lightning.name(),
+                                           network: NetworkSecurityCase.lightning.network,
+                                           liquid: false,
+                                           mainnet: true,
+                                           development: false,
+                                           txExplorerUrl: nil,
+                                           serverType: "breez")
+    public lazy var testnetLightning = GdkNetwork(name: NetworkSecurityCase.testnetLightning.name(),
+                                                  network: NetworkSecurityCase.testnetLightning.network,
+                                                  liquid: false,
+                                                  mainnet: false,
+                                                  development: false,
+                                                  txExplorerUrl: nil,
+                                                  serverType: "breez")
+
+    public mutating func get(networkType: NetworkSecurityCase) -> GdkNetwork {
+        switch networkType {
+        case .bitcoinSS: return bitcoinSS
+        case .bitcoinMS: return bitcoinMS
+        case .testnetSS: return testnetSS
+        case .testnetMS: return testnetMS
+        case .liquidSS: return liquidSS
+        case .liquidMS: return liquidMS
+        case .testnetLiquidSS: return testnetLiquidSS
+        case .testnetLiquidMS: return testnetLiquidMS
+        case .lightning: return lightning
+        case .testnetLightning: return testnetLightning
+        }
     }
-    guard let res = data ?? cachedNetworks,
-          let net = res[network] as? [String: Any],
-          let jsonData = try? JSONSerialization.data(withJSONObject: net),
-          var network = try? JSONDecoder().decode(GdkNetwork.self, from: jsonData)
-    else {
-        fatalError("invalid network")
+
+    public func get(network: String) -> GdkNetwork {
+        if network == NetworkSecurityCase.lightning.network {
+            return GdkNetworks.shared.lightning
+        } else if network == NetworkSecurityCase.testnetLightning.network {
+            return GdkNetworks.shared.testnetLightning
+        } else {
+            return GdkNetworks.shared.getGdkNetwork(network)
+        }
     }
-    network.icon = network.network.lowercased() == "mainnet" ? "ntw_btc" : "ntw_testnet"
-    network.icon = network.liquid ? "ntw_liquid" : network.icon
-    return network
+
+    private static var cachedNetworks: [String: Any]?
+    private func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {
+        if data ?? GdkNetworks.cachedNetworks == nil {
+            GdkNetworks.cachedNetworks = try? getNetworks()
+        }
+        guard let res = data ?? GdkNetworks.cachedNetworks,
+              let net = res[network] as? [String: Any],
+              let jsonData = try? JSONSerialization.data(withJSONObject: net),
+              var network = try? JSONDecoder().decode(GdkNetwork.self, from: jsonData)
+        else {
+            fatalError("invalid network")
+        }
+        network.icon = network.network.lowercased() == "mainnet" ? "ntw_btc" : "ntw_testnet"
+        network.icon = network.liquid ? "ntw_liquid" : network.icon
+        return network
+    }
 }

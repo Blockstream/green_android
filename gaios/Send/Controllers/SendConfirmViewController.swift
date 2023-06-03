@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import PromiseKit
+import BreezSDK
 import gdk
 import greenaddress
 import hw
@@ -22,7 +23,7 @@ class SendConfirmViewController: KeyboardViewController {
 
     private var connected = true
     private var updateToken: NSObjectProtocol?
-    var inputType: InputType = .transaction // for analytics
+    var inputType: TxType = .transaction // for analytics
     var addressInputType: AnalyticsManager.AddressInputType = .paste // for analytics
 
     override func viewDidLoad() {
@@ -90,6 +91,8 @@ class SendConfirmViewController: KeyboardViewController {
                     vc.account = viewModel.account
                     present(vc, animated: false, completion: nil)
                 }
+            } else {
+                self.startAnimating()
             }
             return Guarantee()
         }.then(on: bgq) {
@@ -102,7 +105,6 @@ class SendConfirmViewController: KeyboardViewController {
         }.done { _ in
             self.executeOnDone()
         }.catch { [weak self] error in
-
             if account?.isHW ?? false {
                 self?.dismissHWSummary()
             }
@@ -110,6 +112,8 @@ class SendConfirmViewController: KeyboardViewController {
             self?.sliderView.reset()
             let prettyError: String = {
                 switch error {
+                case BreezSDK.SdkError.Error(let message):
+                    return message.localized
                 case HWError.Abort(let desc),
                     HWError.Declined(let desc):
                     return desc
@@ -127,11 +131,29 @@ class SendConfirmViewController: KeyboardViewController {
                     return error.localizedDescription
                 }
             }()
-            self?.showError(NSLocalizedString(prettyError, comment: ""))
+            switch error {
+            case BreezSDK.SdkError.Error:
+                self?.showBreezError( prettyError )
+            default:
+                self?.showError(NSLocalizedString(prettyError, comment: ""))
+            }
             AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current, error: error, prettyError: prettyError)
         }
     }
 
+    func showBreezError(_ message: String) {
+
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("Copy error", comment: ""), style: .default) { _ in
+                UIPasteboard.general.string = self.viewModel.compose(message)
+                DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
+            })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
     func executeOnDone() {
         let isSendAll = viewModel.tx.sendAll
         let withMemo = !viewModel.tx.memo.isEmpty
@@ -187,7 +209,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
         case SendConfirmSection.addressee.rawValue:
             return viewModel.tx.addressees.count
         case SendConfirmSection.fee.rawValue:
-            return 1
+            return viewModel.account.type == .lightning ? 0 : 1
         case SendConfirmSection.change.rawValue:
             return 0
         case SendConfirmSection.note.rawValue:
@@ -277,7 +299,7 @@ extension SendConfirmViewController: DialogEditViewControllerDelegate {
         reloadSections([SendConfirmSection.note], animated: false)
     }
 
-    func didCancel() { }
+    func didClose() { }
 }
 
 extension SendConfirmViewController: NoteCellDelegate {

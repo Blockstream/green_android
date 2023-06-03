@@ -87,12 +87,12 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     @IBAction func btnAppSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            present(vc, animated: true) {}
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
     func onJadeConnected(jadeHasPin: Bool) {
-        let testnetAvailable = AppSettings.read()?.testnet ?? false
+        let testnetAvailable = AppSettings.shared.testnet
         if !jadeHasPin {
             if testnetAvailable {
                 self.selectNetwork()

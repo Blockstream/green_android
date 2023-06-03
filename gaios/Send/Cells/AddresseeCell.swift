@@ -33,11 +33,11 @@ class AddresseeCell: UITableViewCell {
         lblDenomination.text = cellModel.ticker
         lblFiat.isHidden = !cellModel.showFiat
         lblFiat.text = cellModel.fiat
-        icon.image = WalletManager.current?.registry.image(for: cellModel.assetId)
+        icon.image = cellModel.icon
     }
 
     func setStyle() {
-        bg.cornerRadius = 8.0
+        bg.cornerRadius = 5.0
     }
 
     func setContent() {

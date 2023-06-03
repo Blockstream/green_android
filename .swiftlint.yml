@@ -4,6 +4,7 @@ excluded:
    - gdk-iphone
    - tools
    - Pods
+   - breez_sdk
    - greenaddress/GreenAddress.swift
    - gaios/GreenApplication.swift
    - gaios/Wallet/Views/SlidingButton.swift

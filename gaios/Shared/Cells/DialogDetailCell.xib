@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="96" id="3uX-z7-GC6" customClass="DialogDetailCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="96"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="3uX-z7-GC6" id="f53-VV-6ko">
+                <rect key="frame" x="0.0" y="0.0" width="393" height="96"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="HfG-Nv-tAC">
+                        <rect key="frame" x="25" y="15" width="343" height="66"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="lbl_title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VC4-YV-XJ8">
+                                <rect key="frame" x="0.0" y="0.0" width="169" height="21.666666666666668"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="lbl_hint" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ve-Ft-NfK">
+                                <rect key="frame" x="179" y="0.0" width="164" height="21.666666666666668"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                    </stackView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rmo-fa-Gjh">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="1"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.063219882929999999" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="fFs-BZ-c4y"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstItem="rmo-fa-Gjh" firstAttribute="top" secondItem="f53-VV-6ko" secondAttribute="top" id="6W2-nJ-oE0"/>
+                    <constraint firstItem="HfG-Nv-tAC" firstAttribute="top" secondItem="f53-VV-6ko" secondAttribute="top" constant="15" id="9Eg-vx-tgu"/>
+                    <constraint firstAttribute="trailing" secondItem="rmo-fa-Gjh" secondAttribute="trailing" id="BCQ-yk-zFi"/>
+                    <constraint firstItem="HfG-Nv-tAC" firstAttribute="leading" secondItem="f53-VV-6ko" secondAttribute="leading" constant="25" id="GCu-1e-E3r"/>
+                    <constraint firstAttribute="trailing" secondItem="HfG-Nv-tAC" secondAttribute="trailing" constant="25" id="GHe-3Z-kJ3"/>
+                    <constraint firstItem="rmo-fa-Gjh" firstAttribute="leading" secondItem="f53-VV-6ko" secondAttribute="leading" id="WGr-6h-lrS"/>
+                    <constraint firstAttribute="bottom" secondItem="HfG-Nv-tAC" secondAttribute="bottom" constant="15" id="v10-Ld-PB2"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="lblHint" destination="2ve-Ft-NfK" id="LN1-AB-sS8"/>
+                <outlet property="lblTitle" destination="VC4-YV-XJ8" id="2R1-XG-TRK"/>
+            </connections>
+            <point key="canvasLocation" x="-459" y="-108"/>
+        </tableViewCell>
+    </objects>
+</document>

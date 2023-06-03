@@ -35,7 +35,8 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
     public var hasTxs: Bool = false
     public var satoshi: [String: Int64]?
 
-    public var gdkNetwork: GdkNetwork { getGdkNetwork(network!)}
+    public var networkType: NetworkSecurityCase { NetworkSecurityCase(rawValue: network!)! }
+    public var gdkNetwork: GdkNetwork { networkType.gdkNetwork }
 
     public var btc: Int64? {
         let feeAsset = gdkNetwork.getFeeAsset()
@@ -89,5 +90,23 @@ public class WalletItem: Codable, Equatable, Comparable, Hashable {
         hasher.combine(network)
         hasher.combine(pointer)
         hasher.combine(type)
+    }
+
+    public init(name: String, pointer: UInt32, receivingId: String, type: AccountType, recoveryChainCode: String? = nil, recoveryPubKey: String? = nil, bip44Discovered: Bool? = nil, recoveryXpub: String? = nil, hidden: Bool, network: String? = nil, coreDescriptors: [String]? = nil, extendedPubkey: String? = nil, userPath: [Int]? = nil, hasTxs: Bool = false, satoshi: [String : Int64]? = nil) {
+        self.name = name
+        self.pointer = pointer
+        self.receivingId = receivingId
+        self.type = type
+        self.recoveryChainCode = recoveryChainCode
+        self.recoveryPubKey = recoveryPubKey
+        self.bip44Discovered = bip44Discovered
+        self.recoveryXpub = recoveryXpub
+        self.hidden = hidden
+        self.network = network
+        self.coreDescriptors = coreDescriptors
+        self.extendedPubkey = extendedPubkey
+        self.userPath = userPath
+        self.hasTxs = hasTxs
+        self.satoshi = satoshi
     }
 }

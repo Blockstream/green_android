@@ -35,7 +35,8 @@ struct Account: Codable, Equatable {
     var xpubHashId: String?
     var hidden: Bool? = false
     var uuid: UUID?
-    var gdkNetwork: GdkNetwork? { get { getGdkNetwork(networkName) }}
+    var networkType: NetworkSecurityCase { NetworkSecurityCase(rawValue: networkName)!  }
+    var gdkNetwork: GdkNetwork { networkType.gdkNetwork }
     var isEphemeral: Bool = false
     var askEphemeral: Bool?
     var ephemeralId: Int?
@@ -150,6 +151,10 @@ struct Account: Codable, Equatable {
 
     func removePinKeychainData() {
         _ = AuthenticationTypeHandler.removeAuth(method: .AuthKeyPIN, forNetwork: keychain)
+    }
+
+    func removeLightningCredentials() {
+        LightningRepository.shared.remove(for: keychain)
     }
     
     func addBiometrics(session: SessionManager, credentials: Credentials) -> Promise<Void> {

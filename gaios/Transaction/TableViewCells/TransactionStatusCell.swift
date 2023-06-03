@@ -28,8 +28,7 @@ class TransactionStatusCell: UITableViewCell {
         super.awakeFromNib()
 
         bg.layer.cornerRadius = 5.0
-        lblStatusTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblStatusTitle.textColor = .white.withAlphaComponent(0.4)
+        lblStatusTitle.setStyle(.sectionTitle)
     }
 
     override func prepareForReuse() {
@@ -40,7 +39,7 @@ class TransactionStatusCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(transaction: Transaction, isLiquid: Bool, blockHeight: UInt32) {
+    func configure(transaction: Transaction, blockHeight: UInt32) {
 
         lblStatusTitle.text = "id_transaction_status".localized
         lblDate.text = transaction.date(dateStyle: .long, timeStyle: .short)
@@ -50,18 +49,19 @@ class TransactionStatusCell: UITableViewCell {
 
         var step: Int = 0
         var steps: Int = 0
-        steps = isLiquid ? 2 : 6
+        steps = transaction.isLiquid ? 2 : 6
+        let isLightning = transaction.subaccountItem?.gdkNetwork.lightning ?? false
 
         var status: TransactionStatus = .unconfirmed
-        if transaction.blockHeight == 0 {
+        if !isLightning && transaction.blockHeight == 0 {
             lblStatus.text = NSLocalizedString("id_unconfirmed", comment: "")
             lblStatus.textColor = UIColor.errorRed()
-        } else if isLiquid && blockHeight < transaction.blockHeight + 1 {
+        } else if !isLightning && transaction.isLiquid && blockHeight < transaction.blockHeight + 1 {
             step = Int(blockHeight) - Int(transaction.blockHeight) + 1
             status = .confirming
             lblStatus.textColor = UIColor.customTitaniumLight()
             lblStatus.text = NSLocalizedString("id_pending_confirmation", comment: "")
-        } else if !isLiquid && blockHeight < transaction.blockHeight + 5 {
+        } else if !isLightning && !transaction.isLiquid && blockHeight < transaction.blockHeight + 5 {
             if blockHeight >= transaction.blockHeight {
                 status = .confirming
                 step = Int(blockHeight) - Int(transaction.blockHeight) + 1
@@ -112,8 +112,8 @@ class TransactionStatusCell: UITableViewCell {
         if tx.blockHeight == 0 {
             return false
         }
-        if let account = subaccount(tx: tx), let notificationManager = account.session?.notificationManager,
-           Int(notificationManager.blockHeight) - Int(tx.blockHeight) + 1 < 6 {
+        if let account = subaccount(tx: tx), let session = account.session,
+           Int(session.blockHeight) - Int(tx.blockHeight) + 1 < 6 {
             return false
         }
         return true

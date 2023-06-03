@@ -132,7 +132,7 @@ class WODetailsViewController: KeyboardViewController {
     @IBAction func btnImport(_ sender: Any) {
         let testnet = OnBoardManager.shared.chainType == .testnet
         let network: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        login(for: network.gdkNetwork!)
+        login(for: network.gdkNetwork)
     }
 
     func login(for network: GdkNetwork) {

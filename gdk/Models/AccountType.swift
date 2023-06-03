@@ -9,6 +9,19 @@ public enum AccountType: String, CaseIterable, Codable, Comparable {
     case segwitWrapped = "p2sh-p2wpkh" // former legacy
     case segWit = "p2wpkh"
     case taproot = "p2tr"
+    case lightning = "lightning"
+    
+    public var multisig: Bool {
+        [AccountType.standard, AccountType.amp, AccountType.twoOfThree].contains(self)
+    }
+
+    public var singlesig: Bool {
+        [.legacy, AccountType.segwitWrapped, AccountType.segWit, AccountType.taproot].contains(self)
+    }
+
+    public var lightning: Bool {
+        AccountType.lightning == self
+    }
 
     public var string: String {
         get {
@@ -27,6 +40,8 @@ public enum AccountType: String, CaseIterable, Codable, Comparable {
                 return "SegWit"
             case .taproot:
                 return "Taproot"
+            case .lightning:
+                return "Instant"
             }
         }
     }
@@ -48,6 +63,8 @@ public enum AccountType: String, CaseIterable, Codable, Comparable {
                 return "Native SegWit"
             case .taproot:
                 return "Taproot"
+            case .lightning:
+                return "Lightning"
             }
         }
     }

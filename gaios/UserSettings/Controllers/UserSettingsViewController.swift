@@ -240,25 +240,20 @@ extension UserSettingsViewController {
 
     func showBitcoinDenomination() {
         guard let session = session, let settings = session.settings else { return }
+
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let selected = settings.denomination
-        let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
-        list.forEach { (item: DenominationType) in
-            let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
-            let symbol = item.string(for: network.gdkNetwork!)
-            alert.addAction(UIAlertAction(title: symbol, style: item == selected  ? .destructive : .default) { _ in
-                settings.denomination = item
-                self.changeSettings(settings)
-                    .done {
-                        self.viewModel.load()
-                        self.delegate?.refresh()
-                    }.catch { error in
-                        self.showAlert(error)
-                    }
-            })
+        let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
+
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDenominationViewController") as? DialogDenominationViewController {
+            vc.viewModel = DialogDenominationViewModel(denomination: selected,
+                                                       denominations: list,
+                                                       network: network)
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        self.present(alert, animated: true, completion: nil)
     }
 
     func showAutoLogout() {
@@ -352,9 +347,7 @@ extension UserSettingsViewController {
             self.navigationController?.popViewController(animated: true)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_reset", comment: ""), style: .destructive) { _ in
-            removeBioKeychainData()
-            try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.account.keychain)
-            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.account.keychain)
+            self.account.removeBioKeychainData()
             self.navigationController?.popViewController(animated: true)
         })
         DispatchQueue.main.async {
@@ -390,5 +383,19 @@ extension UserSettingsViewController: DialogWatchOnlySetUpViewControllerDelegate
         default:
             break
         }
+    }
+}
+
+extension UserSettingsViewController: DialogDenominationViewControllerDelagate {
+    func didSelect(denomination: DenominationType) {
+        guard let session = session, let settings = session.settings else { return }
+        settings.denomination = denomination
+        changeSettings(settings)
+            .done {
+                self.viewModel.load()
+                self.delegate?.refresh()
+            }.catch { error in
+                self.showAlert(error)
+            }
     }
 }

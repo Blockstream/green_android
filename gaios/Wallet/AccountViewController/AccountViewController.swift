@@ -1,11 +1,14 @@
 import UIKit
 import PromiseKit
+import BreezSDK
+import lightning
 import gdk
 
 enum AccountSection: Int, CaseIterable {
     case account
     case adding
     case disclose
+    case inbound
     case assets
     case transaction
     case footer
@@ -26,7 +29,9 @@ class AccountViewController: UIViewController {
     @IBOutlet weak var actionsBg: UIView!
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var btnReceive: UIButton!
-
+    @IBOutlet weak var btnScanView: UIView!
+    @IBOutlet weak var divider: UIView!
+    
     private var headerH: CGFloat = 54.0
     private var footerH: CGFloat = 54.0
     private var cardH: CGFloat = 64.0
@@ -42,13 +47,15 @@ class AccountViewController: UIViewController {
         return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
     }
 
+    var showScan = true
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ["AccountCell", "WalletAssetCell", "TransactionCell", "AddingCell", "DiscloseCell"].forEach {
-            tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
-        }
+        btnScanView.isHidden = !showScan
+        divider.isHidden = showScan
 
+        register()
         setContent()
         setStyle()
         tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
@@ -64,7 +71,7 @@ class AccountViewController: UIViewController {
         super.viewWillAppear(animated)
         reloadSections([AccountSection.assets, AccountSection.adding, AccountSection.disclose], animated: false)
 
-        [EventType.Transaction, .Block, .AssetsUpdated, .Network].forEach {
+        EventType.allCases.forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
                                                                   object: nil,
                                                                   queue: .main,
@@ -105,6 +112,13 @@ class AccountViewController: UIViewController {
         viewModel.getTransactions(restart: true)
     }
 
+    func register() {
+        ["AccountCell", "WalletAssetCell", "TransactionCell",
+         "AddingCell", "DiscloseCell", "LTInboundCell"].forEach {
+            tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
+        }
+    }
+
     func setContent() {
 
         navigationItem.rightBarButtonItems = []
@@ -131,8 +145,7 @@ class AccountViewController: UIViewController {
         // Sweep is only supported in watch-only for btc multisig wallets
         if viewModel.watchOnly {
             if let account = AccountsRepository.shared.current,
-               let network = account.gdkNetwork,
-               !network.electrum && !network.liquid {
+               !account.gdkNetwork.electrum && !account.gdkNetwork.liquid {
                    btnSend.setTitle( "id_sweep".localized, for: .normal )
                    btnSend.setImage(UIImage(named: "qr_sweep"), for: .normal)
                } else {
@@ -150,6 +163,7 @@ class AccountViewController: UIViewController {
 
     func setStyle() {
         actionsBg.layer.cornerRadius = 5.0
+        btnScanView.layer.cornerRadius = 10.0
     }
 
     // tableview refresh gesture
@@ -163,7 +177,7 @@ class AccountViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Account Preferences", type: .accountPrefs, items: AccountPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: "Account Preferences", type: .accountPrefs, items: AccountPrefs.getItems(isLightning: viewModel.isLightning))
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -185,7 +199,8 @@ class AccountViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
             vc.viewModel = SendViewModel(account: viewModel.account,
                                          inputType: viewModel.watchOnly ? .sweep : .transaction,
-                                         transaction: nil)
+                                         transaction: nil,
+                                         input: nil)
             vc.fixedWallet = true
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -222,6 +237,17 @@ class AccountViewController: UIViewController {
             .catch { err in self.showError(err) }
     }
 
+    func removeSubaccount() {
+        firstly { self.startLoader(); return Guarantee() }
+            .then { self.viewModel.removeSubaccount() }
+            .ensure { self.stopLoader() }
+            .done {
+                self.delegate?.didArchiveAccount()
+                self.navigationController?.popViewController(animated: true)
+            }
+            .catch { err in self.showError(err) }
+    }
+
     func archive() {
         firstly { self.startLoader(message: "Archiving"); return Guarantee() }
             .then { self.viewModel.archiveSubaccount() }
@@ -250,10 +276,42 @@ class AccountViewController: UIViewController {
         }
     }
 
+    func navigateToBip85Mnemonic() {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController") as? OnBoardInfoViewController {
+            vc.isSettingDisplay = true
+            vc.showBip85 = true
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func presentNodeInfo() {
+        guard let lightningSession = viewModel.account.lightningSession else { return }
+
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNodeViewController") as? DialogNodeViewController {
+            vc.viewModel = DialogNodeViewModel(lightningSession: lightningSession)
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func showExperimental() {
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTExperimentalViewController") as? LTExperimentalViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+
     @objc func ampHelp() {
         if let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-") {
             UIApplication.shared.open(url)
         }
+    }
+
+    func onInboundInfo() {
+        SafeNavigationManager.shared.navigate( ExternalUrls.helpReceiveCapacity )
     }
 
     @IBAction func btnSend(_ sender: Any) {
@@ -264,6 +322,12 @@ class AccountViewController: UIViewController {
         receiveScreen()
     }
 
+    @IBAction func btnQr(_ sender: Any) {
+        if let vc = DialogScanViewController.vc {
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
 }
 
 extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
@@ -281,6 +345,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             return viewModel.addingCellModels.count
         case .disclose:
             return viewModel.discloseCellModels.count
+        case .inbound:
+            return viewModel.inboundCellModels.count
         case .assets:
             return viewModel.showAssets ? viewModel.assetCellModels.count : 0
         case .transaction:
@@ -308,7 +374,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
                                isLast: true,
                                onSelect: nil,
                                onCopy: onCopy,
-                               onShield: nil)
+                               onShield: nil,
+                               onExperiental: {[weak self] in self?.showExperimental()})
                 cell.selectionStyle = .none
                 return cell
             }
@@ -321,6 +388,14 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .disclose:
             if let cell = tableView.dequeueReusableCell(withIdentifier: DiscloseCell.identifier, for: indexPath) as? DiscloseCell {
                 cell.configure(model: viewModel.discloseCellModels[indexPath.row])
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .inbound:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: LTInboundCell.identifier, for: indexPath) as? LTInboundCell {
+                cell.configure(model: viewModel.inboundCellModels[indexPath.row], onInboundInfo: { [weak self] in
+                    self?.onInboundInfo()
+                })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -412,6 +487,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             twoFactorAuthenticatorDialog()
         case .disclose:
             ampHelp()
+        case .inbound:
+            break
         case .assets:
             let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDetailViewController") as? DialogDetailViewController {
@@ -549,15 +626,26 @@ extension AccountViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .accountPrefs:
-            switch AccountPrefs(rawValue: index) {
-            case .rename:
-                renameDialog()
-            case .archive:
-                archive()
-            //case .enhanceSecurity:
-            //    twoFactorAuthenticatorDialog()
-            case .none:
-                break
+            if viewModel.account.networkType != .lightning {
+                switch index {
+                case 0:
+                    renameDialog()
+                case 1:
+                    archive()
+                default:
+                    break
+                }
+            } else {
+                switch index {
+                case 0:
+                    navigateToBip85Mnemonic()
+                case 1:
+                    presentNodeInfo()
+                case 2:
+                    removeSubaccount()
+                default:
+                    break
+                }
             }
         case .enable2faPrefs:
             switch Enable2faPrefs(rawValue: index) {
@@ -613,5 +701,58 @@ extension AccountViewController: AccountArchivedViewControllerDelegate {
             viewControllers.append(vc)
             nav.setViewControllers(viewControllers, animated: true)
         }
+    }
+}
+
+extension AccountViewController: DialogScanViewControllerDelegate {
+
+    func didScan(value: String, index: Int?) {
+        var account = viewModel.account!
+        let parser = Parser(selectedAccount: account, input: value, discoverable: true)
+        parser.parse()
+            .done { [self] _ in
+                // open lightning auth
+                switch parser.lightningType {
+                case .lnUrlAuth(let data):
+                    ltAuthViewController(requestData: data)
+                    return
+                case .lnUrlPay(_), .bolt11(_):
+                    if let lightningSubaccount = parser.lightningSubaccount {
+                        account = lightningSubaccount
+                    }
+                case .none:
+                    break
+                default:
+                    DropAlert().warning(message: parser.error ?? "Invalid QR code")
+                    return
+                }
+                // open send page
+                let tx = parser.createTx?.tx
+                let sendModel = SendViewModel(account: account,
+                                              inputType: tx?.txType ?? .transaction,
+                                              transaction: tx,
+                                              input: value)
+                self.sendViewController(model: sendModel)
+            }.catch { _ in DropAlert().warning(message: parser.error ?? "Invalid QR code") }
+    }
+
+    func ltAuthViewController(requestData: LnUrlAuthRequestData) {
+        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTAuthViewController") as? LTAuthViewController {
+            vc.requestData = requestData
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func sendViewController(model: SendViewModel) {
+        let storyboard = UIStoryboard(name: "Send", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
+            vc.viewModel = model
+            vc.fixedWallet = false
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func didStop() {
     }
 }

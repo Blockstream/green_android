@@ -2,6 +2,7 @@ import UIKit
 import PromiseKit
 import RxBluetoothKit
 import gdk
+import lightning
 
 func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate
@@ -52,6 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Initialize gdk
         GdkInit.defaults().run()
+        LightningBridge.configure()
 
         // Checking for migrations
         MigratorManager.shared.migrate()

@@ -11,7 +11,7 @@ struct RecipientCellModel {
     var txError = ""
     var isSendAll: Bool = false
     var account: WalletItem
-    var inputType: InputType = .transaction
+    var inputType: TxType = .transaction
 
     var isBtc: Bool {
         [AssetInfo.btcId, AssetInfo.lbtcId, AssetInfo.testId, AssetInfo.ltestId].contains(assetId ?? "")

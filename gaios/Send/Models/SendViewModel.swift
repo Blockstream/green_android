@@ -1,181 +1,227 @@
 import Foundation
 import PromiseKit
+import BreezSDK
+import UIKit
 import gdk
 
 class SendViewModel {
 
     var wm: WalletManager? { WalletManager.current }
     var recipientCellModels = [RecipientCellModel]()
-    var account: WalletItem
     var transaction: Transaction?
-    var transactionPriority: TransactionPriority = .High
-    var inputType: InputType
-    var customFee: UInt64 = 1000
+    var inputType: TxType
     var remoteAlert: RemoteAlert?
+
+    var account: WalletItem {
+        didSet {
+            transaction = nil
+            fee = nil
+            feeRate = nil
+            inputError = nil
+        }
+    }
+    var assetId: String?
+    var input: String? = nil
+    var inputError: String? = nil
+    var sendAll: Bool = false
+    var satoshi: Int64? = nil
+    var fee: UInt64? = nil
+    var feeRate: UInt64? = nil
+    var isFiat: Bool = false
+    var editable: Bool = true
+
+    var transactionPriority: TransactionPriority = .Medium {
+        didSet {
+            if transactionPriority != .Custom {
+                feeRate = feeEstimates[transactionPriority.rawValue]
+            }
+        }
+    }
+    
+    var amount: String? {
+        set {
+            if let newValue = newValue {
+                if isFiat {
+                    satoshi = Balance.fromFiat(newValue)?.satoshi
+                } else {
+                    satoshi = Balance.from(newValue, assetId: assetId ?? feeAsset)?.satoshi
+                }
+            } else {
+                satoshi = nil
+            }
+        }
+        get {
+            if let satoshi = satoshi {
+                if isFiat {
+                    return Balance.fromSatoshi(satoshi, assetId: assetId ?? feeAsset)?.toFiat().0
+                } else {
+                    return Balance.fromSatoshi(satoshi, assetId: assetId ?? feeAsset)?.toValue().0
+                }
+            } else {
+                return nil
+            }
+        }
+    }
+    var defaultMinFee: UInt64 { session.gdkNetwork.liquid ? 100 : 1000 }
+    var feeBtcEstimates = [UInt64?]()
+    var feeLiquidEstimates = [UInt64?]()
+    var feeEstimates: [UInt64?] {
+        session.gdkNetwork.liquid ? feeLiquidEstimates : feeBtcEstimates
+    }
+
+    func loadFees() {
+        feeLiquidEstimates = [UInt64?](repeating: 100, count: 25)
+        feeBtcEstimates = [UInt64?](repeating: 1000, count: 25)
+        Guarantee()
+            .compactMap { self.wm?.activeSessions.values.filter { !$0.gdkNetwork.liquid && !$0.gdkNetwork.lightning }.first }
+            .compactMap(on: bgq) { $0.getFeeEstimates() }
+            .done { self.feeBtcEstimates = $0 }
+            .catch { _ in }
+    }
 
     private var session: SessionManager { account.session! }
     private var isLiquid: Bool { session.gdkNetwork.liquid }
     private var isBtc: Bool { !session.gdkNetwork.liquid }
+    private var isLightning: Bool { !session.gdkNetwork.lightning }
     private var btc: String { session.gdkNetwork.getFeeAsset() }
+    private var feeAsset: String { session.gdkNetwork.getFeeAsset() }
     private var validateTask: ValidateTask?
+    private let bgq = DispatchQueue.global(qos: .userInitiated)
 
-    init(account: WalletItem, inputType: InputType, transaction: Transaction?) {
+    init(account: WalletItem, inputType: TxType, transaction: Transaction?, input: String?) {
         self.account = account
-        self.inputType = inputType
         self.transaction = transaction
-        self.transactionPriority = inputType == .bumpFee ? .High : defaultTransactionPriority()
+        self.assetId = account.gdkNetwork.getFeeAsset()
+        self.inputType = inputType
+        self.transactionPriority = inputType == .bumpFee ? .Custom : .Medium
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .send, networks: wm?.activeNetworks ?? []).first
+        self.input = input
+        self.loadFees()
     }
 
-    var recipient: RecipientCellModel? {
-        recipientCellModels.first
-    }
-
-    var isSendAll: Bool {
-        recipient?.isSendAll ?? false
-    }
-
-    func addressee() -> [String: Any] {
-        // handling only 1 recipient for the moment
-        var addressee: [String: Any] = [:]
-        addressee["address"] = recipient?.address ?? ""
-        addressee["satoshi"] = recipient?.satoshi() ?? 0
-        if let assetId = recipient?.assetId, assetId != AssetInfo.btcId {
-            addressee["asset_id"] = recipient?.assetId
-        }
-        return addressee
-    }
-
-    func privateKey() -> String {
-        // handling only 1 recipient for the moment
-        return recipient?.address ?? ""
-    }
-
-    func createTx() -> Promise<Transaction?> {
-        var details: [String: Any] = [:]
-        if let tx = transaction { details = tx.details }
-        transaction = nil
-        var estimates = feeEstimates()
-        estimates[3] = customFee
-        let feeEstimate = estimates[selectedFee()] ?? customFee
-        let feeRate = feeEstimate
+    func validateTransaction() -> Promise<Transaction?> {
+        var tx = Transaction(self.transaction?.details ?? [:], subaccount: account.hashValue)
         switch inputType {
         case .transaction:
-            if recipient?.isBipAddress() ?? false { details = [:] }
-            details["addressees"] = [addressee()]
-            details["fee_rate"] = feeRate
-            details["subaccount"] = account.pointer
-            details["send_all"] = isSendAll
+            let asset = assetId == "btc" ? nil : assetId
+            tx.addressees = [Addressee.from(address: input ?? "", satoshi: satoshi ?? 0, assetId: asset)]
+            tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue] ?? defaultMinFee
+            tx.sendAll = sendAll
         case .sweep:
-            details["private_key"] = privateKey()
-            details["fee_rate"] = feeRate
-            details["subaccount"] = account.pointer
+            tx.privateKey = input
+            tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue] ?? defaultMinFee
         case .bumpFee:
-            details["fee_rate"] = feeRate
+            tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue] ?? defaultMinFee
+        case .bolt11:
+            break
+        case .lnurl:
+            if var addressee = tx.addressees.first {
+                addressee.satoshi = satoshi ?? 0
+                tx.addressees = [addressee]
+            }
         }
         validateTask?.cancel()
-        validateTask = ValidateTask(details: details, inputType: inputType, session: session, account: account)
-        return Promise.value(validateTask)
-            .compactMap { $0 }
-            .then { $0.execute() }
-            .get { self.updateRecipientFromTx(tx: $0) }
+        validateTask = ValidateTask(tx: tx)
+        if let validateTask = validateTask {
+            return validateTask.execute()
+                .get { self.transaction = $0}
+                .get { _ in self.reload() }
+        }
+        return Promise.value(tx)
     }
 
-    func loadRecipient() {
-        var recipient = RecipientCellModel(account: account, inputType: inputType)
-        recipient.assetId = account.gdkNetwork.getFeeAsset()
-        if inputType == .bumpFee {
-            let addressee = transaction?.addressees.first
-            recipient.address = addressee?.address
-            if let satoshi = addressee?.satoshi {
-                let (amount, _) = satoshi == 0 ? ("", "") : Balance.fromSatoshi(satoshi, assetId: recipient.assetId!)?.toDenom() ?? ("", "")
-                recipient.amount = amount
-            }
-            recipient.txError = transaction?.error ?? ""
-        }
-        recipientCellModels.append(recipient)
+    var amountError: String? {
+        return ["id_invalid_amount", "id_no_amount_specified", "id_insufficient_funds", "id_invalid_payment_request_assetid", "id_invalid_asset_id"].contains(inputError) ? inputError : nil
     }
 
-    func feeEstimates() -> [UInt64?] {
-        var feeEstimates = [UInt64?](repeating: 0, count: 4)
-        guard let estimates = session.getFeeEstimates() else {
-            // We use the default minimum fee rates when estimates are not available
-            let defaultMinFee = session.gdkNetwork.liquid ? 100 : 1000
-            return [UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee)]
-        }
-        for (index, value) in [3, 12, 24, 0].enumerated() {
-            feeEstimates[index] = estimates[value]
-        }
-        feeEstimates[3] = nil
-        return feeEstimates
+    var addressError: String? {
+        return ["id_invalid_address", "id_invalid_private_key"].contains(inputError) ? inputError : nil
     }
 
-    func defaultTransactionPriority() -> TransactionPriority {
-        guard let settings = WalletManager.current?.prominentSession?.settings else {
-            return .High
-        }
-        return settings.transactionPriority
-    }
-
-    func selectedFee() -> Int {
-        switch transactionPriority {
-        case .High:
-            return 0
-        case .Medium:
-            return 1
-        case .Low:
-            return 2
-        case .Custom:
-            return 3
-        }
-    }
-
-    var inlineErrors = ["id_invalid_address",
-                      "id_invalid_private_key",
-                      "id_invalid_amount",
-                      "id_no_amount_specified",
-                      "id_insufficient_funds",
-                      "id_invalid_payment_request_assetid",
-                      "id_invalid_asset_id"
+    var inlineErrors = [
+        "id_invalid_address",
+        "id_invalid_private_key",
+        "id_invalid_amount",
+        "id_no_amount_specified",
+        "id_insufficient_funds",
+        "id_invalid_payment_request_assetid",
+        "id_invalid_asset_id"
     ]
 
-    func isBipAddress() -> Bool {
-        return recipient?.isBipAddress() ?? false
-    }
-
-    func updateRecipientFromTx(tx: Transaction?) {
-        transaction = tx
-        if let tx = tx, recipientCellModels.first != nil {
-            let addreessee = tx.addressees.first
-            recipientCellModels[0].txError = tx.error
-            // update asset + address + amount, for bip21 url
-            if let address = addreessee?.address, recipientCellModels[0].address != address {
-                recipientCellModels[0].address = address
+    func reload() {
+        guard let tx = self.transaction else { return }
+        inputError = tx.error
+        sendAll = tx.sendAll
+        fee = tx.fee == 0 ? nil : tx.fee
+        feeRate = tx.feeRate == 0 ? nil : tx.feeRate
+        if let addressee = tx.addressees.first {
+            if input == nil {
+                input = addressee.address
             }
-            if let assetId = addreessee?.assetId, recipientCellModels[0].assetId != assetId {
-                recipientCellModels[0].assetId = assetId
+            if let addrAssetId = addressee.assetId, assetId == nil {
+                assetId = addrAssetId
             }
-            if let satoshi = addreessee?.satoshi, satoshi != 0 && recipientCellModels[0].satoshi() != satoshi {
-                recipientCellModels[0].fromSatoshi(satoshi)
+            if let addrSatoshi = addressee.satoshi, satoshi == nil, addrSatoshi != 0 {
+                satoshi = addrSatoshi
             }
-            // update amount, for send all tx
-            recipientCellModels[0].isSendAll = tx.sendAll
-            if tx.sendAll {
-                let assetId = addreessee?.assetId ?? tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? ""
-                let value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
-                if let balance = Balance.fromSatoshi(value, assetId: assetId) {
-                    let (amount, _) = value == 0 ? ("", "") : balance.toValue()
-                    recipientCellModels[0].amount = amount
-                }
-            }
+        }
+        if tx.sendAll {
+            let assetId = assetId ?? feeAsset
+            let value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
+            satoshi = value
+        }
+        switch inputType {
+        case .transaction, .lnurl:
+            editable = true
+        default:
+            editable = false
         }
     }
 
-    func updateRecipient(assetId: String?) {
-        if recipientCellModels.first != nil {
-            recipientCellModels[0].assetId = assetId
-            recipientCellModels[0].amount = nil
-            recipientCellModels[0].txError = ""
+    var alertCellModel: AlertCardCellModel? {
+        if let remoteAlert = remoteAlert {
+            return AlertCardCellModel(type: .remoteAlert(remoteAlert))
         }
+        return nil
+    }
+
+    var feeCellModel: FeeEditCellModel {
+        return FeeEditCellModel(fee: fee,
+                                feeRate: feeRate,
+                                txError: nil,
+                                feeEstimates: feeEstimates,
+                                transactionPriority: transactionPriority)
+    }
+
+    var accountAssetCellModel: ReceiveAssetCellModel {
+        return ReceiveAssetCellModel(assetId: assetId ?? AssetInfo.btcId, account: account)
+    }
+    
+    var amountCellModel: AmountEditCellModel {
+        let balance = account.satoshi?[assetId ?? feeAsset]
+        return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editable, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning)
+    }
+
+    var addressEditCellModel: AddressEditCellModel {
+        return AddressEditCellModel(text: input, error: addressError, editable: editable)
+    }
+
+    func validateInput() -> Promise<Void> {
+        guard let input = input, !input.isEmpty else { return Promise().asVoid() }
+        if inputType == .bumpFee {
+            return Promise().asVoid() // nothing to do
+        } else if inputType == .sweep {
+            transaction?.privateKey = input
+            return Promise().asVoid()
+        }
+        let parser = Parser(selectedAccount: account, input: input, discoverable: false)
+        return Guarantee()
+            .then { parser.parse() }
+            .compactMap { [self] _ in
+                transaction = parser.createTx?.tx
+                inputType = parser.txType
+                inputError = parser.createTx?.error
+            }.compactMap { self.reload() }
+            .asVoid()
     }
 }

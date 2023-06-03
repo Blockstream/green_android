@@ -161,7 +161,7 @@ class SelectOnBoardTypeViewController: UIViewController {
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            present(vc, animated: true) {}
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

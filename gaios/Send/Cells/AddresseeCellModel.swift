@@ -8,7 +8,7 @@ struct AddresseeCellModel {
     var index: Int
     var isSendAll: Bool { tx.sendAll }
     var addreessee: Addressee { tx.addressees[index] }
-    var assetId: String { addreessee.assetId ?? tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc" }
+    var assetId: String { addreessee.assetId ?? tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? AssetInfo.btcId }
     var showFiat: Bool { [AssetInfo.btcId, AssetInfo.lbtcId, AssetInfo.ltestId].contains(assetId) }
 
     var satoshi: Int64 {
@@ -16,7 +16,7 @@ struct AddresseeCellModel {
         if tx.sendAll {
             value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
         }
-        return value
+        return value ?? 0
     }
 
     var amount: String {
@@ -41,5 +41,14 @@ struct AddresseeCellModel {
             return "≈ \(fiat) \(fiatCurrency)"
         }
         return ""
+    }
+
+    var icon: UIImage? {
+        if tx.subaccountItem?.gdkNetwork.lightning ?? false {
+            return UIImage(named: "ic_lightning_btc")
+        } else {
+            let registry = WalletManager.current?.registry
+            return registry?.image(for: assetId)
+        }
     }
 }

@@ -135,7 +135,7 @@ class DialogAmountViewController: KeyboardViewController {
 //            btnFiat.backgroundColor = UIColor.customMatrixGreen()
 //            btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)
         } else {
-            let isMainnet = AccountsRepository.shared.current?.gdkNetwork?.mainnet ?? true
+            let isMainnet = AccountsRepository.shared.current?.gdkNetwork.mainnet ?? true
             lblDenom.text = isMainnet ? settings.getCurrency() : "FIAT"
 //            btnFiat.setTitle(isMainnet ? settings.getCurrency() : "FIAT", for: UIControl.State.normal)
 //            btnFiat.backgroundColor = UIColor.clear

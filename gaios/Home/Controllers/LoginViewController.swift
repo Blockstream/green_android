@@ -72,7 +72,7 @@ class LoginViewController: UIViewController {
         navigationItem.setHidesBackButton(true, animated: false)
 
         let ntwBtn = UIButton(type: .system)
-        let img = UIImage(named: account.gdkNetwork?.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
+        let img = UIImage(named: account.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white)
         ntwBtn.setImage(img, for: .normal)
         ntwBtn.imageView?.contentMode = .scaleAspectFit
         ntwBtn.addTarget(self, action: #selector(LoginViewController.back), for: .touchUpInside)
@@ -210,7 +210,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionManager(account.gdkNetwork!)
+        let session = SessionManager(account.gdkNetwork)
         self.session = session
         firstly {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
@@ -452,14 +452,13 @@ class LoginViewController: UIViewController {
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
-            vc.delegate = self
-            present(vc, animated: true) {}
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
     @IBAction func btnWalletLock(_ sender: Any) {
         OnBoardManager.shared.flowType = .restore
-        OnBoardParams.shared = OnBoardParams(testnet: account?.gdkNetwork?.mainnet,
+        OnBoardParams.shared = OnBoardParams(testnet: account?.gdkNetwork.mainnet,
                                              walletName: account?.name,
                                              accountId: account?.id ?? UUID().uuidString,
                                              xpubHashId: account?.xpubHashId ?? "")
@@ -507,15 +506,6 @@ extension LoginViewController: UIPopoverPresentationControllerDelegate {
 
     func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         return UINavigationController(rootViewController: controller.presentedViewController)
-    }
-}
-
-extension LoginViewController: WalletSettingsViewControllerDelegate {
-    func didSet(tor: Bool) {
-        //
-    }
-    func didSet(testnet: Bool) {
-        //
     }
 }
 

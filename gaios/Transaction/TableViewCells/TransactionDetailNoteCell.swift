@@ -13,8 +13,7 @@ class TransactionDetailNoteCell: UITableViewCell {
         super.awakeFromNib()
 
         bgNote.layer.cornerRadius = 5.0
-        lblNoteTitle.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-        lblNoteTitle.textColor = .white.withAlphaComponent(0.4)
+        lblNoteTitle.setStyle(.sectionTitle)
         lblNoteTxt.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
     }
 

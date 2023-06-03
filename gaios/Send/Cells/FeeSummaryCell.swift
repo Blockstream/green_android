@@ -8,10 +8,6 @@ class FeeSummaryCell: UITableViewCell {
     @IBOutlet weak var lblFeeFiat: UILabel!
     @IBOutlet weak var lblFeeInfo: UILabel!
 
-    private var btc: String {
-        return WalletManager.current?.account.gdkNetwork?.getFeeAsset() ?? ""
-    }
-
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -29,7 +25,7 @@ class FeeSummaryCell: UITableViewCell {
     }
 
     func configure(_ tx: Transaction) {
-        if let balance = Balance.fromSatoshi(tx.fee, assetId: btc) {
+        if let balance = Balance.fromSatoshi(tx.fee, assetId: tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc") {
             let (amount, denom) = balance.toDenom()
             lblFeeAmount.text = "\(amount) \(denom)"
             let (fiat, fiatCurrency) = balance.toFiat()

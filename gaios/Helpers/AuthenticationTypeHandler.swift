@@ -2,6 +2,7 @@ import Foundation
 import LocalAuthentication
 import Security
 import gdk
+import lightning
 
 class AuthenticationTypeHandler {
     public enum AuthError: Error, Equatable {
@@ -42,6 +43,7 @@ class AuthenticationTypeHandler {
         case AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
         case AuthKeyPIN = "com.blockstream.green.auth_key_pin"
         case AuthKeyWOPassword = "com.blockstream.green.auth_key_wathonly_password"
+        case AuthKeyLightning = "com.blockstream.green.auth_key_lightning"
     }
 
     static let PrivateKeyPathSize = 32
@@ -329,5 +331,15 @@ class AuthenticationTypeHandler {
         var pindata = pinData
         pindata.encryptedBiometric = encrypted
         try set(method: .AuthKeyBiometric, data: pindata.toDict() ?? [:], forNetwork: forNetwork)
+    }
+
+    static func addAuthLightning(forNetwork: String, credentials: AppGreenlightCredentials) throws {
+        try set(method: .AuthKeyLightning, data: credentials.toDict() ?? [:], forNetwork: forNetwork)
+    }
+
+    static func getAuthLightning(forNetwork: String) throws -> AppGreenlightCredentials {
+        let type = AuthType.AuthKeyLightning
+        let data = try get(method: type.rawValue, toDecrypt: false, forNetwork: forNetwork)
+        return AppGreenlightCredentials.from(data) as! AppGreenlightCredentials
     }
 }

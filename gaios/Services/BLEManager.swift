@@ -141,7 +141,7 @@ class BLEManager {
         if p.isLedger() {
             return Observable.just(p)
             .flatMap { _ in self.getLedgerNetwork() }
-            .compactMap { self.session = SessionManager(getGdkNetwork($0.network)) }
+            .compactMap { self.session = SessionManager($0.gdkNetwork) }
             .compactMap { try? self.session?.connect().wait() }
             .compactMap { true }
         }
@@ -155,7 +155,7 @@ class BLEManager {
                 let networkType: NetworkSecurityCase = isTestnet ? .testnetSS : .bitcoinSS
                 let chain = networkType.chain
                 // connect to network pin server
-                self.session = SessionManager(getGdkNetwork(networkType.network))
+                self.session = SessionManager(networkType.gdkNetwork)
                 try? self.session?.connect().wait()
                 // JADE_STATE => READY  (device unlocked / ready to use)
                 // anything else ( LOCKED | UNSAVED | UNINIT | TEMP) will need an authUser first to unlock
@@ -183,7 +183,7 @@ class BLEManager {
     }
 
     func getWalletIdentifier(network: GdkNetwork, xpub: String) -> String? {
-        return SessionManager(network).walletIdentifier(network.network, masterXpub: xpub)?.xpubHashId
+        return SessionManager(network).walletIdentifier(masterXpub: xpub)?.xpubHashId
     }
 
     func logging(_ peripheral: Peripheral, account: Account) -> Observable<WalletManager> {
@@ -194,7 +194,7 @@ class BLEManager {
         
         return getMasterXpub(device, gdkNetwork: network?.gdkNetwork)
             .compactMap { masterXpub = $0; return $0 }
-            .compactMap { self.getWalletIdentifier(network: network!.gdkNetwork!, xpub: $0) }
+            .compactMap { self.getWalletIdentifier(network: network!.gdkNetwork, xpub: $0) }
             .compactMap { account.xpubHashId = $0; return account }
             .compactMap { self.normalizeAccount($0) }
             .compactMap { WalletsRepository.shared.getOrAdd(for: $0) }
@@ -226,7 +226,7 @@ class BLEManager {
                                       network: network.chain,
                                       isJade: device.isJade,
                                       isLedger: device.isLedger,
-                                      isSingleSig: network.gdkNetwork?.electrum ?? true,
+                                      isSingleSig: network.gdkNetwork.electrum ?? true,
                                       uuid: peripheral.identifier)
             }
     }

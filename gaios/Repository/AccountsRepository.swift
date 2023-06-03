@@ -79,14 +79,14 @@ class AccountsRepository {
     }
 
     func remove(_ account: Account) {
-        var currentList = accounts
-        if let index = currentList.firstIndex(where: { $0 == account }) {
-            currentList.remove(at: index)
-        }
-        accounts = currentList
+        accounts.removeAll(where: { $0.id == account.id})
+        account.removePinKeychainData()
+        account.removeBioKeychainData()
+        account.removeLightningCredentials()
     }
 
     func removeAll() {
+        accounts.forEach { remove($0) }
         accounts = []
         try? storage.removeAll()
     }

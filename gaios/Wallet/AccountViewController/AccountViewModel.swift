@@ -37,6 +37,10 @@ class AccountViewModel {
         }
     }
 
+    var inboundCellModels: [LTInboundCellModel] {
+        account.type.lightning ? [LTInboundCellModel(subaccount: account)] : []
+    }
+
     var addingCellModels: [AddingCellModel] {
         let enabled2fa = account.session?.twoFactorConfig?.anyEnabled ?? false
         if account.type == .standard && !enabled2fa && !watchOnly {
@@ -52,6 +56,10 @@ class AccountViewModel {
         default:
             return []
         }
+    }
+
+    var isLightning: Bool {
+        return account.type == .lightning
     }
 
     var ampEducationalMode: AmpEducationalMode {
@@ -130,10 +138,9 @@ class AccountViewModel {
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
         if let subaccount = self.wm.subaccounts.filter({ $0.hashValue == subaccountHash }).first,
-            let network = subaccount.network,
-            let session = self.wm.sessions[network],
-            let blockHeight = session.notificationManager?.blockHeight {
-                return blockHeight
+           let network = subaccount.network,
+           let session = self.wm.sessions[network] {
+            return session.blockHeight
         }
         return 0
     }
@@ -147,6 +154,19 @@ class AccountViewModel {
             .then(on: bgq) { self.wm.subaccount(account: self.account) }
             .compactMap { self.account = $0 }
             .compactMap { self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)] }
+            .asVoid()
+    }
+
+    func removeSubaccount() -> Promise<Void> {
+        let session = wm.sessions[account.gdkNetwork.network]
+        return Guarantee()
+            .compactMap(on: bgq) {
+                session?.disconnect()
+                if let walletHashId = session?.walletHashId {
+                    session?.removeDatadir(walletHashId: walletHashId)
+                    LightningRepository.shared.remove(for: self.wm.account.keychain)
+                }
+            }.then(on: bgq) { self.wm.subaccounts() }
             .asVoid()
     }
 
@@ -165,7 +185,7 @@ class AccountViewModel {
     func handleEvent(_ notification: Notification) {
         let eventType = EventType(rawValue: notification.name.rawValue)
         switch eventType {
-        case .Transaction:
+        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
             getBalance()
             getTransactions(restart: true, max: cachedTransactions.count)
         case .Block:
