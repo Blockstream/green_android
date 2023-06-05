@@ -322,7 +322,12 @@ extension WalletSettingsViewController: DialogScanViewControllerDelegate {
         let data = Data(base64Encoded: value)
         let code = data != nil ? String(data: data!, encoding: .utf8) : nil
         let codes = AnalyticsManager.shared.getRemoteConfigValue(key: "feature_lightning_codes") as? [String]
-        AppSettings.shared.lightningCodeOverride = codes?.contains(code ?? value) ?? false
+        let valid = codes?.contains(code ?? value) ?? false
+        if valid {
+            AppSettings.shared.lightningCodeOverride = valid
+        } else {
+            showError("Invite code invalid or expired".localized)
+        }
         reload()
     }
     func didStop() {
