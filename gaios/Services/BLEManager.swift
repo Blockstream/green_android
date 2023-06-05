@@ -28,6 +28,7 @@ enum DeviceError: Error {
     case dashboard
     case wrong_app
     case outdated_app
+    case notlegacy_app
 }
 
 extension Peripheral {
@@ -98,10 +99,14 @@ class BLEManager {
         return Observable.just(true)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Ledger.shared.application() }
-            .compactMap { $0["name"] as? String ?? "" }
-            .compactMap { name in
+            .compactMap {
+                let name = $0["name"] as? String ?? ""
+                let version = $0["version"] as? String ?? ""
                 if name.contains("OLOS") {
                     throw DeviceError.dashboard // open app from dashboard
+                }
+                if version >= "2.1.0" && ["Bitcoin", "Bitcoin Test"].contains(name) {
+                    throw DeviceError.notlegacy_app
                 }
                 switch name {
                 case "Bitcoin", "Bitcoin Legacy":
@@ -241,6 +246,8 @@ class BLEManager {
             return BLEManagerError.timeoutErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
         case DeviceError.dashboard:
             return BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
+        case DeviceError.notlegacy_app:
+            return BLEManagerError.dashboardErr(txt: "Install legacy companion app")
         case DeviceError.outdated_app:
             return BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
         case DeviceError.wrong_app:
