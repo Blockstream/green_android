@@ -412,7 +412,6 @@
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
 		81743D9A2A17B49A00525FA5 /* lightning.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; };
-		81743D9B2A17B49A00525FA5 /* lightning.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		81743DA42A18006400525FA5 /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81743DA32A18006400525FA5 /* BreezSDK */; };
 		81743DA62A18007000525FA5 /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81743DA52A18007000525FA5 /* BreezSDK */; };
 		81743DA82A18007900525FA5 /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81743DA72A18007900525FA5 /* BreezSDK */; };
@@ -624,17 +623,6 @@
 				81A8F8FC29E5069F0052B214 /* lightning.framework in Embed Libraries */,
 			);
 			name = "Embed Libraries";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		81743D9E2A17B49A00525FA5 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				81743D9B2A17B49A00525FA5 /* lightning.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -2975,7 +2963,6 @@
 				81961A4829E46B5400E9B94D /* Sources */,
 				81961A4929E46B5400E9B94D /* Frameworks */,
 				81961A4A29E46B5400E9B94D /* Resources */,
-				81743D9E2A17B49A00525FA5 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -4031,7 +4018,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.4;
+				MARKETING_VERSION = 4.0.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -4073,7 +4060,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.4;
+				MARKETING_VERSION = 4.0.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -4794,7 +4781,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.4;
+				MARKETING_VERSION = 4.0.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
