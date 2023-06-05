@@ -72,7 +72,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         lblReset2faTitle.text = NSLocalizedString("id_request_twofactor_reset", comment: "")
         lblReset2faCardTitle.text = NSLocalizedString("id_i_lost_my_2fa", comment: "")
         viewModel.networks.enumerated().forEach { (i, net) in
-            let title = session.gdkNetwork.name
+            let title = NetworkSecurityCase(rawValue: net)?.chain.firstCapitalized
             networkSegmentedControl.setTitle(title, forSegmentAt: i)
         }
     }
