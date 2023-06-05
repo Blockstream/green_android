@@ -34,8 +34,8 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="way-Yg-UKQ">
-                                <rect key="frame" x="49" y="35.333333333333343" width="95" height="33.666666666666657"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <rect key="frame" x="49" y="30.333333333333339" width="83" height="49.666666666666657"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="btn_more_info"/>
                                 <connections>
@@ -45,8 +45,8 @@
                         </subviews>
                         <color key="backgroundColor" red="0.96470588235294119" green="0.96470588235294119" blue="0.96470588235294119" alpha="0.20069391993957703" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="way-Yg-UKQ" firstAttribute="top" secondItem="ih6-hs-CUy" secondAttribute="bottom" constant="5" id="9Na-b8-7i6"/>
-                            <constraint firstAttribute="bottom" secondItem="way-Yg-UKQ" secondAttribute="bottom" constant="16" id="ADg-jQ-JTV"/>
+                            <constraint firstItem="way-Yg-UKQ" firstAttribute="top" secondItem="ih6-hs-CUy" secondAttribute="bottom" id="9Na-b8-7i6"/>
+                            <constraint firstAttribute="bottom" secondItem="way-Yg-UKQ" secondAttribute="bottom" constant="5" id="ADg-jQ-JTV"/>
                             <constraint firstItem="D5L-x5-LyM" firstAttribute="leading" secondItem="jDJ-kf-bYI" secondAttribute="leading" constant="18" id="G1Q-7m-4sp"/>
                             <constraint firstItem="ih6-hs-CUy" firstAttribute="leading" secondItem="D5L-x5-LyM" secondAttribute="trailing" constant="15" id="VaD-IR-o4k"/>
                             <constraint firstAttribute="trailing" secondItem="ih6-hs-CUy" secondAttribute="trailing" constant="15" id="ZGg-Wa-PC5"/>
