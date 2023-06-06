@@ -7,7 +7,7 @@ import androidx.core.text.trimmedLength
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.databinding.WatchOnlyBottomSheetBinding
 import com.blockstream.green.ui.settings.WalletSettingsViewModel

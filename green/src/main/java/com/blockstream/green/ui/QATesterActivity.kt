@@ -5,16 +5,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.NetworkEvent
-import com.blockstream.gdk.data.Notification
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.NetworkEvent
+import com.blockstream.common.gdk.data.Notification
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.QaTesterActivityBinding
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.items.NetworkListItem
@@ -45,7 +45,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
     lateinit var sessionManager: SessionManager
 
     @Inject
-    lateinit var gdkBridge: GdkBridge
+    lateinit var gdk: Gdk
 
     @Inject
     lateinit var applicationScope: ApplicationScope
@@ -109,7 +109,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
         }
 
         binding.buttonCreateCustomNetwork.setOnClickListener {
-            FilterBottomSheetDialogFragment.show(fragmentManager = supportFragmentManager)
+            FilterBottomSheetDialogFragment.show(withDivider = false, fragmentManager = supportFragmentManager)
         }
 
         binding.buttonClearGdk.setOnClickListener {
@@ -133,7 +133,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
     override fun getFilterAdapter(requestCode: Int): ModelAdapter<*, *> {
         val adapter = ModelAdapter<Network, NetworkListItem>() {
             NetworkListItem(it.id, it.name, "")
-        }.set(gdkBridge.networks.networks.values.toList())
+        }.set(gdk.networks().networks.values.toList())
 
         adapter.itemFilter.filterPredicate = { item: NetworkListItem, constraint: CharSequence? ->
             item.networkName.lowercase().contains(
@@ -157,7 +157,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
             .setTitle("Network hostname")
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                gdkBridge.registerCustomNetwork(network, dialogBinding.text.toString())
+                gdk.registerCustomNetwork(network, dialogBinding.text.toString())
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

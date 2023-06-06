@@ -5,7 +5,8 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
+import com.blockstream.deviceIcon
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.AppEvent
@@ -85,7 +86,7 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
 
         viewModel.deviceLiveData.observe(viewLifecycleOwner) {
             binding.deviceImageView.setImageResource(
-                it?.getIcon() ?: wallet.deviceIdentifiers?.firstOrNull()?.brand?.deviceIcon ?: 0
+                it?.getIcon() ?: wallet.deviceIdentifiers?.firstOrNull()?.brand?.deviceIcon() ?: 0
             )
         }
 
@@ -104,7 +105,7 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
 
     override fun requestNetwork() {
         viewModel.requestNetworkEmitter?.complete(
-            if(wallet.isMainnet) gdkBridge.networks.bitcoinElectrum else gdkBridge.networks.testnetBitcoinElectrum
+            if(wallet.isMainnet) gdk.networks().bitcoinElectrum else gdk.networks().testnetBitcoinElectrum
         )
     }
 

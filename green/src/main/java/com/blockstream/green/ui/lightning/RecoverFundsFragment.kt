@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.AccountAssetLayoutBinding

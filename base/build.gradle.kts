@@ -6,19 +6,14 @@ plugins {
 android {
     namespace = "com.blockstream.base"
     compileSdk = 33
+    buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
         minSdk = 23
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-        }
     }
 }
 
@@ -27,6 +22,10 @@ kotlin {
 }
 
 dependencies {
+    /**  --- Modules ---------------------------------------------------------------------------- */
+    api(project(":common"))
+    /** ----------------------------------------------------------------------------------------- */
+
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
     api(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.serialization.core)

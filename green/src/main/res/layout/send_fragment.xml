@@ -320,7 +320,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:enabled="@{(vm.isSweep || vm.transactionError == null) &amp;&amp; !vm.onProgress}"
+            android:enabled="@{(vm.transactionError == null) &amp;&amp; !vm.onProgress}"
             android:text="@string/id_next"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

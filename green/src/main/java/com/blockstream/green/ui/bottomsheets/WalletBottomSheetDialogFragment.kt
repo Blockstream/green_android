@@ -2,8 +2,8 @@ package com.blockstream.green.ui.bottomsheets
 
 
 import androidx.databinding.ViewDataBinding
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.ui.wallet.AbstractWalletFragment

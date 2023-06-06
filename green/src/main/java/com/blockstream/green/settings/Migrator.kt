@@ -4,15 +4,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
 import com.blockstream.base.Preferences
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.PinData
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.data.PinData
+import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.utils.toHex
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.utils.EncryptedData
-import com.blockstream.libwally.Wally
 import mu.KLogging
 import java.security.KeyStore
 import java.security.UnrecoverableKeyException
@@ -21,7 +22,7 @@ class Migrator constructor(
     val context: Context,
     val sharedPreferences: SharedPreferences,
     val walletRepository: WalletRepository,
-    val gdkBridge: GdkBridge,
+    val gdk: Gdk,
     val settingsManager: SettingsManager,
     val applicationScope: ApplicationScope
 ) {
@@ -74,7 +75,7 @@ class Migrator constructor(
 
             enableTOR = networkPreferences.getBoolean(TOR_ENABLED, false) || enableTOR
 
-            val network = gdkBridge.networks.getNetworkById(networkId)
+            val network = gdk.networks().getNetworkById(networkId)
 
             val wallet = Wallet(
                 walletHashId = "",
@@ -246,7 +247,7 @@ class Migrator constructor(
             val salt = split[0]
 
             val encryptedDataBytes = Base64.decode(split[1], Base64.NO_WRAP)
-            val encryptedData = Wally.hex_from_bytes(encryptedDataBytes)
+            val encryptedData = encryptedDataBytes.toHex()
 
             return PinData(encryptedData = encryptedData, pinIdentifier = pinIdentifier, salt = salt)
         }catch (e: Exception){

@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
 import com.blockstream.green.databinding.Bip39PassphraseBottomSheetBinding
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.login.LoginViewModel
 import com.blockstream.green.utils.openBrowser
 import dagger.hilt.android.AndroidEntryPoint

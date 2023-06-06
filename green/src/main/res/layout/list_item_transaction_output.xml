@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.blockstream.gdk.data.Transaction.Type"/>
+        <import type="com.blockstream.common.gdk.data.Transaction"/>
 
         <variable
             name="isChange"

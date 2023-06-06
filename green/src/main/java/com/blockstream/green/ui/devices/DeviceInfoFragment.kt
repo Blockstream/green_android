@@ -11,14 +11,15 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.blockstream.DeviceBrand
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.device.DeviceState
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceInfoFragmentBinding
-import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.extensions.snackbar
@@ -85,7 +86,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
 
         viewModel.deviceState.observe(viewLifecycleOwner) {
             // Device went offline
-            if (it == Device.DeviceState.DISCONNECTED) {
+            if (it == DeviceState.DISCONNECTED) {
                 snackbar("Device is disconnected")
                 findNavController().popBackStack()
             }
@@ -190,12 +191,12 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
         }
     }
 
-    override fun onEnvironmentSelected(isTestnet: Boolean?) {
+    override fun onEnvironmentSelected(isTestnet: Boolean?, customNetwork: Network?) {
         if(isTestnet == null){
             viewModel.requestNetworkEmitter?.completeExceptionally(Exception("id_action_canceled"))
         }else{
             viewModel.requestNetworkEmitter?.also {
-                it.complete(if(isTestnet) gdkBridge.networks.testnetBitcoinElectrum else gdkBridge.networks.bitcoinElectrum)
+                it.complete(if(isTestnet) gdk.networks().testnetBitcoinElectrum else gdk.networks().bitcoinElectrum)
             }
         }
     }

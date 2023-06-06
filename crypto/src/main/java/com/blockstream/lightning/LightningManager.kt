@@ -1,5 +1,6 @@
 package com.blockstream.lightning
 
+import com.blockstream.common.lightning.AppGreenlightCredentials
 import mu.KLogging
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap

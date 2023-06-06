@@ -1,7 +1,7 @@
 package com.blockstream.green.ui.archived
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.data.Account
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository

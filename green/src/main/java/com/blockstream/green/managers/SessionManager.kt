@@ -1,29 +1,32 @@
 package com.blockstream.green.managers
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ProcessLifecycleOwner
-import com.blockstream.gdk.AssetManager
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.GdkBridge.Companion.JsonDeserializer
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.TorEvent
+import com.blockstream.common.CountlyInteface
+import com.blockstream.common.gdk.GASession
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
+import com.blockstream.common.gdk.Wally
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.TorEvent
+import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.managers.AssetManager
+import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ApplicationScope
-import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.devices.Device
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import com.blockstream.jade.HttpRequestProvider
 import com.blockstream.lightning.LightningManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -31,23 +34,21 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import mu.KLogging
 import java.util.Timer
-import javax.inject.Provider
 import kotlin.collections.set
 import kotlin.concurrent.schedule
 import kotlin.properties.Delegates
 
 class SessionManager constructor(
     private val applicationScope: ApplicationScope,
+    private val lifecycleManager: LifecycleManager,
     val lightningManager: LightningManager,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
-    private var countlyProvider: Provider<Countly>,
-    private val gdkBridge: GdkBridge,
+    private var countly: CountlyInteface,
+    private val gdk: Gdk,
+    private val wally: Wally,
     qaTester: QATester,
-) : DefaultLifecycleObserver {
-
-    private val countly by lazy { countlyProvider.get() }
-
+) {
     val httpRequestProvider : HttpRequestProvider by lazy {
         createSession()
     }
@@ -60,7 +61,7 @@ class SessionManager constructor(
         }
     }
 
-    private var torEnabled : Boolean by Delegates.observable(settingsManager.getApplicationSettings().tor) { _, oldValue, newValue ->
+    private var torEnabled : Boolean by Delegates.observable(settingsManager.appSettings.tor) { _, oldValue, newValue ->
         if(oldValue != newValue){
             if (newValue) {
                 startTorNetworkSessionIfNeeded()
@@ -84,31 +85,50 @@ class SessionManager constructor(
     private val walletSessions = mutableMapOf<WalletId, GdkSession>()
     private var onBoardingSession: GdkSession? = null
 
-    private var isOnForeground: Boolean = false
-
     private var timeoutTimers = mutableListOf<Timer>()
 
-    var pendingUri = MutableLiveData<ConsumableEvent<String>>()
+    var pendingUri = MutableLiveData<ConsumableEvent<String>?>()
 
     var connectionChangeEvent = MutableLiveData<Boolean>()
 
-    var hardwareWallets = MutableLiveData<List<Wallet>>(listOf())
-    var ephemeralWallets = MutableLiveData<List<Wallet>>(listOf())
+    var hardwareWallets = MutableStateFlow<List<Wallet>>(listOf())
+    var ephemeralWallets = MutableStateFlow<List<Wallet>>(listOf())
 
     init {
-        // Listen to foreground / background events
-        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+        lifecycleManager.lifecycleState.onEach { lifecycle ->
+            if (lifecycle.isForeground()) {
+                timeoutTimers.forEach { it.cancel() }
+                timeoutTimers.clear()
 
-        settingsManager.getApplicationSettingsLiveData().observeForever {
-            torEnabled = it.tor
-        }
+                startTorNetworkSessionIfNeeded()
+            } else {
+                for (session in gdkSessions.filter { it.isConnected }) {
+                    val sessionTimeout = (session.getSettings(null)?.altimeout ?: 1) * 60 * 1000L
 
-        gdkBridge.setNotificationHandler { gaSession, jsonObject ->
-            try{
-                gdkSessions.forEach {
-                    it.onNewNotification(gaSession, JsonDeserializer.decodeFromJsonElement(jsonObject as JsonElement))
+                    timeoutTimers += Timer().also {
+                        it.schedule(sessionTimeout) {
+                            logger.debug { "Session timeout, disconnecting..." }
+                            session.disconnectAsync()
+                        }
+                    }
                 }
-            }catch (e: Exception){
+
+            }
+        }.launchIn(CoroutineScope(context = Dispatchers.Default))
+
+        settingsManager.appSettingsStateFlow.onEach {
+            torEnabled = it.tor
+        }.launchIn(CoroutineScope(context = Dispatchers.Default))
+
+        gdk.setNotificationHandler { gaSession: GASession, jsonObject: Any ->
+            try {
+                gdkSessions.forEach {
+                    it.onNewNotification(
+                        gaSession,
+                        JsonDeserializer.decodeFromJsonElement(jsonObject as JsonElement)
+                    )
+                }
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -124,13 +144,17 @@ class SessionManager constructor(
 
         connectionChangeEvent.observeForever {
             getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == true }.mapNotNull { it.ephemeralWallet }.let {
-                hardwareWallets.postValue(it)
+                hardwareWallets.value = it
             }
 
             getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == false }.mapNotNull { it.ephemeralWallet }.let {
-                ephemeralWallets.postValue(it)
+                ephemeralWallets.value = it
             }
         }
+
+        torProxy.filterNotNull().onEach {
+            countly.updateTorProxy(it)
+        }.launchIn(CoroutineScope(context = Dispatchers.Default))
     }
 
     fun getDeviceSessionForNetworkAllPolicies(device: Device, network: Network, isEphemeral: Boolean): GdkSession? {
@@ -204,7 +228,7 @@ class SessionManager constructor(
 
     fun getNextEphemeralId() : Long = (getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == false }.mapNotNull { it.ephemeralWallet?.ephemeralId }.maxOrNull() ?: 0) + 1
 
-    fun getConnectedDevices(): List<Device>{
+    fun getConnectedDevices(): List<DeviceInterface>{
         return walletSessions.values
             .filter { it.device?.isOffline == false }
             .mapNotNull { it.device }
@@ -254,7 +278,8 @@ class SessionManager constructor(
             sessionManager = this,
             settingsManager = settingsManager,
             assetManager = assetManager,
-            gdkBridge = gdkBridge,
+            gdk = gdk,
+            wally = wally,
             countly = countly
         )
 
@@ -270,32 +295,10 @@ class SessionManager constructor(
             if (!torNetworkSession.isConnected) {
                 // Re-initiate connection
                 applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
-                    gdkBridge.networks.bitcoinElectrum.also { network ->
+                    gdk.networks().bitcoinElectrum.also { network ->
                         torNetworkSession.connect(network = network, initNetworks = listOf(network))
                     }
                     _torProxy.value = torNetworkSession.getProxySettings().proxy
-                }
-            }
-        }
-    }
-
-    override fun onResume(owner: LifecycleOwner) {
-        isOnForeground = true
-        timeoutTimers.forEach { it.cancel() }
-        timeoutTimers.clear()
-
-        startTorNetworkSessionIfNeeded()
-    }
-
-    override fun onPause(owner: LifecycleOwner) {
-        isOnForeground = false
-        for(session in gdkSessions.filter { it.isConnected }){
-            val sessionTimeout = (session.getSettings(null)?.altimeout ?: 1) * 60 * 1000L
-
-            timeoutTimers += Timer().also {
-                it.schedule(sessionTimeout) {
-                    logger.debug { "Session timeout, disconnecting..." }
-                    session.disconnectAsync()
                 }
             }
         }

@@ -21,8 +21,12 @@ app/gdk
 *.so
 GreenBits.iml
 app/app.iml
-crypto/src/main/java/com/blockstream/libgreenaddress/GDK.java
-crypto/src/main/java/com/blockstream/libwally/Wally.java
+gdk/src/main/java/com/blockstream/libgreenaddress/GDK.java
+gdk/src/main/java/com/blockstream/libgreenaddress/GDKJNI.java
+gdk/src/main/java/com/blockstream/libwally/Wally.java
 keystore.properties
 gdk_commit
 local.keystore
+
+common/src/include
+common/src/libs

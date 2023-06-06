@@ -2,17 +2,22 @@ package com.greenaddress.greenbits.wallets;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.blockstream.DeviceBrand;
 import com.blockstream.JadeHWWallet;
+import com.blockstream.common.gdk.device.DeviceBrand;
+import com.blockstream.common.gdk.Gdk;
+import com.blockstream.common.gdk.device.HardwareWalletInteraction;
+import com.blockstream.common.gdk.data.Account;
+import com.blockstream.common.gdk.data.AccountType;
+import com.blockstream.common.gdk.data.Device;
+import com.blockstream.common.gdk.data.InputOutput;
+import com.blockstream.common.gdk.data.Network;
+import com.blockstream.common.gdk.device.BlindingFactorsResult;
+import com.blockstream.common.gdk.device.SignMessageResult;
+import com.blockstream.common.gdk.device.SignTransactionResult;
 import com.blockstream.gdk.ExtensionsKt;
-import com.blockstream.gdk.data.Account;
-import com.blockstream.gdk.data.AccountType;
-import com.blockstream.gdk.data.Device;
-import com.blockstream.gdk.data.InputOutput;
-import com.blockstream.gdk.data.Network;
-import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -20,7 +25,6 @@ import com.google.common.base.Joiner;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenapi.HWWalletBridge;
 import com.satoshilabs.trezor.Trezor;
 import com.satoshilabs.trezor.protobuf.TrezorMessage;
 import com.satoshilabs.trezor.protobuf.TrezorType;
@@ -31,9 +35,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.rxjava3.subjects.CompletableSubject;
 import kotlinx.coroutines.CompletableDeferred;
 import kotlinx.coroutines.CompletableDeferredKt;
+import kotlinx.coroutines.flow.MutableStateFlow;
 import kotlinx.serialization.json.JsonElement;
 
 
@@ -47,7 +51,8 @@ public class TrezorHWWallet extends HWWallet {
     private final Map<String, TrezorType.HDNodeType> mRecoveryXPubs = new HashMap<>();
     private final Map<String, Object> mPrevTxs = new HashMap<>();
 
-    public TrezorHWWallet(final Trezor t, final Device device, final String firmwareVersion) {
+    public TrezorHWWallet(final Gdk gdk, final Trezor t, final Device device, final String firmwareVersion) {
+        mGdk = gdk;
         mTrezor = t;
         mDevice = device;
         mFirmwareVersion = firmwareVersion;
@@ -59,12 +64,13 @@ public class TrezorHWWallet extends HWWallet {
         // No-op
     }
 
+    @NonNull
     @Override
-    public synchronized List<String> getXpubs(final Network network, @Nullable final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public synchronized List<String> getXpubs(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull List<? extends List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
 
         for (List<Integer> path : paths) {
-            final TrezorType.HDNodeType xpub = getUserXpub(parent, path);
+            final TrezorType.HDNodeType xpub = getUserXpub(hwInteraction, path);
 
             final Object hdkey = Wally.bip32_pub_key_init(network.getVerPublic(),
                                                           1, 1, xpub.getChainCode().toByteArray(),
@@ -76,9 +82,9 @@ public class TrezorHWWallet extends HWWallet {
         return xpubs;
     }
 
+    @NonNull
     @Override
-    public synchronized SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
-                                     final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
+    public SignMessageResult signMessage(@Nullable HardwareWalletInteraction hwInteraction, @NonNull List<Integer> path, @NonNull String message, boolean useAeProtocol, @Nullable String aeHostCommitment, @Nullable String aeHostEntropy) {
         if (useAeProtocol) {
             throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
         }
@@ -86,7 +92,7 @@ public class TrezorHWWallet extends HWWallet {
         Message m = mTrezor.io(TrezorMessage.SignMessage.newBuilder()
                                .addAllAddressN(path)
                                .setMessage(ByteString.copyFromUtf8(message)));
-        m = handleCommon(parent, m);
+        m = handleCommon(hwInteraction, m);
         if (m.getClass().getSimpleName().equals("MessageSignature")) {
             final TrezorMessage.MessageSignature ms = (TrezorMessage.MessageSignature)m;
             final byte[] expanded = ms.getSignature().toByteArray();
@@ -98,18 +104,17 @@ public class TrezorHWWallet extends HWWallet {
             final byte[] der = new byte[Wally.EC_SIGNATURE_DER_MAX_LEN];
             final int len = Wally.ec_sig_to_der(compact, der);
             final String signature = Wally.hex_from_bytes(Arrays.copyOf(der, len));
-            return new SignMsgResult(signature, null);
+            return new SignMessageResult(signature, null);
         }
         throw new IllegalStateException("Unknown response: " + m.getClass().getSimpleName());
     }
 
+    @NonNull
     @Override
-    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent, final JsonElement transaction,
-                                                     final List<InputOutput> inputs,
-                                                     final List<InputOutput> outputs,
-                                                     final Map<String, String> transactions,
-                                                     final boolean useAeProtocol)
-    {
+    public SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull JsonElement transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
+        if(network.isLiquid()){
+            throw new RuntimeException(network.getCanonicalName() + " is not supported");
+        }
         try {
             final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
 
@@ -117,7 +122,7 @@ public class TrezorHWWallet extends HWWallet {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
 
-            return signTransactionImpl(network, parent, tx, inputs, outputs, transactions);
+            return signTransactionImpl(network, hwInteraction, tx, inputs, outputs, transactions);
         } finally {
             // Free all wally txs to ensure we don't leak any memory
             for (Map.Entry<String, Object> entry : mPrevTxs.entrySet()) {
@@ -127,16 +132,7 @@ public class TrezorHWWallet extends HWWallet {
         }
     }
 
-    @Override
-    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final JsonElement tx,
-                                              final List<InputOutput> inputs,
-                                              final List<InputOutput> outputs,
-                                              final Map<String, String> transactions,
-                                              final boolean useAeProtocol) {
-        return null;
-    }
-
-    private synchronized SignTxResult signTransactionImpl(final Network network, final HWWalletBridge parent, final ObjectNode tx,
+    private synchronized SignTransactionResult signTransactionImpl(final Network network, @Nullable HardwareWalletInteraction hwInteraction, final ObjectNode tx,
                                              final List<InputOutput> inputs,
                                              final List<InputOutput> outputs,
                                              final Map<String, String> transactions)
@@ -154,10 +150,10 @@ public class TrezorHWWallet extends HWWallet {
         // Fetch and cache all required pubkeys before signing
         if (network.isMultisig()) {
             for (final InputOutput in : inputs)
-                makeMultisigRedeemScript(parent, in);
+                makeMultisigRedeemScript(hwInteraction, in);
             for (final InputOutput out : outputs)
                 if (out.isChange())
-                    makeMultisigRedeemScript(parent, out);
+                    makeMultisigRedeemScript(hwInteraction, out);
         }
 
         Message m = mTrezor.io(TrezorMessage.SignTx.newBuilder()
@@ -167,7 +163,7 @@ public class TrezorHWWallet extends HWWallet {
                                .setVersion(txVersion)
                                .setLockTime(txLocktime));
         while (true) {
-            m = handleCommon(parent, m);
+            m = handleCommon(hwInteraction, m);
             switch (m.getClass().getSimpleName()) {
 
             case "TxRequest": {
@@ -178,19 +174,19 @@ public class TrezorHWWallet extends HWWallet {
                         Wally.hex_from_bytes(r.getSerialized().getSignature().toByteArray()) +"01";
 
                 if (r.getRequestType().equals(TrezorType.RequestType.TXFINISHED))
-                    return new SignTxResult(Arrays.asList(signatures), null);
+                    return new SignTransactionResult(Arrays.asList(signatures), null);
 
                 final TrezorType.TxRequestDetailsType txRequest = r.getDetails();
                 TrezorType.TransactionType.Builder ack = TrezorType.TransactionType.newBuilder();
 
                 if (r.getRequestType().equals(TrezorType.RequestType.TXINPUT)) {
-                    m = txio(ack.addInputs(createInput(network, parent, txRequest, inputs)));
+                    m = txio(ack.addInputs(createInput(network, hwInteraction, txRequest, inputs)));
                     continue;
                 } else if (r.getRequestType().equals(TrezorType.RequestType.TXOUTPUT)) {
                     if (txRequest.hasTxHash())
                         m = txio(ack.addBinOutputs(createBinOutput(txRequest)));
                     else
-                        m = txio(ack.addOutputs(createOutput(network, parent, txRequest, outputs)));
+                        m = txio(ack.addOutputs(createOutput(network, hwInteraction, txRequest, outputs)));
                     continue;
                 } else if (r.getRequestType().equals(TrezorType.RequestType.TXMETA)) {
                     if (txRequest.hasTxHash()) {
@@ -224,12 +220,12 @@ public class TrezorHWWallet extends HWWallet {
         return mPrevTxs.get(key);
     }
 
-    private TrezorType.HDNodeType getUserXpub(@Nullable final HWWalletBridge parent, final List<Integer> path) {
+    private TrezorType.HDNodeType getUserXpub(@Nullable HardwareWalletInteraction hwInteraction, final List<Integer> path) {
         final String key = Joiner.on("/").join(path);
 
         if (!mUserXPubs.containsKey(key)) {
             Message m = mTrezor.io(TrezorMessage.GetPublicKey.newBuilder().addAllAddressN(path));
-            m = handleCommon(parent, m);
+            m = handleCommon(hwInteraction, m);
             if (m.getClass().getSimpleName().equals("PublicKey")) {
                 final TrezorMessage.PublicKey pk = (TrezorMessage.PublicKey)m;
                 mUserXPubs.put(key,
@@ -259,35 +255,36 @@ public class TrezorHWWallet extends HWWallet {
         return cache.get(xpub58);
     }
 
+    @NonNull
     @Override
-    public synchronized String getMasterBlindingKey(HWWalletBridge parent) {
-        return null;
+    public synchronized String getMasterBlindingKey(@Nullable HardwareWalletInteraction hwInteraction) {
+        throw new RuntimeException("Master Blinding Key is not supported");
     }
 
     @Override
-    public synchronized String getBlindingKey(HWWalletBridge parent, String scriptHex) {
-        return null;
+    public synchronized String getBlindingKey(@Nullable HardwareWalletInteraction hwInteraction, String scriptHex) {
+        throw new RuntimeException("Master Blinding Key is not supported");
     }
 
     @Override
-    public synchronized String getBlindingNonce(HWWalletBridge parent, String pubkey, String scriptHex) {
-        return null;
+    public synchronized String getBlindingNonce(@Nullable HardwareWalletInteraction hwInteraction, String pubkey, String scriptHex) {
+        throw new RuntimeException("Master Blinding Key is not supported");
     }
 
     @Override
-    public synchronized BlindingFactorsResult getBlindingFactors(final HWWalletBridge parent, final List<InputOutput> inputs, final List<InputOutput> outputs) {
-        return null;
+    public synchronized BlindingFactorsResult getBlindingFactors(@Nullable HardwareWalletInteraction hwInteraction, final List<InputOutput> inputs, final List<InputOutput> outputs) {
+        throw new RuntimeException("Master Blinding Key is not supported");
     }
 
     private TrezorType.HDNodePathType makeHDNode(final TrezorType.HDNodeType node, final Integer pointer) {
         return TrezorType.HDNodePathType.newBuilder().setNode(node).addAddressN(pointer).build();
     }
 
-    private TrezorType.MultisigRedeemScriptType makeMultisigRedeemScript(final HWWalletBridge parent, final InputOutput in) {
+    private TrezorType.MultisigRedeemScriptType makeMultisigRedeemScript(@Nullable HardwareWalletInteraction hwInteraction, final InputOutput in) {
         final int pointer = in.getPointer();
         final TrezorType.HDNodeType serviceParent = getXpub(mServiceXPubs, in.getServiceXpub());
         final TrezorType.HDNodeType userParent =
-                getUserXpub(parent, in.getUserPathAsInts().subList(0, in.getUserPath().size() - 1));
+                getUserXpub(hwInteraction, in.getUserPathAsInts().subList(0, in.getUserPath().size() - 1));
 
         TrezorType.MultisigRedeemScriptType.Builder b = TrezorType.MultisigRedeemScriptType.newBuilder()
                 .addPubkeys(makeHDNode(serviceParent, pointer))
@@ -300,7 +297,7 @@ public class TrezorHWWallet extends HWWallet {
         return b.setM(2).build();
     }
 
-    private TrezorType.TxOutputType.Builder createOutput(final Network network, final HWWalletBridge parent,
+    private TrezorType.TxOutputType.Builder createOutput(final Network network, @Nullable HardwareWalletInteraction hwInteraction,
                                                          final TrezorType.TxRequestDetailsType txRequest,
                                                          final List<InputOutput> outputs) {
         final InputOutput out = outputs.get(txRequest.getRequestIndex());
@@ -331,7 +328,7 @@ public class TrezorHWWallet extends HWWallet {
             b.addAllAddressN(out.getUserPathAsInts());
             if (network.isMultisig()) {
                 // Green Multisig Shield
-                b.setMultisig(makeMultisigRedeemScript(parent, out));
+                b.setMultisig(makeMultisigRedeemScript(hwInteraction, out));
             }
         } else {
             // Not a change output - just set address
@@ -347,7 +344,7 @@ public class TrezorHWWallet extends HWWallet {
                .setScriptPubkey(ByteString.copyFrom(Wally.tx_get_output_script(prevTx, txRequest.getRequestIndex())));
     }
 
-    private TrezorType.TxInputType.Builder createInput(final Network network, final HWWalletBridge parent,
+    private TrezorType.TxInputType.Builder createInput(final Network network, @Nullable HardwareWalletInteraction hwInteraction,
                                                        final TrezorType.TxRequestDetailsType txRequest,
                                                        final List<InputOutput> inputs) {
         final int index = txRequest.getRequestIndex();
@@ -372,7 +369,7 @@ public class TrezorHWWallet extends HWWallet {
                .addAllAddressN(in.getUserPathAsInts());
 
         if (network.isMultisig()) {
-            txin.setMultisig(makeMultisigRedeemScript(parent, in));
+            txin.setMultisig(makeMultisigRedeemScript(hwInteraction, in));
         }
 
         switch (in.getAddressType()) {
@@ -389,23 +386,23 @@ public class TrezorHWWallet extends HWWallet {
         }
     }
 
-    private Message handleCommon(final HWWalletBridge parent, final Message m) {
+    private Message handleCommon(final HardwareWalletInteraction hwInteraction, final Message m) {
         switch (m.getClass().getSimpleName()) {
         case "ButtonRequest":
             CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
-            if(parent != null) {
-                parent.interactionRequest(this, completable, "id_check_device");
+            if(hwInteraction != null) {
+                hwInteraction.interactionRequest(this, completable, "id_check_device");
             }
             Message io = mTrezor.io(TrezorMessage.ButtonAck.newBuilder());
             completable.complete(true);
-            return handleCommon(parent, io);
+            return handleCommon(hwInteraction, io);
 
         case "PinMatrixRequest":
-            final String pin = parent.requestPinMatrix(DeviceBrand.Trezor);
-            return handleCommon(parent, mTrezor.io(TrezorMessage.PinMatrixAck.newBuilder().setPin(pin)));
+            final String pin = hwInteraction.requestPinMatrix(DeviceBrand.Trezor);
+            return handleCommon(hwInteraction, mTrezor.io(TrezorMessage.PinMatrixAck.newBuilder().setPin(pin)));
 
         case "PassphraseStateRequest":
-            return handleCommon(parent, mTrezor.io(TrezorMessage.PassphraseStateAck.newBuilder()));
+            return handleCommon(hwInteraction, mTrezor.io(TrezorMessage.PassphraseStateAck.newBuilder()));
 
         case "PassphraseRequest":
             TrezorMessage.PassphraseRequest passphraseRequest = (TrezorMessage.PassphraseRequest)m;
@@ -415,11 +412,11 @@ public class TrezorHWWallet extends HWWallet {
             // on the Trezor T hasOnDevice is true, so we check what it is explicitly asking with getOnDevice
             if (!passphraseRequest.hasOnDevice() || !passphraseRequest.getOnDevice()) {
                 // Passphrase set to "HOST", ask the user here on the app
-                final String passphrase = parent.requestPassphrase(DeviceBrand.Trezor);
+                final String passphrase = hwInteraction.requestPassphrase(DeviceBrand.Trezor);
                 ackBuilder.setPassphrase(passphrase);
             }
 
-            return handleCommon(parent, mTrezor.io(ackBuilder));
+            return handleCommon(hwInteraction, mTrezor.io(ackBuilder));
 
         case "Failure":
             final String message = ((TrezorMessage.Failure)m).getMessage();
@@ -429,10 +426,6 @@ public class TrezorHWWallet extends HWWallet {
         default:
             return m;
         }
-    }
-
-    public int getIconResourceId() {
-        return R.drawable.trezor_device;
     }
 
     private static List<Integer> getIntegerPath(final List<Long> unsigned) {
@@ -462,7 +455,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized String getGreenAddress(final Network network, HWWalletBridge parent, final Account account, final List<Long> path, final long csvBlocks) {
+    public synchronized String getGreenAddress(final Network network, HardwareWalletInteraction hwInteraction, final Account account, final List<Long> path, final long csvBlocks) {
 
         if (network.isMultisig()) {
             throw new RuntimeException("Hardware Wallet does not support displaying Green Multisig Shield addresses");
@@ -478,11 +471,17 @@ public class TrezorHWWallet extends HWWallet {
                         .setScriptType(mapAccountType(account.getType()))
                         .addAllAddressN(getIntegerPath(path)));
 
-        m = handleCommon(parent, m);
+        m = handleCommon(hwInteraction, m);
         if (m.getClass().getSimpleName().equals("Address")) {
             final TrezorMessage.Address addr = (TrezorMessage.Address)m;
             return addr.getAddress();
         }
         throw new IllegalStateException("Unknown response: " + m.getClass().getSimpleName());
+    }
+
+    @Nullable
+    @Override
+    public MutableStateFlow getDisconnectEvent() {
+        return null;
     }
 }

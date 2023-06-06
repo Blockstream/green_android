@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
-import com.blockstream.green.data.Countries.COUNTRIES
-import com.blockstream.green.data.Country
+import com.blockstream.common.data.Countries.Countries
+import com.blockstream.common.data.Country
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorSetupFragmentBinding
@@ -252,7 +252,7 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
     override fun getFilterAdapter(requestCode: Int): ModelAdapter<*, *> {
         val adapter = ModelAdapter<Country, CountryListItem>() {
             CountryListItem(it)
-        }.set(COUNTRIES)
+        }.set(Countries)
 
         adapter.itemFilter.filterPredicate = { item: CountryListItem, constraint: CharSequence? ->
             item.country.name.lowercase().contains(

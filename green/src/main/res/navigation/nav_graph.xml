@@ -63,7 +63,7 @@
         <argument
             android:name="network"
             android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.Network"
+            app:argType="com.blockstream.common.gdk.data.Network"
             app:nullable="true" />
         <action
             android:id="@+id/action_walletSettingsFragment_self"
@@ -86,7 +86,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="network"
-            app:argType="com.blockstream.gdk.data.Network"
+            app:argType="com.blockstream.common.gdk.data.Network"
             app:nullable="true"
             android:defaultValue="@null" />
         <action
@@ -105,7 +105,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="network"
-            app:argType="com.blockstream.gdk.data.Network" />
+            app:argType="com.blockstream.common.gdk.data.Network" />
         <argument
             android:name="method"
             android:defaultValue="EMAIL"
@@ -198,7 +198,7 @@
         <argument
             android:name="network"
             android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.Network"
+            app:argType="com.blockstream.common.gdk.data.Network"
             app:nullable="true" />
         <argument
             android:name="isAddAccount"
@@ -226,7 +226,7 @@
 
         <argument
             android:name="credentials"
-            app:argType="com.blockstream.gdk.data.Credentials"
+            app:argType="com.blockstream.common.gdk.data.Credentials"
             android:defaultValue="@null"
             app:nullable="true" />
         <argument
@@ -255,7 +255,7 @@
         <argument
             android:name="network"
             android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.Network"
+            app:argType="com.blockstream.common.gdk.data.Network"
             app:nullable="true" />
         <argument
             android:name="assetId"
@@ -291,7 +291,7 @@
             app:nullable="true" />
         <argument
             android:name="network"
-            app:argType="com.blockstream.gdk.data.Network"
+            app:argType="com.blockstream.common.gdk.data.Network"
             app:nullable="true" />
         <argument
             android:name="assetId"
@@ -325,7 +325,7 @@
             app:nullable="true" />
         <argument
             android:name="network"
-            app:argType="com.blockstream.gdk.data.Network"
+            app:argType="com.blockstream.common.gdk.data.Network"
             app:nullable="true" />
         <argument
             android:name="assetId"
@@ -370,7 +370,7 @@
             app:destination="@id/sendFragment" />
         <argument
             android:name="account"
-            app:argType="com.blockstream.gdk.data.Account" />
+            app:argType="com.blockstream.common.gdk.data.Account" />
         <action
             android:id="@+id/action_accountOverviewFragment_to_addressesFragment"
             app:destination="@id/previousAddressesFragment" />
@@ -468,7 +468,7 @@
         <argument
             android:name="accountType"
             android:defaultValue="UNKNOWN"
-            app:argType="com.blockstream.gdk.data.AccountType" />
+            app:argType="com.blockstream.common.gdk.data.AccountType" />
         <argument
             android:name="assetId"
             android:defaultValue="@null"
@@ -490,7 +490,7 @@
             app:argType="string" />
         <argument
             android:name="network"
-            app:argType="com.blockstream.gdk.data.Network" />
+            app:argType="com.blockstream.common.gdk.data.Network" />
         <action
             android:id="@+id/action_account2of3Fragment_to_enterXpubFragment"
             app:destination="@id/enterXpubFragment" />
@@ -510,10 +510,10 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="network"
-            app:argType="com.blockstream.gdk.data.Network" />
+            app:argType="com.blockstream.common.gdk.data.Network" />
         <argument
             android:name="accountType"
-            app:argType="com.blockstream.gdk.data.AccountType" />
+            app:argType="com.blockstream.common.gdk.data.AccountType" />
         <argument
             android:name="assetId"
             app:argType="string" />
@@ -542,7 +542,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="accountAsset"
-            app:argType="com.blockstream.gdk.data.AccountAsset" />
+            app:argType="com.blockstream.common.gdk.data.AccountAsset" />
         <action
             android:id="@+id/action_receiveFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
@@ -607,11 +607,11 @@
         <argument
             android:name="account"
             android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.Account"
+            app:argType="com.blockstream.common.gdk.data.Account"
             app:nullable="true" />
         <argument
             android:name="transaction"
-            app:argType="com.blockstream.gdk.data.Transaction" />
+            app:argType="com.blockstream.common.gdk.data.Transaction" />
         <action
             android:id="@+id/action_transactionDetailsFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
@@ -628,11 +628,11 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="accountAsset"
-            app:argType="com.blockstream.gdk.data.AccountAsset" />
+            app:argType="com.blockstream.common.gdk.data.AccountAsset" />
         <argument
             android:name="network"
             android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.Network"
+            app:argType="com.blockstream.common.gdk.data.Network"
             app:nullable="true" />
         <argument
             android:name="assetId"
@@ -668,7 +668,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="account"
-            app:argType="com.blockstream.gdk.data.Account" />
+            app:argType="com.blockstream.common.gdk.data.Account" />
         <argument
             android:name="transactionSegmentation"
             app:argType="com.blockstream.green.data.TransactionSegmentation" />
@@ -687,10 +687,10 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="network"
-            app:argType="com.blockstream.gdk.data.Network" />
+            app:argType="com.blockstream.common.gdk.data.Network" />
         <argument
             android:name="accountType"
-            app:argType="com.blockstream.gdk.data.AccountType" />
+            app:argType="com.blockstream.common.gdk.data.AccountType" />
         <argument
             android:name="assetId"
             app:argType="string" />
@@ -733,7 +733,7 @@
         <argument
             android:name="proposal"
             android:defaultValue="@null"
-            app:argType="com.blockstream.gdk.data.SwapProposal"
+            app:argType="com.blockstream.common.gdk.data.SwapProposal"
             app:nullable="true" />
         <action
             android:id="@+id/action_swapFragment_to_sendConfirmFragment"
@@ -752,7 +752,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="proposal"
-            app:argType="com.blockstream.gdk.data.SwapProposal" />
+            app:argType="com.blockstream.common.gdk.data.SwapProposal" />
     </fragment>
     <action
         android:id="@+id/action_global_reviewAddAccountFragment"
@@ -767,7 +767,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="account"
-            app:argType="com.blockstream.gdk.data.Account" />
+            app:argType="com.blockstream.common.gdk.data.Account" />
     </fragment><action android:id="@+id/action_global_chooseAccountTypeFragment" app:destination="@id/chooseAccountTypeFragment"/>
     <action android:id="@+id/action_global_recoveryPhraseFragment" app:destination="@id/recoveryPhraseFragment" />
 
@@ -831,7 +831,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="accountAsset"
-            app:argType="com.blockstream.gdk.data.AccountAsset" />
+            app:argType="com.blockstream.common.gdk.data.AccountAsset" />
         <argument
             android:name="withdraw"
             app:argType="string" />
@@ -846,7 +846,7 @@
             app:argType="com.blockstream.green.database.Wallet" />
         <argument
             android:name="accountAsset"
-            app:argType="com.blockstream.gdk.data.AccountAsset" />
+            app:argType="com.blockstream.common.gdk.data.AccountAsset" />
         <argument
             android:name="auth"
             app:argType="string" />

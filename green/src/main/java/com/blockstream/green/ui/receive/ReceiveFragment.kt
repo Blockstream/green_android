@@ -17,8 +17,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import breez_sdk.LnInvoice
-import com.blockstream.base.Urls
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.Urls
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.R
 import com.blockstream.green.data.AddressType
 import com.blockstream.green.data.DenominatedValue

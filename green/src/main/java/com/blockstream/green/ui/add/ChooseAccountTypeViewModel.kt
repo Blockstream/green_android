@@ -1,15 +1,15 @@
 package com.blockstream.green.ui.add
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.BTC_POLICY_ASSET
-import com.blockstream.gdk.data.AccountType
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.hasHistory
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.items.AccountTypeListItem
 import com.blockstream.green.utils.AppKeystore
 import dagger.assisted.Assisted
@@ -72,7 +72,7 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
 
                     list += AccountType.BIP84_SEGWIT
 
-                    if (isBitcoin && !session.isHardwareWallet && !session.hasLightning && settingsManager.getApplicationSettings().experimentalFeatures && !session.isTestnet && settingsManager.lightningEnabled) {
+                    if (isBitcoin && !session.isHardwareWallet && !session.hasLightning && settingsManager.getApplicationSettings().experimentalFeatures && !session.isTestnet && settingsManager.isLightningEnabled(countly)) {
                         list += AccountType.LIGHTNING
                     }
                 }

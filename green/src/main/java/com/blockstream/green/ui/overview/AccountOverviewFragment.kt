@@ -13,9 +13,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.base.IAppReview
-import com.blockstream.base.Urls
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.common.Urls
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
 import com.blockstream.green.data.GdkEvent

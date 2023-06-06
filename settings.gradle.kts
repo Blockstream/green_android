@@ -1,3 +1,3 @@
-rootProject.name = "Green Android"
+rootProject.name = "Blockstream_Green"
 
-include(":green", ":base", ":crypto", ":hardware", ":jade", ":gms" ,":no-gms", ":lightning")
+include(":green", ":base", ":crypto", ":hardware", ":jade", ":gms" ,":no-gms", ":lightning", ":common", ":gdk")

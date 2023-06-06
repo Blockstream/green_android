@@ -1,14 +1,16 @@
 package com.blockstream.green.ui.settings
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.green.R
+import androidx.lifecycle.viewModelScope
+import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.common.data.ScreenLockSetting
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.Countly
 import com.blockstream.green.lifecycle.ListenableLiveData
-import com.blockstream.green.settings.ApplicationSettings
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,7 +22,7 @@ class AppSettingsViewModel @Inject constructor(
 
     val analyticsFeatureEnabled = settingsManager.analyticsFeatureEnabled
     val lightningEnabled
-        get() = settingsManager.lightningEnabled
+        get() = settingsManager.isLightningEnabled(countly)
 
     val proxyURLInvalid = MutableLiveData(true)
 
@@ -63,14 +65,12 @@ class AppSettingsViewModel @Inject constructor(
     val spvTestnetLiquidElectrumServer = MutableLiveData(appSettings.spvTestnetLiquidElectrumServer ?: "")
 
     init {
-        settingsManager
-            .getApplicationSettingsLiveData()
-            .observe(lifecycleOwner){
+        settingsManager.appSettingsStateFlow.onEach {
             appSettings = it
 
             // Only analytics is changed from an outside scope
             enableAnalytics.postValue(appSettings.analytics)
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun getSettings() = ApplicationSettings(
@@ -115,27 +115,5 @@ class AppSettingsViewModel @Inject constructor(
         const val DEFAULT_MULTI_SPV_LIQUID_URL = "blockstream.info:995"
         const val DEFAULT_MULTI_SPV_TESTNET_URL = "electrum.blockstream.info:60002"
         const val DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL = "blockstream.info:465"
-    }
-}
-
-enum class ScreenLockSetting constructor(val seconds: Int){
-    // Keep same order with getStringList
-    LOCK_IMMEDIATELY(0),
-    LOCK_AFTER_60(60);
-
-    companion object {
-        fun bySeconds(seconds: Int) = when(seconds){
-            60 -> LOCK_AFTER_60
-            else -> LOCK_IMMEDIATELY
-        }
-
-        fun byPosition(position: Int): ScreenLockSetting{
-            return values()[position]
-        }
-
-        fun getStringList(context: Context): List<String>{
-            return listOf(context.getString(
-                R.string.id_lock_immediately), context.getString(R.string.id_lock_after_1_minute))
-        }
     }
 }

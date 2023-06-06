@@ -3,8 +3,8 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.gdk.assetName
 import com.blockstream.green.gdk.assetTicker
 import com.blockstream.green.gdk.balance

@@ -3,7 +3,7 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.blockstream.green.R
-import com.blockstream.green.data.Country
+import com.blockstream.common.data.Country
 import com.blockstream.green.databinding.ListItemCountryBinding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 

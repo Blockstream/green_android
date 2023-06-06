@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.AppKeystore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

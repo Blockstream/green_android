@@ -1,7 +1,7 @@
 package com.blockstream.green.ui.add;
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.GdkBridge
+import com.blockstream.common.gdk.Wally
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 
 
 class EnterXpubViewModel @AssistedInject constructor(
-    gdkBridge: GdkBridge,
+    wally: Wally,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     countly: Countly,
@@ -32,7 +32,7 @@ class EnterXpubViewModel @AssistedInject constructor(
             .onEach {
                 isXpubValid.value = true
                 isXpubValid.value = withContext(Dispatchers.IO){
-                    gdkBridge.isXpubValid(it)
+                    wally.isXpubValid(it)
                 }
             }
             .launchIn(viewModelScope)

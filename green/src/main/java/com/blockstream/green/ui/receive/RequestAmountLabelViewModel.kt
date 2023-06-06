@@ -1,8 +1,8 @@
 package com.blockstream.green.ui.receive
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.params.Convert
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.params.Convert
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.database.Wallet

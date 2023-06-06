@@ -3,7 +3,7 @@ package com.blockstream.green.ui.drawer
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DrawerFragmentBinding

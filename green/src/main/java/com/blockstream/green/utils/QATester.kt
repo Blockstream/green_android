@@ -2,8 +2,8 @@ package com.blockstream.green.utils
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.gdk.AssetQATester
-import com.blockstream.gdk.data.Notification
+import com.blockstream.common.managers.AssetQATester
+import com.blockstream.common.gdk.data.Notification
 import com.blockstream.HardwareQATester
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

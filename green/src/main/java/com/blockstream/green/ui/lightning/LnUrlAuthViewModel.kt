@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import breez_sdk.LnUrlCallbackStatus
 import breez_sdk.LnUrlAuthRequestData
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet

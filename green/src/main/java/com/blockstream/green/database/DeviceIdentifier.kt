@@ -1,11 +1,10 @@
 package com.blockstream.green.database
 
 import android.os.Parcelable
-import com.blockstream.DeviceBrand
-import com.blockstream.gdk.GAJson
+import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.GdkJson
 import com.blockstream.green.devices.Device
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,9 +15,7 @@ data class DeviceIdentifier constructor(
     @SerialName("unique_identifier") val uniqueIdentifier: String,
     @SerialName("brand") val brand: DeviceBrand,
     @SerialName("connection") val connectionType: Device.ConnectionType,
-): GAJson<DeviceIdentifier>(), Parcelable {
+): GdkJson<DeviceIdentifier>(), Parcelable {
 
-    override fun kSerializer(): KSerializer<DeviceIdentifier> {
-        return serializer()
-    }
+    override fun kSerializer() = serializer()
 }

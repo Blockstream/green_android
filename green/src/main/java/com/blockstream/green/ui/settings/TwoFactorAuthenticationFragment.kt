@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.TwofactorAuthenticationFragmentBinding

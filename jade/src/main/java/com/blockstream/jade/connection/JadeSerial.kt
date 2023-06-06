@@ -6,6 +6,7 @@ import com.blockstream.jade.JadeConnectionImpl
 import com.blockstream.jade.entities.JadeError
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
+import kotlinx.coroutines.flow.StateFlow
 
 
 /**
@@ -45,6 +46,10 @@ class JadeSerial(private val usbManager: UsbManager, private val usbDevice: UsbD
     override fun write(bytes: ByteArray): Int {
         usbSerialDevice?.write(bytes)
         return bytes.size
+    }
+
+    override fun getDisconnectEvent(): StateFlow<Boolean>? {
+        return null
     }
 
     override fun disconnect() {

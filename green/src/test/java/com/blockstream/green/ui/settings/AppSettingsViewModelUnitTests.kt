@@ -1,9 +1,8 @@
 package com.blockstream.green.ui.settings
 
-import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.TestViewModel
-import com.blockstream.green.settings.ApplicationSettings
-import com.blockstream.green.settings.SettingsManager
 import junit.framework.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -26,7 +25,7 @@ class AppSettingsViewModelUnitTests : TestViewModel<AppSettingsViewModel>() {
         super.setup()
 
         whenever(settingsManager.getApplicationSettings()).thenReturn(ApplicationSettings())
-        whenever(settingsManager.getApplicationSettingsLiveData()).thenReturn(MutableLiveData(ApplicationSettings()))
+
         viewModel = AppSettingsViewModel(settingsManager, mock())
     }
 

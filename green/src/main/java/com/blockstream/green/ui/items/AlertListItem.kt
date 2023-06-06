@@ -3,8 +3,8 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.TwoFactorReset
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAlertBinding
 import com.blockstream.green.extensions.context
@@ -125,6 +125,6 @@ sealed class AlertType{
     data class Reset2FA(val network: Network, val twoFactorReset: TwoFactorReset): AlertType()
     object TestnetWarning : AlertType()
     object EphemeralBip39 : AlertType()
-    data class Banner(val banner: com.blockstream.green.data.Banner) : AlertType()
+    data class Banner(val banner: com.blockstream.common.data.Banner) : AlertType()
     object FailedNetworkLogin : AlertType()
 }

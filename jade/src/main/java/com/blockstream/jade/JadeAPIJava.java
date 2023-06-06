@@ -24,7 +24,8 @@ import java.util.Random;
 
 import io.reactivex.rxjava3.exceptions.UndeliverableException;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.subjects.PublishSubject;
+import kotlinx.coroutines.flow.MutableStateFlow;
+import kotlinx.coroutines.flow.StateFlow;
 
 /**
  * High-Level Synchronous Jade Client API
@@ -539,7 +540,7 @@ public abstract class JadeAPIJava {
         return signTxInputs(baseId, inputs, useAeProtocol);
     }
 
-    public PublishSubject<Boolean> getBleDisconnectEvent() {
+    public StateFlow<Boolean> getDisconnectEvent() {
         return jade.getBleDisconnectEvent();
     }
 }

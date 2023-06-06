@@ -17,8 +17,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.Device
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.Wally
+import com.blockstream.common.gdk.data.Device
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.Countly
@@ -27,7 +28,7 @@ import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.isBlank
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
@@ -72,7 +73,10 @@ abstract class AppFragment<T : ViewDataBinding>(
     internal lateinit var countly: Countly
 
     @Inject
-    internal lateinit var gdkBridge: GdkBridge
+    internal lateinit var gdk: Gdk
+
+    @Inject
+    internal lateinit var wally: Wally
 
     @Inject
     internal lateinit var sessionManager: SessionManager

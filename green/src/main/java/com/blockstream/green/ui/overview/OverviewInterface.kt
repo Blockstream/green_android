@@ -3,7 +3,7 @@ package com.blockstream.green.ui.overview
 import android.content.Context
 import androidx.lifecycle.lifecycleScope
 import breez_sdk.InputType
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet

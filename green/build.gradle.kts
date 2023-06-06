@@ -5,7 +5,6 @@ import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import java.io.FileInputStream
 import java.util.*
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -17,7 +16,6 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("com.adarshr.test-logger") version "3.2.0"
 }
-true // Needed to make the Suppress annotation work for the plugins block
 
 // https://developer.android.com/studio/publish/app-signing#secure-key
 // Create a variable called keystorePropertiesFile, and initialize it to your
@@ -38,6 +36,7 @@ if (keystorePropertiesFile.exists()){
 android {
     namespace = "com.blockstream.green"
     compileSdk = 33
+    buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
         minSdk = 23
@@ -45,6 +44,7 @@ android {
         versionCode = 410
         versionName = "4.0.10"
         setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")
+        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
         testApplicationId = "com.blockstream.green.test"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -115,7 +115,6 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             matchingFallbacks += listOf("normal")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             ndk {
                 abiFilters += listOf("armeabi-v7a", "arm64-v8a") // includes ARM & x86_64 .so files only, so no x86 .so file
@@ -127,9 +126,12 @@ android {
                 }
             }
         }
+        getByName("debug") {
+            isMinifyEnabled = true
+        }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
@@ -266,7 +268,7 @@ dependencies {
 
 fun appendGdkCommitHash(project: Project, enableGitSubmodule: Boolean): String{
     val gdkCommit = System.getenv("GDK_COMMIT")
-    val gdkCommitFile = project.file("crypto/gdk_commit")
+    val gdkCommitFile = project.file("gdk/gdk_commit")
     var hash: String? = null
 
     if (gdkCommit != null) {
@@ -275,7 +277,7 @@ fun appendGdkCommitHash(project: Project, enableGitSubmodule: Boolean): String{
         val content = gdkCommitFile.readText().trim()
         hash = content.substring(0, Math.min(8, content.length))
     } else if (enableGitSubmodule) {
-        val cmd = "git --git-dir=crypto/gdk/.git rev-parse --short HEAD"
+        val cmd = "git --git-dir=gdk/gdk/.git rev-parse --short HEAD"
         val proc = ProcessGroovyMethods.execute(cmd)
         hash = ProcessGroovyMethods.getText(proc).trim()
     }

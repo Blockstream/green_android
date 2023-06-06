@@ -6,8 +6,8 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.TwoFactorReset
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod

@@ -2,27 +2,29 @@ package com.greenaddress.greenbits.wallets;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.blockstream.HwWalletLogin;
 import com.blockstream.JadeHWWallet;
+import com.blockstream.common.gdk.Gdk;
+import com.blockstream.common.gdk.device.HardwareWalletInteraction;
+import com.blockstream.common.gdk.device.BlindingFactorsResult;
+import com.blockstream.common.gdk.device.SignTransactionResult;
 import com.blockstream.gdk.ExtensionsKt;
-import com.blockstream.gdk.data.Account;
-import com.blockstream.gdk.data.Device;
-import com.blockstream.gdk.data.InputOutput;
-import com.blockstream.gdk.data.Network;
+import com.blockstream.common.gdk.data.Account;
+import com.blockstream.common.gdk.data.Device;
+import com.blockstream.common.gdk.data.InputOutput;
+import com.blockstream.common.gdk.data.Network;
 import com.blockstream.hardware.R;
 import com.blockstream.jade.data.JadeNetworks;
 import com.blockstream.jade.data.JadeState;
 import com.blockstream.jade.data.VersionInfo;
 import com.blockstream.jade.entities.JadeVersion;
-import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.BaseEncoding;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenapi.HWWalletBridge;
 import com.blockstream.HardwareQATester;
 import com.blockstream.jade.JadeAPI;
 import com.blockstream.jade.entities.Commitment;
@@ -41,12 +43,10 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.rxjava3.subjects.CompletableSubject;
-import io.reactivex.rxjava3.subjects.PublishSubject;
 import kotlinx.coroutines.CompletableDeferred;
 import kotlinx.coroutines.CompletableDeferredKt;
-import kotlinx.serialization.json.Json;
+import kotlinx.coroutines.flow.StateFlow;
 import kotlinx.serialization.json.JsonElement;
-import kotlinx.serialization.json.JsonKt;
 
 abstract public class JadeHWWalletJava extends HWWallet {
     private static final String TAG = "JadeHWWallet";
@@ -58,7 +58,8 @@ abstract public class JadeHWWalletJava extends HWWallet {
     // FIXME: remove (an assume true) when 0.1.48 is made minimum allowed version.
     private final boolean has_swap_support;
 
-    public JadeHWWalletJava(final JadeAPI jade, final Device device, final VersionInfo verInfo, final HardwareQATester hardwareQATester) {
+    public JadeHWWalletJava(final Gdk gdk, final JadeAPI jade, final Device device, final VersionInfo verInfo, final HardwareQATester hardwareQATester) {
+        this.mGdk = gdk;
         super.mDevice = device;
         this.jade = jade;
         this.mHardwareQATester = hardwareQATester;
@@ -89,7 +90,8 @@ abstract public class JadeHWWalletJava extends HWWallet {
     // (until correctly setup and user authenticated etc).
     public boolean authUser(final HwWalletLogin hwLoginBridge) throws Exception {
         // Push some extra entropy into Jade
-        jade.addEntropy(GDK.get_random_bytes(32));
+
+        jade.addEntropy(mGdk.getRandomBytes(32));
 
         VersionInfo info = jade.getVersionInfo();
         JadeState state = info.getJadeState();
@@ -201,8 +203,9 @@ abstract public class JadeHWWalletJava extends HWWallet {
         return unsigned;
     }
 
+    @NonNull
     @Override
-    public synchronized List<String> getXpubs(final Network network, final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public synchronized List<String> getXpubs(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull List<? extends List<Integer>> paths) {
         Log.d(TAG, "getXpubs() for " + paths.size() + " paths (" + network.getId() + ").");
 
         final String canonicalNetworkId = network.getCanonicalNetworkId();
@@ -224,9 +227,9 @@ abstract public class JadeHWWalletJava extends HWWallet {
         }
     }
 
+    @NonNull
     @Override
-    public synchronized SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
-                                     final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
+    public synchronized com.blockstream.common.gdk.device.SignMessageResult signMessage(@Nullable HardwareWalletInteraction hwInteraction, @NonNull List<Integer> path, @NonNull String message, boolean useAeProtocol, @Nullable String aeHostCommitment, @Nullable String aeHostEntropy) {
         Log.d(TAG, "signMessage() for message of length " + message.length() + " using path " + path);
 
         CompletableSubject completable = CompletableSubject.create();
@@ -256,7 +259,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
             final String sigDerHex =  hexFromBytes(Arrays.copyOfRange(sigDer, 0, len));
 
             Log.d(TAG, "signMessage() returning: " + sigDerHex);
-            return new SignMsgResult(sigDerHex, hexFromBytes(result.getSignerCommitment()));
+            return new com.blockstream.common.gdk.device.SignMessageResult(sigDerHex, hexFromBytes(result.getSignerCommitment()));
         } catch (final Exception e) {
             completable.onError(e);
             throw new RuntimeException(e);
@@ -282,151 +285,143 @@ abstract public class JadeHWWalletJava extends HWWallet {
         return change;
     }
 
+    @NonNull
     @Override
-    public synchronized SignTxResult signTransaction(final Network network, final HWWalletBridge parent,
-                                        final JsonElement transaction,
-                                        final List<InputOutput> inputs,
-                                        final List<InputOutput> outputs,
-                                        final Map<String, String> transactions,
-                                        final boolean useAeProtocol) {
-
-        final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
-
+    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull JsonElement transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
         Log.d(TAG, "signTransaction() called for " + inputs.size() + " inputs");
-        try {
-            if (transactions == null || transactions.isEmpty()) {
-                throw new RuntimeException("Input transactions missing");
-            }
 
-            // Get the inputs in the form Jade expects
-            final List<TxInput> txInputs = new ArrayList<>(inputs.size());
-            for (final InputOutput input : inputs) {
-                final boolean swInput = input.isSegwit();
-                final byte[] script = hexToBytes(input.getPrevoutScript());
-
-                if (swInput && inputs.size() == 1) {
-                    // Single SegWit input - can skip sending entire tx and just send the sats amount
-                    txInputs.add(new TxInputBtc(swInput,
-                                                null,
-                                                script,
-                                                input.getSatoshi(),
-                                                input.getUserPath(),
-                                                hexToBytes(input.getAeHostCommitment()),
-                                                hexToBytes(input.getAeHostEntropy())));
-                } else {
-                    // Non-SegWit input or there are several inputs - in which case we always send
-                    // the entire prior transaction up to Jade (so it can verify the spend amounts).
-                    final String txhex = transactions.get(input.getTxHash());
-                    if (txhex == null) {
-                        throw new RuntimeException("Required input transaction not found: " + input.getTxHash());
-                    }
-                    final byte[] inputTx = hexToBytes(txhex);
-                    txInputs.add(new TxInputBtc(swInput,
-                                                inputTx,
-                                                script,
-                                                null,
-                                                input.getUserPath(),
-                                                hexToBytes(input.getAeHostCommitment()),
-                                                hexToBytes(input.getAeHostEntropy())));
-                }
-            }
-
-            // Get the change outputs and paths
-            final List<TxChangeOutput> change = getChangeData(outputs);
-
-            // Make jade-api call
-            final String canonicalNetworkId = network.getCanonicalNetworkId();
-            final String txhex = tx.get("transaction").asText();
-            final byte[] txn = hexToBytes(txhex);
-            final SignTxInputsResult result = this.jade.signTx(canonicalNetworkId, useAeProtocol, txn, txInputs, change);
-
-            Log.d(TAG, "signTransaction() returning " + result.getSignatures().size() + " signatures");
-            return new SignTxResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public synchronized SignTxResult signLiquidTransaction(final Network network, final HWWalletBridge parent, final JsonElement transaction,
-                                              final List<InputOutput> inputs,
-                                              final List<InputOutput> outputs,
-                                              final Map<String,String> transactions,
-                                              final boolean useAeProtocol) {
         final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
 
-        Log.d(TAG, "signLiquidTransaction() called for " + inputs.size() + " inputs");
-        try {
-            final byte[] txBytes = hexToBytes(tx.get("transaction").asText());
+        if(network.isLiquid()){
+            try {
+                final byte[] txBytes = hexToBytes(tx.get("transaction").asText());
 
-            // Load the tx into wally for legacy fw versions as will need it later
-            // to access the output's asset[generator] and value[commitment].
-            // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly so
-            // no need to parse/load the transaction into wally.
-            // FIXME: remove when 0.1.48 is made minimum allowed version.
-            final Object wallytx = !this.has_swap_support ? Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_ELEMENTS) : null;
+                // Load the tx into wally for legacy fw versions as will need it later
+                // to access the output's asset[generator] and value[commitment].
+                // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly so
+                // no need to parse/load the transaction into wally.
+                // FIXME: remove when 0.1.48 is made minimum allowed version.
+                final Object wallytx = !this.has_swap_support ? Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_ELEMENTS) : null;
 
-            // Collect data from the tx inputs
-            final List<TxInputLiquid> txInputs = new ArrayList<>(inputs.size());
-            for (final InputOutput input : inputs) {
-                // Get the input in the form Jade expects
-                final byte[] script = hexToBytes(input.getPrevoutScript());
-                final byte[] commitment = hexToBytes(input.getCommitment());
-                txInputs.add(new TxInputLiquid(input.isSegwit(),
-                                               script,
-                                               commitment,
-                                               input.getUserPath(),
-                                               hexToBytes(input.getAeHostCommitment()),
-                                               hexToBytes(input.getAeHostEntropy())));
-            }
-
-            // Get blinding factors and unblinding data per output - null for unblinded outputs
-            // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
-            final List<Commitment> trustedCommitments = new ArrayList<>(outputs.size());
-            for (int i = 0; i < outputs.size(); ++i) {
-                final InputOutput output = outputs.get(i);
-                if (output.getBlindingKey() != null) {
-                    final Commitment commitment = new Commitment();
-                    commitment.setAssetId(output.getAssetIdBytes());
-                    commitment.setValue(output.getSatoshi());
-                    commitment.setAbf(output.getAbfs());
-                    commitment.setVbf(output.getVbfs());
-                    commitment.setBlindingKey(output.getPublicKeyBytes());
-
-                    // Add asset-generator and value-commitment for legacy fw versions
-                    // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly
-                    if (wallytx != null) {
-                        commitment.setAssetGenerator(Wally.tx_get_output_asset(wallytx, i));
-                        commitment.setValueCommitment(Wally.tx_get_output_value(wallytx, i));
-                    }
-
-                    trustedCommitments.add(commitment);
-                } else {
-                    // Add a 'null' commitment for unblinded output
-                    trustedCommitments.add(null);
+                // Collect data from the tx inputs
+                final List<TxInputLiquid> txInputs = new ArrayList<>(inputs.size());
+                for (final InputOutput input : inputs) {
+                    // Get the input in the form Jade expects
+                    final byte[] script = hexToBytes(input.getPrevoutScript());
+                    final byte[] commitment = hexToBytes(input.getCommitment());
+                    txInputs.add(new TxInputLiquid(input.isSegwit(),
+                            script,
+                            commitment,
+                            input.getUserPath(),
+                            hexToBytes(input.getAeHostCommitment()),
+                            hexToBytes(input.getAeHostEntropy())));
                 }
+
+                // Get blinding factors and unblinding data per output - null for unblinded outputs
+                // Assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
+                final List<Commitment> trustedCommitments = new ArrayList<>(outputs.size());
+                for (int i = 0; i < outputs.size(); ++i) {
+                    final InputOutput output = outputs.get(i);
+                    if (output.getBlindingKey() != null) {
+                        final Commitment commitment = new Commitment();
+                        commitment.setAssetId(output.getAssetIdBytes());
+                        commitment.setValue(output.getSatoshi());
+                        commitment.setAbf(output.getAbfs());
+                        commitment.setVbf(output.getVbfs());
+                        commitment.setBlindingKey(output.getPublicKeyBytes());
+
+                        // Add asset-generator and value-commitment for legacy fw versions
+                        // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly
+                        if (wallytx != null) {
+                            commitment.setAssetGenerator(Wally.tx_get_output_asset(wallytx, i));
+                            commitment.setValueCommitment(Wally.tx_get_output_value(wallytx, i));
+                        }
+
+                        trustedCommitments.add(commitment);
+                    } else {
+                        // Add a 'null' commitment for unblinded output
+                        trustedCommitments.add(null);
+                    }
+                }
+
+                // Get the change outputs and paths
+                final List<TxChangeOutput> change = getChangeData(outputs);
+
+                // Make jade-api call to sign the txn
+                final String canonicalNetworkId = network.getCanonicalNetworkId();
+                final SignTxInputsResult result = this.jade.signLiquidTx(canonicalNetworkId, useAeProtocol, txBytes,
+                        txInputs, trustedCommitments, change);
+                // Pivot data into return structure
+                Log.d(TAG, "signLiquidTransaction() returning " + result.getSignatures().size() + " signatures");
+                return new SignTransactionResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
             }
+        }else {
 
-            // Get the change outputs and paths
-            final List<TxChangeOutput> change = getChangeData(outputs);
+            try {
+                if (transactions == null || transactions.isEmpty()) {
+                    throw new RuntimeException("Input transactions missing");
+                }
 
-            // Make jade-api call to sign the txn
-            final String canonicalNetworkId = network.getCanonicalNetworkId();
-            final SignTxInputsResult result = this.jade.signLiquidTx(canonicalNetworkId, useAeProtocol, txBytes,
-                                                                     txInputs, trustedCommitments, change);
-            // Pivot data into return structure
-            Log.d(TAG, "signLiquidTransaction() returning " + result.getSignatures().size() + " signatures");
-            return new SignTxResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+                // Get the inputs in the form Jade expects
+                final List<TxInput> txInputs = new ArrayList<>(inputs.size());
+                for (final InputOutput input : inputs) {
+                    final boolean swInput = input.isSegwit();
+                    final byte[] script = hexToBytes(input.getPrevoutScript());
+
+                    if (swInput && inputs.size() == 1) {
+                        // Single SegWit input - can skip sending entire tx and just send the sats amount
+                        txInputs.add(new TxInputBtc(swInput,
+                                null,
+                                script,
+                                input.getSatoshi(),
+                                input.getUserPath(),
+                                hexToBytes(input.getAeHostCommitment()),
+                                hexToBytes(input.getAeHostEntropy())));
+                    } else {
+                        // Non-SegWit input or there are several inputs - in which case we always send
+                        // the entire prior transaction up to Jade (so it can verify the spend amounts).
+                        final String txhex = transactions.get(input.getTxHash());
+                        if (txhex == null) {
+                            throw new RuntimeException("Required input transaction not found: " + input.getTxHash());
+                        }
+                        final byte[] inputTx = hexToBytes(txhex);
+                        txInputs.add(new TxInputBtc(swInput,
+                                inputTx,
+                                script,
+                                null,
+                                input.getUserPath(),
+                                hexToBytes(input.getAeHostCommitment()),
+                                hexToBytes(input.getAeHostEntropy())));
+                    }
+                }
+
+                // Get the change outputs and paths
+                final List<TxChangeOutput> change = getChangeData(outputs);
+
+                // Make jade-api call
+                final String canonicalNetworkId = network.getCanonicalNetworkId();
+                final String txhex = tx.get("transaction").asText();
+                final byte[] txn = hexToBytes(txhex);
+                final SignTxInputsResult result = this.jade.signTx(canonicalNetworkId, useAeProtocol, txn, txInputs, change);
+
+                Log.d(TAG, "signTransaction() returning " + result.getSignatures().size() + " signatures");
+                return new SignTransactionResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
+    @NonNull
     @Override
-    public synchronized String getMasterBlindingKey(HWWalletBridge parent) {
+    public synchronized String getMasterBlindingKey(@Nullable HardwareWalletInteraction hwInteraction) {
         Log.d(TAG, "getMasterBlindingKey() called");
 
+        CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
         try {
+            hwInteraction.interactionRequest(this, completable, "id_check_your_device");
             final byte[] masterkey = this.jade.getMasterBlindingKey();
             final String keyHex = hexFromBytes(masterkey);
             Log.d(TAG, "getMasterBlindingKey() returning " + keyHex);
@@ -440,10 +435,14 @@ abstract public class JadeHWWalletJava extends HWWallet {
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+        finally {
+            completable.complete(true);
+        }
     }
 
+    @NonNull
     @Override
-    public synchronized String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
+    public synchronized String getBlindingKey(@Nullable HardwareWalletInteraction hwInteraction, @NonNull String scriptHex) {
         Log.d(TAG, "getBlindingKey() for script of length " + scriptHex.length());
 
         try {
@@ -457,8 +456,9 @@ abstract public class JadeHWWalletJava extends HWWallet {
         }
     }
 
+    @NonNull
     @Override
-    public synchronized String getBlindingNonce(final HWWalletBridge parent, final String pubkey, final String scriptHex) {
+    public synchronized String getBlindingNonce(@Nullable HardwareWalletInteraction hwInteraction, @NonNull String pubkey, @NonNull String scriptHex) {
         Log.d(TAG, "getBlindingNonce() for script of length " + scriptHex.length() + " and pubkey " + pubkey);
 
         try {
@@ -481,8 +481,9 @@ abstract public class JadeHWWalletJava extends HWWallet {
         return result;
     }
 
+    @NonNull
     @Override
-    public synchronized BlindingFactorsResult getBlindingFactors(final HWWalletBridge parent, final List<InputOutput> inputs, final List<InputOutput> outputs) {
+    public synchronized  BlindingFactorsResult getBlindingFactors(@Nullable HardwareWalletInteraction hwInteraction, @Nullable List<InputOutput> inputs, @Nullable List<InputOutput> outputs) {
         Log.d(TAG, "getBlindingFactors() called for " + outputs.size() + " outputs");
 
         try {
@@ -529,8 +530,9 @@ abstract public class JadeHWWalletJava extends HWWallet {
         }
     }
 
+
     @Override
-    public synchronized String getGreenAddress(final Network network, HWWalletBridge parent, final Account account, final List<Long> path, final long csvBlocks) {
+    public synchronized String getGreenAddress(Network network, @Nullable HardwareWalletInteraction hwInteraction, Account account, List<Long> path, long csvBlocks) throws Exception {
         try {
             final String canonicalNetworkId = network.getCanonicalNetworkId();
             if (network.isMultisig()) {
@@ -585,12 +587,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
 
     @Nullable
     @Override
-    public synchronized PublishSubject<Boolean> getBleDisconnectEvent() {
-        return jade.getBleDisconnectEvent();
-    }
-
-    @Override
-    public synchronized int getIconResourceId() {
-        return R.drawable.blockstream_jade_device;
+    public StateFlow<Boolean> getDisconnectEvent() {
+        return jade.getDisconnectEvent();
     }
 }

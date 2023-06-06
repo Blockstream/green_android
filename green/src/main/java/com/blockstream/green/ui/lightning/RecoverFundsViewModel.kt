@@ -7,7 +7,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import breez_sdk.RecommendedFees
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet

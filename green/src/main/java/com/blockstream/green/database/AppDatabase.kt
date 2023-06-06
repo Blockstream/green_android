@@ -5,13 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
-import com.blockstream.DeviceBrand
+import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.base.Database.DATABASE_NAME
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.PinData
+import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
+import com.blockstream.common.gdk.data.PinData
 import com.blockstream.green.utils.EncryptedData
 import com.blockstream.green.utils.isDevelopmentFlavor
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 @Database(
@@ -65,28 +64,28 @@ class Converters {
 
     @TypeConverter
     fun toPinData(value: String?): PinData? = value?.let {
-        GdkBridge.JsonDeserializer.decodeFromString(it)
+        JsonDeserializer.decodeFromString(it)
     }
 
     @TypeConverter
-    fun fromPinData(value: PinData?): String? = value?.let { GdkBridge.JsonDeserializer.encodeToString(it)}
+    fun fromPinData(value: PinData?): String? = value?.let { JsonDeserializer.encodeToString(it)}
 
     @TypeConverter
     fun toEncryptedData(value: String?): EncryptedData? = value?.let {
-        GdkBridge.JsonDeserializer.decodeFromString(it)
+        JsonDeserializer.decodeFromString(it)
     }
 
     @TypeConverter
     fun fromEncryptedData(value: EncryptedData?): String? = value?.let {
-        GdkBridge.JsonDeserializer.encodeToString(it)}
+        JsonDeserializer.encodeToString(it)}
 
     @TypeConverter
     fun toDeviceIdentifierList(value: String?): List<DeviceIdentifier>? = value?.let {
-        GdkBridge.JsonDeserializer.decodeFromString(it)
+        JsonDeserializer.decodeFromString(it)
     }
 
     @TypeConverter
-    fun fromDeviceIdentifierList(value: List<DeviceIdentifier>?): String? = value?.let { GdkBridge.JsonDeserializer.encodeToString(it)}
+    fun fromDeviceIdentifierList(value: List<DeviceIdentifier>?): String? = value?.let { JsonDeserializer.encodeToString(it)}
 
     @TypeConverter
     fun toDeviceBrand(value: Int) = enumValues<DeviceBrand>()[value]

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.extensions.logException
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.AppViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

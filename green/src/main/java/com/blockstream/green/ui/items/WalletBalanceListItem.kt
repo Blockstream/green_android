@@ -19,6 +19,7 @@ import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
 import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.gdk.getAssetDrawableOrNull
 import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.utils.toAmountLook
@@ -46,8 +47,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
         session = session,
         assetId = session.walletAssets.keys.firstOrNull(), // Expect the first asset to be the policy BTC or L-BTC
         withUnit = true,
-        withGrouping = true,
-        denomination = denomination.takeIf {!it.isFiat } ?: Denomination.BTC
+        withGrouping = true
     )
 
     private suspend fun balanceInFiat() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLookOrNa(
@@ -143,7 +143,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
             val isAssetWithoutIcon = if (assetId.isPolicyAsset(session)) {
                 false
             } else {
-                session.getAssetDrawableOrNull(assetId) == null
+                session.getAssetDrawableOrNull(context, assetId) == null
             }
 
             if (isAssetWithoutIcon) {

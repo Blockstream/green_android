@@ -1,8 +1,8 @@
 package com.blockstream
 
-import com.blockstream.gdk.data.Network
-import com.greenaddress.greenapi.HWWalletBridge
+import com.blockstream.common.gdk.device.HardwareWalletInteraction
+import com.blockstream.common.gdk.data.Network
 
-interface HwWalletLogin: HWWalletBridge {
+interface HwWalletLogin: HardwareWalletInteraction {
     fun requestNetwork(): Network?
 }

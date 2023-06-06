@@ -1,10 +1,16 @@
 package com.blockstream.green.ui.settings
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.*
-import com.blockstream.gdk.params.EncryptWithPinParams
-import com.blockstream.gdk.params.Limits
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.Settings
+import com.blockstream.common.gdk.data.SettingsNotification
+import com.blockstream.common.gdk.data.TwoFactorConfig
+import com.blockstream.common.gdk.data.TwoFactorMethodConfig
+import com.blockstream.common.gdk.data.TwoFactorReset
+import com.blockstream.common.gdk.params.CsvParams
+import com.blockstream.common.gdk.params.EncryptWithPinParams
+import com.blockstream.common.gdk.params.Limits
+import com.blockstream.common.utils.randomChars
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.GdkEvent
@@ -33,7 +39,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     countly: Countly,
     val appKeystore: AppKeystore,
-    val gdkBridge: GdkBridge,
     val applicationScope: ApplicationScope,
     @Assisted wallet: Wallet
 ) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
@@ -81,7 +86,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             it.isMultisig
         }
 
-        session.accountsFlow.onEach { accounts ->
+        session.allAccountsFlow.onEach { accounts ->
             supportId = accounts.filter { it.isMultisig && it.pointer == 0L }
                 .joinToString(",") { "${it.network.bip21Prefix}:${it.receivingId}" }
         }.launchIn(viewModelScope)
@@ -97,7 +102,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             .allAccountsFlow
             .onEach { accounts ->
                 _archivedAccountsLiveData.value = accounts.count { it.hidden }
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewModelScope)
 
         updateTwoFactorConfig()
         updateWatchOnlyUsername()
@@ -231,7 +236,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     ) {
         doUserAction({
             session
-                .twofactorReset(network, email, isDispute)
+                .twoFactorReset(network, email, isDispute)
                 .result<TwoFactorReset>(twoFactorResolver = twoFactorResolver)
         }, onSuccess = {
             logout(LogoutReason.USER_ACTION)
@@ -318,7 +323,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
     fun setCsvTime(network: Network, csvTime: Int, twoFactorResolver: DialogTwoFactorResolver) {
         doUserAction({
-            session.setCsvTime(network, csvTime).resolve(twoFactorResolver = twoFactorResolver)
+            session.setCsvTime(network, CsvParams(csvTime)).resolve(twoFactorResolver = twoFactorResolver)
             session.updateSettings(network)
         }, onSuccess = {
             onEvent.postValue(ConsumableEvent(GdkEvent.Success))
@@ -327,7 +332,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
     fun enableBiometrics(cipher: Cipher) {
         doUserAction({
-            val pin = gdkBridge.randomChars(15)
+            val pin = randomChars(15)
             val credentials = session.getCredentials()
             val encryptWithPin =
                 session.encryptWithPin(null, EncryptWithPinParams(pin, credentials))

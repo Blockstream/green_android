@@ -1,8 +1,8 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
-import com.blockstream.gdk.data.LoginData
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.LoginData
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.OnboardingOptions

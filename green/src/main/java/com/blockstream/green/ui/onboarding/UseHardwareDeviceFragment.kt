@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
 import com.blockstream.green.R
 import com.blockstream.green.databinding.HardwarePageBinding
 import com.blockstream.green.databinding.UseHardwareDeviceFragmentBinding

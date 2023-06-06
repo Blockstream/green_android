@@ -2,7 +2,7 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.blockstream.gdk.data.Address
+import com.blockstream.common.gdk.data.Address
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAddressBinding
 import com.blockstream.green.extensions.context

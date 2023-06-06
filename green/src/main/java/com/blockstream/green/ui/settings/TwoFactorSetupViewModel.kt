@@ -2,18 +2,16 @@ package com.blockstream.green.ui.settings
 
 import android.graphics.Bitmap
 import androidx.lifecycle.*
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.extensions.isEmailValid
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.createQrBitmap
-
-import com.blockstream.green.extensions.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -22,13 +20,12 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     countly: Countly,
     appKeystore: AppKeystore,
-    gdkBridge: GdkBridge,
     applicationScope: ApplicationScope,
     @Assisted wallet: Wallet,
     @Assisted val network: Network,
     @Assisted val method: TwoFactorMethod,
     @Assisted val action: TwoFactorSetupAction
-) : WalletSettingsViewModel(sessionManager, walletRepository, countly, appKeystore, gdkBridge, applicationScope, wallet) {
+) : WalletSettingsViewModel(sessionManager, walletRepository, countly, appKeystore, applicationScope, wallet) {
 
     var authenticatorUrl: String? = null
     val country = MutableLiveData("")

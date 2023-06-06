@@ -5,9 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.blockstream.green.R
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.views.GreenToolbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 abstract class AppActivity : AppCompatActivity() {
@@ -57,13 +61,12 @@ abstract class AppActivity : AppCompatActivity() {
                 deviceManager.pauseBluetoothScanning()
             }
         }
-
-        settingsManager.getApplicationSettingsLiveData().observe(this){
+        settingsManager.appSettingsStateFlow.onEach {
             // Skip changing secure screen if we are on a secure fragment
             if(it.enhancedPrivacy || !secureFragments.contains(navController.currentDestination?.id)){
                 setSecureScreen(it.enhancedPrivacy)
             }
-        }
+        }.launchIn(CoroutineScope(context = Dispatchers.Default))
     }
 
     private fun setSecureScreen(isSecure: Boolean) {

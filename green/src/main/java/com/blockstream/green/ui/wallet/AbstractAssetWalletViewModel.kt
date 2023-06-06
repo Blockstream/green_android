@@ -2,8 +2,8 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository

@@ -9,7 +9,7 @@
 
         <variable
             name="account"
-            type="com.blockstream.gdk.data.Account" />
+            type="com.blockstream.common.gdk.data.Account" />
 
         <variable
             name="isWatchOnly"

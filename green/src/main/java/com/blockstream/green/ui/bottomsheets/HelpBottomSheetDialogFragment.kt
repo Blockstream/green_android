@@ -1,10 +1,10 @@
 package com.blockstream.green.ui.bottomsheets
 
 import androidx.fragment.app.FragmentManager
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemActionBinding
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.items.AbstractBindingItem
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.utils.StringHolder

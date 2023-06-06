@@ -5,22 +5,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.SwapProposal
+import com.blockstream.common.data.HerokuResponse
+import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
+import com.blockstream.common.gdk.data.SwapProposal
 import com.blockstream.green.data.Countly
-import com.blockstream.green.data.HerokuResponse
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.extensions.logException
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.createQrBitmap
-import com.blockstream.green.extensions.logException
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import mu.KLogging
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -78,7 +77,7 @@ class SwapProposalViewModel @AssistedInject constructor(
                     response.toString()
                 }
             }.let {
-                GdkBridge.JsonDeserializer.decodeFromString<HerokuResponse>(it)
+                JsonDeserializer.decodeFromString<HerokuResponse>(it)
             }.let {
                 "/proposals/${it.proposalId}"
             }

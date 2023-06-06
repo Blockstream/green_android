@@ -24,7 +24,7 @@ class ReviewAddAccountFragment : AbstractAddAccountFragment<ReviewAddAccountFrag
     override val addAccountViewModel: AbstractAddAccountViewModel
         get() = viewModel
 
-    override val network by lazy { gdkBridge.networks.getNetworkByAccountType(args.network.id, args.accountType) }
+    override val network by lazy { gdk.networks().getNetworkByAccountType(args.network.id, args.accountType) }
 
     override val assetId: String
         get() = args.assetId

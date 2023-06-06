@@ -10,9 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
-import com.blockstream.base.Urls
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.SettingsNotification
+import com.blockstream.common.Urls
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.SettingsNotification
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R

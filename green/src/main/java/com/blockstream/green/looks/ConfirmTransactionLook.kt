@@ -1,9 +1,9 @@
 package com.blockstream.green.looks
 
-import com.blockstream.gdk.data.CreateTransaction
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.UtxoView
-import com.blockstream.gdk.params.Convert
+import com.blockstream.common.gdk.params.Convert
+import com.blockstream.common.gdk.data.CreateTransaction
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.UtxoView
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
 import com.blockstream.green.gdk.GdkSession

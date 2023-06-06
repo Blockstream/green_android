@@ -1,10 +1,10 @@
 package com.blockstream.green.ui.devices
 
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.DeviceBrand
 import com.blockstream.HwWalletLogin
 import com.blockstream.JadeHWWallet
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
@@ -69,16 +69,16 @@ abstract class AbstractDeviceViewModel constructor(
     fun getWalletHashId(session: GdkSession, network: Network, device: Device): String {
         return session.getWalletIdentifier(
             network = network, // xPub generation is network agnostic
-            hwWallet = device.hwWallet,
-            hwWalletBridge = this
+            gdkHwWallet = device.gdkHardwareWallet,
+            hwInteraction = this
         ).walletHashId
     }
 
     fun getWalletName(session: GdkSession, network: Network, device: Device) = if (device.isJade) {
         session.getWalletFingerprint(
             network = network,
-            hwWallet = device.hwWallet,
-            hwWalletBridge = this
+            gdkHwWallet = device.gdkHardwareWallet,
+            hwInteraction = this
         )?.uppercase()?.let {
             "Wallet: $it"
         } ?: device.name
@@ -158,7 +158,7 @@ abstract class AbstractDeviceViewModel constructor(
     override fun firmwareComplete(success: Boolean, firmwareFileData: FirmwareFileData) {
         logger.info { "firmwareComplete: $success" }
 
-        (device?.hwWallet as? JadeHWWallet)?.also {
+        (device?.gdkHardwareWallet as? JadeHWWallet)?.also {
             it.updateFirmwareVersion(firmwareFileData.image.version)
         }
 

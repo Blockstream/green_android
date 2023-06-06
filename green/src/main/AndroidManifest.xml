@@ -138,7 +138,6 @@
         </provider>
 
         <service android:name=".services.TaskService"/>
-        <service android:name=".services.LightningService"/>
 
     </application>
 

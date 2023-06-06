@@ -7,9 +7,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import app.rive.runtime.kotlin.core.PlayableInstance
 import com.blockstream.base.IAppReview
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
 import com.blockstream.green.databinding.AppRateDialogBinding
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.RiveListener
 import com.blockstream.green.utils.openBrowser

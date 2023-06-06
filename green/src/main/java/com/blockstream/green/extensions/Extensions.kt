@@ -23,6 +23,7 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.MutableLiveData
 import androidx.viewbinding.ViewBinding
+import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.isPolicyAsset
@@ -39,6 +40,7 @@ fun ViewBinding.context(): Context = root.context
 fun Activity.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
     Snackbar.make(findViewById(android.R.id.content), text, duration).show()
 }
+
 fun TextInputLayout.endIconPadding(margin: Int = 24){
     try {
         val endLayout = suffixTextView.parent as View

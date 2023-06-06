@@ -25,9 +25,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import androidx.transition.TransitionManager
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.PinData
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.PinData
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
@@ -82,7 +82,7 @@ class MainActivity : AppActivity() {
     lateinit var walletRepository: WalletRepository
 
     @Inject
-    lateinit var gdkBridge: GdkBridge
+    lateinit var gdk: Gdk
 
     @Inject
     lateinit var applicationScope: ApplicationScope
@@ -171,7 +171,7 @@ class MainActivity : AppActivity() {
                 }
 
                 if (it.hasExtra(REGISTER_NETWORK_ID) && it.hasExtra(REGISTER_NETWORK_HOSTNAME)) {
-                    gdkBridge.registerCustomNetwork(it.getStringExtra(REGISTER_NETWORK_ID) ?: "", it.getStringExtra(REGISTER_NETWORK_HOSTNAME) ?: "")
+                    gdk.registerCustomNetwork(it.getStringExtra(REGISTER_NETWORK_ID) ?: "", it.getStringExtra(REGISTER_NETWORK_HOSTNAME) ?: "")
                 }
 
                 if (it.hasExtra(ADD_WALLET)) {
@@ -462,6 +462,7 @@ class MainActivity : AppActivity() {
         binding.appBarLayout.isVisible = isVisible
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (isDrawerOpen()) {
             closeDrawer()

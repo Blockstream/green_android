@@ -8,19 +8,14 @@ plugins {
 android {
     namespace = "com.blockstream.gms"
     compileSdk = 33
+    buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
         minSdk = 23
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-        }
     }
 }
 

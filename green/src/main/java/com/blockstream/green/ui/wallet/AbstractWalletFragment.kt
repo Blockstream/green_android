@@ -7,8 +7,9 @@ import android.widget.ArrayAdapter
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
-import com.blockstream.gdk.data.Pricing
-import com.blockstream.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.data.Pricing
+import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.gdk.toString
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
@@ -62,7 +63,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
             if(toolbar.title.isNotBlank() || !title.isNullOrBlank()) {
 
                 toolbar.setLogo(
-                    toolbarIcon ?: wallet.iconResource(session)
+                    toolbarIcon ?: wallet.iconResource()
                 )
             }
         }
@@ -173,9 +174,11 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
                                 networkSnackbar?.setAction(null, null)
                             }else{
                                 networkSnackbar?.setAction(R.string.id_now){
-                                    session.reconnectHint(ReconnectHintParams(
+                                    session.reconnectHint(
+                                        ReconnectHintParams(
                                         hint = ReconnectHintParams.KEY_CONNECT
-                                    ))
+                                    )
+                                    )
                                     networkSnackbar = null
                                 }
                             }

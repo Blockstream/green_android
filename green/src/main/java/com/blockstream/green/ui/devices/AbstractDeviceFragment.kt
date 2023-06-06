@@ -16,8 +16,8 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.core.app.ActivityCompat
 import androidx.databinding.ViewDataBinding
-import com.blockstream.DeviceBrand
-import com.blockstream.base.Urls
+import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.Urls
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.PinTextDialogBinding
@@ -145,9 +145,9 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
 
     open fun requestNetwork() {
         if(!settingsManager.getApplicationSettings().testnet){
-            viewModel.requestNetworkEmitter?.complete(gdkBridge.networks.bitcoinElectrum)
+            viewModel.requestNetworkEmitter?.complete(gdk.networks().bitcoinElectrum)
         }else {
-            EnvironmentBottomSheetDialogFragment.show(childFragmentManager)
+            EnvironmentBottomSheetDialogFragment.show(fragmentManager = childFragmentManager)
         }
     }
 

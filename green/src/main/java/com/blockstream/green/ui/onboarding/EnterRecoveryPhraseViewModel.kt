@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.gdk.GdkBridge
+import com.blockstream.common.gdk.Wally
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.ui.AppViewModel
@@ -15,7 +15,7 @@ import dagger.assisted.AssistedInject
 
 class EnterRecoveryPhraseViewModel @AssistedInject constructor(
     countly: Countly,
-    private val gdkBridge: GdkBridge,
+    private val wally: Wally,
     @Assisted private val recoveryPhrase: String?,
 ) : AppViewModel(countly) {
 
@@ -82,7 +82,7 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
         len -= if (isEditMode && len % 3 == 0) 1 else 0
 
         val valid = if (len > 11 && len % 3 == 0 && !isEditMode) {
-            gdkBridge.isMnemonicValid(recoveryPhrase.joinToString(" "))
+            wally.bip39MnemonicValidate(recoveryPhrase.joinToString(" "))
         } else {
             false
         }

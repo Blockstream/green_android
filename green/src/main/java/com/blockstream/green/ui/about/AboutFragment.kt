@@ -3,7 +3,7 @@ package com.blockstream.green.ui.about
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AboutFragmentBinding

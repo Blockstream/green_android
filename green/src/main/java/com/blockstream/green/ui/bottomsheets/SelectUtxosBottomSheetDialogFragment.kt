@@ -6,7 +6,7 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.data.Account
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.databinding.SelectUtxosBottomSheetBinding
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.ui.items.UtxoListItem

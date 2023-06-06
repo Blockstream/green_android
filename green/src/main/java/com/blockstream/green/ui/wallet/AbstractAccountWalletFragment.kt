@@ -3,8 +3,8 @@ package com.blockstream.green.ui.wallet
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.Network
 import mu.KLogging
 
 abstract class AbstractAccountWalletFragment<T : ViewDataBinding> constructor(

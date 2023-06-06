@@ -7,11 +7,13 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blockstream.DeviceBrand
-import com.blockstream.gdk.data.Device
+import com.blockstream.common.data.Banner
+import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.device.GdkHardwareWallet
+import com.blockstream.common.gdk.device.HardwareWalletInteraction
+import com.blockstream.common.gdk.data.Device
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.data.AppEvent
-import com.blockstream.green.data.Banner
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -20,8 +22,6 @@ import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.nameCleanup
-import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.greenapi.HWWalletBridge
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +31,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 
 
-open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, LifecycleOwner {
+open class AppViewModel(val countly: Countly) : ViewModel(), HardwareWalletInteraction, LifecycleOwner {
     val onEvent = MutableLiveData<ConsumableEvent<AppEvent>>()
     val onProgress = MutableLiveData(false)
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
@@ -56,12 +56,14 @@ open class AppViewModel(val countly: Countly) : ViewModel(), HWWalletBridge, Lif
     @SuppressLint("StaticFieldLeak")
     override val lifecycle: Lifecycle = lifecycleRegistry.value
 
-    override fun interactionRequest(hw: HWWallet?, completable: CompletableDeferred<Boolean>?, text: String?) {
-        hw?.let {
-            onDeviceInteractionEvent.postValue(ConsumableEvent(
-                Triple(it.device, completable, text)
-            ))
-        }
+    override fun interactionRequest(
+        hw: GdkHardwareWallet,
+        completable: CompletableDeferred<Boolean>?,
+        text: String?
+    ) {
+        onDeviceInteractionEvent.postValue(ConsumableEvent(
+            Triple(hw.device, completable, text)
+        ))
     }
 
     override fun requestPinMatrix(deviceBrand: DeviceBrand?): String {

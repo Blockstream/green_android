@@ -1,15 +1,15 @@
 package com.blockstream.green.ui.overview
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.SwapProposal
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.SwapProposal
+import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.gdk.WalletBalances
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.items.AlertType
@@ -20,7 +20,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.decodeFromString
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -72,7 +71,7 @@ class WalletOverviewViewModel @AssistedInject constructor(
             .allAccountsFlow
             .onEach { accounts ->
                 _archivedAccountsLiveData.value = accounts.count { it.hidden }
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewModelScope)
 
         session.systemMessageFlow.onEach {
             if(it.isEmpty()){
@@ -145,14 +144,14 @@ class WalletOverviewViewModel @AssistedInject constructor(
                     response.toString()
                 }
             }.let {
-                GdkBridge.JsonDeserializer.decodeFromString<SwapProposal>(it)
+                JsonDeserializer.decodeFromString<SwapProposal>(it)
             }
     }
 
     fun tryFailedNetworks() {
         session.tryFailedNetworks(hardwareWalletResolver = session.device?.let { device ->
-            DeviceResolver(
-                device.hwWallet,
+            DeviceResolver.createIfNeeded(
+                device.gdkHardwareWallet,
                 this
             )
         })

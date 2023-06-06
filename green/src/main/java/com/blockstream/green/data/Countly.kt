@@ -9,10 +9,17 @@ import androidx.core.content.edit
 import androidx.fragment.app.FragmentManager
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.CountlyInteface
+import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.common.data.Banner
+import com.blockstream.common.data.CountlyWidget
+import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
@@ -20,9 +27,6 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.Device
 import com.blockstream.green.gdk.*
-import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.ApplicationSettings
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppActivity
 import com.blockstream.green.ui.dialogs.CountlyNpsDialogFragment
 import com.blockstream.green.ui.dialogs.CountlySurveyDialogFragment
@@ -31,6 +35,8 @@ import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
 import com.blockstream.green.views.GreenAlertView
 import com.greenaddress.greenbits.wallets.FirmwareFileData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.json.Json
@@ -55,11 +61,12 @@ class Countly constructor(
     private val sharedPreferences: SharedPreferences,
     private val applicationScope: ApplicationScope,
     private val settingsManager: SettingsManager,
-    private val sessionManager: SessionManager,
     private val walletRepository: WalletRepository,
-) {
+): CountlyInteface {
+
+    private var _torProxy: String? = null
     private val _remoteConfigUpdateEvent = MutableSharedFlow<Unit>(replay = 1)
-    val remoteConfigUpdateEvent = _remoteConfigUpdateEvent.asSharedFlow()
+    override val remoteConfigUpdateEvent = _remoteConfigUpdateEvent.asSharedFlow()
 
     private val countly = Countly.sharedInstance().also { countly ->
         val config = CountlyConfig(
@@ -94,7 +101,7 @@ class Countly constructor(
             })
             // Add initial enabled features
             it.setConsentEnabled(
-                if (settingsManager.getApplicationSettings().analytics) {
+                if (settingsManager.appSettings.analytics) {
                     noConsentRequiredGroup + consentRequiredGroup
                 } else {
                     noConsentRequiredGroup
@@ -108,6 +115,7 @@ class Countly constructor(
         countly.init(config)
     }
 
+    private val apm = countly.apm()
     private val events = countly.events()
     private val views = countly.views()
     private val crashes = countly.crashes()
@@ -117,7 +125,7 @@ class Countly constructor(
     private val attribution = countly.attribution()
     private val feedback = countly.feedback()
 
-    private var analyticsConsent : Boolean by Delegates.observable(settingsManager.getApplicationSettings().analytics) { _, oldValue, newValue ->
+    private var analyticsConsent : Boolean by Delegates.observable(settingsManager.appSettings.analytics) { _, oldValue, newValue ->
         if(oldValue != newValue){
             consent.setConsentFeatureGroup(ANALYTICS_GROUP, newValue)
 
@@ -137,17 +145,17 @@ class Countly constructor(
 
     private val countlyProxy: String?
         get() {
-            val appSettings = settingsManager.getApplicationSettings()
-            return if(appSettings.tor){
+            val appSettings = settingsManager.appSettings
+            return if (appSettings.tor) {
                 // Use Orbot
-                if(appSettings.proxyUrl?.startsWith("socks5://") == true){
+                if (appSettings.proxyUrl?.startsWith("socks5://") == true) {
                     appSettings.proxyUrl
-                }else {
-                    sessionManager.torProxy.value ?: "socks5://tor_not_initialized"
+                } else {
+                    _torProxy ?: "socks5://tor_not_initialized"
                 }
-            }else if(!appSettings.proxyUrl.isNullOrBlank()){
+            } else if (!appSettings.proxyUrl.isNullOrBlank()) {
                 appSettings.proxyUrl
-            }else{
+            } else {
                 null
             }
         }
@@ -156,17 +164,12 @@ class Countly constructor(
         // Create Feature groups
         consent.createFeatureGroup(ANALYTICS_GROUP, consentRequiredGroup)
 
-        settingsManager.getApplicationSettingsLiveData().observeForever {
+        settingsManager.appSettingsStateFlow.onEach {
             analyticsConsent = it.analytics
             appSettingsAsString = appSettingsToString(it)
 
             updateProxy()
-        }
-
-        sessionManager.torProxy.onEach {
-            // Proxy endpoint was updated
-            updateProxy()
-        }.launchIn(applicationScope)
+        }.launchIn(scope = CoroutineScope(context = Dispatchers.Default))
 
         // Set number of user software wallets
         walletRepository.getSoftwareWalletsLiveData().observeForever {
@@ -199,7 +202,7 @@ class Countly constructor(
     fun getFeedbackWidgetData(widget: CountlyFeedbackWidget, callback: (CountlyWidget?) -> Unit){
         countly.feedback().getFeedbackWidgetData(widget) { data, _ ->
             try{
-                callback.invoke(GdkBridge.JsonDeserializer.decodeFromString<CountlyWidget>(data.toString()).also{
+                callback.invoke(JsonDeserializer.decodeFromString<CountlyWidget>(data.toString()).also {
                     it.widget = widget
                 })
 
@@ -266,7 +269,7 @@ class Countly constructor(
                                         cid = if (isProductionFlavor) GOOGLE_PLAY_ORGANIC_PRODUCTION else GOOGLE_PLAY_ORGANIC_DEVELOPMENT
                                     }
                                 }
-                                
+
                                 attribution.recordDirectAttribution("countly", buildJsonObject {
                                     put("cid", cid)
                                     if (uid != null) {
@@ -314,6 +317,12 @@ class Countly constructor(
         countly.requestQueue().proxy = countlyProxy
     }
 
+    override fun updateTorProxy(proxy: String){
+        _torProxy = proxy
+
+        updateProxy()
+    }
+
     fun applicationOnCreate(){
         Countly.applicationOnCreate()
     }
@@ -343,7 +352,7 @@ class Countly constructor(
         updateFeedbackWidget()
     }
 
-    fun recordException(throwable: Throwable) {
+    override fun recordException(throwable: Throwable) {
         if(!skipExceptionRecording.contains(throwable.message)) {
             exceptionCounter++
             crashes.recordHandledException(throwable)
@@ -372,17 +381,20 @@ class Countly constructor(
         }
     }
 
-    fun activeWalletStart(){
+    override fun activeWalletStart(){
+        apm.startTrace(Events.WALLET_ACTIVE.toString())
         events.cancelEvent(Events.WALLET_ACTIVE.toString())
         events.startEvent(Events.WALLET_ACTIVE.toString())
     }
 
-    fun activeWalletEnd(
-        session: GdkSession,
+    override fun activeWalletEnd(
+        session: Any,
         walletAssets: Map<String, Long>,
         accountAssets: Map<AccountId, Assets>,
         accounts: List<Account>
     ) {
+        session as GdkSession
+        apm.endTrace(Events.WALLET_ACTIVE.toString(), mutableMapOf())
         events.endEvent(
             Events.WALLET_ACTIVE.toString(),
             sessionSegmentation(session).also { segmentation ->
@@ -399,7 +411,16 @@ class Countly constructor(
         )
     }
 
+    override fun loginLightningStart(){
+        apm.startTrace(Events.LIGHTNING_LOGIN.toString())
+    }
+
+    override fun loginLightningStop(){
+        apm.endTrace(Events.LIGHTNING_LOGIN.toString(), mutableMapOf())
+    }
+
     fun loginWalletStart(){
+        apm.startTrace(Events.WALLET_LOGIN.toString())
         events.cancelEvent(Events.WALLET_LOGIN.toString())
         events.startEvent(Events.WALLET_LOGIN.toString())
     }
@@ -409,6 +430,7 @@ class Countly constructor(
         session: GdkSession,
         loginCredentials: LoginCredentials? = null
     ) {
+        apm.endTrace(Events.WALLET_LOGIN.toString(), mutableMapOf())
         events
             .endEvent(
                 Events.WALLET_LOGIN.toString(),
@@ -443,11 +465,12 @@ class Countly constructor(
         events.recordEvent(Events.HWW_CONNECTED.toString(), deviceSegmentation(device))
     }
 
-    fun jadeInitialize() {
+    override fun jadeInitialize() {
         events.recordEvent(Events.JADE_INITIALIZE.toString())
     }
 
     fun jadeOtaStart(device: Device, firmwareFileData: FirmwareFileData) {
+        apm.startTrace(Events.JADE_OTA.toString())
         events.recordEvent(Events.OTA_START.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
             segmentation[PARAM_SELECTED_CONFIG] = firmwareFileData.image.config.lowercase()
             segmentation[PARAM_SELECTED_DELTA] = firmwareFileData.image.patchSize != null
@@ -459,6 +482,7 @@ class Countly constructor(
     }
 
     fun jadeOtaComplete(device: Device, firmwareFileData: FirmwareFileData) {
+        apm.endTrace(Events.JADE_OTA.toString(), mutableMapOf())
         events.endEvent(Events.OTA_COMPLETE.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
             segmentation[PARAM_SELECTED_CONFIG] = firmwareFileData.image.config.lowercase()
             segmentation[PARAM_SELECTED_DELTA] = firmwareFileData.image.patchSize != null
@@ -544,6 +568,7 @@ class Countly constructor(
     }
 
     fun startSendTransaction(){
+        apm.startTrace(Events.SEND_TRANSACTION.toString())
         // Cancel any previous event
         events.cancelEvent(Events.SEND_TRANSACTION.toString())
         events.startEvent(Events.SEND_TRANSACTION.toString())
@@ -555,6 +580,7 @@ class Countly constructor(
         transactionSegmentation: TransactionSegmentation,
         withMemo: Boolean
     ) {
+        apm.endTrace(Events.SEND_TRANSACTION.toString(), mutableMapOf())
         events
             .endEvent(
                 Events.SEND_TRANSACTION.toString(),
@@ -712,9 +738,9 @@ class Countly constructor(
         } as HashMap<String, Any>
     }
 
-    private fun deviceSegmentation(device: Device, segmentation: HashMap<String, Any> = hashMapOf()): HashMap<String, Any>{
+    private fun deviceSegmentation(device: DeviceInterface, segmentation: HashMap<String, Any> = hashMapOf()): HashMap<String, Any>{
         device.deviceBrand.brand.let { segmentation[PARAM_BRAND] = it }
-        device.hwWallet?.also {
+        device.gdkHardwareWallet?.also {
             segmentation[PARAM_FIRMWARE] = it.firmwareVersion ?: ""
             segmentation[PARAM_MODEL] = it.model
         }
@@ -790,7 +816,7 @@ class Countly constructor(
     fun getRemoteConfigValueForBanners(key: String): List<Banner>? {
         return try {
             getRemoteConfigValueAsString(key)?.let {
-                GdkBridge.JsonDeserializer.decodeFromString<List<Banner>>(it)
+                JsonDeserializer.decodeFromString<List<Banner>>(it)
             }
         }catch (e: Exception){
             e.printStackTrace()
@@ -798,10 +824,10 @@ class Countly constructor(
         }
     }
 
-    fun getRemoteConfigValueForAssets(key: String): Map<String, EnrichedAsset>? {
+    override fun getRemoteConfigValueForAssets(key: String): Map<String, EnrichedAsset>? {
         return try {
             getRemoteConfigValueAsString(key)?.let {
-                GdkBridge.JsonDeserializer.decodeFromString<List<EnrichedAsset>>(it)
+                JsonDeserializer.decodeFromString<List<EnrichedAsset>>(it)
             }?.associate {
                 it.assetId to it
             }
@@ -811,9 +837,8 @@ class Countly constructor(
         }
     }
 
-    fun isLightningFeatureEnabled(): Boolean {
-        return getRemoteConfigValueAsBoolean("feature_lightning") ?: false
-    }
+    override val isLightningFeatureEnabled: Boolean
+        get() = getRemoteConfigValueAsBoolean("feature_lightning") ?: false
 
     private fun appSettingsToString(appSettings: ApplicationSettings): String {
         val settingsAsSet = mutableSetOf<String>()
@@ -832,6 +857,7 @@ class Countly constructor(
         HWW_CONNECT("hww_connect"),
         HWW_CONNECTED("hww_connected"),
         JADE_INITIALIZE("jade_initialize"),
+        JADE_OTA("jade_ota"),
 
         OTA_START("ota_start"),
         OTA_COMPLETE("ota_complete"),
@@ -844,6 +870,7 @@ class Countly constructor(
         WALLET_WATCH_ONLY("wallet_wo"),
 
         WALLET_LOGIN("wallet_login"),
+        LIGHTNING_LOGIN("lightning_login"),
 
         WALLET_CREATE("wallet_create"),
         WALLET_IMPORT("wallet_import"),

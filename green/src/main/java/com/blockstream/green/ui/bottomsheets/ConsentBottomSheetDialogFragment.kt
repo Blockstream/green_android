@@ -5,13 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ConsentBottomSheetBinding
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.extensions.toast
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.bottomsheet.BottomSheetBehavior

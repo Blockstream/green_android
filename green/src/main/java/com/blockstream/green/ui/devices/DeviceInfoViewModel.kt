@@ -3,7 +3,7 @@ package com.blockstream.green.ui.devices
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.*
-import com.blockstream.gdk.GdkBridge
+import com.blockstream.common.gdk.Gdk
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.DeviceIdentifier
@@ -15,8 +15,9 @@ import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.devices.HardwareConnectInteraction
 import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.logException
+import com.blockstream.green.gdk.getWallet
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
@@ -33,7 +34,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     deviceManager: DeviceManager,
     qaTester: QATester,
-    val gdkBridge: GdkBridge,
+    val gdk: Gdk,
     val settingsManager: SettingsManager,
     countly: Countly,
     @Assisted override val device: Device,
@@ -52,7 +53,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
     override val deviceConnectionManagerOrNull = DeviceConnectionManager(
         countly = countly,
-        gdkBridge = gdkBridge,
+        gdk = gdk,
         settingsManager = settingsManager,
         httpRequestProvider = sessionManager.httpRequestProvider,
         interaction = this,
@@ -64,7 +65,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
             rememberDevice.postValue(settingsManager.rememberDeviceWallet())
         }
 
-        if(device.hwWallet == null){
+        if(device.gdkHardwareWallet == null){
             unlockDevice(context)
         }
     }
@@ -77,16 +78,16 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     fun authenticateAndContinue(jadeFirmwareManager: JadeFirmwareManager? = null){
-        val hwWallet = device.hwWallet ?: return
+        val gdkHardwareWallet = device.gdkHardwareWallet ?: return
 
         doUserAction({
             // Save user preference
             settingsManager.setRememberDeviceWallet(rememberDeviceWallet = rememberDevice.value == true)
 
             // Authenticate device if needed
-            deviceConnectionManager.authenticateDeviceIfNeeded(hwWallet = hwWallet, jadeFirmwareManager = jadeFirmwareManager)
+            deviceConnectionManager.authenticateDeviceIfNeeded(gdkHardwareWallet = gdkHardwareWallet, jadeFirmwareManager = jadeFirmwareManager)
 
-            val network = deviceConnectionManager.getOperatingNetwork(hwWallet)
+            val network = deviceConnectionManager.getOperatingNetwork(gdkHardwareWallet)
             val isEphemeral = !rememberDevice.boolean()
 
             var previousSession = (if(device.isLedger){

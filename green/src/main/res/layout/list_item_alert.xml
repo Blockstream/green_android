@@ -4,10 +4,10 @@
     tools:context=".ui.main.WalletAccountFragment">
 
     <data>
-        <import type="com.blockstream.green.data.Banner"/>
+        <import type="com.blockstream.common.data.Banner"/>
         <variable
             name="banner"
-            type="Banner" />
+            type="com.blockstream.common.data.Banner" />
     </data>
 
     <com.blockstream.green.views.GreenAlertView

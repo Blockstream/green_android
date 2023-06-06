@@ -223,7 +223,7 @@ class DeviceManager constructor(
 
     private fun addBleConnectedDevices(){
         sessionManager.getConnectedDevices().filter { it.isBle }.forEach {
-            addBluetoothDevice(it)
+            addBluetoothDevice(it as Device)
         }
     }
 

@@ -1,9 +1,9 @@
 package com.blockstream.green.utils
 
-import com.blockstream.gdk.data.Asset
-import com.blockstream.gdk.data.Balance
-import com.blockstream.gdk.params.Convert
-import com.blockstream.gdk.params.Limits
+import com.blockstream.common.gdk.data.Asset
+import com.blockstream.common.gdk.data.Balance
+import com.blockstream.common.gdk.params.Convert
+import com.blockstream.common.gdk.params.Limits
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.gdk.GdkSession

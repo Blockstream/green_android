@@ -1,7 +1,7 @@
 package com.blockstream.green.utils
 
-import com.blockstream.gdk.data.Pricing
-import com.blockstream.gdk.data.Settings
+import com.blockstream.common.gdk.data.Pricing
+import com.blockstream.common.gdk.data.Settings
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.gdk.GdkSession
 import org.junit.Assert
@@ -26,9 +26,11 @@ class JsonConverterUnitTest {
     private fun initMock(fiat: String) {
         val settings: Settings = mock()
 
-        whenever(settings.pricing).thenReturn(Pricing(
+        whenever(settings.pricing).thenReturn(
+            Pricing(
             fiat, fiat
-        ))
+        )
+        )
         whenever(session.getSettings(anyOrNull())).thenReturn(settings)
     }
 

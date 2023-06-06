@@ -3,7 +3,8 @@ package com.blockstream.green.ui.recovery
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.gdk.GdkBridge
+import com.blockstream.common.gdk.Wally
+import com.blockstream.common.gdk.getBip39WordList
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.ui.AppViewModel
@@ -15,7 +16,7 @@ import java.security.SecureRandom
 import kotlin.random.asKotlinRandom
 
 class RecoveryCheckViewModel @AssistedInject constructor(
-    gdkBridge: GdkBridge,
+    wally: Wally,
     countly: Countly,
     @Assisted val mnemonic: List<String>,
     @Assisted val page: Int
@@ -47,7 +48,7 @@ class RecoveryCheckViewModel @AssistedInject constructor(
         val wordIndex = SecureRandom().asKotlinRandom().nextInt(if(isLastOrFirstPage) 1 else 0 , wordsPerPage - if(isLastOrFirstPage) 1 else 0)
         correctWord = mnemonic[offset + wordIndex]
 
-        val wordList = gdkBridge.getMnemonicWordList().shuffled()
+        val wordList = wally.getBip39WordList().shuffled()
         val randomChoices = (wordList.subList(0, 3).toMutableList() + correctWord).shuffled()
 
         correctWordIndex = randomChoices.indexOf(correctWord)

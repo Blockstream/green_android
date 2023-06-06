@@ -62,7 +62,7 @@ if [[ $UPDATE_DEPENDENCIES != false ]]; then
   exit 0
 fi
 
-cd crypto
+cd gdk
 if [[ $BUILD_GDK != false ]]; then
   printf "\nBuild GDK...\n\n"
   # Not tested, needs more deps

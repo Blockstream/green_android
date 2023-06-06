@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.savedstate.SavedStateRegistryOwner
-import com.blockstream.gdk.GdkBridge
+import com.blockstream.common.gdk.Gdk
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.ui.AppViewModel
@@ -15,7 +15,7 @@ import dagger.assisted.AssistedInject
 import mu.KLogging
 
 class RecoveryIntroViewModel @AssistedInject constructor(
-    gdkBridge: GdkBridge,
+    gdk: Gdk,
     countly: Countly,
     @Assisted private val savedStateHandle: SavedStateHandle,
     @Assisted val generateMnemonic: Boolean,
@@ -32,7 +32,7 @@ class RecoveryIntroViewModel @AssistedInject constructor(
         recoverySize.distinctUntilChanged().observe(lifecycleOwner) {
             if (generateMnemonic) {
                 savedStateHandle[MNEMONIC] =
-                    if (recoverySize.value == R.id.button12) gdkBridge.generateMnemonic12() else gdkBridge.generateMnemonic24()
+                    if (recoverySize.value == R.id.button12) gdk.generateMnemonic12() else gdk.generateMnemonic24()
             }
         }
     }

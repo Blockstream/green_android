@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.gdk.data.Device
+import com.blockstream.common.gdk.data.Device
 import com.blockstream.green.databinding.DeviceInteractionRequestBottomSheetBinding
 import com.blockstream.green.extensions.dismissIn
 import com.blockstream.green.extensions.stringFromIdentifier

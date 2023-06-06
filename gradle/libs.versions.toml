@@ -1,6 +1,8 @@
 [versions]
+atomicfu-gradle-plugin = "0.21.0"
+buildTools = "33.0.2"
 activity-ktx = "1.7.2"
-android-gradle-plugin = "8.0.2"
+android-gradle-plugin = "8.1.0-rc01"
 androidx-junit = "1.1.5"
 annotation = "1.6.0"
 biometric = "1.2.0-alpha05"
@@ -18,13 +20,12 @@ itemanimators = "1.1.0"
 jackson = "2.9.6"
 jna = "5.13.0"
 junit = "4.13.2"
-kotlin = "1.8.21"
+kotlin = "1.9.0"
 kotlin-logging = "3.0.5"
-kotlin-serialization = "1.5.0"
-kotlinx-coroutines = "1.6.4"
+kotlinx-coroutines = "1.7.1"
 kotlinx-datetime = "0.4.0"
 kotlinx-serialization = "1.5.1"
-kotlin-ksp = "1.8.21-1.0.11"
+kotlin-ksp = "1.9.0-1.0.11"
 lifecycle = "2.6.1"
 log-crash = "2.9.0"
 material = "1.9.0"
@@ -73,6 +74,7 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startup-runtime" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
+atomicfu-gradle-plugin = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu-gradle-plugin" }
 countly-sdk-android = { module = "com.github.angelix:countly-sdk-android", version.ref = "countly-sdk-android" }
 fastadapter = { module = "com.mikepenz:fastadapter", version.ref = "fastadapter" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -91,6 +93,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-logging-jvm = { module = "io.github.microutils:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }

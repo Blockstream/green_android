@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.blockstream.ExtensionsKt;
 import com.blockstream.hardware.BuildConfig;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerDeviceBLE;
@@ -19,12 +20,13 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import kotlinx.coroutines.flow.MutableStateFlow;
 
 public class LedgerBLEAdapter {
-    private PublishSubject<Boolean> bleDisconnectEvent = PublishSubject.create();
+    private MutableStateFlow<Boolean> disconectEvent = ExtensionsKt.createDisconnectEvent();
 
     public interface OnConnectedListener {
-        void onConnected(final BTChipTransport transport, final boolean hasScreen, final PublishSubject<Boolean> bleDisconnectEvent);
+        void onConnected(final BTChipTransport transport, final boolean hasScreen, final MutableStateFlow<Boolean> disconnectEvent);
     }
 
     public interface OnErrorListener {
@@ -83,7 +85,7 @@ public class LedgerBLEAdapter {
                                         ledgerDevice.connect();
                                         return ledgerDevice;
                                     })
-                                    .subscribe(device -> onConnected.onConnected(device, true, bleDisconnectEvent),
+                                    .subscribe(device -> onConnected.onConnected(device, true, disconectEvent),
                                             error -> { error.printStackTrace();
                                                        onError.onError(ledgerDevice);
                                     });
@@ -93,7 +95,7 @@ public class LedgerBLEAdapter {
 
                     if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                         Log.i("LedgerBLEAdapter", "Send BLE disconnect event");
-                        bleDisconnectEvent.onNext(true);
+                        disconectEvent.setValue(true);
 
                         // Disconnect, clean up BLE stack resources
                         gatt.close();

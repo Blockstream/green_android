@@ -1,17 +1,17 @@
 package com.blockstream.green.ui.add
 
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.gdk.SATOSHI_UNIT
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.AccountType
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.params.SubAccountParams
+import com.blockstream.common.SATOSHI_UNIT
+import com.blockstream.common.gdk.device.DeviceResolver
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.gdk.hasHistory
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -99,7 +99,7 @@ open class AbstractAddAccountViewModel constructor(
                 session.createAccount(
                     network = network,
                     params = params,
-                    hardwareWalletResolver = DeviceResolver(session.hwWallet, this)
+                    hardwareWalletResolver = DeviceResolver.createIfNeeded(session.gdkHwWallet, this)
                 )
             }
         }, postAction = {

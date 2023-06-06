@@ -1,7 +1,7 @@
 package com.blockstream.green.looks
 
-import com.blockstream.gdk.data.Balance
-import com.blockstream.gdk.params.Convert
+import com.blockstream.common.gdk.data.Balance
+import com.blockstream.common.gdk.params.Convert
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getAssetName

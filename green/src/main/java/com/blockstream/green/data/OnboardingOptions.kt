@@ -1,8 +1,8 @@
 package com.blockstream.green.data
 
 import android.os.Parcelable
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.database.Wallet
 import kotlinx.parcelize.Parcelize
 
@@ -16,9 +16,9 @@ data class OnboardingOptions constructor(
     val network: Network? = null,
     val walletName: String? = null
 ) : Parcelable{
-    fun createCopyForNetwork(gdkBridge: GdkBridge, networkType: String, isElectrum: Boolean): OnboardingOptions {
-        val id = gdkBridge.networks.getNetworkByType(networkTypeOrId = networkType, isElectrum = isElectrum).id
-        return copy(network = gdkBridge.networks.getNetworkById(id), networkType = networkType, isSinglesig = isElectrum)
+    fun createCopyForNetwork(gdk: Gdk, networkType: String, isElectrum: Boolean): OnboardingOptions {
+        val id = gdk.networks().getNetworkByType(networkTypeOrId = networkType, isElectrum = isElectrum).id
+        return copy(network = gdk.networks().getNetworkById(id), networkType = networkType, isSinglesig = isElectrum)
     }
 
     companion object {

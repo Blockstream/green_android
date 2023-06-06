@@ -3,18 +3,23 @@ package com.blockstream.green.gdk
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import com.blockstream.gdk.BTC_POLICY_ASSET
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.AccountType
-import com.blockstream.gdk.data.Device
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.gdk.GA_ERROR
+import com.blockstream.common.gdk.GA_NOT_AUTHORIZED
+import com.blockstream.common.gdk.GA_RECONNECT
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Device
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.gdk.toBitmap
+import com.blockstream.gdk.toBitmapDrawable
 import com.blockstream.green.R
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.extensions.startsWith
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
-import com.blockstream.libgreenaddress.KotlinGDK
 
 fun Transaction.getConfirmationsMax(session: GdkSession): Int {
     if(isLoadingTransaction) return 0
@@ -24,6 +29,23 @@ fun Transaction.getConfirmationsMax(session: GdkSession): Int {
 fun Transaction.getConfirmations(session: GdkSession): Long {
     if(isLoadingTransaction) return -1
     return getConfirmations(session.blockHeight(network))
+}
+
+// Should we cache BitmapDrawable/Bitmap
+fun GdkSession.getAssetDrawableOrNull(context: Context, assetId: String): Drawable? {
+    networkAssetManager.getAssetIcon(assetId, this)?.let {
+        return it.toBitmap()?.toBitmapDrawable(context)
+    }
+
+    return null
+}
+
+suspend fun GdkSession.getWallet(walletRepository: WalletRepository): Wallet? {
+    return (ephemeralWallet ?: (sessionManager.getWalletIdFromSession(this)?.let { walletId -> walletRepository.getWallet(walletId) }))
+}
+
+fun GdkSession.getAssetDrawableOrDefault(context: Context, assetId: String): Drawable {
+    return getAssetDrawableOrNull(context, assetId) ?: context.getDrawable(R.drawable.ic_unknown)!!
 }
 
 // By default policy asset is first
@@ -168,7 +190,7 @@ fun Account.isFunded(session: GdkSession): Boolean{
     return session.accountAssets(this).values.sum() > 0
 }
 
-fun Account.hasHistory(session: GdkSession): Boolean{
+fun Account.hasHistory(session: GdkSession): Boolean {
     return bip44Discovered == true || isFunded(session) || session.accountTransactions(this).let {
         it.isNotEmpty() && it.firstOrNull()?.isLoadingTransaction == false
     }
@@ -201,7 +223,7 @@ fun String?.getAssetIcon(context: Context, session: GdkSession, isLightning: Boo
             }
         )!!
     } else {
-        session.liquid?.let { session.getAssetDrawableOrDefault(this) }
+        session.liquid?.let { session.getAssetDrawableOrDefault(context,this) }
             ?: ContextCompat.getDrawable(context, R.drawable.ic_unknown)!!
     }
 }
@@ -248,13 +270,13 @@ fun Device.getIcon(): Int{
 
 fun com.blockstream.green.devices.Device.getIcon(): Int{
     return when {
-        isTrezor -> R.drawable.trezor_device
-        isLedger -> R.drawable.ledger_device
+        deviceBrand.isTrezor -> R.drawable.trezor_device
+        deviceBrand.isLedger -> R.drawable.ledger_device
         else -> R.drawable.blockstream_jade_device
     }
 }
 
-fun Wallet.iconResource(session: GdkSession) = when {
+fun Wallet.iconResource() = when {
     isWatchOnly -> R.drawable.ic_regular_eye_24
     isTestnet -> R.drawable.ic_regular_flask_24
     isBip39Ephemeral -> R.drawable.ic_regular_wallet_passphrase_24
@@ -266,7 +288,7 @@ fun Wallet.iconResource(session: GdkSession) = when {
 }
 
 fun Throwable.getGDKErrorCode(): Int {
-    return this.message?.getGDKErrorCode() ?: KotlinGDK.GA_ERROR
+    return this.message?.getGDKErrorCode() ?: GA_ERROR
 }
 fun String.getGDKErrorCode(): Int {
     return try {
@@ -274,17 +296,17 @@ fun String.getGDKErrorCode(): Int {
         val function = this.split(" ".toRegex()).toTypedArray()[2]
         val code = stringCode.toInt()
         // remap gdk connection error
-        if (code == KotlinGDK.GA_ERROR && "GA_connect" == function) KotlinGDK.GA_RECONNECT else code
+        if (code == GA_ERROR && "GA_connect" == function) GA_RECONNECT else code
     } catch (e: Exception) {
-        KotlinGDK.GA_ERROR
+        GA_ERROR
     }
 }
 
 // TODO combine
 fun Throwable.isNotAuthorized() =
-    getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || message == "id_invalid_pin"
+    getGDKErrorCode() == GA_NOT_AUTHORIZED || message == "id_invalid_pin"
 fun String.isNotAuthorized() =
-    getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || this == "id_invalid_pin"
+    getGDKErrorCode() == GA_NOT_AUTHORIZED || this == "id_invalid_pin"
 
 fun String.isConnectionError() = this.contains("failed to connect")
 

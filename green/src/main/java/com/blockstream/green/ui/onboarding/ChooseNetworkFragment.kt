@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseNetworkFragmentBinding
@@ -40,7 +40,7 @@ class ChooseNetworkFragment :
                 is NetworkListItem -> {
                     options?.apply {
                         if(isRestoreFlow){
-                            navigate(createCopyForNetwork(gdkBridge, item.network, isSinglesig == true))
+                            navigate(createCopyForNetwork(gdk = gdk, item.network, isSinglesig == true))
                         }else{
                             navigate(copy(networkType = item.network))
                         }
@@ -93,7 +93,7 @@ class ChooseNetworkFragment :
                 )
             }
 
-            gdkBridge.networks.customNetwork?.let {
+            gdk.networks().customNetwork?.let {
                 expandable.subItems.add(
                     NetworkListItem(
                         it.id,

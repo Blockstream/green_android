@@ -3,9 +3,9 @@ package com.blockstream.green.ui.wallet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.Settings
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.Settings
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.CredentialType

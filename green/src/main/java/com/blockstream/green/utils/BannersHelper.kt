@@ -1,8 +1,8 @@
 package com.blockstream.green.utils
 
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.data.Banner
 import com.blockstream.green.R
-import com.blockstream.green.data.Banner
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.ui.AppFragment
 import kotlinx.coroutines.flow.launchIn
@@ -22,7 +22,7 @@ object BannersHelper {
                     appFragment.getAppViewModel()?.closedBanners?.contains(it) == false &&
 
                     // Filter networks
-                    (it.networks == null || (it.networks.intersect((session?.activeSessions?.map { it.network } ?: setOf()).toSet()).isNotEmpty()))  &&
+                    (!it.hasNetworks || ((it.networks ?: listOf()).intersect((session?.activeSessions?.map { it.network } ?: setOf()).toSet()).isNotEmpty()))  &&
 
                     // Filter based on screen name
                     (it.screens?.contains(appFragment.screenName) == true || it.screens?.contains("*") == true)

@@ -1,9 +1,9 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.gdk.data.EncryptWithPin
-import com.blockstream.gdk.params.EncryptWithPinParams
-import com.blockstream.gdk.params.LoginCredentialsParams
+import com.blockstream.common.gdk.data.EncryptWithPin
+import com.blockstream.common.gdk.params.EncryptWithPinParams
+import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
@@ -12,7 +12,7 @@ import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.database.WatchOnlyCredentials
+import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.green.gdk.title
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.AppViewModel

@@ -3,7 +3,7 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.size
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionBinding
 import com.blockstream.green.databinding.TransactionAssetLayoutBinding
@@ -47,7 +47,6 @@ data class TransactionListItem constructor(
         }
 
         binding.isLoading = false
-        binding.type = tx.txType
         binding.confirmations = confirmations
         binding.confirmationsRequired = tx.network.confirmationsRequired
         binding.date = look.date

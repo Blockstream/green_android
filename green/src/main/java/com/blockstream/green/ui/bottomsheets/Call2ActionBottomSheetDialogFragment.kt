@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.Call2ActionBottomSheetBinding

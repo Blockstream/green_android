@@ -24,7 +24,7 @@ import androidx.core.text.underline
 import androidx.fragment.app.Fragment
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
-import com.blockstream.green.settings.ApplicationSettings
+import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.green.ui.AppFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel

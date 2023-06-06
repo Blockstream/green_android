@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.gdk.BTC_POLICY_ASSET
-import com.blockstream.gdk.data.Account
+import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AssetDetailsBottomSheetBinding
 import com.blockstream.green.gdk.isPolicyAsset

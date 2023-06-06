@@ -5,13 +5,13 @@ import android.content.Context
 import android.content.DialogInterface
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import com.blockstream.gdk.data.TwoFactorStatus
+import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorCodeDialogBinding
 import com.blockstream.green.extensions.localized2faMethod
 import com.blockstream.green.extensions.localized2faMethods
-import com.blockstream.green.gdk.TwoFactorResolver
+import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenPinViewListener
@@ -73,12 +73,12 @@ class DialogTwoFactorResolver : TwoFactorResolver {
         }
     }
 
-    override suspend fun getCode(twoFactorStatus: TwoFactorStatus): CompletableDeferred<String> {
+    override suspend fun getCode(authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String> {
         return withContext(context = Dispatchers.Main) {
             CompletableDeferred<String>().also { deferred ->
                 val dialogBinding = TwofactorCodeDialogBinding.inflate(LayoutInflater.from(context))
 
-                twoFactorStatus.method?.let { method ->
+                authHandlerStatus.method?.let { method ->
                     dialogBinding.icon.setImageResource(TwoFactorMethod.from(method).getIcon())
                     dialogBinding.title = context.getString(
                         R.string.id_please_provide_your_1s_code,
@@ -87,7 +87,7 @@ class DialogTwoFactorResolver : TwoFactorResolver {
                 }
                 dialogBinding.hint = context.getString(R.string.id_code)
 
-                twoFactorStatus.attemptsRemaining?.let {
+                authHandlerStatus.attemptsRemaining?.let {
                     dialogBinding.attemptsRemaining =
                         context.getString(R.string.id_attempts_remaining_d, it)
                 }
@@ -116,7 +116,7 @@ class DialogTwoFactorResolver : TwoFactorResolver {
 
                 appFragment?.let {
                     try {
-                        twoFactorStatus.authData?.jsonObject?.get("telegram_url")?.jsonPrimitive?.content?.let { url ->
+                        authHandlerStatus.authData?.jsonObject?.get("telegram_url")?.jsonPrimitive?.content?.let { url ->
                             it.openBrowser(url)
                         }
                     } catch (e: Exception) {

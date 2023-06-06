@@ -1,42 +1,108 @@
 package com.blockstream.green.gdk
 
-import android.graphics.drawable.Drawable
 import breez_sdk.BreezEvent
 import breez_sdk.InputType
 import breez_sdk.InvoicePaidDetails
 import breez_sdk.LnInvoice
 import breez_sdk.LnUrlPayResult
 import breez_sdk.SwapInfo
-import com.blockstream.gdk.*
-import com.blockstream.gdk.data.*
-import com.blockstream.gdk.params.*
-import com.blockstream.gdk.params.TransactionParams.Companion.TRANSACTIONS_PER_PAGE
+import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.CountlyInteface
+import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.data.WatchOnlyCredentials
+import com.blockstream.common.gdk.AuthHandler
+import com.blockstream.common.gdk.FeeBlockTarget
+import com.blockstream.common.gdk.GAAuthHandler
+import com.blockstream.common.gdk.GASession
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.HardwareWalletResolver
+import com.blockstream.common.gdk.TwoFactorResolver
+import com.blockstream.common.gdk.Wally
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Accounts
+import com.blockstream.common.gdk.data.Address
+import com.blockstream.common.gdk.data.Addressee
+import com.blockstream.common.gdk.data.Asset
+import com.blockstream.common.gdk.data.Balance
+import com.blockstream.common.gdk.data.Block
+import com.blockstream.common.gdk.data.CreateSwapTransaction
+import com.blockstream.common.gdk.data.CreateTransaction
+import com.blockstream.common.gdk.data.Credentials
+import com.blockstream.common.gdk.data.EncryptWithPin
+import com.blockstream.common.gdk.data.FeeEstimation
+import com.blockstream.common.gdk.data.LoginData
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.NetworkEvent
+import com.blockstream.common.gdk.data.Notification
+import com.blockstream.common.gdk.data.Output
+import com.blockstream.common.gdk.data.PreviousAddresses
+import com.blockstream.common.gdk.data.SendTransactionSuccess
+import com.blockstream.common.gdk.data.Settings
+import com.blockstream.common.gdk.data.SubAccount
+import com.blockstream.common.gdk.data.TorEvent
+import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.gdk.data.Transactions
+import com.blockstream.common.gdk.data.TwoFactorConfig
+import com.blockstream.common.gdk.data.TwoFactorMethodConfig
+import com.blockstream.common.gdk.data.TwoFactorReset
+import com.blockstream.common.gdk.data.UnspentOutputs
+import com.blockstream.common.gdk.data.Utxo
+import com.blockstream.common.gdk.data.ValidateAddressees
+import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.gdk.device.DeviceState
+import com.blockstream.common.gdk.device.GdkHardwareWallet
+import com.blockstream.common.gdk.device.HardwareWalletInteraction
+import com.blockstream.common.gdk.params.AddressParams
+import com.blockstream.common.gdk.params.AssetsParams
+import com.blockstream.common.gdk.params.BalanceParams
+import com.blockstream.common.gdk.params.CompleteSwapParams
+import com.blockstream.common.gdk.params.ConnectionParams
+import com.blockstream.common.gdk.params.Convert
+import com.blockstream.common.gdk.params.CreateSwapParams
+import com.blockstream.common.gdk.params.CreateTransactionParams
+import com.blockstream.common.gdk.params.CredentialsParams
+import com.blockstream.common.gdk.params.CsvParams
+import com.blockstream.common.gdk.params.DecryptWithPinParams
+import com.blockstream.common.gdk.params.DeviceParams
+import com.blockstream.common.gdk.params.EncryptWithPinParams
+import com.blockstream.common.gdk.params.GetAssetsParams
+import com.blockstream.common.gdk.params.Limits
+import com.blockstream.common.gdk.params.LoginCredentialsParams
+import com.blockstream.common.gdk.params.PreviousAddressParams
+import com.blockstream.common.gdk.params.ReceiveAddressParams
+import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.SubAccountParams
+import com.blockstream.common.gdk.params.SubAccountsParams
+import com.blockstream.common.gdk.params.TransactionParams
+import com.blockstream.common.gdk.params.TransactionParams.Companion.TRANSACTIONS_PER_PAGE
+import com.blockstream.common.gdk.params.UpdateSubAccountParams
+import com.blockstream.common.gdk.params.ValidateAddresseesParams
+import com.blockstream.common.lightning.AppGreenlightCredentials
+import com.blockstream.common.managers.AssetManager
+import com.blockstream.common.managers.AssetsProvider
+import com.blockstream.common.managers.NetworkAssetManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.BuildConfig
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.EnrichedAsset
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.database.WatchOnlyCredentials
-import com.blockstream.green.devices.Device
 import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.jade.HttpRequestProvider
-import com.blockstream.libgreenaddress.GAAuthHandler
-import com.blockstream.libgreenaddress.GASession
-import com.blockstream.lightning.AppGreenlightCredentials
 import com.blockstream.lightning.LightningBridge
 import com.blockstream.lightning.expireIn
+import com.blockstream.lightning.fromInvoice
+import com.blockstream.lightning.fromLnUrlPay
+import com.blockstream.lightning.fromPayment
+import com.blockstream.lightning.fromSwapInfo
 import com.blockstream.lightning.isExpired
 import com.blockstream.lightning.maxSendableSatoshi
 import com.blockstream.lightning.minSendableSatoshi
 import com.blockstream.lightning.sendableSatoshi
-import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.greenapi.HWWalletBridge
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -65,11 +131,12 @@ typealias AssetPair = Pair<String, Long>
 typealias AccountId = String
 /* Handles multiple GDK sessions per network */
 class GdkSession constructor(
-    private val sessionManager: SessionManager,
+    val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
-    private val gdkBridge: GdkBridge,
-    private val countly: Countly
+    private val gdk: Gdk,
+    private val wally: Wally,
+    private val countly: CountlyInteface
 ) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
     fun createScope(dispatcher: CoroutineDispatcher = Dispatchers.Default) = CoroutineScope(SupervisorJob() + dispatcher + logException(countly))
 
@@ -122,7 +189,8 @@ class GdkSession constructor(
     val accountsAndBalanceUpdatedFlow get() = _accountsAndBalanceUpdatedSharedFlow.asSharedFlow()
 
     // Transactions
-    private var _walletTransactionsStateFlow : MutableStateFlow<List<Transaction>> = MutableStateFlow(listOf(Transaction.LoadingTransaction))
+    private var _walletTransactionsStateFlow : MutableStateFlow<List<Transaction>> = MutableStateFlow(listOf(
+        Transaction.LoadingTransaction))
     val walletTransactionsFlow get() = _walletTransactionsStateFlow.asStateFlow()
 
     // Transactions
@@ -145,7 +213,9 @@ class GdkSession constructor(
     private var _twoFactorConfigCache = mutableMapOf<Network, TwoFactorConfig>()
 
     private var _blockStateFlow = mutableMapOf<Network, MutableStateFlow<Block>>()
-    private fun blockStateFlow(network: Network) = _blockStateFlow.getOrPut(network) { MutableStateFlow(Block(height = 0)) }
+    private fun blockStateFlow(network: Network) = _blockStateFlow.getOrPut(network) { MutableStateFlow(
+        Block(height = 0)
+    ) }
     fun blockFlow(network: Network): StateFlow<Block> = blockStateFlow(network).asStateFlow()
     fun blockHeight(network: Network) = blockStateFlow(network).value.height
 
@@ -245,7 +315,7 @@ class GdkSession constructor(
         get() = gdkSessions.filter { activeSessions.contains(it.key) }
 
     private fun gdkSession(network: Network) = gdkSessions.getOrPut(network){
-        gdkBridge.createSession()
+        gdk.createSession()
     }
 
     var hasLightning : Boolean = false
@@ -273,10 +343,10 @@ class GdkSession constructor(
     val isHardwareWallet: Boolean
         get() = device != null
 
-    val hwWallet: HWWallet?
-        get() = device?.hwWallet
+    val gdkHwWallet: GdkHardwareWallet?
+        get() = device?.gdkHardwareWallet
 
-    var device: Device? = null
+    var device: DeviceInterface? = null
         private set
 
     var ephemeralWallet: Wallet? = null
@@ -288,7 +358,7 @@ class GdkSession constructor(
     private var authenticationRequired = mutableMapOf<Network, Boolean>()
 
     val networks
-        get() = gdkBridge.networks
+        get() = gdk.networks()
 
     var isConnected : Boolean by Delegates.observable(false) { _, oldValue, newValue ->
         if(oldValue != newValue){
@@ -304,7 +374,7 @@ class GdkSession constructor(
 
     val networkAssetManager: NetworkAssetManager get() = assetManager.getNetworkAssetManager(isMainnet)
 
-    val hideAmounts: Boolean get() = settingsManager.getApplicationSettings().hideAmounts
+    val hideAmounts: Boolean get() = settingsManager.appSettings.hideAmounts
 
     val starsOrNull: String? get() = "*****".takeIf { hideAmounts }
 
@@ -334,12 +404,13 @@ class GdkSession constructor(
         }.launchIn(scope + Dispatchers.IO)
     }
 
-    suspend fun getWallet(walletRepository: WalletRepository): Wallet? {
-        return (ephemeralWallet ?: (sessionManager.getWalletIdFromSession(this)?.let { walletId -> walletRepository.getWallet(walletId) }))
-    }
-
     private fun authHandler(network: Network, gaAuthHandler: GAAuthHandler): AuthHandler =
-        AuthHandler(network = network, session = this, gdkBridge = gdkBridge, gaAuthHandler = gaAuthHandler)
+        AuthHandler(
+            gaAuthHandler = gaAuthHandler,
+            network = network,
+            gdkHwWallet = gdkHwWallet,
+            gdk = gdk
+        )
 
     private fun updateEnrichedAssets() {
         if (isNetworkInitialized && !isWatchOnly) {
@@ -354,7 +425,7 @@ class GdkSession constructor(
     fun getSettings(network: Network? = null): Settings? {
         return (network?.let { it.takeIf { !it.isLightning } ?: bitcoin } ?: defaultNetwork).let {
             settingsStateFlow(it).value ?: try {
-                gdkBridge.getSettings(gdkSession(it))
+                gdk.getSettings(gdkSession(it))
             } catch (e: Exception) {
                 e.printStackTrace()
                 null
@@ -363,7 +434,7 @@ class GdkSession constructor(
     }
 
     fun changeSettings(network: Network, settings: Settings) =
-        authHandler(network, gdkBridge.changeSettings(gdkSession(network), settings)).resolve()
+        authHandler(network, gdk.changeSettings(gdkSession(network), settings)).resolve()
 
     fun changeGlobalSettings(settings: Settings){
         val exceptions = mutableListOf<Exception>()
@@ -394,7 +465,7 @@ class GdkSession constructor(
 
     fun updateSettings(network: Network? = null){
         activeSessions.filter { network == null || it.network == network.id }.forEach {
-            settingsStateFlow(it).value = gdkBridge.getSettings(gdkSession(it))
+            settingsStateFlow(it).value = gdk.getSettings(gdkSession(it))
         }
     }
 
@@ -411,7 +482,7 @@ class GdkSession constructor(
     }
 
     @Throws
-    fun availableCurrencies() = gdkBridge.getAvailableCurrencies(gdkSession(defaultNetwork))
+    fun availableCurrencies() = gdk.getAvailableCurrencies(gdkSession(defaultNetwork))
 
     fun prominentNetwork(isTestnet: Boolean) = if(isTestnet) networks.testnetBitcoinElectrum else networks.bitcoinElectrum
     fun prominentNetwork(wallet: Wallet, loginCredentials: LoginCredentials? = null) =
@@ -419,7 +490,7 @@ class GdkSession constructor(
             loginCredentials.network
         ) else if (wallet.isWatchOnly || wallet.isHardware) networkBy(wallet.activeNetwork) else prominentNetwork(wallet.isTestnet)
 
-    fun networkBy(id: String) = gdkBridge.networks.getNetworkById(id)
+    fun networkBy(id: String) = gdk.networks().getNetworkById(id)
 
     /*
     Electrum:
@@ -435,7 +506,7 @@ class GdkSession constructor(
         spv_servers: unused
      */
     private fun createConnectionParams(network: Network): ConnectionParams {
-        val applicationSettings = settingsManager.getApplicationSettings()
+        val applicationSettings = settingsManager.appSettings
 
         var electrumUrl: String? = null
         var spvServers: List<String>? = null
@@ -521,7 +592,7 @@ class GdkSession constructor(
         return gdkSessions.map {
             scope.async(context = Dispatchers.IO, start = CoroutineStart.DEFAULT) {
                 try {
-                    gdkBridge.connect(it.value, createConnectionParams(it.key))
+                    gdk.connect(it.value, createConnectionParams(it.key))
                     it.key
                 } catch (e: Exception) {
                     _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + it.key
@@ -531,12 +602,12 @@ class GdkSession constructor(
         }.awaitAll().filterNotNull()
     }
 
-    fun getProxySettings() = gdkBridge.getProxySettings(gdkSession(defaultNetwork))
+    fun getProxySettings() = gdk.getProxySettings(gdkSession(defaultNetwork))
 
     fun reconnectHint(hint: ReconnectHintParams) =
         scope.launch(context = Dispatchers.IO) {
             gdkSessions.forEach {
-                gdkBridge.reconnectHint(it.value, hint)
+                gdk.reconnectHint(it.value, hint)
             }
         }
 
@@ -603,7 +674,7 @@ class GdkSession constructor(
 
         // Destroy gaSession
         gaSessionToBeDestroyed.forEach {
-            gdkBridge.destroySession(it)
+            gdk.destroySession(it)
         }
     }
 
@@ -612,12 +683,12 @@ class GdkSession constructor(
         activeSessions.remove(network)
 
         gdkSessions.remove(network)?.also { gaSessionToBeDestroyed ->
-            gdkBridge.destroySession(gaSessionToBeDestroyed)
+            gdk.destroySession(gaSessionToBeDestroyed)
         }
 
         // Init a new Session and connect
         try{
-            gdkBridge.connect(gdkSession(network), createConnectionParams(network))
+            gdk.connect(gdkSession(network), createConnectionParams(network))
         }catch (e: Exception){
             e.printStackTrace()
         }
@@ -665,7 +736,7 @@ class GdkSession constructor(
             prepareHttpRequest()
         }
 
-        return gdkBridge.httpRequest(gdkSession(defaultNetwork), data).also {
+        return gdk.httpRequest(gdkSession(defaultNetwork), data).also {
             if(data.jsonObject["urls"]?.jsonArray?.map {
                 it.jsonPrimitive.content
             }?.find { it.contains("/set_pin") } != null){
@@ -737,7 +808,7 @@ class GdkSession constructor(
         if(!activeSessions.contains(network)){
 
             try {
-                gdkBridge.connect(gdkSession(network), createConnectionParams(network))
+                gdk.connect(gdkSession(network), createConnectionParams(network))
             } catch (e: Exception) {
                 // catch if already connected
             }
@@ -750,11 +821,11 @@ class GdkSession constructor(
                 LoginCredentialsParams.fromCredentials(getCredentials())
             }
 
-            val deviceParams = DeviceParams.fromDeviceOrEmpty(device?.hwWallet?.device)
+            val deviceParams = DeviceParams.fromDeviceOrEmpty(device?.gdkHardwareWallet?.device)
 
             authHandler(
                 network,
-                gdkBridge.registerUser(
+                gdk.registerUser(
                     session = gdkSession(network),
                     deviceParams = deviceParams,
                     loginCredentialsParams = loginCredentialsParams
@@ -763,7 +834,7 @@ class GdkSession constructor(
 
             authHandler(
                 network,
-                gdkBridge.loginUser(
+                gdk.loginUser(
                     session = gdkSession(network),
                     deviceParams = deviceParams,
                     loginCredentialsParams = loginCredentialsParams
@@ -827,16 +898,16 @@ class GdkSession constructor(
                         connectToGreenlight(mnemonic = deriveLightningMnemonic())
                     } else {
                         try {
-                            gdkBridge.connect(gdkSession(network), createConnectionParams(network))
+                            gdk.connect(gdkSession(network), createConnectionParams(network))
                         } catch (e: Exception) {
                             // catch if already connected
                         }
 
-                        val deviceParams = DeviceParams.fromDeviceOrEmpty(device?.hwWallet?.device)
+                        val deviceParams = DeviceParams.fromDeviceOrEmpty(device?.gdkHardwareWallet?.device)
 
                         authHandler(
                             network,
-                            gdkBridge.loginUser(
+                            gdk.loginUser(
                                 session = gdkSession(network),
                                 deviceParams = deviceParams,
                                 loginCredentialsParams = loginCredentialsParams
@@ -959,17 +1030,17 @@ class GdkSession constructor(
 
     suspend fun loginWithDevice(
         wallet: Wallet,
-        device: Device,
+        device: DeviceInterface,
         hardwareWalletResolver: HardwareWalletResolver,
-        hwWalletBridge: HWWalletBridge,
+        hwInteraction: HardwareWalletInteraction? = null,
     ): LoginData {
         val lastUsedNetwork = networks.getNetworkById(wallet.activeNetwork)
 
         val supportedNetworks = networks(wallet.isTestnet)
 
-        val initNetworks = if (device.isTrezor) {
+        val initNetworks = if (device.deviceBrand.isTrezor) {
             supportedNetworks.filter { it.isBitcoin }
-        } else if (device.isLedger) {
+        } else if (device.deviceBrand.isLedger) {
             // Ledger can operate only into a single network but both policies are supported
             supportedNetworks.filter { it.isBitcoin == lastUsedNetwork.isBitcoin && !(it.isSinglesig && it.isLiquid) }
         } else {
@@ -984,7 +1055,7 @@ class GdkSession constructor(
             device = device,
             isSmartDiscovery = true,
             hardwareWalletResolver = hardwareWalletResolver,
-            hwWalletBridge = hwWalletBridge,
+            hwInteraction = hwInteraction,
         )
     }
 
@@ -994,13 +1065,13 @@ class GdkSession constructor(
         wallet: Wallet? = null,
         loginCredentialsParams: LoginCredentialsParams,
         appGreenlightCredentials: AppGreenlightCredentials? = null,
-        device: Device? = null,
+        device: DeviceInterface? = null,
         isCreate: Boolean = false,
         isRestore: Boolean = false,
         isSmartDiscovery: Boolean = false,
         initializeSession: Boolean = true,
         hardwareWalletResolver: HardwareWalletResolver? = null,
-        hwWalletBridge: HWWalletBridge? = null,
+        hwInteraction: HardwareWalletInteraction? = null,
     ): LoginData {
         this.isWatchOnly = loginCredentialsParams.isWatchOnly
         this.device = device
@@ -1015,12 +1086,12 @@ class GdkSession constructor(
 
         device?.deviceState?.onEach {
             // Device went offline
-            if(it == Device.DeviceState.DISCONNECTED){
+            if(it == DeviceState.DISCONNECTED){
                 disconnectAsync()
             }
         }?.launchIn(scope)
 
-        val deviceParams = DeviceParams.fromDeviceOrEmpty(device?.hwWallet?.device)
+        val deviceParams = DeviceParams.fromDeviceOrEmpty(device?.gdkHardwareWallet?.device)
 
         val initAccount = wallet?.activeAccount
         val initNetwork = wallet?.activeNetwork
@@ -1065,11 +1136,11 @@ class GdkSession constructor(
                 try {
                     val hasGdkCache = if(isHardwareWallet || loginCredentialsParams.mnemonic.isNotBlank()){
                         try {
-                            gdkBridge.hasGdkCache(
+                            gdk.hasGdkCache(
                                 getWalletIdentifier(
                                     network = network,
                                     loginCredentialsParams = loginCredentialsParams,
-                                    hwWalletBridge = hwWalletBridge
+                                    hwInteraction = hwInteraction
                                 )
                             )
                         } catch (e: Exception){
@@ -1095,7 +1166,7 @@ class GdkSession constructor(
 
                     authHandler(
                         gdkSession.key,
-                        gdkBridge.loginUser(
+                        gdk.loginUser(
                             session = gdkSession.value,
                             deviceParams = deviceParams,
                             loginCredentialsParams = loginCredentialsParams
@@ -1138,7 +1209,7 @@ class GdkSession constructor(
                                         resetNetwork(network)
 
                                         // Remove GDK cache folder
-                                        removeGdkCache(loginData)
+                                        gdk.removeGdkCache(loginData)
                                     }
                                 }
                             }
@@ -1171,13 +1242,13 @@ class GdkSession constructor(
                 val lightningLoginData = getWalletIdentifier(
                     network = defaultNetwork,
                     loginCredentialsParams = LoginCredentialsParams(mnemonic = lightningMnemonic),
-                    hwWalletBridge = null
+                    hwInteraction = null
                 )
 
                 // Init SDK
                 lightningSdkOrNull = initLightningSdk(lightningLoginData, appGreenlightCredentials)
 
-                if (appGreenlightCredentials != null || (isRestore && settingsManager.lightningEnabled && settingsManager.getApplicationSettings().experimentalFeatures)) {
+                if (appGreenlightCredentials != null || (isRestore && settingsManager.isLightningEnabled(countly) && settingsManager.appSettings.experimentalFeatures)) {
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {
@@ -1227,8 +1298,10 @@ class GdkSession constructor(
     }
 
     private fun initLightningSdk(loginData: LoginData, appGreenlightCredentials: AppGreenlightCredentials? = null): LightningBridge {
+        val breezSdkWorkingDir = File(gdk.dataDir, "breezSdk")
+
         val workingDir = File(
-            gdkBridge.breezSdkWorkingDir,
+            breezSdkWorkingDir,
             "${loginData.walletHashId}${File.separator}0"
         )
 
@@ -1239,12 +1312,15 @@ class GdkSession constructor(
     }
 
     private fun connectToGreenlight(mnemonic: String, create: Boolean = false){
+        countly.loginLightningStart()
         if(create){
             lightningSdk.connectToGreenlight(mnemonic)
             hasLightning = true
         }else{
             lightningSdk.connectToGreenlightIfExists(mnemonic)
         }
+
+        countly.loginLightningStop()
 
         lightningSdk.eventSharedFlow.onEach {
             onLightningEvent(it)
@@ -1254,9 +1330,9 @@ class GdkSession constructor(
     private fun reLogin(network: Network): LoginData {
         return authHandler(
             network,
-            gdkBridge.loginUser(
+            gdk.loginUser(
                 session = gdkSession(network),
-                deviceParams = DeviceParams.fromDeviceOrEmpty(device?.hwWallet?.device),
+                deviceParams = DeviceParams.fromDeviceOrEmpty(device?.gdkHardwareWallet?.device),
                 loginCredentialsParams = LoginCredentialsParams.empty
             )
         ).result<LoginData>().also {
@@ -1342,20 +1418,20 @@ class GdkSession constructor(
     fun updateSystemMessage(){
         scope.launch(context = Dispatchers.IO) {
             _systemMessageStateFlow.value = gdkSessions.map {
-                it.key to gdkBridge.getSystemMessage(it.value)
+                it.key to (gdk.getSystemMessage(it.value) ?: "")
             }.filter { !it.second.isNullOrBlank() }
         }
     }
 
     fun ackSystemMessage(network: Network, message: String) = authHandler(
         network,
-        gdkBridge.ackSystemMessage(gdkSession(network), message)
+        gdk.ackSystemMessage(gdkSession(network), message)
     ).resolve()
 
-    fun setTransactionMemo(network: Network, txHash: String, memo: String): Boolean = try{
-        gdkBridge.setTransactionMemo(gdkSession(network), txHash, memo)
+    fun setTransactionMemo(network: Network, txHash: String, memo: String): Boolean = try {
+        gdk.setTransactionMemo(gdkSession(network), txHash, memo)
         true
-    }catch (e: Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         false
     }
@@ -1363,25 +1439,25 @@ class GdkSession constructor(
     fun getWalletIdentifier(
         network: Network,
         loginCredentialsParams: LoginCredentialsParams? = null,
-        hwWallet: HWWallet? = null,
-        hwWalletBridge: HWWalletBridge? = null,
-    ) = gdkBridge.getWalletIdentifier(
+        gdkHwWallet: GdkHardwareWallet? = null,
+        hwInteraction: HardwareWalletInteraction? = null,
+    ) = gdk.getWalletIdentifier(
         connectionParams = createConnectionParams(network),
-        loginCredentialsParams = (hwWallet ?: this.hwWallet)?.let {
+        loginCredentialsParams = (gdkHwWallet ?: this.gdkHwWallet)?.let {
             LoginCredentialsParams(
-                masterXpub = it.getXpubs(network, hwWalletBridge, listOf(listOf())).first()
+                masterXpub = it.getXpubs(network, hwInteraction, listOf(listOf())).first()
             )
         } ?: loginCredentialsParams ?: getCredentials().let { LoginCredentialsParams.fromCredentials(it) }
     )
 
     fun getWalletFingerprint(
         network: Network,
-        hwWallet: HWWallet? = null,
-        hwWalletBridge: HWWalletBridge? = null
+        gdkHwWallet: GdkHardwareWallet? = null,
+        hwInteraction: HardwareWalletInteraction? = null,
     ): String? {
-        return (hwWallet ?: this.hwWallet)?.let {
-            gdkBridge.bip32Fingerprint(
-                it.getXpubs(network, hwWalletBridge, listOf(listOf())).first()
+        return (gdkHwWallet ?: this.gdkHwWallet)?.let {
+            wally.bip32Fingerprint(
+                it.getXpubs(network, hwInteraction, listOf(listOf())).first()
             )
         }
     }
@@ -1392,7 +1468,7 @@ class GdkSession constructor(
 
         return authHandler(
             network,
-            gdkBridge.encryptWithPin(gdkSession(network), encryptWithPinParams)
+            gdk.encryptWithPin(gdkSession(network), encryptWithPinParams)
         ).result<EncryptWithPin>().also {
             it.networkInjected = (network)
         }
@@ -1401,15 +1477,14 @@ class GdkSession constructor(
     private fun decryptCredentialsWithPin(network: Network, decryptWithPinParams: DecryptWithPinParams): Credentials {
         return authHandler(
             network,
-            gdkBridge.decryptWithPin(gdkSession(network), decryptWithPinParams)
+            gdk.decryptWithPin(gdkSession(network), decryptWithPinParams)
         ).result()
     }
 
     fun getCredentials(params: CredentialsParams = CredentialsParams()): Credentials {
         val network = defaultNetwork.takeIf { hasActiveNetwork(defaultNetwork) } ?: activeSessions.first()
 
-        return authHandler(network, gdkBridge.getCredentials(gdkSession(network), params))
-            .result()
+        return authHandler(network, gdk.getCredentials(gdkSession(network), params)).result()
     }
 
     fun deriveLightningMnemonic(credentials: Credentials? = null): String {
@@ -1417,19 +1492,19 @@ class GdkSession constructor(
             if (isLightningOnly) {
                 it.mnemonic // Already derived
             } else {
-                gdkBridge.bip85FromMnemonic(
+                wally.bip85FromMnemonic(
                     mnemonic = it.mnemonic,
                     passphrase = it.bip39Passphrase,
                     index = 0,
                     isTestnet = isTestnet
-                )
+                )?: throw Exception("Couldn't derive lightning mnemonic")
             }
         }
     }
 
     fun getReceiveAddress(account: Account) = authHandler(
         account.network,
-        gdkBridge.getReceiveAddress(gdkSession(account.network),
+        gdk.getReceiveAddress(gdkSession(account.network),
             ReceiveAddressParams(account.pointer)
         )
     ).result<Address>()
@@ -1445,15 +1520,15 @@ class GdkSession constructor(
 
     fun getPreviousAddresses(account: Account, lastPointer: Int?) = authHandler(
         account.network,
-        gdkBridge.getPreviousAddress(gdkSession(account.network),
+        gdk.getPreviousAddress(gdkSession(account.network),
             PreviousAddressParams(account.pointer, lastPointer = lastPointer)
         )
     ).result<PreviousAddresses>()
 
     override fun refreshAssets(params: AssetsParams) {
-        (activeLiquid ?: liquid)?.also { gdkBridge.refreshAssets(gdkSession(it), params) }
+        (activeLiquid ?: liquid)?.also { gdk.refreshAssets(gdkSession(it), params) }
     }
-    override fun getAssets(params: GetAssetsParams) = (activeLiquid ?: liquid)?.let { gdkBridge.getAssets(gdkSession(it), params) }
+    override fun getAssets(params: GetAssetsParams) = (activeLiquid ?: liquid)?.let { gdk.getAssets(gdkSession(it), params) }
 
     fun createAccount(
         network: Network,
@@ -1461,7 +1536,7 @@ class GdkSession constructor(
         hardwareWalletResolver: HardwareWalletResolver? = null
     ): Account {
         return initNetworkIfNeeded(network) {
-            authHandler(network, gdkBridge.createSubAccount(gdkSession(network), params))
+            authHandler(network, gdk.createSubAccount(gdkSession(network), params))
                 .result<Account>(
                     hardwareWalletResolver = hardwareWalletResolver
                 ).also {
@@ -1494,7 +1569,7 @@ class GdkSession constructor(
     private fun getAccounts(network: Network, refresh: Boolean = false): List<Account> = initNetworkIfNeeded(network) {
         gdkSession(network).let {
             // Watch-only can't discover new accounts
-            authHandler(network, gdkBridge.getSubAccounts(it, SubAccountsParams(refresh = if(isWatchOnly) false else refresh)))
+            authHandler(network, gdk.getSubAccounts(it, SubAccountsParams(refresh = if(isWatchOnly) false else refresh)))
                 .result<Accounts>().accounts.onEach { account ->
                     account.networkInjected = network
                 }
@@ -1502,7 +1577,7 @@ class GdkSession constructor(
     }
 
     fun getAccount(account: Account) = authHandler(
-        account.network, gdkBridge.getSubAccount(gdkSession(account.network), account.pointer)
+        account.network, gdk.getSubAccount(gdkSession(account.network), account.pointer)
     ).result<Account>().also {
         it.networkInjected = account.network
 
@@ -1539,20 +1614,23 @@ class GdkSession constructor(
         // Disable account editing for lightning accounts
         if(account.isLightning) return account
 
-        gdkBridge.updateSubAccount(
-            gdkSession(account.network), if (resetAccountName.isNullOrBlank()) {
-                UpdateSubAccountParams(
-                    hidden = isHidden,
-                    subaccount = account.pointer
-                )
-            } else {
-                UpdateSubAccountParams(
-                    hidden = isHidden,
-                    name = resetAccountName,
-                    subaccount = account.pointer
-                )
-            }
-        )
+        authHandler(
+            account.network,
+            gdk.updateSubAccount(
+                gdkSession(account.network), if (resetAccountName.isNullOrBlank()) {
+                    UpdateSubAccountParams(
+                        hidden = isHidden,
+                        subaccount = account.pointer
+                    )
+                } else {
+                    UpdateSubAccountParams(
+                        hidden = isHidden,
+                        name = resetAccountName,
+                        subaccount = account.pointer
+                    )
+                }
+            )
+        ).resolve()
         // Update account list
         updateAccounts()
 
@@ -1568,12 +1646,14 @@ class GdkSession constructor(
     }
 
     fun updateAccount(account: Account, name: String): Account {
-        gdkBridge.updateSubAccount(
-            gdkSession(account.network), UpdateSubAccountParams(
-                name = name,
-                subaccount = account.pointer
+        authHandler(account.network,
+            gdk.updateSubAccount(
+                gdkSession(account.network), UpdateSubAccountParams(
+                    name = name,
+                    subaccount = account.pointer
+                )
             )
-        )
+        ).resolve()
 
         updateAccounts()
 
@@ -1588,16 +1668,16 @@ class GdkSession constructor(
             lightningSdk.recommendedFees().let {fees ->
                 (
                         listOf(fees.minimumFee) +
-                        List(GdkBridge.FeeBlockTarget[0] - 0) { fees.fastestFee } +
-                        List(GdkBridge.FeeBlockTarget[1] - GdkBridge.FeeBlockTarget[0]) { fees.halfHourFee } +
-                        List(GdkBridge.FeeBlockTarget[2] - GdkBridge.FeeBlockTarget[1]) { fees.hourFee }
+                        List(FeeBlockTarget[0] - 0) { fees.fastestFee } +
+                        List(FeeBlockTarget[1] - FeeBlockTarget[0]) { fees.halfHourFee } +
+                        List(FeeBlockTarget[2] - FeeBlockTarget[1]) { fees.hourFee }
                         ).map { it.toLong() }.let {
                     FeeEstimation(it)
                 }
             }
 
         }else{
-            gdkBridge.getFeeEstimates(gdkSession(network)).let {
+            gdk.getFeeEstimates(gdkSession(network)).let {
                 // Temp fix
                 if(network.isSinglesig && network.isLiquid) {
                     FeeEstimation(it.fees.map { fee ->
@@ -1616,7 +1696,7 @@ class GdkSession constructor(
     fun getTransactions(account: Account, params: TransactionParams = TransactionParams(subaccount = 0)) = (if (account.network.isLightning) {
         getLightningTransactions()
     } else {
-        authHandler(account.network, gdkBridge.getTransactions(gdkSession(account.network), params))
+        authHandler(account.network, gdk.getTransactions(gdkSession(account.network), params))
             .result<Transactions>()
     }).also {
         it.transactions.onEach { tx ->
@@ -1814,16 +1894,16 @@ class GdkSession constructor(
         when {
             t1.blockHeight == 0L && t2.blockHeight > 0L -> -1
             t2.blockHeight == 0L && t1.blockHeight > 0L -> 1
-            t1.blockHeight == t2.blockHeight && t1.createdAt == t2.createdAt -> { // if we send to the same account, display first the outgoing tx
+            t1.blockHeight == t2.blockHeight && t1.createdAtTs == t2.createdAtTs -> { // if we send to the same account, display first the outgoing tx
                 if (t1.isIn && t2.isOut) {
                     -1
                 } else if (t2.isIn && t1.isOut) {
                     1
                 } else {
-                    t2.createdAt.compareTo(t1.createdAt)
+                    t2.createdAtTs.compareTo(t1.createdAtTs)
                 }
             }
-            else -> t2.createdAt.compareTo(t1.createdAt)
+            else -> t2.createdAtTs.compareTo(t1.createdAtTs)
         }
 
     fun sortUtxos(a1: Utxo, a2: Utxo): Int = sortAssets(a1.assetId, a2.assetId)
@@ -1880,7 +1960,7 @@ class GdkSession constructor(
             lightningSdk.balance()?.let { mapOf(BTC_POLICY_ASSET to it) }
         } else {
             authHandler(
-                account.network, gdkBridge.getBalance(
+                account.network, gdk.getBalance(
                     gdkSession(account.network), BalanceParams(
                         subaccount = account.pointer,
                         confirmations = confirmations
@@ -1898,7 +1978,7 @@ class GdkSession constructor(
     }
 
     fun changeSettingsTwoFactor(network: Network, method: String, methodConfig: TwoFactorMethodConfig) =
-        authHandler(network, gdkBridge.changeSettingsTwoFactor(
+        authHandler(network, gdk.changeSettingsTwoFactor(
                 gdkSession(network),
                 method,
                 methodConfig
@@ -1908,7 +1988,7 @@ class GdkSession constructor(
     fun getTwoFactorConfig(network: Network, useCache: Boolean = false): TwoFactorConfig {
         if(!useCache || !_twoFactorConfigCache.contains(network)){
             _twoFactorConfigCache[network] = try {
-                gdkBridge.getTwoFactorConfig(gdkSession(network))
+                gdk.getTwoFactorConfig(gdkSession(network))
             } catch (e: Exception) {
                 countly.recordException(e)
                 // Quick fix to solve login issues
@@ -1919,30 +1999,30 @@ class GdkSession constructor(
         return _twoFactorConfigCache[network]!!
     }
 
-    fun getWatchOnlyUsername(network: Network) = gdkBridge.getWatchOnlyUsername(gdkSession(network))
+    fun getWatchOnlyUsername(network: Network) = gdk.getWatchOnlyUsername(gdkSession(network))
 
-    fun setWatchOnly(network: Network, username: String, password: String) = gdkBridge.setWatchOnly(
+    fun setWatchOnly(network: Network, username: String, password: String) = gdk.setWatchOnly(
         gdkSession(network),
         username,
         password
     )
 
-    fun twofactorReset(network: Network, email:String, isDispute: Boolean) =
-        authHandler(network, gdkBridge.twofactorReset(gdkSession(network), email, isDispute))
+    fun twoFactorReset(network: Network, email:String, isDispute: Boolean) =
+        authHandler(network, gdk.twoFactorReset(gdkSession(network), email, isDispute))
 
     fun twofactorUndoReset(network: Network, email: String) =
-        authHandler(network, gdkBridge.twofactorUndoReset(gdkSession(network), email))
+        authHandler(network, gdk.twoFactorUndoReset(gdkSession(network), email))
 
     fun twofactorCancelReset(network: Network) =
-        authHandler(network, gdkBridge.twofactorCancelReset(gdkSession(network)))
+        authHandler(network, gdk.twoFactorCancelReset(gdkSession(network)))
 
     fun twofactorChangeLimits(network: Network, limits: Limits) =
-        authHandler(network, gdkBridge.twofactorChangeLimits(gdkSession(network), limits))
+        authHandler(network, gdk.twoFactorChangeLimits(gdkSession(network), limits))
 
-    fun sendNlocktimes(network: Network) = gdkBridge.sendNlocktimes(gdkSession(network))
+    fun sendNlocktimes(network: Network) = gdk.sendNlocktimes(gdkSession(network))
 
-    fun setCsvTime(network: Network, value: Int) =
-        authHandler(network, gdkBridge.setCsvTime(gdkSession(network), value))
+    fun setCsvTime(network: Network, value: CsvParams) =
+        authHandler(network, gdk.setCsvTime(gdkSession(network), value))
 
     private fun updateAccounts(refresh: Boolean = false) {
         getAccounts(refresh).also { fetchedAccounts ->
@@ -1966,9 +2046,9 @@ class GdkSession constructor(
                 put("asset_info", convert.asset!!.toJsonElement())
                 put(convert.asset?.assetId ?: "", convert.assetAmount)
             }
-            gdkBridge.convertAmount(gdkSession(network), convert, jsonElement)
+            gdk.convertAmount(gdkSession(network), convert, jsonElement)
         } else {
-            gdkBridge.convertAmount(gdkSession(network), convert)
+            gdk.convertAmount(gdkSession(network), convert)
         }
     }catch (e: Exception){
         e.printStackTrace()
@@ -1981,7 +2061,7 @@ class GdkSession constructor(
 
     private fun getUnspentOutputs(network: Network, params: BalanceParams) = authHandler(
         network,
-        gdkBridge.getUnspentOutputs(gdkSession(network), params)
+        gdk.getUnspentOutputs(gdkSession(network), params)
     ).result<UnspentOutputs>().also {
         it.fillUtxosJsonElement()
     }
@@ -2010,7 +2090,7 @@ class GdkSession constructor(
 
         return authHandler(
             network,
-            gdkBridge.createTransaction(gdkSession(network), params)
+            gdk.createTransaction(gdkSession(network), params)
         ).result<CreateTransaction>()
     }
 
@@ -2019,7 +2099,7 @@ class GdkSession constructor(
             createLightningTransaction(network, params)
         } else authHandler(
             network,
-            gdkBridge.createTransaction(gdkSession(network), params)
+            gdk.createTransaction(gdkSession(network), params)
         ).result<CreateTransaction>()
 
     private suspend fun generateLightningError(
@@ -2109,24 +2189,18 @@ class GdkSession constructor(
 
     fun createSwapTransaction(network: Network, params: CreateSwapParams, twoFactorResolver: TwoFactorResolver) = authHandler(
         network,
-        gdkBridge.createSwapTransaction(gdkSession(network), params)
+        gdk.createSwapTransaction(gdkSession(network), params)
     ).result<CreateSwapTransaction>(twoFactorResolver = twoFactorResolver)
 
     fun completeSwapTransaction(network: Network, params: CompleteSwapParams, twoFactorResolver: TwoFactorResolver) = authHandler(
         network,
-        gdkBridge.completeSwapTransaction(gdkSession(network), params)
+        gdk.completeSwapTransaction(gdkSession(network), params)
     ).result<CreateTransaction>(twoFactorResolver = twoFactorResolver)
-
-    fun updateCreateTransaction(network: Network, createTransaction: CreateTransaction) =
-        authHandler(
-            network,
-            gdkBridge.updateTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
-        ).result<CreateTransaction>()
 
     fun blindTransaction(network: Network, createTransaction: CreateTransaction) =
         authHandler(
             network,
-            gdkBridge.blindTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
+            gdk.blindTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
         ).result<CreateTransaction>()
 
     fun signTransaction(network: Network, createTransaction: CreateTransaction): CreateTransaction = if(network.isLightning){
@@ -2134,12 +2208,12 @@ class GdkSession constructor(
     }else{
         authHandler(
             network,
-            gdkBridge.signTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
+            gdk.signTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
         ).result<CreateTransaction>()
     }
 
     fun broadcastTransaction(network: Network, transaction: String) = SendTransactionSuccess(
-        txHash = gdkBridge.broadcastTransaction(
+        txHash = gdk.broadcastTransaction(
             gdkSession(network),
             transaction
         )
@@ -2197,16 +2271,8 @@ class GdkSession constructor(
     }else{
         authHandler(
             network,
-            gdkBridge.sendTransaction(gdkSession(network), createTransaction = signedTransaction.jsonElement!!)
+            gdk.sendTransaction(gdkSession(network), transaction = signedTransaction.jsonElement!!)
         ).result<SendTransactionSuccess>(twoFactorResolver = twoFactorResolver)
-    }
-
-    private fun removeGdkCache(loginData: LoginData){
-        gdkBridge.removeGdkCache(loginData)
-    }
-
-    fun recordException(throwable: Throwable) {
-        countly.recordException(throwable)
     }
 
     private fun walletActiveEventIfNeeded(){
@@ -2344,12 +2410,10 @@ class GdkSession constructor(
 
     fun hasAssetIcon(assetId : String) = networkAssetManager.hasAssetIcon(assetId)
     fun getAsset(assetId : String): Asset? = networkAssetManager.getAsset(assetId, this)
-    fun getAssetDrawableOrNull(assetId : String): Drawable? = networkAssetManager.getAssetDrawableOrNull(assetId, this)
-    fun getAssetDrawableOrDefault(assetId : String): Drawable = networkAssetManager.getAssetDrawableOrDefault(assetId, this)
 
     private fun validateAddress(network: Network, params: ValidateAddresseesParams) = authHandler(
         network,
-        gdkBridge.validate(gdkSession(network), params)
+        gdk.validate(gdkSession(network), params)
     ).result<ValidateAddressees>()
 
     fun parseInput(input: String): Pair<Network, InputType?>? {

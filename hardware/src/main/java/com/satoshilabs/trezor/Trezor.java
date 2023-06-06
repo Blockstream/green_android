@@ -31,7 +31,6 @@ import com.satoshilabs.trezor.protobuf.TrezorMessage.Success;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.TxRequest;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.TxSize;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.WordRequest;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;

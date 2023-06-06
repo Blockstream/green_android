@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import com.blockstream.common.data.CountlyWidget
+import com.blockstream.common.data.FollowUpType
 import com.blockstream.green.R
-import com.blockstream.green.data.CountlyWidget
-import com.blockstream.green.data.FollowUpType
 import com.blockstream.green.databinding.CountlyNpsDialogBinding
 import com.blockstream.green.extensions.snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -103,7 +103,7 @@ class CountlyNpsDialogFragment() : AbstractDialogFragment<CountlyNpsDialogBindin
             data["comment"] = binding.textInputEditText.text.toString()
         }
 
-        countly.sendFeedbackWidgetData(widget.widget, data)
+        countly.sendFeedbackWidgetData(widget.widget as ModuleFeedback.CountlyFeedbackWidget, data)
 
         activity?.snackbar(widget.msg.thanks)
 
@@ -136,7 +136,7 @@ class CountlyNpsDialogFragment() : AbstractDialogFragment<CountlyNpsDialogBindin
         super.onDismiss(dialog)
         if(!isSubmitted && !isNotNow){
             widgetOrNull?.also {
-                countly.sendFeedbackWidgetData(it.widget, null)
+                countly.sendFeedbackWidgetData(it.widget as ModuleFeedback.CountlyFeedbackWidget, null)
             }
         }
     }

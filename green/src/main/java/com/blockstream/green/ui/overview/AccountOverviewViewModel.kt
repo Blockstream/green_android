@@ -2,8 +2,8 @@ package com.blockstream.green.ui.overview
 
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
@@ -15,6 +15,7 @@ import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.lightning.fromSwapInfo
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.combine

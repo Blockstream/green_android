@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.data.Account
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemOutputDescriptorsBinding

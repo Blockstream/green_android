@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.blockstream.gdk.data.Transaction.Type" />
+        <import type="com.blockstream.common.gdk.data.Transaction.Type" />
         <import type="com.blockstream.green.extensions.ExtensionsKt" />
 
         <variable

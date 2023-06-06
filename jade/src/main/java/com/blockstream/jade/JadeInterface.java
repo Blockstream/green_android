@@ -16,6 +16,9 @@ import com.polidea.rxandroidble3.RxBleDevice;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import kotlinx.coroutines.flow.MutableStateFlow;
+import kotlinx.coroutines.flow.StateFlow;
+
 /**
  * Mid-level interface to Jade
  * Wraps either a serial or a ble connection
@@ -237,7 +240,7 @@ public class JadeInterface {
         return response;
     }
 
-    public io.reactivex.rxjava3.subjects.PublishSubject<Boolean> getBleDisconnectEvent() {
-        return connection.getBleDisconnectEvent();
+    public StateFlow<Boolean> getBleDisconnectEvent() {
+        return connection.getDisconnectEvent();
     }
 }

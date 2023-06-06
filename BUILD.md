@@ -26,7 +26,7 @@ published by Blockstream. Gradle/Android Studio will automatically use the lates
 
 To download and update manually native libraries to the latest supported run:
 
-``` ./crypto/fetch_gdk_binaries.sh ```
+``` ./gdk/fetch_android_binaries.sh ```
 
 #### Cross-compile the native libraries (advanced):
 

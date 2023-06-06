@@ -6,9 +6,9 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.BTC_POLICY_ASSET
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.green.data.EnrichedAsset
+import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.green.databinding.FilterBottomSheetBinding
 import com.blockstream.green.extensions.makeItConstant
 import com.blockstream.green.gdk.getAssetName

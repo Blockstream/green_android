@@ -6,8 +6,8 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.fragment.findNavController
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.setNavigationResult

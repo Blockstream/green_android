@@ -5,9 +5,9 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateMargins
 import androidx.core.view.updatePadding
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.data.Utxo
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Utxo
 import com.blockstream.green.R
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
@@ -16,6 +16,7 @@ import com.blockstream.green.databinding.AssetLayoutBinding
 import com.blockstream.green.databinding.UtxoLayoutBinding
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.balance
+import com.blockstream.green.gdk.getAssetDrawableOrNull
 import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.gdk.getAssetName
 import com.blockstream.green.gdk.hasHistory
@@ -178,7 +179,7 @@ fun AccountCardLayoutBinding.bind(
             val isAssetWithoutIcon = if (asset.key.isPolicyAsset(session)) {
                 false
             } else {
-                session.getAssetDrawableOrNull(asset.key) == null
+                session.getAssetDrawableOrNull(context, asset.key) == null
             }
 
             if (isAssetWithoutIcon) {

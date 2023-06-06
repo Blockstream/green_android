@@ -7,7 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.data.AccountType
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.RecoveryCheckFragmentBinding

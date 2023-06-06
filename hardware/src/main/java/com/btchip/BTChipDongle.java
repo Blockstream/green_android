@@ -19,7 +19,7 @@
 
 package com.btchip;
 
-import com.blockstream.gdk.data.InputOutput;
+import com.blockstream.common.gdk.data.InputOutput;
 import com.blockstream.libwally.Wally;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.utils.BufferUtils;

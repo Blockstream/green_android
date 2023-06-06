@@ -6,7 +6,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavDirections
-import com.blockstream.base.Urls
+import com.blockstream.common.Urls
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.SetupNewWalletFragmentBinding

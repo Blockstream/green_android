@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.blockstream.gdk.data.Device" />
+        <import type="com.blockstream.common.gdk.data.Device" />
 
         <variable
             name="firmware"

@@ -5,18 +5,22 @@ import android.bluetooth.BluetoothDevice
 import android.hardware.usb.UsbDevice
 import android.os.ParcelUuid
 import android.os.SystemClock
-import com.blockstream.DeviceBrand
+import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.gdk.device.DeviceState
+import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.green.BuildConfig
-import com.blockstream.jade.JadeBleImpl
 import com.btchip.comm.LedgerDeviceBLE
-import com.greenaddress.greenapi.HWWallet
 import com.polidea.rxandroidble3.RxBleDevice
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.addTo
-import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import mu.KLogging
 import kotlin.properties.Delegates
 
@@ -30,58 +34,47 @@ class Device constructor(
     val usbDevice: UsbDevice? = null,
     var bleDevice: RxBleDevice? = null,
     val bleService: ParcelUuid? = null,
-) {
-    enum class DeviceState {
-        SCANNED, DISCONNECTED
-    }
+): DeviceInterface {
 
     private val _deviceState : MutableStateFlow<DeviceState> = MutableStateFlow(DeviceState.SCANNED)
-    val deviceState
+    override val deviceState
         get() = _deviceState.asStateFlow()
 
     private val bleDisposables = CompositeDisposable()
 
-    var hwWallet: HWWallet? by Delegates.observable(null) { _, _, hwWallet ->
-        logger.info { "Set HWWallet" }
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-        bleDisposables.clear()
+    override var gdkHardwareWallet: GdkHardwareWallet? by Delegates.observable(null) { _, _, gdkHardwareWallet ->
+        logger.info { "Set GdkHardwareWallet" }
 
-        hwWallet?.bleDisconnectEvent?.let {
+        gdkHardwareWallet?.disconnectEvent?.let {
             logger.info { "Subscribe to BLE disconnect event" }
-            it.observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(onError = { e ->
-                    e.printStackTrace()
-                },
-                onNext = {
+            it.onEach { isDisconnected ->
+                if(isDisconnected){
                     logger.info { "BLE Disconnect event from device, marking it as offline" }
                     offline()
-                }).addTo(bleDisposables)
+                }
+            }.launchIn(scope = scope)
         }
     }
+    override val isJade: Boolean
+        get() = deviceBrand.isJade
+    override val isTrezor: Boolean
+        get() = deviceBrand.isTrezor
+    override val isLedger: Boolean
+        get() = deviceBrand.isLedger
 
     val usbManager
         get() = deviceManager.usbManager
 
-    val isOffline = deviceState.value == DeviceState.DISCONNECTED
-
-    val isJade by lazy {
-        bleService == ParcelUuid(JadeBleImpl.IO_SERVICE_UUID) || usbDevice?.vendorId == VENDOR_JADE_A  || usbDevice?.vendorId == VENDOR_JADE_B
-    }
-
-    val isTrezor by lazy {
-        usbDevice?.vendorId == VENDOR_TREZOR || usbDevice?.vendorId == VENDOR_TREZOR_V2
-    }
-
-    val isLedger by lazy {
-        bleService == ParcelUuid(LedgerDeviceBLE.SERVICE_UUID) || usbDevice?.vendorId == VENDOR_BTCHIP || usbDevice?.vendorId == VENDOR_LEDGER
-    }
+    override val isOffline = deviceState.value == DeviceState.DISCONNECTED
 
     val supportsLiquid by lazy {
-        !isTrezor
+        !deviceBrand.isTrezor
     }
 
     val canSwitchNetwork by lazy {
-        isJade || isTrezor
+        deviceBrand.isJade || deviceBrand.isTrezor
     }
 
     fun askForPermissionOrBond(onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null) {
@@ -102,8 +95,8 @@ class Device constructor(
     var timeout: Long = 0
 
     // On Jade devices is not safe to use mac address as an id cause of RPA. Prefer using the unique name as a way to identify the device.
-    val id: String by lazy {
-        usbDevice?.deviceId?.toString(10) ?: (if(isJade) name else bleDevice?.bluetoothDevice?.address) ?: hashCode().toString(10)
+    override val id: String by lazy {
+        usbDevice?.deviceId?.toString(10) ?: (if(deviceBrand.isJade) name else bleDevice?.bluetoothDevice?.address) ?: hashCode().toString(10)
     }
 
     val uniqueIdentifier: String
@@ -116,15 +109,15 @@ class Device constructor(
             hashCode().toString(10)
         }
 
-    val name
+    override val name
         @SuppressLint("MissingPermission")
-        get() = (if (isJade && isUsb) "Jade" else usbDevice?.productName
+        get() = (if (deviceBrand.isJade && isUsb) "Jade" else usbDevice?.productName
             ?: bleDevice?.bluetoothDevice?.name) ?: deviceBrand.name
 
     // Jade v1 has the controller manufacturer as a productName
     val manufacturer
         @SuppressLint("MissingPermission")
-        get() = if (isJade) deviceBrand.name else usbDevice?.productName
+        get() = if (deviceBrand.isJade) deviceBrand.name else usbDevice?.productName
             ?: bleDevice?.bluetoothDevice?.name
 
     val vendorId
@@ -133,16 +126,16 @@ class Device constructor(
     val productId
         get() = usbDevice?.productId
 
-    val isUsb
+    override val isUsb
         get() = type == ConnectionType.USB
 
-    val isBle
+    override val isBle
         get() = type == ConnectionType.BLUETOOTH
 
-    val deviceBrand by lazy {
+    override val deviceBrand by lazy {
         when {
-            isTrezor -> DeviceBrand.Trezor
-            isLedger -> DeviceBrand.Ledger
+            (usbDevice?.vendorId == VENDOR_TREZOR || usbDevice?.vendorId == VENDOR_TREZOR_V2) -> DeviceBrand.Trezor
+            (bleService == ParcelUuid(LedgerDeviceBLE.SERVICE_UUID) || usbDevice?.vendorId == VENDOR_BTCHIP || usbDevice?.vendorId == VENDOR_LEDGER) -> DeviceBrand.Ledger
             else -> DeviceBrand.Blockstream
         }
     }
@@ -167,7 +160,7 @@ class Device constructor(
     }
 
     fun handleBondingByHwwImplementation(): Boolean {
-        return isBle && isJade
+        return isBle && deviceBrand.isJade
     }
 
     fun offline() {
@@ -175,10 +168,11 @@ class Device constructor(
         _deviceState.compareAndSet(DeviceState.SCANNED, DeviceState.DISCONNECTED)
     }
 
-    fun disconnect() {
+    override fun disconnect() {
         bleDisposables.clear()
-        hwWallet?.disconnect()
-        hwWallet = null
+        scope.cancel()
+        gdkHardwareWallet?.disconnect()
+        gdkHardwareWallet = null
 
         if(isBle) {
             offline()

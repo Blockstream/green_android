@@ -2,7 +2,7 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.blockstream.gdk.data.Account
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.R
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.ListItemAccountBinding

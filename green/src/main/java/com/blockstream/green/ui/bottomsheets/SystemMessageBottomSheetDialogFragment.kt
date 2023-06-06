@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.databinding.SystemMessageBottomSheetBinding
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.extensions.dismissIn
 import com.blockstream.green.extensions.errorDialog

@@ -4,6 +4,31 @@ stages:
   - deploy
   - upload
 
+#####################################
+# Build XCFramework
+
+xcframework:
+  image:
+    name: greenaddress/android@sha256:6c319f48b63af1107aa3d144fb9ea4ad909648bf6d0c538fa4724690bb64edc6
+    entrypoint: [""]
+  stage: build
+  when: manual
+  artifacts:
+    name: "green_xcframework-$CI_COMMIT_SHORT_SHA"
+    expire_in: 10 days
+    when: on_success
+    paths:
+      - common/build/XCFrameworks/*.zip
+  tags:
+    - osx
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./gradlew assembleXCFramework
+    - cd common/build/XCFrameworks
+    - zip -r debug.zip debug
+    - zip -r release.zip release
 
 #####################################
 # Build Signed APKs
@@ -112,7 +137,7 @@ gdk_commit:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - ./crypto/fetch_gdk_binaries.sh -c $GDK_COMMIT
+    - ./gdk/fetch_android_binaries.sh -c $GDK_COMMIT
     - ./gradlew assembleProductionGoogleRelease
 
 #####################################
@@ -259,3 +284,20 @@ gcp_push_gdk_commit:
     - gsutil -m cp -r $CI_PROJECT_DIR/green/build/outputs/apk/productionGoogle/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
     - qrencode -t UTF8 "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
+
+gcp_push_xcframework:
+  extends: .gcp_prep
+  needs: ["gcp_auth", "xcframework"]
+  variables:
+    GCS_BUCKET: green-android-builds
+    XCFRAMEWORK_NAME: green_xcframework-$CI_COMMIT_SHA
+  before_script:
+    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
+  script:
+    - apk add libqrencode
+    - echo "Uploading gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip"
+    - gsutil -m cp -r $CI_PROJECT_DIR/common/build/XCFrameworks/release.zip gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip
+    - echo "https://storage.googleapis.com/$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip"
+    - echo "Uploading gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip"
+    - gsutil -m cp -r $CI_PROJECT_DIR/common/build/XCFrameworks/release.zip gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip
+    - echo "https://storage.googleapis.com/$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip"

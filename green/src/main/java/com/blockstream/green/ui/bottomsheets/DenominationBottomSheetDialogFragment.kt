@@ -10,7 +10,7 @@ import com.blockstream.green.R
 import com.blockstream.green.data.DenominatedValue
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.RecyclerBottomSheetBinding
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.items.AbstractBindingItem
 import com.blockstream.green.ui.items.DenominationListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel

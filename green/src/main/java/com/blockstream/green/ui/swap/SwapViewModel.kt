@@ -1,19 +1,29 @@
 package com.blockstream.green.ui.swap;
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.BTC_POLICY_ASSET
-import com.blockstream.gdk.GAJson
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.*
-import com.blockstream.gdk.params.*
+import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
+import com.blockstream.common.gdk.TwoFactorResolver
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.CreateTransaction
+import com.blockstream.common.gdk.data.LiquiDexV0List
+import com.blockstream.common.gdk.data.SwapAsset
+import com.blockstream.common.gdk.data.SwapProposal
+import com.blockstream.common.gdk.data.Utxo
+import com.blockstream.common.gdk.params.CompleteSwapParams
+import com.blockstream.common.gdk.params.Convert
+import com.blockstream.common.gdk.params.CreateSwapParams
+import com.blockstream.common.gdk.params.CreateTransactionParams
+import com.blockstream.common.gdk.params.LiquidDexV0AssetParams
+import com.blockstream.common.gdk.params.LiquidDexV0Params
 import com.blockstream.green.data.Countly
-import com.blockstream.green.data.EnrichedAsset
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.extensions.toggle
-import com.blockstream.green.gdk.TwoFactorResolver
 import com.blockstream.green.gdk.assetTicker
 import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.managers.SessionManager
@@ -112,7 +122,7 @@ class SwapViewModel @AssistedInject constructor(
         session.enrichedAssetsFlow.onEach {
             remoteAssets = it
             updateToAssets()
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewModelScope)
 
         combine(utxoLiveData.asFlow(), toAssetIdLiveData.asFlow(), exchangeRateDirection.asFlow(), toAmount.asFlow()) { _, _, _, _ ->
             Unit
@@ -295,9 +305,9 @@ class SwapViewModel @AssistedInject constructor(
         val string = tx.jsonElement!!.toString()
         val tmp = JSONObject(string)
         tmp.put("sign_with", JSONArray(listOf("user", "green-backend").toTypedArray()) )
-        val json = GdkBridge.JsonDeserializer.parseToJsonElement(tmp.toString())
-        val updatedTx = GdkBridge.JsonDeserializer.decodeFromJsonElement<CreateTransaction>(json).let {
-            if (it is GAJson<*> && it.keepJsonElement) {
+        val json = JsonDeserializer.parseToJsonElement(tmp.toString())
+        val updatedTx = JsonDeserializer.decodeFromJsonElement<CreateTransaction>(json).let {
+            if (it is GdkJson<*> && it.keepJsonElement) {
                 it.jsonElement = json
             }
             it

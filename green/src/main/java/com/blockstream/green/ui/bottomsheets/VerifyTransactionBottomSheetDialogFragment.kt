@@ -33,7 +33,7 @@ class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragmen
                 }
             }
 
-            binding.device = receiveViewModel.session.hwWallet?.device
+            binding.device = receiveViewModel.session.gdkHwWallet?.device
         }
 
         val fastAdapter = FastAdapter.with((parentFragment as SendConfirmFragment).createAdapter(isAddressVerificationOnDevice = true))

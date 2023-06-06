@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.gdk.data.Account
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.databinding.RenameAccountBottomSheetBinding
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.nameCleanup

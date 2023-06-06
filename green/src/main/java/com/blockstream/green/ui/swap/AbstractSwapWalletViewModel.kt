@@ -2,7 +2,7 @@ package com.blockstream.green.ui.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.gdk.data.SwapProposal
+import com.blockstream.common.gdk.data.SwapProposal
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository

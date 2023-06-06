@@ -5,11 +5,11 @@
 
     <data>
         <import type="com.blockstream.green.gdk.ExtensionsKt"/>
-        <import type="com.blockstream.gdk.data.AccountType"/>
+        <import type="com.blockstream.common.gdk.data.AccountType"/>
 
         <variable
             name="accountType"
-            type="AccountType" />
+            type="com.blockstream.common.gdk.data.AccountType" />
 
     </data>
 

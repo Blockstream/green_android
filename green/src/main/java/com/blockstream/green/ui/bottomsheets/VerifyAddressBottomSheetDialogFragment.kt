@@ -31,7 +31,7 @@ class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<V
                 }
             }
 
-            binding.device = receiveViewModel.session.hwWallet?.device
+            binding.device = receiveViewModel.session.gdkHwWallet?.device
         }
 
         binding.arrow.bounceDown()

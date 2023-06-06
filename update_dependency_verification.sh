@@ -68,6 +68,6 @@ if [[ $GRADLE == "local" ]]; then
 else
   echo "Using Docker"
   # Deprecated: Use `docker run -it -v $PWD:/ga greenaddress/android -u` instead
-  # docker run --rm -v $PWD:/ga --entrypoint /bin/sh greenaddress/android@sha256:6c319f48b63af1107aa3d144fb9ea4ad909648bf6d0c538fa4724690bb64edc6 "-c" "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
+  # docker run --rm -v $PWD:/ga --entrypoint /bin/sh greenaddress/android@sha256:de85c05b5ac837918a349e17e5085f57a59d5352a4f2f9029ab6174be8966429 "-c" "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
   docker run --rm -it -v $PWD:/ga greenaddress/android -u --write-verification-metadata sha256 ${TASK}
 fi

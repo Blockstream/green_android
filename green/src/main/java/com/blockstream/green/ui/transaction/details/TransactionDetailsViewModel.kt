@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.Transaction
-import com.blockstream.gdk.params.TransactionParams
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.gdk.params.TransactionParams
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet

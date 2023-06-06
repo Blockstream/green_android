@@ -1,8 +1,7 @@
 package com.blockstream.green.ui.settings
 
 import androidx.lifecycle.*
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.*
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
@@ -22,10 +21,9 @@ open class WatchOnlyViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     countly: Countly,
     appKeystore: AppKeystore,
-    gdkBridge: GdkBridge,
     applicationScope: ApplicationScope,
     @Assisted wallet: Wallet
-) : WalletSettingsViewModel(sessionManager, walletRepository, countly, appKeystore, gdkBridge, applicationScope, wallet) {
+) : WalletSettingsViewModel(sessionManager, walletRepository, countly, appKeystore, applicationScope, wallet) {
 
     private val _outputDescriptorsAccounts = MutableStateFlow<List<Account>>(listOf())
     val outputDescriptorsAccounts get() = _outputDescriptorsAccounts.asSharedFlow()

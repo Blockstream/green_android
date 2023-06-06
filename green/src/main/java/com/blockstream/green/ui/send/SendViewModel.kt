@@ -2,13 +2,12 @@ package com.blockstream.green.ui.send;
 
 import android.graphics.Bitmap
 import androidx.lifecycle.*
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.GdkBridge.Companion.FeeBlockTarget
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.data.CreateTransaction
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.params.AddressParams
-import com.blockstream.gdk.params.CreateTransactionParams
+import com.blockstream.common.gdk.FeeBlockTarget
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.CreateTransaction
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.params.AddressParams
+import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.green.data.*
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -132,7 +131,7 @@ class SendViewModel @AssistedInject constructor(
             .distinctUntilChanged()
             .onEach {
                 if(it.toInt() != SliderCustomIndex){
-                    feeRate = feeEstimation?.getOrNull(GdkBridge.FeeBlockTarget[3 - (it.toInt())])
+                    feeRate = feeEstimation?.getOrNull(FeeBlockTarget[3 - (it.toInt())])
                 }
 
                 checkTransaction()
@@ -343,9 +342,11 @@ class SendViewModel @AssistedInject constructor(
                     feeRate = getFeeRate(),
                     privateKey = recipients.value?.get(0)?.address?.value?.trim() ?: "", // private key
                     passphrase = "",
-                    addressees = listOf(AddressParams(
+                    addressees = listOf(
+                        AddressParams(
                         address = session.getReceiveAddress(account).address
-                    ))
+                    )
+                    )
                 )
             }
             else -> {
@@ -379,7 +380,7 @@ class SendViewModel @AssistedInject constructor(
                 val tx = session.createTransaction(network, params)
                 var balance: Assets? = null
 
-                if(finalCheckBeforeContinue){
+                if(finalCheckBeforeContinue && !isSweep){
                     balance = session.getBalance(account)
                 }
 

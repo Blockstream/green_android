@@ -8,8 +8,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.BaseRecyclerViewBinding

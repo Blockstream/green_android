@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.green.data.EnrichedAsset
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.green.gdk.getAssetName
 import com.blockstream.green.ui.items.AssetListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment

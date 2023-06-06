@@ -2,7 +2,7 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
@@ -23,13 +23,13 @@ class WalletsViewModel @Inject constructor(
 ) : AppViewModel(countly) {
     val softwareWalletsLiveData: LiveData<List<Wallet>> = walletRepository.getSoftwareWalletsLiveData()
 
-    val ephemeralWalletsLiveData = sessionManager.ephemeralWallets
+    val ephemeralWalletsLiveData = sessionManager.ephemeralWallets.asLiveData()
 
     private val _hardwareWalletsLiveData: MutableLiveData<List<Wallet>> = MutableLiveData()
     val hardwareWalletsLiveData: LiveData<List<Wallet>> get() = _hardwareWalletsLiveData
 
     init {
-        combine(walletRepository.getHardwareWalletsFlow(), sessionManager.hardwareWallets.asFlow()) { w1, w2 ->
+        combine(walletRepository.getHardwareWalletsFlow(), sessionManager.hardwareWallets) { w1, w2 ->
             (w1 + w2).distinctBy { it.id }
         }.onEach {
             _hardwareWalletsLiveData.value = it

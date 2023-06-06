@@ -1,31 +1,24 @@
 package com.blockstream.green.data
 
-import android.content.SharedPreferences
-import com.blockstream.green.settings.ApplicationSettings
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.until
+import com.blockstream.common.data.ApplicationSettings
+import com.russhwolf.settings.Settings
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.whenever
-import kotlin.time.Duration
 
 @RunWith(MockitoJUnitRunner::class)
 class ApplicationSettingsUnitTests {
 
     @Mock
-    private lateinit var prefs: SharedPreferences
+    private lateinit var settings: Settings
 
     @Test
     fun test_initial_values_with_empty_prefs(){
-        val appSettings = ApplicationSettings.fromSharedPreferences(prefs)
+        val appSettings = ApplicationSettings.fromSettings(settings)
 
         Assert.assertFalse(appSettings.tor)
         Assert.assertNull(appSettings.proxyUrl)
@@ -33,13 +26,20 @@ class ApplicationSettingsUnitTests {
 
     @Test
     fun test_values_from_prefs(){
-        whenever(prefs.getString(any(), anyOrNull())).thenAnswer {
+
+        whenever(settings.getStringOrNull(any())).thenAnswer {
             // value is same as requested key
             it.arguments[0] as String
         }
-        whenever(prefs.getBoolean(any(), any())).thenReturn(true)
 
-        val appSettings = ApplicationSettings.fromSharedPreferences(prefs)
+//        whenever(settings.getString(any(), anyOrNull())).thenAnswer {
+//            // value is same as requested key
+//            it.arguments[0] as String
+//        }
+        
+        whenever(settings.getBoolean(any(), any())).thenReturn(true)
+
+        val appSettings = ApplicationSettings.fromSettings(settings)
 
         Assert.assertEquals("proxyURL", appSettings.proxyUrl)
         Assert.assertTrue(appSettings.tor)

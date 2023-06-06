@@ -5,8 +5,8 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.data.AccountType
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.databinding.Account2of3FragmentBinding
 import com.blockstream.green.gdk.getNetworkIcon

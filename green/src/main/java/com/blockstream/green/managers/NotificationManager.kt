@@ -24,8 +24,8 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getNetworkColor
-import com.blockstream.green.services.LightningService
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.gdk.getWallet
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.MainActivity
 import kotlinx.coroutines.launch
 import mu.KLogging
@@ -50,8 +50,6 @@ class NotificationManager constructor(
                         sessionManager.getWalletSessionOrNull(walletId)?.disconnectAsync()
                     }
                 }
-            } else if (intent.action == ACTION_DISCONNECT_LIGHTNING) {
-                LightningService.stop(context)
             }
         }
     }
@@ -212,7 +210,7 @@ class NotificationManager constructor(
                     setShowWhen(false)
                 }
 
-                setVisibility(if (settingsManager.getApplicationSettings().enhancedPrivacy) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE)
+                setVisibility(if (settingsManager.appSettings.enhancedPrivacy) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE)
             }
             .build()
     }
@@ -263,7 +261,7 @@ class NotificationManager constructor(
                 disconnectIntent
             )
             .apply {
-                setVisibility(if (settingsManager.getApplicationSettings().enhancedPrivacy) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE)
+                setVisibility(if (settingsManager.appSettings.enhancedPrivacy) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE)
             }
             .build()
     }

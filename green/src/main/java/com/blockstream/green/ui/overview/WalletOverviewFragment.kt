@@ -11,9 +11,9 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.base.IAppReview
-import com.blockstream.gdk.data.Account
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
@@ -497,9 +497,9 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         }.launchIn(lifecycleScope)
 
         // Update on amount visibility change
-        settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner){
+        settingsManager.appSettingsStateFlow.onEach {
             fastAdapter.notifyAdapterDataSetChanged()
-        }
+        }.launchIn(lifecycleScope)
 
         val navigateToAssets = {
             navigate(

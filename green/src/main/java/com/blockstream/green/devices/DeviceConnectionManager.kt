@@ -1,17 +1,18 @@
 package com.blockstream.green.devices
 
 import android.content.Context
-import com.blockstream.DeviceBrand
 import com.blockstream.HardwareQATester
 import com.blockstream.JadeHWWallet
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.data.DeviceSupportsAntiExfilProtocol
-import com.blockstream.gdk.data.DeviceSupportsLiquid
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.data.DeviceSupportsAntiExfilProtocol
+import com.blockstream.common.gdk.data.DeviceSupportsLiquid
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.extensions.logException
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.jade.HttpRequestProvider
 import com.blockstream.jade.JadeAPI
@@ -33,17 +34,18 @@ import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import com.greenaddress.greenbits.wallets.LedgerBLEAdapter
 import com.greenaddress.greenbits.wallets.TrezorHWWallet
 import com.satoshilabs.trezor.Trezor
-import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import mu.KLogging
 
 class DeviceConnectionManager constructor(
     countly: Countly,
-    val gdkBridge: GdkBridge,
+    val gdk: Gdk,
     val settingsManager: SettingsManager,
     private val httpRequestProvider: HttpRequestProvider,
     private val interaction: HardwareConnectInteraction,
@@ -64,15 +66,15 @@ class DeviceConnectionManager constructor(
         scope.launch(context = Dispatchers.IO) {
             try {
                 when {
-                    device.isJade -> {
+                    device.deviceBrand.isJade -> {
                         connectJadeDevice(context, device)
                     }
 
-                    device.isTrezor -> {
+                    device.deviceBrand.isTrezor -> {
                         connectTrezorDevice(device)
                     }
 
-                    device.isLedger -> {
+                    device.deviceBrand.isLedger -> {
                         connectLedgerDevice(context, device)
                     }
                 }
@@ -86,7 +88,7 @@ class DeviceConnectionManager constructor(
 
     private suspend fun connectJadeDevice(context: Context, device: Device) {
 
-        if (device.isJade) {
+        if (device.deviceBrand.isJade) {
             try {
                 (device.usbDevice?.let { usbDevice ->
                     createSerial(httpRequestProvider, device.usbManager, usbDevice, 115200)
@@ -110,13 +112,13 @@ class DeviceConnectionManager constructor(
         }
     }
 
-    suspend fun authenticateDeviceIfNeeded(hwWallet: HWWallet, jadeFirmwareManager: JadeFirmwareManager? = null){
-        if(hwWallet is JadeHWWallet && hwWallet.getVersionInfo().jadeState != JadeState.READY){
+    suspend fun authenticateDeviceIfNeeded(gdkHardwareWallet: GdkHardwareWallet, jadeFirmwareManager: JadeFirmwareManager? = null){
+        if(gdkHardwareWallet is JadeHWWallet && gdkHardwareWallet.getVersionInfo().jadeState != JadeState.READY){
             try {
                 // Prepare http request
                 httpRequestProvider.httpRequest.prepareHttpRequest()
 
-                hwWallet.authenticate(interaction, jadeFirmwareManager ?: this.jadeFirmwareManager)
+                gdkHardwareWallet.authenticate(interaction, jadeFirmwareManager ?: this.jadeFirmwareManager)
 
             } catch (e: Exception) {
                 if (e is JadeError) {
@@ -147,7 +149,7 @@ class DeviceConnectionManager constructor(
             val version = JadeVersion(verInfo.jadeVersion)
             val supportsExternalBlinding = JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING <= version
 
-            val jadeDevice = com.blockstream.gdk.data.Device(
+            val jadeDevice = com.blockstream.common.gdk.data.Device(
                 name = "Jade",
                 supportsArbitraryScripts = true,
                 supportsLowR = true,
@@ -157,7 +159,7 @@ class DeviceConnectionManager constructor(
                 supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.Optional
             )
 
-            val jadeWallet = JadeHWWallet(jade, jadeDevice, verInfo, qaTester)
+            val jadeWallet = JadeHWWallet(gdk, jade, jadeDevice, verInfo, qaTester)
 
             onHWalletCreated(device, jadeWallet, jadeWallet.isUninitialized)
 
@@ -223,7 +225,7 @@ class DeviceConnectionManager constructor(
     private fun onTrezorConnected(device: Device, trezor: Trezor, firmwareVersion: String?) {
         logger.debug { "Creating Trezor HW wallet" }
 
-        val trezorDevice = com.blockstream.gdk.data.Device(
+        val trezorDevice = com.blockstream.common.gdk.data.Device(
             name = "Trezor",
             supportsArbitraryScripts = false,
             supportsLowR = false,
@@ -233,7 +235,7 @@ class DeviceConnectionManager constructor(
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
         )
 
-        onHWalletCreated(device, TrezorHWWallet(trezor, trezorDevice, firmwareVersion))
+        onHWalletCreated(device, TrezorHWWallet(gdk, trezor, trezorDevice, firmwareVersion))
     }
 
     private fun closeTrezorAndFail(device: Device) {
@@ -248,12 +250,13 @@ class DeviceConnectionManager constructor(
             LedgerBLEAdapter.connectLedgerBLE(
                 context,
                 device.bleDevice!!.bluetoothDevice,
-                { transport: BTChipTransport, hasScreen: Boolean, _: PublishSubject<Boolean?>? ->
+                { transport: BTChipTransport, hasScreen: Boolean, disconnectEvent: MutableStateFlow<Boolean> ->
                     scope.launch {
                         onLedger(
                             device,
                             transport,
-                            hasScreen
+                            hasScreen,
+                            disconnectEvent
                         )
                     }
                 }
@@ -269,7 +272,8 @@ class DeviceConnectionManager constructor(
                         onLedger(
                             device,
                             transport,
-                            true
+                            true,
+                            null
                         )
                     }
                 } else {
@@ -279,7 +283,8 @@ class DeviceConnectionManager constructor(
                         onLedger(
                             device,
                             transport,
-                            false
+                            false,
+                            null
                         )
                     }
                 }
@@ -292,7 +297,8 @@ class DeviceConnectionManager constructor(
     private suspend fun onLedger(
         device: Device,
         transport: BTChipTransport,
-        hasScreen: Boolean
+        hasScreen: Boolean,
+        disconnectEvent: MutableStateFlow<Boolean>?
     ) {
         transport.setDebug(isDevelopmentOrDebug)
 
@@ -320,11 +326,11 @@ class DeviceConnectionManager constructor(
 
 
             val network = when {
-                isBitcoin && isTestnet -> gdkBridge.networks.testnetBitcoinElectrum
-                isLiquid && !isTestnet -> gdkBridge.networks.liquidGreen
-                isLiquid && isTestnet -> gdkBridge.networks.testnetLiquidGreen
+                isBitcoin && isTestnet -> gdk.networks().testnetBitcoinElectrum
+                isLiquid && !isTestnet -> gdk.networks().liquidGreen
+                isLiquid && isTestnet -> gdk.networks().testnetLiquidGreen
                 else -> {
-                    gdkBridge.networks.bitcoinElectrum
+                    gdk.networks().bitcoinElectrum
                 }
             }
 
@@ -360,14 +366,14 @@ class DeviceConnectionManager constructor(
                 ).await()
 
                 if (isPositive != null) {
-                    onLedgerConnected(device, network, dongle, fw.toString())
+                    onLedgerConnected(device, network, dongle, fw.toString(), disconnectEvent)
                 } else {
                     closeLedgerAndFail(device, transport)
                 }
 
             }
 
-            onLedgerConnected(device, network, dongle, fw.toString())
+            onLedgerConnected(device, network, dongle, fw.toString(), disconnectEvent)
 
         } catch (e: BTChipException) {
             e.printStackTrace()
@@ -389,7 +395,8 @@ class DeviceConnectionManager constructor(
         device: Device,
         network: Network,
         dongle: BTChipDongle,
-        firmwareVersion: String
+        firmwareVersion: String,
+        disconnectEvent: StateFlow<Boolean>?
     ) {
         val pin: String? =
             if (device.isUsb && !BTChipTransportAndroid.isLedgerWithScreen(device.usbDevice)) {
@@ -400,7 +407,7 @@ class DeviceConnectionManager constructor(
 
         logger.info { "Creating Ledger HW wallet" + if (pin != null) " with PIN" else "" }
 
-        val ledgerDevice = com.blockstream.gdk.data.Device(
+        val ledgerDevice = com.blockstream.common.gdk.data.Device(
             name = "Ledger",
             supportsArbitraryScripts = true,
             supportsLowR = false,
@@ -412,7 +419,7 @@ class DeviceConnectionManager constructor(
 
         onHWalletCreated(
             device,
-            BTChipHWWallet(dongle, pin, network, ledgerDevice, firmwareVersion, null)
+            BTChipHWWallet(gdk, dongle, pin, network, ledgerDevice, firmwareVersion, disconnectEvent)
         )
     }
 
@@ -427,50 +434,50 @@ class DeviceConnectionManager constructor(
     }
 
     private fun onHWalletCreated(device: Device, hwWallet: HWWallet, isJadeUninitialized: Boolean? = null) {
-        device.hwWallet = hwWallet
+        device.gdkHardwareWallet = hwWallet
         interaction.onDeviceReady(device, isJadeUninitialized)
     }
 
-    suspend fun getOperatingNetworkForEnviroment(hwWallet: HWWallet, isTestnet: Boolean): Network{
-        return (when (hwWallet) {
+    suspend fun getOperatingNetworkForEnviroment(gdkHardwareWallet: GdkHardwareWallet, isTestnet: Boolean): Network {
+        return (when (gdkHardwareWallet) {
             is JadeHWWallet -> {
-                hwWallet.getVersionInfo().jadeNetworks.let { networks ->
+                gdkHardwareWallet.getVersionInfo().jadeNetworks.let { networks ->
                     when (networks) {
                         JadeNetworks.MAIN -> {
-                            gdkBridge.networks.bitcoinElectrum.takeIf { !isTestnet }
+                            gdk.networks().bitcoinElectrum.takeIf { !isTestnet }
                         }
                         JadeNetworks.TEST -> {
-                            gdkBridge.networks.testnetBitcoinElectrum.takeIf { isTestnet  }
+                            gdk.networks().testnetBitcoinElectrum.takeIf { isTestnet  }
                         }
                         else -> {
-                            if(isTestnet) gdkBridge.networks.testnetBitcoinElectrum else gdkBridge.networks.bitcoinElectrum
+                            if(isTestnet) gdk.networks().testnetBitcoinElectrum else gdk.networks().bitcoinElectrum
                         }
                     }
                 }
             }
             is TrezorHWWallet -> {
                 // Can operate on mainnet/testnet
-                if(isTestnet) gdkBridge.networks.testnetBitcoinElectrum else gdkBridge.networks.bitcoinElectrum
+                if(isTestnet) gdk.networks().testnetBitcoinElectrum else gdk.networks().bitcoinElectrum
             }
             is BTChipHWWallet -> {
-                hwWallet.network.takeIf { it.isTestnet == isTestnet }
+                gdkHardwareWallet.network.takeIf { it.isTestnet == isTestnet }
             }
             else -> {
                 null
             }
-        }) ?: getOperatingNetwork(hwWallet)
+        }) ?: getOperatingNetwork(gdkHardwareWallet)
     }
 
-    suspend fun getOperatingNetwork(hwWallet: HWWallet): Network{
-        return when (hwWallet) {
+    suspend fun getOperatingNetwork(gdkHardwareWallet: GdkHardwareWallet): Network {
+        return when (gdkHardwareWallet) {
             is JadeHWWallet -> {
-                hwWallet.getVersionInfo().jadeNetworks.let { networks->
+                gdkHardwareWallet.getVersionInfo().jadeNetworks.let { networks->
                     when (networks) {
                         JadeNetworks.MAIN -> {
-                            gdkBridge.networks.bitcoinElectrum
+                            gdk.networks().bitcoinElectrum
                         }
                         JadeNetworks.TEST -> {
-                            gdkBridge.networks.testnetBitcoinElectrum
+                            gdk.networks().testnetBitcoinElectrum
                         }
                         else -> {
                             interaction.requestNetwork()
@@ -483,7 +490,7 @@ class DeviceConnectionManager constructor(
             }
 
             is BTChipHWWallet -> {
-                hwWallet.network!!
+                gdkHardwareWallet.network!!
             }
 
             else -> {

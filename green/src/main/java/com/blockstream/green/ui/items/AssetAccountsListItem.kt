@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.R
-import com.blockstream.green.data.EnrichedAsset
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.green.databinding.ListItemAssetAccountsBinding
 import com.blockstream.green.databinding.SelectAccountLayoutBinding
 import com.blockstream.green.extensions.bind

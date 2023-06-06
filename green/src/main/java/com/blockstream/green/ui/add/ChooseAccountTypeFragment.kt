@@ -6,9 +6,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.gdk.BTC_POLICY_ASSET
-import com.blockstream.gdk.data.AccountType
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseAccountTypeFragmentBinding

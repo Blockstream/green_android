@@ -8,7 +8,7 @@ import com.blockstream.green.databinding.DialogFeedbackBinding
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.isEmailValid
 import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.datetime.Clock

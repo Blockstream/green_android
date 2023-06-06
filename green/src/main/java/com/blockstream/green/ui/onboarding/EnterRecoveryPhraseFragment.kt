@@ -11,7 +11,8 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.gdk.data.AccountType
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.getBip39WordList
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.EditTextDialogBinding
@@ -141,7 +142,7 @@ class EnterRecoveryPhraseFragment :
             adapter = fastAdapter
         }
 
-        binding.recoveryPhraseKeyboardView.setWordList(gdkBridge.getMnemonicWordList())
+        binding.recoveryPhraseKeyboardView.setWordList(wally.getBip39WordList())
 
         binding.recoveryPhraseKeyboardView.setOnRecoveryPhraseKeyboardListener(object :
             RecoveryPhraseKeyboardView.OnRecoveryPhraseKeyboardListener {

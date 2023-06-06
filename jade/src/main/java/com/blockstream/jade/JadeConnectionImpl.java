@@ -2,6 +2,8 @@ package com.blockstream.jade;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,6 +14,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import kotlinx.coroutines.flow.MutableStateFlow;
+import kotlinx.coroutines.flow.StateFlow;
 
 /**
  * Abstract a low-level Jade connection - eg. over serial or ble.
@@ -47,9 +51,8 @@ public abstract class JadeConnectionImpl {
 
     abstract public int write(final byte[] bytes);
 
-    public PublishSubject<Boolean> getBleDisconnectEvent() {
-        return null;
-    }
+    @Nullable
+    abstract public StateFlow<Boolean> getDisconnectEvent();
 
     // Function to push data into the dataReceived queue
     protected void onDataReceived(final byte[] data) {

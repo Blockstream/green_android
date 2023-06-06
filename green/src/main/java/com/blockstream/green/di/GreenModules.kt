@@ -5,9 +5,14 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.blockstream.gdk.AssetManager
-import com.blockstream.gdk.GdkBridge
-import com.blockstream.gdk.Logger
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.Wally
+import com.blockstream.common.gdk.getGdkBinding
+import com.blockstream.common.gdk.getWally
+import com.blockstream.common.gdk.params.InitConfig
+import com.blockstream.common.managers.AssetManager
+import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.GreenApplication
@@ -18,22 +23,20 @@ import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.settings.Migrator
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.*
-import com.blockstream.libgreenaddress.KotlinGDK
-import com.blockstream.libwally.KotlinWally
 import com.blockstream.lightning.LightningManager
 import com.pandulapeter.beagle.Beagle
 import com.pandulapeter.beagle.common.configuration.Behavior
 import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
 import com.pandulapeter.beagle.modules.*
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.SharedPreferencesSettings
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.MainScope
-import javax.inject.Provider
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -47,56 +50,51 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideKotlinGDK(): KotlinGDK {
-        return KotlinGDK()
+    fun provideSettings(sharedPreferences: SharedPreferences): Settings {
+        return SharedPreferencesSettings(sharedPreferences)
     }
 
     @Singleton
     @Provides
-    fun provideKotlinWally(): KotlinWally {
-        return KotlinWally()
+    fun provideLifecycleManager(): LifecycleManager {
+        return LifecycleManager()
     }
 
     @Singleton
     @Provides
-    fun provideGreenWallet(
-        @ApplicationContext context: Context,
-        gdk: KotlinGDK,
-        wally: KotlinWally,
-        sharedPreferences: SharedPreferences,
-        beagle: Beagle
-    ): GdkBridge {
-        var logger : Logger? = null
-
-        if(isDevelopmentOrDebug){
-            logger = object : Logger{
-                override fun log(message: String) {
-                    beagle.log(message)
-                }
-            }
-        }
-        return GdkBridge(
-            gdk = gdk,
-            wally = wally,
-            sharedPreferences = sharedPreferences,
-            dataDir = context.filesDir,
-            isDevelopment = isDevelopmentFlavor,
-            extraLogger = logger
+    fun provideGDK(@ApplicationContext context: Context, settings: Settings): Gdk {
+        val config = InitConfig(
+            datadir = context.filesDir.absolutePath,
+            logLevel = if (BuildConfig.DEBUG) "debug" else "none",
+            enableSinglesigLiquidHWW = true
         )
+
+        return Gdk(
+            settings = settings,
+            gdkBinding = getGdkBinding(isDevelopmentFlavor, config)
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideKotlinWally(): Wally {
+        return getWally()
     }
 
     @Singleton
     @Provides
     fun provideSessionManager(
         applicationScope: ApplicationScope,
+        lifecycleManager: LifecycleManager,
         lightningManager: LightningManager,
         settingsManager: SettingsManager,
         assetManager: AssetManager,
-        countlyProvider: Provider<Countly>,
-        gdkBridge: GdkBridge,
+        countly: Countly,
+        gdk: Gdk,
+        wally: Wally,
         qaTester: QATester
     ): SessionManager {
-        return SessionManager(applicationScope, lightningManager, settingsManager, assetManager, countlyProvider, gdkBridge, qaTester)
+        return SessionManager(applicationScope, lifecycleManager, lightningManager, settingsManager, assetManager, countly, gdk, wally, qaTester)
     }
 
     @Singleton
@@ -107,20 +105,28 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideAssetManager(@ApplicationContext context: Context, applicationScope: ApplicationScope, QATester: QATester): AssetManager {
-        return AssetManager(context, applicationScope, QATester)
+    fun provideAssetManager(applicationScope: ApplicationScope, QATester: QATester): AssetManager {
+        return AssetManager(applicationScope, QATester)
     }
 
     @Singleton
     @Provides
-    fun provideCountly(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, applicationScope: ApplicationScope, settingsManager: SettingsManager, sessionManager: SessionManager, walletRepository: WalletRepository): Countly {
-        return Countly(context, sharedPreferences, applicationScope, settingsManager, sessionManager, walletRepository)
+    fun provideCountly(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, applicationScope: ApplicationScope, settingsManager: SettingsManager, walletRepository: WalletRepository): Countly {
+        return Countly(context, sharedPreferences, applicationScope, settingsManager, walletRepository)
     }
 
     @Singleton
     @Provides
-    fun provideSettingsManager(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, countlyProvider: Provider<Countly>): SettingsManager {
-        return SettingsManager(context, sharedPreferences, countlyProvider)
+    fun provideSettingsManager(@ApplicationContext context: Context): SettingsManager {
+        val sharedPreferences = context.getSharedPreferences(SettingsManager.APPLICATION_SETTINGS_NAME, Context.MODE_PRIVATE)
+        val settings = SharedPreferencesSettings(sharedPreferences)
+
+        return SettingsManager(
+            analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics),
+            lightningFeatureEnabled = context.resources.getBoolean(R.bool.feature_lightning),
+            rateGooglePlayEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play),
+            settings = settings
+        )
     }
 
     @Singleton
@@ -131,8 +137,8 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideMigrator(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, walletRepository: WalletRepository, gdkBridge: GdkBridge, settingsManager: SettingsManager, applicationScope: ApplicationScope): Migrator {
-        return Migrator(context, sharedPreferences, walletRepository, gdkBridge, settingsManager, applicationScope)
+    fun provideMigrator(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, walletRepository: WalletRepository, gdk: Gdk, settingsManager: SettingsManager, applicationScope: ApplicationScope): Migrator {
+        return Migrator(context, sharedPreferences, walletRepository, gdk, settingsManager, applicationScope)
     }
 
     @Singleton

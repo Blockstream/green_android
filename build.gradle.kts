@@ -13,12 +13,10 @@ buildscript {
     }
 }
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.google.dagger.hilt.android) apply false
     alias(libs.plugins.google.devtools.ksp) apply false
 }
-true // Needed to make the Suppress annotation work for the plugins block
 
 allprojects {
     repositories {
@@ -27,8 +25,4 @@ allprojects {
         maven ("https://jitpack.io")
         maven("https://mvn.breez.technology/releases")
     }
-}
-
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
 }

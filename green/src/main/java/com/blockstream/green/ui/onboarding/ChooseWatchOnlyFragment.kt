@@ -2,7 +2,7 @@ package com.blockstream.green.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseWatchOnlyFragmentBinding
@@ -47,7 +47,7 @@ class ChooseWatchOnlyFragment :
                             isWatchOnly = true,
                             isSinglesig = true,
                             isTestnet = false,
-                            network = gdkBridge.networks.getNetworkByType(networkTypeOrId = Network.ElectrumMainnet, isElectrum = true)
+                            network = gdk.networks().getNetworkByType(networkTypeOrId = Network.ElectrumMainnet, isElectrum = true)
                         )
                     )
                 )

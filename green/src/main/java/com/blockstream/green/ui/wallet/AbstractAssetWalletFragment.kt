@@ -6,7 +6,7 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.extensions.bind
 import com.blockstream.green.ui.bottomsheets.AccountAssetBottomSheetDialogFragment

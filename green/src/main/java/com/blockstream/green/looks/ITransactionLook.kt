@@ -1,7 +1,7 @@
 package com.blockstream.green.looks
 
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.UtxoView
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.UtxoView
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
 import kotlinx.coroutines.CoroutineScope
 

@@ -1,5 +1,6 @@
 package com.blockstream.gdk
 
+import com.blockstream.common.gdk.JsonConverter
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

@@ -1,6 +1,7 @@
 package com.blockstream
 
-import com.blockstream.gdk.data.Device
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.data.Device
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.data.JadeNetworks
 import com.blockstream.jade.data.JadeState
@@ -15,12 +16,13 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import mu.KLogging
 
-class JadeHWWallet(
+class JadeHWWallet constructor(
+    val gdk: Gdk,
     val jadeApi: JadeAPI,
     device: Device,
     versionInfo: VersionInfo,
     hardwareQATester: HardwareQATester
-) : JadeHWWalletJava(jadeApi, device, versionInfo, hardwareQATester) {
+) : JadeHWWalletJava(gdk, jadeApi, device, versionInfo, hardwareQATester) {
 
     fun getVersionInfo(): VersionInfo {
         return jadeApi.versionInfo

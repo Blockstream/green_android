@@ -1,6 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
-import com.blockstream.DeviceBrand
+import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.HardwareQATester
 import kotlinx.coroutines.Deferred
 

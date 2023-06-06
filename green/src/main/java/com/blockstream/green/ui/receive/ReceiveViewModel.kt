@@ -13,8 +13,8 @@ import breez_sdk.InputType
 import breez_sdk.LnInvoice
 import breez_sdk.SwapInfo
 import com.blockstream.green.data.Denomination
-import com.blockstream.gdk.data.AccountAsset
-import com.blockstream.gdk.data.Address
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Address
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.DenominatedValue
@@ -38,6 +38,8 @@ import com.blockstream.lightning.amountSatoshi
 import com.blockstream.lightning.channelFeePercent
 import com.blockstream.lightning.channelMinimumFeeSatoshi
 import com.blockstream.lightning.expireIn
+import com.blockstream.lightning.fromInvoice
+import com.blockstream.lightning.fromSwapInfo
 import com.blockstream.lightning.inboundLiquiditySatoshi
 import com.blockstream.lightning.maxReceivableSatoshi
 import dagger.assisted.Assisted
@@ -120,12 +122,12 @@ class ReceiveViewModel @AssistedInject constructor(
             .distinctUntilChanged()
             .onEach {
                 clearRequestAmount()
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewModelScope)
 
         // Generate address when account & account type changes
         accountLiveData.asFlow().onEach {
             generateAddress()
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewModelScope)
 
         combine(accountLiveData.asFlow(), lightningInvoice.asFlow(), swapInfo.asFlow(), showOnchainAddress.asFlow()) { account, lightningInvoice, swapInfo, _ ->
             Triple(account , lightningInvoice, swapInfo)
@@ -137,7 +139,7 @@ class ReceiveViewModel @AssistedInject constructor(
 
                 update()
             }
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewModelScope)
 
 
         session.lightning?.also {
@@ -184,7 +186,7 @@ class ReceiveViewModel @AssistedInject constructor(
                     denomination = denomination.value,
                     withUnit = true
                 )
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewModelScope)
 
             combine(swapInfo.asFlow().filterNotNull(), denomination.asFlow()) { swapInfo, _ ->
                 swapInfo
@@ -204,7 +206,7 @@ class ReceiveViewModel @AssistedInject constructor(
                     withUnit = true
                 )
 
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewModelScope)
 
             session.lastInvoicePaid.filterNotNull().onEach { paidDetails ->
                 if(paidDetails.paymentHash == lightningInvoice.value?.paymentHash){
@@ -218,7 +220,7 @@ class ReceiveViewModel @AssistedInject constructor(
                     }
 
                 }
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewModelScope)
         }
     }
 
@@ -250,14 +252,14 @@ class ReceiveViewModel @AssistedInject constructor(
         addressLiveData.value?.let { address ->
             deviceAddressValidationEvent.value = ConsumableEvent(null)
 
-            session.hwWallet?.let { hwWallet ->
+            session.gdkHwWallet?.let { hwWallet ->
                 doUserAction({
                     hwWallet.getGreenAddress(
-                        network,
-                        null,
-                        account,
-                        address.userPath,
-                        address.subType ?: 0
+                        network = network,
+                        hwInteraction = null,
+                        account = account,
+                        path = address.userPath ?: listOf(),
+                        csvBlocks = address.subType ?: 0
                     )
                 }, preAction = null, postAction = null, timeout = 30, onSuccess = {
                     if (it == address.address) {

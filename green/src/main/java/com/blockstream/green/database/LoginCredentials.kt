@@ -2,7 +2,7 @@ package com.blockstream.green.database
 
 import androidx.room.*
 import androidx.room.ForeignKey.Companion.CASCADE
-import com.blockstream.gdk.data.PinData
+import com.blockstream.common.gdk.data.PinData
 import com.blockstream.green.utils.EncryptedData
 
 

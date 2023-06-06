@@ -4,11 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import breez_sdk.LnUrlCallbackStatus
 import breez_sdk.LnUrlWithdrawRequestData
-import com.blockstream.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.DenominatedValue
 import com.blockstream.green.data.Denomination
@@ -126,7 +125,7 @@ class LnUrlWithdrawViewModel @AssistedInject constructor(
 
             }
 
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewModelScope)
     }
 
     private fun updateExchange() {

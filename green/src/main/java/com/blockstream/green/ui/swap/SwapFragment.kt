@@ -5,9 +5,9 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.data.CreateTransaction
-import com.blockstream.gdk.data.SwapProposal
-import com.blockstream.gdk.data.Utxo
+import com.blockstream.common.gdk.data.CreateTransaction
+import com.blockstream.common.gdk.data.SwapProposal
+import com.blockstream.common.gdk.data.Utxo
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.TransactionSegmentation

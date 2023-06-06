@@ -2,6 +2,7 @@ package com.blockstream.green.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.AddWalletFragmentBinding
@@ -51,18 +52,18 @@ class AddWalletFragment :
 
     private fun askForNetworkEnviroment(isRestore: Boolean){
         this.isRestore = isRestore
-        EnvironmentBottomSheetDialogFragment.show(childFragmentManager)
+        EnvironmentBottomSheetDialogFragment.show(withCustomNetwork = true, fragmentManager = childFragmentManager)
     }
 
-    override fun onEnvironmentSelected(isTestnet: Boolean?) {
+    override fun onEnvironmentSelected(isTestnet: Boolean?, customNetwork: Network?) {
         if(isTestnet != null){
             val onboardingOptions = OnboardingOptions(isRestoreFlow = isRestore, isTestnet = isTestnet)
 
             navigate(
                 if(onboardingOptions.isRestoreFlow){
-                    AddWalletFragmentDirections.actionAddWalletFragmentToEnterRecoveryPhraseFragment(onboardingOptions = onboardingOptions)
+                    AddWalletFragmentDirections.actionAddWalletFragmentToEnterRecoveryPhraseFragment(onboardingOptions = onboardingOptions, network = customNetwork)
                 }else{
-                    AddWalletFragmentDirections.actionAddWalletFragmentToRecoveryIntroFragment(onboardingOptions = onboardingOptions)
+                    AddWalletFragmentDirections.actionAddWalletFragmentToRecoveryIntroFragment(onboardingOptions = onboardingOptions, network = customNetwork)
                 }
             )
         }

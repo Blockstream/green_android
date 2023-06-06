@@ -8,8 +8,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.base.Urls
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.Urls
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.data.GdkEvent

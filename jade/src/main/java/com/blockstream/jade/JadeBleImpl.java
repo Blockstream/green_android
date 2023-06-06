@@ -3,6 +3,8 @@ package com.blockstream.jade;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.jakewharton.rx3.ReplayingShare;
 import com.polidea.rxandroidble3.NotificationSetupMode;
 import com.polidea.rxandroidble3.RxBleConnection;
@@ -16,6 +18,8 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import kotlinx.coroutines.flow.MutableStateFlow;
+import kotlinx.coroutines.flow.StateFlow;
 
 /**
  * Low-level BLE backend interface to Jade
@@ -41,7 +45,7 @@ public class JadeBleImpl extends JadeConnectionImpl {
 
     private CompositeDisposable disposable;
     private Observable<RxBleConnection> connection;
-    private io.reactivex.rxjava3.subjects.PublishSubject<Boolean> bleDisconnectEvent = io.reactivex.rxjava3.subjects.PublishSubject.create();
+    private MutableStateFlow<Boolean> disconnectEvent = ExtensionsKt.createDisconnectEvent();
 
     JadeBleImpl(final Context context, final RxBleDevice device) {
         this.context = context;
@@ -70,11 +74,6 @@ public class JadeBleImpl extends JadeConnectionImpl {
     }
 
     @Override
-    public io.reactivex.rxjava3.subjects.PublishSubject<Boolean> getBleDisconnectEvent() {
-        return bleDisconnectEvent;
-    }
-
-    @Override
     public boolean isConnected() {
         return this.disposable != null && !this.disposable.isDisposed()
                 && this.connection != null && isBleConnected();
@@ -91,7 +90,7 @@ public class JadeBleImpl extends JadeConnectionImpl {
                         if (state == RxBleConnection.RxBleConnectionState.DISCONNECTING) {
                             // Trigger Disconnect
                             Log.i(TAG, "Send BLE disconnect event");
-                            bleDisconnectEvent.onNext(true);
+                            disconnectEvent.setValue(true);
                         }
                     }, Throwable::printStackTrace)
             );
@@ -183,5 +182,11 @@ public class JadeBleImpl extends JadeConnectionImpl {
                            this::onSendFailure)
         );
         return bytes.length;
+    }
+
+    @Nullable
+    @Override
+    public StateFlow<Boolean> getDisconnectEvent() {
+        return disconnectEvent;
     }
 }

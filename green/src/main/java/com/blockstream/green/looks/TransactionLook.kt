@@ -1,9 +1,10 @@
 package com.blockstream.green.looks
 
 import androidx.core.view.isVisible
-import com.blockstream.gdk.data.Transaction
-import com.blockstream.gdk.data.UtxoView
-import com.blockstream.gdk.params.Convert
+import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.gdk.data.UtxoView
+import com.blockstream.common.gdk.params.Convert
+import com.blockstream.gdk.createdAt
 import com.blockstream.green.R
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.TransactionAssetLayoutBinding
@@ -24,7 +25,7 @@ import mu.KLogging
 
 class TransactionLook constructor(val tx: Transaction, val session: GdkSession): ITransactionLook {
     override val network by lazy { tx.network }
-    val date by lazy { tx.createdAt.formatAuto() }
+    val date by lazy { tx.createdAt().formatAuto() }
 
     val memo: String by lazy {
         tx.memo

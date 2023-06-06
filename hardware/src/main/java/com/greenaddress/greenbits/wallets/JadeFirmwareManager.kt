@@ -2,7 +2,7 @@ package com.greenaddress.greenbits.wallets
 
 import android.os.SystemClock
 import android.util.Base64
-import com.blockstream.DeviceBrand
+import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.jade.HttpRequestProvider
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.data.VersionInfo
@@ -21,6 +21,7 @@ import java.security.MessageDigest
 
 // A firmware instance on the file server
 // Meta data, and optionally the actual fw binary
+
 class FirmwareFileData(
     val filepath: String,
     val image: FirmwareImage,

@@ -113,11 +113,11 @@ checkout(){
 
 gdk(){
   if [[ $GDK == "app" ]]; then
-      ./crypto/fetch_gdk_binaries.sh
+      ./gdk/fetch_android_binaries.sh
   else
     # Export the GDK_COMMIT for it to be appended in app version
     export GDK_COMMIT=$1
-    ./crypto/fetch_gdk_binaries.sh -c $1
+    ./gdk/fetch_android_binaries.sh -c $1
   fi
 }
 

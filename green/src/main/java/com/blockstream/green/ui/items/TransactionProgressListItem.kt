@@ -3,7 +3,8 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.blockstream.gdk.data.Transaction
+import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.gdk.createdAt
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
 import com.blockstream.green.gdk.GdkSession
@@ -25,7 +26,7 @@ data class TransactionProgressListItem constructor(
     }
 
     override fun bindView(binding: ListItemTransactionProgressBinding, payloads: List<Any>) {
-        binding.date = transaction.createdAt.formatMediumWithTime()
+        binding.date = transaction.createdAt().formatMediumWithTime()
         binding.confirmations = confirmations
         binding.confirmationsRequired = confirmationsRequired
         binding.canRBF = transaction.canRBF && transaction.isIn == false && !session.isWatchOnly

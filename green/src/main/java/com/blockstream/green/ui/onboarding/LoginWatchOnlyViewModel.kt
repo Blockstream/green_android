@@ -5,11 +5,11 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.*
-import com.blockstream.gdk.data.AccountType
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.database.WatchOnlyCredentials
+import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.string
 import com.blockstream.green.managers.SessionManager
@@ -77,7 +77,7 @@ class LoginWatchOnlyViewModel @AssistedInject constructor(
 
         val watchOnlyDescriptors =
             watchOnlyDescriptor.string().takeIf { it.isNotBlank() }?.split(",", "\n")
-                ?.map { it.trimIndent().trimMargin() }?.filter { it.isNotBlank() }?.toSet()
+                ?.map { it.trim().trimIndent().trimMargin() }?.filter { it.isNotBlank() }?.toSet()
                 ?.toList()
 
         val watchOnlyCredentials = if (onboardingOptions.isSinglesig == true) {

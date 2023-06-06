@@ -4,21 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.blockstream.gdk.data.Transaction" />
-        <import type="com.blockstream.gdk.data.Transaction.Type" />
+        <import type="com.blockstream.common.gdk.data.Transaction" />
+        <import type="com.blockstream.common.gdk.data.Transaction.Type" />
         <import type="com.blockstream.green.extensions.ExtensionsKt" />
 
         <variable
             name="tx"
-            type="com.blockstream.gdk.data.Transaction" />
+            type="com.blockstream.common.gdk.data.Transaction" />
 
         <variable
             name="account"
-            type="com.blockstream.gdk.data.Account" />
-
-        <variable
-            name="type"
-            type="Type" />
+            type="com.blockstream.common.gdk.data.Account" />
 
         <variable
             name="isLoading"
@@ -94,7 +90,7 @@
                     android:id="@+id/typeImageView"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@{type == Type.IN ? @drawable/ic_receive : (type == Type.OUT ? @drawable/ic_send : (type == Type.REDEPOSIT ? @drawable/ic_send : type == Type.MIXED ? @drawable/ic_swap : @drawable/ic_shield ))}"
+                    android:src="@{tx.txType == Type.IN ? @drawable/ic_receive : (tx.txType == Type.OUT ? @drawable/ic_send : (tx.txType == Type.REDEPOSIT ? @drawable/ic_send : tx.txType == Type.MIXED ? @drawable/ic_swap : @drawable/ic_shield ))}"
                     tools:src="@drawable/ic_receive" />
 
 

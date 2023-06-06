@@ -1,17 +1,18 @@
 package com.blockstream.green.data
 
 import android.os.Parcelable
-import com.blockstream.gdk.BITS_UNIT
-import com.blockstream.gdk.BTC_UNIT
-import com.blockstream.gdk.MBTC_UNIT
-import com.blockstream.gdk.SATOSHI_UNIT
-import com.blockstream.gdk.UBTC_UNIT
-import com.blockstream.gdk.data.Balance
+import com.blockstream.common.BITS_UNIT
+import com.blockstream.common.BTC_UNIT
+import com.blockstream.common.MBTC_UNIT
+import com.blockstream.common.SATOSHI_UNIT
+import com.blockstream.common.UBTC_UNIT
+import com.blockstream.common.gdk.data.Balance
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.assetTicker
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 import com.blockstream.green.utils.toAmountLook
 import kotlinx.parcelize.Parcelize
+
 import mu.KLogging
 
 @Parcelize

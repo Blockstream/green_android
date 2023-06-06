@@ -2,8 +2,8 @@ package com.blockstream.green.ui.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.gdk.data.AccountType
-import com.blockstream.gdk.data.Network
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository

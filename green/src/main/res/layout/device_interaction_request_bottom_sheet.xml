@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.blockstream.gdk.data.Device" />
+        <import type="com.blockstream.common.gdk.data.Device" />
         <variable
             name="device"
-            type="Device" />
+            type="com.blockstream.common.gdk.data.Device" />
 
         <variable
             name="text"

@@ -2,8 +2,11 @@ package com.blockstream.green.ui.login
 
 import android.util.Base64
 import androidx.lifecycle.*
-import com.blockstream.gdk.data.TorEvent
-import com.blockstream.gdk.params.LoginCredentialsParams
+import com.blockstream.common.gdk.data.TorEvent
+import com.blockstream.common.gdk.device.DeviceResolver
+import com.blockstream.common.gdk.params.LoginCredentialsParams
+import com.blockstream.common.lightning.AppGreenlightCredentials
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
@@ -12,20 +15,17 @@ import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.database.WatchOnlyCredentials
+import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.green.devices.Device
-import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.extensions.string
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.isNotAuthorized
 import com.blockstream.green.lifecycle.PendingLiveData
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.lightning.AppGreenlightCredentials
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.filterNotNull
@@ -64,7 +64,7 @@ class LoginViewModel @AssistedInject constructor(
 
     val torEvent: MutableLiveData<TorEvent> = MutableLiveData()
 
-    val applicationSettingsLiveData = settingsManager.getApplicationSettingsLiveData()
+    val applicationSettingsLiveData = settingsManager.appSettingsStateFlow.asLiveData()
 
     var bip39Passphrase = MutableLiveData("")
 
@@ -185,15 +185,15 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     fun loginWithDevice() {
-        if(device == null) return
-
-        login {
-            session.loginWithDevice(
-                wallet = wallet,
-                device = device,
-                hardwareWalletResolver = DeviceResolver(device.hwWallet, this),
-                hwWalletBridge = this
-            )
+        device?.gdkHardwareWallet?.also { gdkHardwareWallet ->
+            login {
+                session.loginWithDevice(
+                    wallet = wallet,
+                    device = device,
+                    hardwareWalletResolver = DeviceResolver(gdkHardwareWallet, this),
+                    hwInteraction = this
+                )
+            }
         }
     }
 

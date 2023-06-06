@@ -10,8 +10,8 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.base.Urls
-import com.blockstream.gdk.GdkBridge
+import com.blockstream.common.Urls
+import com.blockstream.common.gdk.FeeBlockTarget
 import com.blockstream.green.R
 import com.blockstream.green.data.AddressInputType
 import com.blockstream.green.data.DenominatedValue
@@ -204,7 +204,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             binding.expectedConfirmationTime = if(slider.toInt() == SendViewModel.SliderCustomIndex){
                 getString(R.string.id_custom)
             }else{
-                getExpectedConfirmationTime(requireContext(), GdkBridge.FeeBlockTarget[3 - (slider.toInt())])
+                getExpectedConfirmationTime(requireContext(), FeeBlockTarget[3 - (slider.toInt())])
             }
         }
 

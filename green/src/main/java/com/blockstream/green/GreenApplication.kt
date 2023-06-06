@@ -7,15 +7,18 @@ import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.blockstream.gdk.AssetManager
-import com.blockstream.gdk.GdkBridge
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
+import com.blockstream.common.managers.AssetManager
+import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.settings.Migrator
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.QATesterActivity
 import com.blockstream.green.utils.QATester
@@ -50,9 +53,6 @@ class GreenApplication : Application() {
     lateinit var qaTester: QATester
 
     @Inject
-    lateinit var gdkBridge: GdkBridge
-
-    @Inject
     lateinit var beagle: Beagle
 
     @Inject
@@ -67,8 +67,22 @@ class GreenApplication : Application() {
     @Inject
     lateinit var countly: Countly
 
+    @Inject
+    lateinit var lifecycleManager: LifecycleManager
+
     override fun onCreate() {
         super.onCreate()
+
+        // Listen to foreground / background events
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object: DefaultLifecycleObserver{
+            override fun onResume(owner: LifecycleOwner) {
+                lifecycleManager.setOnForeground(true)
+            }
+
+            override fun onPause(owner: LifecycleOwner) {
+                lifecycleManager.setOnForeground(false)
+            }
+        })
 
         registerActivityLifecycleCallbacks(activityLifecycle)
 

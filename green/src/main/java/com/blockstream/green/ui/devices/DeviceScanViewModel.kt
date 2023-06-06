@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.*
-import com.blockstream.gdk.GdkBridge
+import com.blockstream.common.gdk.Gdk
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
@@ -13,7 +13,7 @@ import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.SettingsManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import dagger.assisted.Assisted
@@ -31,7 +31,7 @@ class DeviceScanViewModel @AssistedInject constructor(
     deviceManager: DeviceManager,
     qaTester: QATester,
     countly: Countly,
-    gdkBridge: GdkBridge,
+    gdk: Gdk,
     settingsManager: SettingsManager,
     @Assisted wallet: Wallet
 ) : AbstractDeviceViewModel(sessionManager, walletRepository, deviceManager, qaTester, countly, wallet) {
@@ -52,7 +52,7 @@ class DeviceScanViewModel @AssistedInject constructor(
 
     override val deviceConnectionManagerOrNull = DeviceConnectionManager(
         countly = countly,
-        gdkBridge = gdkBridge,
+        gdk = gdk,
         settingsManager = settingsManager,
         httpRequestProvider = sessionManager.httpRequestProvider,
         interaction = this,
@@ -91,7 +91,7 @@ class DeviceScanViewModel @AssistedInject constructor(
     }
 
     private fun selectDevice(device: Device) {
-        if (device.hwWallet != null) {
+        if (device.gdkHardwareWallet != null) {
             // Device is unlocked
             onDeviceReady(device, null)
         } else if (device.hasPermissionsOrIsBonded() || device.handleBondingByHwwImplementation()) {
@@ -131,11 +131,11 @@ class DeviceScanViewModel @AssistedInject constructor(
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
 
         doUserAction({
-            val hwWallet = device.hwWallet ?: throw Exception("Not HWWallet initiated")
+            val gdkHardwareWallet = device.gdkHardwareWallet ?: throw Exception("Not HWWallet initiated")
 
-            deviceConnectionManager.authenticateDeviceIfNeeded(hwWallet)
+            deviceConnectionManager.authenticateDeviceIfNeeded(gdkHardwareWallet)
 
-            val network = deviceConnectionManager.getOperatingNetworkForEnviroment(hwWallet, wallet.isTestnet)
+            val network = deviceConnectionManager.getOperatingNetworkForEnviroment(gdkHardwareWallet, wallet.isTestnet)
 
             if(wallet.isTestnet != network.isTestnet){
                 throw Exception("The device is operating on the wrong Environment")

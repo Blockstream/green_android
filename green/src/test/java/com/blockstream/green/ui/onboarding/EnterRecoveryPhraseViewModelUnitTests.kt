@@ -1,7 +1,7 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
-import com.blockstream.gdk.GdkBridge
+import com.blockstream.common.gdk.Wally
 import com.blockstream.green.TestData
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
@@ -22,17 +22,17 @@ class EnterRecoveryPhraseViewModelUnitTests : TestViewModel<EnterRecoveryPhraseV
     @Mock
     private lateinit var isValidObserver: Observer<Boolean>
     @Mock
-    private lateinit var gdkBridge: GdkBridge
+    private lateinit var wally: Wally
 
     @Before
     override fun setup(){
         super.setup()
 
         TestData.recoveryPhrases.forEach {
-            whenever(gdkBridge.isMnemonicValid(it)).thenReturn(true)
+            whenever(wally.bip39MnemonicValidate(it)).thenReturn(true)
         }
 
-        viewModel = EnterRecoveryPhraseViewModel(mock(), gdkBridge, null)
+        viewModel = EnterRecoveryPhraseViewModel(mock(), wally, null)
 
         viewModel.showPasteButton.observeForever(showPasteButtonObserver)
         viewModel.showHelpButton.observeForever(showHelpButtonObserver)
@@ -60,7 +60,7 @@ class EnterRecoveryPhraseViewModelUnitTests : TestViewModel<EnterRecoveryPhraseV
         }
 
         // isBip39MnemonicValid called
-        verify(gdkBridge, times(TestData.recoveryPhrases.size)).isMnemonicValid(any())
+        verify(wally, times(TestData.recoveryPhrases.size)).bip39MnemonicValidate(any())
 
         verify(isValidObserver, times(TestData.recoveryPhrases.size)).onChanged(eq(true))
     }

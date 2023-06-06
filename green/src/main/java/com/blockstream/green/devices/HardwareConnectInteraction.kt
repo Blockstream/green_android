@@ -1,11 +1,12 @@
 package com.blockstream.green.devices
 
-import com.blockstream.DeviceBrand
 import com.blockstream.HwWalletLogin
-import com.greenaddress.greenapi.HWWalletBridge
+import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.greenaddress.greenbits.wallets.FirmwareInteraction
 
-interface HardwareConnectInteraction : FirmwareInteraction, HwWalletLogin, HWWalletBridge {
+interface HardwareConnectInteraction : FirmwareInteraction, HwWalletLogin,
+    HardwareWalletInteraction {
     fun showInstructions(resId: Int)
     fun showError(err: String)
 

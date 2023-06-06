@@ -27,6 +27,7 @@ import breez_sdk.parseInput
 import breez_sdk.parseInvoice
 import breez_sdk.recoverNode
 import breez_sdk.registerNode
+import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.crypto.BuildConfig
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -1,14 +1,14 @@
 package com.blockstream.green.utils
 
-import com.blockstream.gdk.BITS_UNIT
-import com.blockstream.gdk.BTC_UNIT
-import com.blockstream.gdk.MBTC_UNIT
-import com.blockstream.gdk.SATOSHI_UNIT
-import com.blockstream.gdk.UBTC_UNIT
-import com.blockstream.gdk.data.Balance
-import com.blockstream.gdk.data.CreateTransaction
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.params.Convert
+import com.blockstream.common.BITS_UNIT
+import com.blockstream.common.BTC_UNIT
+import com.blockstream.common.MBTC_UNIT
+import com.blockstream.common.SATOSHI_UNIT
+import com.blockstream.common.UBTC_UNIT
+import com.blockstream.common.gdk.data.Balance
+import com.blockstream.common.gdk.data.CreateTransaction
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.params.Convert
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getAssetTicker

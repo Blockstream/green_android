@@ -6,10 +6,12 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
+import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AppSettingsFragmentBinding
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.stringFromIdentifier
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
@@ -71,8 +73,9 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
 
         binding.vm = viewModel
         binding.isDevelopment = isDevelopmentFlavor
-
-        val screenLockSettings = ScreenLockSetting.getStringList(requireContext())
+        val screenLockSettings = ScreenLockSetting.getStringList().map {
+            requireContext().stringFromIdentifier(it)
+        }
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, screenLockSettings)
         binding.screenLockSetting.setAdapter(adapter)
         binding.screenLockSetting.setText(screenLockSettings[ScreenLockSetting.bySeconds(viewModel.screenLockSetting.value ?: 0).ordinal], false)

@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import breez_sdk.SuccessActionProcessed
-import com.blockstream.gdk.data.SendTransactionSuccess
+import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.green.R
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.NavigateEvent
@@ -143,7 +143,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
                 (it.data as? SendTransactionSuccess)?.also { sendTransactionSuccess ->
-                    val successAction = sendTransactionSuccess.successAction
+                    val successAction = sendTransactionSuccess.successAction as? SuccessActionProcessed
                     if(successAction != null){
                         val message = when(successAction){
                             is SuccessActionProcessed.Aes -> {
