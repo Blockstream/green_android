@@ -666,18 +666,18 @@ extension WalletViewController: DialogRenameViewControllerDelegate {
 extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
     func userLogout() {
         userWillLogout = true
-        /*self.presentedViewController?.dismiss(animated: true, completion: {
+        self.presentedViewController?.dismiss(animated: true, completion: {
             let account = self.viewModel.wm?.account
             if account?.isHW ?? false {
-                BLEViewModel.shared.dispose()
+                Task { try? await BleViewModel.shared.disconnect() }
             }
             DispatchQueue.main.async {
                 WalletsRepository.shared.delete(for: account?.id ?? "")
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)
                 let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-                UIApplication.shared.keyWindow?.rootViewController = nav
+                _ = UIApplication.shared.keyWindow?.rootViewController = nav
             }
-        })*/
+        })
     }
 
     func refresh() {

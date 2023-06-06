@@ -343,3 +343,42 @@ public struct JadeResponse<T: Codable>: Decodable, Encodable {
         try? CodableCBOREncoder().encode(self)
     }
 }
+
+public struct Firmware: Codable {
+    enum CodingKeys: String, CodingKey {
+        case filename = "filename"
+        case version = "version"
+        case config = "config"
+        case fwsize = "fwsize"
+        case fromVersion = "from_version"
+        case fromConfig = "from_config"
+        case patchSize = "patch_size"
+    }
+    public let filename: String
+    public let version: String
+    public let config: String
+    public let fwsize: Int
+    public let fromVersion: String?
+    public let fromConfig: String?
+    public let patchSize: Int?
+
+    public func upgradable(_ jadeVersion: String) -> Bool {
+        return self.config == "ble" && self.version > jadeVersion &&
+        self.fromConfig ?? "ble" == "ble" && self.fromVersion ?? jadeVersion == jadeVersion
+    }
+
+    public var isDelta: Bool {
+        return patchSize == nil
+    }
+}
+
+public struct FirmwareVersions: Codable {
+    public let full: [Firmware]?
+    public let delta: [Firmware]?
+}
+
+public struct FirmwareChannels: Codable {
+    public let beta: FirmwareVersions?
+    public let stable: FirmwareVersions?
+    public let previous: FirmwareVersions?
+}

@@ -310,9 +310,7 @@
 		34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */; };
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
 		34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34C8585529F9012C004A3F83 /* LTFlow.storyboard */; };
-		34C8E76829BF6AD400C84066 /* PairingSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76729BF6AD400C84066 /* PairingSuccessViewController.swift */; };
 		34C8E76F29BF7DF100C84066 /* ConnectionFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */; };
-		34C8E77129BF85AC00C84066 /* ListDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77029BF85AC00C84066 /* ListDevicesViewController.swift */; };
 		34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* JadeDeviceCell.swift */; };
 		34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C8E77529BF868500C84066 /* JadeDeviceCell.xib */; };
 		34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77F29C069F400C84066 /* PinCreateViewController.swift */; };
@@ -414,6 +412,11 @@
 		815A804429B3D44300269027 /* AccountsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804329B3D44300269027 /* AccountsRepository.swift */; };
 		815A804629B3D4B600269027 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804529B3D4B600269027 /* KeychainStorage.swift */; };
 		815A804829B6443F00269027 /* WalletsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815A804729B6443F00269027 /* WalletsRepository.swift */; };
+		816184582A3B0DD1007D6569 /* BleJadeConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184572A3B0DD1007D6569 /* BleJadeConnection.swift */; };
+		8161845D2A3B6467007D6569 /* AnyPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8161845C2A3B6467007D6569 /* AnyPublisher.swift */; };
+		816184602A3B7596007D6569 /* BleJadeCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8161845F2A3B7596007D6569 /* BleJadeCommands.swift */; };
+		816184622A3B788C007D6569 /* BleJade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184612A3B788C007D6569 /* BleJade.swift */; };
+		816184652A3B8AC1007D6569 /* BleJadeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816184642A3B8AC1007D6569 /* BleJadeManager.swift */; };
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
@@ -424,23 +427,35 @@
 		81743D9A2A17B49A00525FA5 /* lightning.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; };
 		81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B322992BC9800F05BF2 /* RecipientCellModel.swift */; };
 		81772B352992EDEA00F05BF2 /* SendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B342992EDE900F05BF2 /* SendViewModel.swift */; };
+		817A0B312A3CC52500E2F80D /* Semaphore in Frameworks */ = {isa = PBXBuildFile; productRef = 817A0B302A3CC52500E2F80D /* Semaphore */; };
+		817A0B332A40428500E2F80D /* BleLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B322A40428500E2F80D /* BleLedger.swift */; };
+		817A0B352A404F6600E2F80D /* BLEDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B342A404F6600E2F80D /* BLEDevice.swift */; };
+		817A0B372A41AF8B00E2F80D /* BleLedgerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B362A41AF8B00E2F80D /* BleLedgerCommands.swift */; };
+		817A0B392A41B0DB00E2F80D /* BleLedgerConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B382A41B0DB00E2F80D /* BleLedgerConnection.swift */; };
+		817A0B3D2A41BE6100E2F80D /* HWConnectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B3C2A41BE6100E2F80D /* HWConnectionProtocol.swift */; };
+		817A0B3F2A41C8E200E2F80D /* JadeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B3E2A41C8E200E2F80D /* JadeMessage.swift */; };
+		817A0B412A41D48700E2F80D /* BleLedgerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817A0B402A41D48600E2F80D /* BleLedgerManager.swift */; };
 		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
 		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
 		81865F49299F7D24002CBA87 /* MigratorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81865F48299F7D24002CBA87 /* MigratorManager.swift */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189230429F67F5500551824 /* WOViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189230329F67F5500551824 /* WOViewModel.swift */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
+		818BA7032A2F6A6300DFB03A /* AsyncBluetooth in Frameworks */ = {isa = PBXBuildFile; productRef = 818BA7022A2F6A6300DFB03A /* AsyncBluetooth */; };
+		818BA7072A2F8ACB00DFB03A /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BA7062A2F8ACB00DFB03A /* ScanViewModel.swift */; };
+		818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BA70E2A2F900900DFB03A /* ScanViewController.swift */; };
+		818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BA7122A2F909B00DFB03A /* ScanListItem.swift */; };
+		818BA7152A2F913C00DFB03A /* CentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BA7142A2F913C00DFB03A /* CentralManager.swift */; };
+		818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BA7172A30838F00DFB03A /* PairingSuccessViewController.swift */; };
+		818BA71A2A30839B00DFB03A /* BleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BA7192A30839B00DFB03A /* BleViewModel.swift */; };
 		818BA71E2A30B45200DFB03A /* green.crt in Resources */ = {isa = PBXBuildFile; fileRef = 818BA71C2A30B45200DFB03A /* green.crt */; };
 		818BA71F2A30B45200DFB03A /* green.pem in Resources */ = {isa = PBXBuildFile; fileRef = 818BA71D2A30B45200DFB03A /* green.pem */; };
 		8190D4C62A268F93003D31B4 /* Number.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8190D4C52A268F93003D31B4 /* Number.swift */; };
-		8190D4C82A269016003D31B4 /* JadeCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8190D4C72A269016003D31B4 /* JadeCommands.swift */; };
 		8190D4CA2A28C77B003D31B4 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8190D4C92A28C77B003D31B4 /* Parser.swift */; };
 		81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961A4C29E46B5400E9B94D /* gdk.framework */; };
 		81961A6229E46B5600E9B94D /* gdk.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81961A4C29E46B5400E9B94D /* gdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		81961A7A29E484EE00E9B94D /* TwoFactorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */; };
 		81961A7B29E4867500E9B94D /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7122374E8B0035F95A /* URL.swift */; };
-		81961A9029E4A9AD00E9B94D /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 81961A8F29E4A9AD00E9B94D /* RxSwift */; };
-		81961A9429E4AB5200E9B94D /* RxBluetoothKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81961A9329E4AB5200E9B94D /* RxBluetoothKit */; };
 		81961A9829E4AC0600E9B94D /* Gdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81004E2E292B57FD001C2E4D /* Gdk.swift */; };
 		81961A9929E4AC1500E9B94D /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F72E0828904D3F00D4DEFF /* Credentials.swift */; };
 		81961A9A29E4AC1A00E9B94D /* TorNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F226C80D6B00682508 /* TorNotification.swift */; };
@@ -470,26 +485,15 @@
 		81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 81961ACD29E4E41600E9B94D /* RiveRuntime */; };
 		81961AEC29E4EC2F00E9B94D /* hw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; };
 		81961AED29E4EC2F00E9B94D /* hw.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		81961AF729E4EC6A00E9B94D /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AF629E4EC6A00E9B94D /* RxSwift */; };
-		81961AF929E4EC6F00E9B94D /* RxBluetoothKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AF829E4EC6F00E9B94D /* RxBluetoothKit */; };
 		81961AFB29E4EC7300E9B94D /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AFA29E4EC7300E9B94D /* SwiftCBOR */; };
 		81961B0729E4ED7400E9B94D /* hw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; };
 		81961B0C29E4EE3C00E9B94D /* HWResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062CF245322B0003464A0 /* HWResolver.swift */; };
-		81961B0E29E4EE3C00E9B94D /* HWChannelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWChannelProtocol.swift */; };
 		81961B0F29E4EE3C00E9B94D /* HWProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWProtocol.swift */; };
 		81961B1029E4EE3C00E9B94D /* HWDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818EE77F26A5C2ED008CD09E /* HWDevice.swift */; };
 		81961B1129E4EE3C00E9B94D /* TxInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D922541F0D1001159D6 /* TxInput.swift */; };
 		81961B1329E4EE3C00E9B94D /* TxChangeOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D962541F110001159D6 /* TxChangeOutput.swift */; };
 		81961B1429E4EE3C00E9B94D /* Commitment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4CA25531470001C8544 /* Commitment.swift */; };
-		81961B1529E4EE3C00E9B94D /* Jade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8169EBBC2445F16F0053BC73 /* Jade.swift */; };
-		81961B1629E4EE3C00E9B94D /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
 		81961B1729E4EE3C00E9B94D /* HWError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* HWError.swift */; };
-		81961B1829E4EE3C00E9B94D /* JadeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */; };
-		81961B1929E4EE3C00E9B94D /* JadeOTA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8111485E287891F500C6F030 /* JadeOTA.swift */; };
-		81961B1A29E4EE3C00E9B94D /* LedgerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */; };
-		81961B1B29E4EE3C00E9B94D /* LedgerChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2922E9E9EA005A04C6 /* LedgerChannel.swift */; };
-		81961B1C29E4EE3C00E9B94D /* LedgerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */; };
-		81961B1D29E4EE3C00E9B94D /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2722E9E9EA005A04C6 /* Ledger.swift */; };
 		81961B1F29E4EEFE00E9B94D /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961B1E29E4EEFE00E9B94D /* String.swift */; };
 		81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; };
 		81961B3D29E4F4A200E9B94D /* greenaddress.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -499,7 +503,6 @@
 		819F1AEC2A0E6CAB00ECF999 /* PolicyCellType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819F1AEB2A0E6CAB00ECF999 /* PolicyCellType.swift */; };
 		819F1AEE2A127FA400ECF999 /* AddressEditCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819F1AED2A127FA300ECF999 /* AddressEditCell.swift */; };
 		819F1AF02A12839D00ECF999 /* AmountEditCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819F1AEF2A12839D00ECF999 /* AmountEditCell.swift */; };
-		81A34FED29C4659B004B27F4 /* BLEViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */; };
 		81A34FF129C547F4004B27F4 /* AvailableNetworks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A34FF029C547F4004B27F4 /* AvailableNetworks.swift */; };
 		81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */; };
 		81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A49697291030AB00CA218D /* UserSettingsCellModel.swift */; };
@@ -510,9 +513,6 @@
 		81A591A329157B32001D1A65 /* MultisigSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A591A229157B32001D1A65 /* MultisigSettingsCellModel.swift */; };
 		81A8F8DF29E4F6170052B214 /* greenaddress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; };
 		81A8F8E429E4F71C0052B214 /* GDKSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961A6D29E47E5D00E9B94D /* GDKSession.swift */; };
-		81A8F8E929E4FC660052B214 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961ABC29E4BAFF00E9B94D /* Observable.swift */; };
-		81A8F8EB29E500AB0052B214 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 81A8F8EA29E500AB0052B214 /* RxSwift */; };
-		81A8F8EF29E500CA0052B214 /* RxBluetoothKit in Frameworks */ = {isa = PBXBuildFile; productRef = 81A8F8EE29E500CA0052B214 /* RxBluetoothKit */; };
 		81A8F8FB29E5069F0052B214 /* lightning.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; };
 		81A8F8FC29E5069F0052B214 /* lightning.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		81A8F92029E5138C0052B214 /* AppGreenlightCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A8F91F29E5138C0052B214 /* AppGreenlightCredentials.swift */; };
@@ -937,9 +937,7 @@
 		34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCellModel.swift; sourceTree = "<group>"; };
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
 		34C8585529F9012C004A3F83 /* LTFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LTFlow.storyboard; sourceTree = "<group>"; };
-		34C8E76729BF6AD400C84066 /* PairingSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingSuccessViewController.swift; sourceTree = "<group>"; };
 		34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionFailViewController.swift; sourceTree = "<group>"; };
-		34C8E77029BF85AC00C84066 /* ListDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListDevicesViewController.swift; sourceTree = "<group>"; };
 		34C8E77429BF868500C84066 /* JadeDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDeviceCell.swift; sourceTree = "<group>"; };
 		34C8E77529BF868500C84066 /* JadeDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JadeDeviceCell.xib; sourceTree = "<group>"; };
 		34C8E77F29C069F400C84066 /* PinCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinCreateViewController.swift; sourceTree = "<group>"; };
@@ -1034,7 +1032,6 @@
 		810E052827B45AA700F917E2 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
 		810E052927B45AA800F917E2 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		811006E02199C5BF00D14414 /* UIErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIErrorLabel.swift; sourceTree = "<group>"; };
-		8111485E287891F500C6F030 /* JadeOTA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeOTA.swift; sourceTree = "<group>"; };
 		811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorConfig.swift; sourceTree = "<group>"; };
 		811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GdkSettings.swift; sourceTree = "<group>"; };
@@ -1052,7 +1049,6 @@
 		813872932A0480E20092CFD2 /* LightningSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningSessionManager.swift; sourceTree = "<group>"; };
 		813872952A04AF450092CFD2 /* LNExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNExtensions.swift; sourceTree = "<group>"; };
 		8152772629F9B52F00853EA1 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
-		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
 		8157CDA9299BE1E800365F1B /* AddresseeCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddresseeCellModel.swift; sourceTree = "<group>"; };
 		8157CDAB299BE9E100365F1B /* SendConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendConfirmViewModel.swift; sourceTree = "<group>"; };
 		8158974A2701980700DDF6D4 /* HWError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWError.swift; sourceTree = "<group>"; };
@@ -1060,20 +1056,30 @@
 		815A804529B3D4B600269027 /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
 		815A804729B6443F00269027 /* WalletsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsRepository.swift; sourceTree = "<group>"; };
 		815D4A9F28638A56004DC015 /* PinData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinData.swift; sourceTree = "<group>"; };
+		816184572A3B0DD1007D6569 /* BleJadeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJadeConnection.swift; sourceTree = "<group>"; };
+		8161845C2A3B6467007D6569 /* AnyPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyPublisher.swift; sourceTree = "<group>"; };
+		8161845F2A3B7596007D6569 /* BleJadeCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJadeCommands.swift; sourceTree = "<group>"; };
+		816184612A3B788C007D6569 /* BleJade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJade.swift; sourceTree = "<group>"; };
+		816184642A3B8AC1007D6569 /* BleJadeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleJadeManager.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
 		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
 		81640CDF21FB2B4200E7F79C /* FeeButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeeButton.xib; sourceTree = "<group>"; };
-		8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeMessage.swift; sourceTree = "<group>"; };
 		81683F8F26BC022C0058982E /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		81683F9126BC02960058982E /* Transactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transactions.swift; sourceTree = "<group>"; };
 		81683F9326BC088E0058982E /* WalletItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletItem.swift; sourceTree = "<group>"; };
-		8169EBBC2445F16F0053BC73 /* Jade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jade.swift; sourceTree = "<group>"; };
 		816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogJadeCheckViewController.swift; sourceTree = "<group>"; };
 		816F0AF323E4713600569A5D /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
 		817417362236E85500A28E36 /* ScreenLockWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockWindow.swift; sourceTree = "<group>"; };
 		81772B322992BC9800F05BF2 /* RecipientCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientCellModel.swift; sourceTree = "<group>"; };
 		81772B342992EDE900F05BF2 /* SendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendViewModel.swift; sourceTree = "<group>"; };
+		817A0B322A40428500E2F80D /* BleLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleLedger.swift; sourceTree = "<group>"; };
+		817A0B342A404F6600E2F80D /* BLEDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEDevice.swift; sourceTree = "<group>"; };
+		817A0B362A41AF8B00E2F80D /* BleLedgerCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleLedgerCommands.swift; sourceTree = "<group>"; };
+		817A0B382A41B0DB00E2F80D /* BleLedgerConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleLedgerConnection.swift; sourceTree = "<group>"; };
+		817A0B3C2A41BE6100E2F80D /* HWConnectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWConnectionProtocol.swift; sourceTree = "<group>"; };
+		817A0B3E2A41C8E200E2F80D /* JadeMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JadeMessage.swift; sourceTree = "<group>"; };
+		817A0B402A41D48600E2F80D /* BleLedgerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleLedgerManager.swift; sourceTree = "<group>"; };
 		818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuthenticatorFactors.storyboard; sourceTree = "<group>"; };
 		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
 		81865F42299D5AA5002CBA87 /* Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Codable.swift; sourceTree = "<group>"; };
@@ -1082,11 +1088,16 @@
 		8187B47F21E9027100235A35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8189230329F67F5500551824 /* WOViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOViewModel.swift; sourceTree = "<group>"; };
 		8189BEFF2236F2270091B466 /* ScreenLocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLocker.swift; sourceTree = "<group>"; };
+		818BA7062A2F8ACB00DFB03A /* ScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewModel.swift; sourceTree = "<group>"; };
+		818BA70E2A2F900900DFB03A /* ScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
+		818BA7122A2F909B00DFB03A /* ScanListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanListItem.swift; sourceTree = "<group>"; };
+		818BA7142A2F913C00DFB03A /* CentralManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CentralManager.swift; sourceTree = "<group>"; };
+		818BA7172A30838F00DFB03A /* PairingSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingSuccessViewController.swift; sourceTree = "<group>"; };
+		818BA7192A30839B00DFB03A /* BleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleViewModel.swift; sourceTree = "<group>"; };
 		818BA71C2A30B45200DFB03A /* green.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = green.crt; sourceTree = "<group>"; };
 		818BA71D2A30B45200DFB03A /* green.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = green.pem; sourceTree = "<group>"; };
 		818EE77F26A5C2ED008CD09E /* HWDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWDevice.swift; sourceTree = "<group>"; };
 		8190D4C52A268F93003D31B4 /* Number.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Number.swift; sourceTree = "<group>"; };
-		8190D4C72A269016003D31B4 /* JadeCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeCommands.swift; sourceTree = "<group>"; };
 		8190D4C92A28C77B003D31B4 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		8192BB8521EF52B100B04185 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8192BB8621EF52B100B04185 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1119,7 +1130,6 @@
 		81961AB529E4B80F00E9B94D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81961AB829E4B93F00E9B94D /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		81961ABA29E4B9C600E9B94D /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
-		81961ABC29E4BAFF00E9B94D /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		81961ABF29E4C40700E9B94D /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		81961AD729E4EC2E00E9B94D /* hw.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = hw.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81961B1E29E4EEFE00E9B94D /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
@@ -1131,8 +1141,6 @@
 		819F1AEF2A12839D00ECF999 /* AmountEditCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountEditCell.swift; sourceTree = "<group>"; };
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWProtocol.swift; sourceTree = "<group>"; };
-		81A062D524532643003464A0 /* HWChannelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWChannelProtocol.swift; sourceTree = "<group>"; };
-		81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEViewModel.swift; sourceTree = "<group>"; };
 		81A34FEE29C547B8004B27F4 /* NetworkSecurityCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSecurityCase.swift; sourceTree = "<group>"; };
 		81A34FF029C547F4004B27F4 /* AvailableNetworks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableNetworks.swift; sourceTree = "<group>"; };
 		81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewModel.swift; sourceTree = "<group>"; };
@@ -1152,11 +1160,7 @@
 		81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetAmountView.xib; sourceTree = "<group>"; };
 		81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountNavigator.swift; sourceTree = "<group>"; };
 		81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMessageViewController.swift; sourceTree = "<group>"; };
-		81BF4E2722E9E9EA005A04C6 /* Ledger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
 		81BF4E2822E9E9EA005A04C6 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		81BF4E2922E9E9EA005A04C6 /* LedgerChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerChannel.swift; sourceTree = "<group>"; };
-		81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerCommands.swift; sourceTree = "<group>"; };
-		81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerWrapper.swift; sourceTree = "<group>"; };
 		81BF5D4828C885AF006225C6 /* WalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManager.swift; sourceTree = "<group>"; };
 		81C56B6A29BA2B02003E0E19 /* SetPinViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPinViewModel.swift; sourceTree = "<group>"; };
 		81C602A422A553D3004E26E1 /* Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
@@ -1198,12 +1202,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81A8F8EB29E500AB0052B214 /* RxSwift in Frameworks */,
+				81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */,
 				81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */,
 				81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */,
 				81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */,
-				81A8F8EF29E500CA0052B214 /* RxBluetoothKit in Frameworks */,
-				81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */,
 				81A8F8FB29E5069F0052B214 /* lightning.framework in Frameworks */,
 				81961AEC29E4EC2F00E9B94D /* hw.framework in Frameworks */,
 			);
@@ -1229,9 +1231,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81961A9029E4A9AD00E9B94D /* RxSwift in Frameworks */,
 				81743D9A2A17B49A00525FA5 /* lightning.framework in Frameworks */,
-				81961A9429E4AB5200E9B94D /* RxBluetoothKit in Frameworks */,
 				81961B0729E4ED7400E9B94D /* hw.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1241,9 +1241,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				81A8F8DF29E4F6170052B214 /* greenaddress.framework in Frameworks */,
-				81961AF929E4EC6F00E9B94D /* RxBluetoothKit in Frameworks */,
-				81961AF729E4EC6A00E9B94D /* RxSwift in Frameworks */,
+				818BA7032A2F6A6300DFB03A /* AsyncBluetooth in Frameworks */,
 				81961AFB29E4EC7300E9B94D /* SwiftCBOR in Frameworks */,
+				817A0B312A3CC52500E2F80D /* Semaphore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1668,14 +1668,6 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		34560B9C29BF1FAD007E916F /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
 		34560BA229BF338A007E916F /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -1841,6 +1833,7 @@
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
+				3416B67629D1A5EC00643C9C /* AccountArchivedViewController.swift */,
 				81837789224E6D4700DC0FB1 /* PgpViewController.swift */,
 				20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */,
 				812DBDBB29724F69002992D6 /* WatchOnlySettingsViewController.swift */,
@@ -2190,7 +2183,14 @@
 		34B385D429B8882A0097220B /* HWFlow */ = {
 			isa = PBXGroup;
 			children = (
-				34560B9C29BF1FAD007E916F /* ViewModels */,
+				816184642A3B8AC1007D6569 /* BleJadeManager.swift */,
+				817A0B402A41D48600E2F80D /* BleLedgerManager.swift */,
+				818BA7192A30839B00DFB03A /* BleViewModel.swift */,
+				818BA7142A2F913C00DFB03A /* CentralManager.swift */,
+				816184682A3BB4DF007D6569 /* Connect */,
+				8161845E2A3B6CDF007D6569 /* Wait */,
+				818BA70D2A2F8FF300DFB03A /* Scan */,
+				817A0B422A43008B00E2F80D /* Setup */,
 				34B385D729B888A70097220B /* Controllers */,
 				34B385D529B888610097220B /* HWFlow.storyboard */,
 			);
@@ -2200,21 +2200,11 @@
 		34B385D729B888A70097220B /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				34560BA229BF338A007E916F /* Cells */,
 				34B385D829B888E40097220B /* WelcomeJadeViewController.swift */,
 				349F723D29C84DA4007B9154 /* UpdateFirmwareViewController.swift */,
-				34560B7729B9C6E7007E916F /* JadeWaitViewController.swift */,
-				34560B7929B9D590007E916F /* JadeWaitViewModel.swift */,
-				34560B9D29BF2120007E916F /* LedgerWaitViewController.swift */,
-				34560B8229BA257E007E916F /* SetupJadeViewController.swift */,
 				34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */,
-				34C8E77029BF85AC00C84066 /* ListDevicesViewController.swift */,
-				34C8E76729BF6AD400C84066 /* PairingSuccessViewController.swift */,
-				34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */,
+				818BA7172A30838F00DFB03A /* PairingSuccessViewController.swift */,
 				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
-				34C8E78129C0746E00C84066 /* ConnectViewController.swift */,
-				81A34FEC29C4659B004B27F4 /* BLEViewModel.swift */,
-				3416B67629D1A5EC00643C9C /* AccountArchivedViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2606,10 +2596,9 @@
 		81387E5D2452066500A63C1D /* Ledger */ = {
 			isa = PBXGroup;
 			children = (
-				81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */,
-				81BF4E2922E9E9EA005A04C6 /* LedgerChannel.swift */,
-				81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */,
-				81BF4E2722E9E9EA005A04C6 /* Ledger.swift */,
+				817A0B382A41B0DB00E2F80D /* BleLedgerConnection.swift */,
+				817A0B362A41AF8B00E2F80D /* BleLedgerCommands.swift */,
+				817A0B322A40428500E2F80D /* BleLedger.swift */,
 			);
 			path = Ledger;
 			sourceTree = "<group>";
@@ -2617,11 +2606,10 @@
 		81387E5E2452067800A63C1D /* Jade */ = {
 			isa = PBXGroup;
 			children = (
-				8169EBBC2445F16F0053BC73 /* Jade.swift */,
-				8190D4C72A269016003D31B4 /* JadeCommands.swift */,
-				815431952445C0EE00EE34DB /* JadeChannel.swift */,
-				8164908F27F4C4FF0097B2E4 /* JadeMessage.swift */,
-				8111485E287891F500C6F030 /* JadeOTA.swift */,
+				816184572A3B0DD1007D6569 /* BleJadeConnection.swift */,
+				8161845F2A3B7596007D6569 /* BleJadeCommands.swift */,
+				816184612A3B788C007D6569 /* BleJade.swift */,
+				817A0B3E2A41C8E200E2F80D /* JadeMessage.swift */,
 			);
 			path = Jade;
 			sourceTree = "<group>";
@@ -2637,6 +2625,25 @@
 			path = Repository;
 			sourceTree = "<group>";
 		};
+		8161845E2A3B6CDF007D6569 /* Wait */ = {
+			isa = PBXGroup;
+			children = (
+				34560B7929B9D590007E916F /* JadeWaitViewModel.swift */,
+				34560B7729B9C6E7007E916F /* JadeWaitViewController.swift */,
+				34560B9D29BF2120007E916F /* LedgerWaitViewController.swift */,
+			);
+			path = Wait;
+			sourceTree = "<group>";
+		};
+		816184682A3BB4DF007D6569 /* Connect */ = {
+			isa = PBXGroup;
+			children = (
+				34C8E78129C0746E00C84066 /* ConnectViewController.swift */,
+				34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */,
+			);
+			path = Connect;
+			sourceTree = "<group>";
+		};
 		81772B362992EDF800F05BF2 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -2644,6 +2651,26 @@
 				8157CDAB299BE9E100365F1B /* SendConfirmViewModel.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		817A0B422A43008B00E2F80D /* Setup */ = {
+			isa = PBXGroup;
+			children = (
+				34560B8429BA28F7007E916F /* SetupJadeViewModel.swift */,
+				34560B8229BA257E007E916F /* SetupJadeViewController.swift */,
+			);
+			path = Setup;
+			sourceTree = "<group>";
+		};
+		818BA70D2A2F8FF300DFB03A /* Scan */ = {
+			isa = PBXGroup;
+			children = (
+				34560BA229BF338A007E916F /* Cells */,
+				818BA70E2A2F900900DFB03A /* ScanViewController.swift */,
+				818BA7062A2F8ACB00DFB03A /* ScanViewModel.swift */,
+				818BA7122A2F909B00DFB03A /* ScanListItem.swift */,
+			);
+			path = Scan;
 			sourceTree = "<group>";
 		};
 		818BA71B2A30B3E900DFB03A /* certs */ = {
@@ -2673,8 +2700,8 @@
 		818EE78226A5C52F008CD09E /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
-				81A062D524532643003464A0 /* HWChannelProtocol.swift */,
 				81A062D124532454003464A0 /* HWProtocol.swift */,
+				817A0B3C2A41BE6100E2F80D /* HWConnectionProtocol.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -2755,9 +2782,9 @@
 		81961B0429E4ECFA00E9B94D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				81961ABC29E4BAFF00E9B94D /* Observable.swift */,
 				81961B1E29E4EEFE00E9B94D /* String.swift */,
 				8190D4C52A268F93003D31B4 /* Number.swift */,
+				8161845C2A3B6467007D6569 /* AnyPublisher.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2801,6 +2828,7 @@
 				81A34FF029C547F4004B27F4 /* AvailableNetworks.swift */,
 				81F328EE29E93ED100D54F1D /* AppSettings.swift */,
 				811EFEE62A2BAFFB0054EBFE /* GdkSettings.swift */,
+				817A0B342A404F6600E2F80D /* BLEDevice.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2961,8 +2989,6 @@
 			name = gaios;
 			packageProductDependencies = (
 				81961ACD29E4E41600E9B94D /* RiveRuntime */,
-				81A8F8EA29E500AB0052B214 /* RxSwift */,
-				81A8F8EE29E500CA0052B214 /* RxBluetoothKit */,
 				81B2350E2A6A8BCD00B8FF5D /* Countly */,
 			);
 			productName = gaios;
@@ -3022,8 +3048,6 @@
 			);
 			name = gdk;
 			packageProductDependencies = (
-				81961A8F29E4A9AD00E9B94D /* RxSwift */,
-				81961A9329E4AB5200E9B94D /* RxBluetoothKit */,
 			);
 			productName = gdk;
 			productReference = 81961A4C29E46B5400E9B94D /* gdk.framework */;
@@ -3045,9 +3069,9 @@
 			);
 			name = hw;
 			packageProductDependencies = (
-				81961AF629E4EC6A00E9B94D /* RxSwift */,
-				81961AF829E4EC6F00E9B94D /* RxBluetoothKit */,
 				81961AFA29E4EC7300E9B94D /* SwiftCBOR */,
+				818BA7022A2F6A6300DFB03A /* AsyncBluetooth */,
+				817A0B302A3CC52500E2F80D /* Semaphore */,
 			);
 			productName = hw;
 			productReference = 81961AD729E4EC2E00E9B94D /* hw.framework */;
@@ -3161,12 +3185,12 @@
 			);
 			mainGroup = 676FCF131F9D0CF800354E93;
 			packageReferences = (
-				81961A8E29E4A98900E9B94D /* XCRemoteSwiftPackageReference "RxSwift" */,
-				81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */,
 				81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */,
 				81961ACC29E4E41600E9B94D /* XCRemoteSwiftPackageReference "rive-ios" */,
 				81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */,
 				81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */,
+				818BA7012A2F6A6300DFB03A /* XCRemoteSwiftPackageReference "AsyncBluetooth" */,
+				817A0B2F2A3CC52500E2F80D /* XCRemoteSwiftPackageReference "Semaphore" */,
 			);
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
 			projectDirPath = "";
@@ -3363,6 +3387,7 @@
 				3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */,
 				34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */,
 				81961AB929E4B93F00E9B94D /* Transaction.swift in Sources */,
+				816184652A3B8AC1007D6569 /* BleJadeManager.swift in Sources */,
 				345ED1F429C088DC00BD9071 /* SelectOnBoardTypeViewController.swift in Sources */,
 				3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */,
 				346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */,
@@ -3390,6 +3415,8 @@
 				3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
+				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
+				818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
 				3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */,
@@ -3406,9 +3433,9 @@
 				34440E7A28B379C8006CD464 /* WalletListHDCell.swift in Sources */,
 				34204720291C12C000EDE945 /* AssetSelectViewController.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
+				817A0B412A41D48700E2F80D /* BleLedgerManager.swift in Sources */,
 				81961AC029E4C40700E9B94D /* Utils.swift in Sources */,
 				81961AB729E4B91E00E9B94D /* AssetAmountList.swift in Sources */,
-				81A34FED29C4659B004B27F4 /* BLEViewModel.swift in Sources */,
 				34BBCEF82971518C0057DF4A /* AccountAssetCell.swift in Sources */,
 				3457F4A92923947A00EF33B5 /* DialogListViewController.swift in Sources */,
 				346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */,
@@ -3515,6 +3542,7 @@
 				3420471A291B9AA700EDE945 /* PolicyCellModel.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
 				8189230429F67F5500551824 /* WOViewModel.swift in Sources */,
+				818BA7152A2F913C00DFB03A /* CentralManager.swift in Sources */,
 				34F980AA2914286300C12D48 /* AccountViewModel.swift in Sources */,
 				342F9812293518C6005876A8 /* Enable2faPrefs.swift in Sources */,
 				34C9E10926B92F0B00200D2F /* DynamicTableView.swift in Sources */,
@@ -3554,6 +3582,7 @@
 				3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */,
 				81A4969629102FCB00CA218D /* UserSettingsViewModel.swift in Sources */,
 				81F328FC29ED319300D54F1D /* ResolverManager.swift in Sources */,
+				817A0B352A404F6600E2F80D /* BLEDevice.swift in Sources */,
 				34A75B6D292BD704007995D7 /* NetworkPrefs.swift in Sources */,
 				81A49698291030AB00CA218D /* UserSettingsCellModel.swift in Sources */,
 				349F723E29C84DA4007B9154 /* UpdateFirmwareViewController.swift in Sources */,
@@ -3619,6 +3648,7 @@
 				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */,
+				818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */,
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				811EFEE72A2BAFFB0054EBFE /* GdkSettings.swift in Sources */,
 				34A2AF0227BD378C006A01E9 /* FooterQrCell.swift in Sources */,
@@ -3627,6 +3657,7 @@
 				3445499329FBFC8F006725D2 /* LTNoteCell.swift in Sources */,
 				34FE20122A1CA1FC00301746 /* DialogNodeViewController.swift in Sources */,
 				812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */,
+				818BA7072A2F8ACB00DFB03A /* ScanViewModel.swift in Sources */,
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
 				344915E92A0CE24700D35818 /* ReceiveAssetCell.swift in Sources */,
@@ -3649,6 +3680,7 @@
 				34560BA529BF349E007E916F /* OtherDeviceCell.swift in Sources */,
 				34440E7F28B37C2D006CD464 /* WalletListEmptyCell.swift in Sources */,
 				344915F22A0CE29C00D35818 /* ReceiveAddressCellModel.swift in Sources */,
+				818BA71A2A30839B00DFB03A /* BleViewModel.swift in Sources */,
 				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
 				345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */,
@@ -3663,7 +3695,6 @@
 				81A5919B29156011001D1A65 /* MultisigSettingsViewModel.swift in Sources */,
 				34EB670528213A8A0036D615 /* AMConstants.swift in Sources */,
 				34237FD5276B693100618502 /* SendViewController.swift in Sources */,
-				34C8E76829BF6AD400C84066 /* PairingSuccessViewController.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
 				34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */,
 				34019C1A28D1FC5100E64BEE /* Localizable.swift in Sources */,
@@ -3777,25 +3808,23 @@
 				81961B1F29E4EEFE00E9B94D /* String.swift in Sources */,
 				81F328F429E9ABBE00D54F1D /* AuthResolver.swift in Sources */,
 				81961B0C29E4EE3C00E9B94D /* HWResolver.swift in Sources */,
-				81961B0E29E4EE3C00E9B94D /* HWChannelProtocol.swift in Sources */,
+				817A0B3D2A41BE6100E2F80D /* HWConnectionProtocol.swift in Sources */,
+				817A0B3F2A41C8E200E2F80D /* JadeMessage.swift in Sources */,
+				816184622A3B788C007D6569 /* BleJade.swift in Sources */,
 				81D404E12A1D6138002631F5 /* Utils.swift in Sources */,
 				8190D4C62A268F93003D31B4 /* Number.swift in Sources */,
 				81961B0F29E4EE3C00E9B94D /* HWProtocol.swift in Sources */,
+				817A0B332A40428500E2F80D /* BleLedger.swift in Sources */,
 				81961B1029E4EE3C00E9B94D /* HWDevice.swift in Sources */,
 				81961B1129E4EE3C00E9B94D /* TxInput.swift in Sources */,
 				81961B1329E4EE3C00E9B94D /* TxChangeOutput.swift in Sources */,
 				81961B1429E4EE3C00E9B94D /* Commitment.swift in Sources */,
-				81961B1529E4EE3C00E9B94D /* Jade.swift in Sources */,
-				81961B1629E4EE3C00E9B94D /* JadeChannel.swift in Sources */,
+				816184602A3B7596007D6569 /* BleJadeCommands.swift in Sources */,
+				816184582A3B0DD1007D6569 /* BleJadeConnection.swift in Sources */,
 				81961B1729E4EE3C00E9B94D /* HWError.swift in Sources */,
-				81961B1829E4EE3C00E9B94D /* JadeMessage.swift in Sources */,
-				81961B1929E4EE3C00E9B94D /* JadeOTA.swift in Sources */,
-				81961B1A29E4EE3C00E9B94D /* LedgerCommands.swift in Sources */,
-				81961B1B29E4EE3C00E9B94D /* LedgerChannel.swift in Sources */,
-				8190D4C82A269016003D31B4 /* JadeCommands.swift in Sources */,
-				81961B1C29E4EE3C00E9B94D /* LedgerWrapper.swift in Sources */,
-				81961B1D29E4EE3C00E9B94D /* Ledger.swift in Sources */,
-				81A8F8E929E4FC660052B214 /* Observable.swift in Sources */,
+				817A0B372A41AF8B00E2F80D /* BleLedgerCommands.swift in Sources */,
+				8161845D2A3B6467007D6569 /* AnyPublisher.swift in Sources */,
+				817A0B392A41B0DB00E2F80D /* BleLedgerConnection.swift in Sources */,
 				81E6897E2A234DAC00102BFC /* InputOutput.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4989,20 +5018,20 @@
 				revision = 55c0a99777802b3f0910cb45c04a3d2b7e6cc4d1;
 			};
 		};
-		81961A8E29E4A98900E9B94D /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+		817A0B2F2A3CC52500E2F80D /* XCRemoteSwiftPackageReference "Semaphore" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ReactiveX/RxSwift";
+			repositoryURL = "https://github.com/groue/Semaphore";
 			requirement = {
-				kind = exactVersion;
-				version = 5.1.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.8;
 			};
 		};
-		81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */ = {
+		818BA7012A2F6A6300DFB03A /* XCRemoteSwiftPackageReference "AsyncBluetooth" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/chamira-at/RxBluetoothKit.git";
+			repositoryURL = "https://github.com/manolofdez/AsyncBluetooth";
 			requirement = {
-				branch = "ios-15-support";
-				kind = branch;
+				kind = revision;
+				revision = 1dd29c190a62f95d8f5d6820567f90a52cac3847;
 			};
 		};
 		81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */ = {
@@ -5037,45 +5066,25 @@
 			package = 81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */;
 			productName = BreezSDK;
 		};
-		81961A8F29E4A9AD00E9B94D /* RxSwift */ = {
+		817A0B302A3CC52500E2F80D /* Semaphore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 81961A8E29E4A98900E9B94D /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
+			package = 817A0B2F2A3CC52500E2F80D /* XCRemoteSwiftPackageReference "Semaphore" */;
+			productName = Semaphore;
 		};
-		81961A9329E4AB5200E9B94D /* RxBluetoothKit */ = {
+		818BA7022A2F6A6300DFB03A /* AsyncBluetooth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */;
-			productName = RxBluetoothKit;
+			package = 818BA7012A2F6A6300DFB03A /* XCRemoteSwiftPackageReference "AsyncBluetooth" */;
+			productName = AsyncBluetooth;
 		};
 		81961ACD29E4E41600E9B94D /* RiveRuntime */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 81961ACC29E4E41600E9B94D /* XCRemoteSwiftPackageReference "rive-ios" */;
 			productName = RiveRuntime;
 		};
-		81961AF629E4EC6A00E9B94D /* RxSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81961A8E29E4A98900E9B94D /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
-		};
-		81961AF829E4EC6F00E9B94D /* RxBluetoothKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */;
-			productName = RxBluetoothKit;
-		};
 		81961AFA29E4EC7300E9B94D /* SwiftCBOR */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
 			productName = SwiftCBOR;
-		};
-		81A8F8EA29E500AB0052B214 /* RxSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81961A8E29E4A98900E9B94D /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
-		};
-		81A8F8EE29E500CA0052B214 /* RxBluetoothKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */;
-			productName = RxBluetoothKit;
 		};
 		81B2350E2A6A8BCD00B8FF5D /* Countly */ = {
 			isa = XCSwiftPackageProductDependency;

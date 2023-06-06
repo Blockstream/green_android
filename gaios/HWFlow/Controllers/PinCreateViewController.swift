@@ -1,6 +1,4 @@
 import UIKit
-import RxBluetoothKit
-import RxSwift
 import gdk
 import hw
 
@@ -17,8 +15,8 @@ class PinCreateViewController: HWFlowBaseViewController {
 
     var remember = false
     var testnet = false
-    var peripheral: Peripheral!
-    var wm: WalletManager?
+    var bleViewModel: BleViewModel?
+    var account: Account?
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -28,7 +26,6 @@ class PinCreateViewController: HWFlowBaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setContent()
         setStyle()
         loadNavigationBtns()
@@ -105,17 +102,26 @@ class PinCreateViewController: HWFlowBaseViewController {
     @IBAction func continueBtnTapped(_ sender: Any) {
         btnContinue.isHidden = true
         start()
-        BLEViewModel.shared.initialize(peripheral: peripheral,
-                                       testnet: testnet,
-                                       progress: { _ in },
-                                       completion: {
-            self.wm = $0
-            if self.peripheral.isJade() {
-                AnalyticsManager.shared.initializeJade(account: AccountsRepository.shared.current)
+        Task {
+            do {
+                try await bleViewModel?.connect()
+                try await bleViewModel?.initialize(testnet: testnet)
+                if let account = try await bleViewModel?.defaultAccount() {
+                    try await bleViewModel?.login(account: account)
+                    self.account = account
+                }
+                // check firmware
+                let res = try? await bleViewModel?.checkFirmware()
+                if let version = res?.0, let lastFirmware = res?.1 {
+                    onCheckFirmware(version: version, lastFirmware: lastFirmware)
+                    return
+                } else {
+                    next()
+                }
+            } catch {
+                onError(error)
             }
-            self.peripheral.isJade() ? self.jadeFirmwareUpgrade() : self.next()
-        },
-                                       error: self.error)
+        }
     }
 
     @objc func setupBtnTapped() {
@@ -125,48 +131,62 @@ class PinCreateViewController: HWFlowBaseViewController {
         }
     }
 
-    func next() {
-        guard let wm = wm else { return }
-        wm.account.hidden = !remember
-        AccountsRepository.shared.upsert(wm.account)
-        AnalyticsManager.shared.loginWalletEnd(account: wm.account, loginType: .pin)
-        AccountNavigator.goLogged(account: wm.account, nv: navigationController)
+    @MainActor
+    func onCheckFirmware(version: JadeVersionInfo, lastFirmware: Firmware) {
+        let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "UpdateFirmwareViewController") as? UpdateFirmwareViewController {
+            vc.firmware = lastFirmware
+            vc.version = version.jadeVersion
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
     }
 
-    override func error(_ err: Error) {
+    @MainActor
+    func next() {
+        account?.hidden = !remember
+        if let account = account {
+            AccountsRepository.shared.upsert(account)
+            AnalyticsManager.shared.loginWallet(loginType: .hardware, ephemeralBip39: false, account: account)
+            _ = AccountNavigator.goLogged(account: account, nv: navigationController)
+        }
+    }
+
+    @MainActor
+    override func onError(_ err: Error) {
         btnContinue.isHidden = false
-        self.stop()
-        let bleError = BLEManager.shared.toBleError(err, network: nil)
-        let txt = BLEManager.shared.toErrorString(bleError)
-        showAlert(title: "id_error".localized, message: txt)
         AnalyticsManager.shared.failedWalletLogin(account: wm!.account, error: err, prettyError: txt)
+        let bleError = bleViewModel?.toBleError(err, network: nil)
+        let txt = bleViewModel?.toErrorString(bleError!)
+        showAlert(title: "id_error".localized, message: txt ?? "")
+        Task { try? await bleViewModel?.disconnect() }
     }
 }
 
 extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
+    @MainActor
     func didUpdate(version: String, firmware: Firmware) {
 
         AnalyticsManager.shared.otaStartJade(account: AccountsRepository.shared.current, firmware: firmware)
         startLoader(message: "id_updating_firmware".localized)
-        let repair = version <= "0.1.30" && firmware.version >= "0.1.31"
-        BLEViewModel.shared.updateFirmware(
-            peripheral: self.peripheral!,
-            firmware: firmware,
-            progress: { self.startLoader(message: self.progressLoaderMessage(title: $0, subtitle: $1)) },
-            completion: {
-                self.stopLoader()
-                if repair {
-                    self.showAlert(title: "id_firmware_update_completed".localized, message: "id_new_jade_firmware_required".localized)
+        Task {
+            do {
+                let res = try await bleViewModel?.updateFirmware(firmware: firmware)
+                await MainActor.run {
+                    self.stopLoader()
+                    btnContinue.isHidden = false
+                    if let res = res, res {
+                        AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
+                        DropAlert().success(message: "id_firmware_update_completed".localized)
+                    } else {
+                        DropAlert().error(message: "id_operation_failure".localized)
+                    }
                 }
-                if $0 {
-                    AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
-                    DropAlert().success(message: "id_firmware_update_completed".localized)
-                } else {
-                    DropAlert().error(message: "id_operation_failure".localized)
-                }
-                BLEViewModel.shared.dispose()
-            },
-            error: { _ in self.stopLoader(); DropAlert().error(message: "id_operation_failure".localized) })
+            } catch {
+                onError(error)
+            }
+        }
     }
 
     func didSkip() {
@@ -189,9 +209,9 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
         attributedTitleString.append(attributedHintString)
         return attributedTitleString
     }
-
+    @MainActor
     func jadeFirmwareUpgrade() {
-        _ = BLEViewModel.shared.checkFirmware(Jade.shared.peripheral)
+        /*_ = BLEViewModel.shared.checkFirmware(Jade.shared.peripheral)
             .subscribe(onNext: { (version, lastFirmware) in
                 guard let version = version, let lastFirmware = lastFirmware else { return }
                 let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
@@ -202,6 +222,6 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
                     vc.modalPresentationStyle = .overFullScreen
                     self.present(vc, animated: false, completion: nil)
                 }
-            }, onError: { _ in self.next()})
+            }, onError: { _ in self.next()})*/
     }
 }

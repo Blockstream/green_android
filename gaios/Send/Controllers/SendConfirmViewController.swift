@@ -121,8 +121,8 @@ class SendConfirmViewController: KeyboardViewController {
                     case HWError.Abort(let desc),
                         HWError.Declined(let desc):
                         return desc
-                    case LedgerWrapper.LedgerError.IOError,
-                        LedgerWrapper.LedgerError.InvalidParameter:
+                    case BleLedgerConnection.LedgerError.IOError,
+                        BleLedgerConnection.LedgerError.InvalidParameter:
                         return "id_operation_failure"
                     case TwoFactorCallError.failure(let localizedDescription),
                         TwoFactorCallError.cancel(let localizedDescription):

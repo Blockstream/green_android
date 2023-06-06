@@ -1,8 +1,6 @@
-import Foundation
 import UIKit
-
-import RxBluetoothKit
-import RxSwift
+import AsyncBluetooth
+import Combine
 
 class PairingSuccessViewController: HWFlowBaseViewController {
 
@@ -15,8 +13,9 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     @IBOutlet weak var rememberSwitch: UISwitch!
     @IBOutlet weak var btnAppSettings: UIButton!
 
-    var peripheral: Peripheral!
-
+    var bleViewModel: BleViewModel?
+    var scanViewModel: ScanViewModel?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -24,19 +23,19 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         mash.isHidden = true
         setContent()
         setStyle()
-        if peripheral.isJade() {
+        if bleViewModel?.deviceType == .Jade {
             loadNavigationBtns()
         }
         AnalyticsManager.shared.hwwConnect(account: AccountsRepository.shared.current)
     }
 
     func setContent() {
-        lblTitle.text = peripheral.name
+        lblTitle.text = bleViewModel?.peripheral?.name
         lblHint.text = "id_follow_the_instructions_on_your".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
         lblRemember.text = "id_remember_device_connection".localized
-        imgDevice.image = UIImage(named: peripheral.isJade() ? "il_jade_welcome_1" : "il_ledger")
-        lblHint.text = peripheral.isJade() ? "Blockstream" : ""
+        imgDevice.image = UIImage(named: bleViewModel?.deviceType == .Jade ? "il_jade_welcome_1" : "il_ledger")
+        lblHint.text = bleViewModel?.deviceType == .Jade ? "Blockstream" : ""
         btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
@@ -69,18 +68,24 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     }
 
     @IBAction func btnContinue(_ sender: Any) {
-        if peripheral.isJade() {
-            self.startLoader(message: "id_connecting".localized)
-            BLEViewModel.shared.connecting(peripheral,
-                                           completion: self.onJadeConnected,
-                                           error: self.error)
-        } else {
-            self.startLoader(message: "id_logging_in".localized)
-            BLEViewModel.shared.initialize(peripheral: peripheral,
-                                           testnet: false,
-                                           progress: { _ in },
-                                           completion: self.onLedgerLogin,
-                                           error: self.error)
+        startLoader(message: "id_logging_in".localized)
+        Task {
+            do {
+                await scanViewModel?.stopScan()
+                try await bleViewModel?.connect()
+                if bleViewModel?.type == .Jade {
+                    try? await bleViewModel?.disconnect()
+                    try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
+                    try await bleViewModel?.connect()
+                    let version = try await bleViewModel?.versionJade()
+                    onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
+                } else {
+                    onLogin()
+                }
+            } catch {
+                try? await bleViewModel?.disconnect()
+                onError(error)
+            }
         }
     }
 
@@ -91,6 +96,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         }
     }
 
+    @MainActor
     func onJadeConnected(jadeHasPin: Bool) {
         let testnetAvailable = AppSettings.shared.testnet
         if !jadeHasPin {
@@ -100,52 +106,51 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             }
             self.onJadeInitialize(testnet: false)
         } else {
-            self.onJadeLogin()
+            self.onLogin()
         }
     }
 
-    func onJadeLogin() {
-        _ = BLEManager.shared.account(self.peripheral)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { account in
-                self.stopLoader()
-                var account = account
-                account.hidden = !(self.rememberSwitch.isOn)
-                BLEViewModel.shared.dispose()
+    @MainActor
+    func onLogin() {
+        Task {
+            do {
+                let account = try await bleViewModel?.defaultAccount()
+                //try? await bleViewModel?.disconnect()
+                //try await Task.sleep(nanoseconds: UInt64(3 * 1_000_000_000))
+                await MainActor.run {
+                    stopLoader()
+                    var account = account
+                    account?.hidden = !(self.rememberSwitch.isOn)
+                    let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+                    if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
+                        vc.account = account
+                        vc.bleViewModel = bleViewModel
+                        vc.scanViewModel = scanViewModel
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
+            } catch {
+                try? await bleViewModel?.disconnect()
+                onError(error)
+            }
+        }
+    }
+
+    @MainActor
+    func onJadeInitialize(testnet: Bool) {
+        Task {
+            try await bleViewModel?.jade?.disconnect()
+            await MainActor.run {
+                stopLoader()
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-                if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
-                    vc.account = account
+                if let vc = hwFlow.instantiateViewController(withIdentifier: "PinCreateViewController") as? PinCreateViewController {
+                    vc.testnet = testnet
+                    vc.bleViewModel = bleViewModel
+                    vc.remember = rememberSwitch.isOn
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
-            }, onError: { self.error($0) })
-    }
-
-    func onJadeInitialize(testnet: Bool) {
-        self.stopLoader()
-        BLEViewModel.shared.dispose()
-        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "PinCreateViewController") as? PinCreateViewController {
-            vc.testnet = testnet
-            vc.peripheral = peripheral
-            vc.remember = rememberSwitch.isOn
-            self.navigationController?.pushViewController(vc, animated: true)
+            }
         }
-    }
-
-    func onLedgerLogin(_ wm: WalletManager) {
-        self.stopLoader()
-        wm.account.hidden = !(rememberSwitch.isOn)
-        AccountsRepository.shared.upsert(wm.account)
-        AccountNavigator.goLogged(account: wm.account, nv: navigationController)
-
-        AnalyticsManager.shared.hwwConnected(account: AccountsRepository.shared.current)
-    }
-
-    override func error(_ err: Error) {
-        self.stopLoader()
-        let bleError = BLEManager.shared.toBleError(err, network: nil)
-        let txt = BLEManager.shared.toErrorString(bleError)
-        showAlert(title: "id_error".localized, message: txt)
     }
 }
 

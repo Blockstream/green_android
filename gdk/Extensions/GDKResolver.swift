@@ -26,17 +26,20 @@ public class GDKResolver {
     let twoFactorCall: TwoFactorCall?
     let popupDelegate: PopupResolverDelegate?
     let hwDelegate: HwResolverDelegate?
+    let hwDevice: HWProtocol?
 
     public init(_ twoFactorCall: TwoFactorCall?,
-         popupDelegate: PopupResolverDelegate? = nil,
-         hwDelegate: HwResolverDelegate? = nil,
-         chain: String,
-         connected: @escaping() -> Bool = { true }) {
+                popupDelegate: PopupResolverDelegate? = nil,
+                hwDelegate: HwResolverDelegate? = nil,
+                hwDevice: HWProtocol? = nil,
+                chain: String,
+                connected: @escaping() -> Bool = { true }) {
         self.twoFactorCall = twoFactorCall
         self.popupDelegate = popupDelegate
         self.hwDelegate = hwDelegate
         self.chain = chain
         self.connected = connected
+        self.hwDevice = hwDevice
     }
 
     public func resolve() async throws -> [String: Any]? {
@@ -78,7 +81,7 @@ public class GDKResolver {
                 let json = try? JSONSerialization.data(withJSONObject: device, options: []),
                 let hwdevice = try? JSONDecoder().decode(HWDevice.self, from: json) {
                 do {
-                    let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain)
+                    let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain, hwDevice: hwDevice)
                     try self.twoFactorCall?.resolveCode(code: res.stringify())
                 } catch {
                     throw TwoFactorCallError.failure(localizedDescription: error.localizedDescription)

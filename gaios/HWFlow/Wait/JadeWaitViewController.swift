@@ -1,7 +1,7 @@
 import UIKit
-import RxBluetoothKit
-import RxSwift
 import RiveRuntime
+import AsyncBluetooth
+import Combine
 
 class JadeWaitViewController: HWFlowBaseViewController {
 
@@ -14,10 +14,13 @@ class JadeWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var animateView: UIView!
 
     let viewModel = JadeWaitViewModel()
+    var scanModel: ScanViewModel?
+    private var scanCancellable: AnyCancellable?
     var timer: Timer?
     var idx = 0
 
     private var activeToken, resignToken: NSObjectProtocol?
+    private var selectedItem: ScanListItem?
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -33,24 +36,35 @@ class JadeWaitViewController: HWFlowBaseViewController {
         loadNavigationBtns()
         update()
         animateView.alpha = 0.0
+
+        scanCancellable = scanModel?.objectWillChange.sink(receiveValue: { [weak self] in
+            DispatchQueue.main.async {
+                if self?.selectedItem != nil { return }
+                if let peripheral = self?.scanModel?.peripherals.filter({ $0.jade }).first {
+                    self?.selectedItem = peripheral
+                    Task { await self?.scanModel?.stopScan() }
+                    self?.scanCancellable?.cancel()
+                    self?.next()
+                }
+            }
+        })
     }
 
     deinit {
         print("Deinit")
+        scanCancellable?.cancel()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         timer = Timer.scheduledTimer(timeInterval: Constants.jadeAnimInterval, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
-        BLEViewModel.shared.scan(jade: true,
-                                 completion: self.next,
-                                 error: self.error)
         update()
         UIView.animate(withDuration: 0.3) {
             self.animateView.alpha = 1.0
         }
         start()
+        scanModel?.startScan(deviceType: .Jade)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -63,7 +77,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
         }
         stop()
         timer?.invalidate()
-        BLEViewModel.shared.scanDispose?.dispose()
+        Task { await scanModel?.stopScan() }
     }
 
     @objc func fireTimer() {
@@ -149,11 +163,11 @@ class JadeWaitViewController: HWFlowBaseViewController {
         loadingIndicator.isAnimating = false
     }
 
-    func next(peripherals: [Peripheral]) {
-        if peripherals.isEmpty { return }
+    func next() {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "ListDevicesViewController") as? ListDevicesViewController {
-            vc.isJade = true
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ScanViewController") as? ScanViewController {
+            vc.deviceType = .Jade
+            vc.viewModel = scanModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

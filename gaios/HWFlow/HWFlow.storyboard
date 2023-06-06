@@ -730,10 +730,10 @@
             </objects>
             <point key="canvasLocation" x="3072" y="680"/>
         </scene>
-        <!--List Devices View Controller-->
+        <!--Scan View Controller-->
         <scene sceneID="iSu-2x-VGA">
             <objects>
-                <viewController storyboardIdentifier="ListDevicesViewController" id="23i-a9-QU1" customClass="ListDevicesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ScanViewController" id="23i-a9-QU1" customClass="ScanViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="CwH-pO-X2J">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

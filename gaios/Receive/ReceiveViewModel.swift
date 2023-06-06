@@ -5,7 +5,6 @@ import greenaddress
 import hw
 import BreezSDK
 import lightning
-import RxSwift
 
 enum ReceiveType: Int, CaseIterable {
     case address
@@ -63,45 +62,11 @@ class ReceiveViewModel {
     }
 
     func validateHw() async throws -> Bool {
-        let hw: HWProtocol = wm.account.isLedger ? Ledger.shared : Jade.shared
-        let chain = account.gdkNetwork.chain
         guard let addr = address else {
             throw GaError.GenericError()
         }
-        let validated = try await validate(with: self.account, hw: hw, addr: addr, network: chain)
-        return validated == addr.address
-    }
-
-    public func validate(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String) async throws -> String {
-        return try await withCheckedThrowingContinuation  { continuation in
-            newReceiveAddress(with: wallet, hw: hw, addr: addr, network: network) { result in
-                switch result {
-                case .success(let data):
-                    continuation.resume(returning: data)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
-    }
-
-    func newReceiveAddress(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String,
-                           _ completion: @escaping (Result<String, Error>) -> Void) {
-        let network = wallet.gdkNetwork
-        _ = hw.newReceiveAddress(chain: network.chain,
-                                 mainnet: network.mainnet,
-                                 multisig: !network.electrum,
-                                 chaincode: wallet.recoveryChainCode,
-                                 recoveryPubKey: wallet.recoveryPubKey,
-                                 walletPointer: wallet.pointer,
-                                 walletType: wallet.type.rawValue,
-                                 path: addr.userPath ?? [],
-                                 csvBlocks: addr.subtype ?? 0)
-        .subscribe(onNext: { data in
-            completion(.success(data))
-        }, onError: { err in
-            completion(.failure(err))
-        })
+        let res = try await BleViewModel.shared.validateAddress(account: account, address: addr)
+        return res 
     }
 
     func addressToUri(address: String, satoshi: Int64) -> String {

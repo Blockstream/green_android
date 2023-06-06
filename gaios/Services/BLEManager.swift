@@ -1,48 +1,12 @@
 import Foundation
-
-import RxSwift
-import RxBluetoothKit
 import CoreBluetooth
 import UIKit
 import gdk
 import hw
 import greenaddress
 
-enum BLEManagerError: Error {
-    case powerOff(txt: String)
-    case unauthorized(txt: String)
-    case notReady(txt: String)
-    case scanErr(txt: String)
-    case bleErr(txt: String)
-    case timeoutErr(txt: String)
-    case dashboardErr(txt: String)
-    case outdatedAppErr(txt: String)
-    case wrongAppErr(txt: String)
-    case authErr(txt: String)
-    case swErr(txt: String)
-    case genericErr(txt: String)
-    case firmwareErr(txt: String)
-}
-
-enum DeviceError: Error {
-    case dashboard
-    case wrong_app
-    case outdated_app
-    case notlegacy_app
-}
-
-extension Peripheral {
-    func isLedger() -> Bool {
-        peripheral.name?.contains("Nano") ?? false
-    }
-
-    func isJade() -> Bool {
-        peripheral.name?.contains("Jade") ?? false
-    }
-}
-
 class BLEManager {
-
+/*
     static let shared = BLEManager()
     let manager: CentralManager
     private let queue = DispatchQueue(label: "manager.queue")
@@ -125,21 +89,21 @@ class BLEManager {
 
     func getMasterXpub(_ device: HWDevice, gdkNetwork: GdkNetwork?) -> Observable<String> {
         if device.isJade {
-            return Jade.shared.xpubs(network: gdkNetwork?.chain ?? "mainnet", path: [])
+            return Observable.just("true")
         }
         return getLedgerNetwork()
             .flatMap { Ledger.shared.xpubs(network: $0.chain, path: []) }
     }
 
     func connectJade(_ p: Peripheral) -> Observable<Bool> {
-        return Observable.just(p)
+        return Observable.just(true)/*
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .timeoutIfNoEvent(RxTimeInterval.seconds(3))
             .flatMap { p in Jade.shared.open(p) }
             .timeoutIfNoEvent(RxTimeInterval.seconds(10))
             .flatMap { _ in Jade.shared.addEntropy() }
             .flatMap { _ in Jade.shared.version() }
-            .compactMap { $0.jadeHasPin }
+            .compactMap { $0.jadeHasPin }*/
     }
 
     func authenticating(_ p: Peripheral, testnet: Bool? = nil) -> Observable<Bool> {
@@ -150,7 +114,7 @@ class BLEManager {
             .flatMap { Observable.create { try? await self.session?.connect() }}
             .compactMap { true }
         }
-        return Observable.just(p)
+        return Observable.just(true)/*
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Jade.shared.version() }
             .flatMap { version -> Observable<Bool> in
@@ -176,7 +140,7 @@ class BLEManager {
                                 .retry(3)
                     }
                 }
-            }
+            }*/
     }
 
     func normalizeAccount(_ account: Account) -> Account {
@@ -214,11 +178,7 @@ class BLEManager {
     }
 
     func network(_ peripheral: Peripheral) -> Observable<NetworkSecurityCase> {
-        if peripheral.isJade() {
-            return Jade.shared.version().compactMap { $0.jadeNetworks == "TEST" ? .testnetSS : .bitcoinSS }
-        } else {
-            return  self.getLedgerNetwork()
-        }
+        return  self.getLedgerNetwork()
     }
 
     func account(_ peripheral: Peripheral) -> Observable<Account> {
@@ -254,7 +214,7 @@ class BLEManager {
             let authErr = err as? AuthenticationTypeHandler.AuthError
             AnalyticsManager.shared.failedWalletLogin(account: AccountsRepository.shared.current, error: err, prettyError: authErr?.localizedDescription ?? "")
             return BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
-        case is Ledger.SWError:
+        case is BleLedger.LedgerError, is BleLedgerConnection.LedgerError:
             return BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
         case is HWError:
             switch err {
@@ -343,4 +303,5 @@ extension Observable {
             return Disposables.create { task.cancel() }
         }
     }
+ */
 }

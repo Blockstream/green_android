@@ -23,7 +23,7 @@ class UpdateFirmwareViewController: UIViewController {
     weak var delegate: UpdateFirmwareViewControllerDelegate?
     var version: String!
     var firmware: Firmware!
-    var needCableUpdate: Bool { version == Jade.BOARD_TYPE_JADE_V1_1 && version < "0.1.28" }
+    var needCableUpdate: Bool { version == BleJade.BOARD_TYPE_JADE_V1_1 && version < "0.1.28" }
     var isRequired: Bool { version <= "0.1.30" && firmware.version >= "0.1.31" }
 
     override func viewDidLoad() {

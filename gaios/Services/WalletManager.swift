@@ -32,6 +32,12 @@ class WalletManager {
             }
         }
     }
+
+    var hwDevice: BLEDevice? {
+        didSet {
+            sessions.forEach { $0.value.hw = hwDevice }
+        }
+    }
     
     // Store active subaccount
     private var activeWalletHash: Int?

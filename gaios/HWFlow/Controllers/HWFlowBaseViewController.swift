@@ -1,10 +1,7 @@
 import UIKit
-import RxBluetoothKit
-import RxSwift
 
 class HWFlowBaseViewController: UIViewController {
 
-    var stateDisposable: Disposable?
     let mash = UIImageView(image: UIImage(named: "il_mash")!)
 
     override func viewDidLoad() {
@@ -24,32 +21,17 @@ class HWFlowBaseViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         UIApplication.shared.isIdleTimerDisabled = true
-        stateDisposable = BLEManager.shared.manager
-                .observeState()
-                .subscribe(onNext: { if $0 != .poweredOn { self.showBleState($0) }},
-                           onError: { self.error($0) })
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         UIApplication.shared.isIdleTimerDisabled = false
-        stateDisposable?.dispose()
     }
 
-    func showBleState(_ state: BluetoothState) {
-        switch state {
-        case .unknown:
-            break
-        case .unsupported:
-            showError("Unsupported bluetooth".localized)
-        case .unauthorized, .poweredOff, .resetting:
-            showError("id_enable_bluetooth_from_system".localized)
-        case .poweredOn:
-            break
-        }
-    }
-    func error(_ err: Error) {
-        let bleError = BLEManager.shared.toBleError(err, network: nil)
-        let txt = BLEManager.shared.toErrorString(bleError)
-        showAlert(title: "id_error".localized, message: txt)
+    @MainActor
+    func onError(_ err: Error) {
+        stopLoader()
+        let bleError = BleViewModel.shared.toBleError(err, network: nil)
+        let txt = BleViewModel.shared.toErrorString(bleError)
+        DropAlert().error(message: txt)
     }
 }

@@ -1,18 +1,16 @@
 import UIKit
-import RxSwift
-import RxBluetoothKit
+import AsyncBluetooth
+import Combine
 
-class ListDevicesViewController: HWFlowBaseViewController {
+class ScanViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnTroubleshoot: UIButton!
-    var isJade = true
+    private var scanCancellable: AnyCancellable?
+    private var cancellableBag = Set<AnyCancellable>()
+    var deviceType = DeviceType.Jade
 
-    var peripherals = [Peripheral]() {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    var viewModel: ScanViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,9 +18,16 @@ class ListDevicesViewController: HWFlowBaseViewController {
         ["JadeDeviceCell", "OtherDeviceCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
-        if isJade {
+        if deviceType == .Jade {
             loadNavigationBtns()
         }
+        
+        // Add this
+        scanCancellable = viewModel.objectWillChange.sink(receiveValue: { [weak self] in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        })
         setContent()
         setStyle()
     }
@@ -32,38 +37,31 @@ class ListDevicesViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        BLEViewModel.shared.scan(jade: isJade,
-                                 completion: { self.peripherals = $0 },
-                                 error: self.error)
+        viewModel.startScan(deviceType: deviceType)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        BLEViewModel.shared.scanDispose?.dispose()
+        Task { await viewModel.stopScan() }
+        scanCancellable?.cancel()
     }
 
     func setContent() {
         title = "".localized
         btnTroubleshoot.setTitle("id_troubleshoot".localized, for: .normal)
-        btnTroubleshoot.isHidden = !isJade
+        btnTroubleshoot.isHidden = deviceType != .Jade
     }
 
     func setStyle() {
         btnTroubleshoot.setStyle(.inline)
     }
 
-    func next(_ peripheral: Peripheral) {
+    func next() {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "PairingSuccessViewController") as? PairingSuccessViewController {
-            vc.peripheral = peripheral
+            vc.bleViewModel = BleViewModel.shared
+            vc.scanViewModel = viewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
-    }
-
-    override func error(_ err: Error) {
-        self.stopLoader()
-        let bleError = BLEManager.shared.toBleError(err, network: nil)
-        let txt = BLEManager.shared.toErrorString(bleError)
-        showAlert(title: "id_error".localized, message: txt)
     }
 
     func loadNavigationBtns() {
@@ -87,27 +85,27 @@ class ListDevicesViewController: HWFlowBaseViewController {
     }
 }
 
-extension ListDevicesViewController: UITableViewDelegate, UITableViewDataSource {
+extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return peripherals.count
+        return viewModel.peripherals.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let peripheral = peripherals[indexPath.row]
-        if peripheral.isJade() {
+        let peripheral = viewModel.peripherals[indexPath.row]
+        if peripheral.jade {
             if let cell = tableView.dequeueReusableCell(withIdentifier: JadeDeviceCell.identifier, for: indexPath) as? JadeDeviceCell {
-                cell.configure(text: peripheral.name ?? "Jade")
+                cell.configure(text: peripheral.name)
                 cell.selectionStyle = .none
                 return cell
             }
         } else {
             if let cell = tableView.dequeueReusableCell(withIdentifier: OtherDeviceCell.identifier, for: indexPath) as? OtherDeviceCell {
-                cell.configure(text: peripheral.name ?? "Nano X")
+                cell.configure(text: peripheral.name)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -136,9 +134,14 @@ extension ListDevicesViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let peripheral = peripherals[indexPath.row]
-        BLEViewModel.shared.pairing(peripheral,
-                                    completion: { _ in self.next(peripheral) } ,
-                                    error: self.error)
+        let peripheral = viewModel.peripherals[indexPath.row]
+
+        Task {
+            await viewModel.stopScan()
+            BleViewModel.shared.deviceType = peripheral.type ?? .Jade
+            BleViewModel.shared.peripheralID = peripheral.identifier
+            try? await BleViewModel.shared.connect()
+            await MainActor.run { self.next() }
+        }
     }
 }

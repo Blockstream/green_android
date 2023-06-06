@@ -10,13 +10,15 @@ class ResolverManager {
     let resolver: GDKResolver
     let session: SessionManager?
     
-    init(_ factor: TwoFactorCall, chain: String, connected: @escaping() -> Bool = { true }, session: SessionManager? = nil) {
+    init(_ factor: TwoFactorCall, chain: String, connected: @escaping() -> Bool = { true }, hwDevice: HWProtocol?, session: SessionManager? = nil) {
         self.session = session
         resolver = GDKResolver(factor,
                                popupDelegate: PopupResolver(),
                                hwDelegate: HWResolver(),
+                               hwDevice: hwDevice,
                                chain: chain,
-                               connected: connected)
+                               connected: connected
+        )
         
     }
 

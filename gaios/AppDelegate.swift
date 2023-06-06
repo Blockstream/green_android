@@ -1,6 +1,4 @@
 import UIKit
-
-import RxBluetoothKit
 import gdk
 import lightning
 

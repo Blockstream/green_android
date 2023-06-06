@@ -107,6 +107,7 @@ class Learn2faViewController: UIViewController {
             } catch {
                 self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
             }
+            
             self.stopAnimating()
         }
     }

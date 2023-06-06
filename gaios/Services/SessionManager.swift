@@ -25,6 +25,7 @@ class SessionManager {
     
     var connected = false
     var logged = false
+    weak var hw: BLEDevice?
     
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
@@ -140,12 +141,17 @@ class SessionManager {
     func enabled() -> Bool {
         return true
     }
-
+    
+    func resolve(_ twoFactorCall: TwoFactorCall?) async throws -> [String: Any]? {
+        let rm = ResolverManager(twoFactorCall, chain: self.gdkNetwork.chain, hwDevice: hw?.interface)
+        return try await rm.run()
+    }
+    
     func transactions(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
         let txs = try self.session?.getTransactions(details: ["subaccount": subaccount,
                                                               "first": first,
                                                               "count": Constants.trxPerPage])
-        let res = try await ResolverManager(txs, chain: self.gdkNetwork.chain).run()
+        let res = try await resolve(txs)
         let result = res?["result"] as? [String: Any]
         let dict = result?["transactions"] as? [[String: Any]]
         let list = dict?.map { Transaction($0) }
@@ -154,7 +160,7 @@ class SessionManager {
     
     func subaccount(_ pointer: UInt32) async throws -> WalletItem? {
         let subaccount = try self.session?.getSubaccount(subaccount: pointer)
-        let res = try await ResolverManager(subaccount, chain: self.gdkNetwork.chain).run()
+        let res = try await resolve(subaccount)
         let result = res?["result"] as? [String: Any]
         let wallet = WalletItem.from(result ?? [:]) as? WalletItem
         wallet?.network = self.gdkNetwork.network
@@ -196,13 +202,13 @@ class SessionManager {
         let notFound = !wallets.contains(where: {$0.type == AccountType.segWit })
         if gdkNetwork.electrum && notFound {
             let res = try self.session?.createSubaccount(details: ["name": "", "type": AccountType.segWit.rawValue])
-            _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+            _ = try await resolve(res)
         }
     }
     
     func reconnect() async throws {
         let res = try self.session?.loginUserSW(details: [:])
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func loginUser(_ params: Credentials, restore: Bool) async throws -> LoginUserResult {
@@ -241,7 +247,7 @@ class SessionManager {
     func wrapperAsync<T: Codable, K: Codable>(fun: GdkFunc?, params: T) async throws -> K {
         let dict = params.toDict()
         if let fun = try fun?(dict ?? [:]) {
-            let res = try await ResolverManager(fun, chain: self.gdkNetwork.chain).run()
+            let res = try await resolve(fun)
             let result = res?["result"] as? [String: Any]
             if let res = K.from(result ?? [:]) as? K {
                 return res
@@ -273,7 +279,7 @@ class SessionManager {
     func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         try await self.connect()
         let res = try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]])
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func encryptWithPin(_ params: EncryptWithPinParams) async throws -> EncryptWithPinResult {
@@ -282,17 +288,17 @@ class SessionManager {
 
     func resetTwoFactor(email: String, isDispute: Bool) async throws {
         let res = try self.session?.resetTwoFactor(email: email, isDispute: isDispute)
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func cancelTwoFactorReset() async throws {
         let res = try self.session?.cancelTwoFactorReset()
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func undoTwoFactorReset(email: String) async throws {
         let res = try self.session?.undoTwoFactorReset(email: email)
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func setWatchOnly(username: String, password: String) async throws {
@@ -305,12 +311,12 @@ class SessionManager {
 
     func setCSVTime(value: Int) async throws {
         let res = try self.session?.setCSVTime(details: ["value": value])
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func setTwoFactorLimit(details: [String: Any]) async throws {
         let res = try self.session?.setTwoFactorLimit(details: details)
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func convertAmount(input: [String: Any]) throws -> [String: Any] {
@@ -329,18 +335,18 @@ class SessionManager {
     
     func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {
         let balance = try self.session?.getBalance(details: ["subaccount": subaccount, "num_confs": numConfs])
-        let res = try await ResolverManager(balance, chain: self.gdkNetwork.chain).run()
+        let res = try await resolve(balance)
         return res?["result"] as? [String: Int64] ?? [:]
     }
     
     func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) async throws {
         let res = try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:])
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func updateSubaccount(subaccount: UInt32, hidden: Bool) async throws {
         let res = try self.session?.updateSubaccount(details: ["subaccount": subaccount, "hidden": hidden])
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
     
     func createSubaccount(_ details: CreateSubaccountParams) async throws -> WalletItem {
@@ -359,14 +365,14 @@ class SessionManager {
     
     func getUnspentOutputs(subaccount: UInt32, numConfs: Int) async throws -> [String: Any] {
         let utxos = try self.session?.getUnspentOutputs(details: ["subaccount": subaccount, "num_confs": numConfs])
-        let res = try await ResolverManager(utxos, chain: self.gdkNetwork.chain).run()
+        let res = try await resolve(utxos)
         let result = res?["result"] as? [String: Any]
         return result?["unspent_outputs"] as? [String: Any] ?? [:]
     }
     
     func wrapperTransaction(fun: GdkFunc?, tx: Transaction) async throws -> Transaction {
         if let fun = try fun?(tx.details) {
-            let res = try await ResolverManager(fun, chain: self.gdkNetwork.chain).run()
+            let res = try await resolve(fun)
             let result = res?["result"] as? [String: Any]
             return Transaction(result ?? [:], subaccount: tx.subaccount)
         }
@@ -404,7 +410,7 @@ class SessionManager {
 
     func ackSystemMessage(message: String) async throws {
         let res = try self.session?.ackSystemMessage(message: message)
-        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+        _ = try await resolve(res)
     }
 
     func getAvailableCurrencies() async throws -> [String: [String]] {

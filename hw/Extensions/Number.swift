@@ -68,6 +68,17 @@ extension Array where Element == UInt8 {
 }
 
 extension Data {
-    var bytes: [UInt8]? { [UInt8](self) }
+    var bytes: [UInt8] { [UInt8](self) }
     var hex: String { self.map { String(format: "%02hhx", $0) }.joined() }
+    func chunked(into size: Int) -> [Data] {
+        bytes.chunked(into: size).map { Data($0) }
+    }
+}
+
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
+    }
 }

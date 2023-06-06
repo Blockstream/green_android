@@ -37,6 +37,7 @@ class ReceiveViewController: KeyboardViewController {
     private var headerH: CGFloat = 36.0
     private var loading = true
     var viewModel: ReceiveViewModel!
+    var dialogReceiveVerifyAddressViewController: DialogReceiveVerifyAddressViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -209,19 +210,25 @@ class ReceiveViewController: KeyboardViewController {
         Task {
             do {
                 let res = try await viewModel?.validateHw()
-                if res ?? false {
-                    DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
-                } else {
-                    DropAlert().error(message: NSLocalizedString("id_the_addresses_dont_match", comment: ""))
+                await MainActor.run {
+                    if res ?? false {
+                        dialogReceiveVerifyAddressViewController?.dismiss()
+                        DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
+                    } else {
+                        DropAlert().error(message: NSLocalizedString("id_the_addresses_dont_match", comment: ""))
+                    }
                 }
             } catch {
-                switch error {
-                case HWError.Abort(let desc),
-                    HWError.URLError(let desc),
-                    HWError.Declined(let desc):
-                    DropAlert().error(message: desc)
-                default:
-                    DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+                await MainActor.run {
+                    dialogReceiveVerifyAddressViewController?.dismiss()
+                    switch error {
+                    case HWError.Abort(let desc),
+                        HWError.URLError(let desc),
+                        HWError.Declined(let desc):
+                        DropAlert().error(message: desc)
+                    default:
+                        DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+                    }
                 }
             }
         }
@@ -371,6 +378,7 @@ class ReceiveViewController: KeyboardViewController {
             vc.walletItem = viewModel.account
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
+            dialogReceiveVerifyAddressViewController = vc
         }
     }
 

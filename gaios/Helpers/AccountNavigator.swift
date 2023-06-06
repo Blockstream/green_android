@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import AsyncBluetooth
 
 class AccountNavigator {
 
@@ -19,6 +20,8 @@ class AccountNavigator {
             return goLogged(account: account, nv: nv)
         } else if account.isHW {
             vcConnect?.account = account
+            vcConnect?.bleViewModel = BleViewModel.shared
+            vcConnect?.scanViewModel = ScanViewModel()
             nv.setViewControllers([vcHome!, vcConnect!], animated: true)
         } else if account.isWatchonly {
             vcWatch?.account = account

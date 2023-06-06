@@ -136,7 +136,7 @@ class SecuritySelectViewModel {
         if used {
             try await session.updateSubaccount(subaccount: 0, hidden: true)
         }
-        try await wm.subaccounts()
+        _ = try await wm.subaccounts()
     }
 
     func isUsedDefaultAccount(for session: SessionManager, account: WalletItem?) async throws -> Bool {
@@ -160,7 +160,7 @@ class SecuritySelectViewModel {
         if let unfunded = unfunded {
             // automatically unarchive it
             try await session.updateSubaccount(subaccount: unfunded.pointer, hidden: false)
-            try await session.subaccount(unfunded.pointer)
+            _ = try await session.subaccount(unfunded.pointer)
         }
         let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
         if let funded = funded, let dialog = self.unarchiveCreateDialog {

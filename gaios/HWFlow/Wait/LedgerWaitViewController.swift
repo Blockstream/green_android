@@ -1,14 +1,19 @@
 import UIKit
-import RxBluetoothKit
-import RxSwift
+import CoreBluetooth
+import AsyncBluetooth
+import Combine
 
 class LedgerWaitViewController: HWFlowBaseViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
-
+    
+    var scanModel: ScanViewModel?
+    private var scanCancellable: AnyCancellable?
     private var activeToken, resignToken: NSObjectProtocol?
+    private var selectedItem: ScanListItem?
+
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
         progress.translatesAutoresizingMaskIntoConstraints = false
@@ -20,6 +25,18 @@ class LedgerWaitViewController: HWFlowBaseViewController {
 
         setContent()
         setStyle()
+        
+        scanCancellable = scanModel?.objectWillChange.sink(receiveValue: { [weak self] in
+            DispatchQueue.main.async {
+                if self?.selectedItem != nil { return }
+                if let peripheral = self?.scanModel?.peripherals.filter({ $0.ledger }).first {
+                    self?.selectedItem = peripheral
+                    Task { await self?.scanModel?.stopScan() }
+                    self?.scanCancellable?.cancel()
+                    self?.next()
+                }
+            }
+        })
     }
 
     deinit {
@@ -30,9 +47,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         start()
-        BLEViewModel.shared.scan(jade: false,
-                                 completion: self.next,
-                                 error: self.error)
+        scanModel?.startScan(deviceType: .Ledger)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -43,7 +58,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
             NotificationCenter.default.removeObserver(token)
         }
         stop()
-        BLEViewModel.shared.scanDispose?.dispose()
+        Task { await scanModel?.stopScan() }
     }
 
     func setContent() {
@@ -87,11 +102,11 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         loadingIndicator.isAnimating = false
     }
 
-    func next(peripherals: [Peripheral]) {
-        if peripherals.isEmpty { return  }
+    func next() {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
-        if let vc = hwFlow.instantiateViewController(withIdentifier: "ListDevicesViewController") as? ListDevicesViewController {
-            vc.isJade = false
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ScanViewController") as? ScanViewController {
+            vc.deviceType = .Ledger
+            vc.viewModel = scanModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
