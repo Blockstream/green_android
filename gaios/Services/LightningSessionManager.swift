@@ -142,7 +142,7 @@ class LightningSessionManager: SessionManager {
             // Check for expiration
             print ("Expire in \(invoice.expiry)")
             if invoice.isExpired {
-                throw TransactionError.invalid(localizedDescription: "id_invoice_expired")
+                throw TransactionError.invalid(localizedDescription: "Invoice Expired")
             }
             let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: nil)
             print("res \(res)")
@@ -171,16 +171,16 @@ class LightningSessionManager: SessionManager {
     ) -> String? {
         let balance = account.btc ?? 0
         guard let satoshi = satoshi, satoshi > 0 else {
-            return "id_invalid_amount"
+            return "id_invalid_amount".localized
         }
         if let min = min, satoshi < min {
-            return "id_amount_must_be_at_least_s"
+            return "Amount must be at least \(min)"
         }
         if satoshi > balance {
-            return "id_insufficient_funds"
+            return "id_insufficient_funds".localized
         }
         if let max = max, satoshi > max {
-            return "id_amount_must_be_at_most_s"
+            return "Amount must be at most \(max)"
         }
         return nil
     }
@@ -205,7 +205,7 @@ class LightningSessionManager: SessionManager {
             tx.amounts = ["btc": Int64(sendableSatoshi)]
             tx.transactionOutputs = [TransactionOutput.fromLnInvoice(invoice, fallbackAmount: Int64(sendableSatoshi))]
             if invoice.isExpired {
-                tx.error = "id_invoice_expired"
+                tx.error = "Invoice Expired"
             }
             if let description = invoice.description {
                 tx.memo = description
