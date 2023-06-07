@@ -13,7 +13,6 @@ class AccountSelectCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         bg.cornerRadius = 5.0
         btnDisclose.isUserInteractionEnabled = false
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
@@ -24,16 +23,13 @@ class AccountSelectCell: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        imgLight.isHidden = true
     }
 
     func configure(model: AccountSelectCellModel) {
-        let name = model.account.localizedName
-        let type = model.account.localizedType
-        let isSS = model.account.gdkNetwork.electrum ? true : false
-        let security = (isSS ? "Singlesig" : "Multisig").uppercased()
-
-        lblName.text = name
-        lblType.text = security + " / " + type
+        imgSS.isHidden = !model.account.type.singlesig
+        imgMS.isHidden = !model.account.type.multisig
+        imgLight.isHidden = !model.account.type.lightning
+        lblName.text = model.account.localizedName
+        lblType.text = model.account.type.subtitle.uppercased()
     }
 }
