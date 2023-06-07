@@ -407,14 +407,12 @@
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
+		81664BED2A31219500A0131D /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81664BEC2A31219500A0131D /* BreezSDK */; };
 		816A13D92A20DD0C00C7D4CB /* DialogScanMultiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816A13D82A20DD0C00C7D4CB /* DialogScanMultiViewController.swift */; };
 		816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */; };
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
 		81743D9A2A17B49A00525FA5 /* lightning.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; };
-		81743DA42A18006400525FA5 /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81743DA32A18006400525FA5 /* BreezSDK */; };
-		81743DA62A18007000525FA5 /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81743DA52A18007000525FA5 /* BreezSDK */; };
-		81743DA82A18007900525FA5 /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81743DA72A18007900525FA5 /* BreezSDK */; };
 		81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B322992BC9800F05BF2 /* RecipientCellModel.swift */; };
 		81772B352992EDEA00F05BF2 /* SendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B342992EDE900F05BF2 /* SendViewModel.swift */; };
 		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
@@ -1194,7 +1192,6 @@
 			files = (
 				81A8F8EB29E500AB0052B214 /* RxSwift in Frameworks */,
 				81961AD129E4E44200E9B94D /* Countly in Frameworks */,
-				81743DA42A18006400525FA5 /* BreezSDK in Frameworks */,
 				81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */,
 				81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */,
 				81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */,
@@ -1229,7 +1226,6 @@
 				81743D9A2A17B49A00525FA5 /* lightning.framework in Frameworks */,
 				81961A9429E4AB5200E9B94D /* RxBluetoothKit in Frameworks */,
 				81961A7929E4819F00E9B94D /* PromiseKit in Frameworks */,
-				81743DA62A18007000525FA5 /* BreezSDK in Frameworks */,
 				81961B0729E4ED7400E9B94D /* hw.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1258,7 +1254,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81743DA82A18007900525FA5 /* BreezSDK in Frameworks */,
+				81664BED2A31219500A0131D /* BreezSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2927,7 +2923,6 @@
 				81A8F8EA29E500AB0052B214 /* RxSwift */,
 				81A8F8EC29E500B20052B214 /* PromiseKit */,
 				81A8F8EE29E500CA0052B214 /* RxBluetoothKit */,
-				81743DA32A18006400525FA5 /* BreezSDK */,
 			);
 			productName = gaios;
 			productReference = 676FCF1C1F9D0CF800354E93 /* gaios.app */;
@@ -2989,7 +2984,6 @@
 				81961A7829E4819F00E9B94D /* PromiseKit */,
 				81961A8F29E4A9AD00E9B94D /* RxSwift */,
 				81961A9329E4AB5200E9B94D /* RxBluetoothKit */,
-				81743DA52A18007000525FA5 /* BreezSDK */,
 			);
 			productName = gdk;
 			productReference = 81961A4C29E46B5400E9B94D /* gdk.framework */;
@@ -3056,7 +3050,7 @@
 			);
 			name = lightning;
 			packageProductDependencies = (
-				81743DA72A18007900525FA5 /* BreezSDK */,
+				81664BEC2A31219500A0131D /* BreezSDK */,
 			);
 			productName = lightning;
 			productReference = 81A8F8F529E5069E0052B214 /* lightning.framework */;
@@ -3135,7 +3129,7 @@
 				81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */,
 				81961ACC29E4E41600E9B94D /* XCRemoteSwiftPackageReference "rive-ios" */,
 				81961ACF29E4E44200E9B94D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */,
-				81743DA22A18006400525FA5 /* XCRemoteSwiftPackageReference "breez-sdk-swift" */,
+				81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */,
 			);
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
 			projectDirPath = "";
@@ -4943,12 +4937,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		81743DA22A18006400525FA5 /* XCRemoteSwiftPackageReference "breez-sdk-swift" */ = {
+		81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/lvaccaro/breez-sdk-swift";
+			repositoryURL = "https://github.com/breez/breez-sdk-swift";
 			requirement = {
 				kind = revision;
-				revision = 8fc1670f092e056a4b4a6df915c2cc30938af8d0;
+				revision = 1dfcb8622c4d4000f5d7727b9ee69e14367b4be7;
 			};
 		};
 		81961A7729E4819E00E9B94D /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
@@ -5002,19 +4996,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		81743DA32A18006400525FA5 /* BreezSDK */ = {
+		81664BEC2A31219500A0131D /* BreezSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 81743DA22A18006400525FA5 /* XCRemoteSwiftPackageReference "breez-sdk-swift" */;
-			productName = BreezSDK;
-		};
-		81743DA52A18007000525FA5 /* BreezSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81743DA22A18006400525FA5 /* XCRemoteSwiftPackageReference "breez-sdk-swift" */;
-			productName = BreezSDK;
-		};
-		81743DA72A18007900525FA5 /* BreezSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81743DA22A18006400525FA5 /* XCRemoteSwiftPackageReference "breez-sdk-swift" */;
+			package = 81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */;
 			productName = BreezSDK;
 		};
 		81961A7829E4819F00E9B94D /* PromiseKit */ = {
