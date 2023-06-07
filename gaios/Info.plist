@@ -6,10 +6,6 @@
 	<string>$(BREEZ_API_KEY)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>GREENLIGHT_DEVICE_CERT</key>
-	<string>$(GREENLIGHT_DEVICE_CERT)</string>
-	<key>GREENLIGHT_DEVICE_KEY</key>
-	<string>$(GREENLIGHT_DEVICE_KEY)</string>
 	<key>CFBundleDisplayName</key>
 	<string>$(GA_APP_NAME)</string>
 	<key>CFBundleExecutable</key>

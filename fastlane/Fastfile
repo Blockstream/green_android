@@ -34,9 +34,28 @@ platform :ios do
       output_name: "Green-dev.ipa",
       include_symbols: true,
       include_bitcode: false,
-      export_method: "ad-hoc",
       build_path: "./dev",
       archive_path: "./dev/Green.xcarchive",
+      export_method: "ad-hoc",
+      xcargs: "-allowProvisioningUpdates"
+    )
+  end
+
+  desc "Build prod release"
+  lane :build_prod_release do
+    build_ios_app(
+      configuration: "Release",
+      scheme: "gaios",
+      project: "gaios.xcodeproj",
+      #silent: true,
+      clean: true,
+      output_directory: "./prod",
+      output_name: "Green.ipa",
+      include_symbols: true,
+      include_bitcode: false,
+      build_path: "./prod",
+      archive_path: "./prod/Green.xcarchive",
+      #export_options: "./ExportOptions.plist",
       export_method: "ad-hoc",
       xcargs: "-allowProvisioningUpdates"
     )

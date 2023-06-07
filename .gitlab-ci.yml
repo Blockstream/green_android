@@ -3,6 +3,7 @@ stages:
     - build
     - test
     - deploy
+    - store
 
 test_format:
   stage: format
@@ -15,6 +16,7 @@ test_format:
 
 build_unsigned_debug:
   stage: build
+  when: manual
   tags:
     - fastosx
     - osx
@@ -23,6 +25,7 @@ build_unsigned_debug:
   script:
     - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
     - ./tools/fetch_gdk_binaries.sh $GDK_OPT
+    - ./tools/setup_xcconfig.sh
     - fastlane build_unsigned_debug
 
 build_dev_release:
@@ -52,13 +55,47 @@ build_dev_release:
     - mkdir tmp && unzip ./dev/Green-dev.app.dSYM.zip -d tmp
     - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
     - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
-    - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
-    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
+    - ./tools/distribute.sh --app dev/Green-dev.ipa --dest dev --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev
+    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev/index.html"
+    - echo $LINK
+    - echo $LINK | qrencode -t UTF8
+
+build_prod_release:
+  stage: build
+  when: manual
+  tags:
+    - fastosx
+    - osx
+  artifacts:
+    name: "green-ios-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - prod
+  variables:
+    COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
+    COUNTLY_APP_HOST: $COUNTLY_APP_HOST
+    GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
+    GREENLIGHT_DEVICE_CERT: $GREENLIGHT_DEVICE_CERT
+    BREEZ_API_KEY: $BREEZ_API_KEY
+  script:
+    - ./tools/fetch_gdk_binaries.sh
+    - ./tools/setup_xcconfig.sh
+    - echo "Dev"
+    - cat configs/DevSettings.xcconfig
+    - echo "Prod"
+    - cat configs/ProdSettings.xcconfig
+    - fastlane build_prod_release
+    - mkdir tmp && unzip ./prod/Green.app.dSYM.zip -d tmp
+    - COUNTLY_UPLOADER=$(find ~/Library/Developer/Xcode/DerivedData -iname countly_dsym_uploader.sh | head -n 1)
+    - find ./tmp -name \*.dSYM -exec $COUNTLY_UPLOADER $COUNTLY_APP_HOST $COUNTLY_APP_KEY {} \;
+    - ./tools/distribute.sh --app prod/Green.ipa --dest prod --url https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod
+    - LINK="https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod/index.html"
     - echo $LINK
     - echo $LINK | qrencode -t UTF8
 
 build_signed_prod_release:
-  stage: deploy
+  stage: store
   when: manual
   tags:
     - fastosx
@@ -102,18 +139,32 @@ ui_tests:
   after_script:
     - xcrun simctl shutdown "iPhone 11"
 
-cp_gcloud:
+cp_gcloud_dev:
   image: blockstream/gcloud-docker-tf:1.1.7
+  needs: ["build_dev_release"]
   tags:
     - ga
   stage: deploy
   script:
-    - echo gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
+    - echo gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev
     - TMPF=$(mktemp) || exit 1
     - echo $GCLOUD_PUSH_KEY > $TMPF
     - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
     - gcloud auth activate-service-account --key-file=$TMPF
-    - gsutil cp -r $CI_PROJECT_DIR/dev gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA
-    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA/index.html"
-  dependencies:
-    - build_dev_release
+    - gsutil cp -r $CI_PROJECT_DIR/dev gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev
+    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-dev/index.html"
+
+cp_gcloud_prod:
+  image: blockstream/gcloud-docker-tf:1.1.7
+  needs: ["build_prod_release"]
+  tags:
+    - ga
+  stage: deploy
+  script:
+    - echo gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod
+    - TMPF=$(mktemp) || exit 1
+    - echo $GCLOUD_PUSH_KEY > $TMPF
+    - export GOOGLE_APPLICATION_CREDENTIALS=$TMPF
+    - gcloud auth activate-service-account --key-file=$TMPF
+    - gsutil cp -r $CI_PROJECT_DIR/prod gs://green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod
+    - echo "https://storage.googleapis.com/green-ios-builds/$CI_PROJECT_NAME-$CI_COMMIT_SHA-prod/index.html"

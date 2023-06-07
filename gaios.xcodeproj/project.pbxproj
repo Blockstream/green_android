@@ -424,6 +424,8 @@
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189230429F67F5500551824 /* WOViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189230329F67F5500551824 /* WOViewModel.swift */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
+		818BA71E2A30B45200DFB03A /* green.crt in Resources */ = {isa = PBXBuildFile; fileRef = 818BA71C2A30B45200DFB03A /* green.crt */; };
+		818BA71F2A30B45200DFB03A /* green.pem in Resources */ = {isa = PBXBuildFile; fileRef = 818BA71D2A30B45200DFB03A /* green.pem */; };
 		8190D4C62A268F93003D31B4 /* Number.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8190D4C52A268F93003D31B4 /* Number.swift */; };
 		8190D4C82A269016003D31B4 /* JadeCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8190D4C72A269016003D31B4 /* JadeCommands.swift */; };
 		8190D4CA2A28C77B003D31B4 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8190D4C92A28C77B003D31B4 /* Parser.swift */; };
@@ -1073,6 +1075,8 @@
 		8187B47F21E9027100235A35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8189230329F67F5500551824 /* WOViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOViewModel.swift; sourceTree = "<group>"; };
 		8189BEFF2236F2270091B466 /* ScreenLocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLocker.swift; sourceTree = "<group>"; };
+		818BA71C2A30B45200DFB03A /* green.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = green.crt; sourceTree = "<group>"; };
+		818BA71D2A30B45200DFB03A /* green.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = green.pem; sourceTree = "<group>"; };
 		818EE77F26A5C2ED008CD09E /* HWDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWDevice.swift; sourceTree = "<group>"; };
 		8190D4C52A268F93003D31B4 /* Number.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Number.swift; sourceTree = "<group>"; };
 		8190D4C72A269016003D31B4 /* JadeCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeCommands.swift; sourceTree = "<group>"; };
@@ -2399,6 +2403,7 @@
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
+				818BA71B2A30B3E900DFB03A /* certs */,
 				81DBD7062A2A576500D88FFF /* configs */,
 				676FCF1E1F9D0CF800354E93 /* gaios */,
 				676FCF351F9D0CF800354E93 /* gaiosTests */,
@@ -2600,6 +2605,15 @@
 				8157CDAB299BE9E100365F1B /* SendConfirmViewModel.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		818BA71B2A30B3E900DFB03A /* certs */ = {
+			isa = PBXGroup;
+			children = (
+				818BA71C2A30B45200DFB03A /* green.crt */,
+				818BA71D2A30B45200DFB03A /* green.pem */,
+			);
+			path = certs;
 			sourceTree = "<group>";
 		};
 		818EE78126A5C429008CD09E /* Models */ = {
@@ -3182,6 +3196,7 @@
 				34204727291CE13100EDE945 /* AssetSelectCell.xib in Resources */,
 				3487657829D43B2A0059D05F /* Illustration Checkmark.riv in Resources */,
 				346752F7291E5D0100256132 /* AccountSelectCell.xib in Resources */,
+				818BA71F2A30B45200DFB03A /* green.pem in Resources */,
 				34B170E3292E861E00A829B2 /* AddingCell.xib in Resources */,
 				3458AB14292D2822006EC7FB /* AssetExpandableView.xib in Resources */,
 				3483D09929FBDAF800C85106 /* LTInfoCell.xib in Resources */,
@@ -3192,6 +3207,7 @@
 				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
 				348EB95329FA93860001CC47 /* LTAmountCell.xib in Resources */,
 				3458AB10292D1F0B006EC7FB /* AnyAssetCell.xib in Resources */,
+				818BA71E2A30B45200DFB03A /* green.crt in Resources */,
 				340F07E42620499A0065A986 /* NetworkSelectorBarItem.xib in Resources */,
 				3488FC69290AE26E00122628 /* BalanceCell.xib in Resources */,
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
@@ -4004,7 +4020,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -4048,7 +4064,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4770,7 +4786,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;

@@ -10,3 +10,5 @@ dev
 dist
 breez_sdk
 .env
+certs/green.crt
+certs/green.pem

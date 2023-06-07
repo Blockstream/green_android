@@ -23,14 +23,26 @@ public class LightningBridge {
     private var network: Network { testnet ? .testnet : .bitcoin }
     private var environment: EnvironmentType { testnet ? .staging : .production }
 
-    static let BREEZ_API_KEY = Bundle.main.infoDictionary?["BREEZ_API_KEY"] as? String
-    static let GREENLIGHT_DEVICE_CERT = Bundle.main.infoDictionary?["GREENLIGHT_DEVICE_CERT"] as? String
-    static let GREENLIGHT_DEVICE_KEY = Bundle.main.infoDictionary?["GREENLIGHT_DEVICE_KEY"] as? String
+    static public let BREEZ_API_KEY = Bundle.main.infoDictionary?["BREEZ_API_KEY"] as? String
+    static public var GREENLIGHT_DEVICE_CERT: Data? {
+        let path = Bundle.main.path(forResource: "green", ofType: "crt") ?? ""
+        var content = try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
+        if let content = content?.filter({ !$0.isWhitespace }) {
+            return Data(base64Encoded: content)
+        }
+        return nil
+    }
+    static public var GREENLIGHT_DEVICE_KEY: Data? {
+        let path = Bundle.main.path(forResource: "green", ofType: "pem") ?? ""
+        var content = try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
+        if let content = content?.filter({ !$0.isWhitespace }) {
+            return Data(base64Encoded: content)
+        }
+        return nil
+    }
     static var CREDENTIALS: GreenlightCredentials? {
-        if let GREENLIGHT_DEVICE_CERT = LightningBridge.GREENLIGHT_DEVICE_CERT,
-           let GREENLIGHT_DEVICE_KEY = LightningBridge.GREENLIGHT_DEVICE_KEY,
-           let cert = Data(base64Encoded: GREENLIGHT_DEVICE_CERT),
-           let key = Data(base64Encoded: GREENLIGHT_DEVICE_KEY) {
+        if let cert = LightningBridge.GREENLIGHT_DEVICE_CERT,
+           let key = LightningBridge.GREENLIGHT_DEVICE_KEY {
             return GreenlightCredentials(deviceKey: [UInt8](key), deviceCert: [UInt8](cert))
         }
         return nil
@@ -51,7 +63,9 @@ public class LightningBridge {
     }
 
     public func connectToGreenlight(mnemonic: String) {
-        start(mnemonic: mnemonic, greenlightCredentials: getAppLightningCredentials(mnemonic: mnemonic).greenlightCredentials)
+        if let credentials = getAppLightningCredentials(mnemonic: mnemonic)?.greenlightCredentials {
+            start(mnemonic: mnemonic, greenlightCredentials: credentials)            
+        }
     }
 
     public func connectToGreenlightIfExists(mnemonic: String) -> Bool {
@@ -77,7 +91,7 @@ public class LightningBridge {
         return credentials != nil
     }
 
-    private func getAppLightningCredentials(mnemonic: String) -> AppGreenlightCredentials {
+    private func getAppLightningCredentials(mnemonic: String) -> AppGreenlightCredentials? {
         if !checkIfGreenlightNodeExists(mnemonic: mnemonic) {
             do {
                 credentials = AppGreenlightCredentials(
@@ -90,7 +104,7 @@ public class LightningBridge {
                 )
             } catch { print(error) }
         }
-        return credentials!
+        return credentials
     }
 
     private func start(mnemonic: String, greenlightCredentials: GreenlightCredentials) {
