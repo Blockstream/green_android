@@ -1,5 +1,6 @@
 import Foundation
 import gdk
+import hw
 
 extension AnalyticsManager {
 
@@ -77,6 +78,16 @@ extension AnalyticsManager {
             if let twoFactorType = twoFactorType {
                 s[AnalyticsManager.str2fa] = twoFactorType.rawValue
             }
+            return s
+        }
+        return nil
+    }
+
+    func firmwareSgmt(_ account: Account?, firmware: Firmware) -> Sgmt? {
+        if var s = sessSgmt(account) {
+            s[AnalyticsManager.strSelectedConfig] = firmware.config.lowercased()
+            s[AnalyticsManager.strSelectedDelta] = firmware.isDelta == true ? "true" : "false"
+            s[AnalyticsManager.strSelectedVersion] = firmware.version
             return s
         }
         return nil

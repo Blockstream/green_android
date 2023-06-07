@@ -108,7 +108,13 @@ class PinCreateViewController: HWFlowBaseViewController {
         BLEViewModel.shared.initialize(peripheral: peripheral,
                                        testnet: testnet,
                                        progress: { _ in },
-                                       completion: { self.wm = $0; self.peripheral.isJade() ? self.jadeFirmwareUpgrade() : self.next() },
+                                       completion: {
+            self.wm = $0
+            if self.peripheral.isJade() {
+                AnalyticsManager.shared.initializeJade(account: AccountsRepository.shared.current)
+            }
+            self.peripheral.isJade() ? self.jadeFirmwareUpgrade() : self.next()
+        },
                                        error: self.error)
     }
 
@@ -138,6 +144,8 @@ class PinCreateViewController: HWFlowBaseViewController {
 
 extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
     func didUpdate(version: String, firmware: Firmware) {
+
+        AnalyticsManager.shared.otaStartJade(account: AccountsRepository.shared.current, firmware: firmware)
         startLoader(message: "id_updating_firmware".localized)
         let repair = version <= "0.1.30" && firmware.version >= "0.1.31"
         BLEViewModel.shared.updateFirmware(
@@ -150,6 +158,7 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
                     self.showAlert(title: "id_firmware_update_completed".localized, message: "id_new_jade_firmware_required".localized)
                 }
                 if $0 {
+                    AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
                     DropAlert().success(message: "id_firmware_update_completed".localized)
                 } else {
                     DropAlert().error(message: "id_operation_failure".localized)

@@ -59,6 +59,10 @@ extension AnalyticsManager {
     static let strType = "type"
     static let strMedia = "media"
 
+    static let strSelectedConfig = "selected_config"
+    static let strSelectedDelta = "selected_delta"
+    static let strSelectedVersion = "selected_version"
+
     enum OnBoardFlow: String {
         case strCreate = "create"
         case strRestore = "restore"

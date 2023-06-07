@@ -365,6 +365,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     @IBAction func btnVerify(_ sender: Any) {
+        AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletType: viewModel.account.type)
         validate()
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveVerifyAddressViewController") as? DialogReceiveVerifyAddressViewController {

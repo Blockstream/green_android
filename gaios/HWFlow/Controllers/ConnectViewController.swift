@@ -195,6 +195,8 @@ class ConnectViewController: HWFlowBaseViewController {
 
 extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
     func didUpdate(version: String, firmware: Firmware) {
+
+        AnalyticsManager.shared.otaStartJade(account: account, firmware: firmware)
         startLoader(message: "id_updating_firmware".localized)
         let repair = version <= "0.1.30" && firmware.version >= "0.1.31"
         BLEViewModel.shared.updateFirmware(
@@ -207,6 +209,7 @@ extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
                     self.showAlert(title: "id_firmware_update_completed".localized, message: "id_new_jade_firmware_required".localized)
                 }
                 if $0 {
+                    AnalyticsManager.shared.otaCompleteJade(account: self.account, firmware: firmware)
                     DropAlert().success(message: "id_firmware_update_completed".localized)
                 } else {
                     DropAlert().error(message: "id_operation_failure".localized)

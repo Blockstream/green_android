@@ -1,5 +1,6 @@
 import Foundation
 import gdk
+import hw
 
 enum AnalyticsEventName: String {
     case debugEvent = "debug_event"
@@ -28,9 +29,13 @@ enum AnalyticsEventName: String {
     case assetSelect = "asset_select"
     case accountSelect = "account_select"
     case accountNew = "account_new"
-    case jadeInitialize = "jade_initialize"
     case connectHWW = "hww_connect"
     case connectedHWW = "hww_connected"
+
+    case jadeInitialize = "jade_initialize"
+    case jadeVerifyAddress = "verify_address"
+    case jadeOtaStart = "ota_start"
+    case jadeOtaComplete = "ota_complete"
 }
 
 extension AnalyticsManager {
@@ -213,10 +218,6 @@ extension AnalyticsManager {
         }
     }
 
-    func initJade() {
-        recordEvent(.jadeInitialize)
-    }
-
     func hwwConnect(account: Account?) {
         if let s = sessSgmt(account) {
             recordEvent(.connectHWW, sgmt: s)
@@ -226,6 +227,32 @@ extension AnalyticsManager {
     func hwwConnected(account: Account?) {
         if let s = sessSgmt(account) {
             recordEvent(.connectedHWW, sgmt: s)
+        }
+    }
+
+    func initializeJade(account: Account?) {
+        if let s = sessSgmt(account) {
+            recordEvent(.jadeInitialize, sgmt: s)
+        }
+    }
+
+    func verifyAddressJade(account: Account?, walletType: AccountType?) {
+        if let s = subAccSeg(account, walletType: walletType) {
+            recordEvent(.jadeVerifyAddress, sgmt: s)
+        }
+    }
+
+    func otaStartJade(account: Account?, firmware: Firmware) {
+        if let s = firmwareSgmt(account, firmware: firmware) {
+            recordEvent(.jadeOtaStart, sgmt: s)
+            cancelEvent(.jadeOtaComplete)
+            startEvent(.jadeOtaComplete)
+        }
+    }
+
+    func otaCompleteJade(account: Account?, firmware: Firmware) {
+        if let s = firmwareSgmt(account, firmware: firmware) {
+            endEvent(.jadeOtaComplete, sgmt: s)
         }
     }
 }

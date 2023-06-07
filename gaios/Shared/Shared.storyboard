@@ -596,7 +596,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="848"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nz3-bb-vmV">
-                                                <rect key="frame" x="0.0" y="622" width="414" height="226"/>
+                                                <rect key="frame" x="0.0" y="614" width="414" height="234"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_hww_arrow" translatesAutoresizingMaskIntoConstraints="NO" id="8bR-HR-Dej">
                                                         <rect key="frame" x="182" y="10" width="50" height="50"/>
@@ -645,7 +645,7 @@
                                                     <constraint firstItem="uWg-8K-XTs" firstAttribute="leading" secondItem="Nz3-bb-vmV" secondAttribute="leading" constant="90" id="QCX-Qm-IrX"/>
                                                     <constraint firstAttribute="trailing" secondItem="jmH-VR-Blq" secondAttribute="trailing" constant="20" id="dII-xl-4la"/>
                                                     <constraint firstItem="8bR-HR-Dej" firstAttribute="top" secondItem="Nz3-bb-vmV" secondAttribute="top" constant="10" id="ib6-eE-zXr"/>
-                                                    <constraint firstAttribute="bottom" secondItem="GUq-zI-7BF" secondAttribute="bottom" constant="16" id="kNp-sE-en7"/>
+                                                    <constraint firstAttribute="bottom" secondItem="GUq-zI-7BF" secondAttribute="bottom" constant="24" id="kNp-sE-en7"/>
                                                     <constraint firstItem="8bR-HR-Dej" firstAttribute="centerX" secondItem="Nz3-bb-vmV" secondAttribute="centerX" id="lGk-5y-Xoj"/>
                                                     <constraint firstAttribute="trailing" secondItem="G7g-9T-JQJ" secondAttribute="trailing" constant="36" id="pU6-vD-HC1"/>
                                                     <constraint firstItem="G7g-9T-JQJ" firstAttribute="top" secondItem="uWg-8K-XTs" secondAttribute="bottom" constant="24" id="rGz-uh-49c"/>
