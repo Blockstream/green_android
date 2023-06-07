@@ -112,7 +112,7 @@ class LightningSessionManager: SessionManager {
     }
 
     func subaccount_() -> WalletItem {
-        return WalletItem(name: "", pointer: 0, receivingId: "", type: .lightning, hidden: false)
+        return WalletItem(name: "", pointer: 0, receivingId: "", type: .lightning, hidden: false, network: NetworkSecurityCase.lightning.network)
     }
 
     override func subaccount(_ pointer: UInt32) -> Promise<WalletItem> {
