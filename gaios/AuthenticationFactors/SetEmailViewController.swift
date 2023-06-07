@@ -26,7 +26,7 @@ class SetEmailViewController: KeyboardViewController {
         textField.setRightPaddingPoints(10.0)
         nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-        nextButton.setStyle(.primary)
+        nextButton.setStyle(.primaryDisabled)
         setRecoveryLabel.text = isSetRecovery ?
             NSLocalizedString("id_set_up_an_email_to_get", comment: "") :
             NSLocalizedString("id_the_email_will_also_be_used_to", comment: "")
@@ -91,5 +91,9 @@ class SetEmailViewController: KeyboardViewController {
                 DropAlert().error(message: error.localizedDescription)
             }
         }
+    }
+
+    @IBAction func editingChanged(_ sender: Any) {
+        (textField.text ?? "").isValidEmailAddr() ? nextButton.setStyle(.primary) : nextButton.setStyle(.primaryDisabled)
     }
 }
