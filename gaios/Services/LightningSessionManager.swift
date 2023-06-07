@@ -11,7 +11,7 @@ class LightningSessionManager: SessionManager {
     var lightBridge: LightningBridge?
     var nodeState: NodeState?
     var lspInfo: LspInformation?
-    var keychain: String?
+    var accountId: String?
     
     var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
 
@@ -51,15 +51,15 @@ class LightningSessionManager: SessionManager {
     }
 
     private func loginUser_(_ params: Credentials) -> LoginUserResult {
-        let greenlightCredentials = LightningRepository.shared.get(for: keychain ?? "")
         let walletId = walletIdentifier(credentials: params)
+        let walletHashId = walletId!.walletHashId
+        let greenlightCredentials = LightningRepository.shared.get(for: walletHashId)
         lightBridge = initLightningSdk(params, appGreenlightCredentials: greenlightCredentials)
         connectToGreenlight(credentials: params, create: greenlightCredentials == nil)
         if let greenlightCredentials = lightBridge?.credentials {
-            LightningRepository.shared.upsert(for: keychain ?? "", credentials: greenlightCredentials)
+            LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
         }
         logged = true
-        walletHashId = walletId?.walletHashId
         nodeState = lightBridge?.updateNodeInfo()
         lspInfo = lightBridge?.updateLspInformation()
         return LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
@@ -91,7 +91,8 @@ class LightningSessionManager: SessionManager {
     }
 
     override func existDatadir(walletHashId: String) -> Bool {
-        return LightningRepository.shared.get(for: keychain ?? "") != nil
+        let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId)/0"
+        return FileManager.default.fileExists(atPath: workingDir)
     }
 
     override func removeDatadir(walletHashId: String) {
@@ -234,17 +235,10 @@ class LightningSessionManager: SessionManager {
         }
     }
 
-    override func discovery(credentials: Credentials? = nil, hw: HWDevice? = nil, removeDatadir: Bool, walletHashId: String) -> Promise<Void> {
+    override func discovery() -> Promise<Bool> {
         return Guarantee()
             .then(on: bgq) { self.getBalance(subaccount: 0, numConfs: 0) }
-            .compactMap(on: bgq) {
-                let notFunded = $0["btc"] == 0
-                if notFunded && removeDatadir {
-                    self.disconnect()
-                    self.removeDatadir(walletHashId: walletHashId)
-                    LightningRepository.shared.remove(for: self.keychain ?? "")
-                }
-            }
+            .compactMap { $0["btc"] != 0 }
     }
 
     func createInvoice(satoshi: UInt64, description: String) throws -> LnInvoice? {

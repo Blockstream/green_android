@@ -25,7 +25,6 @@ class SessionManager {
 
     var connected = false
     var logged = false
-    var walletHashId: String?
 
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
@@ -257,7 +256,6 @@ class SessionManager {
 
     private func onLogin(_ data: LoginUserResult) -> Promise<Void> {
         logged = true
-        walletHashId = data.walletHashId
         if !self.gdkNetwork.electrum {
             return self.loadTwoFactorConfig().asVoid().recover {_ in }
         }
@@ -504,7 +502,7 @@ class SessionManager {
         return nil
     }
 
-    func discovery(credentials: Credentials? = nil, hw: HWDevice? = nil, removeDatadir: Bool, walletHashId: String) -> Promise<Void> {
+    func discovery() -> Promise<Bool> {
         return Guarantee()
             .then(on: bgq) { self.subaccounts(true) }
             .recover { _ in Promise(error: LoginError.connectionFailed()) }
@@ -512,13 +510,7 @@ class SessionManager {
             .compactMap { $0.gdkNetwork.electrum && !($0.bip44Discovered ?? false) }
             .then(on: bgq) { $0 ? self.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
             .then(on: bgq) { _ in self.subaccounts() }
-            .map { subaccounts in
-                let notFunds = subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty
-                if self.gdkNetwork.electrum && notFunds && removeDatadir {
-                    self.disconnect()
-                    self.removeDatadir(walletHashId: walletHashId)
-                }
-            }.asVoid()
+            .compactMap { !$0.filter({ $0.bip44Discovered ?? false }).isEmpty }
     }
 
     func networkConnect() {

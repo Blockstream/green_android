@@ -154,7 +154,9 @@ struct Account: Codable, Equatable {
     }
 
     func removeLightningCredentials() {
-        LightningRepository.shared.remove(for: keychain)
+        if let walletHashId = walletHashId {
+            LightningRepository.shared.remove(for: walletHashId)
+        }
     }
     
     func addBiometrics(session: SessionManager, credentials: Credentials) -> Promise<Void> {

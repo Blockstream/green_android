@@ -158,14 +158,17 @@ class AccountViewModel {
     }
 
     func removeSubaccount() -> Promise<Void> {
-        let session = wm.sessions[account.gdkNetwork.network]
+        guard let prominentSession = wm.prominentSession,
+                let session = wm.sessions[account.gdkNetwork.network] else {
+            return Promise().asVoid()
+        }
         return Guarantee()
+            .then(on: bgq) { prominentSession.getCredentials(password: "") }
+            .compactMap(on: bgq) { session.walletIdentifier(credentials: $0) }
             .compactMap(on: bgq) {
-                session?.disconnect()
-                if let walletHashId = session?.walletHashId {
-                    session?.removeDatadir(walletHashId: walletHashId)
-                    LightningRepository.shared.remove(for: self.wm.account.keychain)
-                }
+                session.disconnect()
+                session.removeDatadir(walletHashId: $0.walletHashId )
+                LightningRepository.shared.remove(for: $0.walletHashId)
             }.then(on: bgq) { self.wm.subaccounts() }
             .asVoid()
     }

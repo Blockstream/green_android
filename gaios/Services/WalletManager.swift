@@ -93,7 +93,7 @@ class WalletManager {
 
     func addLightningSession(for network: NetworkSecurityCase) {
         let session = LightningSessionManager(network.gdkNetwork)
-        session.keychain = account.keychain
+        session.accountId = account.id
         sessions[network.rawValue] = session
     }
 
@@ -210,12 +210,20 @@ class WalletManager {
             return Promise { seal in
                 guard let session = self.sessions[network] else { return seal.fulfill(()) }
                 let walletHashId = walletId(session)!.walletHashId
-                let removeDatadir = !existDatadir(session) && session.gdkNetwork.network != self.prominentNetwork.network && (credentials == nil || credentials?.bip39Passphrase.isNilOrEmpty ?? false)
+                let removeDatadir = !existDatadir(session) && session.gdkNetwork.network != self.prominentNetwork.network
                 do {
                     let res = try session.loginUser(credentials: credentials, hw: device).wait()
                     self.account.xpubHashId = res.xpubHashId
+                    if session.gdkNetwork.network == self.prominentNetwork.network {
+                        self.account.walletHashId = res.walletHashId
+                    }
                     if session.logged && (fullRestore || !existDatadir(session)) {
-                        try session.discovery(credentials: credentials, hw: device, removeDatadir: removeDatadir, walletHashId: walletHashId).wait()
+                        let isFunded = try session.discovery().wait()
+                        if !isFunded && removeDatadir {
+                            session.disconnect()
+                            session.removeDatadir(walletHashId: walletHashId)
+                            LightningRepository.shared.remove(for: walletHashId)
+                        }
                     }
                 } catch {
                     self.failureSessions[session.gdkNetwork.network] = error
