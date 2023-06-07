@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.7] - 2023-06-08
+
+### Changed
+- Bump GDK to version 0.0.63
+- Update dependencies
+
+### Added
+- Add lightning support as experimental feature
+- Add a blinding step in liquid for software and hardware wallets
+
+### Fixed
+- Fix watch-only view for large fonts
+
 ## [4.0.4] - 2023-05-03
 
 ### Changed
