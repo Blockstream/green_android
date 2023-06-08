@@ -33,25 +33,6 @@ class WalletManager {
         }
     }
 
-    // Store active subaccount
-    private var activeWalletHash: Int?
-    var currentSubaccount: WalletItem? {
-        get {
-            if activeWalletHash == nil {
-                return subaccounts.first { $0.hidden == false }
-            }
-            return subaccounts.first { $0.hashValue == activeWalletHash}
-        }
-        set {
-            if let newValue = newValue {
-                activeWalletHash = newValue.hashValue
-                if let index = subaccounts.firstIndex(where: { $0.pointer == newValue.pointer && $0.network == newValue.network}) {
-                    subaccounts[index] = newValue
-                }
-            }
-        }
-    }
-
     // Get active session of the active subaccount
     var prominentSession: SessionManager? {
         return sessions[prominentNetwork.rawValue]

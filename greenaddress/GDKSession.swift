@@ -36,5 +36,4 @@ public class GDKSession: Session {
     public override func setNotificationHandler(notificationCompletionHandler: NotificationCompletionHandler?) {
         super.setNotificationHandler(notificationCompletionHandler: notificationCompletionHandler)
     }
-
 }
