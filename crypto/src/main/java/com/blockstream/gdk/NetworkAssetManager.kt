@@ -45,7 +45,7 @@ class NetworkAssetManager constructor(
 
     fun cacheAssets(assetIds: Collection<String>, assetsProvider: AssetsProvider) {
         assetIds.filter { !metadata.containsKey(it) && !icons.containsKey(it) }.takeIf { it.isNotEmpty() }?.also { unCachedIds ->
-            assetsProvider.getAssets(GetAssetsParams(unCachedIds)).also { assets ->
+            assetsProvider.getAssets(GetAssetsParams(unCachedIds))?.also { assets ->
                 // get_assets only returns non null assets, so we need to add nulls for the missing assets
                 unCachedIds.forEach { assetId ->
                     metadata[assetId] = assets.assets?.get(assetId)
@@ -61,7 +61,7 @@ class NetworkAssetManager constructor(
             try {
                 logger.info { "Cache Asset Metadata Missed: $assetId" }
                 // If null save it in cache either way
-                assetsProvider.getAssets(GetAssetsParams(listOf(assetId))).assets?.get(assetId).let {
+                assetsProvider.getAssets(GetAssetsParams(listOf(assetId)))?.assets?.get(assetId).let {
                     metadata[assetId] = it
                 }
             } catch (e: Exception) {
@@ -77,7 +77,7 @@ class NetworkAssetManager constructor(
             try {
                 logger.info { "Cache Asset Icon Missed: $assetId" }
                 // If null save it in cache either way
-                assetsProvider.getAssets(GetAssetsParams(listOf(assetId))).icons?.get(assetId).let {
+                assetsProvider.getAssets(GetAssetsParams(listOf(assetId)))?.icons?.get(assetId).let {
                     icons[assetId] = it
                 }
             } catch (e: Exception) {

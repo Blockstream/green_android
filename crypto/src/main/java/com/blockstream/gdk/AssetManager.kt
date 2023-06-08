@@ -13,7 +13,7 @@ interface AssetQATester {
 
 interface AssetsProvider {
     fun refreshAssets(params: AssetsParams)
-    fun getAssets(params: GetAssetsParams): Assets
+    fun getAssets(params: GetAssetsParams): Assets?
 }
 
 /*

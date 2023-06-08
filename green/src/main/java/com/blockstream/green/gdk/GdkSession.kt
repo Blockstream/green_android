@@ -341,7 +341,7 @@ class GdkSession constructor(
         AuthHandler(network = network, session = this, gdkBridge = gdkBridge, gaAuthHandler = gaAuthHandler)
 
     private fun updateEnrichedAssets() {
-        if (isNetworkInitialized) {
+        if (isNetworkInitialized && !isWatchOnly) {
             countly.getRemoteConfigValueForAssets(if (isMainnet) LIQUID_ASSETS_KEY else LIQUID_ASSETS_TESTNET_KEY)?.also {
                 _enrichedAssetsFlow.value = it
                 cacheAssets(it.keys)
@@ -1449,8 +1449,10 @@ class GdkSession constructor(
         )
     ).result<PreviousAddresses>()
 
-    override fun refreshAssets(params: AssetsParams) = gdkBridge.refreshAssets(gdkSession(activeLiquid ?: liquid!!), params)
-    override fun getAssets(params: GetAssetsParams) = gdkBridge.getAssets(gdkSession(activeLiquid ?: liquid!!), params)
+    override fun refreshAssets(params: AssetsParams) {
+        (activeLiquid ?: liquid)?.also { gdkBridge.refreshAssets(gdkSession(it), params) }
+    }
+    override fun getAssets(params: GetAssetsParams) = (activeLiquid ?: liquid)?.let { gdkBridge.getAssets(gdkSession(it), params) }
 
     fun createAccount(
         network: Network,
